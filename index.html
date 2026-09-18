@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrain — Evidence-Based Binaural Beats</title>
+<meta name="description" content="A single-page binaural beat generator built on published research: delta and theta tracks for relaxation and sleep, beta and gamma tracks for attention and stimulation.">
+<style>
+  :root{
+    --bg:#0a0e1a;
+    --bg-2:#0f1524;
+    --panel:#141c2e;
+    --panel-2:#1a2438;
+    --line:#26304a;
+    --line-soft:#1e2740;
+    --text:#e8edf7;
+    --text-dim:#9aa7c2;
+    --text-faint:#6b7a99;
+    --relax:#5eead4;
+    --relax-deep:#2dd4bf;
+    --stim:#fbbf24;
+    --stim-deep:#f59e0b;
+    --accent:#818cf8;
+    --danger:#fb7185;
+    --radius:14px;
+    --radius-sm:9px;
+    --shadow:0 18px 40px -18px rgba(0,0,0,.75);
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 600px at 12% -8%, rgba(94,234,212,.09), transparent 62%),
+      radial-gradient(900px 520px at 92% 4%, rgba(129,140,248,.10), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font:16px/1.65 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    padding-bottom:230px;
+    min-height:100vh;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+  a{color:var(--relax);text-decoration:none;border-bottom:1px solid rgba(94,234,212,.28)}
+  a:hover{border-bottom-color:var(--relax)}
+  h1,h2,h3{line-height:1.2;margin:0}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-variant-numeric:tabular-nums}
+
+  /* ---------- header ---------- */
+  header{padding:56px 0 30px}
+  .brand{display:flex;align-items:center;gap:13px;margin-bottom:22px}
+  .brand-mark{
+    width:38px;height:38px;border-radius:11px;flex:none;
+    background:linear-gradient(140deg,var(--relax),var(--accent) 55%,var(--stim));
+    position:relative;
+  }
+  .brand-mark::after{
+    content:"";position:absolute;inset:9px;border-radius:4px;
+    background:var(--bg);
+  }
+  .brand-name{font-size:19px;font-weight:650;letter-spacing:-.015em}
+  .brand-tag{font-size:12.5px;color:var(--text-faint);letter-spacing:.06em;text-transform:uppercase}
+  h1{font-size:clamp(30px,5.4vw,48px);font-weight:700;letter-spacing:-.03em;max-width:17ch}
+  h1 em{font-style:normal;background:linear-gradient(100deg,var(--relax),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{margin:20px 0 0;color:var(--text-dim);font-size:17px;max-width:62ch}
+
+  .notices{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .notice{
+    display:flex;gap:9px;align-items:flex-start;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);
+    padding:11px 14px;font-size:13.5px;color:var(--text-dim);max-width:340px;
+  }
+  .notice b{color:var(--text);font-weight:600}
+  .notice.warn{border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.07)}
+  .notice-ic{font-size:15px;line-height:1.45;flex:none}
+
+  /* ---------- filters ---------- */
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
+    margin:44px 0 20px;padding-top:28px;border-top:1px solid var(--line-soft);
+  }
+  .tabs{display:flex;gap:7px;flex-wrap:wrap}
+  .tab{
+    background:var(--panel);color:var(--text-dim);border:1px solid var(--line);
+    padding:8px 15px;border-radius:999px;font-size:13.5px;font-weight:550;cursor:pointer;
+    font-family:inherit;transition:background .15s,color .15s,border-color .15s;
+  }
+  .tab:hover{color:var(--text);border-color:#33405f}
+  .tab[aria-selected="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+  .count{font-size:13px;color:var(--text-faint)}
+
+  /* ---------- cards ---------- */
+  .grid{display:grid;gap:15px;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));margin:0 0 10px;padding:0;list-style:none}
+  .card{
+    background:linear-gradient(180deg,var(--panel),var(--bg-2));
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:19px 19px 17px;display:flex;flex-direction:column;gap:13px;
+    position:relative;overflow:hidden;transition:border-color .18s,transform .18s;
+  }
+  .card::before{
+    content:"";position:absolute;inset:0 auto 0 0;width:3px;
+    background:linear-gradient(180deg,var(--c1),var(--c2));opacity:.85;
+  }
+  .card:hover{border-color:#35405e;transform:translateY(-2px)}
+  .card.is-playing{border-color:var(--c1);box-shadow:0 0 0 1px var(--c1) inset,0 14px 34px -20px var(--c1)}
+  .card[data-cat="relax"]{--c1:var(--relax);--c2:#3b82f6}
+  .card[data-cat="stim"]{--c1:var(--stim);--c2:#f472b6}
+
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .band{
+    font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;font-weight:700;
+    color:var(--c1);background:color-mix(in srgb,var(--c1) 13%,transparent);
+    border:1px solid color-mix(in srgb,var(--c1) 30%,transparent);
+    padding:3.5px 8px;border-radius:5px;white-space:nowrap;
+  }
+  .card h3{font-size:17.5px;font-weight:620;letter-spacing:-.015em}
+  .card .desc{font-size:14px;color:var(--text-dim);margin:0;flex:1}
+
+  .specs{display:flex;gap:7px;flex-wrap:wrap}
+  .spec{
+    background:var(--panel-2);border:1px solid var(--line-soft);border-radius:6px;
+    padding:5px 9px;font-size:12px;color:var(--text-dim);
+  }
+  .spec b{color:var(--text);font-weight:600}
+
+  details.ev{border-top:1px solid var(--line-soft);padding-top:12px;margin-top:2px}
+  details.ev summary{
+    cursor:pointer;font-size:12.5px;color:var(--text-faint);list-style:none;
+    display:flex;align-items:center;gap:7px;user-select:none;
+  }
+  details.ev summary::-webkit-details-marker{display:none}
+  details.ev summary::after{content:"›";transition:transform .2s;font-size:15px;line-height:1}
+  details.ev[open] summary::after{transform:rotate(90deg)}
+  details.ev summary:hover{color:var(--text-dim)}
+  .ev-body{font-size:13px;color:var(--text-dim);margin-top:9px}
+  .ev-body cite{display:block;margin-top:7px;font-style:normal;font-size:12px;color:var(--text-faint)}
+  .strength{display:inline-flex;gap:2.5px;margin-left:auto;align-items:center}
+  .strength i{width:13px;height:3px;border-radius:2px;background:var(--line);display:block}
+  .strength i.on{background:var(--c1)}
+
+  .play-btn{
+    font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
+    background:var(--c1);color:#0a0e1a;border:0;border-radius:9px;
+    padding:11px 16px;display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:filter .15s;
+  }
+  .play-btn:hover{filter:brightness(1.1)}
+  .play-btn:active{transform:translateY(1px)}
+
+  /* ---------- builder ---------- */
+  section{margin:66px 0}
+  .sec-head{margin-bottom:22px}
+  .sec-head h2{font-size:25px;font-weight:660;letter-spacing:-.022em}
+  .sec-head p{color:var(--text-dim);margin:9px 0 0;font-size:15px;max-width:66ch}
+  .builder{
+    background:linear-gradient(180deg,var(--panel),var(--bg-2));
+    border:1px solid var(--line);border-radius:var(--radius);padding:24px;
+  }
+  .fields{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .field label{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--text-dim);margin-bottom:9px;gap:10px}
+  .field label b{color:var(--text);font-size:14.5px;font-weight:620}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:99px;
+    background:var(--line);outline:none;margin:8px 0;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:19px;height:19px;border-radius:50%;
+    background:var(--text);cursor:pointer;border:4px solid var(--accent);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:19px;height:19px;border-radius:50%;background:var(--text);cursor:pointer;border:4px solid var(--accent);
+  }
+  input[type=range]:focus-visible{box-shadow:0 0 0 3px rgba(129,140,248,.4)}
+  .hint{font-size:12px;color:var(--text-faint);margin:4px 0 0}
+  .builder-foot{display:flex;flex-wrap:wrap;gap:13px;align-items:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--line-soft)}
+  .btn{
+    font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border-radius:9px;
+    padding:11px 18px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);
+    transition:background .15s,border-color .15s;
+  }
+  .btn:hover{background:#22304a;border-color:#3a4767}
+  .btn.primary{background:var(--accent);color:#0a0e1a;border-color:var(--accent)}
+  .btn.primary:hover{filter:brightness(1.1);background:var(--accent)}
+  .band-readout{font-size:13px;color:var(--text-dim);margin-left:auto}
+  .band-readout b{color:var(--text)}
+
+  /* ---------- science ---------- */
+  .prose{color:var(--text-dim);font-size:15.5px;max-width:74ch}
+  .prose h3{font-size:17px;color:var(--text);margin:30px 0 9px;font-weight:620}
+  .prose p{margin:0 0 14px}
+  .prose ul{margin:0 0 14px;padding-left:20px}
+  .prose li{margin-bottom:7px}
+  .prose strong{color:var(--text);font-weight:600}
+
+  table{width:100%;border-collapse:collapse;margin:22px 0;font-size:14px}
+  caption{text-align:left;font-size:13px;color:var(--text-faint);padding-bottom:10px}
+  th,td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  th{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);font-weight:650;border-bottom-color:var(--line)}
+  td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
+  .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+  ol.refs{color:var(--text-dim);font-size:13.5px;padding-left:22px;margin:0}
+  ol.refs li{margin-bottom:11px}
+
+  footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:28px 0 8px;color:var(--text-faint);font-size:13px}
+  footer p{margin:0 0 9px;max-width:74ch}
+
+  /* ---------- player ---------- */
+  .player{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    background:rgba(12,17,30,.93);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border-top:1px solid var(--line);box-shadow:var(--shadow);
+    transform:translateY(102%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .player.open{transform:translateY(0)}
+  .player-inner{max-width:var(--maxw);margin:0 auto;padding:16px 20px 18px;display:grid;gap:16px;grid-template-columns:auto 1fr auto;align-items:center}
+
+  .orb{position:relative;width:62px;height:62px;flex:none}
+  .orb svg{position:absolute;inset:0;transform:rotate(-90deg)}
+  .orb .ring-bg{fill:none;stroke:var(--line);stroke-width:4}
+  .orb .ring-fg{fill:none;stroke:var(--pc,var(--relax));stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .4s linear}
+  .orb-core{
+    position:absolute;inset:13px;border-radius:50%;
+    background:radial-gradient(circle at 34% 30%,var(--pc,var(--relax)),transparent 72%);
+    opacity:.5;
+  }
+  .player.playing .orb-core{animation:breathe 6s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:scale(.82);opacity:.35}50%{transform:scale(1.06);opacity:.75}}
+
+  .p-meta{min-width:0}
+  .p-name{font-size:15.5px;font-weight:620;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .p-sub{font-size:12.5px;color:var(--text-faint);margin-top:2px}
+  .ears{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .ear{
+    font-size:11.5px;background:var(--panel-2);border:1px solid var(--line-soft);
+    border-radius:5px;padding:3px 8px;color:var(--text-dim);
+  }
+  .ear b{color:var(--text)}
+  .ear.beat{border-color:color-mix(in srgb,var(--pc,var(--relax)) 40%,transparent);color:var(--pc,var(--relax))}
+  .ear.beat b{color:var(--pc,var(--relax))}
+
+  .p-controls{display:flex;align-items:center;gap:13px;flex-wrap:wrap;justify-content:flex-end}
+  .icon-btn{
+    width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;flex:none;
+    background:var(--pc,var(--relax));color:#0a0e1a;font-size:16px;
+    display:grid;place-items:center;font-family:inherit;transition:filter .15s;
+  }
+  .icon-btn:hover{filter:brightness(1.1)}
+  .icon-btn.ghost{background:var(--panel-2);color:var(--text-dim);border:1px solid var(--line);width:40px;height:40px;font-size:14px}
+  .icon-btn.ghost:hover{color:var(--text);background:#22304a}
+  .time{font-size:17px;font-weight:620;min-width:66px;text-align:right}
+  .vol{display:flex;align-items:center;gap:9px;min-width:150px}
+  .vol span{font-size:12px;color:var(--text-faint);white-space:nowrap}
+  .vol input[type=range]{margin:0}
+  .toggles{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--text-dim);grid-column:1/-1;border-top:1px solid var(--line-soft);padding-top:13px;align-items:center}
+  .toggles label{display:flex;align-items:center;gap:7px;cursor:pointer}
+  .toggles input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
+  .status{margin-left:auto;font-size:12.5px;color:var(--text-faint)}
+
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  @media (max-width:760px){
+    body{padding-bottom:280px}
+    header{padding:36px 0 20px}
+    .player-inner{grid-template-columns:auto 1fr;padding:14px 16px 16px;gap:13px}
+    .p-controls{grid-column:1/-1;justify-content:space-between}
+    .vol{min-width:0;flex:1}
+    .orb{width:52px;height:52px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div>
+        <div class="brand-name">Entrain</div>
+        <div class="brand-tag">Binaural beat generator</div>
+      </div>
+    </div>
+    <h1>Tones your brain <em>builds itself</em>.</h1>
+    <p class="lede">
+      Every track here is generated live in your browser from two pure sine tones — one per ear.
+      The beat you hear is the difference between them, and it exists only in your auditory brainstem.
+      Frequencies, carrier tones and session lengths are taken from the published literature, and each
+      card shows what the evidence actually says.
+    </p>
+    <div class="notices">
+      <div class="notice">
+        <span class="notice-ic" aria-hidden="true">🎧</span>
+        <span><b>Headphones are mandatory.</b> On speakers the two tones mix in the air and you get an ordinary acoustic beat, not a binaural one.</span>
+      </div>
+      <div class="notice">
+        <span class="notice-ic" aria-hidden="true">🔉</span>
+        <span><b>Keep it quiet.</b> Beats are perceived most clearly at low, comfortable levels. Loud does not mean stronger.</span>
+      </div>
+      <div class="notice warn">
+        <span class="notice-ic" aria-hidden="true">⚠︎</span>
+        <span><b>Not for everyone.</b> Avoid if you have epilepsy or a seizure disorder, wear a pacemaker, or are driving or operating machinery. This is not a medical device.</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="tabs" role="tablist" aria-label="Filter tracks">
+      <button class="tab" role="tab" aria-selected="true" data-filter="all">All tracks</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="relax">Relaxation &amp; sleep</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="stim">Stimulation &amp; focus</button>
+    </div>
+    <div class="count" id="count"></div>
+  </div>
+
+  <ul class="grid" id="grid"></ul>
+
+  <section id="builder">
+    <div class="sec-head">
+      <h2>Build your own</h2>
+      <p>
+        Pick any beat frequency and carrier. Beats are perceived most robustly with carriers between roughly
+        200&nbsp;Hz and 500&nbsp;Hz, and the illusion breaks down as the difference between the two tones exceeds
+        about 30–35&nbsp;Hz — past that you start to hear two separate tones instead of one beating one.
+      </p>
+    </div>
+    <div class="builder">
+      <div class="fields">
+        <div class="field">
+          <label for="cBeat">Beat frequency <b id="cBeatV">10.0 Hz</b></label>
+          <input type="range" id="cBeat" min="0.5" max="40" step="0.5" value="10">
+          <p class="hint" id="cBand">Alpha — relaxed alertness</p>
+        </div>
+        <div class="field">
+          <label for="cCar">Carrier tone <b id="cCarV">250 Hz</b></label>
+          <input type="range" id="cCar" min="100" max="600" step="10" value="250">
+          <p class="hint">Lower carriers give a stronger, more stable beat percept.</p>
+        </div>
+        <div class="field">
+          <label for="cMin">Session length <b id="cMinV">20 min</b></label>
+          <input type="range" id="cMin" min="5" max="60" step="5" value="20">
+          <p class="hint">Longer exposures performed better in meta-analysis.</p>
+        </div>
+      </div>
+      <div class="builder-foot">
+        <button class="btn primary" id="cPlay">Play custom session</button>
+        <div class="band-readout">Left ear <b id="cL">250 Hz</b> · Right ear <b id="cR">260 Hz</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="science">
+    <div class="sec-head">
+      <h2>What the research actually supports</h2>
+      <p>The honest summary: real but modest effects, decent evidence for anxiety and attention, weaker and noisier evidence for memory.</p>
+    </div>
+    <div class="prose">
+      <h3>How a binaural beat is made</h3>
+      <p>
+        Feed 250&nbsp;Hz to the left ear and 260&nbsp;Hz to the right, and neither ear receives a 10&nbsp;Hz signal —
+        yet you perceive a 10&nbsp;Hz pulsing. The beat is produced by binaural interaction in the superior olivary
+        complex of the brainstem, which is why the effect vanishes the moment the tones reach both ears
+        (Oster, 1973). Two constraints follow from the physiology:
+      </p>
+      <ul>
+        <li><strong>Carrier matters.</strong> The lower of the two tones is the carrier, and lower carriers produce a more robust percept. A 40&nbsp;Hz auditory steady-state response has been evoked with a 400&nbsp;Hz carrier but was undetectable above roughly 3000&nbsp;Hz.</li>
+        <li><strong>The beat has a ceiling.</strong> Beyond about a 35&nbsp;Hz difference, the two tones separate perceptually and the beat disappears — which is why gamma tracks sit at the edge of what this method can do.</li>
+      </ul>
+
+      <h3>Dosing: timing beats frequency-picking</h3>
+      <p>
+        The 2019 meta-analysis of 22 studies (35 effect sizes) found an overall medium effect,
+        <span class="mono">g&nbsp;=&nbsp;0.45</span>, and two practical findings that matter more than which exact
+        frequency you choose:
+      </p>
+      <ul>
+        <li><strong>Listen before the task, not only during it.</strong> Exposure before, or before <em>and</em> during, a task outperformed exposure during the task alone.</li>
+        <li><strong>Longer is better.</strong> Time under exposure contributed significantly to the model. Most positive trials ran 15–30 minutes.</li>
+        <li><strong>Masking is optional.</strong> White or pink noise over the top gave similar effects to unmasked beats — so the noise bed in the player is for comfort, not potency.</li>
+      </ul>
+
+      <h3>Where the evidence is strongest, and weakest</h3>
+      <p>
+        Anxiety is the best-supported outcome: theta/delta beats showed a medium-to-large effect,
+        <span class="mono">g&nbsp;=&nbsp;0.69</span>. Attention and vigilance hold up reasonably well.
+        Memory is genuinely contested — a 2022 meta-analysis of 15 studies reported a medium overall effect,
+        but the accompanying systematic review found conflicting results for theta and beta on memory tasks,
+        and several 40&nbsp;Hz studies found no entrainment at all with their parameters. Individual
+        differences are real: alpha beats improved divergent thinking only in participants with lower
+        estimated baseline dopamine.
+      </p>
+      <p>
+        Treat the strength bars on each card as what they are — a rough read of how consistent the literature
+        is for that band, not a promise about your session.
+      </p>
+
+      <h3>Frequency bands at a glance</h3>
+      <div class="tbl-scroll">
+      <table>
+        <caption>Bands as used on this page, with the outcomes most often studied for each.</caption>
+        <thead>
+          <tr><th>Band</th><th>Range</th><th>Typical use</th><th>Evidence note</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Delta</td><td>0.5–4 Hz</td><td>Deep sleep, pre-procedure anxiety</td><td>3 Hz lengthened stage-3 sleep; strongest anxiety effects</td></tr>
+          <tr><td>Theta</td><td>4–8 Hz</td><td>Meditation, recovery, drowsy calm</td><td>6 Hz raised theta power; theta post-exercise raised parasympathetic activity</td></tr>
+          <tr><td>Alpha</td><td>8–12 Hz</td><td>Relaxed alertness, stress, creativity</td><td>Stress reduction in post-hoc analyses; divergent thinking effects are conditional</td></tr>
+          <tr><td>Beta</td><td>12–30 Hz</td><td>Vigilance, sustained focus</td><td>16/24 Hz beat more hits and fewer false alarms than theta/delta</td></tr>
+          <tr><td>Gamma</td><td>30–40+ Hz</td><td>Attentional training, working memory</td><td>40 Hz beat 16 Hz in attentional-blink training; other trials found nothing</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="references">
+    <div class="sec-head">
+      <h2>References</h2>
+      <p>Sources behind the frequencies, durations and claims on this page.</p>
+    </div>
+    <ol class="refs">
+      <li>Oster, G. (1973). Auditory beats in the brain. <em>Scientific American</em>, 229(4), 94–102. <a href="https://ia801406.us.archive.org/27/items/magazine-article-1973-scientific-american-auditory-beats-in-the-brain-gerald-oster/Magazine%20Article%201973%20%28Scientific%20American%29%20-%20Auditory%20Beats%20in%20the%20Brain%20-%20Gerald%20Oster%20_text.pdf" rel="noopener">PDF</a></li>
+      <li>Garcia-Argibay, M., Santed, M. A., &amp; Reales, J. M. (2019). Efficacy of binaural auditory beats in cognition, anxiety, and pain perception: a meta-analysis. <em>Psychological Research</em>, 83, 357–372. <a href="https://link.springer.com/article/10.1007/s00426-018-1066-8" rel="noopener">Springer</a></li>
+      <li>Ingendoh, R. M., Posny, E. S., &amp; Heine, A. (2023). Binaural beats to entrain the brain? / Potential of binaural beats intervention for improving memory and attention: meta-analysis and systematic review. <em>Psychological Research</em>. <a href="https://link.springer.com/article/10.1007/s00426-022-01706-7" rel="noopener">Springer</a></li>
+      <li>Lane, J. D., Kasian, S. J., Owens, J. E., &amp; Marsh, G. R. (1998). Binaural auditory beats affect vigilance performance and mood. <em>Physiology &amp; Behavior</em>, 63(2), 249–252. <a href="https://www.sciencedirect.com/science/article/abs/pii/S0031938497004368" rel="noopener">ScienceDirect</a></li>
+      <li>Jirakittayakorn, N., &amp; Wongsawat, Y. (2018). A novel insight of effects of a 3-Hz binaural beat on sleep stages during sleep. <em>Frontiers in Human Neuroscience</em>, 12, 387. <a href="https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2018.00387/full" rel="noopener">Frontiers</a></li>
+      <li>Jirakittayakorn, N., &amp; Wongsawat, Y. (2017). Brain responses to a 6-Hz binaural beat: effects on general theta rhythm and frontal midline theta activity. <em>Frontiers in Neuroscience</em>, 11, 365. <a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2017.00365/full" rel="noopener">Frontiers</a></li>
+      <li>McConnell, P. A., Froeliger, B., Garland, E. L., Ives, J. C., &amp; Sforzo, G. A. (2014). Auditory driving of the autonomic nervous system: listening to theta-frequency binaural beats post-exercise increases parasympathetic activation and sympathetic withdrawal. <em>Frontiers in Psychology</em>, 5, 1248. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4231835/" rel="noopener">PMC</a></li>
+      <li>Padmanabhan, R., Hildreth, A. J., &amp; Laws, D. (2005). A prospective, randomised, controlled study examining binaural beat audio and pre-operative anxiety in patients undergoing general anaesthesia for day case surgery. <em>Anaesthesia</em>, 60(9), 874–877. <a href="https://associationofanaesthetists-publications.onlinelibrary.wiley.com/doi/10.1111/j.1365-2044.2005.04287.x" rel="noopener">Wiley</a></li>
+      <li>Reedijk, S. A., Bolders, A., &amp; Hommel, B. (2013). The impact of binaural beats on creativity. <em>Frontiers in Human Neuroscience</em>, 7, 786. <a href="https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2013.00786/full" rel="noopener">Frontiers</a></li>
+      <li>Hommel, B., Sellaro, R., et al. (2020). 40-Hz binaural beats enhance training to mitigate the attentional blink. <em>Scientific Reports</em>, 10, 6759. <a href="https://www.nature.com/articles/s41598-020-63980-y" rel="noopener">Nature</a></li>
+      <li>Jausovec, N., et al. (2022). Effects of alpha, beta and gamma binaural beat stimulation and short-term training on working memory: a within-subject randomized placebo-controlled trial. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9153928/" rel="noopener">PMC</a></li>
+      <li>Orozco Perez, H. D., Dumas, G., &amp; Lehmann, A. (2020). Binaural beats through the auditory pathway: from brainstem to connectivity patterns. <em>eNeuro</em>, 7(2). <a href="https://www.eneuro.org/content/7/2/ENEURO.0232-19.2020" rel="noopener">eNeuro</a></li>
+      <li>Basu, S., &amp; Banerjee, B. (2023). Potential of binaural beats intervention — gamma frequency, memory performance and EEG spectral density. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10048082/" rel="noopener">PMC</a></li>
+      <li>Kim, S., et al. (2024). Effect of dynamic binaural beats on sleep quality: a proof-of-concept study with questionnaire and biosignals. <em>SLEEP</em>, 47(10). <a href="https://academic.oup.com/sleep/article/47/10/zsae097/7647043" rel="noopener">Oxford Academic</a></li>
+    </ol>
+  </section>
+
+  <footer>
+    <p><strong>Not medical advice.</strong> Binaural beats are a consumer audio technique, not a treatment. Effects reported in the literature are modest and inconsistent across individuals. Nothing here diagnoses, treats or prevents any condition — talk to a clinician about sleep, anxiety or attention problems.</p>
+    <p>All audio is synthesised in your browser with the Web Audio API. Nothing is downloaded, streamed, recorded or sent anywhere.</p>
+  </footer>
+</div>
+
+<!-- ============ PLAYER ============ -->
+<div class="player" id="player" aria-live="polite">
+  <div class="player-inner">
+    <div class="orb" aria-hidden="true">
+      <svg viewBox="0 0 62 62" width="62" height="62">
+        <circle class="ring-bg" cx="31" cy="31" r="28"></circle>
+        <circle class="ring-fg" id="ring" cx="31" cy="31" r="28" stroke-dasharray="175.9" stroke-dashoffset="175.9"></circle>
+      </svg>
+      <div class="orb-core"></div>
+    </div>
+
+    <div class="p-meta">
+      <div class="p-name" id="pName">—</div>
+      <div class="p-sub" id="pSub">—</div>
+      <div class="ears">
+        <span class="ear">L <b id="pL">—</b></span>
+        <span class="ear">R <b id="pR">—</b></span>
+        <span class="ear beat">beat <b id="pBeat">—</b></span>
+      </div>
+    </div>
+
+    <div class="p-controls">
+      <button class="icon-btn" id="toggle" aria-label="Play or pause">▶</button>
+      <div class="time mono" id="time">00:00</div>
+      <button class="icon-btn ghost" id="stop" aria-label="Stop session" title="Stop">■</button>
+      <div class="vol">
+        <span>Volume</span>
+        <input type="range" id="vol" min="0" max="100" step="1" value="35" aria-label="Volume">
+      </div>
+    </div>
+
+    <div class="toggles">
+      <label><input type="checkbox" id="noise"> Pink-noise bed</label>
+      <label><input type="checkbox" id="openEnded"> Open-ended (ignore timer)</label>
+      <div class="status" id="status">Ready</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ------------------------------------------------------------------
+     Track library. Every entry is traceable to a reference in the list
+     at the bottom of the page. `ramp` tracks slide from one beat
+     frequency to another across the session, the way the audio used in
+     Padmanabhan 2005 progressively slowed into delta.
+  ------------------------------------------------------------------ */
+  var TRACKS = [
+    /* ---------- RELAXATION ---------- */
+    {
+      id: "sleep-descent", cat: "relax", band: "Delta", name: "Deep Sleep Descent",
+      carrier: 200, beat: 3, rampFrom: 6, minutes: 30, strength: 3,
+      desc: "Starts in theta and slides down into a 3 Hz delta beat, the frequency used in the sleep-stage trial.",
+      ev: "A 3 Hz binaural beat significantly increased delta activity and lengthened stage-3 (deep) sleep versus control nights. The descent from 6 Hz mirrors the common protocol of easing through theta before settling into delta.",
+      cite: "Jirakittayakorn & Wongsawat 2018, Front. Hum. Neurosci."
+    },
+    {
+      id: "preop-calm", cat: "relax", band: "Delta", name: "Pre-Procedure Calm",
+      carrier: 250, beat: 2, rampFrom: 10, minutes: 30, strength: 3,
+      desc: "A 30-minute progressive slowing from alpha to a closing stretch of deep delta — the anxiety protocol.",
+      ev: "The randomised pre-operative trial used a 30-minute track that progressively slowed the beat to give a closing 10-minute period of delta. Theta/delta beats carry the largest pooled anxiety effect in meta-analysis (g = 0.69).",
+      cite: "Padmanabhan et al. 2005, Anaesthesia · Garcia-Argibay et al. 2019"
+    },
+    {
+      id: "theta-meditation", cat: "relax", band: "Theta", name: "Theta Meditation",
+      carrier: 250, beat: 6, minutes: 20, strength: 3,
+      desc: "A steady 6 Hz beat — the frequency shown to raise theta power and frontal midline theta during listening.",
+      ev: "EEG recorded during 6 Hz binaural beat exposure showed increased general theta rhythm and frontal midline theta activity, the signature associated with meditative and internally focused states.",
+      cite: "Jirakittayakorn & Wongsawat 2017, Front. Neurosci."
+    },
+    {
+      id: "parasympathetic", cat: "relax", band: "Theta", name: "Parasympathetic Recovery",
+      carrier: 200, beat: 6, minutes: 20, strength: 2,
+      desc: "Theta-band beats for the wind-down after hard exercise, where autonomic effects were measured.",
+      ev: "Listening to theta-frequency binaural beats post-exercise increased parasympathetic activation and sympathetic withdrawal, measured through heart-rate variability — an autonomic effect rather than a purely subjective one.",
+      cite: "McConnell et al. 2014, Front. Psychol."
+    },
+    {
+      id: "alpha-stress", cat: "relax", band: "Alpha", name: "Alpha Stress Relief",
+      carrier: 300, beat: 10, minutes: 20, strength: 2,
+      desc: "10 Hz alpha at a mid carrier — relaxed but awake, the state most anxiety protocols target.",
+      ev: "Alpha-frequency beats around 10 Hz are the most common choice in anxiety and stress work, and post-hoc analyses have found stress reduction specifically in the alpha condition. Carriers in the 200–600 Hz range are standard for this use.",
+      cite: "Garcia-Argibay et al. 2019 · band reviews"
+    },
+    {
+      id: "creative-reverie", cat: "relax", band: "Alpha", name: "Creative Reverie",
+      carrier: 340, beat: 10, minutes: 20, strength: 1,
+      desc: "Alpha for divergent thinking — with the caveat that it worked for some people and not others.",
+      ev: "Alpha binaural beats improved divergent (but not convergent) thinking. The effect appeared only in participants with lower estimated baseline dopamine; those higher on that measure showed no benefit or slightly worse performance.",
+      cite: "Reedijk, Bolders & Hommel 2013, Front. Hum. Neurosci."
+    },
+
+    /* ---------- STIMULATION ---------- */
+    {
+      id: "vigilance-16", cat: "stim", band: "Beta", name: "Vigilance 16",
+      carrier: 400, beat: 16, minutes: 30, strength: 3,
+      desc: "The 16 Hz beta condition from the vigilance study — a 30-minute watch-keeping session.",
+      ev: "Across a 30-minute visual vigilance task, beta-frequency beats (16 and 24 Hz) produced more correct target detections and fewer false alarms than theta/delta beats, and were associated with less negative mood.",
+      cite: "Lane et al. 1998, Physiology & Behavior"
+    },
+    {
+      id: "sustained-24", cat: "stim", band: "Beta", name: "Sustained Attention 24",
+      carrier: 400, beat: 24, minutes: 30, strength: 3,
+      desc: "The faster beta arm of the same trial, for tasks that keep drifting away from you.",
+      ev: "The 24 Hz beta condition shared the vigilance advantage over slower beats in the original trial. Beta beats in the 12–30 Hz range are the band most consistently linked to active focus in the reviews.",
+      cite: "Lane et al. 1998 · band reviews"
+    },
+    {
+      id: "deep-work", cat: "stim", band: "Beta", name: "Deep Work Block",
+      carrier: 300, beat: 15, minutes: 50, strength: 2,
+      desc: "A long beta block sized to a full study or work session rather than a short burst.",
+      ev: "Time under exposure contributed significantly to the meta-analytic model, with longer periods advisable for maximum effect. Study-focused guidance converges on 25–50 minute blocks followed by a short break.",
+      cite: "Garcia-Argibay et al. 2019"
+    },
+    {
+      id: "pre-task-primer", cat: "stim", band: "Beta", name: "Pre-Task Primer",
+      carrier: 320, beat: 14, minutes: 10, strength: 3,
+      desc: "Ten minutes of beta before you start — the timing the meta-analysis actually favours.",
+      ev: "Exposure before a task, or before and during it, produced superior results to exposure during the task alone. This is the single most actionable finding in the meta-analysis and needs no long session.",
+      cite: "Garcia-Argibay et al. 2019"
+    },
+    {
+      id: "gamma-40", cat: "stim", band: "Gamma", name: "Gamma Focus 40",
+      carrier: 400, beat: 40, minutes: 25, strength: 2,
+      desc: "40 Hz on a 400 Hz carrier — the exact pairing that reliably evokes a steady-state response.",
+      ev: "A 40 Hz binaural-beat auditory steady-state response was evoked with a 400 Hz carrier and was undetectable above ~3000 Hz, which is why the carrier is fixed low here. In attentional-blink training, 40 Hz produced greater improvement than 16 Hz.",
+      cite: "Hommel et al. 2020, Sci. Rep. · Orozco Perez et al. 2020, eNeuro"
+    },
+    {
+      id: "gamma-memory", cat: "stim", band: "Gamma", name: "Working Memory Gamma",
+      carrier: 240, beat: 40, minutes: 15, strength: 1,
+      desc: "A short gamma block for memory work — the most contested claim on this page, flagged as such.",
+      ev: "Some trials found better working-memory performance under 40 Hz stimulation, correlating with frequency-following responses. Others found no change in either memory scores or EEG and concluded entrainment never occurred. Treat as experimental.",
+      cite: "Jausovec et al. 2022 · Basu & Banerjee 2023"
+    }
+  ];
+
+  var BANDS = [
+    { max: 4,  name: "Delta", note: "deep sleep, strongest anxiety effects" },
+    { max: 8,  name: "Theta", note: "meditation, drowsy calm, autonomic recovery" },
+    { max: 12, name: "Alpha", note: "relaxed alertness" },
+    { max: 30, name: "Beta",  note: "vigilance and sustained focus" },
+    { max: 99, name: "Gamma", note: "attention training — near the perceptual limit" }
+  ];
+
+  function bandFor(hz) {
+    for (var i = 0; i < BANDS.length; i++) if (hz <= BANDS[i].max) return BANDS[i];
+    return BANDS[BANDS.length - 1];
+  }
+
+  var $ = function (sel) { return document.querySelector(sel); };
+
+  /* ------------------------------------------------------------------
+     Audio engine. Two oscillators are merged into discrete left and
+     right channels so there is genuinely no crossfeed between them.
+  ------------------------------------------------------------------ */
+  var A = {
+    ctx: null, oscL: null, oscR: null, gL: null, gR: null,
+    master: null, merger: null, noiseSrc: null, noiseGain: null,
+    track: null, startedAt: 0, elapsed: 0, playing: false, raf: 0, endTimer: 0
+  };
+
+  var FADE_IN = 2.0, FADE_OUT = 4.0;
+
+  function ensureCtx() {
+    if (!A.ctx) {
+      var Ctor = window.AudioContext || window.webkitAudioContext;
+      if (!Ctor) return null;
+      A.ctx = new Ctor();
+      A.master = A.ctx.createGain();
+      A.master.gain.value = 0;
+      A.master.connect(A.ctx.destination);
+    }
+    if (A.ctx.state === "suspended") A.ctx.resume();
+    return A.ctx;
+  }
+
+  function volGain() {
+    var v = parseInt($("#vol").value, 10) / 100;
+    return v * v * 0.55; // perceptual-ish curve, deliberately conservative
+  }
+
+  function makePinkNoise(ctx) {
+    var len = Math.floor(ctx.sampleRate * 4);
+    var buf = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (var ch = 0; ch < 2; ch++) {
+      var d = buf.getChannelData(ch);
+      var b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (var i = 0; i < len; i++) {
+        var w = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + w * 0.0555179;
+        b1 = 0.99332 * b1 + w * 0.0750759;
+        b2 = 0.96900 * b2 + w * 0.1538520;
+        b3 = 0.86650 * b3 + w * 0.3104856;
+        b4 = 0.55000 * b4 + w * 0.5329522;
+        b5 = -0.7616 * b5 - w * 0.0168980;
+        d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11;
+        b6 = w * 0.115926;
+      }
+    }
+    return buf;
+  }
+
+  function startNoise() {
+    if (!A.ctx || A.noiseSrc) return;
+    A.noiseGain = A.ctx.createGain();
+    A.noiseGain.gain.value = 0;
+    A.noiseGain.connect(A.master);
+    A.noiseSrc = A.ctx.createBufferSource();
+    A.noiseSrc.buffer = makePinkNoise(A.ctx);
+    A.noiseSrc.loop = true;
+    A.noiseSrc.connect(A.noiseGain);
+    A.noiseSrc.start();
+    A.noiseGain.gain.linearRampToValueAtTime(0.16, A.ctx.currentTime + 1.5);
+  }
+
+  function stopNoise() {
+    if (!A.noiseSrc) return;
+    var src = A.noiseSrc, g = A.noiseGain, t = A.ctx.currentTime;
+    g.gain.cancelScheduledValues(t);
+    g.gain.setValueAtTime(g.gain.value, t);
+    g.gain.linearRampToValueAtTime(0, t + 1);
+    setTimeout(function () { try { src.stop(); src.disconnect(); g.disconnect(); } catch (e) {} }, 1400);
+    A.noiseSrc = null; A.noiseGain = null;
+  }
+
+  /* Beat frequency at a given elapsed time (handles ramp tracks). */
+  function beatAt(track, seconds) {
+    if (typeof track.rampFrom !== "number") return track.beat;
+    var total = track.minutes * 60;
+    var p = total > 0 ? Math.min(1, Math.max(0, seconds / total)) : 1;
+    return track.rampFrom + (track.beat - track.rampFrom) * p;
+  }
+
+  function buildVoices(track, offsetSeconds) {
+    var ctx = A.ctx, now = ctx.currentTime;
+    A.merger = ctx.createChannelMerger(2);
+    A.merger.connect(A.master);
+
+    A.oscL = ctx.createOscillator();
+    A.oscR = ctx.createOscillator();
+    A.oscL.type = "sine";
+    A.oscR.type = "sine";
+    A.gL = ctx.createGain();
+    A.gR = ctx.createGain();
+    A.gL.gain.value = 0.5;
+    A.gR.gain.value = 0.5;
+
+    A.oscL.connect(A.gL); A.gL.connect(A.merger, 0, 0);
+    A.oscR.connect(A.gR); A.gR.connect(A.merger, 0, 1);
+
+    A.oscL.frequency.setValueAtTime(track.carrier, now);
+
+    var startBeat = beatAt(track, offsetSeconds);
+    A.oscR.frequency.setValueAtTime(track.carrier + startBeat, now);
+
+    if (typeof track.rampFrom === "number") {
+      var remaining = Math.max(0, track.minutes * 60 - offsetSeconds);
+      if (remaining > 0) {
+        A.oscR.frequency.linearRampToValueAtTime(track.carrier + track.beat, now + remaining);
+      }
+    }
+
+    A.oscL.start(now);
+    A.oscR.start(now);
+  }
+
+  function teardownVoices(fadeSeconds) {
+    if (!A.oscL) return;
+    var ctx = A.ctx, t = ctx.currentTime, f = fadeSeconds || 0.15;
+    var l = A.oscL, r = A.oscR, gl = A.gL, gr = A.gR, m = A.merger;
+    A.master.gain.cancelScheduledValues(t);
+    A.master.gain.setValueAtTime(A.master.gain.value, t);
+    A.master.gain.linearRampToValueAtTime(0, t + f);
+    setTimeout(function () {
+      try { l.stop(); r.stop(); l.disconnect(); r.disconnect(); gl.disconnect(); gr.disconnect(); m.disconnect(); } catch (e) {}
+    }, (f + 0.25) * 1000);
+    A.oscL = A.oscR = A.gL = A.gR = A.merger = null;
+  }
+
+  /* ---------------------------- transport ---------------------------- */
+
+  function load(track) {
+    if (A.playing || A.oscL) hardStop(true);
+    A.track = track;
+    A.elapsed = 0;
+    $("#player").classList.add("open");
+    $("#player").style.setProperty("--pc", track.cat === "relax" ? "var(--relax)" : "var(--stim)");
+    $("#pName").textContent = track.name;
+    var lengthTxt = track.minutes + " min";
+    var beatTxt = typeof track.rampFrom === "number"
+      ? track.rampFrom.toFixed(1) + " → " + track.beat.toFixed(1) + " Hz"
+      : track.beat.toFixed(1) + " Hz";
+    $("#pSub").textContent = track.band + " · " + beatTxt + " · " + track.carrier + " Hz carrier · " + lengthTxt;
+    paint();
+    play();
+  }
+
+  function play() {
+    if (!A.track) return;
+    if (!ensureCtx()) {
+      setStatus("Web Audio is not available in this browser.");
+      return;
+    }
+    buildVoices(A.track, A.elapsed);
+    var t = A.ctx.currentTime;
+    A.master.gain.cancelScheduledValues(t);
+    A.master.gain.setValueAtTime(0, t);
+    A.master.gain.linearRampToValueAtTime(volGain(), t + FADE_IN);
+    if ($("#noise").checked) startNoise();
+
+    A.startedAt = A.ctx.currentTime - A.elapsed;
+    A.playing = true;
+    $("#toggle").textContent = "❚❚";
+    $("#toggle").setAttribute("aria-label", "Pause");
+    $("#player").classList.add("playing");
+    markCard();
+    scheduleEnd();
+    setStatus("Playing — keep the volume low and comfortable.");
+    loop();
+  }
+
+  function pause() {
+    if (!A.playing) return;
+    A.elapsed = A.ctx.currentTime - A.startedAt;
+    teardownVoices(0.4);
+    stopNoise();
+    A.playing = false;
+    clearTimeout(A.endTimer);
+    cancelAnimationFrame(A.raf);
+    $("#toggle").textContent = "▶";
+    $("#toggle").setAttribute("aria-label", "Play");
+    $("#player").classList.remove("playing");
+    markCard();
+    setStatus("Paused at " + fmt(A.elapsed) + ".");
+  }
+
+  function hardStop(silent) {
+    teardownVoices(0.3);
+    stopNoise();
+    A.playing = false;
+    A.elapsed = 0;
+    clearTimeout(A.endTimer);
+    cancelAnimationFrame(A.raf);
+    $("#toggle").textContent = "▶";
+    $("#player").classList.remove("playing");
+    markCard();
+    paint();
+    if (!silent) setStatus("Stopped.");
+  }
+
+  function finish() {
+    var t = A.ctx.currentTime;
+    A.master.gain.cancelScheduledValues(t);
+    A.master.gain.setValueAtTime(A.master.gain.value, t);
+    A.master.gain.linearRampToValueAtTime(0, t + FADE_OUT);
+    setStatus("Fading out — session complete.");
+    setTimeout(function () {
+      hardStop(true);
+      setStatus("Session complete: " + A.track.minutes + " min of " + A.track.name + ".");
+    }, FADE_OUT * 1000 + 200);
+  }
+
+  function scheduleEnd() {
+    clearTimeout(A.endTimer);
+    if ($("#openEnded").checked) return;
+    var total = A.track.minutes * 60;
+    var left = total - A.elapsed - FADE_OUT;
+    A.endTimer = setTimeout(finish, Math.max(0, left * 1000));
+  }
+
+  function loop() {
+    if (!A.playing) return;
+    A.elapsed = A.ctx.currentTime - A.startedAt;
+    paint();
+    A.raf = requestAnimationFrame(loop);
+  }
+
+  /* ----------------------------- display ----------------------------- */
+
+  function fmt(sec) {
+    sec = Math.max(0, Math.round(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+  }
+
+  var CIRC = 2 * Math.PI * 28;
+
+  function paint() {
+    if (!A.track) return;
+    var t = A.track, total = t.minutes * 60;
+    var open = $("#openEnded").checked;
+    var beat = beatAt(t, A.elapsed);
+
+    $("#pL").textContent = t.carrier.toFixed(0) + " Hz";
+    $("#pR").textContent = (t.carrier + beat).toFixed(1) + " Hz";
+    $("#pBeat").textContent = beat.toFixed(1) + " Hz";
+
+    if (open) {
+      $("#time").textContent = fmt(A.elapsed);
+      $("#ring").style.strokeDashoffset = CIRC * (1 - (A.elapsed % 60) / 60);
+    } else {
+      $("#time").textContent = fmt(Math.max(0, total - A.elapsed));
+      var p = total > 0 ? Math.min(1, A.elapsed / total) : 0;
+      $("#ring").style.strokeDashoffset = CIRC * (1 - p);
+    }
+  }
+
+  function setStatus(msg) { $("#status").textContent = msg; }
+
+  function markCard() {
+    var cards = document.querySelectorAll(".card");
+    for (var i = 0; i < cards.length; i++) {
+      var on = A.playing && A.track && cards[i].dataset.id === A.track.id;
+      cards[i].classList.toggle("is-playing", on);
+      var btn = cards[i].querySelector(".play-btn");
+      if (btn) btn.textContent = on ? "❚❚  Playing" : "▶  Play " + cards[i].dataset.min + " min";
+    }
+  }
+
+  /* ------------------------------ render ----------------------------- */
+
+  function dots(n) {
+    var h = '<span class="strength" title="Strength of supporting evidence: ' + n + ' of 3" aria-label="Evidence strength ' + n + ' of 3">';
+    for (var i = 1; i <= 3; i++) h += '<i class="' + (i <= n ? "on" : "") + '"></i>';
+    return h + "</span>";
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  function render(filter) {
+    var list = TRACKS.filter(function (t) { return filter === "all" || t.cat === filter; });
+    var html = list.map(function (t) {
+      var beatTxt = typeof t.rampFrom === "number"
+        ? t.rampFrom + "→" + t.beat + " Hz"
+        : t.beat + " Hz";
+      return '' +
+        '<li class="card" data-cat="' + t.cat + '" data-id="' + t.id + '" data-min="' + t.minutes + '">' +
+          '<div class="card-top">' +
+            '<h3>' + esc(t.name) + '</h3>' +
+            '<span class="band">' + esc(t.band) + '</span>' +
+          '</div>' +
+          '<p class="desc">' + esc(t.desc) + '</p>' +
+          '<div class="specs">' +
+            '<span class="spec">Beat <b>' + beatTxt + '</b></span>' +
+            '<span class="spec">Carrier <b>' + t.carrier + ' Hz</b></span>' +
+            '<span class="spec">Length <b>' + t.minutes + ' min</b></span>' +
+          '</div>' +
+          '<button class="play-btn">▶&nbsp; Play ' + t.minutes + ' min</button>' +
+          '<details class="ev"><summary>Evidence ' + dots(t.strength) + '</summary>' +
+            '<div class="ev-body">' + esc(t.ev) + '<cite>' + esc(t.cite) + '</cite></div>' +
+          '</details>' +
+        '</li>';
+    }).join("");
+
+    $("#grid").innerHTML = html;
+    $("#count").textContent = list.length + " track" + (list.length === 1 ? "" : "s");
+    markCard();
+  }
+
+  /* ------------------------------ events ----------------------------- */
+
+  $("#grid").addEventListener("click", function (e) {
+    var btn = e.target.closest(".play-btn");
+    if (!btn) return;
+    var id = btn.closest(".card").dataset.id;
+    if (A.track && A.track.id === id && A.playing) { pause(); return; }
+    if (A.track && A.track.id === id && !A.playing && A.elapsed > 0) { play(); return; }
+    var track = TRACKS.filter(function (t) { return t.id === id; })[0];
+    if (track) load(track);
+  });
+
+  var tabs = document.querySelectorAll(".tab");
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].addEventListener("click", function (e) {
+      for (var j = 0; j < tabs.length; j++) tabs[j].setAttribute("aria-selected", "false");
+      e.currentTarget.setAttribute("aria-selected", "true");
+      render(e.currentTarget.dataset.filter);
+    });
+  }
+
+  $("#toggle").addEventListener("click", function () {
+    if (!A.track) return;
+    if (A.playing) pause(); else play();
+  });
+  $("#stop").addEventListener("click", function () { hardStop(false); });
+
+  $("#vol").addEventListener("input", function () {
+    if (A.ctx && A.playing) {
+      var t = A.ctx.currentTime;
+      A.master.gain.cancelScheduledValues(t);
+      A.master.gain.setValueAtTime(A.master.gain.value, t);
+      A.master.gain.linearRampToValueAtTime(volGain(), t + 0.12);
+    }
+    try { localStorage.setItem("entrain.vol", $("#vol").value); } catch (e) {}
+  });
+
+  $("#noise").addEventListener("change", function () {
+    if (!A.playing) return;
+    if (this.checked) startNoise(); else stopNoise();
+  });
+
+  $("#openEnded").addEventListener("change", function () {
+    if (A.playing) scheduleEnd();
+    paint();
+    setStatus(this.checked
+      ? "Open-ended: the session will keep running until you stop it."
+      : "Timer active: " + (A.track ? A.track.minutes + " min." : ""));
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.code !== "Space" || !A.track) return;
+    var tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "button" || tag === "select" || tag === "textarea" || tag === "summary") return;
+    e.preventDefault();
+    if (A.playing) pause(); else play();
+  });
+
+  /* ------------------------------ builder ---------------------------- */
+
+  function syncBuilder() {
+    var beat = parseFloat($("#cBeat").value);
+    var car = parseInt($("#cCar").value, 10);
+    var min = parseInt($("#cMin").value, 10);
+    var b = bandFor(beat);
+    $("#cBeatV").textContent = beat.toFixed(1) + " Hz";
+    $("#cCarV").textContent = car + " Hz";
+    $("#cMinV").textContent = min + " min";
+    $("#cBand").textContent = b.name + " — " + b.note;
+    $("#cL").textContent = car + " Hz";
+    $("#cR").textContent = (car + beat).toFixed(1) + " Hz";
+  }
+
+  ["#cBeat", "#cCar", "#cMin"].forEach(function (sel) {
+    $(sel).addEventListener("input", syncBuilder);
+  });
+
+  $("#cPlay").addEventListener("click", function () {
+    var beat = parseFloat($("#cBeat").value);
+    var car = parseInt($("#cCar").value, 10);
+    var min = parseInt($("#cMin").value, 10);
+    var b = bandFor(beat);
+    load({
+      id: "custom", cat: beat <= 12 ? "relax" : "stim", band: b.name,
+      name: "Custom " + beat.toFixed(1) + " Hz " + b.name,
+      carrier: car, beat: beat, minutes: min, strength: 0,
+      desc: "", ev: "", cite: ""
+    });
+  });
+
+  /* ------------------------------- init ------------------------------ */
+
+  try {
+    var saved = localStorage.getItem("entrain.vol");
+    if (saved !== null) $("#vol").value = saved;
+  } catch (e) {}
+
+  render("all");
+  syncBuilder();
+  window.addEventListener("pagehide", function () { if (A.playing) hardStop(true); });
+})();
+</script>
+</body>
+</html>
