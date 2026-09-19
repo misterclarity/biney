@@ -848,7 +848,9 @@
     master: null, merger: null, noiseSrc: null, noiseGain: null,
     track: null, startedAt: 0, elapsed: 0, playing: false, raf: 0, endTimer: 0,
     phase: "single",   // "single" | "prime" | "task"
-    gainMul: 1         // phase-level attenuation, independent of the volume slider
+    gainMul: 1,        // phase-level attenuation, independent of the volume slider
+    voicesOff: false,  // task phase where the carriers were deliberately faded out
+    gen: 0             // bumped on every transport change; stale timers check it
   };
 
   var store = {
@@ -876,7 +878,9 @@
     return v * v * 0.55 * A.gainMul; // perceptual-ish curve, deliberately conservative
   }
 
+  var pinkBuf = null;
   function makePinkNoise(ctx) {
+    if (pinkBuf) return pinkBuf;
     var len = Math.floor(ctx.sampleRate * 4);
     var buf = ctx.createBuffer(2, len, ctx.sampleRate);
     for (var ch = 0; ch < 2; ch++) {
@@ -894,6 +898,7 @@
         b6 = w * 0.115926;
       }
     }
+    pinkBuf = buf;
     return buf;
   }
 
@@ -1033,6 +1038,8 @@
 
   function load(track) {
     if (A.playing || A.oscL) hardStop(true);
+    A.gen++;
+    A.voicesOff = false;
     A.track = track;
     A.elapsed = 0;
     A.phase = track.then ? "prime" : "single";
@@ -1063,7 +1070,7 @@
       setStatus("Web Audio is not available in this browser.");
       return;
     }
-    buildVoices(A.track, A.elapsed);
+    if (!A.voicesOff) buildVoices(A.track, A.elapsed);
     var t = A.ctx.currentTime;
     A.master.gain.cancelScheduledValues(t);
     A.master.gain.setValueAtTime(0, t);
@@ -1084,6 +1091,7 @@
 
   function pause() {
     if (!A.playing) return;
+    A.gen++;
     A.elapsed = A.ctx.currentTime - A.startedAt;
     teardownVoices(0.4);
     stopNoise();
@@ -1098,11 +1106,17 @@
   }
 
   function hardStop(silent) {
+    A.gen++;
     teardownVoices(0.3);
     stopNoise();
     if (A.track && A.track.then) $("#noise").checked = !!A.noisePref;
     A.playing = false;
     A.elapsed = 0;
+    /* the session is over: a later press of play restarts it from the top,
+       so put the phase back to what this track starts in */
+    A.phase = (A.track && A.track.then) ? "prime" : "single";
+    A.gainMul = 1;
+    A.voicesOff = false;
     clearTimeout(A.endTimer);
     cancelAnimationFrame(A.raf);
     $("#toggle").textContent = "▶";
@@ -1120,7 +1134,12 @@
     A.master.gain.setValueAtTime(A.master.gain.value, t);
     A.master.gain.linearRampToValueAtTime(0, t + s);
     setStatus("Fading out\u2026");
-    setTimeout(function () { hardStop(true); setStatus(msg); }, s * 1000 + 200);
+    var gen = A.gen;
+    setTimeout(function () {
+      if (gen !== A.gen) return;      // superseded by a new track, a pause or a stop
+      hardStop(true);
+      setStatus(msg);
+    }, s * 1000 + 200);
   }
 
   function finish() {
@@ -1147,6 +1166,7 @@
       startNoise();
       $("#noise").checked = true;
       fadeOutVoicesOnly(4);
+      A.voicesOff = true;
       $("#pSub").textContent = "Task phase \u00b7 pink noise only";
       setStatus("Task phase: beats have faded out, pink noise continues. Stop when you finish.");
     } else {
@@ -1356,6 +1376,7 @@
 
   document.addEventListener("keydown", function (e) {
     if (e.code !== "Space" || !A.track) return;
+    if (!$("#scModal").hidden || !$("#pmModal").hidden) return;
     var tag = (e.target.tagName || "").toLowerCase();
     if (tag === "input" || tag === "button" || tag === "select" || tag === "textarea" || tag === "summary") return;
     e.preventDefault();
@@ -1437,12 +1458,12 @@
     $("#scStep2").hidden = true;
     $("#scResult").hidden = true;
     $("#scAgain").hidden = true;
-    $("#scModal").hidden = false;
+    openDialog("#scModal");
     setTimeout(function () { $("#scPlay").focus(); }, 30);
   }
 
   function closeCheck(runPending) {
-    $("#scModal").hidden = true;
+    closeDialog("#scModal");
     var fn = pendingPlay;
     pendingPlay = null;
     if (runPending && fn) fn();
@@ -1462,6 +1483,7 @@
     if (continueLabel) {
       $("#scAnyway").textContent = continueLabel;
       $("#scAgain").hidden = false;
+      $("#scRetry").focus();
     }
   }
 
@@ -1497,6 +1519,7 @@
     playTestTone("left");
     $("#scStep1").hidden = true;
     $("#scStep2").hidden = false;
+    $("#scStep2").querySelector("[data-ans]").focus();
   });
   $("#scReplay").addEventListener("click", function () { playTestTone("left"); });
   $("#scStep2").addEventListener("click", function (e) {
@@ -1631,13 +1654,13 @@
   function openMatcher() {
     if (A.playing) hardStop(true);
     pmSetHz(tinnitusHz() || 4000);
-    $("#pmModal").hidden = false;
+    openDialog("#pmModal");
     setTimeout(function () { $("#pmTone").focus(); }, 30);
   }
   function closeMatcher(save) {
     pmStop();
     var hz = pmHz();
-    $("#pmModal").hidden = true;
+    closeDialog("#pmModal");
     var fn = pendingPitch;
     pendingPitch = null;
     if (save) {
@@ -1657,6 +1680,33 @@
   $("#pmModal").addEventListener("click", function (e) { if (e.target === this) closeMatcher(false); });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && !$("#pmModal").hidden) closeMatcher(false);
+  });
+
+  /* Both dialogs are blocking, so Tab has to stay inside them. */
+  var lastFocus = null;
+  function openDialog(sel) {
+    lastFocus = document.activeElement;
+    $(sel).hidden = false;
+  }
+  function closeDialog(sel) {
+    $(sel).hidden = true;
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
+    lastFocus = null;
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Tab") return;
+    var box = !$("#scModal").hidden ? $("#scModal") : (!$("#pmModal").hidden ? $("#pmModal") : null);
+    if (!box) return;
+    var all = box.querySelectorAll("button, input, a[href], select, textarea");
+    var list = [], i;
+    for (i = 0; i < all.length; i++) {
+      if (!all[i].disabled && all[i].offsetParent !== null) list.push(all[i]);
+    }
+    if (!list.length) return;
+    var first = list[0], last = list[list.length - 1];
+    if (!box.contains(document.activeElement)) { e.preventDefault(); first.focus(); return; }
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
 
   /* ------------------------------- init ------------------------------ */
