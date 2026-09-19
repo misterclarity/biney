@@ -28,6 +28,7 @@
     --maxw:1080px;
   }
   *{box-sizing:border-box}
+  [hidden]{display:none!important}   /* author display rules must not defeat the attribute */
   html{-webkit-text-size-adjust:100%}
   body{
     margin:0;
@@ -205,6 +206,61 @@
   footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:28px 0 8px;color:var(--text-faint);font-size:13px}
   footer p{margin:0 0 9px;max-width:74ch}
 
+
+  /* ---------- prime panel ---------- */
+  .prime-sec{margin:46px 0 0}
+  .prime{background:linear-gradient(180deg,var(--panel),var(--bg-2));border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;display:grid;gap:18px}
+  .prime-row{display:grid;gap:10px}
+  .prime-label{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);font-weight:650}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    position:relative;display:inline-flex;align-items:center;cursor:pointer;
+    background:var(--panel-2);border:1px solid var(--line);color:var(--text-dim);
+    padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:550;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .chip input{position:absolute;opacity:0;width:0;height:0}
+  .chip:hover{color:var(--text);border-color:#3a4767}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#0a0e1a}
+  .chip:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+  .prime-foot{display:flex;flex-wrap:wrap;gap:16px;align-items:center;border-top:1px solid var(--line-soft);padding-top:18px}
+  .prime-foot .hint{margin:0;max-width:54ch;flex:1;min-width:240px}
+
+  /* ---------- modal ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:20px;
+    background:rgba(6,9,17,.74);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  }
+  .modal[hidden]{display:none}
+  .modal-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);max-width:540px;width:100%;padding:26px;max-height:88vh;overflow-y:auto;
+  }
+  .modal-card h2{font-size:21px;font-weight:660;letter-spacing:-.02em;margin-bottom:11px}
+  .modal-card p{color:var(--text-dim);font-size:14.5px;margin:0 0 16px}
+  .sc-q{color:var(--text);font-weight:600;margin-bottom:11px}
+  .sc-answers{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(148px,1fr))}
+  .btn.link{background:none;border:0;color:var(--text-faint);padding:6px 0;font-size:13px;text-decoration:underline}
+  .btn.link:hover{color:var(--text-dim);background:none}
+  .sc-result{border-radius:var(--radius-sm);padding:13px 15px;font-size:14px;margin-top:6px}
+  .sc-result.ok{background:rgba(94,234,212,.09);border:1px solid rgba(94,234,212,.35);color:#99f6e4}
+  .sc-result.bad{background:rgba(251,113,133,.09);border:1px solid rgba(251,113,133,.38);color:#fda4af}
+  .sc-result b{display:block;color:var(--text);margin-bottom:4px}
+  .sc-again{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+  .modal-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line-soft)}
+  .tone-dot{
+    display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);
+    margin-right:8px;vertical-align:middle;
+  }
+
+  /* ---------- phase cue ---------- */
+  .cue{
+    background:linear-gradient(90deg,color-mix(in srgb,var(--pc,var(--stim)) 26%,transparent),transparent 70%);
+    border-bottom:1px solid color-mix(in srgb,var(--pc,var(--stim)) 42%,transparent);
+    padding:12px 20px;font-size:14.5px;font-weight:620;color:var(--text);text-align:center;
+  }
+  .cue[hidden]{display:none}
+
   /* ---------- player ---------- */
   .player{
     position:fixed;left:0;right:0;bottom:0;z-index:50;
@@ -261,7 +317,7 @@
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
   @media (max-width:760px){
-    body{padding-bottom:280px}
+    body{padding-bottom:320px}
     header{padding:36px 0 20px}
     .player-inner{grid-template-columns:auto 1fr;padding:14px 16px 16px;gap:13px}
     .p-controls{grid-column:1/-1;justify-content:space-between}
@@ -306,6 +362,51 @@
       </div>
     </div>
   </header>
+
+
+  <section id="prime" class="prime-sec">
+    <div class="sec-head">
+      <h2>Prime, then work</h2>
+      <p>
+        The clearest finding in the meta-analysis is about timing rather than frequency: exposure
+        <em>before</em> a task — or before and during it — outperformed listening only while you work.
+        So prime first, get a cue when the block ends, and start.
+      </p>
+    </div>
+    <div class="prime">
+      <div class="prime-row">
+        <div class="prime-label" id="pfLab">Prime with</div>
+        <div class="chips" id="pfChips" role="radiogroup" aria-labelledby="pfLab">
+          <label class="chip"><input type="radio" name="pbeat" value="10|300"> Alpha 10 Hz</label>
+          <label class="chip on"><input type="radio" name="pbeat" value="14|320" checked> Beta 14 Hz</label>
+          <label class="chip"><input type="radio" name="pbeat" value="16|400"> Beta 16 Hz</label>
+          <label class="chip"><input type="radio" name="pbeat" value="24|400"> Beta 24 Hz</label>
+          <label class="chip"><input type="radio" name="pbeat" value="40|400"> Gamma 40 Hz</label>
+        </div>
+      </div>
+      <div class="prime-row">
+        <div class="prime-label" id="plLab">Prime for</div>
+        <div class="chips" id="plChips" role="radiogroup" aria-labelledby="plLab">
+          <label class="chip"><input type="radio" name="pmin" value="5"> 5 min</label>
+          <label class="chip on"><input type="radio" name="pmin" value="10" checked> 10 min</label>
+          <label class="chip"><input type="radio" name="pmin" value="15"> 15 min</label>
+          <label class="chip"><input type="radio" name="pmin" value="20"> 20 min</label>
+        </div>
+      </div>
+      <div class="prime-row">
+        <div class="prime-label" id="ptLab">Then, once you start working</div>
+        <div class="chips" id="ptChips" role="radiogroup" aria-labelledby="ptLab">
+          <label class="chip on"><input type="radio" name="pthen" value="continue" checked> Keep going, quieter</label>
+          <label class="chip"><input type="radio" name="pthen" value="noise"> Pink noise only</label>
+          <label class="chip"><input type="radio" name="pthen" value="silence"> Silence</label>
+        </div>
+      </div>
+      <div class="prime-foot">
+        <button class="btn primary" id="primeStart">Start 10-minute prime</button>
+        <p class="hint" id="primeHint"></p>
+      </div>
+    </div>
+  </section>
 
   <div class="toolbar">
     <div class="tabs" role="tablist" aria-label="Filter tracks">
@@ -445,8 +546,48 @@
   </footer>
 </div>
 
+
+<!-- ============ HEADPHONE CHECK ============ -->
+<div class="modal" id="scModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="scTitle">
+    <h2 id="scTitle">Quick headphone check</h2>
+    <p>
+      A binaural beat only exists if each ear receives its own tone. On speakers, a single earbud, or a
+      mono Bluetooth device the two tones mix before they reach you and nothing on this page does anything.
+      This takes five seconds.
+    </p>
+
+    <div id="scStep1">
+      <button class="btn primary" id="scPlay"><span class="tone-dot"></span>Play test tone</button>
+      <p class="hint" style="margin-top:10px">A soft 440&nbsp;Hz tone, sent to one ear only.</p>
+    </div>
+
+    <div id="scStep2" hidden>
+      <p class="sc-q">Where did you hear it?</p>
+      <div class="sc-answers">
+        <button class="btn" data-ans="left">Left ear only</button>
+        <button class="btn" data-ans="right">Right ear only</button>
+        <button class="btn" data-ans="both">Both ears / centre</button>
+        <button class="btn" data-ans="none">Nothing at all</button>
+      </div>
+      <button class="btn link" id="scReplay">Play it again</button>
+    </div>
+
+    <div class="sc-result" id="scResult" hidden></div>
+    <div class="sc-again" id="scAgain" hidden>
+      <button class="btn" id="scRetry">Test again</button>
+      <button class="btn" id="scAnyway">Continue anyway</button>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn link" id="scSkip">Skip the check</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ PLAYER ============ -->
-<div class="player" id="player" aria-live="polite">
+<div class="player" id="player">
+  <div class="cue" id="cue" role="alert" hidden></div>
   <div class="player-inner">
     <div class="orb" aria-hidden="true">
       <svg viewBox="0 0 62 62" width="62" height="62">
@@ -468,7 +609,7 @@
 
     <div class="p-controls">
       <button class="icon-btn" id="toggle" aria-label="Play or pause">▶</button>
-      <div class="time mono" id="time">00:00</div>
+      <div class="time mono" id="time" role="timer" aria-label="Session time">00:00</div>
       <button class="icon-btn ghost" id="stop" aria-label="Stop session" title="Stop">■</button>
       <div class="vol">
         <span>Volume</span>
@@ -479,7 +620,8 @@
     <div class="toggles">
       <label><input type="checkbox" id="noise"> Pink-noise bed</label>
       <label><input type="checkbox" id="openEnded"> Open-ended (ignore timer)</label>
-      <div class="status" id="status">Ready</div>
+      <button class="btn link" id="scOpen" style="padding:0;font-size:12.5px">Re-check headphones</button>
+      <div class="status" id="status" role="status" aria-live="polite">Ready</div>
     </div>
   </div>
 </div>
@@ -562,13 +704,6 @@
       cite: "Garcia-Argibay et al. 2019"
     },
     {
-      id: "pre-task-primer", cat: "stim", band: "Beta", name: "Pre-Task Primer",
-      carrier: 320, beat: 14, minutes: 10, strength: 3,
-      desc: "Ten minutes of beta before you start — the timing the meta-analysis actually favours.",
-      ev: "Exposure before a task, or before and during it, produced superior results to exposure during the task alone. This is the single most actionable finding in the meta-analysis and needs no long session.",
-      cite: "Garcia-Argibay et al. 2019"
-    },
-    {
       id: "gamma-40", cat: "stim", band: "Gamma", name: "Gamma Focus 40",
       carrier: 400, beat: 40, minutes: 25, strength: 2,
       desc: "40 Hz on a 400 Hz carrier — the exact pairing that reliably evokes a steady-state response.",
@@ -606,7 +741,14 @@
   var A = {
     ctx: null, oscL: null, oscR: null, gL: null, gR: null,
     master: null, merger: null, noiseSrc: null, noiseGain: null,
-    track: null, startedAt: 0, elapsed: 0, playing: false, raf: 0, endTimer: 0
+    track: null, startedAt: 0, elapsed: 0, playing: false, raf: 0, endTimer: 0,
+    phase: "single",   // "single" | "prime" | "task"
+    gainMul: 1         // phase-level attenuation, independent of the volume slider
+  };
+
+  var store = {
+    get: function (k) { try { return localStorage.getItem("entrain." + k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem("entrain." + k, v); } catch (e) {} }
   };
 
   var FADE_IN = 2.0, FADE_OUT = 4.0;
@@ -626,7 +768,7 @@
 
   function volGain() {
     var v = parseInt($("#vol").value, 10) / 100;
-    return v * v * 0.55; // perceptual-ish curve, deliberately conservative
+    return v * v * 0.55 * A.gainMul; // perceptual-ish curve, deliberately conservative
   }
 
   function makePinkNoise(ctx) {
@@ -727,12 +869,34 @@
     A.oscL = A.oscR = A.gL = A.gR = A.merger = null;
   }
 
+  /* Fade out only the two carriers, leaving master — and therefore the pink
+     noise bed — running. Used when a prime hands over to a noise-only task phase. */
+  function fadeOutVoicesOnly(seconds) {
+    if (!A.oscL) return;
+    var t = A.ctx.currentTime;
+    var l = A.oscL, r = A.oscR, gl = A.gL, gr = A.gR, m = A.merger;
+    [gl, gr].forEach(function (g) {
+      g.gain.cancelScheduledValues(t);
+      g.gain.setValueAtTime(g.gain.value, t);
+      g.gain.linearRampToValueAtTime(0, t + seconds);
+    });
+    setTimeout(function () {
+      try { l.stop(); r.stop(); l.disconnect(); r.disconnect(); gl.disconnect(); gr.disconnect(); m.disconnect(); } catch (e) {}
+    }, (seconds + 0.3) * 1000);
+    A.oscL = A.oscR = A.gL = A.gR = A.merger = null;
+  }
+
   /* ---------------------------- transport ---------------------------- */
 
   function load(track) {
     if (A.playing || A.oscL) hardStop(true);
     A.track = track;
     A.elapsed = 0;
+    A.phase = track.then ? "prime" : "single";
+    A.gainMul = 1;
+    A.noisePref = $("#noise").checked;
+    paintCache = {};
+    hideCue();
     $("#player").classList.add("open");
     $("#player").style.setProperty("--pc", track.cat === "relax" ? "var(--relax)" : "var(--stim)");
     $("#pName").textContent = track.name;
@@ -740,7 +904,8 @@
     var beatTxt = typeof track.rampFrom === "number"
       ? track.rampFrom.toFixed(1) + " → " + track.beat.toFixed(1) + " Hz"
       : track.beat.toFixed(1) + " Hz";
-    $("#pSub").textContent = track.band + " · " + beatTxt + " · " + track.carrier + " Hz carrier · " + lengthTxt;
+    $("#pSub").textContent = (track.then ? "Prime · " : "") +
+      track.band + " · " + beatTxt + " · " + track.carrier + " Hz carrier · " + lengthTxt;
     paint();
     play();
   }
@@ -787,6 +952,7 @@
   function hardStop(silent) {
     teardownVoices(0.3);
     stopNoise();
+    if (A.track && A.track.then) $("#noise").checked = !!A.noisePref;
     A.playing = false;
     A.elapsed = 0;
     clearTimeout(A.endTimer);
@@ -798,30 +964,85 @@
     if (!silent) setStatus("Stopped.");
   }
 
-  function finish() {
+  function fadeOutAndStop(msg, seconds) {
+    var s = typeof seconds === "number" ? seconds : FADE_OUT;
     var t = A.ctx.currentTime;
+    clearTimeout(A.endTimer);
     A.master.gain.cancelScheduledValues(t);
     A.master.gain.setValueAtTime(A.master.gain.value, t);
-    A.master.gain.linearRampToValueAtTime(0, t + FADE_OUT);
-    setStatus("Fading out — session complete.");
-    setTimeout(function () {
-      hardStop(true);
-      setStatus("Session complete: " + A.track.minutes + " min of " + A.track.name + ".");
-    }, FADE_OUT * 1000 + 200);
+    A.master.gain.linearRampToValueAtTime(0, t + s);
+    setStatus("Fading out\u2026");
+    setTimeout(function () { hardStop(true); setStatus(msg); }, s * 1000 + 200);
+  }
+
+  function finish() {
+    fadeOutAndStop("Session complete: " + A.track.minutes + " min of " + A.track.name + ".");
+  }
+
+  /* The prime block has elapsed. Cue the user to begin, then do whatever they
+     chose for the working phase. The cue is the point of the whole mode. */
+  function enterTask() {
+    var mode = (A.track.then && A.track.then.mode) || "silence";
+    A.phase = "task";
+    paintCache = {};
+
+    if (mode === "silence") {
+      showCue("Prime complete \u2014 start now.");
+      fadeOutAndStop("Prime complete. Audio off \u2014 you carry the priming effect into the task.");
+      return;
+    }
+
+    showCue("Prime complete \u2014 start now.");
+    clearTimeout(A.endTimer);
+
+    if (mode === "noise") {
+      startNoise();
+      $("#noise").checked = true;
+      fadeOutVoicesOnly(4);
+      $("#pSub").textContent = "Task phase \u00b7 pink noise only";
+      setStatus("Task phase: beats have faded out, pink noise continues. Stop when you finish.");
+    } else {
+      A.gainMul = 0.45;
+      var t = A.ctx.currentTime;
+      A.master.gain.cancelScheduledValues(t);
+      A.master.gain.setValueAtTime(A.master.gain.value, t);
+      A.master.gain.linearRampToValueAtTime(volGain(), t + 6);
+      $("#pSub").textContent = "Task phase \u00b7 " + A.track.beat.toFixed(1) +
+        " Hz \u00b7 " + A.track.carrier + " Hz carrier \u00b7 reduced volume";
+      setStatus("Task phase: beats continue at reduced volume. Stop when you finish.");
+    }
   }
 
   function scheduleEnd() {
     clearTimeout(A.endTimer);
-    if ($("#openEnded").checked) return;
+    if (A.phase === "task") return;                 // working phase runs open-ended
+    if (A.phase !== "prime" && $("#openEnded").checked) return;
     var total = A.track.minutes * 60;
+    if (A.phase === "prime") {
+      A.endTimer = setTimeout(enterTask, Math.max(0, (total - A.elapsed) * 1000));
+      return;
+    }
     var left = total - A.elapsed - FADE_OUT;
     A.endTimer = setTimeout(finish, Math.max(0, left * 1000));
   }
 
+  function showCue(msg) {
+    var c = $("#cue");
+    c.textContent = msg;
+    c.hidden = false;
+    clearTimeout(A.cueTimer);
+    A.cueTimer = setTimeout(function () { c.hidden = true; }, 25000);
+  }
+  function hideCue() { clearTimeout(A.cueTimer); $("#cue").hidden = true; }
+
+  /* The clock ticks at 1 Hz and the ramp display moves slower still, so there is
+     no reason to touch the DOM 60 times a second. Throttle, then diff. */
+  var lastPaint = 0;
   function loop() {
     if (!A.playing) return;
     A.elapsed = A.ctx.currentTime - A.startedAt;
-    paint();
+    var now = (window.performance && performance.now) ? performance.now() : Date.now();
+    if (now - lastPaint >= 120) { lastPaint = now; paint(); }
     A.raf = requestAnimationFrame(loop);
   }
 
@@ -835,24 +1056,32 @@
 
   var CIRC = 2 * Math.PI * 28;
 
+  var paintCache = {};
+  function setText(sel, val) {
+    if (paintCache[sel] === val) return;
+    paintCache[sel] = val;
+    $(sel).textContent = val;
+  }
+
   function paint() {
     if (!A.track) return;
     var t = A.track, total = t.minutes * 60;
-    var open = $("#openEnded").checked;
+    var countUp = A.phase === "task" || $("#openEnded").checked;
     var beat = beatAt(t, A.elapsed);
 
-    $("#pL").textContent = t.carrier.toFixed(0) + " Hz";
-    $("#pR").textContent = (t.carrier + beat).toFixed(1) + " Hz";
-    $("#pBeat").textContent = beat.toFixed(1) + " Hz";
+    setText("#pL", t.carrier.toFixed(0) + " Hz");
+    setText("#pR", (t.carrier + beat).toFixed(1) + " Hz");
+    setText("#pBeat", beat.toFixed(1) + " Hz");
 
-    if (open) {
-      $("#time").textContent = fmt(A.elapsed);
-      $("#ring").style.strokeDashoffset = CIRC * (1 - (A.elapsed % 60) / 60);
+    var off;
+    if (countUp) {
+      setText("#time", fmt(A.elapsed));
+      off = CIRC * (1 - (A.elapsed % 60) / 60);
     } else {
-      $("#time").textContent = fmt(Math.max(0, total - A.elapsed));
-      var p = total > 0 ? Math.min(1, A.elapsed / total) : 0;
-      $("#ring").style.strokeDashoffset = CIRC * (1 - p);
+      setText("#time", fmt(Math.max(0, total - A.elapsed)));
+      off = CIRC * (1 - (total > 0 ? Math.min(1, A.elapsed / total) : 0));
     }
+    if (paintCache.ring !== off) { paintCache.ring = off; $("#ring").style.strokeDashoffset = off; }
   }
 
   function setStatus(msg) { $("#status").textContent = msg; }
@@ -920,7 +1149,7 @@
     if (A.track && A.track.id === id && A.playing) { pause(); return; }
     if (A.track && A.track.id === id && !A.playing && A.elapsed > 0) { play(); return; }
     var track = TRACKS.filter(function (t) { return t.id === id; })[0];
-    if (track) load(track);
+    if (track) gate(function () { load(track); });
   });
 
   var tabs = document.querySelectorAll(".tab");
@@ -993,15 +1222,195 @@
     var car = parseInt($("#cCar").value, 10);
     var min = parseInt($("#cMin").value, 10);
     var b = bandFor(beat);
-    load({
-      id: "custom", cat: beat <= 12 ? "relax" : "stim", band: b.name,
-      name: "Custom " + beat.toFixed(1) + " Hz " + b.name,
-      carrier: car, beat: beat, minutes: min, strength: 0,
-      desc: "", ev: "", cite: ""
+    gate(function () {
+      load({
+        id: "custom", cat: beat <= 12 ? "relax" : "stim", band: b.name,
+        name: "Custom " + beat.toFixed(1) + " Hz " + b.name,
+        carrier: car, beat: beat, minutes: min, strength: 0,
+        desc: "", ev: "", cite: ""
+      });
+    });
+  });
+
+
+  /* ------------------------ headphone check -------------------------
+     The commonest way this page fails is silently: on speakers, one earbud
+     or a mono Bluetooth device the two tones mix before they reach the
+     listener and there is no binaural beat at all. A five-second channel
+     test catches that before anyone sits through a 30-minute session.
+  -------------------------------------------------------------------- */
+
+  var pendingPlay = null;
+
+  function gate(fn) {
+    if (store.get("stereo") || A.checkSkipped) { fn(); return; }
+    pendingPlay = fn;
+    openCheck();
+  }
+
+  function playTestTone(side) {
+    if (!ensureCtx()) { setStatus("Web Audio is not available in this browser."); return; }
+    var ctx = A.ctx, now = ctx.currentTime, dur = 2.2;
+    var merger = ctx.createChannelMerger(2);
+    var osc = ctx.createOscillator();
+    var g = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = 440;
+    g.gain.setValueAtTime(0, now);
+    g.gain.linearRampToValueAtTime(0.25, now + 0.15);
+    g.gain.setValueAtTime(0.25, now + dur - 0.3);
+    g.gain.linearRampToValueAtTime(0, now + dur);
+    osc.connect(g);
+    g.connect(merger, 0, side === "right" ? 1 : 0);
+    merger.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + dur + 0.05);
+    setTimeout(function () { try { g.disconnect(); merger.disconnect(); } catch (e) {} }, (dur + 0.4) * 1000);
+  }
+
+  function openCheck() {
+    $("#scStep1").hidden = false;
+    $("#scStep2").hidden = true;
+    $("#scResult").hidden = true;
+    $("#scAgain").hidden = true;
+    $("#scModal").hidden = false;
+    setTimeout(function () { $("#scPlay").focus(); }, 30);
+  }
+
+  function closeCheck(runPending) {
+    $("#scModal").hidden = true;
+    var fn = pendingPlay;
+    pendingPlay = null;
+    if (runPending && fn) fn();
+  }
+
+  function showResult(cls, title, body, continueLabel) {
+    var res = $("#scResult");
+    $("#scStep1").hidden = true;
+    $("#scStep2").hidden = true;
+    res.className = "sc-result " + cls;
+    res.innerHTML = "";
+    var b = document.createElement("b");
+    b.textContent = title;
+    res.appendChild(b);
+    res.appendChild(document.createTextNode(body));
+    res.hidden = false;
+    if (continueLabel) {
+      $("#scAnyway").textContent = continueLabel;
+      $("#scAgain").hidden = false;
+    }
+  }
+
+  function answerCheck(a) {
+    if (a === "left") {
+      store.set("stereo", "ok");
+      showResult("ok", "Stereo separation confirmed.",
+        " Each ear is receiving its own signal, which is the one thing the beat depends on.", null);
+      setTimeout(function () { closeCheck(true); }, 1600);
+      return;
+    }
+    if (a === "right") {
+      store.set("stereo", "swapped");
+      showResult("ok", "Stereo works \u2014 channels reversed.",
+        " Something in your setup has swapped left and right. A binaural beat is the difference " +
+        "between the two tones, so it still works exactly as intended; only the L and R labels " +
+        "in the player are the wrong way round.", "Continue");
+      return;
+    }
+    if (a === "both") {
+      showResult("bad", "No channel separation.",
+        " You are on speakers, a mono device, or a Bluetooth connection that has collapsed to one " +
+        "channel. The two tones are mixing before they reach you, so there is no binaural beat \u2014 " +
+        "just a hum. Wired stereo headphones are the reliable fix.", "Continue anyway");
+      return;
+    }
+    showResult("bad", "Nothing came through.",
+      " Check that the right output device is selected and that system and browser volume are up, " +
+      "then test again.", "Continue anyway");
+  }
+
+  $("#scPlay").addEventListener("click", function () {
+    playTestTone("left");
+    $("#scStep1").hidden = true;
+    $("#scStep2").hidden = false;
+  });
+  $("#scReplay").addEventListener("click", function () { playTestTone("left"); });
+  $("#scStep2").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-ans]");
+    if (b) answerCheck(b.dataset.ans);
+  });
+  $("#scRetry").addEventListener("click", openCheck);
+  $("#scAnyway").addEventListener("click", function () {
+    if (!store.get("stereo")) store.set("stereo", "override");
+    closeCheck(true);
+  });
+  $("#scSkip").addEventListener("click", function () {
+    A.checkSkipped = true;          // this visit only; ask again next time
+    closeCheck(true);
+  });
+  $("#scOpen").addEventListener("click", function () { pendingPlay = null; openCheck(); });
+  $("#scModal").addEventListener("click", function (e) {
+    if (e.target === this) closeCheck(false);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !$("#scModal").hidden) closeCheck(false);
+  });
+
+  /* --------------------------- prime mode ---------------------------
+     Exposure before a task beat exposure during it, so this makes that
+     protocol the featured path rather than a track you have to know to pick.
+  -------------------------------------------------------------------- */
+
+  var THEN_COPY = {
+    "continue": "then a cue to begin and the beats carry on at about half volume while you work.",
+    "noise": "then a cue to begin, the beats fade out and the pink noise bed carries on alone.",
+    "silence": "then a cue to begin and the audio stops \u2014 priming alone was enough in the trials."
+  };
+
+  function primeCfg() {
+    var bv = document.querySelector('input[name="pbeat"]:checked').value.split("|");
+    return {
+      beat: parseFloat(bv[0]),
+      carrier: parseInt(bv[1], 10),
+      minutes: parseInt(document.querySelector('input[name="pmin"]:checked').value, 10),
+      then: document.querySelector('input[name="pthen"]:checked').value
+    };
+  }
+
+  function syncPrime() {
+    var c = primeCfg();
+    $("#primeStart").textContent = "Start " + c.minutes + "-minute prime";
+    $("#primeHint").textContent = c.minutes + " min of " + c.beat + " Hz " +
+      bandFor(c.beat).name.toLowerCase() + " on a " + c.carrier + " Hz carrier, " + THEN_COPY[c.then];
+  }
+
+  ["#pfChips", "#plChips", "#ptChips"].forEach(function (sel) {
+    var box = $(sel);
+    box.addEventListener("change", function () {
+      var chips = box.querySelectorAll(".chip");
+      for (var i = 0; i < chips.length; i++) {
+        chips[i].classList.toggle("on", chips[i].querySelector("input").checked);
+      }
+      syncPrime();
+    });
+  });
+
+  $("#primeStart").addEventListener("click", function () {
+    var c = primeCfg();
+    var b = bandFor(c.beat);
+    gate(function () {
+      load({
+        id: "prime", cat: c.beat <= 12 ? "relax" : "stim", band: b.name,
+        name: "Prime \u2014 " + c.beat + " Hz " + b.name,
+        carrier: c.carrier, beat: c.beat, minutes: c.minutes, strength: 0,
+        desc: "", ev: "", cite: "",
+        then: { mode: c.then }
+      });
     });
   });
 
   /* ------------------------------- init ------------------------------ */
+
 
   try {
     var saved = localStorage.getItem("entrain.vol");
@@ -1010,6 +1419,7 @@
 
   render("all");
   syncBuilder();
+  syncPrime();
   window.addEventListener("pagehide", function () { if (A.playing) hardStop(true); });
 })();
 </script>
