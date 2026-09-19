@@ -19,6 +19,7 @@
     --relax:#5eead4;
     --relax-deep:#2dd4bf;
     --stim:#fbbf24;
+    --ther:#a78bfa;
     --stim-deep:#f59e0b;
     --accent:#818cf8;
     --danger:#fb7185;
@@ -106,6 +107,7 @@
   .card.is-playing{border-color:var(--c1);box-shadow:0 0 0 1px var(--c1) inset,0 14px 34px -20px var(--c1)}
   .card[data-cat="relax"]{--c1:var(--relax);--c2:#3b82f6}
   .card[data-cat="stim"]{--c1:var(--stim);--c2:#f472b6}
+  .card[data-cat="ther"]{--c1:var(--ther);--c2:#22d3ee}
 
   .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
   .band{
@@ -123,6 +125,8 @@
     padding:5px 9px;font-size:12px;color:var(--text-dim);
   }
   .spec b{color:var(--text);font-weight:600}
+  button.spec{font-family:inherit;cursor:pointer}
+  button.spec:hover{border-color:#3a4767}
 
   details.ev{border-top:1px solid var(--line-soft);padding-top:12px;margin-top:2px}
   details.ev summary{
@@ -253,6 +257,28 @@
     margin-right:8px;vertical-align:middle;
   }
 
+  /* ---------- pitch matcher ---------- */
+  .pm-readout{
+    display:flex;align-items:baseline;gap:10px;justify-content:center;
+    background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--radius-sm);
+    padding:14px;margin:4px 0 16px;
+  }
+  .pm-hz{font-size:34px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .pm-unit{font-size:15px;color:var(--text-faint)}
+  .pm-oct{display:flex;gap:8px;justify-content:center;margin-top:12px}
+  .pm-warn{
+    background:rgba(251,191,36,.09);border:1px solid rgba(251,191,36,.35);color:#fcd34d;
+    border-radius:var(--radius-sm);padding:11px 13px;font-size:13.5px;margin:14px 0 0;
+  }
+  .pm-med{
+    background:rgba(251,113,133,.07);border:1px solid rgba(251,113,133,.3);
+    border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;color:var(--text-dim);margin:16px 0 0;
+  }
+  .pm-med b{color:var(--text);display:block;margin-bottom:3px}
+  .pm-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .notch-chip{border-color:color-mix(in srgb,var(--c1) 40%,transparent)!important;color:var(--c1)!important}
+  .notch-chip b{color:var(--c1)!important}
+
   /* ---------- phase cue ---------- */
   .cue{
     background:linear-gradient(90deg,color-mix(in srgb,var(--pc,var(--stim)) 26%,transparent),transparent 70%);
@@ -311,6 +337,8 @@
   .toggles{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--text-dim);grid-column:1/-1;border-top:1px solid var(--line-soft);padding-top:13px;align-items:center}
   .toggles label{display:flex;align-items:center;gap:7px;cursor:pointer}
   .toggles input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
+  .toggles label.off{opacity:.5;cursor:default}
+  .toggles label.off input{cursor:default}
   .status{margin-left:auto;font-size:12.5px;color:var(--text-faint)}
 
   .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -413,6 +441,7 @@
       <button class="tab" role="tab" aria-selected="true" data-filter="all">All tracks</button>
       <button class="tab" role="tab" aria-selected="false" data-filter="relax">Relaxation &amp; sleep</button>
       <button class="tab" role="tab" aria-selected="false" data-filter="stim">Stimulation &amp; focus</button>
+      <button class="tab" role="tab" aria-selected="false" data-filter="ther">Tinnitus</button>
     </div>
     <div class="count" id="count"></div>
   </div>
@@ -498,6 +527,24 @@
         is for that band, not a promise about your session.
       </p>
 
+      <h3>The tinnitus track works differently</h3>
+      <p>
+        Everything else on this page rests on entrainment — a beat frequency nudging cortical rhythms.
+        <strong>Notched Relief</strong> does not. Its active ingredient is the <em>absence</em> of sound:
+        removing a one-octave band centred on your own tinnitus pitch is thought to reduce the
+        over-excitable auditory cortex neurons tuned to that frequency, through lateral inhibition from
+        their unmasked neighbours. That is why it needs a pitch match and why the notch is useless if it
+        is aimed at the wrong frequency. The 8&nbsp;Hz alpha beat rides on top because adding one to
+        relaxing sound improved tinnitus handicap and emotional scores more than the sound alone.
+      </p>
+      <p>
+        Two caveats worth stating plainly. The notched-training results held for tinnitus at or below
+        8&nbsp;kHz and were not observed above it. And the timescale is not one session: the trials ran
+        15&nbsp;minutes twice daily for four weeks, or daily listening across twelve months for the
+        roughly 30% loudness reduction. Sound therapy is an adjunct to clinical care, and for tinnitus
+        distress specifically, cognitive behavioural therapy remains the better-supported intervention.
+      </p>
+
       <h3>Frequency bands at a glance</h3>
       <div class="tbl-scroll">
       <table>
@@ -536,6 +583,11 @@
       <li>Jausovec, N., et al. (2022). Effects of alpha, beta and gamma binaural beat stimulation and short-term training on working memory: a within-subject randomized placebo-controlled trial. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9153928/" rel="noopener">PMC</a></li>
       <li>Orozco Perez, H. D., Dumas, G., &amp; Lehmann, A. (2020). Binaural beats through the auditory pathway: from brainstem to connectivity patterns. <em>eNeuro</em>, 7(2). <a href="https://www.eneuro.org/content/7/2/ENEURO.0232-19.2020" rel="noopener">eNeuro</a></li>
       <li>Basu, S., &amp; Banerjee, B. (2023). Potential of binaural beats intervention — gamma frequency, memory performance and EEG spectral density. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10048082/" rel="noopener">PMC</a></li>
+      <li>Okamoto, H., Stracke, H., Stoll, W., &amp; Pantev, C. (2010). Listening to tailor-made notched music reduces tinnitus loudness and tinnitus-related auditory cortex activity. <em>PNAS</em>, 107(3), 1207–1210. <a href="https://www.pnas.org/doi/full/10.1073/pnas.0911268107" rel="noopener">PNAS</a></li>
+      <li>Stein, A., et al. (2011). Short and intense tailor-made notched music training against tinnitus: the tinnitus frequency matters. <em>PLOS One</em>, 6(9), e24685. <a href="https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0024685" rel="noopener">PLOS One</a></li>
+      <li>Stein, A., et al. (2015). Impact of spectral notch width on neurophysiological plasticity and clinical effectiveness of tailor-made notched music training. <em>PLOS One</em>, 10(9), e0138595. <a href="https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0138595" rel="noopener">PLOS One</a></li>
+      <li>Ghaffari, R., et al. (2024). Investigating the effectiveness of music therapy combined with binaural beats on chronic tinnitus: a randomized controlled trial. <em>American Journal of Otolaryngology</em>. <a href="https://pubmed.ncbi.nlm.nih.gov/38723376/" rel="noopener">PubMed</a></li>
+      <li>Effect of binaural beat and tailor-made notched music training on reducing the loudness and annoyance of chronic tinnitus: a controlled trial. <em>Auditory and Vestibular Research</em>. <a href="https://www.cochranelibrary.com/central/doi/10.1002/central/CN-02888726/full" rel="noopener">Cochrane CENTRAL</a></li>
       <li>Kim, S., et al. (2024). Effect of dynamic binaural beats on sleep quality: a proof-of-concept study with questionnaire and biosignals. <em>SLEEP</em>, 47(10). <a href="https://academic.oup.com/sleep/article/47/10/zsae097/7647043" rel="noopener">Oxford Academic</a></li>
     </ol>
   </section>
@@ -585,6 +637,50 @@
   </div>
 </div>
 
+
+<!-- ============ TINNITUS PITCH MATCH ============ -->
+<div class="modal" id="pmModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+    <h2 id="pmTitle">Match your tinnitus pitch</h2>
+    <p>
+      The notch has to sit on <em>your</em> tinnitus to do anything. Move the slider until the tone
+      sounds closest to the pitch you hear, then save it. Keep the volume low — this is a pure tone.
+    </p>
+
+    <div class="pm-readout">
+      <span class="pm-hz mono" id="pmHz">4000</span><span class="pm-unit">Hz</span>
+    </div>
+    <input type="range" id="pmSlider" min="0" max="1000" step="1" value="700" aria-label="Tinnitus pitch">
+
+    <div class="pm-oct">
+      <button class="btn" id="pmDown">÷2 — octave down</button>
+      <button class="btn" id="pmTone">Play tone</button>
+      <button class="btn" id="pmUp">×2 — octave up</button>
+    </div>
+    <p class="hint" style="margin-top:12px">
+      Matches are commonly out by a whole octave, and which way depends on where you started from —
+      so check the octave above and below before you settle.
+    </p>
+
+    <div class="pm-warn" id="pmWarn" hidden>
+      Above 8&nbsp;kHz the notched-training trials found no significant effect. You can save this pitch,
+      but expect the notch to do less than the trials reported.
+    </div>
+
+    <div class="pm-med">
+      <b>See a clinician first.</b>
+      Tinnitus that is new, one-sided, pulsing in time with your heartbeat, or paired with hearing loss
+      or dizziness needs medical assessment. Sound therapy is an adjunct to care, not a substitute for it,
+      and not a cure.
+    </div>
+
+    <div class="pm-actions">
+      <button class="btn primary" id="pmUse">Save pitch and play</button>
+      <button class="btn" id="pmCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ PLAYER ============ -->
 <div class="player" id="player">
   <div class="cue" id="cue" role="alert" hidden></div>
@@ -618,7 +714,7 @@
     </div>
 
     <div class="toggles">
-      <label><input type="checkbox" id="noise"> Pink-noise bed</label>
+      <label id="noiseLab"><input type="checkbox" id="noise"> <span id="noiseTxt">Pink-noise bed</span></label>
       <label><input type="checkbox" id="openEnded"> Open-ended (ignore timer)</label>
       <button class="btn link" id="scOpen" style="padding:0;font-size:12.5px">Re-check headphones</button>
       <div class="status" id="status" role="status" aria-live="polite">Ready</div>
@@ -679,6 +775,15 @@
       desc: "Alpha for divergent thinking — with the caveat that it worked for some people and not others.",
       ev: "Alpha binaural beats improved divergent (but not convergent) thinking. The effect appeared only in participants with lower estimated baseline dopamine; those higher on that measure showed no benefit or slightly worse performance.",
       cite: "Reedijk, Bolders & Hommel 2013, Front. Hum. Neurosci."
+    },
+
+    /* ---------- TINNITUS ---------- */
+    {
+      id: "tinnitus-notch", cat: "ther", band: "Alpha + notch", name: "Notched Relief",
+      carrier: 250, beat: 8, minutes: 15, strength: 2, notch: true,
+      desc: "Pink noise with a one-octave hole cut around your own tinnitus pitch, under an 8 Hz alpha beat. Needs a pitch match first.",
+      ev: "Two mechanisms, each trialled separately. Removing a one-octave band centred on the individual tinnitus frequency reduced subjective loudness by roughly 30% and lowered tinnitus-related auditory cortex activity after 12 months, an effect attributed to lateral inhibition; it held for tinnitus at or below 8 kHz and not above. Separately, adding an 8 Hz alpha binaural beat to relaxing sound improved tinnitus handicap and emotional scores more than the sound alone over 15 minutes twice daily for 4 weeks. A controlled trial combining notched training with binaural beats found the combination gave the larger mean handicap reduction. This is an adjunct, not a cure, and the timescale is weeks of daily use rather than one session.",
+      cite: "Okamoto et al. 2010, PNAS \u00b7 Stein et al. 2011, PLOS One \u00b7 Am. J. Otolaryngol. 2024 RCT"
     },
 
     /* ---------- STIMULATION ---------- */
@@ -792,27 +897,65 @@
     return buf;
   }
 
-  function startNoise() {
+  var noiseNodes = [];
+
+  /* With a notch centre, the noise is split into a low band and a high band with
+     one octave left empty between them (geometrically centred on the matched
+     pitch, so f/\u221a2 to f\u00b7\u221a2). Three cascaded biquads a side give a
+     steep skirt; a single "notch" biquad is far too narrow for an octave. */
+  function startNoise(notchHz) {
     if (!A.ctx || A.noiseSrc) return;
-    A.noiseGain = A.ctx.createGain();
+    var ctx = A.ctx, target = 0.16, i;
+    A.noiseGain = ctx.createGain();
     A.noiseGain.gain.value = 0;
     A.noiseGain.connect(A.master);
-    A.noiseSrc = A.ctx.createBufferSource();
-    A.noiseSrc.buffer = makePinkNoise(A.ctx);
+    A.noiseSrc = ctx.createBufferSource();
+    A.noiseSrc.buffer = makePinkNoise(ctx);
     A.noiseSrc.loop = true;
-    A.noiseSrc.connect(A.noiseGain);
+
+    if (notchHz) {
+      var lo = notchHz / Math.SQRT2, hi = notchHz * Math.SQRT2;
+      var a = A.noiseSrc, b = A.noiseSrc;
+      for (i = 0; i < 3; i++) {
+        var lp = ctx.createBiquadFilter();
+        lp.type = "lowpass"; lp.frequency.value = lo; lp.Q.value = 0.707;
+        a.connect(lp); a = lp; noiseNodes.push(lp);
+      }
+      for (i = 0; i < 3; i++) {
+        var hp = ctx.createBiquadFilter();
+        hp.type = "highpass"; hp.frequency.value = hi; hp.Q.value = 0.707;
+        b.connect(hp); b = hp; noiseNodes.push(hp);
+      }
+      a.connect(A.noiseGain);
+      b.connect(A.noiseGain);
+      target = 0.3;            // the therapeutic signal, not an ambient bed
+    } else {
+      A.noiseSrc.connect(A.noiseGain);
+    }
+
     A.noiseSrc.start();
-    A.noiseGain.gain.linearRampToValueAtTime(0.16, A.ctx.currentTime + 1.5);
+    A.noiseGain.gain.linearRampToValueAtTime(target, ctx.currentTime + 1.5);
   }
 
   function stopNoise() {
     if (!A.noiseSrc) return;
-    var src = A.noiseSrc, g = A.noiseGain, t = A.ctx.currentTime;
+    var src = A.noiseSrc, g = A.noiseGain, nodes = noiseNodes, t = A.ctx.currentTime;
+    noiseNodes = [];
     g.gain.cancelScheduledValues(t);
     g.gain.setValueAtTime(g.gain.value, t);
     g.gain.linearRampToValueAtTime(0, t + 1);
-    setTimeout(function () { try { src.stop(); src.disconnect(); g.disconnect(); } catch (e) {} }, 1400);
+    setTimeout(function () {
+      try {
+        src.stop(); src.disconnect(); g.disconnect();
+        for (var i = 0; i < nodes.length; i++) nodes[i].disconnect();
+      } catch (e) {}
+    }, 1400);
     A.noiseSrc = null; A.noiseGain = null;
+  }
+
+  function tinnitusHz() {
+    var v = parseFloat(store.get("tinnitusHz"));
+    return (v && isFinite(v)) ? v : 0;
   }
 
   /* Beat frequency at a given elapsed time (handles ramp tracks). */
@@ -895,10 +1038,14 @@
     A.phase = track.then ? "prime" : "single";
     A.gainMul = 1;
     A.noisePref = $("#noise").checked;
+    $("#noise").disabled = !!track.notch;
+    $("#noiseLab").classList.toggle("off", !!track.notch);
+    $("#noiseTxt").textContent = track.notch ? "Notched noise (built in)" : "Pink-noise bed";
     paintCache = {};
     hideCue();
     $("#player").classList.add("open");
-    $("#player").style.setProperty("--pc", track.cat === "relax" ? "var(--relax)" : "var(--stim)");
+    $("#player").style.setProperty("--pc", "var(--" +
+      (track.cat === "relax" ? "relax" : track.cat === "ther" ? "ther" : "stim") + ")");
     $("#pName").textContent = track.name;
     var lengthTxt = track.minutes + " min";
     var beatTxt = typeof track.rampFrom === "number"
@@ -921,7 +1068,8 @@
     A.master.gain.cancelScheduledValues(t);
     A.master.gain.setValueAtTime(0, t);
     A.master.gain.linearRampToValueAtTime(volGain(), t + FADE_IN);
-    if ($("#noise").checked) startNoise();
+    if (A.track.notch) startNoise(tinnitusHz());
+    else if ($("#noise").checked) startNoise();
 
     A.startedAt = A.ctx.currentTime - A.elapsed;
     A.playing = true;
@@ -1110,7 +1258,9 @@
     });
   }
 
+  var curFilter = "all";
   function render(filter) {
+    curFilter = filter;
     var list = TRACKS.filter(function (t) { return filter === "all" || t.cat === filter; });
     var html = list.map(function (t) {
       var beatTxt = typeof t.rampFrom === "number"
@@ -1127,6 +1277,10 @@
             '<span class="spec">Beat <b>' + beatTxt + '</b></span>' +
             '<span class="spec">Carrier <b>' + t.carrier + ' Hz</b></span>' +
             '<span class="spec">Length <b>' + t.minutes + ' min</b></span>' +
+            (t.notch
+              ? '<button class="spec notch-chip" data-rematch="1">Notch <b>' +
+                  (tinnitusHz() ? Math.round(tinnitusHz()) + ' Hz' : 'set your pitch') + '</b></button>'
+              : '') +
           '</div>' +
           '<button class="play-btn">▶&nbsp; Play ' + t.minutes + ' min</button>' +
           '<details class="ev"><summary>Evidence ' + dots(t.strength) + '</summary>' +
@@ -1143,13 +1297,22 @@
   /* ------------------------------ events ----------------------------- */
 
   $("#grid").addEventListener("click", function (e) {
+    if (e.target.closest("[data-rematch]")) { pendingPitch = null; openMatcher(); return; }
     var btn = e.target.closest(".play-btn");
     if (!btn) return;
     var id = btn.closest(".card").dataset.id;
     if (A.track && A.track.id === id && A.playing) { pause(); return; }
     if (A.track && A.track.id === id && !A.playing && A.elapsed > 0) { play(); return; }
     var track = TRACKS.filter(function (t) { return t.id === id; })[0];
-    if (track) gate(function () { load(track); });
+    if (!track) return;
+    gate(function () {
+      if (track.notch && !tinnitusHz()) {      // the notch is useless until it is aimed
+        pendingPitch = function () { load(track); };
+        openMatcher();
+        return;
+      }
+      load(track);
+    });
   });
 
   var tabs = document.querySelectorAll(".tab");
@@ -1178,6 +1341,7 @@
   });
 
   $("#noise").addEventListener("change", function () {
+    if (A.track && A.track.notch) return;   // that noise is the therapy, not a bed
     if (!A.playing) return;
     if (this.checked) startNoise(); else stopNoise();
   });
@@ -1409,7 +1573,94 @@
     });
   });
 
+
+  /* ------------------------ tinnitus pitch match ---------------------
+     Notched sound therapy works by removing a one-octave band centred on the
+     listener's own tinnitus frequency, so the pitch has to be matched before
+     the track means anything. Octave errors are the classic failure here, so
+     the halve/double buttons are first-class controls rather than a nicety.
+  -------------------------------------------------------------------- */
+
+  var pendingPitch = null;
+  var pm = { osc: null, gain: null, on: false };
+
+  var PM_MIN = 500, PM_MAX = 10000;
+  function pmHz() {
+    var v = parseInt($("#pmSlider").value, 10) / 1000;
+    return PM_MIN * Math.pow(PM_MAX / PM_MIN, v);
+  }
+  function pmSetHz(hz) {
+    hz = Math.min(PM_MAX, Math.max(PM_MIN, hz));
+    var v = Math.log(hz / PM_MIN) / Math.log(PM_MAX / PM_MIN);
+    $("#pmSlider").value = Math.round(v * 1000);
+    pmSync();
+  }
+  function pmSync() {
+    var hz = pmHz();
+    $("#pmHz").textContent = Math.round(hz);
+    $("#pmWarn").hidden = hz <= 8000;
+    if (pm.on) pm.osc.frequency.setTargetAtTime(hz, A.ctx.currentTime, 0.02);
+  }
+
+  function pmStart() {
+    if (pm.on || !ensureCtx()) return;
+    var ctx = A.ctx, now = ctx.currentTime;
+    pm.gain = ctx.createGain();
+    pm.gain.gain.setValueAtTime(0, now);
+    pm.gain.gain.linearRampToValueAtTime(0.08, now + 0.3);
+    pm.osc = ctx.createOscillator();
+    pm.osc.type = "sine";
+    pm.osc.frequency.setValueAtTime(pmHz(), now);
+    pm.osc.connect(pm.gain);
+    pm.gain.connect(ctx.destination);
+    pm.osc.start(now);
+    pm.on = true;
+    $("#pmTone").textContent = "Stop tone";
+  }
+  function pmStop() {
+    if (!pm.on) return;
+    var t = A.ctx.currentTime, o = pm.osc, g = pm.gain;
+    g.gain.cancelScheduledValues(t);
+    g.gain.setValueAtTime(g.gain.value, t);
+    g.gain.linearRampToValueAtTime(0, t + 0.2);
+    setTimeout(function () { try { o.stop(); o.disconnect(); g.disconnect(); } catch (e) {} }, 420);
+    pm.osc = null; pm.gain = null; pm.on = false;
+    $("#pmTone").textContent = "Play tone";
+  }
+
+  function openMatcher() {
+    if (A.playing) hardStop(true);
+    pmSetHz(tinnitusHz() || 4000);
+    $("#pmModal").hidden = false;
+    setTimeout(function () { $("#pmTone").focus(); }, 30);
+  }
+  function closeMatcher(save) {
+    pmStop();
+    var hz = pmHz();
+    $("#pmModal").hidden = true;
+    var fn = pendingPitch;
+    pendingPitch = null;
+    if (save) {
+      store.set("tinnitusHz", String(Math.round(hz)));
+      render(curFilter);
+      setStatus("Notch centred on " + Math.round(hz) + " Hz.");
+      if (fn) fn();
+    }
+  }
+
+  $("#pmSlider").addEventListener("input", pmSync);
+  $("#pmTone").addEventListener("click", function () { pm.on ? pmStop() : pmStart(); });
+  $("#pmUp").addEventListener("click", function () { pmSetHz(pmHz() * 2); });
+  $("#pmDown").addEventListener("click", function () { pmSetHz(pmHz() / 2); });
+  $("#pmUse").addEventListener("click", function () { closeMatcher(true); });
+  $("#pmCancel").addEventListener("click", function () { closeMatcher(false); });
+  $("#pmModal").addEventListener("click", function (e) { if (e.target === this) closeMatcher(false); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !$("#pmModal").hidden) closeMatcher(false);
+  });
+
   /* ------------------------------- init ------------------------------ */
+
 
 
   try {
