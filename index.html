@@ -28,6 +28,7 @@
     --b-sip:#a7f3d0;
     --b-hold:#f5d38b;
     --b-out:#a78bfa;
+    --hr:#fb7185;            /* live heart data */
     --radius:14px;
     --radius-sm:9px;
     --shadow:0 18px 40px -18px rgba(0,0,0,.75);
@@ -379,6 +380,71 @@
   .b-safety{font-size:12.5px;color:var(--text-faint);margin:0;border-top:1px solid var(--line-soft);padding-top:14px}
   .b-safety b{color:var(--text-dim);font-weight:600}
 
+  /* ---------- live heart data ---------- */
+  .hr{
+    margin-top:15px;background:linear-gradient(180deg,var(--panel),var(--bg-2));
+    border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;display:grid;gap:18px;
+  }
+  .hr-top{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-start;justify-content:space-between}
+  .hr-intro{min-width:0;flex:1 1 360px}
+  .hr-intro h3{font-size:19px;font-weight:650;letter-spacing:-.015em;margin-top:6px;text-wrap:balance}
+  .hr-intro p{margin:6px 0 0;font-size:14px;color:var(--text-dim);max-width:66ch}
+  .hr-intro .hr-msg{color:var(--b-hold)}
+  .hr-intro .hr-msg:empty{display:none}
+  .hr-conn{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .hr-conn .btn:disabled{opacity:.45;cursor:default}
+  .hr-pill{
+    display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-dim);white-space:nowrap;
+    background:var(--panel-2);border:1px solid var(--line-soft);border-radius:999px;padding:5px 11px;
+  }
+  .hr-pill i{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex:none}
+  .hr[data-state="on"] .hr-pill i{background:var(--hr);box-shadow:0 0 8px var(--hr)}
+  .hr[data-state="busy"] .hr-pill i,.hr[data-state="lost"] .hr-pill i{background:var(--b-hold)}
+  .hr-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .hr-tile{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:12px 14px;min-width:0}
+  .hr-tile .k{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);font-weight:650}
+  .hr-tile .v{
+    display:flex;align-items:baseline;gap:5px;margin-top:4px;
+    font-size:28px;font-weight:680;letter-spacing:-.02em;line-height:1.2;font-variant-numeric:tabular-nums;
+  }
+  .hr-tile .v small{font-size:13px;color:var(--text-faint);font-weight:550;letter-spacing:0}
+  .hr-tile .s{font-size:12px;color:var(--text-faint);margin-top:3px}
+  .hr-tile.now .v{color:var(--hr)}
+  .hr-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--hr);opacity:.35;align-self:center;margin-left:4px;flex:none}
+  .hr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:15px}
+  .hr-box{
+    border:1px solid var(--line-soft);border-radius:var(--radius-sm);background:var(--bg);
+    padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;
+  }
+  .hr-box-head{display:flex;justify-content:space-between;align-items:baseline;gap:4px 12px;flex-wrap:wrap}
+  .hr-box-head b{font-size:14.5px;font-weight:620}
+  .hr-box-head .hint{margin:0}
+  .hr-chart{position:relative;height:140px}
+  .hr-chart.sm{height:130px}
+  .hr-chart canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .hr-empty{
+    position:absolute;inset:0;margin:0;display:grid;place-items:center;text-align:center;
+    padding:0 10%;font-size:13px;color:var(--text-faint);
+  }
+  .hr-summary{margin:0;font-size:13px;color:var(--text-dim)}
+  .hr-find-txt{margin:0;font-size:13.5px;color:var(--text-dim)}
+  .hr-find-foot{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .hr-find-foot .btn:disabled{opacity:.45;cursor:default}
+  .hr-help ol{margin:0 0 10px;padding-left:20px}
+  .hr-help li{margin-bottom:6px}
+  .hr-help p{margin:0}
+  .b-stat.b-hr{color:var(--hr);border-color:color-mix(in srgb,var(--hr) 35%,transparent)}
+  .b-stat.b-hr b{color:var(--hr)}
+  .b-stat.b-hr .hr-dot{width:7px;height:7px;margin:0 6px 0 0;vertical-align:1px;opacity:.5}
+  .ear.ear-hr{border-color:color-mix(in srgb,var(--hr) 40%,transparent);color:var(--hr)}
+  .ear.ear-hr b{color:var(--hr)}
+  @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr)} }
+  @media (max-width:640px){
+    .hr{padding:16px}
+    .hr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .hr-tile .v{font-size:24px}
+  }
+
   /* Focus view: the stage takes the whole screen (and real fullscreen when allowed) */
   .b-stage.focus{
     position:fixed;inset:0;z-index:90;border:0;border-radius:0;background:var(--bg);
@@ -637,6 +703,7 @@
           <div class="b-stats mono">
             <span class="b-stat">Breath <b id="bCount">0</b><span id="bOf"> / 27</span></span>
             <span class="b-stat"><b id="bClock">04:57</b> <span id="bClockL">left</span></span>
+            <span class="b-stat b-hr" id="bHrStat" title="Heart rate from your sensor" hidden><i class="hr-dot" aria-hidden="true"></i><b id="bHr">—</b> bpm</span>
           </div>
         </div>
 
@@ -752,6 +819,89 @@
         </p>
       </div>
     </div>
+
+    <div class="hr" id="hr" data-state="off">
+      <div class="hr-top">
+        <div class="hr-intro">
+          <div class="prime-label">Live heart data</div>
+          <h3 id="hrTitle">Pair a heart-rate sensor</h3>
+          <p>
+            Watch your heart rate rise as you breathe in and fall as you breathe out. Any Bluetooth heart-rate
+            sensor works: a Garmin watch set to broadcast, an ear-clip sensor or a chest strap.
+          </p>
+          <p class="hr-msg" id="hrMsg" role="status"></p>
+        </div>
+        <div class="hr-conn">
+          <span class="hr-pill" id="hrPill"><i></i><span id="hrPillTxt">Not connected</span></span>
+          <button class="btn" id="hrConnect">Connect sensor</button>
+          <button class="btn link" id="hrAny">My sensor isn't listed</button>
+        </div>
+      </div>
+
+      <div class="hr-tiles">
+        <div class="hr-tile now">
+          <div class="k">Heart rate</div>
+          <div class="v"><span id="hrNow">—</span><small>bpm</small><i class="hr-dot" aria-hidden="true"></i></div>
+          <div class="s" id="hrNowS">Waiting for a sensor</div>
+        </div>
+        <div class="hr-tile">
+          <div class="k">Swing, last breath</div>
+          <div class="v"><span id="hrSwLast">—</span><small>bpm</small></div>
+          <div class="s">Highest minus lowest heart rate in one breath</div>
+        </div>
+        <div class="hr-tile">
+          <div class="k">Swing, this session</div>
+          <div class="v"><span id="hrSwAvg">—</span><small>bpm</small></div>
+          <div class="s" id="hrSwAvgS">Average across breaths</div>
+        </div>
+        <div class="hr-tile">
+          <div class="k">RMSSD, last 60 s</div>
+          <div class="v"><span id="hrRmssd">—</span><small>ms</small></div>
+          <div class="s" id="hrRmssdS">Needs beat-to-beat data</div>
+        </div>
+      </div>
+
+      <div class="hr-body">
+        <div class="hr-box">
+          <div class="hr-box-head"><b>Breath by breath</b><span class="hint">Each bar is one breath's heart-rate swing, in bpm</span></div>
+          <div class="hr-chart">
+            <canvas id="hrBars" aria-hidden="true"></canvas>
+            <p class="hr-empty" id="hrBarsEmpty">Connect a sensor and start a breathing session. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
+          </div>
+          <p class="hr-summary" id="hrSummary" hidden></p>
+        </div>
+        <div class="hr-box">
+          <div class="hr-box-head"><b>Resonance test</b><span class="hint" id="hrFindWhen">Connect a sensor first</span></div>
+          <p class="hr-find-txt" id="hrFindTxt">
+            Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the
+            biggest heart-rate swing. About 10 minutes, sitting still.
+          </p>
+          <div class="hr-chart sm"><canvas id="hrFind" aria-hidden="true"></canvas></div>
+          <div class="hr-find-foot">
+            <button class="btn" id="hrFindStart" disabled>Start resonance test</button>
+            <button class="btn primary" id="hrFindUse" hidden>Breathe at this pace</button>
+          </div>
+        </div>
+      </div>
+
+      <details class="ev hr-help">
+        <summary>Setting up a Garmin watch, a HeartMath sensor or a chest strap</summary>
+        <div class="ev-body">
+          <ol>
+            <li><b>Garmin Venu 4:</b> open Settings &gt; Health &amp; Wellness &gt; Wrist Heart Rate and choose Broadcast Heart Rate, or pick it from the controls menu (hold the upper button). Keep the watch on that screen while you practise.</li>
+            <li><b>HeartMath Inner Balance sensor:</b> clip it on, switch it on, and close the HeartMath app on your phone first, because the sensor talks to one device at a time.</li>
+            <li>Open this page in Chrome or Edge on a computer or an Android phone. Safari, iPhone browsers and Firefox can't reach Bluetooth sensors.</li>
+            <li>Press Connect sensor and pick it from the list. If it doesn't appear, try My sensor isn't listed.</li>
+          </ol>
+          <p>
+            Garmin watches broadcast a smoothed heart rate about once a second, without the individual beat-to-beat
+            intervals. That is enough to see the swing with each breath, though it reads smaller than a beat-to-beat
+            sensor would show. RMSSD, the standard short-term HRV measure, needs those intervals, so it lights up with
+            an ear-clip sensor or a chest strap such as the Polar H10.
+          </p>
+        </div>
+      </details>
+    </div>
   </section>
 
   <section id="science">
@@ -834,6 +984,14 @@
         The trial behind cyclic sighing is randomised but small and was run remotely. As with the beats, read
         the strength bars as a summary of the literature, not a promise about your session.
       </p>
+      <p>
+        With a heart-rate sensor connected, the guide shows how far your heart rate rises and falls within each
+        breath. That peak-to-trough swing is one of the standard criteria for finding a person's resonance rate,
+        which in adults usually lies between 4.5 and 6.5 breaths a minute. The resonance test follows the steps of
+        the published assessment protocol, two minutes at each pace from 6.5 down to 4.5, but it skips the rest
+        periods between steps and judges by the swing alone, without the phase and spectral criteria a clinician
+        would also check (Shaffer &amp; Meehan, 2020). Treat its answer as a good starting pace, not a diagnosis.
+      </p>
 
       <h3>Frequency bands at a glance</h3>
       <div class="tbl-scroll">
@@ -884,6 +1042,7 @@
       <li>Balban, M. Y., Neri, E., Kogon, M. M., et al. (2023). Brief structured respiration practices enhance mood and reduce physiological arousal. <em>Cell Reports Medicine</em>, 4(1), 100895. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9873947/" rel="noopener">PMC</a></li>
       <li>Fincham, G. W., Strauss, C., Montero-Marin, J., &amp; Cavanagh, K. (2023). Effect of breathwork on stress and mental health: a meta-analysis of randomised-controlled trials. <em>Scientific Reports</em>, 13, 432. <a href="https://www.nature.com/articles/s41598-022-27247-y" rel="noopener">Nature</a></li>
       <li>Van Diest, I., Verstappen, K., Aubert, A. E., et al. (2014). Inhalation/exhalation ratio modulates the effect of slow breathing on heart rate variability and relaxation. <em>Applied Psychophysiology and Biofeedback</em>, 39(3–4), 171–180. <a href="https://doi.org/10.1007/s10484-014-9253-x" rel="noopener">DOI</a></li>
+      <li>Shaffer, F., &amp; Meehan, Z. M. (2020). A practical guide to resonance frequency assessment for heart rate variability biofeedback. <em>Frontiers in Neuroscience</em>, 14, 570400. <a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2020.570400/full" rel="noopener">Frontiers</a></li>
       <li>Vierra, J., Boonla, O., &amp; Prasertsri, P. (2022). Effects of sleep deprivation and 4-7-8 breathing control on heart rate variability, blood pressure, blood glucose, and endothelial function in healthy young adults. <em>Physiological Reports</em>, 10, e15389. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9277512/" rel="noopener">PMC</a></li>
     </ol>
   </section>
@@ -996,6 +1155,7 @@
         <span class="ear">L <b id="pL">—</b></span>
         <span class="ear">R <b id="pR">—</b></span>
         <span class="ear beat">beat <b id="pBeat">—</b></span>
+        <span class="ear ear-hr" id="pHrChip" title="Heart rate now, and the change since the first minute of this session" hidden>HR <b id="pHr">—</b></span>
       </div>
     </div>
 
@@ -2068,7 +2228,7 @@
 
   var B_VIS_HINT = {
     circle: "The circle grows as you breathe in and shrinks as you breathe out. The outer arc fills as each phase runs.",
-    wave: "Your breath as a wave scrolling past the marker. Equal in and out with no holds is a pure sine; holds are the flat stretches. What comes next is labelled along the bottom.",
+    wave: "Your breath as a wave scrolling past the marker. Equal in and out with no holds is a pure sine; holds are the flat stretches. What comes next is labelled along the bottom. With a heart sensor connected, your heart rate is drawn over it in pink.",
     box: "Trace the square: up on the in-breath, across the top on the hold, down on the out-breath, back along the bottom.",
     dial: "One lap of the dial is one breath, divided by phase. The centre swells with each in-breath.",
     column: "The column fills like your lungs and drains as you breathe out."
@@ -2101,7 +2261,10 @@
     ph: null, pending: null,  // phases in use, and an edit waiting for the next breath
     epoch: 0, done: 0, total: 0,
     raf: 0, tick: 0, key: "", segOn: -1, schedTo: 0,
-    voice: null, bus: null, lock: null, doneMsg: ""
+    voice: null, bus: null, lock: null, doneMsg: "", doneCount: 0, doneSecs: 0,
+    hr: [],                   // heart samples this session: {bt, hr, n (breath index), cyc}
+    swings: [], hrDone: 0,    // per-breath heart-rate swing, and the next breath to score
+    finder: null              // the resonance test, while it runs
   };
 
   function bNow() { return (window.performance && performance.now ? performance.now() : Date.now()) / 1000; }
@@ -2113,7 +2276,15 @@
     for (var i = 0; i < BREATHS.length; i++) if (BREATHS[i].id === id) return BREATHS[i];
     return null;
   }
-  function saveBreath() { store.set("breath", JSON.stringify(BC)); }
+  /* During the resonance test BC holds the test's timings; save the viewer's own. */
+  function saveBreath() {
+    var c = BC;
+    if (B.finder) {
+      c = B.finder.saved;
+      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue;
+    }
+    store.set("breath", JSON.stringify(c));
+  }
 
   function buildPhases(c) {
     var list = [];
@@ -2290,15 +2461,16 @@
 
     var tot = B.total, cur;
     if (st === "idle") cur = 0;
-    else if (st === "done") cur = tot;
+    else if (st === "done") cur = B.doneCount;
     else cur = L ? L.count + 1 : 0;
     if (tot && cur > tot) cur = tot;
     bSetT("#bCount", String(cur));
-    bSetT("#bOf", tot ? " / " + tot : "");
+    bSetT("#bOf", (tot && st !== "done") ? " / " + tot : "");
 
     var clock, lab;
-    if (!BC.minutes) { clock = st === "idle" ? 0 : Math.max(0, bt); lab = "elapsed"; }
-    else { clock = st === "done" ? 0 : endBt() - (st === "idle" ? 0 : Math.max(0, bt)); lab = "left"; }
+    if (st === "done") { clock = B.doneSecs; lab = "total"; }
+    else if (!BC.minutes || B.finder) { clock = st === "idle" ? 0 : Math.max(0, bt); lab = "elapsed"; }
+    else { clock = endBt() - (st === "idle" ? 0 : Math.max(0, bt)); lab = "left"; }
     bSetT("#bClock", fmt(Math.max(0, clock)));
     bSetT("#bClockL", lab);
 
@@ -2311,8 +2483,10 @@
   function bFresh() {
     B.ph = buildPhases(BC); B.pending = null; B.epoch = 0; B.done = 0; planTotal();
     B.st = 0; B.key = ""; B.schedTo = -B_LEAD;
+    B.hr = []; B.swings = []; B.hrDone = 0;
     renderLine();
     bSetT("#bMsg", "");
+    drawSwings(); hrTiles();
   }
   function bToggle() {
     if (B.state === "running") bPause();
@@ -2346,12 +2520,18 @@
     cancelAnimationFrame(B.raf);
     cueOff();
     releaseLock();
+    if (B.state !== "idle" && B.state !== "done") {
+      var bt = breathTime();
+      if (bt >= 0) hrFinalize(locate(bt).count);
+      hrSummary();
+    }
+    if (B.finder) finderCancel();
     B.state = "idle";
     bFresh();
-    syncTransport(); updateHead(); draw();
+    syncTransport(); updateHead(); draw(); finderUI();
   }
-  function bFinish() {
-    var secs = endBt(), n = B.total;
+  /* Shared ending for a timed session and the resonance test. */
+  function bEnd(count, secs, msg) {
     clearInterval(B.tick);
     cancelAnimationFrame(B.raf);
     cueOff();
@@ -2360,9 +2540,17 @@
       chime(B_CHIME.out, t, 0.2);
       chime(B_CHIME.sip, t + 0.42, 0.16);
     }
+    hrFinalize(count);
+    hrSummary();
     B.state = "done";
-    B.doneMsg = n + " breaths in " + fmt(secs) + ". Breathe normally for a minute before you get up.";
+    B.doneCount = count;
+    B.doneSecs = secs;
+    B.doneMsg = msg;
     releaseLock();
+  }
+  function bFinish() {
+    var secs = endBt(), n = B.total;
+    bEnd(n, secs, n + " breaths in " + fmt(secs) + ". Breathe normally for a minute before you get up.");
     syncTransport(); updateHead(); draw();
     bSetT("#bLive", "Session complete.");
   }
@@ -2370,9 +2558,13 @@
     if (B.state !== "running") return;
     var bt = breathTime();
     if (bt >= 0 && B.total && bt >= endBt()) { bFinish(); return; }
-    if (bt >= 0) commitPending(bt);
+    if (bt >= 0) {
+      commitPending(bt);
+      hrFinalize(locate(bt).count);
+    }
     bSchedule(bt);
     updateHead();
+    if (B.finder) finderTick(bt);
   }
   function bLoop() {
     if (B.state !== "running") return;
@@ -2528,7 +2720,7 @@
 
   function readColors() {
     var cs = getComputedStyle(document.documentElement);
-    ["text", "text-dim", "text-faint", "line", "bg", "b-in", "b-sip", "b-hold", "b-out"].forEach(function (k) {
+    ["text", "text-dim", "text-faint", "line", "bg", "b-in", "b-sip", "b-hold", "b-out", "hr"].forEach(function (k) {
       BCOL[k] = cs.getPropertyValue("--" + k).trim() || "#888888";
     });
   }
@@ -2725,8 +2917,9 @@
   }
   BVIS.wave = function (S) {
     var gx = 54, xr = CW - 10, top = 34, bot = CH - 48, bt = S.bt;
-    var win = Math.min(40, Math.max(12, S.ph.cycle * 1.8));
-    var pps = (xr - gx) / win, nowX = Math.round(gx + (xr - gx) * 0.3);
+    // with a heart sensor, show more of what has happened so its response is visible
+    var hrOn = S.live && B.hr.length > 1, win = Math.min(40, Math.max(hrOn ? 22 : 12, S.ph.cycle * (hrOn ? 2.6 : 1.8)));
+    var pps = (xr - gx) / win, nowX = Math.round(gx + (xr - gx) * (hrOn ? 0.66 : 0.3));
     var Y = function (l) { return bot - l * (bot - top); };
     var X = function (t) { return nowX + (t - bt) * pps; };
     var x;
@@ -2775,7 +2968,34 @@
     d2.fill();
     waveRun(nowX, xr, bt, nowX, pps, Y, 0.35, 2);     // what is coming
     waveRun(gx, nowX, bt, nowX, pps, Y, 1, 3);        // what you have breathed
+
+    // heart rate over the same time axis, on its own scale fitted to the window
+    var hrVis = S.live ? B.hr.filter(function (s) { return s.bt >= t0 - 2 && s.bt <= bt; }) : [];
+    var hrLo = 0, hrHi = 0;
+    if (hrVis.length > 1) {
+      var mn = Infinity, mx = -Infinity;
+      hrVis.forEach(function (s) { if (s.hr < mn) mn = s.hr; if (s.hr > mx) mx = s.hr; });
+      var mid = (mn + mx) / 2, half = Math.max(5, (mx - mn) / 2 + 2);
+      hrLo = mid - half; hrHi = mid + half;
+      var YH = function (h) { return bot - (h - hrLo) / (hrHi - hrLo) * (bot - top); };
+      d2.lineWidth = 2;
+      d2.lineJoin = "round";
+      d2.strokeStyle = rgba(BCOL.hr, 0.9);
+      d2.beginPath();
+      var prev = null;
+      hrVis.forEach(function (s) {
+        var hx = X(s.bt), hy = YH(s.hr);
+        if (!prev || s.bt - prev.bt > 4) d2.moveTo(hx, hy); else d2.lineTo(hx, hy);
+        prev = s;
+      });
+      d2.stroke();
+    }
     d2.restore();
+    if (hrVis.length > 1) {
+      label(Math.round(hrHi) + " bpm", gx - 10, Y(1) + 16, rgba(BCOL.hr, 0.9), "right", "middle", 10.5);
+      label(Math.round(hrLo) + " bpm", gx - 10, Y(0) - 16, rgba(BCOL.hr, 0.9), "right", "middle", 10.5);
+      label("Heart rate", xr, 14, rgba(BCOL.hr, 0.9), "right", "middle", 11);
+    }
 
     d2.lineWidth = 1;
     d2.strokeStyle = rgba(BCOL.text, 0.16);
@@ -2957,6 +3177,544 @@
     }
   };
 
+  /* ------------------------- live heart data -------------------------
+     Any sensor that speaks the standard Bluetooth Heart Rate Service
+     (0x180D) works: a Garmin watch set to Broadcast Heart Rate, an ear-clip
+     sensor or a chest strap. Each notification carries a heart rate and,
+     from beat-to-beat sensors, zero or more RR intervals in 1/1024 s.
+     Watches send heart rate only, so RMSSD lights up only when RR arrives.
+
+     The biofeedback measure is the heart-rate swing within each breath
+     (peak minus trough), one of the standard criteria for finding a
+     person's resonance breathing rate (Shaffer & Meehan 2020). Taking the
+     max-min over a whole breath makes it insensitive to the few seconds of
+     smoothing lag in a watch's optical heart rate.
+  -------------------------------------------------------------------- */
+
+  var H = {
+    dev: null, chr: null, state: "off", name: "", wantOn: false, tries: 0,
+    hr: 0, lastAt: 0, hasRR: false, contact: null,
+    beats: [],                 // {t, rr}: beat-to-beat intervals from the last 5 minutes
+    pulseT: 0, tickT: 0, find: null
+  };
+  var FIND_RATES = [6.5, 6, 5.5, 5, 4.5], FIND_STEP = 120;
+
+  function avg(a) { var s = 0; for (var i = 0; i < a.length; i++) s += a[i]; return a.length ? s / a.length : 0; }
+  function hrSupported() { return !!(navigator.bluetooth && navigator.bluetooth.requestDevice); }
+  function hrLive() { return H.state === "on" && H.hr > 0 && bNow() - H.lastAt < 5; }
+
+  function hrSetState(st, pill) {
+    H.state = st;
+    $("#hr").dataset.state = st;
+    bSetT("#hrPillTxt", pill);
+    bSetT("#hrConnect", (st === "on" || st === "lost") ? "Disconnect" : st === "busy" ? "Connecting…" : "Connect sensor");
+    $("#hrConnect").disabled = st === "busy" || !hrSupported();
+    $("#hrAny").hidden = st === "on" || st === "lost" || !hrSupported();
+    finderUI();
+    hrTiles();
+  }
+  function hrMsg(s) { bSetT("#hrMsg", s || ""); }
+
+  /* `any` opens the browser's chooser on every nearby device, for sensors
+     that offer the heart-rate service but don't advertise it. */
+  function hrConnect(any) {
+    if (H.state === "on" || H.state === "lost") { hrDisconnect(); return; }
+    if (!hrSupported()) return;
+    hrMsg("");
+    hrSetState("busy", "Choose your sensor…");
+    var opts = any === true
+      ? { acceptAllDevices: true, optionalServices: ["heart_rate"] }
+      : { filters: [{ services: ["heart_rate"] }] };
+    var req;
+    try { req = navigator.bluetooth.requestDevice(opts); } catch (e) { hrFail(e); return; }
+    req.then(function (dev) {
+      if (H.dev && H.dev !== dev) H.dev.removeEventListener("gattserverdisconnected", hrLost);
+      H.dev = dev;
+      H.name = dev.name || "Heart-rate sensor";
+      H.wantOn = true;
+      H.tries = 0;
+      H.hasRR = false;
+      H.beats = [];
+      dev.removeEventListener("gattserverdisconnected", hrLost);
+      dev.addEventListener("gattserverdisconnected", hrLost);
+      return hrAttach();
+    }).catch(hrFail);
+  }
+  function hrAttach() {
+    hrSetState("busy", "Connecting to " + H.name + "…");
+    return H.dev.gatt.connect()
+      .then(function (srv) { return srv.getPrimaryService("heart_rate"); })
+      .then(function (svc) { return svc.getCharacteristic("heart_rate_measurement"); })
+      .then(function (chr) {
+        if (H.chr) H.chr.removeEventListener("characteristicvaluechanged", hrOnValue);
+        H.chr = chr;
+        chr.addEventListener("characteristicvaluechanged", hrOnValue);
+        return chr.startNotifications();
+      })
+      .then(function () {
+        H.tries = 0;
+        hrMsg("");
+        bSetT("#hrTitle", H.name);
+        hrSetState("on", "Connected");
+        clearInterval(H.tickT);
+        H.tickT = setInterval(hrTiles, 1000);
+        hrPulse();
+      });
+  }
+  function hrFail(e) {
+    var n = e && e.name;
+    H.wantOn = false;
+    try { if (H.dev && H.dev.gatt.connected) H.dev.gatt.disconnect(); } catch (x) {}
+    hrSetState("off", "Not connected");
+    if (n === "NotFoundError" && H.dev && /service/i.test(e.message || "")) {
+      hrMsg(H.name + " doesn't offer the standard heart-rate service, so this page can't read it.");
+    } else if (n === "NotFoundError") {
+      hrMsg("No sensor was picked. A Garmin watch only shows up while Broadcast Heart Rate is on; other sensors need to be awake and not connected to another app.");
+    } else if (n === "SecurityError" || n === "NotAllowedError") {
+      hrMsg("This copy of the page isn't allowed to use Bluetooth. Open the page at its own web address in Chrome or Edge and connect from there.");
+    } else {
+      hrMsg("The sensor didn't answer. Check that it is on, broadcasting and close by, then try again.");
+    }
+  }
+  function hrLost() {
+    if (!H.wantOn) return;
+    if (H.tries >= 5) {
+      H.wantOn = false;
+      hrSetState("off", "Not connected");
+      hrMsg("Lost the connection to " + H.name + ". Press Connect sensor to try again.");
+      return;
+    }
+    H.tries++;
+    hrSetState("lost", "Reconnecting…");
+    setTimeout(function () {
+      if (!H.wantOn || !H.dev) return;
+      hrAttach().catch(function () { hrLost(); });
+    }, 1500 * H.tries);
+  }
+  function hrDisconnect() {
+    H.wantOn = false;
+    clearInterval(H.tickT);
+    clearTimeout(H.pulseT);
+    try { if (H.chr) H.chr.removeEventListener("characteristicvaluechanged", hrOnValue); } catch (e) {}
+    try { if (H.dev && H.dev.gatt.connected) H.dev.gatt.disconnect(); } catch (e) {}
+    H.chr = null;
+    H.hr = 0;
+    bSetT("#hrTitle", "Pair a heart-rate sensor");
+    hrSetState("off", "Not connected");
+  }
+
+  /* Heart Rate Measurement characteristic (0x2A37): flags, then 8- or 16-bit
+     heart rate, optional energy expended, optional RR intervals. */
+  function hrParse(dv) {
+    var flags = dv.getUint8(0), i = 1, hr, rr = [];
+    if (flags & 1) { hr = dv.getUint16(i, true); i += 2; } else { hr = dv.getUint8(i); i += 1; }
+    if (flags & 8) i += 2;
+    if (flags & 16) for (; i + 1 < dv.byteLength; i += 2) rr.push(dv.getUint16(i, true) * 1000 / 1024);
+    return { hr: hr, rr: rr, contact: (flags & 4) ? !!(flags & 2) : null };
+  }
+  function hrOnValue(e) {
+    var p, now = bNow();
+    try { p = hrParse(e.target.value); } catch (err) { return; }
+    H.contact = p.contact;
+    if (p.contact === false || !(p.hr > 25 && p.hr < 240)) { hrTiles(); return; }
+    H.hr = p.hr;
+    H.lastAt = now;
+    var series = [];
+    if (p.rr.length) {
+      // the last interval in a notification ends at about "now"; walk back from there
+      H.hasRR = true;
+      var t = now, beats = [];
+      for (var j = p.rr.length - 1; j >= 0; j--) { beats.unshift({ t: t, rr: p.rr[j] }); t -= p.rr[j] / 1000; }
+      beats.forEach(function (b) {
+        if (b.rr < 300 || b.rr > 2000) return;          // outside 30-200 bpm: a dropout, not a beat
+        H.beats.push(b);
+        series.push({ t: b.t, hr: 60000 / b.rr });
+      });
+      while (H.beats.length && H.beats[0].t < now - 300) H.beats.shift();
+    } else {
+      series.push({ t: now, hr: p.hr });
+    }
+    series.forEach(hrRecord);
+    hrTiles();
+  }
+  function hrRecord(pt) {
+    var now = bNow();
+    if (B.state === "running") {
+      var bt = breathTime() - (now - pt.t);
+      if (bt >= 0) {
+        var L = locate(bt);
+        B.hr.push({ bt: bt, hr: pt.hr, n: L.count, cyc: L.ph.cycle });
+      }
+    }
+    // a light log for binaural tracks: change since the first minute
+    if (A.playing && A.ctx) {
+      var el = A.ctx.currentTime - A.startedAt - (now - pt.t);
+      if (!A.hrLog || A.hrLogTrack !== A.track || el < (A.hrLogLast || 0) - 3) { A.hrLog = []; A.hrLogTrack = A.track; }
+      A.hrLog.push({ t: el, hr: pt.hr });
+      A.hrLogLast = el;
+    }
+  }
+
+  /* RMSSD over a window, skipping pairs that jump more than 25% (artefacts
+     or ectopic beats). Needs at least 20 clean pairs. */
+  function rmssd(t0, t1) {
+    var b = H.beats.filter(function (x) { return x.t >= t0 && x.t <= t1; }), sq = [];
+    for (var i = 1; i < b.length; i++) {
+      var a = b[i - 1].rr, c = b[i].rr;
+      if (Math.abs(c - a) / a > 0.25) continue;
+      sq.push((c - a) * (c - a));
+    }
+    if (sq.length < 20) return null;
+    return { v: Math.sqrt(avg(sq)), n: b.length };
+  }
+
+  function hrPlayerText() {
+    var s = String(Math.round(H.hr)), log = A.hrLog, el = A.elapsed;
+    if (A.playing && log && log.length && el > 120) {
+      var first = log.filter(function (x) { return x.t < 60; }).map(function (x) { return x.hr; });
+      var last = log.filter(function (x) { return x.t > el - 30; }).map(function (x) { return x.hr; });
+      if (first.length > 5 && last.length > 3) {
+        var d = Math.round(avg(last) - avg(first));
+        s += " (" + (d > 0 ? "+" + d : d < 0 ? "−" + (-d) : "±0") + ")";
+      }
+    }
+    return s;
+  }
+
+  function hrTiles() {
+    var live = hrLive();
+    bSetT("#hrNow", live ? String(Math.round(H.hr)) : "—");
+    var sub;
+    if (H.state === "busy") sub = "Connecting…";
+    else if (H.state === "lost") sub = "Reconnecting…";
+    else if (H.state !== "on") sub = "Waiting for a sensor";
+    else if (H.contact === false) sub = "No skin contact";
+    else if (!live) sub = "No readings. Is the sensor broadcasting?";
+    else sub = H.hasRR ? "Beat to beat" : "Smoothed rate from the sensor";
+    bSetT("#hrNowS", sub);
+
+    var sw = B.swings, last = sw[sw.length - 1];
+    bSetT("#hrSwLast", last ? last.amp.toFixed(1) : "—");
+    bSetT("#hrSwAvg", sw.length ? avg(sw.map(function (s) { return s.amp; })).toFixed(1) : "—");
+    bSetT("#hrSwAvgS", sw.length ? "Average of " + sw.length + (sw.length === 1 ? " breath" : " breaths") : "Average across breaths");
+
+    var now = bNow(), r = H.state === "on" ? rmssd(now - 60, now) : null;
+    bSetT("#hrRmssd", r ? String(Math.round(r.v)) : "—");
+    bSetT("#hrRmssdS", r ? "From " + r.n + " beats" : (H.hasRR && H.state === "on") ? "Collecting beats…" : "Needs beat-to-beat data");
+
+    $("#bHrStat").hidden = !live;
+    bSetT("#bHr", live ? String(Math.round(H.hr)) : "—");
+    $("#pHrChip").hidden = !live;
+    if (live) bSetT("#pHr", hrPlayerText());
+  }
+
+  /* A dot that blinks at the current heart rate. */
+  function hrPulse() {
+    clearTimeout(H.pulseT);
+    if (H.state !== "on" && H.state !== "lost") return;
+    var live = hrLive();
+    if (live && !RM) {
+      var dots = document.querySelectorAll(".hr-dot");
+      for (var i = 0; i < dots.length; i++) {
+        if (dots[i].animate && dots[i].offsetParent !== null) {
+          dots[i].animate([{ opacity: 1, transform: "scale(1.45)" }, { opacity: 0.35, transform: "scale(1)" }],
+            { duration: 320, easing: "ease-out" });
+        }
+      }
+    }
+    H.pulseT = setTimeout(hrPulse, live ? 60000 / H.hr : 1000);
+  }
+
+  /* Score every finished breath below index `upTo`: max minus min heart rate
+     inside it, if the samples cover most of the breath. */
+  function hrFinalize(upTo) {
+    var changed = false;
+    while (B.hrDone < upTo) {
+      var n = B.hrDone, pts = B.hr.filter(function (s) { return s.n === n; });
+      B.hrDone++;
+      if (pts.length < 3 || pts[pts.length - 1].bt - pts[0].bt < pts[0].cyc * 0.6) continue;
+      var hi = -Infinity, lo = Infinity;
+      pts.forEach(function (s) { if (s.hr > hi) hi = s.hr; if (s.hr < lo) lo = s.hr; });
+      B.swings.push({ n: n, amp: hi - lo, cyc: pts[0].cyc });
+      changed = true;
+    }
+    if (changed) { drawSwings(); hrTiles(); if (B.finder) drawFind(); }
+  }
+
+  function hrSummary() {
+    var s = B.hr;
+    if (s.length < 10) return;
+    var end = s[s.length - 1].bt, parts = [];
+    var all = s.map(function (x) { return x.hr; });
+    if (end >= 150) {
+      var a = avg(s.filter(function (x) { return x.bt < 60; }).map(function (x) { return x.hr; }));
+      var b = avg(s.filter(function (x) { return x.bt > end - 60; }).map(function (x) { return x.hr; }));
+      parts.push("heart rate " + Math.round(a) + " bpm in the first minute and " + Math.round(b) + " in the last");
+    } else {
+      parts.push("heart rate averaged " + Math.round(avg(all)) + " bpm");
+    }
+    if (B.swings.length) {
+      parts.push("an average swing of " + avg(B.swings.map(function (x) { return x.amp; })).toFixed(1) +
+        " bpm over " + B.swings.length + " breaths");
+    }
+    var now = bNow(), r = H.hasRR ? rmssd(now - 60, now) : null;
+    if (r) parts.push("RMSSD " + Math.round(r.v) + " ms in the last minute");
+    var el = $("#hrSummary");
+    el.textContent = "Last session: " + parts.join(", ") + ".";
+    el.hidden = false;
+  }
+
+  /* ----- charts ----- */
+
+  function fitCanvas(cv) {
+    var c = cv.getContext && cv.getContext("2d"), r = cv.getBoundingClientRect();
+    if (!c || !r.width || !r.height) return null;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, r.width, r.height);
+    return { c: c, w: r.width, h: r.height };
+  }
+  function niceMax(v) { return Math.max(4, Math.ceil(v / 4) * 4); }
+
+  function drawSwings() {
+    var cv = $("#hrBars"), f = fitCanvas(cv), sw = B.swings;
+    $("#hrBarsEmpty").hidden = sw.length > 0;
+    if (!f || !sw.length) return;
+    var c = f.c, W = f.w, Hh = f.h, padL = 30, padT = 8, padB = 6, ph = Hh - padT - padB;
+    var n = Math.max(12, Math.floor((W - padL) / 15)), shown = sw.slice(-n), max = 0;
+    shown.forEach(function (s) { if (s.amp > max) max = s.amp; });
+    max = niceMax(max);
+    c.font = "500 11px " + B_SANS;
+    c.textAlign = "right";
+    c.textBaseline = "middle";
+    c.lineWidth = 1;
+    [0, max / 2, max].forEach(function (v) {
+      var y = Math.round(padT + ph - v / max * ph) + 0.5;
+      c.strokeStyle = BCOL.line;
+      c.beginPath(); c.moveTo(padL, y); c.lineTo(W, y); c.stroke();
+      c.fillStyle = BCOL["text-faint"];
+      c.fillText(String(v), padL - 7, y);
+    });
+    var slot = (W - padL) / n, bw = Math.max(3, Math.min(14, slot * 0.62));
+    shown.forEach(function (s, i) {
+      var h = Math.max(1.5, s.amp / max * ph), x = padL + slot * i + (slot - bw) / 2;
+      c.fillStyle = rgba(BCOL.hr, i === shown.length - 1 ? 0.95 : 0.5);
+      c.fillRect(x, padT + ph - h, bw, h);
+    });
+  }
+
+  function nearestRate(r) {
+    var best = FIND_RATES[0];
+    FIND_RATES.forEach(function (x) { if (Math.abs(x - r) < Math.abs(best - r)) best = x; });
+    return best;
+  }
+  /* Mean swing at each test pace. The first breath at each pace is left out:
+     heart rate is still settling from the previous one. */
+  function findResults() {
+    return FIND_RATES.map(function (rate) {
+      var amps = B.swings.filter(function (s) { return nearestRate(60 / s.cyc) === rate; })
+        .map(function (s) { return s.amp; }).slice(1);
+      return { rate: rate, amp: amps.length ? avg(amps) : null, n: amps.length };
+    });
+  }
+
+  function drawFind() {
+    var f = fitCanvas($("#hrFind"));
+    if (!f) return;
+    var res = B.finder ? findResults() : (H.find ? H.find.res : null);
+    var c = f.c, W = f.w, Hh = f.h, padT = 20, padB = 22, ph = Hh - padT - padB, max = 0, best = null;
+    (res || []).forEach(function (r) {
+      if (r.amp !== null && r.amp > max) max = r.amp;
+      if (r.amp !== null && (!best || r.amp > best.amp)) best = r;
+    });
+    max = niceMax(max);
+    var slot = W / FIND_RATES.length, bw = Math.min(46, slot * 0.56);
+    c.strokeStyle = BCOL.line;
+    c.lineWidth = 1;
+    c.beginPath(); c.moveTo(0, padT + ph + 0.5); c.lineTo(W, padT + ph + 0.5); c.stroke();
+    FIND_RATES.forEach(function (rate, i) {
+      var r = res ? res[i] : null, x = slot * i + (slot - bw) / 2, cx = slot * i + slot / 2;
+      var cur = B.finder && B.finder.idx === i;
+      if (r && r.amp !== null) {
+        var h = Math.max(2, r.amp / max * ph), isBest = !B.finder && best && r.rate === best.rate;
+        c.fillStyle = rgba(BCOL.hr, isBest ? 0.95 : 0.42);
+        c.fillRect(x, padT + ph - h, bw, h);
+        c.font = (isBest ? "700 " : "600 ") + "12px " + B_SANS;
+        c.fillStyle = isBest ? BCOL.text : BCOL["text-dim"];
+        c.textAlign = "center"; c.textBaseline = "bottom";
+        c.fillText(r.amp.toFixed(1), cx, padT + ph - h - 4);
+      } else {
+        c.setLineDash([3, 4]);
+        c.strokeStyle = rgba(BCOL["text-faint"], 0.5);
+        c.strokeRect(x + 0.5, padT + ph - 18.5, bw - 1, 18);
+        c.setLineDash([]);
+      }
+      var lab = rate + (i === FIND_RATES.length - 1 ? " /min" : "");
+      c.font = (cur ? "700 " : "600 ") + "11.5px " + B_SANS;
+      c.fillStyle = cur ? BCOL.text : BCOL["text-faint"];
+      c.textAlign = "center"; c.textBaseline = "top";
+      c.fillText(lab, cx, padT + ph + 5);
+      if (cur) {                                           // the pace being tested now
+        c.fillStyle = BCOL.hr;
+        c.fillRect(cx - 9, padT + ph + 19, 18, 2);
+      }
+    });
+  }
+
+  /* ----- resonance test ----- */
+
+  function findTimings(rate) {
+    var cyc = 60 / rate, inh = Math.round(cyc * 0.4 * 10) / 10;   // 40:60 in:out, as the protocol recommends a longer exhale
+    return { inh: inh, sip: 0, hold: 0, exh: Math.round((cyc - inh) * 10) / 10, rest: 0 };
+  }
+  function setTimings(t) { BC.inh = t.inh; BC.sip = t.sip; BC.hold = t.hold; BC.exh = t.exh; BC.rest = t.rest; }
+  function syncBreathControls() {
+    checkRadio("bpat", BC.pattern); checkRadio("blen", String(BC.minutes));
+    syncChips("#bPats"); syncChips("#bLen");
+    syncFields(); syncRate(); renderNote(); syncVisHint();
+  }
+
+  function finderStart() {
+    if (H.state !== "on" || B.finder) return;
+    var saved = {};
+    Object.keys(BC).forEach(function (k) { saved[k] = BC[k]; });
+    bStop();
+    B.finder = { saved: saved, idx: 0, stepAt: 0 };
+    setTimings(findTimings(FIND_RATES[0]));
+    BC.pattern = "custom";
+    BC.minutes = 0;
+    syncBreathControls();
+    bSetT("#bDesc", "Resonance test running. Follow the guide; the pace slows a little every two minutes. Sit still and breathe gently, not deeply.");
+    bFresh();
+    bResume();
+    finderUI(0);
+    drawFind();
+    try { $("#bStage").scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "start" }); } catch (e) {}
+  }
+  function finderTick(bt) {
+    var F = B.finder;
+    if (!F || bt < 0) return;
+    if (bt - F.stepAt >= FIND_STEP) {
+      if (F.idx >= FIND_RATES.length - 1) { finderFinish(); return; }
+      F.idx++;
+      F.stepAt = bt;
+      setTimings(findTimings(FIND_RATES[F.idx]));
+      syncFields(); syncRate();
+      applyTimings();
+      bSetT("#bMsg", "Slowing to " + FIND_RATES[F.idx] + " breaths a minute from the next breath.");
+      drawFind();
+    }
+    finderUI(bt);
+  }
+  function finderRestore(F) {
+    Object.keys(F.saved).forEach(function (k) { BC[k] = F.saved[k]; });
+    syncBreathControls();
+  }
+  /* Stop the test and put the viewer's own settings back. Callers decide
+     what happens to the session itself. */
+  function finderCancel() {
+    var F = B.finder;
+    if (!F) return;
+    B.finder = null;
+    finderRestore(F);
+    bSetT("#bMsg", "Resonance test stopped.");
+    finderUI();
+    drawFind();
+  }
+  function finderFinish() {
+    var F = B.finder, bt = breathTime(), L = locate(bt);
+    bEnd(L.count, Math.max(0, bt), "Resonance test complete. Your results are under the guide.");
+    var res = findResults(), best = null;
+    res.forEach(function (r) { if (r.amp !== null && (!best || r.amp > best.amp)) best = r; });
+    H.find = { at: Date.now(), res: res, best: best ? best.rate : null, rr: H.hasRR };
+    store.set("resonance", JSON.stringify(H.find));
+    B.finder = null;
+    finderRestore(F);
+    B.ph = buildPhases(BC); B.pending = null; B.epoch = 0; B.done = 0; planTotal();
+    renderLine();
+    bSetT("#bMsg", "");
+    syncTransport(); updateHead(); draw();
+    finderUI(); drawFind();
+    bSetT("#bLive", "Resonance test complete.");
+  }
+  function useBest() {
+    if (!H.find || !H.find.best) return;
+    if (B.finder) finderCancel();
+    setTimings(findTimings(H.find.best));
+    BC.pattern = matchPreset();
+    syncBreathControls();
+    applyTimings();
+    saveBreath();
+    bSetT("#bMsg", "Set to " + H.find.best + " breaths a minute, your resonance test result.");
+    try { $("#bStage").scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "start" }); } catch (e) {}
+  }
+  function finderUI(bt) {
+    var F = B.finder, btn = $("#hrFindStart"), use = $("#hrFindUse");
+    if (F) {
+      bSetT("#hrFindStart", "Stop test");
+      btn.disabled = false;
+      use.hidden = true;
+      var left = Math.max(0, FIND_STEP - Math.max(0, (typeof bt === "number" ? bt : breathTime()) - F.stepAt));
+      bSetT("#hrFindWhen", "Pace " + (F.idx + 1) + " of " + FIND_RATES.length + " · " + FIND_RATES[F.idx] + " /min · " + fmt(left) + " left");
+      return;
+    }
+    bSetT("#hrFindStart", H.find ? "Run the test again" : "Start resonance test");
+    btn.disabled = H.state !== "on";
+    var when = H.state !== "on" ? "Connect a sensor first" : "";
+    if (H.find) {
+      var d = new Date(H.find.at);
+      when = "Last run " + d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+    }
+    bSetT("#hrFindWhen", when);
+    if (H.find && H.find.best) {
+      var lo = null;
+      H.find.res.forEach(function (r) { if (r.amp !== null && (lo === null || r.amp < lo)) lo = r.amp; });
+      var top = H.find.res.filter(function (r) { return r.rate === H.find.best; })[0];
+      bSetT("#hrFindTxt", "Biggest swing at " + H.find.best + " breaths a minute: " + top.amp.toFixed(1) +
+        " bpm, against " + lo.toFixed(1) + " at the smallest. Differences under about 1 bpm are within noise, so if two paces are close, pick the one that feels easier.");
+      use.hidden = false;
+      bSetT("#hrFindUse", "Breathe at " + H.find.best + " /min");
+    } else if (H.find) {
+      bSetT("#hrFindTxt", "There wasn't enough heart-rate data to compare paces. Check that the sensor stays connected for the whole test and run it again.");
+      use.hidden = true;
+    } else {
+      use.hidden = true;
+    }
+  }
+
+  function hrInit() {
+    try {
+      var f = JSON.parse(store.get("resonance") || "null");
+      if (f && f.res && f.res.length === FIND_RATES.length && f.at) H.find = f;
+    } catch (e) {}
+    if (!hrSupported()) {
+      hrSetState("off", "Bluetooth unavailable");
+      hrMsg("This browser can't reach Bluetooth sensors. Use Chrome or Edge on a computer or an Android phone; Safari, iPhone browsers and Firefox don't support it.");
+    } else {
+      hrSetState("off", "Not connected");
+      try {
+        if (navigator.bluetooth.getAvailability) {
+          navigator.bluetooth.getAvailability().then(function (ok) {
+            if (!ok) hrMsg("Bluetooth looks switched off or missing on this device.");
+          }).catch(function () {});
+        }
+      } catch (e) {}
+    }
+    $("#hrConnect").addEventListener("click", function () { hrConnect(false); });
+    $("#hrAny").addEventListener("click", function () { hrConnect(true); });
+    $("#hrFindStart").addEventListener("click", function () { if (B.finder) bStop(); else finderStart(); });
+    $("#hrFindUse").addEventListener("click", useBest);
+    var redraw = function () { drawSwings(); drawFind(); };
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(redraw);
+      ro.observe($("#hrBars")); ro.observe($("#hrFind"));
+    } else window.addEventListener("resize", redraw);
+    finderUI(); redraw(); hrTiles();
+    window.addEventListener("pagehide", function () { if (H.state === "on") hrDisconnect(); });
+  }
+
   function initBreath() {
     try {
       var saved = JSON.parse(store.get("breath") || "null");
@@ -2988,6 +3746,8 @@
     syncFields(); syncRate(); renderNote(); syncVisHint(); renderLine(); syncTransport(); updateHead();
 
     $("#bPats").addEventListener("change", function (e) {
+      if (B.finder) finderCancel();
+      checkRadio("bpat", e.target.value);
       syncChips("#bPats");
       BC.pattern = e.target.value;
       var p = preset(BC.pattern);
@@ -2999,7 +3759,9 @@
     });
     B_FIELDS.forEach(function (f) {
       $(f.id).addEventListener("input", function () {
-        BC[f.k] = parseFloat(this.value);
+        var v = parseFloat(this.value);
+        if (B.finder) finderCancel();
+        BC[f.k] = v;
         var id = matchPreset();
         if (id !== BC.pattern) { BC.pattern = id; checkRadio("bpat", id); syncChips("#bPats"); }
         syncFields(); renderNote(); syncVisHint(); applyTimings(); saveBreath();
@@ -3010,6 +3772,8 @@
       syncChips("#bVis"); syncVisHint(); draw(); saveBreath();
     });
     $("#bLen").addEventListener("change", function (e) {
+      if (B.finder) finderCancel();
+      checkRadio("blen", e.target.value);
       BC.minutes = parseInt(e.target.value, 10);
       syncChips("#bLen");
       if (B.state === "running" || B.state === "paused") normalize(breathTime());
@@ -3069,6 +3833,7 @@
   syncBuilder();
   syncPrime();
   initBreath();
+  hrInit();
   window.addEventListener("pagehide", function () {
     if (A.playing) hardStop(true);
     if (B.state === "running") bPause();
