@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Entrain — Evidence-Based Binaural Beats</title>
-<meta name="description" content="A single-page binaural beat generator built on published research: delta and theta tracks for relaxation and sleep, beta and gamma tracks for attention and stimulation.">
+<meta name="description" content="A single-page binaural beat generator built on published research: delta and theta tracks for relaxation and sleep, beta and gamma tracks for attention and stimulation, plus a customisable paced-breathing guide.">
 <style>
   :root{
     --bg:#0a0e1a;
@@ -23,10 +23,16 @@
     --stim-deep:#f59e0b;
     --accent:#818cf8;
     --danger:#fb7185;
+    /* breathing guide: one hue per phase */
+    --b-in:#5eead4;
+    --b-sip:#a7f3d0;
+    --b-hold:#f5d38b;
+    --b-out:#a78bfa;
     --radius:14px;
     --radius-sm:9px;
     --shadow:0 18px 40px -18px rgba(0,0,0,.75);
     --maxw:1080px;
+    color-scheme:dark;
   }
   *{box-sizing:border-box}
   [hidden]{display:none!important}   /* author display rules must not defeat the attribute */
@@ -42,7 +48,11 @@
     padding-bottom:230px;
     min-height:100vh;
   }
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+  .wrap{
+    max-width:var(--maxw);margin:0 auto;
+    padding-left:max(20px,env(safe-area-inset-left,0px));
+    padding-right:max(20px,env(safe-area-inset-right,0px));
+  }
   a{color:var(--relax);text-decoration:none;border-bottom:1px solid rgba(94,234,212,.28)}
   a:hover{border-bottom-color:var(--relax)}
   h1,h2,h3{line-height:1.2;margin:0}
@@ -287,6 +297,113 @@
   }
   .cue[hidden]{display:none}
 
+  /* ---------- in-page nav ---------- */
+  .jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:24px;font-size:13.5px}
+  .jump a{color:var(--text-dim);border-bottom:1px solid transparent}
+  .jump a:hover{color:var(--text);border-bottom-color:var(--line)}
+
+  /* ---------- breathing guide ----------
+     Stage on the left (what you watch), controls on the right (what you set).
+     The stage's --bc follows the current phase, so the phase name, the
+     timeline and the canvas glow all share one colour. */
+  .breath{display:grid;gap:15px;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);align-items:start}
+  .b-stage,.b-controls{
+    background:linear-gradient(180deg,var(--panel),var(--bg-2));
+    border:1px solid var(--line);border-radius:var(--radius);min-width:0;
+  }
+  .b-stage{--bc:var(--text-faint);padding:20px;display:flex;flex-direction:column;gap:14px}
+  .b-stage[data-phase="in"]{--bc:var(--b-in)}
+  .b-stage[data-phase="sip"]{--bc:var(--b-sip)}
+  .b-stage[data-phase="hold"],.b-stage[data-phase="rest"]{--bc:var(--b-hold)}
+  .b-stage[data-phase="out"]{--bc:var(--b-out)}
+  .b-stage[data-phase="done"]{--bc:var(--relax)}
+  .b-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px 16px;flex-wrap:wrap}
+  .b-phase{min-width:0}
+  .b-phase-name{font-size:30px;font-weight:680;letter-spacing:-.025em;line-height:1.1;color:var(--bc);transition:color .45s}
+  .b-phase-hint{font-size:13.5px;color:var(--text-faint);margin-top:5px;min-height:1.65em}
+  .b-stats{display:flex;gap:7px;flex-wrap:wrap;font-size:12px;color:var(--text-dim)}
+  .b-stat{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:6px;padding:4px 9px;white-space:nowrap}
+  .b-stat b{color:var(--text);font-weight:620}
+  .b-view{
+    position:relative;height:330px;border-radius:var(--radius-sm);overflow:hidden;
+    border:1px solid var(--line-soft);
+    background:radial-gradient(70% 80% at 50% 50%,color-mix(in srgb,var(--bc) 7%,transparent),transparent 75%),var(--bg);
+  }
+  .b-view canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .b-line{position:relative;height:28px}
+  .b-segs{display:flex;gap:3px;height:100%}
+  .b-seg{
+    --sc:var(--b-in);flex:1 1 0;min-width:0;border-radius:6px;padding:0 4px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11.5px;font-weight:620;color:var(--sc);white-space:nowrap;overflow:hidden;text-overflow:clip;
+    background:color-mix(in srgb,var(--sc) 10%,transparent);
+    border:1px solid color-mix(in srgb,var(--sc) 24%,transparent);
+    transition:background .3s;
+  }
+  .b-seg[data-k="sip"]{--sc:var(--b-sip)}
+  .b-seg[data-k="hold"],.b-seg[data-k="rest"]{--sc:var(--b-hold)}
+  .b-seg[data-k="out"]{--sc:var(--b-out)}
+  .b-seg.on{background:color-mix(in srgb,var(--sc) 26%,transparent)}
+  .b-mark{
+    position:absolute;top:-4px;bottom:-4px;left:0;width:2px;margin-left:-1px;border-radius:2px;
+    background:var(--text);box-shadow:0 0 8px rgba(232,237,247,.55);will-change:transform;
+  }
+  .b-transport{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .b-transport .btn.primary{min-width:156px}
+  .b-transport .btn:disabled{opacity:.45;cursor:default}
+  .b-msg{font-size:12.5px;color:var(--text-faint);margin-left:auto}
+
+  .b-controls{padding:20px 22px;display:grid;gap:18px}
+  .b-note{
+    --c1:var(--b-in);
+    background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--radius-sm);
+    padding:12px 14px;font-size:13.5px;color:var(--text-dim);
+  }
+  .b-note p{margin:0}
+  .b-note details.ev{margin-top:10px;padding-top:10px}
+  .b-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px}
+  .b-fields .field label{margin-bottom:0}
+  .b-fields input[type=range]{margin:10px 0 4px}
+  .b-rate{
+    align-self:center;background:var(--panel-2);border:1px solid var(--line-soft);
+    border-radius:var(--radius-sm);padding:8px 12px;
+  }
+  .b-rate{font-variant-numeric:tabular-nums}
+  .b-rate b{display:block;font-size:16px;color:var(--text);font-weight:650;letter-spacing:-.01em}
+  .b-rate span{display:block;font-size:11.5px;color:var(--text-faint);margin-top:1px}
+  .chip svg{width:15px;height:15px;margin-right:7px;flex:none}
+  .b-vol{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text-faint);max-width:320px}
+  .b-vol span{white-space:nowrap}
+  .b-vol input[type=range]{margin:0}
+  .prime-row .hint{margin:0}
+  .b-safety{font-size:12.5px;color:var(--text-faint);margin:0;border-top:1px solid var(--line-soft);padding-top:14px}
+  .b-safety b{color:var(--text-dim);font-weight:600}
+
+  /* Focus view: the stage takes the whole screen (and real fullscreen when allowed) */
+  .b-stage.focus{
+    position:fixed;inset:0;z-index:90;border:0;border-radius:0;background:var(--bg);
+    padding-top:max(20px,env(safe-area-inset-top,0px));
+    padding-bottom:max(20px,env(safe-area-inset-bottom,0px));
+    padding-left:max(20px,env(safe-area-inset-left,0px));
+    padding-right:max(20px,env(safe-area-inset-right,0px));
+  }
+  .b-stage.focus .b-view{flex:1;height:auto;min-height:0}
+  .b-stage.focus .b-phase-name{font-size:clamp(30px,4.4vw,48px)}
+  body.b-lock{overflow:hidden}
+
+  @media (max-width:880px){
+    .breath{grid-template-columns:minmax(0,1fr)}
+  }
+  @media (max-width:520px){
+    .b-stage{padding:16px}
+    .b-controls{padding:16px}
+    .b-view{height:280px}
+    .b-phase-name{font-size:25px}
+    .b-transport .btn{flex:1 1 auto}
+    .b-msg{margin-left:0;flex-basis:100%}
+    .b-fields{gap:6px 14px}
+  }
+
   /* ---------- player ---------- */
   .player{
     position:fixed;left:0;right:0;bottom:0;z-index:50;
@@ -295,7 +412,11 @@
     transform:translateY(102%);transition:transform .3s cubic-bezier(.4,0,.2,1);
   }
   .player.open{transform:translateY(0)}
-  .player-inner{max-width:var(--maxw);margin:0 auto;padding:16px 20px 18px;display:grid;gap:16px;grid-template-columns:auto 1fr auto;align-items:center}
+  .player-inner{
+    max-width:var(--maxw);margin:0 auto;display:grid;gap:16px;grid-template-columns:auto 1fr auto;align-items:center;
+    padding-top:16px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));
+    padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));
+  }
 
   .orb{position:relative;width:62px;height:62px;flex:none}
   .orb svg{position:absolute;inset:0;transform:rotate(-90deg)}
@@ -308,6 +429,8 @@
   }
   .player.playing .orb-core{animation:breathe 6s ease-in-out infinite}
   @keyframes breathe{0%,100%{transform:scale(.82);opacity:.35}50%{transform:scale(1.06);opacity:.75}}
+  /* while the breathing guide runs, the orb follows the guide instead of its own 6 s loop */
+  .player.breath-sync .orb-core{animation:none}
 
   .p-meta{min-width:0}
   .p-name{font-size:15.5px;font-weight:620;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -347,7 +470,12 @@
   @media (max-width:760px){
     body{padding-bottom:320px}
     header{padding:36px 0 20px}
-    .player-inner{grid-template-columns:auto 1fr;padding:14px 16px 16px;gap:13px}
+    .player-inner{
+      grid-template-columns:auto 1fr;gap:13px;
+      padding-top:14px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));
+      padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+    }
+    .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
     .p-controls{grid-column:1/-1;justify-content:space-between}
     .vol{min-width:0;flex:1}
     .orb{width:52px;height:52px}
@@ -389,6 +517,13 @@
         <span><b>Not for everyone.</b> Avoid if you have epilepsy or a seizure disorder, wear a pacemaker, or are driving or operating machinery. This is not a medical device.</span>
       </div>
     </div>
+    <nav class="jump" aria-label="On this page">
+      <a href="#prime">Prime, then work</a>
+      <a href="#tracks">Tracks</a>
+      <a href="#builder">Build your own</a>
+      <a href="#breathe">Breathing guide</a>
+      <a href="#science">The research</a>
+    </nav>
   </header>
 
 
@@ -436,7 +571,7 @@
     </div>
   </section>
 
-  <div class="toolbar">
+  <div class="toolbar" id="tracks">
     <div class="tabs" role="tablist" aria-label="Filter tracks">
       <button class="tab" role="tab" aria-selected="true" data-filter="all">All tracks</button>
       <button class="tab" role="tab" aria-selected="false" data-filter="relax">Relaxation &amp; sleep</button>
@@ -478,6 +613,143 @@
       <div class="builder-foot">
         <button class="btn primary" id="cPlay">Play custom session</button>
         <div class="band-readout">Left ear <b id="cL">250 Hz</b> · Right ear <b id="cR">260 Hz</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="breathe">
+    <div class="sec-head">
+      <h2>Breathing guide</h2>
+      <p>
+        Slow breathing is the other well-studied route to the calm the relaxation tracks aim for, and it
+        runs on a much slower clock: six breaths a minute is a 0.1&nbsp;Hz rhythm. Pick a pattern, adjust
+        the timings, and follow whichever visual suits you. It runs on its own or alongside any track.
+      </p>
+    </div>
+
+    <div class="breath">
+      <div class="b-stage" id="bStage" data-phase="ready">
+        <div class="b-head">
+          <div class="b-phase">
+            <div class="b-phase-name" id="bPhase">Ready</div>
+            <div class="b-phase-hint" id="bHint">Press start, then follow the shape.</div>
+          </div>
+          <div class="b-stats mono">
+            <span class="b-stat">Breath <b id="bCount">0</b><span id="bOf"> / 27</span></span>
+            <span class="b-stat"><b id="bClock">04:57</b> <span id="bClockL">left</span></span>
+          </div>
+        </div>
+
+        <div class="b-view" id="bView">
+          <canvas id="bCanvas" aria-hidden="true"></canvas>
+        </div>
+
+        <div class="b-line" aria-hidden="true">
+          <div class="b-segs" id="bSegs">
+            <div class="b-seg" data-k="in" style="flex:5.5 1 0">In 5.5s</div>
+            <div class="b-seg" data-k="out" style="flex:5.5 1 0">Out 5.5s</div>
+          </div>
+          <div class="b-mark" id="bMark"></div>
+        </div>
+
+        <div class="b-transport">
+          <button class="btn primary" id="bStart">Start breathing</button>
+          <button class="btn" id="bReset" disabled>Reset</button>
+          <button class="btn" id="bFocus">Focus view</button>
+          <span class="b-msg" id="bMsg" role="status"></span>
+        </div>
+        <div class="visually-hidden" id="bLive" aria-live="polite"></div>
+      </div>
+
+      <div class="b-controls">
+        <div class="prime-row">
+          <div class="prime-label" id="bpLab">Pattern</div>
+          <div class="chips" id="bPats" role="radiogroup" aria-labelledby="bpLab">
+            <label class="chip on"><input type="radio" name="bpat" value="resonance" checked> Resonance 5.5</label>
+            <label class="chip"><input type="radio" name="bpat" value="sigh"> Cyclic sigh</label>
+            <label class="chip"><input type="radio" name="bpat" value="exhale"> Long exhale</label>
+            <label class="chip"><input type="radio" name="bpat" value="box"> Box 4-4-4-4</label>
+            <label class="chip"><input type="radio" name="bpat" value="478"> 4-7-8</label>
+            <label class="chip"><input type="radio" name="bpat" value="custom"> Custom</label>
+          </div>
+        </div>
+
+        <div class="b-note">
+          <p id="bDesc">Equal, unhurried breaths in and out at about 5.5 a minute, with no holds. This is the pace used in heart-rate-variability biofeedback.</p>
+          <details class="ev" id="bEv">
+            <summary id="bEvSum">Evidence <span class="strength" title="Strength of supporting evidence: 3 of 3" aria-label="Evidence strength 3 of 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></summary>
+            <div class="ev-body"><span id="bEvTxt"></span><cite id="bCite"></cite></div>
+          </details>
+        </div>
+
+        <div class="b-fields">
+          <div class="field">
+            <label for="bInh">Inhale <b id="bInhV">5.5 s</b></label>
+            <input type="range" id="bInh" min="1" max="10" step="0.5" value="5.5">
+          </div>
+          <div class="field">
+            <label for="bSip">Second inhale <b id="bSipV">Off</b></label>
+            <input type="range" id="bSip" min="0" max="2" step="0.5" value="0">
+          </div>
+          <div class="field">
+            <label for="bHold">Hold, lungs full <b id="bHoldV">Off</b></label>
+            <input type="range" id="bHold" min="0" max="10" step="0.5" value="0">
+          </div>
+          <div class="field">
+            <label for="bExh">Exhale <b id="bExhV">5.5 s</b></label>
+            <input type="range" id="bExh" min="1" max="12" step="0.5" value="5.5">
+          </div>
+          <div class="field">
+            <label for="bRest">Hold, lungs empty <b id="bRestV">Off</b></label>
+            <input type="range" id="bRest" min="0" max="10" step="0.5" value="0">
+          </div>
+          <div class="b-rate">
+            <b id="bRateV">5.5 breaths/min</b>
+            <span id="bRateS">0.091 Hz · 11.0 s a breath</span>
+          </div>
+        </div>
+
+        <div class="prime-row">
+          <div class="prime-label" id="bvLab">Visual</div>
+          <div class="chips" id="bVis" role="radiogroup" aria-labelledby="bvLab">
+            <label class="chip on"><input type="radio" name="bvis" value="circle" checked><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="2.8"/></svg>Circle</label>
+            <label class="chip"><input type="radio" name="bvis" value="wave"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M1.2 8c1.7-4.6 3.4-4.6 5.1 0s3.4 4.6 5.1 0c1-2.6 2.2-3.6 3.4-3.4"/></svg>Wave</label>
+            <label class="chip"><input type="radio" name="bvis" value="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/><circle cx="2.5" cy="8" r="1.5" fill="currentColor" stroke="none"/></svg>Box</label>
+            <label class="chip"><input type="radio" name="bvis" value="dial"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 1.8A6.2 6.2 0 1 1 1.8 8"/><circle cx="8" cy="8" r="2.2"/></svg>Dial</label>
+            <label class="chip"><input type="radio" name="bvis" value="column"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="1.5" width="6" height="13" rx="3"/><path d="M5 9.5h6"/></svg>Column</label>
+          </div>
+          <p class="hint" id="bVisHint">The circle grows as you breathe in and shrinks as you breathe out. The outer arc fills as each phase runs.</p>
+        </div>
+
+        <div class="prime-row">
+          <div class="prime-label" id="blLab">Length</div>
+          <div class="chips" id="bLen" role="radiogroup" aria-labelledby="blLab">
+            <label class="chip"><input type="radio" name="blen" value="2"> 2 min</label>
+            <label class="chip on"><input type="radio" name="blen" value="5" checked> 5 min</label>
+            <label class="chip"><input type="radio" name="blen" value="10"> 10 min</label>
+            <label class="chip"><input type="radio" name="blen" value="15"> 15 min</label>
+            <label class="chip"><input type="radio" name="blen" value="0"> Open-ended</label>
+          </div>
+        </div>
+
+        <div class="prime-row">
+          <div class="prime-label" id="bsLab">Sound cues</div>
+          <div class="chips" id="bSnd" role="radiogroup" aria-labelledby="bsLab">
+            <label class="chip on"><input type="radio" name="bsnd" value="off" checked> Off</label>
+            <label class="chip"><input type="radio" name="bsnd" value="tones"> Rising tone</label>
+            <label class="chip"><input type="radio" name="bsnd" value="chimes"> Chimes</label>
+          </div>
+          <div class="b-vol" id="bVolRow" hidden>
+            <span>Cue volume</span>
+            <input type="range" id="bCue" min="0" max="100" step="1" value="40" aria-label="Cue volume">
+          </div>
+          <p class="hint">Cues play equally in both ears and sit above the carrier range, so they leave a running binaural beat alone.</p>
+        </div>
+
+        <p class="b-safety">
+          <b>Go gently.</b> Stop and breathe normally if you feel light-headed or tingly. Leave out the holds if
+          you are pregnant or have a heart, lung or blood-pressure condition.
+        </p>
       </div>
     </div>
   </section>
@@ -545,6 +817,24 @@
         distress specifically, cognitive behavioural therapy remains the better-supported intervention.
       </p>
 
+      <h3>Breathing runs on a slower clock</h3>
+      <p>
+        The breathing guide works through a different route from the beats. Each breath nudges heart rate up
+        on the way in and down on the way out. At around six breaths a minute, a rhythm of
+        <span class="mono">0.1&nbsp;Hz</span>, that swing falls into step with the baroreflex, the loop that
+        steadies blood pressure, and the two reinforce each other. Heart-rate variability peaks there, which is
+        why HRV biofeedback trains people to breathe at that pace (Lehrer &amp; Gevirtz, 2014). A 2022
+        meta-analysis of 223 studies found that voluntary slow breathing raised vagally mediated heart-rate
+        variability during a session, straight after one, and after multi-session training.
+      </p>
+      <p>
+        The mood findings are more modest. A 2023 meta-analysis of randomised trials found breathwork lowered
+        self-reported stress by a small-to-medium amount (<span class="mono">g&nbsp;=&nbsp;&minus;0.35</span>),
+        with similar effects on anxiety and depression, but most of the trials carried a moderate risk of bias.
+        The trial behind cyclic sighing is randomised but small and was run remotely. As with the beats, read
+        the strength bars as a summary of the literature, not a promise about your session.
+      </p>
+
       <h3>Frequency bands at a glance</h3>
       <div class="tbl-scroll">
       <table>
@@ -589,11 +879,17 @@
       <li>Ghaffari, R., et al. (2024). Investigating the effectiveness of music therapy combined with binaural beats on chronic tinnitus: a randomized controlled trial. <em>American Journal of Otolaryngology</em>. <a href="https://pubmed.ncbi.nlm.nih.gov/38723376/" rel="noopener">PubMed</a></li>
       <li>Effect of binaural beat and tailor-made notched music training on reducing the loudness and annoyance of chronic tinnitus: a controlled trial. <em>Auditory and Vestibular Research</em>. <a href="https://www.cochranelibrary.com/central/doi/10.1002/central/CN-02888726/full" rel="noopener">Cochrane CENTRAL</a></li>
       <li>Kim, S., et al. (2024). Effect of dynamic binaural beats on sleep quality: a proof-of-concept study with questionnaire and biosignals. <em>SLEEP</em>, 47(10). <a href="https://academic.oup.com/sleep/article/47/10/zsae097/7647043" rel="noopener">Oxford Academic</a></li>
+      <li>Lehrer, P. M., &amp; Gevirtz, R. (2014). Heart rate variability biofeedback: how and why does it work? <em>Frontiers in Psychology</em>, 5, 756. <a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2014.00756/full" rel="noopener">Frontiers</a></li>
+      <li>Laborde, S., Allen, M., Borges, U., et al. (2022). Effects of voluntary slow breathing on heart rate and heart rate variability: a systematic review and a meta-analysis. <em>Neuroscience &amp; Biobehavioral Reviews</em>, 138, 104711. <a href="https://doi.org/10.1016/j.neubiorev.2022.104711" rel="noopener">DOI</a></li>
+      <li>Balban, M. Y., Neri, E., Kogon, M. M., et al. (2023). Brief structured respiration practices enhance mood and reduce physiological arousal. <em>Cell Reports Medicine</em>, 4(1), 100895. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9873947/" rel="noopener">PMC</a></li>
+      <li>Fincham, G. W., Strauss, C., Montero-Marin, J., &amp; Cavanagh, K. (2023). Effect of breathwork on stress and mental health: a meta-analysis of randomised-controlled trials. <em>Scientific Reports</em>, 13, 432. <a href="https://www.nature.com/articles/s41598-022-27247-y" rel="noopener">Nature</a></li>
+      <li>Van Diest, I., Verstappen, K., Aubert, A. E., et al. (2014). Inhalation/exhalation ratio modulates the effect of slow breathing on heart rate variability and relaxation. <em>Applied Psychophysiology and Biofeedback</em>, 39(3–4), 171–180. <a href="https://doi.org/10.1007/s10484-014-9253-x" rel="noopener">DOI</a></li>
+      <li>Vierra, J., Boonla, O., &amp; Prasertsri, P. (2022). Effects of sleep deprivation and 4-7-8 breathing control on heart rate variability, blood pressure, blood glucose, and endothelial function in healthy young adults. <em>Physiological Reports</em>, 10, e15389. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9277512/" rel="noopener">PMC</a></li>
     </ol>
   </section>
 
   <footer>
-    <p><strong>Not medical advice.</strong> Binaural beats are a consumer audio technique, not a treatment. Effects reported in the literature are modest and inconsistent across individuals. Nothing here diagnoses, treats or prevents any condition — talk to a clinician about sleep, anxiety or attention problems.</p>
+    <p><strong>Not medical advice.</strong> Binaural beats and paced breathing are self-help techniques, not treatments. Effects reported in the literature are modest and inconsistent across individuals. Nothing here diagnoses, treats or prevents any condition — talk to a clinician about sleep, anxiety or attention problems.</p>
     <p>All audio is synthesised in your browser with the Web Audio API. Nothing is downloaded, streamed, recorded or sent anywhere.</p>
   </footer>
 </div>
@@ -1377,6 +1673,7 @@
   document.addEventListener("keydown", function (e) {
     if (e.code !== "Space" || !A.track) return;
     if (!$("#scModal").hidden || !$("#pmModal").hidden) return;
+    if ($("#bStage").classList.contains("focus")) return;   // focus view: Space drives the breathing guide
     var tag = (e.target.tagName || "").toLowerCase();
     if (tag === "input" || tag === "button" || tag === "select" || tag === "textarea" || tag === "summary") return;
     e.preventDefault();
@@ -1709,6 +2006,1056 @@
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
 
+  /* ------------------------- breathing guide -------------------------
+     A breath is modelled as a lung "level" from 0 (empty) to 1 (full)
+     moving through up to five phases: in, an optional second sip (the
+     cyclic sigh), a hold at the top, out, and a hold at the bottom. In and
+     out use a cosine ease, so equal in/out with no holds traces an exact
+     sine wave at the breathing frequency.
+
+     The clock is performance.now(). Drawing runs on requestAnimationFrame;
+     phase changes, the session end and audio-cue scheduling run on a
+     100 ms interval, so they carry on (more coarsely) in a background tab.
+     Timing edits made mid-session take effect from the next breath, so the
+     shape never jumps under you.
+  -------------------------------------------------------------------- */
+
+  var BREATHS = [
+    {
+      id: "resonance", strength: 3,
+      t: { inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0 },
+      desc: "Equal, unhurried breaths in and out at about 5.5 a minute, with no holds. This is the pace used in heart-rate-variability biofeedback.",
+      ev: "Near 5.5 to 6 breaths a minute, the rise and fall in heart rate that each breath causes falls into step with the baroreflex, the loop that steadies blood pressure, and the two reinforce each other, so heart-rate variability peaks. A meta-analysis of 223 studies found slow breathing raised vagally mediated HRV during a session, straight after one, and after multi-session training.",
+      cite: "Lehrer & Gevirtz 2014, Front. Psychol. · Laborde et al. 2022, Neurosci. Biobehav. Rev."
+    },
+    {
+      id: "sigh", strength: 2,
+      t: { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
+      desc: "A slow inhale through the nose, a short second sip to fill the lungs completely, then a long exhale through the mouth.",
+      ev: "In a month-long randomised trial, five minutes a day of cyclic sighing raised positive mood more than mindfulness meditation did, and lowered resting breathing rate more as well. It was the most effective of the four practices tested. Participants set their own pace, so treat these timings as a starting point.",
+      cite: "Balban et al. 2023, Cell Rep. Med."
+    },
+    {
+      id: "exhale", strength: 2,
+      t: { inh: 3, sip: 0, hold: 0, exh: 7, rest: 0 },
+      desc: "Six breaths a minute with the out-breath more than twice as long as the in-breath, close to the ratio used in the trial.",
+      ev: "At six breaths a minute, a short inhale with a long exhale (an inhale-to-exhale ratio of 0.42) was rated more relaxing than the reverse ratio and produced more high-frequency heart-rate variability, the component linked to vagal activity.",
+      cite: "Van Diest et al. 2014, Appl. Psychophysiol. Biofeedback"
+    },
+    {
+      id: "box", strength: 2,
+      t: { inh: 4, sip: 0, hold: 4, exh: 4, rest: 4 },
+      desc: "Four equal sides: in, hold, out, hold. Steady and easy to count.",
+      ev: "Box breathing was one of the four practices in the cyclic-sighing trial. Mood improved over the month, but less than with cyclic sighing, and the difference from meditation was not significant. The trial set each side at 3 to 10 seconds depending on how long a person could comfortably exhale, so shorten the sides if the holds strain.",
+      cite: "Balban et al. 2023, Cell Rep. Med."
+    },
+    {
+      id: "478", strength: 1,
+      t: { inh: 4, sip: 0, hold: 7, exh: 8, rest: 0 },
+      desc: "A popular wind-down before sleep: in for 4, hold for 7, out for 8.",
+      ev: "In a small study of 44 young adults, a session of 4-7-8 breathing lowered heart rate and blood pressure immediately afterwards and shifted heart-rate variability toward parasympathetic activity, whether or not they had slept the night before. Beyond that the evidence is thin. The long hold is demanding, so scale all three numbers down together if it strains.",
+      cite: "Vierra et al. 2022, Physiol. Rep."
+    }
+  ];
+
+  var B_KIND = {
+    "in":   { name: "Breathe in",  short: "In" },
+    "sip":  { name: "Top up",      short: "Sip" },
+    "hold": { name: "Hold",        short: "Hold" },
+    "out":  { name: "Breathe out", short: "Out" },
+    "rest": { name: "Hold",        short: "Hold" }
+  };
+
+  var B_VIS_HINT = {
+    circle: "The circle grows as you breathe in and shrinks as you breathe out. The outer arc fills as each phase runs.",
+    wave: "Your breath as a wave scrolling past the marker. Equal in and out with no holds is a pure sine; holds are the flat stretches. What comes next is labelled along the bottom.",
+    box: "Trace the square: up on the in-breath, across the top on the hold, down on the out-breath, back along the bottom.",
+    dial: "One lap of the dial is one breath, divided by phase. The centre swells with each in-breath.",
+    column: "The column fills like your lungs and drains as you breathe out."
+  };
+
+  var B_FIELDS = [
+    { k: "inh",  id: "#bInh",  min: 1, max: 10, opt: false },
+    { k: "sip",  id: "#bSip",  min: 0, max: 2,  opt: true },
+    { k: "hold", id: "#bHold", min: 0, max: 10, opt: true },
+    { k: "exh",  id: "#bExh",  min: 1, max: 12, opt: false },
+    { k: "rest", id: "#bRest", min: 0, max: 10, opt: true }
+  ];
+
+  var B_LEAD = 3;           // seconds of "get ready" before the first inhale
+  var B_SIP = 0.8;          // lung level the first inhale reaches when a second sip follows
+  var B_TONE = 698.46;      // F5: the rising tone runs F5 to C6, above every carrier on the page
+  var B_CHIME = { "in": 1046.5, "sip": 1318.5, "hold": 783.99, "out": 659.25, "rest": 523.25 };
+  var TONE_LEVEL = { "in": 1, "sip": 1, "hold": 0.5, "out": 0.22, "rest": 0.03 };
+  var B_SANS = 'ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+  var B_MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace';
+
+  var BC = {
+    pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0,
+    visual: "circle", minutes: 5, sound: "off", cue: 40
+  };
+
+  var B = {
+    state: "idle",            // idle | running | paused | done
+    t0: 0, st: 0,             // clock origin while running; frozen session time otherwise
+    ph: null, pending: null,  // phases in use, and an edit waiting for the next breath
+    epoch: 0, done: 0, total: 0,
+    raf: 0, tick: 0, key: "", segOn: -1, schedTo: 0,
+    voice: null, bus: null, lock: null, doneMsg: ""
+  };
+
+  function bNow() { return (window.performance && performance.now ? performance.now() : Date.now()) / 1000; }
+  function sessTime() { return B.state === "running" ? bNow() - B.t0 : B.st; }
+  function breathTime() { return sessTime() - B_LEAD; }
+  function fmtS(s) { return (s % 1 ? s.toFixed(1) : String(s)) + "s"; }
+  function bSetT(sel, v) { var el = $(sel); if (el && el.textContent !== v) el.textContent = v; }
+  function preset(id) {
+    for (var i = 0; i < BREATHS.length; i++) if (BREATHS[i].id === id) return BREATHS[i];
+    return null;
+  }
+  function saveBreath() { store.set("breath", JSON.stringify(BC)); }
+
+  function buildPhases(c) {
+    var list = [];
+    if (c.sip > 0) {
+      list.push({ k: "in", secs: c.inh, from: 0, to: B_SIP });
+      list.push({ k: "sip", secs: c.sip, from: B_SIP, to: 1 });
+    } else {
+      list.push({ k: "in", secs: c.inh, from: 0, to: 1 });
+    }
+    if (c.hold > 0) list.push({ k: "hold", secs: c.hold, from: 1, to: 1 });
+    list.push({ k: "out", secs: c.exh, from: 1, to: 0 });
+    if (c.rest > 0) list.push({ k: "rest", secs: c.rest, from: 0, to: 0 });
+    var t = 0;
+    for (var i = 0; i < list.length; i++) { list[i].i = i; list[i].start = t; t += list[i].secs; }
+    return { list: list, cycle: t, sig: list.map(function (p) { return p.k + p.secs; }).join("|") };
+  }
+
+  /* Where in the session a breath-time falls. Pure: a pending timing edit is
+     applied virtually from the end of the breath that was in progress. */
+  function locate(bt) {
+    var ph = B.ph, epoch = B.epoch, done = B.done;
+    if (B.pending && bt >= epoch + ph.cycle) { epoch += ph.cycle; done += 1; ph = B.pending; }
+    var rel = Math.max(0, bt - epoch);
+    var idx = Math.floor(rel / ph.cycle + 1e-9);
+    var ct = Math.max(0, rel - idx * ph.cycle);
+    var p = ph.list[ph.list.length - 1];
+    for (var i = 0; i < ph.list.length; i++) {
+      if (ct < ph.list[i].start + ph.list[i].secs) { p = ph.list[i]; break; }
+    }
+    return {
+      ph: ph, count: done + idx, ct: ct, p: p,
+      prog: Math.min(1, Math.max(0, (ct - p.start) / p.secs)),
+      pStart: epoch + idx * ph.cycle + p.start
+    };
+  }
+  function bEase(x) { return (1 - Math.cos(Math.PI * x)) / 2; }
+  function levelOf(L) { return L.p.from + (L.p.to - L.p.from) * bEase(L.prog); }
+  function levelAt(bt) { return bt < 0 ? 0 : levelOf(locate(bt)); }
+
+  function endBt() { return B.epoch + (B.total - B.done) * B.ph.cycle; }
+  function planTotal() {
+    if (!BC.minutes) { B.total = 0; return; }
+    B.total = B.done + Math.max(1, Math.round((BC.minutes * 60 - B.epoch) / B.ph.cycle));
+  }
+  function commitPending(bt) {
+    if (!B.pending || bt < B.epoch + B.ph.cycle) return;
+    if (B.total && B.epoch + B.ph.cycle >= endBt() - 1e-6) return;  // the session ends at that boundary anyway
+    B.epoch += B.ph.cycle;
+    B.done += 1;
+    B.ph = B.pending;
+    B.pending = null;
+    planTotal();
+    renderLine();
+    bSetT("#bMsg", "");
+  }
+  /* Move the epoch up to the start of the breath in progress. */
+  function normalize(bt) {
+    if (bt < 0) return;
+    commitPending(bt);
+    var idx = Math.floor((bt - B.epoch) / B.ph.cycle + 1e-9);
+    if (idx > 0) { B.epoch += idx * B.ph.cycle; B.done += idx; }
+  }
+
+  function applyTimings() {
+    var ph = buildPhases(BC);
+    if (B.state === "idle" || B.state === "done") {
+      if (B.state === "done") B.state = "idle";
+      B.ph = ph; B.pending = null; B.epoch = 0; B.done = 0;
+      planTotal();
+      syncTransport();
+    } else {
+      var bt = breathTime();
+      if (bt < 0) {
+        B.ph = ph; B.pending = null; planTotal();
+      } else {
+        normalize(bt);
+        if (ph.sig === B.ph.sig) { B.pending = null; bSetT("#bMsg", ""); }
+        else { B.pending = ph; bSetT("#bMsg", "New timings start with the next breath."); }
+      }
+    }
+    renderLine();
+    syncRate();
+    updateHead();
+    draw();
+  }
+
+  /* ----- controls ----- */
+
+  function cycleOf(c) { return c.inh + c.sip + c.hold + c.exh + c.rest; }
+  function syncRate() {
+    var cyc = cycleOf(BC);
+    bSetT("#bRateV", (60 / cyc).toFixed(1) + " breaths/min");
+    bSetT("#bRateS", (1 / cyc).toFixed(3) + " Hz · " + cyc.toFixed(1) + " s a breath");
+  }
+  function renderLine() {
+    $("#bSegs").innerHTML = B.ph.list.map(function (p) {
+      return '<div class="b-seg" data-k="' + p.k + '" style="flex:' + p.secs + ' 1 0">' +
+        B_KIND[p.k].short + " " + fmtS(p.secs) + "</div>";
+    }).join("");
+    B.segOn = -1;
+  }
+  function syncFields() {
+    B_FIELDS.forEach(function (f) {
+      $(f.id).value = BC[f.k];
+      bSetT(f.id + "V", (f.opt && !BC[f.k]) ? "Off" : BC[f.k].toFixed(1) + " s");
+    });
+  }
+  function matchPreset() {
+    for (var i = 0; i < BREATHS.length; i++) {
+      var t = BREATHS[i].t;
+      if (t.inh === BC.inh && t.sip === BC.sip && t.hold === BC.hold && t.exh === BC.exh && t.rest === BC.rest) {
+        return BREATHS[i].id;
+      }
+    }
+    return "custom";
+  }
+  function renderNote() {
+    var p = preset(BC.pattern);
+    if (p) {
+      bSetT("#bDesc", p.desc);
+      $("#bEvSum").innerHTML = "Evidence " + dots(p.strength);
+      bSetT("#bEvTxt", p.ev);
+      bSetT("#bCite", p.cite);
+      $("#bEv").hidden = false;
+      return;
+    }
+    var rate = 60 / cycleOf(BC);
+    var s = "Your own timings: " + rate.toFixed(1) + " breaths a minute. " + (rate <= 10
+      ? "That is inside the under-10-a-minute range most slow-breathing studies used."
+      : "That is faster than the under-10-a-minute range most slow-breathing studies used.");
+    if (BC.exh > BC.inh + BC.sip) s += " The exhale is longer than the inhale, the ratio rated more relaxing at slow rates.";
+    bSetT("#bDesc", s);
+    $("#bEv").hidden = true;
+  }
+  function syncChips(sel) {
+    var chips = $(sel).querySelectorAll(".chip");
+    for (var i = 0; i < chips.length; i++) chips[i].classList.toggle("on", chips[i].querySelector("input").checked);
+  }
+  function checkRadio(name, val) {
+    var el = document.querySelector('input[name="' + name + '"][value="' + val + '"]');
+    if (el) el.checked = true;
+  }
+  function syncVisHint() {
+    var s = B_VIS_HINT[BC.visual] || "";
+    if (BC.visual === "box" && !BC.hold && !BC.rest) s += " This pattern has no holds, so the top and bottom sides are skipped.";
+    bSetT("#bVisHint", s);
+  }
+  function syncTransport() {
+    var st = B.state;
+    bSetT("#bStart", st === "running" ? "Pause" : st === "paused" ? "Resume" : st === "done" ? "Start again" : "Start breathing");
+    $("#bReset").disabled = st === "idle";
+  }
+  function kindHint(k) {
+    if (k === "in") return BC.sip > 0 ? "Slowly, through your nose." : "Slow and smooth, through your nose.";
+    if (k === "sip") return "A short second sip to fill your lungs.";
+    if (k === "hold") return "Lungs full. Keep your shoulders soft.";
+    if (k === "out") return BC.sip > 0 ? "Long and slow, through your mouth." : "Long and slow. Let it go.";
+    return "Lungs empty. Wait for the next breath.";
+  }
+
+  function updateHead() {
+    var st = B.state, bt = breathTime(), k, name, hint, L = null;
+    if (st === "idle") { k = "ready"; name = "Ready"; hint = "Press start, then follow the shape."; }
+    else if (st === "done") { k = "done"; name = "Done"; hint = B.doneMsg; }
+    else if (bt < 0) { k = "lead"; name = "Get ready"; hint = "Let your breath settle. First inhale in " + Math.ceil(-bt - 1e-6) + "…"; }
+    else {
+      L = locate(bt); k = L.p.k; name = B_KIND[k].name;
+      hint = st === "paused" ? "Paused. Press resume to carry on from here." : kindHint(k);
+    }
+    var stage = $("#bStage");
+    if (stage.dataset.phase !== k) stage.dataset.phase = k;
+    bSetT("#bPhase", name);
+    bSetT("#bHint", hint);
+
+    var tot = B.total, cur;
+    if (st === "idle") cur = 0;
+    else if (st === "done") cur = tot;
+    else cur = L ? L.count + 1 : 0;
+    if (tot && cur > tot) cur = tot;
+    bSetT("#bCount", String(cur));
+    bSetT("#bOf", tot ? " / " + tot : "");
+
+    var clock, lab;
+    if (!BC.minutes) { clock = st === "idle" ? 0 : Math.max(0, bt); lab = "elapsed"; }
+    else { clock = st === "done" ? 0 : endBt() - (st === "idle" ? 0 : Math.max(0, bt)); lab = "left"; }
+    bSetT("#bClock", fmt(Math.max(0, clock)));
+    bSetT("#bClockL", lab);
+
+    var key = st + ":" + (L ? L.count + ":" + L.p.i : k);
+    if (key !== B.key) { B.key = key; if (st === "running") bSetT("#bLive", name); }
+  }
+
+  /* ----- transport ----- */
+
+  function bFresh() {
+    B.ph = buildPhases(BC); B.pending = null; B.epoch = 0; B.done = 0; planTotal();
+    B.st = 0; B.key = ""; B.schedTo = -B_LEAD;
+    renderLine();
+    bSetT("#bMsg", "");
+  }
+  function bToggle() {
+    if (B.state === "running") bPause();
+    else if (B.state === "paused") bResume();
+    else { bFresh(); bResume(); }
+  }
+  function bResume() {
+    B.t0 = bNow() - B.st;
+    B.state = "running";
+    if (BC.sound !== "off") cueOn();
+    acquireLock();
+    clearInterval(B.tick);
+    B.tick = setInterval(bTick, 100);
+    syncTransport();
+    bTick();
+    cancelAnimationFrame(B.raf);
+    bLoop();
+  }
+  function bPause() {
+    if (B.state !== "running") return;
+    B.st = sessTime();
+    B.state = "paused";
+    clearInterval(B.tick);
+    cancelAnimationFrame(B.raf);
+    cueOff();
+    releaseLock();
+    syncTransport(); updateHead(); draw();
+  }
+  function bStop() {
+    clearInterval(B.tick);
+    cancelAnimationFrame(B.raf);
+    cueOff();
+    releaseLock();
+    B.state = "idle";
+    bFresh();
+    syncTransport(); updateHead(); draw();
+  }
+  function bFinish() {
+    var secs = endBt(), n = B.total;
+    clearInterval(B.tick);
+    cancelAnimationFrame(B.raf);
+    cueOff();
+    if (BC.sound !== "off" && B.bus && A.ctx) {
+      var t = A.ctx.currentTime + 0.05;
+      chime(B_CHIME.out, t, 0.2);
+      chime(B_CHIME.sip, t + 0.42, 0.16);
+    }
+    B.state = "done";
+    B.doneMsg = n + " breaths in " + fmt(secs) + ". Breathe normally for a minute before you get up.";
+    releaseLock();
+    syncTransport(); updateHead(); draw();
+    bSetT("#bLive", "Session complete.");
+  }
+  function bTick() {
+    if (B.state !== "running") return;
+    var bt = breathTime();
+    if (bt >= 0 && B.total && bt >= endBt()) { bFinish(); return; }
+    if (bt >= 0) commitPending(bt);
+    bSchedule(bt);
+    updateHead();
+  }
+  function bLoop() {
+    if (B.state !== "running") return;
+    draw();
+    B.raf = requestAnimationFrame(bLoop);
+  }
+
+  /* ----- sound cues: their own bus straight to the output, both ears ----- */
+
+  function cueGain() { var v = BC.cue / 100; return v * v * 0.9; }
+  function toneHz(lv) { return B_TONE * Math.pow(1.5, lv); }
+  function ensureBus() {
+    if (!ensureCtx()) return false;
+    if (!B.bus) { B.bus = A.ctx.createGain(); B.bus.gain.value = 0; B.bus.connect(A.ctx.destination); }
+    var now = A.ctx.currentTime;
+    B.bus.gain.cancelScheduledValues(now);
+    B.bus.gain.setTargetAtTime(cueGain(), now, 0.04);
+    return true;
+  }
+  function cueOn() {
+    if (!ensureBus()) return;
+    var ctx = A.ctx, now = ctx.currentTime, bt = breathTime();
+    B.schedTo = bt;
+    if (BC.sound !== "tones") return;
+    if (!B.voice) {
+      var o = ctx.createOscillator(), vg = ctx.createGain();
+      o.type = "sine"; o.frequency.value = B_TONE; vg.gain.value = 0;
+      o.connect(vg); vg.connect(B.bus); o.start();
+      B.voice = { o: o, g: vg };
+    }
+    var f = B.voice.o.frequency, gg = B.voice.g.gain;
+    f.cancelScheduledValues(now); gg.cancelScheduledValues(now);
+    gg.setValueAtTime(0, now);
+    if (bt >= 0) {
+      var L = locate(bt);
+      f.setValueAtTime(toneHz(levelOf(L)), now);
+      toneTo(L.p, now, L.p.secs * (1 - L.prog));
+    } else {
+      f.setValueAtTime(B_TONE, now);
+    }
+  }
+  function cueOff() {
+    if (!B.voice || !A.ctx) { B.voice = null; return; }
+    var v = B.voice, t = A.ctx.currentTime;
+    v.o.frequency.cancelScheduledValues(t);
+    v.g.gain.cancelScheduledValues(t);
+    v.g.gain.setTargetAtTime(0, t, 0.08);
+    setTimeout(function () { try { v.o.stop(); v.o.disconnect(); v.g.disconnect(); } catch (e) {} }, 700);
+    B.voice = null;
+  }
+  /* Glide the tone toward this phase's target. setTargetAtTime starts from
+     wherever the previous phase left the value, so no anchors are needed. */
+  function toneTo(p, when, dur) {
+    if (!B.voice) return;
+    var tc = Math.max(0.04, dur / 3.2);
+    B.voice.o.frequency.setTargetAtTime(toneHz(p.to), when, tc);
+    B.voice.g.gain.setTargetAtTime(0.22 * TONE_LEVEL[p.k], when, (p.k === "hold" || p.k === "rest") ? 0.3 : tc);
+  }
+  function chime(hz, when, peak) {
+    if (!A.ctx || !B.bus) return;
+    var ctx = A.ctx;
+    var o1 = ctx.createOscillator(), o2 = ctx.createOscillator();
+    var g1 = ctx.createGain(), g2 = ctx.createGain();
+    o1.type = "sine"; o1.frequency.value = hz;
+    o2.type = "sine"; o2.frequency.value = hz * 2.76;      // the inharmonic partial that makes it ring like a bell
+    g1.gain.setValueAtTime(0, when);
+    g1.gain.linearRampToValueAtTime(peak, when + 0.012);
+    g1.gain.exponentialRampToValueAtTime(0.0001, when + 1.9);
+    g2.gain.setValueAtTime(0, when);
+    g2.gain.linearRampToValueAtTime(peak * 0.25, when + 0.008);
+    g2.gain.exponentialRampToValueAtTime(0.0001, when + 0.55);
+    o1.connect(g1); o2.connect(g2); g1.connect(B.bus); g2.connect(B.bus);
+    o1.start(when); o2.start(when);
+    o1.stop(when + 2); o2.stop(when + 0.6);
+    o1.onended = function () { try { o1.disconnect(); o2.disconnect(); g1.disconnect(); g2.disconnect(); } catch (e) {} };
+  }
+  /* Queue a cue for every phase boundary inside a short horizon, on the audio
+     clock. The horizon widens in a background tab, where timers fire ~1/s. */
+  function bSchedule(bt) {
+    if (BC.sound === "off" || !A.ctx || !B.bus) return;
+    var horizon = bt + (document.hidden ? 1.6 : 0.4);
+    var cur = Math.max(B.schedTo, bt), guard = 0;
+    while (guard++ < 12) {
+      var nb;
+      if (cur < 0) nb = 0;
+      else { var Lc = locate(cur + 1e-6); nb = Lc.pStart + Lc.p.secs; }
+      if (nb > horizon) break;
+      if (B.total && nb >= endBt() - 1e-6) break;          // the closing chime belongs to bFinish
+      var L = locate(nb + 1e-6), when = A.ctx.currentTime + (nb - bt);
+      if (BC.sound === "chimes") chime(B_CHIME[L.p.k], when, (L.p.k === "hold" || L.p.k === "rest") ? 0.13 : 0.2);
+      else toneTo(L.p, when, L.p.secs);
+      cur = nb;
+    }
+    B.schedTo = cur;
+  }
+  /* Let people hear a cue when they pick it, before they start. */
+  function preview() {
+    if (BC.sound === "off" || B.state === "running" || !ensureBus()) return;
+    var ctx = A.ctx, t = ctx.currentTime + 0.03;
+    if (BC.sound === "chimes") { chime(B_CHIME["in"], t, 0.2); return; }
+    var o = ctx.createOscillator(), vg = ctx.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(B_TONE, t);
+    o.frequency.setTargetAtTime(toneHz(1), t, 0.45);
+    vg.gain.setValueAtTime(0, t);
+    vg.gain.setTargetAtTime(0.22, t, 0.3);
+    vg.gain.setTargetAtTime(0, t + 1.4, 0.2);
+    o.connect(vg); vg.connect(B.bus);
+    o.start(t); o.stop(t + 2.6);
+    o.onended = function () { try { o.disconnect(); vg.disconnect(); } catch (e) {} };
+  }
+
+  /* Keep the screen awake while a session runs; ignore refusals. */
+  function acquireLock() {
+    try {
+      if (!navigator.wakeLock || B.lock) return;
+      navigator.wakeLock.request("screen").then(function (l) {
+        if (B.state !== "running") { l.release().catch(function () {}); return; }
+        B.lock = l;
+        l.addEventListener("release", function () { if (B.lock === l) B.lock = null; });
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  function releaseLock() {
+    var l = B.lock;
+    B.lock = null;
+    if (l) { try { var p = l.release(); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
+  }
+
+  function setFocus(on) {
+    var st = $("#bStage");
+    st.classList.toggle("focus", on);
+    document.body.classList.toggle("b-lock", on);
+    bSetT("#bFocus", on ? "Exit focus" : "Focus view");
+    try {
+      if (on && st.requestFullscreen && !document.fullscreenElement) {
+        var p = st.requestFullscreen();
+        if (p && p.catch) p.catch(function () {});
+      } else if (!on && document.fullscreenElement) {
+        var q = document.exitFullscreen();
+        if (q && q.catch) q.catch(function () {});
+      }
+    } catch (e) {}
+    if (on) $("#bStart").focus();
+    sizeCanvas();
+  }
+
+  /* ----- drawing ----- */
+
+  var bcv = $("#bCanvas"), d2 = bcv.getContext ? bcv.getContext("2d") : null, CW = 0, CH = 0;
+  var BCOL = {}, BVIS = {};
+  var RM = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  function readColors() {
+    var cs = getComputedStyle(document.documentElement);
+    ["text", "text-dim", "text-faint", "line", "bg", "b-in", "b-sip", "b-hold", "b-out"].forEach(function (k) {
+      BCOL[k] = cs.getPropertyValue("--" + k).trim() || "#888888";
+    });
+  }
+  function rgba(hex, a) {
+    var h = hex.replace("#", "");
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
+  }
+  function kc(k) {
+    return k === "in" ? BCOL["b-in"] : k === "sip" ? BCOL["b-sip"] :
+      (k === "hold" || k === "rest") ? BCOL["b-hold"] : k === "out" ? BCOL["b-out"] : BCOL["text-faint"];
+  }
+  function sizeCanvas() {
+    if (!d2) return;
+    var r = bcv.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    CW = r.width; CH = r.height;
+    bcv.width = Math.round(CW * dpr);
+    bcv.height = Math.round(CH * dpr);
+    d2.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+
+  function frameState() {
+    var live = B.state === "running" || B.state === "paused";
+    var bt = live ? breathTime() : 0;
+    if (live && bt >= 0) commitPending(bt);
+    var S = { live: live, bt: bt, lead: live && bt < 0, L: null, level: 0, k: live ? "lead" : "idle", prog: 0, count: null };
+    if (S.lead) {
+      S.count = Math.ceil(-bt - 1e-6);
+    } else {
+      S.L = locate(Math.max(0, bt));
+      if (live) {
+        S.level = levelOf(S.L);
+        S.k = S.L.p.k;
+        S.prog = S.L.prog;
+        S.count = Math.max(1, Math.ceil(S.L.p.secs * (1 - S.L.prog) - 1e-6));
+      }
+    }
+    S.ph = S.L ? S.L.ph : B.ph;
+    S.col = kc(S.k);
+    return S;
+  }
+
+  function draw() {
+    if (!d2 || !CW || !CH || !B.ph) return;
+    var S = frameState();
+    d2.clearRect(0, 0, CW, CH);
+    d2.setLineDash([]);
+    (BVIS[BC.visual] || BVIS.circle)(S);
+    moveMark(S);
+    syncOrb(S);
+  }
+  function moveMark(S) {
+    var segs = $("#bSegs").children, on = -1, x = 0;
+    if (S.live && !S.lead && S.L.ph === B.ph) {
+      on = S.L.p.i;
+      var el = segs[on];
+      if (el) x = el.offsetLeft + el.offsetWidth * S.prog;
+    }
+    $("#bMark").style.transform = "translateX(" + x.toFixed(1) + "px)";
+    if (on !== B.segOn) {
+      for (var i = 0; i < segs.length; i++) segs[i].classList.toggle("on", i === on);
+      B.segOn = on;
+    }
+  }
+  /* The player's orb follows the guide while it runs. */
+  function syncOrb(S) {
+    var pl = $("#player"), core = pl.querySelector(".orb-core");
+    if (S.live) {
+      pl.classList.add("breath-sync");
+      core.style.transform = "scale(" + (0.74 + 0.36 * S.level).toFixed(3) + ")";
+      core.style.opacity = (0.3 + 0.5 * S.level).toFixed(3);
+    } else if (pl.classList.contains("breath-sync")) {
+      pl.classList.remove("breath-sync");
+      core.style.transform = "";
+      core.style.opacity = "";
+    }
+  }
+
+  function bFont(w, px, mono) { d2.font = w + " " + px + "px " + (mono ? B_MONO : B_SANS); }
+  function ring(x, y, r) { d2.beginPath(); d2.arc(x, y, r, 0, Math.PI * 2); d2.stroke(); }
+  function disc(x, y, r) { d2.beginPath(); d2.arc(x, y, r, 0, Math.PI * 2); d2.fill(); }
+  function line(x1, y1, x2, y2) { d2.beginPath(); d2.moveTo(x1, y1); d2.lineTo(x2, y2); d2.stroke(); }
+  function rrect(x, y, w, h, r) {
+    d2.beginPath();
+    d2.moveTo(x + r, y);
+    d2.arcTo(x + w, y, x + w, y + h, r);
+    d2.arcTo(x + w, y + h, x, y + h, r);
+    d2.arcTo(x, y + h, x, y, r);
+    d2.arcTo(x, y, x + w, y, r);
+    d2.closePath();
+  }
+  function label(txt, x, y, col, align, base, px, weight) {
+    bFont(weight || "600", px || 12, false);
+    d2.fillStyle = col;
+    d2.textAlign = align || "center";
+    d2.textBaseline = base || "middle";
+    d2.fillText(txt, x, y);
+  }
+  function glowDot(x, y, r, col) {
+    d2.save();
+    d2.shadowColor = rgba(col, 0.9);
+    d2.shadowBlur = 18;
+    d2.fillStyle = col;
+    disc(x, y, r);
+    d2.restore();
+    d2.fillStyle = BCOL.bg;
+    disc(x, y, r * 0.38);
+  }
+  function rateText() { return (60 / B.ph.cycle).toFixed(1); }
+  /* Centre readout: the phase countdown while live, the breathing rate at rest. */
+  function centre(S, cx, cy, px) {
+    d2.textAlign = "center";
+    if (S.live) {
+      bFont("600", Math.round(px), true);
+      d2.fillStyle = BCOL.text;
+      d2.textBaseline = "middle";
+      d2.fillText(String(S.count), cx, cy + px * 0.04);
+    } else {
+      bFont("650", Math.round(px * 0.72), true);
+      d2.fillStyle = BCOL.text;
+      d2.textBaseline = "alphabetic";
+      d2.fillText(rateText(), cx, cy + px * 0.1);
+      label("breaths / min", cx, cy + px * 0.1 + 17, BCOL["text-dim"], "center", "alphabetic", 11.5, "500");
+    }
+  }
+
+  /* 1. Circle: an orb between an inner (empty) and outer (full) guide ring. */
+  BVIS.circle = function (S) {
+    var cx = CW / 2, cy = CH / 2, R = Math.min(CW, CH) * 0.38, r0 = R * 0.36;
+    var lv = S.live ? S.level : 0.42, col = S.live ? S.col : BCOL["b-in"];
+    d2.lineWidth = 1;
+    d2.strokeStyle = BCOL.line;
+    ring(cx, cy, R);
+    d2.setLineDash([3, 5]);
+    d2.strokeStyle = rgba(BCOL["text-faint"], 0.55);
+    ring(cx, cy, r0);
+    d2.setLineDash([]);
+
+    var r = r0 + (R - r0) * lv;
+    var gr = d2.createRadialGradient(cx - r * 0.28, cy - r * 0.32, r * 0.08, cx, cy, r);
+    gr.addColorStop(0, rgba(col, 0.6));
+    gr.addColorStop(1, rgba(col, 0.1));
+    d2.save();
+    d2.shadowColor = rgba(col, 0.45);
+    d2.shadowBlur = RM ? 0 : 20 + 34 * lv;
+    d2.fillStyle = gr;
+    disc(cx, cy, r);
+    d2.restore();
+    d2.lineWidth = 2;
+    d2.strokeStyle = rgba(col, 0.9);
+    ring(cx, cy, r);
+
+    if (S.live && !S.lead && S.prog > 0) {
+      d2.lineWidth = 3;
+      d2.lineCap = "round";
+      d2.strokeStyle = col;
+      d2.beginPath();
+      d2.arc(cx, cy, R + 9, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * S.prog);
+      d2.stroke();
+      d2.lineCap = "butt";
+    }
+    centre(S, cx, cy, Math.max(24, r0 * 0.95));
+  };
+
+  /* 2. Wave: lung level against time, scrolling past a fixed "now" marker. */
+  function waveRun(xa, xb, bt, nowX, pps, Y, alpha, lw) {
+    var runK = null, x = xa, tt, k, lv, y, L;
+    d2.lineWidth = lw;
+    d2.lineJoin = "round";
+    d2.lineCap = "round";
+    for (;;) {
+      if (x > xb) x = xb;
+      tt = bt + (x - nowX) / pps;
+      if (tt < 0) { k = "lead"; lv = 0; } else { L = locate(tt); k = L.p.k; lv = levelOf(L); }
+      y = Y(lv);
+      if (k !== runK) {
+        if (runK !== null) { d2.lineTo(x, y); d2.stroke(); }
+        d2.beginPath();
+        d2.strokeStyle = rgba(kc(k), alpha);
+        d2.moveTo(x, y);
+        runK = k;
+      } else {
+        d2.lineTo(x, y);
+      }
+      if (x >= xb) break;
+      x += 2;
+    }
+    if (runK !== null) d2.stroke();
+    d2.lineCap = "butt";
+  }
+  BVIS.wave = function (S) {
+    var gx = 54, xr = CW - 10, top = 34, bot = CH - 48, bt = S.bt;
+    var win = Math.min(40, Math.max(12, S.ph.cycle * 1.8));
+    var pps = (xr - gx) / win, nowX = Math.round(gx + (xr - gx) * 0.3);
+    var Y = function (l) { return bot - l * (bot - top); };
+    var X = function (t) { return nowX + (t - bt) * pps; };
+    var x;
+
+    d2.lineWidth = 1;
+    d2.setLineDash([2, 6]);
+    d2.strokeStyle = BCOL.line;
+    line(gx, Y(1), xr, Y(1));
+    line(gx, Y(0), xr, Y(0));
+    d2.setLineDash([]);
+    label("Full", gx - 10, Y(1), BCOL["text-faint"], "right", "middle", 11);
+    label("Empty", gx - 10, Y(0), BCOL["text-faint"], "right", "middle", 11);
+
+    // ruler of phases along the bottom
+    var t0 = bt - (nowX - gx) / pps, t1 = bt + (xr - nowX) / pps, cur = Math.max(0, t0), guard = 0;
+    while (cur < t1 && guard++ < 80) {
+      var L = locate(cur + 1e-6), s = L.pStart, e = s + L.p.secs, xs = X(s), xe = X(e);
+      if (xs >= gx) {
+        d2.lineWidth = 1;
+        d2.strokeStyle = rgba(BCOL["text-faint"], 0.5);
+        line(xs, bot + 6, xs, bot + 16);
+      }
+      var a = Math.max(xs, gx), b = Math.min(xe, xr);
+      if (b - a > 44) {
+        label(B_KIND[L.p.k].short + " " + fmtS(L.p.secs), (a + b) / 2, bot + 29,
+          rgba(kc(L.p.k), e > bt ? 0.9 : 0.4), "center", "middle", 11.5);
+      }
+      cur = e;
+    }
+
+    d2.save();
+    d2.beginPath();
+    d2.rect(gx, 0, xr - gx, CH);
+    d2.clip();
+    // soft fill under the part already breathed
+    var fg = d2.createLinearGradient(0, top, 0, bot);
+    fg.addColorStop(0, rgba(BCOL["b-in"], 0.16));
+    fg.addColorStop(1, rgba(BCOL["b-in"], 0));
+    d2.beginPath();
+    d2.moveTo(gx, bot);
+    for (x = gx; x < nowX; x += 2) d2.lineTo(x, Y(levelAt(bt + (x - nowX) / pps)));
+    d2.lineTo(nowX, Y(levelAt(bt)));
+    d2.lineTo(nowX, bot);
+    d2.closePath();
+    d2.fillStyle = fg;
+    d2.fill();
+    waveRun(nowX, xr, bt, nowX, pps, Y, 0.35, 2);     // what is coming
+    waveRun(gx, nowX, bt, nowX, pps, Y, 1, 3);        // what you have breathed
+    d2.restore();
+
+    d2.lineWidth = 1;
+    d2.strokeStyle = rgba(BCOL.text, 0.16);
+    line(nowX, top - 18, nowX, bot + 2);
+    var dy = Y(S.live ? S.level : 0);
+    glowDot(nowX, dy, 7, S.live ? S.col : BCOL["b-in"]);
+    if (S.live) {
+      bFont("650", 14, true);
+      d2.fillStyle = BCOL.text;
+      d2.textAlign = "center";
+      d2.textBaseline = "bottom";
+      d2.fillText(String(S.count), nowX, dy - 13);
+    }
+  };
+
+  /* 3. Box: a dot traces a square, one side per phase. */
+  BVIS.box = function (S) {
+    var s = Math.min(CW * 0.5, CH * 0.6), x0 = (CW - s) / 2, y0 = (CH - s) / 2;
+    var d = { "in": 0, sip: 0, hold: 0, out: 0, rest: 0 };
+    S.ph.list.forEach(function (p) { d[p.k] = p.secs; });
+    var BL = [x0, y0 + s], TL = [x0, y0], TR = [x0 + s, y0], BR = [x0 + s, y0 + s];
+    var sides = [
+      { k: "in",   a: BL, b: TL, secs: d["in"] + d.sip, txt: "In " + fmtS(d["in"]) + (d.sip ? " + " + fmtS(d.sip) : "") },
+      { k: "hold", a: TL, b: TR, secs: d.hold, txt: d.hold ? "Hold " + fmtS(d.hold) : "No hold" },
+      { k: "out",  a: TR, b: BR, secs: d.out,  txt: "Out " + fmtS(d.out) },
+      { k: "rest", a: BR, b: BL, secs: d.rest, txt: d.rest ? "Hold " + fmtS(d.rest) : "No hold" }
+    ];
+    var sipY = y0 + s - B_SIP * s;
+
+    d2.lineCap = "round";
+    d2.lineWidth = 4;
+    sides.forEach(function (sd) {
+      d2.setLineDash(sd.secs ? [] : [2, 8]);
+      d2.strokeStyle = sd.secs ? rgba(kc(sd.k), 0.2) : rgba(BCOL["text-faint"], 0.4);
+      line(sd.a[0], sd.a[1], sd.b[0], sd.b[1]);
+    });
+    d2.setLineDash([]);
+
+    var pos = BL.slice();
+    if (S.live && !S.lead) {
+      var k = S.k, ci = (k === "in" || k === "sip") ? 0 : k === "hold" ? 1 : k === "out" ? 2 : 3;
+      if (ci === 0) pos = [x0, y0 + s - S.level * s];
+      else if (ci === 1) pos = [x0 + S.prog * s, y0];
+      else if (ci === 2) pos = [x0 + s, y0 + (1 - S.level) * s];
+      else pos = [x0 + s - S.prog * s, y0 + s];
+      for (var i = 0; i < ci; i++) {
+        if (!sides[i].secs) continue;
+        if (i === 0 && d.sip) {
+          d2.strokeStyle = kc("in"); line(x0, y0 + s, x0, sipY);
+          d2.strokeStyle = kc("sip"); line(x0, sipY, x0, y0);
+        } else {
+          d2.strokeStyle = kc(sides[i].k);
+          line(sides[i].a[0], sides[i].a[1], sides[i].b[0], sides[i].b[1]);
+        }
+      }
+      if (k === "sip") {
+        d2.strokeStyle = kc("in"); line(x0, y0 + s, x0, sipY);
+        d2.strokeStyle = kc("sip"); line(x0, sipY, pos[0], pos[1]);
+      } else {
+        d2.strokeStyle = S.col;
+        line(sides[ci].a[0], sides[ci].a[1], pos[0], pos[1]);
+      }
+    }
+    d2.lineCap = "butt";
+
+    d2.fillStyle = BCOL.line;
+    [BL, TL, TR, BR].forEach(function (c) { disc(c[0], c[1], 3.5); });
+    sides.forEach(function (sd, i) {
+      var col = sd.secs ? rgba(kc(sd.k), 0.9) : BCOL["text-faint"];
+      if (i === 0) label(sd.txt, x0 - 16, y0 + s / 2, col, "right", "middle", 12);
+      else if (i === 1) label(sd.txt, x0 + s / 2, y0 - 14, col, "center", "bottom", 12);
+      else if (i === 2) label(sd.txt, x0 + s + 16, y0 + s / 2, col, "left", "middle", 12);
+      else label(sd.txt, x0 + s / 2, y0 + s + 14, col, "center", "top", 12);
+    });
+    glowDot(pos[0], pos[1], 8, S.live ? S.col : BCOL["b-in"]);
+    centre(S, CW / 2, CH / 2, Math.max(24, s * 0.26));
+  };
+
+  /* 4. Dial: one lap is one breath, the ring split by phase duration. */
+  BVIS.dial = function (S) {
+    var cx = CW / 2, cy = CH / 2, P = S.ph, TAU = Math.PI * 2, a0 = -Math.PI / 2;
+    // shrink the ring on narrow screens so the side labels stay inside the canvas
+    bFont("600", 12, false);
+    var labW = 0;
+    P.list.forEach(function (p) { labW = Math.max(labW, d2.measureText(B_KIND[p.k].short + " " + fmtS(p.secs)).width); });
+    var R = Math.max(48, Math.min(Math.min(CW, CH) * 0.32, CW / 2 - 26 - labW - 8));
+    var ct = (S.live && !S.lead) ? S.L.ct : 0;
+    var ang = function (t) { return a0 + TAU * t / P.cycle; };
+    d2.lineCap = "butt";
+    P.list.forEach(function (p) {
+      var span = TAU * p.secs / P.cycle, gap = Math.min(0.035, span / 6);
+      var s = ang(p.start) + gap, e = ang(p.start + p.secs) - gap;
+      d2.lineWidth = 14;
+      d2.strokeStyle = rgba(kc(p.k), 0.18);
+      d2.beginPath(); d2.arc(cx, cy, R, s, e); d2.stroke();
+      if (S.live && !S.lead && ct > p.start) {
+        var pe = Math.min(e, ang(ct));
+        if (pe > s) {
+          d2.strokeStyle = kc(p.k);
+          d2.beginPath(); d2.arc(cx, cy, R, s, pe); d2.stroke();
+        }
+      }
+      var mid = ang(p.start + p.secs / 2), lr = R + 26, c = Math.cos(mid);
+      label(B_KIND[p.k].short + " " + fmtS(p.secs), cx + c * lr, cy + Math.sin(mid) * lr,
+        rgba(kc(p.k), 0.9), Math.abs(c) < 0.35 ? "center" : (c > 0 ? "left" : "right"), "middle", 12);
+    });
+    var lv = S.live ? S.level : 0.42, col = S.live ? S.col : BCOL["b-in"];
+    var r = R * (0.34 + 0.3 * lv);
+    d2.fillStyle = rgba(col, 0.14);
+    disc(cx, cy, r);
+    d2.lineWidth = 1.5;
+    d2.strokeStyle = rgba(col, 0.6);
+    ring(cx, cy, r);
+    var ha = ang(ct);
+    glowDot(cx + Math.cos(ha) * R, cy + Math.sin(ha) * R, 9, (S.live && !S.lead) ? S.col : BCOL.text);
+    centre(S, cx, cy, Math.max(24, R * 0.4));
+  };
+
+  /* 5. Column: a capsule that fills like lungs, the countdown riding the surface. */
+  BVIS.column = function (S) {
+    var h = CH * 0.74, w = Math.max(64, Math.min(104, CW * 0.17));
+    var x0 = CW / 2 - w / 2, y0 = (CH - h) / 2, rr = w / 2;
+    var lv = S.live ? S.level : 0, col = S.live ? S.col : BCOL["b-in"];
+    var hasSip = S.ph.list.some(function (p) { return p.k === "sip"; });
+
+    d2.lineWidth = 1;
+    d2.strokeStyle = rgba(BCOL["text-faint"], 0.6);
+    for (var i = 0; i <= 4; i++) { var ty = y0 + h - (i / 4) * h; line(x0 - 16, ty, x0 - 6, ty); }
+    label("Full", x0 - 22, y0, BCOL["text-faint"], "right", "middle", 11);
+    label("Empty", x0 - 22, y0 + h, BCOL["text-faint"], "right", "middle", 11);
+
+    d2.lineWidth = 2;
+    d2.strokeStyle = BCOL.line;
+    rrect(x0, y0, w, h, rr);
+    d2.stroke();
+
+    var sy = y0 + h - lv * h;
+    if (lv > 0.002) {
+      d2.save();
+      rrect(x0 + 4, y0 + 4, w - 8, h - 8, rr - 4);
+      d2.clip();
+      var moving = S.k === "in" || S.k === "sip" || S.k === "out";
+      var amp = RM ? 0 : (moving ? 2.4 : 0.8), tnow = bNow();
+      var fg = d2.createLinearGradient(0, y0, 0, y0 + h);
+      fg.addColorStop(0, rgba(col, 0.85));
+      fg.addColorStop(1, rgba(col, 0.22));
+      d2.fillStyle = fg;
+      d2.beginPath();
+      d2.moveTo(x0, y0 + h);
+      for (var x = x0; x <= x0 + w + 0.1; x += 3) d2.lineTo(x, sy + Math.sin(x * 0.12 + tnow * 2.6) * amp);
+      d2.lineTo(x0 + w, y0 + h);
+      d2.closePath();
+      d2.fill();
+      d2.restore();
+    }
+    if (hasSip) {
+      var sipY = y0 + h - B_SIP * h;
+      d2.setLineDash([3, 4]);
+      d2.lineWidth = 1;
+      d2.strokeStyle = rgba(BCOL["b-sip"], 0.6);
+      line(x0 + 5, sipY, x0 + w - 5, sipY);
+      d2.setLineDash([]);
+    }
+
+    var tx = x0 + w + 22;
+    if (S.live) {
+      bFont("650", 30, true);
+      d2.fillStyle = BCOL.text;
+      d2.textAlign = "left";
+      d2.textBaseline = "middle";
+      d2.fillText(String(S.count), tx, Math.min(y0 + h - 14, Math.max(y0 + 14, sy)));
+    } else {
+      bFont("650", 26, true);
+      d2.fillStyle = BCOL.text;
+      d2.textAlign = "left";
+      d2.textBaseline = "alphabetic";
+      d2.fillText(rateText(), tx, CH / 2 + 4);
+      label("breaths / min", tx, CH / 2 + 22, BCOL["text-dim"], "left", "alphabetic", 11.5, "500");
+    }
+  };
+
+  function initBreath() {
+    try {
+      var saved = JSON.parse(store.get("breath") || "null");
+      if (saved && typeof saved === "object") {
+        B_FIELDS.forEach(function (f) {
+          var v = parseFloat(saved[f.k]);
+          if (isFinite(v) && v >= f.min && v <= f.max) BC[f.k] = Math.round(v * 2) / 2;
+        });
+        if (BVIS[saved.visual]) BC.visual = saved.visual;
+        if (["off", "tones", "chimes"].indexOf(saved.sound) >= 0) BC.sound = saved.sound;
+        if ([0, 2, 5, 10, 15].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;
+        var cue = parseInt(saved.cue, 10);
+        if (cue >= 0 && cue <= 100) BC.cue = cue;
+        BC.pattern = (saved.pattern === "custom") ? "custom" : matchPreset();
+      }
+    } catch (e) {}
+
+    readColors();
+    checkRadio("bpat", BC.pattern);
+    checkRadio("bvis", BC.visual);
+    checkRadio("blen", String(BC.minutes));
+    checkRadio("bsnd", BC.sound);
+    ["#bPats", "#bVis", "#bLen", "#bSnd"].forEach(syncChips);
+    $("#bCue").value = BC.cue;
+    $("#bVolRow").hidden = BC.sound === "off";
+
+    B.ph = buildPhases(BC);
+    planTotal();
+    syncFields(); syncRate(); renderNote(); syncVisHint(); renderLine(); syncTransport(); updateHead();
+
+    $("#bPats").addEventListener("change", function (e) {
+      syncChips("#bPats");
+      BC.pattern = e.target.value;
+      var p = preset(BC.pattern);
+      if (p) {
+        BC.inh = p.t.inh; BC.sip = p.t.sip; BC.hold = p.t.hold; BC.exh = p.t.exh; BC.rest = p.t.rest;
+        syncFields();
+      }
+      renderNote(); syncVisHint(); applyTimings(); saveBreath();
+    });
+    B_FIELDS.forEach(function (f) {
+      $(f.id).addEventListener("input", function () {
+        BC[f.k] = parseFloat(this.value);
+        var id = matchPreset();
+        if (id !== BC.pattern) { BC.pattern = id; checkRadio("bpat", id); syncChips("#bPats"); }
+        syncFields(); renderNote(); syncVisHint(); applyTimings(); saveBreath();
+      });
+    });
+    $("#bVis").addEventListener("change", function (e) {
+      BC.visual = e.target.value;
+      syncChips("#bVis"); syncVisHint(); draw(); saveBreath();
+    });
+    $("#bLen").addEventListener("change", function (e) {
+      BC.minutes = parseInt(e.target.value, 10);
+      syncChips("#bLen");
+      if (B.state === "running" || B.state === "paused") normalize(breathTime());
+      if (B.state === "done") { B.state = "idle"; bFresh(); syncTransport(); }
+      planTotal(); updateHead(); saveBreath();
+    });
+    $("#bSnd").addEventListener("change", function (e) {
+      BC.sound = e.target.value;
+      syncChips("#bSnd");
+      $("#bVolRow").hidden = BC.sound === "off";
+      if (B.state === "running") { cueOff(); if (BC.sound !== "off") cueOn(); }
+      else preview();
+      saveBreath();
+    });
+    $("#bCue").addEventListener("input", function () {
+      BC.cue = parseInt(this.value, 10);
+      if (B.bus && A.ctx) B.bus.gain.setTargetAtTime(cueGain(), A.ctx.currentTime, 0.05);
+      saveBreath();
+    });
+    $("#bCue").addEventListener("change", preview);
+
+    $("#bStart").addEventListener("click", bToggle);
+    $("#bReset").addEventListener("click", bStop);
+    $("#bFocus").addEventListener("click", function () { setFocus(!$("#bStage").classList.contains("focus")); });
+
+    document.addEventListener("fullscreenchange", function () {
+      if (!document.fullscreenElement && $("#bStage").classList.contains("focus")) setFocus(false);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (!$("#bStage").classList.contains("focus")) return;
+      if (e.key === "Escape") { setFocus(false); return; }
+      if (e.code !== "Space") return;
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "button" || tag === "input") return;   // the focused control handles its own Space
+      e.preventDefault();
+      bToggle();
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden && B.state === "running") { acquireLock(); bTick(); }
+    });
+
+    if (window.ResizeObserver) new ResizeObserver(function () { sizeCanvas(); }).observe($("#bView"));
+    else window.addEventListener("resize", sizeCanvas);
+    sizeCanvas();
+  }
+
   /* ------------------------------- init ------------------------------ */
 
 
@@ -1721,7 +3068,11 @@
   render("all");
   syncBuilder();
   syncPrime();
-  window.addEventListener("pagehide", function () { if (A.playing) hardStop(true); });
+  initBreath();
+  window.addEventListener("pagehide", function () {
+    if (A.playing) hardStop(true);
+    if (B.state === "running") bPause();
+  });
 })();
 </script>
 </body>
