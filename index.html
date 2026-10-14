@@ -93,13 +93,13 @@
     margin:44px 0 20px;padding-top:28px;border-top:1px solid var(--line-soft);
   }
   .tabs{display:flex;gap:7px;flex-wrap:wrap}
-  .tab{
+  .tab,.g-tab{
     background:var(--panel);color:var(--text-dim);border:1px solid var(--line);
     padding:8px 15px;border-radius:999px;font-size:13.5px;font-weight:550;cursor:pointer;
     font-family:inherit;transition:background .15s,color .15s,border-color .15s;
   }
-  .tab:hover{color:var(--text);border-color:#33405f}
-  .tab[aria-selected="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+  .tab:hover,.g-tab:hover{color:var(--text);border-color:#33405f}
+  .tab[aria-selected="true"],.g-tab[aria-selected="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
   .count{font-size:13px;color:var(--text-faint)}
 
   /* ---------- cards ---------- */
@@ -436,9 +436,69 @@
   .hr-find-txt{margin:0;font-size:13.5px;color:var(--text-dim)}
   .hr-find-foot{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .hr-find-foot .btn:disabled{opacity:.45;cursor:default}
-  .hr-help ol{margin:0 0 10px;padding-left:20px}
-  .hr-help li{margin-bottom:6px}
-  .hr-help p{margin:0}
+  /* connection guide */
+  .hr-guide{border:1px solid var(--line-soft);border-radius:var(--radius-sm);background:var(--bg)}
+  .hr-guide > summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:12px}
+  .hr-guide > summary::-webkit-details-marker{display:none}
+  .hr-guide > summary::after{content:"›";margin-left:auto;font-size:20px;line-height:1;color:var(--text-faint);transition:transform .2s;flex:none}
+  .hr-guide[open] > summary::after{transform:rotate(90deg)}
+  .hr-guide > summary:hover::after{color:var(--text)}
+  .hr-guide-sum{min-width:0}
+  .hr-guide-sum b{display:block;font-size:15px;font-weight:620;color:var(--text)}
+  .hr-guide-sum span{display:block;font-size:13px;color:var(--text-faint);margin-top:2px}
+  .hr-guide-body{
+    display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;
+    border-top:1px solid var(--line-soft);padding:16px;
+  }
+  .g-main{min-width:0}
+  .g-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+  .g-tab{font-size:13px;padding:7px 13px}
+  .g-steps{counter-reset:g;list-style:none;margin:0;padding:0;display:grid;gap:14px}
+  .g-steps li{counter-increment:g;position:relative;padding-left:38px;font-size:14px;color:var(--text-dim);max-width:68ch}
+  .g-steps li::before{
+    content:counter(g);position:absolute;left:0;top:0;width:25px;height:25px;border-radius:50%;
+    background:var(--panel-2);border:1px solid var(--line);color:var(--text);
+    font-size:12px;font-weight:650;display:grid;place-items:center;
+  }
+  .g-steps li b{display:block;color:var(--text);font-weight:600;margin-bottom:2px}
+  .g-expect{
+    margin:16px 0 0;padding:11px 13px;border-radius:var(--radius-sm);font-size:13.5px;color:var(--text-dim);
+    background:color-mix(in srgb,var(--hr) 7%,transparent);border:1px solid color-mix(in srgb,var(--hr) 24%,transparent);
+  }
+  .g-expect b{color:var(--text);font-weight:600}
+  .g-side{display:grid;gap:12px;align-content:start;min-width:0}
+  .g-card{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:13px 14px}
+  .g-card h4{margin:6px 0 8px;font-size:14.5px;font-weight:620}
+  .g-card ul{margin:0;padding-left:18px;font-size:13px;color:var(--text-dim)}
+  .g-card ul li{margin-bottom:6px;overflow-wrap:anywhere}
+  .g-card ul li:last-child{margin-bottom:0}
+  .g-check{list-style:none;padding:0 !important;margin:10px 0 14px !important;display:grid;gap:10px}
+  .g-check li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;margin:0 !important}
+  .g-check li i{
+    width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);margin-top:1px;
+    display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;line-height:1;color:var(--bg);
+  }
+  .g-check li b{display:block;color:var(--text);font-weight:600;font-size:13px}
+  .g-check li .s{display:block;font-size:12px;color:var(--text-faint)}
+  .g-check li.ok i{background:var(--relax);border-color:var(--relax)}
+  .g-check li.ok i::after{content:"✓"}
+  .g-check li.wait i{border-color:var(--b-hold);border-style:dashed}
+  .g-check li.no i{background:var(--danger);border-color:var(--danger)}
+  .g-check li.no i::after{content:"×";font-size:13px}
+  .g-check li.info i{border-color:var(--text-faint)}
+  .g-check li.info i::after{content:"–";color:var(--text-faint)}
+  .g-check li.no .s{color:var(--b-hold)}
+  .g-check + .btn:disabled{opacity:.45;cursor:default}
+  .g-trouble{border-top:1px solid var(--line-soft);padding:14px 16px 6px}
+  .g-trouble .prime-label{margin-bottom:4px}
+  .g-trouble details{border-top:1px solid var(--line-soft)}
+  .g-trouble details:first-of-type{border-top:0}
+  .g-trouble summary{cursor:pointer;list-style:none;display:flex;gap:9px;padding:10px 0;font-size:13.5px;font-weight:560;color:var(--text)}
+  .g-trouble summary::-webkit-details-marker{display:none}
+  .g-trouble summary::before{content:"+";width:12px;flex:none;color:var(--text-faint);font-weight:700}
+  .g-trouble details[open] summary::before{content:"−"}
+  .g-trouble p{margin:0 0 12px 21px;font-size:13px;color:var(--text-dim);max-width:72ch}
+  @media (max-width:880px){ .hr-guide-body{grid-template-columns:minmax(0,1fr)} }
   .b-stat.b-hr{color:var(--hr);border-color:color-mix(in srgb,var(--hr) 35%,transparent)}
   .b-stat.b-hr b{color:var(--hr)}
   .b-stat.b-hr .hr-dot{width:7px;height:7px;margin:0 6px 0 0;vertical-align:1px;opacity:.5}
@@ -600,6 +660,7 @@
       <a href="#tracks">Tracks</a>
       <a href="#builder">Build your own</a>
       <a href="#breathe">Breathing guide</a>
+      <a href="#connect">Connect a heart sensor</a>
       <a href="#science">The research</a>
     </nav>
   </header>
@@ -851,6 +912,119 @@
         </div>
       </div>
 
+      <details class="hr-guide" id="connect">
+        <summary>
+          <span class="hr-guide-sum">
+            <b>Connection guide</b>
+            <span>Step by step for a Garmin Venu 4, a HeartMath sensor or a chest strap, with a live check of each step</span>
+          </span>
+        </summary>
+
+        <div class="hr-guide-body">
+          <div class="g-main">
+            <div class="g-tabs" role="tablist" aria-label="Choose your sensor">
+              <button class="g-tab" role="tab" id="gt-garmin" data-dev="garmin" aria-controls="gp-garmin" aria-selected="true">Garmin Venu 4</button>
+              <button class="g-tab" role="tab" id="gt-heartmath" data-dev="heartmath" aria-controls="gp-heartmath" aria-selected="false" tabindex="-1">HeartMath sensor</button>
+              <button class="g-tab" role="tab" id="gt-strap" data-dev="strap" aria-controls="gp-strap" aria-selected="false" tabindex="-1">Chest strap</button>
+              <button class="g-tab" role="tab" id="gt-other" data-dev="other" aria-controls="gp-other" aria-selected="false" tabindex="-1">Other sensors</button>
+            </div>
+
+            <div class="g-panel" role="tabpanel" id="gp-garmin" aria-labelledby="gt-garmin">
+              <ol class="g-steps">
+                <li><b>Start broadcasting on the watch.</b>Hold the upper-right button to open the controls menu and choose the heart-rate broadcast control. You can also go to Settings &gt; Health &amp; Wellness &gt; Wrist Heart Rate &gt; Broadcast Heart Rate. If the control isn't in the menu, you can add it when you customise the controls menu.</li>
+                <li><b>Wear it snug and keep your arm still.</b>Put it a finger's width above the wrist bone, tight enough not to slide. The optical sensor reads most steadily with your forearm resting on something.</li>
+                <li><b>Connect here.</b>Press Connect sensor. The watch appears in the list under its name within a few seconds; choose it and press Pair.</li>
+                <li><b>Stop when you're done.</b>Press the upper-right button on the watch to stop broadcasting, because it uses extra battery.</li>
+              </ol>
+              <p class="g-expect"><b>What you'll get:</b> heart rate about once a second, the swing in each breath and the resonance test. Garmin watches don't broadcast beat-to-beat intervals, so RMSSD stays empty and coherence is marked as an estimate.</p>
+            </div>
+
+            <div class="g-panel" role="tabpanel" id="gp-heartmath" aria-labelledby="gt-heartmath" hidden>
+              <ol class="g-steps">
+                <li><b>Free it from the HeartMath app.</b>The sensor connects to one device at a time. Close the HeartMath or Inner Balance app on your phone or tablet (swipe it away from the recent-apps screen), or switch that device's Bluetooth off for a moment.</li>
+                <li><b>Turn it on.</b>Press the button on the sensor once. A rapidly flashing blue light means it's ready to connect. A Coherence Plus sensor blinking white is still looking for the device it last used, so step 1 isn't done yet. If the battery light blinks red, charge it first.</li>
+                <li><b>Clip it on.</b>Clip the sensor to your earlobe and the cord's clip to your collar so it doesn't tug. If readings are patchy, rub the earlobe for a few seconds to warm it.</li>
+                <li><b>Connect here.</b>Press Connect sensor and choose it from the list; look for a name with HeartMath in it or the ID number printed on the back of the sensor. If it doesn't appear, press My sensor isn't listed, which shows every nearby device.</li>
+              </ol>
+              <p class="g-expect"><b>What you'll get:</b> if your sensor sends beat-to-beat intervals, as Elite HRV's compatibility list suggests, everything works: RMSSD after about 30 seconds and the full coherence score after 64. HeartMath doesn't document use with other apps, so if RMSSD still says it needs beat-to-beat data after a minute, your model sends heart rate only.</p>
+            </div>
+
+            <div class="g-panel" role="tabpanel" id="gp-strap" aria-labelledby="gt-strap" hidden>
+              <ol class="g-steps">
+                <li><b>Wet the electrodes.</b>Moisten the two textured areas on the inside of the strap with water.</li>
+                <li><b>Put it on.</b>Clip the sensor to the strap and fasten it just below your chest muscles, sensor centred. Most straps switch on when they touch skin.</li>
+                <li><b>Close other apps.</b>Quit apps that might already be connected to it, such as Polar, Garmin Connect, Strava or Zwift.</li>
+                <li><b>Connect here.</b>Press Connect sensor and choose it from the list, for example "Polar H10" followed by a serial number.</li>
+              </ol>
+              <p class="g-expect"><b>What you'll get:</b> everything, beat to beat. A chest strap gives the most accurate HRV. Afterwards, unclip the sensor or dry the strap so it stops broadcasting.</p>
+            </div>
+
+            <div class="g-panel" role="tabpanel" id="gp-other" aria-labelledby="gt-other" hidden>
+              <ol class="g-steps">
+                <li><b>Check it uses the standard heart-rate service.</b>Anything that pairs with gym equipment, Zwift or a bike computer as a Bluetooth heart-rate monitor almost certainly does. Some watches can't broadcast at all; look for a setting called something like "broadcast heart rate".</li>
+                <li><b>Turn broadcasting on and free it from other apps.</b>Most sensors connect to only one app or device at a time.</li>
+                <li><b>Connect here.</b>Press Connect sensor. If the sensor doesn't advertise the service up front, use My sensor isn't listed. The page tells you if the device you pick has no heart-rate service.</li>
+              </ol>
+              <p class="g-expect"><b>What you'll get:</b> watches usually send heart rate only, like the Garmin. Ear-clip and chest sensors usually send beat-to-beat intervals too, which RMSSD and the full coherence score need.</p>
+            </div>
+          </div>
+
+          <aside class="g-side">
+            <div class="g-card" id="gEnv">
+              <div class="prime-label">Your browser</div>
+              <h4 id="gEnvTitle">Checking…</h4>
+              <ul id="gEnvTips"></ul>
+            </div>
+            <div class="g-card">
+              <div class="prime-label">Connection check</div>
+              <ul class="g-check" id="gCheck" aria-live="polite">
+                <li data-k="bt"><i aria-hidden="true"></i><div><b>Bluetooth in this browser</b><span class="s"></span></div></li>
+                <li data-k="conn"><i aria-hidden="true"></i><div><b>Sensor connected</b><span class="s"></span></div></li>
+                <li data-k="hr"><i aria-hidden="true"></i><div><b>Heart rate arriving</b><span class="s"></span></div></li>
+                <li data-k="rr"><i aria-hidden="true"></i><div><b>Beat-to-beat data</b><span class="s"></span></div></li>
+              </ul>
+              <button class="btn" id="gConnect">Connect sensor</button>
+            </div>
+          </aside>
+        </div>
+
+        <div class="g-trouble">
+          <div class="prime-label">If something doesn't work</div>
+          <details>
+            <summary>The sensor isn't in the list</summary>
+            <p>Check that it's switched on and free. On a Garmin, broadcasting has to be running. A HeartMath sensor needs the fast blue flash and the HeartMath app closed. A chest strap needs wet electrodes and skin contact. Keep it within a metre or two of the phone or computer, and if it still doesn't show, press My sensor isn't listed.</p>
+          </details>
+          <details>
+            <summary>Chrome on Android finds nothing at all</summary>
+            <p>Bluetooth has to be on: swipe down from the top of the screen and tap Bluetooth. Chrome also needs permission to find nearby devices. On a Samsung Galaxy, open Settings &gt; Apps &gt; Chrome &gt; Permissions &gt; Nearby devices and choose Allow. On older Android versions the permission is called Location, and location services must be on.</p>
+          </details>
+          <details>
+            <summary>I paired the sensor in my phone's Bluetooth settings</summary>
+            <p>Unpair it. The page connects to the sensor directly, and a system pairing can keep it busy. On a Samsung Galaxy, go to Settings &gt; Connections &gt; Bluetooth, tap the gear next to the sensor and choose Unpair.</p>
+          </details>
+          <details>
+            <summary>The Connect button is greyed out</summary>
+            <p>This browser can't use Bluetooth. Open the page in Chrome or Edge on an Android phone or a computer. On a phone, Samsung Internet may not offer it, so use Chrome. On an iPhone, Safari and Chrome can't reach sensors; Bluefy, a browser built for Web Bluetooth, can.</p>
+          </details>
+          <details>
+            <summary>It connects, then drops</summary>
+            <p>Move the phone closer, charge the sensor, and keep Chrome in front with the screen on, because Android pauses pages in the background. The page tries to reconnect five times on its own before giving up.</p>
+          </details>
+          <details>
+            <summary>Heart rate works, but RMSSD stays empty</summary>
+            <p>The sensor sends heart rate only, which is true of every Garmin watch. The swing and the resonance test still work, and coherence is shown as an estimate. For RMSSD and full coherence, use the HeartMath sensor or a chest strap.</p>
+          </details>
+          <details>
+            <summary>The numbers jump around</summary>
+            <p>Optical sensors on the wrist or ear lose the pulse when you move or your skin is cold. Sit still, rest your arm, tighten the watch a notch, or warm your earlobe. For a chest strap, wet the electrodes again.</p>
+          </details>
+          <details>
+            <summary>The page says Bluetooth is blocked</summary>
+            <p>You're looking at a copy embedded inside another page, such as a preview, and those block Bluetooth. Open the page at its own web address and connect from there.</p>
+          </details>
+        </div>
+      </details>
+
       <div class="hr-tiles">
         <div class="hr-tile now">
           <div class="k">Heart rate</div>
@@ -911,25 +1085,6 @@
           </div>
         </div>
       </div>
-
-      <details class="ev hr-help">
-        <summary>Setting up a Garmin watch, a HeartMath sensor or a chest strap</summary>
-        <div class="ev-body">
-          <ol>
-            <li><b>Garmin Venu 4:</b> open Settings &gt; Health &amp; Wellness &gt; Wrist Heart Rate and choose Broadcast Heart Rate, or pick it from the controls menu (hold the upper button). Keep the watch on that screen while you practise.</li>
-            <li><b>HeartMath Inner Balance sensor:</b> clip it on, switch it on, and close the HeartMath app on your phone first, because the sensor talks to one device at a time.</li>
-            <li>Open this page in Chrome or Edge on a computer or an Android phone. Safari, iPhone browsers and Firefox can't reach Bluetooth sensors.</li>
-            <li>Press Connect sensor and pick it from the list. If it doesn't appear, try My sensor isn't listed.</li>
-          </ol>
-          <p>
-            Garmin watches broadcast a smoothed heart rate about once a second, without the individual beat-to-beat
-            intervals. That is enough to see the swing with each breath, though it reads smaller than a beat-to-beat
-            sensor would show. RMSSD, the standard short-term HRV measure, needs those intervals, so it lights up with
-            an ear-clip sensor or a chest strap such as the Polar H10. The coherence score also wants beat-to-beat
-            data: from a watch it is marked as an estimate, because the smoothing makes it read high.
-          </p>
-        </div>
-      </details>
     </div>
   </section>
 
@@ -3253,8 +3408,10 @@
     H.state = st;
     $("#hr").dataset.state = st;
     bSetT("#hrPillTxt", pill);
-    bSetT("#hrConnect", (st === "on" || st === "lost") ? "Disconnect" : st === "busy" ? "Connecting…" : "Connect sensor");
-    $("#hrConnect").disabled = st === "busy" || !hrSupported();
+    ["#hrConnect", "#gConnect"].forEach(function (sel) {
+      bSetT(sel, (st === "on" || st === "lost") ? "Disconnect" : st === "busy" ? "Connecting…" : "Connect sensor");
+      $(sel).disabled = st === "busy" || !hrSupported();
+    });
     $("#hrAny").hidden = st === "on" || st === "lost" || !hrSupported();
     finderUI();
     hrTiles();
@@ -3301,6 +3458,8 @@
       })
       .then(function () {
         H.tries = 0;
+        H.connAt = bNow();
+        store.set("hrEver", "1");
         hrMsg("");
         bSetT("#hrTitle", H.name);
         hrSetState("on", "Connected");
@@ -3463,6 +3622,119 @@
     $("#pHrChip").hidden = !live;
     if (live) bSetT("#pHr", hrPlayerText());
     cohShow();
+    guideCheck();
+  }
+
+  /* ----- connection guide ----- */
+
+  /* What this browser can do, in the visitor's terms. Feature detection
+     decides; the user agent only picks which advice to show. */
+  function guideEnv() {
+    var ua = navigator.userAgent || "", bt = hrSupported(), embedded = false;
+    try { embedded = window.self !== window.top; } catch (e) { embedded = true; }
+    var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    var os = /Android/.test(ua) ? "android" : ios ? "ios" : /CrOS/.test(ua) ? "chromeos" :
+      /Mac OS X/.test(ua) ? "mac" : /Windows/.test(ua) ? "windows" : /Linux/.test(ua) ? "linux" : "other";
+    var br = /SamsungBrowser/.test(ua) ? "Samsung Internet" : /EdgA?\//.test(ua) ? "Edge" : /OPR\//.test(ua) ? "Opera" :
+      /Firefox|FxiOS/.test(ua) ? "Firefox" : /CriOS/.test(ua) ? "Chrome" : /Chrome\//.test(ua) ? "Chrome" :
+      /Safari\//.test(ua) ? "Safari" : "This browser";
+    var osName = { android: "Android", ios: ios && /iPad/.test(ua) ? "iPad" : "iPhone", chromeos: "ChromeOS", mac: "macOS", windows: "Windows", linux: "Linux", other: "this device" }[os];
+    var title = br + " on " + osName, tips = [];
+
+    if (embedded) {
+      title += ", embedded in another page";
+      tips.push("This copy sits inside another page, such as a preview, which blocks Bluetooth. Open the page at its own web address to connect.");
+    }
+    if (os === "ios" && bt) {
+      tips.push("This browser offers Web Bluetooth, so you can connect here.");
+    } else if (os === "ios") {
+      tips.push("Safari and Chrome on iPhone and iPad can't reach Bluetooth sensors.");
+      tips.push("Bluefy, a browser built for Web Bluetooth, can: install it from the App Store and open this page in it.");
+    } else if (!bt) {
+      tips.push(os === "android"
+        ? "Open this page in Chrome instead; install it from the Play Store if you need to. Copy the address from the address bar and paste it into Chrome."
+        : "Open this page in Chrome or Edge. Safari and Firefox don't support Bluetooth sensors.");
+      if (os === "linux") tips.push("Chrome on Linux may also need about://flags/#enable-experimental-web-platform-features switched on.");
+    } else if (os === "android") {
+      tips.push("Turn Bluetooth on: swipe down from the top of the screen and tap Bluetooth.");
+      tips.push("When Chrome asks to find and connect to nearby devices, tap Allow. If you said no before, go to Settings > Apps > " + br + " > Permissions > Nearby devices.");
+      tips.push("Don't pair the sensor in Android's Bluetooth settings; the page connects to it directly.");
+      tips.push("During a session keep the screen on and the browser in front. The guide keeps the screen awake while it runs.");
+    } else if (os === "mac") {
+      tips.push("The first time, macOS asks whether " + br + " may use Bluetooth; allow it. If you missed it: System Settings > Privacy & Security > Bluetooth.");
+      tips.push("Don't pair the sensor in the Bluetooth settings; the page connects to it directly.");
+    } else if (os === "windows") {
+      tips.push("Turn Bluetooth on in Settings > Bluetooth & devices.");
+      tips.push("Don't pair the sensor in Windows settings; the page connects to it directly.");
+    } else if (os === "linux") {
+      tips.push("If Connect finds nothing, switch on about://flags/#enable-experimental-web-platform-features and restart " + br + ".");
+    } else {
+      tips.push("Turn Bluetooth on, then press Connect sensor.");
+    }
+    return { title: title, tips: tips, ok: bt && !embedded };
+  }
+
+  function guideRenderEnv() {
+    var env = guideEnv(), ul = $("#gEnvTips");
+    bSetT("#gEnvTitle", env.title);
+    ul.innerHTML = "";
+    env.tips.forEach(function (t) { var li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+  }
+
+  function guideItem(k, cls, sub) {
+    var li = document.querySelector('#gCheck li[data-k="' + k + '"]');
+    if (!li) return;
+    if (li.className !== cls) li.className = cls;
+    var s = li.querySelector(".s");
+    if (s.textContent !== sub) s.textContent = sub;
+  }
+
+  /* The live check beside the steps: each line ticks as that step works. */
+  function guideCheck() {
+    var st = H.state, live = hrLive(), now = bNow();
+    guideItem("bt", hrSupported() ? "ok" : "no", hrSupported() ? "Ready" : "Not available here. See Your browser.");
+    if (st === "on") guideItem("conn", "ok", H.name);
+    else if (st === "busy") guideItem("conn", "wait", "Connecting…");
+    else if (st === "lost") guideItem("conn", "wait", "Reconnecting…");
+    else guideItem("conn", "", hrSupported() ? "Press Connect sensor" : "");
+    if (live) guideItem("hr", "ok", Math.round(H.hr) + " bpm");
+    else if (st === "on") guideItem("hr", "wait", H.contact === false ? "No skin contact" : "No readings yet. Is it broadcasting and on your skin?");
+    else guideItem("hr", "", "");
+    var recentBeat = H.beats.length && now - H.beats[H.beats.length - 1].t < 5;
+    if (live && recentBeat) guideItem("rr", "ok", "RMSSD and coherence use every beat");
+    else if (live && H.connAt && now - H.connAt > 10) guideItem("rr", "info", "This sensor sends heart rate only. Swing works; coherence is an estimate.");
+    else if (live) guideItem("rr", "wait", "Checking…");
+    else guideItem("rr", "", "Needed for RMSSD and full coherence");
+  }
+
+  function guideInit() {
+    var g = $("#connect");
+    if (!store.get("hrEver") || location.hash === "#connect") g.open = true;    // open until the first connection
+    var tabs = Array.prototype.slice.call(document.querySelectorAll(".g-tab"));
+    var pick = function (dev, focus) {
+      tabs.forEach(function (t) {
+        var on = t.dataset.dev === dev;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        t.tabIndex = on ? 0 : -1;
+        $("#gp-" + t.dataset.dev).hidden = !on;
+        if (on && focus) t.focus();
+      });
+      store.set("guideDev", dev);
+    };
+    tabs.forEach(function (t, i) {
+      t.addEventListener("click", function () { pick(t.dataset.dev); });
+      t.addEventListener("keydown", function (e) {
+        var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        pick(tabs[(i + d + tabs.length) % tabs.length].dataset.dev, true);
+      });
+    });
+    var saved = store.get("guideDev");
+    if (saved && $("#gp-" + saved)) pick(saved);
+    $("#gConnect").addEventListener("click", function () { hrConnect(false); });
+    guideRenderEnv();
+    guideCheck();
   }
 
   /* A dot that blinks at the current heart rate. */
@@ -3894,6 +4166,7 @@
   }
 
   function hrInit() {
+    guideInit();
     try {
       var f = JSON.parse(store.get("resonance") || "null");
       if (f && f.res && f.res.length === FIND_RATES.length && f.at) H.find = f;
