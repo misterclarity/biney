@@ -400,7 +400,13 @@
   .hr-pill i{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex:none}
   .hr[data-state="on"] .hr-pill i{background:var(--hr);box-shadow:0 0 8px var(--hr)}
   .hr[data-state="busy"] .hr-pill i,.hr[data-state="lost"] .hr-pill i{background:var(--b-hold)}
-  .hr-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .hr-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+  .hr-meter{position:relative;height:6px;border-radius:99px;background:var(--line);margin:10px 0 16px}
+  .hr-meter i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:99px;background:var(--hr);transition:width .6s}
+  .hr-meter span{position:absolute;top:9px;font-size:10.5px;color:var(--text-faint);line-height:1}
+  .hr-meter span:first-of-type{left:0}
+  .hr-meter span:last-of-type{right:0}
+  .hr-col{display:grid;gap:15px;min-width:0;align-content:start}
   .hr-tile{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:12px 14px;min-width:0}
   .hr-tile .k{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);font-weight:650}
   .hr-tile .v{
@@ -438,10 +444,16 @@
   .b-stat.b-hr .hr-dot{width:7px;height:7px;margin:0 6px 0 0;vertical-align:1px;opacity:.5}
   .ear.ear-hr{border-color:color-mix(in srgb,var(--hr) 40%,transparent);color:var(--hr)}
   .ear.ear-hr b{color:var(--hr)}
+  .hr-chart.grow{flex:1 1 auto;height:auto;min-height:130px;max-height:260px}
+  @media (max-width:1000px){
+    .hr-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .hr-tile.coh{grid-column:span 2}
+  }
   @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr)} }
   @media (max-width:640px){
     .hr{padding:16px}
     .hr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .hr-tile.coh{grid-column:1 / -1}
     .hr-tile .v{font-size:24px}
   }
 
@@ -704,6 +716,7 @@
             <span class="b-stat">Breath <b id="bCount">0</b><span id="bOf"> / 27</span></span>
             <span class="b-stat"><b id="bClock">04:57</b> <span id="bClockL">left</span></span>
             <span class="b-stat b-hr" id="bHrStat" title="Heart rate from your sensor" hidden><i class="hr-dot" aria-hidden="true"></i><b id="bHr">—</b> bpm</span>
+            <span class="b-stat b-hr" id="bCohStat" title="Coherence score over the last 64 seconds, usually 0 to 8" hidden>coherence <b id="bCoh">—</b></span>
           </div>
         </div>
 
@@ -859,16 +872,31 @@
           <div class="v"><span id="hrRmssd">—</span><small>ms</small></div>
           <div class="s" id="hrRmssdS">Needs beat-to-beat data</div>
         </div>
+        <div class="hr-tile coh">
+          <div class="k">Coherence, last 64 s</div>
+          <div class="v"><span id="hrCoh">—</span><small>score</small></div>
+          <div class="hr-meter" aria-hidden="true"><i id="hrCohBar"></i><span>0</span><span>8</span></div>
+          <div class="s" id="hrCohS">Needs a heart-rate sensor</div>
+        </div>
       </div>
 
       <div class="hr-body">
-        <div class="hr-box">
-          <div class="hr-box-head"><b>Breath by breath</b><span class="hint">Each bar is one breath's heart-rate swing, in bpm</span></div>
-          <div class="hr-chart">
-            <canvas id="hrBars" aria-hidden="true"></canvas>
-            <p class="hr-empty" id="hrBarsEmpty">Connect a sensor and start a breathing session. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
+        <div class="hr-col">
+          <div class="hr-box">
+            <div class="hr-box-head"><b>Breath by breath</b><span class="hint">Each bar is one breath's heart-rate swing, in bpm</span></div>
+            <div class="hr-chart">
+              <canvas id="hrBars" aria-hidden="true"></canvas>
+              <p class="hr-empty" id="hrBarsEmpty">Connect a sensor and start a breathing session. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
+            </div>
+            <p class="hr-summary" id="hrSummary" hidden></p>
           </div>
-          <p class="hr-summary" id="hrSummary" hidden></p>
+          <div class="hr-box">
+            <div class="hr-box-head"><b>Heart rhythm spectrum</b><span class="hint">Pink: your heart rhythm · dashed: your breathing pace</span></div>
+            <div class="hr-chart sm">
+              <canvas id="hrSpec" aria-hidden="true"></canvas>
+              <p class="hr-empty" id="hrSpecEmpty">After 64 seconds of heart data, this shows which rhythms your heart rate is moving in. Coherence is high when one smooth peak stands out, usually right on your breathing pace.</p>
+            </div>
+          </div>
         </div>
         <div class="hr-box">
           <div class="hr-box-head"><b>Resonance test</b><span class="hint" id="hrFindWhen">Connect a sensor first</span></div>
@@ -876,7 +904,7 @@
             Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the
             biggest heart-rate swing. About 10 minutes, sitting still.
           </p>
-          <div class="hr-chart sm"><canvas id="hrFind" aria-hidden="true"></canvas></div>
+          <div class="hr-chart sm grow"><canvas id="hrFind" aria-hidden="true"></canvas></div>
           <div class="hr-find-foot">
             <button class="btn" id="hrFindStart" disabled>Start resonance test</button>
             <button class="btn primary" id="hrFindUse" hidden>Breathe at this pace</button>
@@ -897,7 +925,8 @@
             Garmin watches broadcast a smoothed heart rate about once a second, without the individual beat-to-beat
             intervals. That is enough to see the swing with each breath, though it reads smaller than a beat-to-beat
             sensor would show. RMSSD, the standard short-term HRV measure, needs those intervals, so it lights up with
-            an ear-clip sensor or a chest strap such as the Polar H10.
+            an ear-clip sensor or a chest strap such as the Polar H10. The coherence score also wants beat-to-beat
+            data: from a watch it is marked as an estimate, because the smoothing makes it read high.
           </p>
         </div>
       </details>
@@ -992,6 +1021,18 @@
         periods between steps and judges by the swing alone, without the phase and spectral criteria a clinician
         would also check (Shaffer &amp; Meehan, 2020). Treat its answer as a good starting pace, not a diagnosis.
       </p>
+      <p>
+        The coherence score follows HeartMath's published method. Every 5 seconds it takes the last 64 seconds of
+        heartbeats, finds the strongest rhythm between 0.04 and 0.26&nbsp;Hz, and compares the power in a
+        0.030&nbsp;Hz band around that peak with the power below and above it:
+        <span class="mono">CR&nbsp;=&nbsp;(peak&nbsp;÷&nbsp;below)&nbsp;×&nbsp;(peak&nbsp;÷&nbsp;above)</span>, and the score is
+        <span class="mono">ln(CR&nbsp;+&nbsp;1)</span>, usually between 0 and 8 (McCraty et al., 2009; Balaji et al., 2025).
+        It measures how much your heart rhythm settles into one smooth wave, and slow, even breathing near your
+        resonance rate is the most reliable way to raise it. In HeartMath's data from 1.8 million sessions, the most
+        common peak was about 0.1&nbsp;Hz, six breaths a minute. HeartMath's own apps rescale the score (0 to 16 in
+        Inner Balance) and use thresholds they don't publish, so expect the numbers here to differ from the app's.
+        The score needs beat-to-beat data; from a watch's smoothed heart rate it is an estimate that reads high.
+      </p>
 
       <h3>Frequency bands at a glance</h3>
       <div class="tbl-scroll">
@@ -1042,6 +1083,8 @@
       <li>Balban, M. Y., Neri, E., Kogon, M. M., et al. (2023). Brief structured respiration practices enhance mood and reduce physiological arousal. <em>Cell Reports Medicine</em>, 4(1), 100895. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9873947/" rel="noopener">PMC</a></li>
       <li>Fincham, G. W., Strauss, C., Montero-Marin, J., &amp; Cavanagh, K. (2023). Effect of breathwork on stress and mental health: a meta-analysis of randomised-controlled trials. <em>Scientific Reports</em>, 13, 432. <a href="https://www.nature.com/articles/s41598-022-27247-y" rel="noopener">Nature</a></li>
       <li>Van Diest, I., Verstappen, K., Aubert, A. E., et al. (2014). Inhalation/exhalation ratio modulates the effect of slow breathing on heart rate variability and relaxation. <em>Applied Psychophysiology and Biofeedback</em>, 39(3–4), 171–180. <a href="https://doi.org/10.1007/s10484-014-9253-x" rel="noopener">DOI</a></li>
+      <li>McCraty, R., Atkinson, M., Tomasino, D., &amp; Bradley, R. T. (2009). The coherent heart: heart–brain interactions, psychophysiological coherence, and the emergence of system-wide order. <em>Integral Review</em>, 5(2), 10–115. <a href="https://www.integral-review.org/issues/vol_5_no_2_mccraty_et_al_the_coherent_heart.pdf" rel="noopener">PDF</a></li>
+      <li>Balaji, S., Plonka, N., Atkinson, M., et al., &amp; McCraty, R. (2025). Heart rate variability biofeedback in a global study of the most common coherence frequencies and the impact of emotional states. <em>Scientific Reports</em>, 15, 3241. <a href="https://www.nature.com/articles/s41598-025-87729-7" rel="noopener">Nature</a></li>
       <li>Shaffer, F., &amp; Meehan, Z. M. (2020). A practical guide to resonance frequency assessment for heart rate variability biofeedback. <em>Frontiers in Neuroscience</em>, 14, 570400. <a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2020.570400/full" rel="noopener">Frontiers</a></li>
       <li>Vierra, J., Boonla, O., &amp; Prasertsri, P. (2022). Effects of sleep deprivation and 4-7-8 breathing control on heart rate variability, blood pressure, blood glucose, and endothelial function in healthy young adults. <em>Physiological Reports</em>, 10, e15389. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9277512/" rel="noopener">PMC</a></li>
     </ol>
@@ -2264,6 +2307,7 @@
     voice: null, bus: null, lock: null, doneMsg: "", doneCount: 0, doneSecs: 0,
     hr: [],                   // heart samples this session: {bt, hr, n (breath index), cyc}
     swings: [], hrDone: 0,    // per-breath heart-rate swing, and the next breath to score
+    coh: [],                  // coherence scores taken during this session
     finder: null              // the resonance test, while it runs
   };
 
@@ -2483,7 +2527,7 @@
   function bFresh() {
     B.ph = buildPhases(BC); B.pending = null; B.epoch = 0; B.done = 0; planTotal();
     B.st = 0; B.key = ""; B.schedTo = -B_LEAD;
-    B.hr = []; B.swings = []; B.hrDone = 0;
+    B.hr = []; B.swings = []; B.hrDone = 0; B.coh = [];
     renderLine();
     bSetT("#bMsg", "");
     drawSwings(); hrTiles();
@@ -3195,7 +3239,9 @@
     dev: null, chr: null, state: "off", name: "", wantOn: false, tries: 0,
     hr: 0, lastAt: 0, hasRR: false, contact: null,
     beats: [],                 // {t, rr}: beat-to-beat intervals from the last 5 minutes
-    pulseT: 0, tickT: 0, find: null
+    series: [],                // {t, hr}: every heart-rate point (per beat, or per notification), last 5 minutes
+    since: 0, coh: null,       // when continuous data began; the latest coherence result
+    pulseT: 0, tickT: 0, cohT: 0, find: null
   };
   var FIND_RATES = [6.5, 6, 5.5, 5, 4.5], FIND_STEP = 120;
 
@@ -3235,6 +3281,8 @@
       H.tries = 0;
       H.hasRR = false;
       H.beats = [];
+      H.series = [];
+      H.coh = null;
       dev.removeEventListener("gattserverdisconnected", hrLost);
       dev.addEventListener("gattserverdisconnected", hrLost);
       return hrAttach();
@@ -3258,6 +3306,9 @@
         hrSetState("on", "Connected");
         clearInterval(H.tickT);
         H.tickT = setInterval(hrTiles, 1000);
+        H.since = 0;                     // a reconnect leaves a gap, so coherence starts its 64 s again
+        clearInterval(H.cohT);
+        H.cohT = setInterval(cohTick, 5000);
         hrPulse();
       });
   }
@@ -3294,7 +3345,10 @@
   function hrDisconnect() {
     H.wantOn = false;
     clearInterval(H.tickT);
+    clearInterval(H.cohT);
     clearTimeout(H.pulseT);
+    H.coh = null;
+    drawSpectrum();
     try { if (H.chr) H.chr.removeEventListener("characteristicvaluechanged", hrOnValue); } catch (e) {}
     try { if (H.dev && H.dev.gatt.connected) H.dev.gatt.disconnect(); } catch (e) {}
     H.chr = null;
@@ -3318,6 +3372,7 @@
     H.contact = p.contact;
     if (p.contact === false || !(p.hr > 25 && p.hr < 240)) { hrTiles(); return; }
     H.hr = p.hr;
+    if (!H.since || now - H.lastAt > 5) H.since = now;   // continuous data restarts after a gap
     H.lastAt = now;
     var series = [];
     if (p.rr.length) {
@@ -3334,7 +3389,8 @@
     } else {
       series.push({ t: now, hr: p.hr });
     }
-    series.forEach(hrRecord);
+    series.forEach(function (pt) { H.series.push(pt); hrRecord(pt); });
+    while (H.series.length && H.series[0].t < now - 300) H.series.shift();
     hrTiles();
   }
   function hrRecord(pt) {
@@ -3406,6 +3462,7 @@
     bSetT("#bHr", live ? String(Math.round(H.hr)) : "—");
     $("#pHrChip").hidden = !live;
     if (live) bSetT("#pHr", hrPlayerText());
+    cohShow();
   }
 
   /* A dot that blinks at the current heart rate. */
@@ -3456,6 +3513,9 @@
     if (B.swings.length) {
       parts.push("an average swing of " + avg(B.swings.map(function (x) { return x.amp; })).toFixed(1) +
         " bpm over " + B.swings.length + " breaths");
+    }
+    if (B.coh.length) {
+      parts.push("average coherence " + avg(B.coh).toFixed(1) + (H.hasRR ? "" : " (estimated)"));
     }
     var now = bNow(), r = H.hasRR ? rmssd(now - 60, now) : null;
     if (r) parts.push("RMSSD " + Math.round(r.v) + " ms in the last minute");
@@ -3684,6 +3744,155 @@
     }
   }
 
+  /* ----- coherence -----
+     HeartMath's published coherence measure (Balaji et al. 2025; McCraty et
+     al. 2009). Take the last 64 s of inter-beat intervals, resample evenly,
+     remove the linear trend, and find the highest spectral peak between
+     0.04 and 0.26 Hz. Integrate a 0.030 Hz window centred on it, and the
+     power below and above that window across the spectrum (0.0033-0.4 Hz
+     here, the standard HRV range; the papers don't state the limits):
+       CR = (peak / below) x (peak / above),   score = ln(CR + 1)
+     which usually runs 0 to 8. The window is zero-padded to 256 s for a
+     finer frequency grid and left untapered, so the peak's main lobe
+     (1/64 Hz either side) fits the 0.030 Hz window. */
+  var COH_WIN = 64, COH_FS = 4, COH_DF = 1 / 256;
+
+  function cohCompute(pts, tEnd) {
+    // pts: [{t (s), v (inter-beat interval, ms)}], oldest first
+    var t0 = tEnd - COH_WIN, n = COH_WIN * COH_FS, x = new Array(n), i, j = 0, k;
+    if (pts.length < 8 || pts[0].t > t0 + 3 || tEnd - pts[pts.length - 1].t > 4) return null;
+    for (i = 1; i < pts.length; i++) {
+      if (pts[i].t > t0 && pts[i].t - pts[i - 1].t > 5) return null;      // a gap: not 64 s of rhythm
+    }
+    for (i = 0; i < n; i++) {
+      var t = t0 + i / COH_FS;
+      while (j < pts.length - 2 && pts[j + 1].t <= t) j++;
+      var a = pts[j], b = pts[j + 1] || a;
+      x[i] = (t <= a.t || b.t <= a.t) ? a.v : t >= b.t ? b.v : a.v + (b.v - a.v) * (t - a.t) / (b.t - a.t);
+    }
+    var sx = 0, sy = 0, sxx = 0, sxy = 0;
+    for (i = 0; i < n; i++) { sx += i; sy += x[i]; sxx += i * i; sxy += i * x[i]; }
+    var slope = (n * sxy - sx * sy) / (n * sxx - sx * sx), icpt = (sy - slope * sx) / n;
+    for (i = 0; i < n; i++) x[i] -= icpt + slope * i;
+
+    var K = Math.ceil(0.42 / COH_DF), P = new Array(K + 1);
+    for (k = 0; k <= K; k++) {
+      var w = 2 * Math.PI * k * COH_DF / COH_FS, re = 0, im = 0;
+      for (i = 0; i < n; i++) { re += x[i] * Math.cos(w * i); im -= x[i] * Math.sin(w * i); }
+      P[k] = re * re + im * im;
+    }
+    var kLo = Math.ceil(0.04 / COH_DF), kHi = Math.floor(0.26 / COH_DF), kp = kLo;
+    for (k = kLo; k <= kHi; k++) if (P[k] > P[kp]) kp = k;
+    var half = 0.015 / COH_DF, kMin = Math.ceil(0.0033 / COH_DF), kMax = Math.floor(0.4 / COH_DF);
+    var peak = 0, below = 0, above = 0;
+    for (k = kMin; k <= kMax; k++) {
+      if (Math.abs(k - kp) <= half) peak += P[k];
+      else if (k < kp) below += P[k];
+      else above += P[k];
+    }
+    if (!(peak > 0 && below > 0 && above > 0)) return null;
+    var cr = (peak / below) * (peak / above);
+    return { cs: Math.log(cr + 1), cr: cr, f: kp * COH_DF, P: P };
+  }
+  // end cohCompute
+
+  function median(a) {
+    var s = a.slice().sort(function (p, q) { return p - q; }), m = s.length >> 1;
+    return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+  }
+
+  /* Every 5 s: beat-to-beat intervals when the sensor sends them, otherwise
+     the heart-rate stream, which gives only an estimate. A watch's smoothing
+     strips the faster rhythms, so the "above" power shrinks and the score
+     reads high. */
+  function cohTick() {
+    var now = bNow(), pts;
+    if (H.state !== "on") { H.coh = null; cohShow(); drawSpectrum(); return; }
+    if (H.hasRR) {
+      pts = H.beats.filter(function (b) { return b.t >= now - COH_WIN - 3; }).map(function (b) { return { t: b.t, v: b.rr }; });
+      if (pts.length) {
+        var med = median(pts.map(function (p) { return p.v; }));
+        pts = pts.filter(function (p) { return Math.abs(p.v - med) / med <= 0.3; });   // missed or extra beats
+      }
+    } else {
+      pts = H.series.filter(function (s) { return s.t >= now - COH_WIN - 3; }).map(function (s) { return { t: s.t, v: 60000 / s.hr }; });
+    }
+    var r = cohCompute(pts, now);
+    H.coh = r ? { cs: r.cs, f: r.f, P: r.P, est: !H.hasRR } : null;
+    if (r && B.state === "running" && breathTime() >= 0) B.coh.push(r.cs);
+    cohShow();
+    drawSpectrum();
+  }
+
+  function cohShow() {
+    var c = H.coh, live = hrLive(), on = !!(c && live), s;
+    bSetT("#hrCoh", on ? c.cs.toFixed(1) : "—");
+    $("#hrCohBar").style.width = on ? Math.min(100, c.cs / 8 * 100).toFixed(1) + "%" : "0%";
+    if (H.state !== "on") s = "Needs a heart-rate sensor";
+    else if (!on) {
+      var left = H.since ? Math.ceil(COH_WIN - (bNow() - H.since)) : COH_WIN;
+      s = left > 0 ? "Collecting: " + left + " s to go" : "Waiting for steady data";
+    } else {
+      s = "Peak at " + c.f.toFixed(3) + " Hz, " + (c.f * 60).toFixed(1) + " a minute" +
+        (c.est ? ". Estimated from smoothed heart rate, so it reads high" : "");
+    }
+    bSetT("#hrCohS", s);
+    $("#bCohStat").hidden = !on;
+    bSetT("#bCoh", on ? c.cs.toFixed(1) : "—");
+  }
+
+  /* The spectrum behind the score: heart-rate power by frequency, the peak
+     window filled, the 0.04-0.26 Hz search band shaded, and the breathing
+     pace as a dashed line while a session runs. */
+  function drawSpectrum() {
+    var f = fitCanvas($("#hrSpec")), co = H.coh && hrLive() ? H.coh : null;
+    $("#hrSpecEmpty").hidden = !!co;
+    if (!f || !co) return;
+    var c = f.c, W = f.w, Hh = f.h, padL = 6, padR = 10, padT = 22, padB = 20, FMAX = 0.4;
+    var pw = W - padL - padR, ph = Hh - padT - padB, base = padT + ph;
+    var X = function (fr) { return padL + fr / FMAX * pw; };
+    c.fillStyle = rgba(BCOL.line, 0.35);
+    c.fillRect(X(0.04), padT, X(0.26) - X(0.04), ph);
+    c.strokeStyle = BCOL.line; c.lineWidth = 1;
+    c.beginPath(); c.moveTo(padL, base + 0.5); c.lineTo(W - padR, base + 0.5); c.stroke();
+    c.font = "500 10.5px " + B_SANS; c.fillStyle = BCOL["text-faint"]; c.textBaseline = "top";
+    [0, 0.1, 0.2, 0.3, 0.4].forEach(function (v, i) {
+      c.textAlign = i === 0 ? "left" : i === 4 ? "right" : "center";
+      c.fillText(v === 0 ? "0" : v + (i === 4 ? " Hz" : ""), X(v), base + 5);
+    });
+
+    var P = co.P, kMax = Math.floor(FMAX / COH_DF), max = 0, k;
+    for (k = 1; k <= kMax; k++) if (P[k] > max) max = P[k];
+    if (!(max > 0)) return;
+    var Y = function (p) { return base - p / max * ph; };
+    c.beginPath(); c.moveTo(X(0), base);
+    for (k = 0; k <= kMax; k++) c.lineTo(X(k * COH_DF), Y(P[k]));
+    c.lineTo(X(FMAX), base); c.closePath();
+    c.fillStyle = rgba(BCOL.hr, 0.16); c.fill();
+    // the 0.030 Hz peak window, filled solid
+    c.save();
+    c.beginPath(); c.rect(X(co.f - 0.015), padT - 4, X(co.f + 0.015) - X(co.f - 0.015), ph + 4); c.clip();
+    c.beginPath(); c.moveTo(X(0), base);
+    for (k = 0; k <= kMax; k++) c.lineTo(X(k * COH_DF), Y(P[k]));
+    c.lineTo(X(FMAX), base); c.closePath();
+    c.fillStyle = rgba(BCOL.hr, 0.55); c.fill();
+    c.restore();
+    c.beginPath();
+    for (k = 0; k <= kMax; k++) { var px = X(k * COH_DF), py = Y(P[k]); if (k) c.lineTo(px, py); else c.moveTo(px, py); }
+    c.strokeStyle = rgba(BCOL.hr, 0.95); c.lineWidth = 1.5; c.stroke();
+
+    if ((B.state === "running" || B.state === "paused") && B.ph) {
+      var fb = 1 / B.ph.cycle;
+      c.setLineDash([3, 4]); c.strokeStyle = BCOL["b-in"]; c.lineWidth = 1.5;
+      c.beginPath(); c.moveTo(X(fb), padT - 6); c.lineTo(X(fb), base); c.stroke();
+      c.setLineDash([]);
+    }
+    c.font = "650 11.5px " + B_SANS; c.fillStyle = BCOL.text; c.textBaseline = "bottom";
+    var lx = X(co.f);
+    c.textAlign = lx < 40 ? "left" : lx > W - 40 ? "right" : "center";
+    c.fillText(co.f.toFixed(3) + " Hz", lx, padT - 8);
+  }
+
   function hrInit() {
     try {
       var f = JSON.parse(store.get("resonance") || "null");
@@ -3706,10 +3915,10 @@
     $("#hrAny").addEventListener("click", function () { hrConnect(true); });
     $("#hrFindStart").addEventListener("click", function () { if (B.finder) bStop(); else finderStart(); });
     $("#hrFindUse").addEventListener("click", useBest);
-    var redraw = function () { drawSwings(); drawFind(); };
+    var redraw = function () { drawSwings(); drawFind(); drawSpectrum(); };
     if (window.ResizeObserver) {
       var ro = new ResizeObserver(redraw);
-      ro.observe($("#hrBars")); ro.observe($("#hrFind"));
+      ro.observe($("#hrBars")); ro.observe($("#hrFind")); ro.observe($("#hrSpec"));
     } else window.addEventListener("resize", redraw);
     finderUI(); redraw(); hrTiles();
     window.addEventListener("pagehide", function () { if (H.state === "on") hrDisconnect(); });
