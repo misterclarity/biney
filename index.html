@@ -3,482 +3,578 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1120">
 <title>Entrain — Evidence-Based Binaural Beats</title>
-<meta name="description" content="A single-page binaural beat generator built on published research: delta and theta tracks for relaxation and sleep, beta and gamma tracks for attention and stimulation, plus a customisable paced-breathing guide.">
+<meta name="description" content="Binaural beats, paced breathing and live heart-rate biofeedback in one offline page: research-based tracks, a breathing guide with five visuals, Bluetooth heart sensors, coherence and a resonance test.">
 <style>
+  /* Layout: an app shell. Desktop has a fixed left rail and a content column; on a phone the
+     rail becomes a bottom tab bar and the mini player docks just above it.
+     Palette: ink-blue night surfaces, and each accent carries one meaning:
+     teal = relax and breathing in, amber = stimulation and holds, violet = tinnitus and
+     breathing out, rose = heart data, indigo = the action you can take. */
   :root{
-    --bg:#0a0e1a;
-    --bg-2:#0f1524;
-    --panel:#141c2e;
-    --panel-2:#1a2438;
-    --line:#26304a;
-    --line-soft:#1e2740;
-    --text:#e8edf7;
-    --text-dim:#9aa7c2;
-    --text-faint:#6b7a99;
+    --bg:#0b1120;
+    --bg-2:#0d1426;
+    --panel:#131b30;
+    --panel-2:#1a2440;
+    --panel-3:#222e4f;
+    --line:#28334f;
+    --line-soft:#1d2741;
+    --text:#ebf0f9;
+    --text-dim:#a2aec8;
+    --text-faint:#6f7b9d;
     --relax:#5eead4;
     --relax-deep:#2dd4bf;
     --stim:#fbbf24;
-    --ther:#a78bfa;
     --stim-deep:#f59e0b;
-    --accent:#818cf8;
+    --ther:#a78bfa;
+    --accent:#8e98fc;
     --danger:#fb7185;
-    /* breathing guide: one hue per phase */
     --b-in:#5eead4;
     --b-sip:#a7f3d0;
     --b-hold:#f5d38b;
     --b-out:#a78bfa;
-    --hr:#fb7185;            /* live heart data */
-    --radius:14px;
-    --radius-sm:9px;
-    --shadow:0 18px 40px -18px rgba(0,0,0,.75);
-    --maxw:1080px;
+    --hr:#fb7185;
+    /* Interface text uses the device's own font (Roboto on Android), so nothing is downloaded and the
+       page works offline. Headings use one embedded weight of Poppins (OFL), subset to Latin. */
+    --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --display:"Entrain Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --radius:16px;
+    --radius-sm:10px;
+    --shadow:0 24px 48px -24px rgba(0,0,0,.8);
+    --rail:228px;
+    --tabbar:62px;
+    --top:60px;
+    --maxw:1120px;
     color-scheme:dark;
   }
+  @font-face{
+    font-family:"Entrain Display";font-style:normal;font-weight:700;font-display:swap;
+    src:url(data:font/woff;base64,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) format("woff");
+  }
   *{box-sizing:border-box}
-  [hidden]{display:none!important}   /* author display rules must not defeat the attribute */
+  [hidden]{display:none!important}
   html{-webkit-text-size-adjust:100%}
+  .topbar h1,.brand-name,.home-hero h2,.b-phase-name,.hr-intro h3,.prose h2,.prose h3,.refs-sec h3,
+  .modal-card h2,.sheet-head h2,.note-card h3,.qk b,.card h3,.hr-guide-sum b{
+    font-family:var(--display);font-weight:700;font-synthesis:none;
+  }
   body{
-    margin:0;
-    background:
-      radial-gradient(1100px 600px at 12% -8%, rgba(94,234,212,.09), transparent 62%),
-      radial-gradient(900px 520px at 92% 4%, rgba(129,140,248,.10), transparent 60%),
-      var(--bg);
-    color:var(--text);
-    font:16px/1.65 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-    padding-bottom:230px;
-    min-height:100vh;
+    margin:0;background:var(--bg);color:var(--text);
+    font:15px/1.6 var(--font);font-weight:450;
+    -webkit-font-smoothing:antialiased;min-height:100vh;
   }
-  .wrap{
-    max-width:var(--maxw);margin:0 auto;
-    padding-left:max(20px,env(safe-area-inset-left,0px));
-    padding-right:max(20px,env(safe-area-inset-right,0px));
-  }
-  a{color:var(--relax);text-decoration:none;border-bottom:1px solid rgba(94,234,212,.28)}
-  a:hover{border-bottom-color:var(--relax)}
-  h1,h2,h3{line-height:1.2;margin:0}
-  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-variant-numeric:tabular-nums}
+  h1,h2,h3,h4{line-height:1.2;margin:0;text-wrap:balance}
+  a{color:inherit;text-decoration:none}
+  .mono{font-variant-numeric:tabular-nums}
+  button{font-family:inherit}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
-  /* ---------- header ---------- */
-  header{padding:56px 0 30px}
-  .brand{display:flex;align-items:center;gap:13px;margin-bottom:22px}
+  /* ---------- shell ---------- */
+  .rail{position:fixed;z-index:60}
+  .brand{display:flex;align-items:center;gap:11px;padding:4px 10px}
   .brand-mark{
-    width:38px;height:38px;border-radius:11px;flex:none;
-    background:linear-gradient(140deg,var(--relax),var(--accent) 55%,var(--stim));
-    position:relative;
+    width:32px;height:32px;border-radius:10px;flex:none;position:relative;
+    background:conic-gradient(from 200deg,var(--relax),var(--accent),var(--stim),var(--relax));
   }
-  .brand-mark::after{
-    content:"";position:absolute;inset:9px;border-radius:4px;
-    background:var(--bg);
-  }
-  .brand-name{font-size:19px;font-weight:650;letter-spacing:-.015em}
-  .brand-tag{font-size:12.5px;color:var(--text-faint);letter-spacing:.06em;text-transform:uppercase}
-  h1{font-size:clamp(30px,5.4vw,48px);font-weight:700;letter-spacing:-.03em;max-width:17ch}
-  h1 em{font-style:normal;background:linear-gradient(100deg,var(--relax),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .lede{margin:20px 0 0;color:var(--text-dim);font-size:17px;max-width:62ch}
+  .brand-mark::after{content:"";position:absolute;inset:8px;border-radius:4px;background:var(--bg)}
+  .brand-name{font-size:18px;font-weight:780;letter-spacing:-.02em}
+  .nav a{color:var(--text-dim);font-weight:650;transition:color .15s,background .15s}
+  .nav a:hover{color:var(--text)}
+  .nav .ni{display:grid;place-items:center}
+  .rail-foot{margin-top:auto;font-size:12px;color:var(--text-faint);padding:0 10px;line-height:1.5}
 
-  .notices{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
-  .notice{
-    display:flex;gap:9px;align-items:flex-start;
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);
-    padding:11px 14px;font-size:13.5px;color:var(--text-dim);max-width:340px;
+  .main{
+    min-width:0;
+    padding-left:max(16px,env(safe-area-inset-left,0px));
+    padding-right:max(16px,env(safe-area-inset-right,0px));
+    padding-bottom:40px;
   }
-  .notice b{color:var(--text);font-weight:600}
-  .notice.warn{border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.07)}
-  .notice-ic{font-size:15px;line-height:1.45;flex:none}
+  .topbar{
+    position:sticky;top:env(safe-area-inset-top,0px);z-index:40;height:var(--top);
+    display:flex;align-items:center;gap:12px;
+    margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));
+    padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));
+    background:rgba(11,17,32,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  }
+  .topbar h1{font-size:20px;font-weight:780;letter-spacing:-.025em}
+  .top-mark{display:none}
+  .top-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 13px;border-radius:999px;
+    background:var(--panel);border:1px solid var(--line-soft);color:var(--text-dim);
+    font-size:13px;font-weight:650;white-space:nowrap;cursor:pointer;
+  }
+  .pill:hover{color:var(--text);border-color:var(--line)}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex:none}
+  .pill[data-state="on"]{color:var(--hr);border-color:color-mix(in srgb,var(--hr) 35%,transparent)}
+  .pill[data-state="on"] .dot{background:var(--hr);opacity:.6}
+  .pill[data-state="busy"] .dot,.pill[data-state="lost"] .dot{background:var(--b-hold)}
+  .pill .hr-dot{margin:0;width:8px;height:8px;align-self:center}
+  .pill:not([data-state="on"]) .hr-dot{opacity:1}
+  body.sheet-lock{overflow:hidden}
 
-  /* ---------- filters ---------- */
-  .toolbar{
-    display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
-    margin:44px 0 20px;padding-top:28px;border-top:1px solid var(--line-soft);
-  }
-  .tabs{display:flex;gap:7px;flex-wrap:wrap}
-  .tab,.g-tab{
-    background:var(--panel);color:var(--text-dim);border:1px solid var(--line);
-    padding:8px 15px;border-radius:999px;font-size:13.5px;font-weight:550;cursor:pointer;
-    font-family:inherit;transition:background .15s,color .15s,border-color .15s;
-  }
-  .tab:hover,.g-tab:hover{color:var(--text);border-color:#33405f}
-  .tab[aria-selected="true"],.g-tab[aria-selected="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
-  .count{font-size:13px;color:var(--text-faint)}
+  .view{max-width:var(--maxw);padding-top:6px}
+  .v-lede{color:var(--text-dim);margin:2px 0 18px;max-width:66ch;font-size:15px}
 
-  /* ---------- cards ---------- */
-  .grid{display:grid;gap:15px;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));margin:0 0 10px;padding:0;list-style:none}
-  .card{
-    background:linear-gradient(180deg,var(--panel),var(--bg-2));
-    border:1px solid var(--line);border-radius:var(--radius);
-    padding:19px 19px 17px;display:flex;flex-direction:column;gap:13px;
-    position:relative;overflow:hidden;transition:border-color .18s,transform .18s;
+  @media (min-width:1024px){
+    .rail{
+      left:0;top:0;bottom:0;width:var(--rail);display:flex;flex-direction:column;gap:26px;
+      padding:18px 14px calc(18px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));
+      border-right:1px solid var(--line-soft);background:var(--bg);
+    }
+    .nav{display:grid;gap:3px}
+    .nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:11px;font-size:14.5px}
+    .nav a:hover{background:var(--panel)}
+    .nav a[aria-current="page"]{color:var(--text);background:var(--panel-2)}
+    .main{margin-left:var(--rail);padding-left:32px;padding-right:max(32px,env(safe-area-inset-right,0px))}
+    .topbar{margin:0 -32px;padding:0 32px;height:68px}
+    .topbar h1{font-size:22px}
+    body.has-player .main{padding-bottom:140px}
   }
-  .card::before{
-    content:"";position:absolute;inset:0 auto 0 0;width:3px;
-    background:linear-gradient(180deg,var(--c1),var(--c2));opacity:.85;
+  @media (max-width:1023px){
+    .rail{
+      left:0;right:0;bottom:0;height:calc(var(--tabbar) + env(safe-area-inset-bottom,0px));
+      padding:0 env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
+      background:rgba(11,17,32,.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      border-top:1px solid var(--line-soft);
+    }
+    .rail .brand,.rail-foot{display:none}
+    .nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));height:var(--tabbar)}
+    .nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--text-faint)}
+    .nav .ni{width:52px;height:28px;border-radius:14px;transition:background .15s}
+    .nav a[aria-current="page"]{color:var(--text)}
+    .nav a[aria-current="page"] .ni{background:var(--panel-3)}
+    .top-mark{display:block;width:24px;height:24px;border-radius:8px}
+    .top-mark::after{inset:6px;border-radius:3px}
+    .main{padding-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 28px)}
+    body.has-player .main{padding-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 104px)}
   }
-  .card:hover{border-color:#35405e;transform:translateY(-2px)}
-  .card.is-playing{border-color:var(--c1);box-shadow:0 0 0 1px var(--c1) inset,0 14px 34px -20px var(--c1)}
-  .card[data-cat="relax"]{--c1:var(--relax);--c2:#3b82f6}
-  .card[data-cat="stim"]{--c1:var(--stim);--c2:#f472b6}
-  .card[data-cat="ther"]{--c1:var(--ther);--c2:#22d3ee}
 
-  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-  .band{
-    font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;font-weight:700;
-    color:var(--c1);background:color-mix(in srgb,var(--c1) 13%,transparent);
-    border:1px solid color-mix(in srgb,var(--c1) 30%,transparent);
-    padding:3.5px 8px;border-radius:5px;white-space:nowrap;
-  }
-  .card h3{font-size:17.5px;font-weight:620;letter-spacing:-.015em}
-  .card .desc{font-size:14px;color:var(--text-dim);margin:0;flex:1}
-
-  .specs{display:flex;gap:7px;flex-wrap:wrap}
-  .spec{
-    background:var(--panel-2);border:1px solid var(--line-soft);border-radius:6px;
-    padding:5px 9px;font-size:12px;color:var(--text-dim);
-  }
-  .spec b{color:var(--text);font-weight:600}
-  button.spec{font-family:inherit;cursor:pointer}
-  button.spec:hover{border-color:#3a4767}
-
-  details.ev{border-top:1px solid var(--line-soft);padding-top:12px;margin-top:2px}
-  details.ev summary{
-    cursor:pointer;font-size:12.5px;color:var(--text-faint);list-style:none;
-    display:flex;align-items:center;gap:7px;user-select:none;
-  }
-  details.ev summary::-webkit-details-marker{display:none}
-  details.ev summary::after{content:"›";transition:transform .2s;font-size:15px;line-height:1}
-  details.ev[open] summary::after{transform:rotate(90deg)}
-  details.ev summary:hover{color:var(--text-dim)}
-  .ev-body{font-size:13px;color:var(--text-dim);margin-top:9px}
-  .ev-body cite{display:block;margin-top:7px;font-style:normal;font-size:12px;color:var(--text-faint)}
-  .strength{display:inline-flex;gap:2.5px;margin-left:auto;align-items:center}
-  .strength i{width:13px;height:3px;border-radius:2px;background:var(--line);display:block}
-  .strength i.on{background:var(--c1)}
-
-  .play-btn{
-    font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
-    background:var(--c1);color:#0a0e1a;border:0;border-radius:9px;
-    padding:11px 16px;display:flex;align-items:center;justify-content:center;gap:8px;
-    transition:filter .15s;
-  }
-  .play-btn:hover{filter:brightness(1.1)}
-  .play-btn:active{transform:translateY(1px)}
-
-  /* ---------- builder ---------- */
-  section{margin:66px 0}
-  .sec-head{margin-bottom:22px}
-  .sec-head h2{font-size:25px;font-weight:660;letter-spacing:-.022em}
-  .sec-head p{color:var(--text-dim);margin:9px 0 0;font-size:15px;max-width:66ch}
-  .builder{
-    background:linear-gradient(180deg,var(--panel),var(--bg-2));
-    border:1px solid var(--line);border-radius:var(--radius);padding:24px;
-  }
-  .fields{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-  .field label{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--text-dim);margin-bottom:9px;gap:10px}
-  .field label b{color:var(--text);font-size:14.5px;font-weight:620}
-  input[type=range]{
-    -webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:99px;
-    background:var(--line);outline:none;margin:8px 0;
-  }
-  input[type=range]::-webkit-slider-thumb{
-    -webkit-appearance:none;appearance:none;width:19px;height:19px;border-radius:50%;
-    background:var(--text);cursor:pointer;border:4px solid var(--accent);
-  }
-  input[type=range]::-moz-range-thumb{
-    width:19px;height:19px;border-radius:50%;background:var(--text);cursor:pointer;border:4px solid var(--accent);
-  }
-  input[type=range]:focus-visible{box-shadow:0 0 0 3px rgba(129,140,248,.4)}
-  .hint{font-size:12px;color:var(--text-faint);margin:4px 0 0}
-  .builder-foot{display:flex;flex-wrap:wrap;gap:13px;align-items:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--line-soft)}
+  /* ---------- shared controls ---------- */
   .btn{
-    font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border-radius:9px;
-    padding:11px 18px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);
-    transition:background .15s,border-color .15s;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    font-size:14px;font-weight:700;cursor:pointer;border-radius:12px;min-height:44px;
+    padding:10px 18px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);
+    transition:background .15s,border-color .15s,filter .15s;
   }
-  .btn:hover{background:#22304a;border-color:#3a4767}
-  .btn.primary{background:var(--accent);color:#0a0e1a;border-color:var(--accent)}
-  .btn.primary:hover{filter:brightness(1.1);background:var(--accent)}
-  .band-readout{font-size:13px;color:var(--text-dim);margin-left:auto}
-  .band-readout b{color:var(--text)}
+  .btn:hover{background:var(--panel-3);border-color:#3a4767}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn.primary{background:var(--accent);color:#0b1120;border-color:var(--accent)}
+  .btn.primary:hover{filter:brightness(1.08);background:var(--accent)}
+  .btn.quiet{background:transparent;border-color:transparent;color:var(--text-dim)}
+  .btn.quiet:hover{background:var(--panel-2);color:var(--text)}
+  .btn.small{min-height:34px;padding:6px 12px;font-size:13px;border-radius:10px}
+  .btn.link{background:none;border:0;min-height:0;color:var(--text-faint);padding:6px 0;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+  .btn.link:hover{color:var(--text-dim);background:none}
 
-  /* ---------- science ---------- */
-  .prose{color:var(--text-dim);font-size:15.5px;max-width:74ch}
-  .prose h3{font-size:17px;color:var(--text);margin:30px 0 9px;font-weight:620}
-  .prose p{margin:0 0 14px}
-  .prose ul{margin:0 0 14px;padding-left:20px}
-  .prose li{margin-bottom:7px}
-  .prose strong{color:var(--text);font-weight:600}
-
-  table{width:100%;border-collapse:collapse;margin:22px 0;font-size:14px}
-  caption{text-align:left;font-size:13px;color:var(--text-faint);padding-bottom:10px}
-  th,td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--line-soft);vertical-align:top}
-  th{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);font-weight:650;border-bottom-color:var(--line)}
-  td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
-  .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-
-  ol.refs{color:var(--text-dim);font-size:13.5px;padding-left:22px;margin:0}
-  ol.refs li{margin-bottom:11px}
-
-  footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:28px 0 8px;color:var(--text-faint);font-size:13px}
-  footer p{margin:0 0 9px;max-width:74ch}
-
-
-  /* ---------- prime panel ---------- */
-  .prime-sec{margin:46px 0 0}
-  .prime{background:linear-gradient(180deg,var(--panel),var(--bg-2));border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;display:grid;gap:18px}
-  .prime-row{display:grid;gap:10px}
-  .prime-label{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);font-weight:650}
   .chips{display:flex;flex-wrap:wrap;gap:8px}
   .chip{
-    position:relative;display:inline-flex;align-items:center;cursor:pointer;
-    background:var(--panel-2);border:1px solid var(--line);color:var(--text-dim);
-    padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:550;
-    transition:background .15s,color .15s,border-color .15s;
+    position:relative;display:inline-flex;align-items:center;cursor:pointer;white-space:nowrap;
+    background:var(--panel-2);border:1px solid transparent;color:var(--text-dim);
+    padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:650;
+    transition:background .15s,color .15s;
   }
   .chip input{position:absolute;opacity:0;width:0;height:0}
-  .chip:hover{color:var(--text);border-color:#3a4767}
-  .chip.on{background:var(--accent);border-color:var(--accent);color:#0a0e1a}
+  .chip:hover{color:var(--text);background:var(--panel-3)}
+  .chip.on{background:var(--text);color:var(--bg)}
   .chip:focus-within{outline:2px solid var(--accent);outline-offset:2px}
-  .prime-foot{display:flex;flex-wrap:wrap;gap:16px;align-items:center;border-top:1px solid var(--line-soft);padding-top:18px}
-  .prime-foot .hint{margin:0;max-width:54ch;flex:1;min-width:240px}
+  .chip svg{width:15px;height:15px;margin-right:7px;flex:none}
 
-  /* ---------- modal ---------- */
-  .modal{
-    position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:20px;
-    background:rgba(6,9,17,.74);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  .tabs{display:flex;gap:7px;flex-wrap:wrap}
+  .tab,.g-tab{
+    background:var(--panel-2);color:var(--text-dim);border:1px solid transparent;
+    padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:650;cursor:pointer;
+    transition:background .15s,color .15s;
   }
-  .modal[hidden]{display:none}
-  .modal-card{
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    box-shadow:var(--shadow);max-width:540px;width:100%;padding:26px;max-height:88vh;overflow-y:auto;
+  .tab:hover,.g-tab:hover{color:var(--text);background:var(--panel-3)}
+  .tab[aria-selected="true"],.g-tab[aria-selected="true"]{background:var(--text);color:var(--bg)}
+
+  .seg{
+    display:inline-flex;gap:4px;padding:4px;border-radius:14px;background:var(--panel);
+    margin:0 0 18px;max-width:100%;overflow-x:auto;scrollbar-width:none;
   }
-  .modal-card h2{font-size:21px;font-weight:660;letter-spacing:-.02em;margin-bottom:11px}
-  .modal-card p{color:var(--text-dim);font-size:14.5px;margin:0 0 16px}
-  .sc-q{color:var(--text);font-weight:600;margin-bottom:11px}
-  .sc-answers{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(148px,1fr))}
-  .btn.link{background:none;border:0;color:var(--text-faint);padding:6px 0;font-size:13px;text-decoration:underline}
-  .btn.link:hover{color:var(--text-dim);background:none}
-  .sc-result{border-radius:var(--radius-sm);padding:13px 15px;font-size:14px;margin-top:6px}
-  .sc-result.ok{background:rgba(94,234,212,.09);border:1px solid rgba(94,234,212,.35);color:#99f6e4}
-  .sc-result.bad{background:rgba(251,113,133,.09);border:1px solid rgba(251,113,133,.38);color:#fda4af}
-  .sc-result b{display:block;color:var(--text);margin-bottom:4px}
-  .sc-again{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
-  .modal-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line-soft)}
-  .tone-dot{
-    display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);
-    margin-right:8px;vertical-align:middle;
+  .seg::-webkit-scrollbar{display:none}
+  .seg-b{
+    border:0;background:transparent;color:var(--text-dim);font-size:14px;font-weight:700;
+    padding:9px 16px;border-radius:10px;cursor:pointer;white-space:nowrap;
+  }
+  .seg-b:hover{color:var(--text)}
+  .seg-b[aria-selected="true"]{background:var(--panel-3);color:var(--text)}
+
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;
+    background:var(--panel-3);outline:none;margin:10px 0;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;
+    background:var(--text);cursor:pointer;border:5px solid var(--accent);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:22px;height:22px;border-radius:50%;background:var(--text);cursor:pointer;border:5px solid var(--accent);
+  }
+  input[type=range]:focus-visible{box-shadow:0 0 0 3px rgba(142,152,252,.4)}
+  .hint{font-size:12.5px;color:var(--text-faint);margin:4px 0 0}
+  .field label{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--text-dim);gap:10px;font-weight:600}
+  .field label b{color:var(--text);font-size:14.5px;font-weight:750;font-variant-numeric:tabular-nums}
+  .prime-label{font-size:13px;font-weight:700;color:var(--text-dim)}
+  .prime-row{display:grid;gap:10px}
+
+  /* the three things to know before playing a beat, as one strip */
+  .notice-strip{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin:0 0 22px;
+    background:var(--line-soft);border-radius:16px;overflow:hidden;
+  }
+  .ns{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;background:var(--panel);padding:12px 14px;font-size:13px;color:var(--text-dim)}
+  .ns svg.i{width:18px;height:18px;margin-top:1px;color:var(--text-faint)}
+  .ns > span{flex:1 1 180px;min-width:0}
+  .ns b{color:var(--text);font-weight:700}
+  .ns.warn svg.i{color:var(--danger)}
+  .ns .btn{margin-left:28px}
+  @media (max-width:860px){
+    .notice-strip{grid-template-columns:minmax(0,1fr)}
+    .ns{padding:10px 14px}
   }
 
-  /* ---------- pitch matcher ---------- */
-  .pm-readout{
-    display:flex;align-items:baseline;gap:10px;justify-content:center;
-    background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--radius-sm);
-    padding:14px;margin:4px 0 16px;
+  /* ---------- home ---------- */
+  .home-hero{
+    position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:8px 28px;align-items:center;
+    padding:28px;border-radius:24px;background:var(--panel);overflow:hidden;
   }
-  .pm-hz{font-size:34px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-  .pm-unit{font-size:15px;color:var(--text-faint)}
-  .pm-oct{display:flex;gap:8px;justify-content:center;margin-top:12px}
-  .pm-warn{
-    background:rgba(251,191,36,.09);border:1px solid rgba(251,191,36,.35);color:#fcd34d;
-    border-radius:var(--radius-sm);padding:11px 13px;font-size:13.5px;margin:14px 0 0;
+  .home-hero h2{font-size:clamp(30px,4.4vw,46px);font-weight:800;letter-spacing:-.035em;line-height:1.02}
+  .home-hero p{color:var(--text-dim);margin:12px 0 0;max-width:46ch;font-size:15.5px}
+  .home-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+  .home-wave{position:relative;height:190px;min-width:0}
+  .home-wave canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px}
+  .qk{
+    --qc:var(--accent);display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+    padding:16px;border-radius:18px;background:var(--panel);color:var(--text);border:0;
+    font-size:inherit;text-align:left;cursor:pointer;transition:background .15s;
   }
-  .pm-med{
-    background:rgba(251,113,133,.07);border:1px solid rgba(251,113,133,.3);
-    border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;color:var(--text-dim);margin:16px 0 0;
+  .qk:hover{background:var(--panel-2)}
+  .qk .qi{
+    width:36px;height:36px;border-radius:11px;display:grid;place-items:center;margin-bottom:12px;
+    background:color-mix(in srgb,var(--qc) 15%,transparent);color:var(--qc);
   }
-  .pm-med b{color:var(--text);display:block;margin-bottom:3px}
-  .pm-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-  .notch-chip{border-color:color-mix(in srgb,var(--c1) 40%,transparent)!important;color:var(--c1)!important}
-  .notch-chip b{color:var(--c1)!important}
+  .qk b{font-size:15px;font-weight:750;letter-spacing:-.01em}
+  .qk span{font-size:13px;color:var(--text-dim);line-height:1.45}
+  .home-cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:12px;margin-top:12px;align-items:start}
+  .note-card{padding:18px 20px;border-radius:18px;background:var(--panel)}
+  .note-card h3{font-size:15.5px;font-weight:750}
+  .note-card p{margin:8px 0 0;font-size:14px;color:var(--text-dim)}
+  .note-card .when{font-size:12.5px;color:var(--text-faint);margin-top:10px}
+  .safety{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:11px}
+  .safety li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:11px;font-size:13.5px;color:var(--text-dim)}
+  .safety li svg.i{width:18px;height:18px;margin-top:2px;color:var(--text-faint)}
+  .safety li.warn svg.i{color:var(--danger)}
+  .safety b{color:var(--text);font-weight:700}
+  @media (max-width:860px){
+    .home-hero{grid-template-columns:minmax(0,1fr);padding:22px}
+    .home-wave{height:96px}
+    .quick{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .home-cols{grid-template-columns:minmax(0,1fr)}
+  }
 
-  /* ---------- phase cue ---------- */
-  .cue{
-    background:linear-gradient(90deg,color-mix(in srgb,var(--pc,var(--stim)) 26%,transparent),transparent 70%);
-    border-bottom:1px solid color-mix(in srgb,var(--pc,var(--stim)) 42%,transparent);
-    padding:12px 20px;font-size:14.5px;font-weight:620;color:var(--text);text-align:center;
+  /* ---------- breathing guide ---------- */
+  .breath{display:grid;gap:18px;grid-template-columns:minmax(0,1fr) 340px;align-items:start}
+  .b-stage{
+    --bc:var(--text-faint);
+    background:var(--panel);border-radius:24px;padding:20px;min-width:0;
+    display:flex;flex-direction:column;gap:14px;
   }
-  .cue[hidden]{display:none}
-
-  /* ---------- in-page nav ---------- */
-  .jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:24px;font-size:13.5px}
-  .jump a{color:var(--text-dim);border-bottom:1px solid transparent}
-  .jump a:hover{color:var(--text);border-bottom-color:var(--line)}
-
-  /* ---------- breathing guide ----------
-     Stage on the left (what you watch), controls on the right (what you set).
-     The stage's --bc follows the current phase, so the phase name, the
-     timeline and the canvas glow all share one colour. */
-  .breath{display:grid;gap:15px;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);align-items:start}
-  .b-stage,.b-controls{
-    background:linear-gradient(180deg,var(--panel),var(--bg-2));
-    border:1px solid var(--line);border-radius:var(--radius);min-width:0;
-  }
-  .b-stage{--bc:var(--text-faint);padding:20px;display:flex;flex-direction:column;gap:14px}
   .b-stage[data-phase="in"]{--bc:var(--b-in)}
   .b-stage[data-phase="sip"]{--bc:var(--b-sip)}
   .b-stage[data-phase="hold"],.b-stage[data-phase="rest"]{--bc:var(--b-hold)}
   .b-stage[data-phase="out"]{--bc:var(--b-out)}
   .b-stage[data-phase="done"]{--bc:var(--relax)}
+  .b-patrow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 2px;flex-wrap:nowrap}
+  .b-patrow::-webkit-scrollbar{display:none}
   .b-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px 16px;flex-wrap:wrap}
   .b-phase{min-width:0}
-  .b-phase-name{font-size:30px;font-weight:680;letter-spacing:-.025em;line-height:1.1;color:var(--bc);transition:color .45s}
-  .b-phase-hint{font-size:13.5px;color:var(--text-faint);margin-top:5px;min-height:1.65em}
-  .b-stats{display:flex;gap:7px;flex-wrap:wrap;font-size:12px;color:var(--text-dim)}
-  .b-stat{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:6px;padding:4px 9px;white-space:nowrap}
-  .b-stat b{color:var(--text);font-weight:620}
+  .b-phase-name{font-size:clamp(30px,4vw,44px);font-weight:800;letter-spacing:-.035em;line-height:1.05;color:var(--bc);transition:color .45s}
+  .b-phase-hint{font-size:14px;color:var(--text-faint);margin-top:6px;min-height:1.6em}
+  .b-stats{display:flex;gap:6px;flex-wrap:wrap;font-size:12.5px;color:var(--text-dim);font-variant-numeric:tabular-nums}
+  .b-stat{background:var(--panel-2);border-radius:8px;padding:4px 9px;white-space:nowrap;font-weight:600}
+  .b-stat b{color:var(--text);font-weight:780}
+  .b-stat.b-hr{color:var(--hr);background:color-mix(in srgb,var(--hr) 12%,transparent)}
+  .b-stat.b-hr b{color:var(--hr)}
+  .b-stat.b-hr .hr-dot{width:7px;height:7px;margin:0 6px 0 0;vertical-align:1px;opacity:.5}
   .b-view{
-    position:relative;height:330px;border-radius:var(--radius-sm);overflow:hidden;
-    border:1px solid var(--line-soft);
-    background:radial-gradient(70% 80% at 50% 50%,color-mix(in srgb,var(--bc) 7%,transparent),transparent 75%),var(--bg);
+    position:relative;height:clamp(300px,50vh,560px);border-radius:18px;overflow:hidden;
+    background:radial-gradient(60% 70% at 50% 50%,color-mix(in srgb,var(--bc) 8%,transparent),transparent 75%),var(--bg-2);
   }
   .b-view canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   .b-line{position:relative;height:28px}
   .b-segs{display:flex;gap:3px;height:100%}
   .b-seg{
-    --sc:var(--b-in);flex:1 1 0;min-width:0;border-radius:6px;padding:0 4px;
+    --sc:var(--b-in);flex:1 1 0;min-width:0;border-radius:8px;padding:0 4px;
     display:flex;align-items:center;justify-content:center;
-    font-size:11.5px;font-weight:620;color:var(--sc);white-space:nowrap;overflow:hidden;text-overflow:clip;
-    background:color-mix(in srgb,var(--sc) 10%,transparent);
-    border:1px solid color-mix(in srgb,var(--sc) 24%,transparent);
-    transition:background .3s;
+    font-size:11.5px;font-weight:700;color:var(--sc);white-space:nowrap;overflow:hidden;
+    background:color-mix(in srgb,var(--sc) 11%,transparent);transition:background .3s;
   }
   .b-seg[data-k="sip"]{--sc:var(--b-sip)}
   .b-seg[data-k="hold"],.b-seg[data-k="rest"]{--sc:var(--b-hold)}
   .b-seg[data-k="out"]{--sc:var(--b-out)}
-  .b-seg.on{background:color-mix(in srgb,var(--sc) 26%,transparent)}
+  .b-seg.on{background:color-mix(in srgb,var(--sc) 28%,transparent)}
   .b-mark{
     position:absolute;top:-4px;bottom:-4px;left:0;width:2px;margin-left:-1px;border-radius:2px;
-    background:var(--text);box-shadow:0 0 8px rgba(232,237,247,.55);will-change:transform;
+    background:var(--text);box-shadow:0 0 8px rgba(235,240,249,.55);will-change:transform;
   }
   .b-transport{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  .b-transport .btn.primary{min-width:156px}
-  .b-transport .btn:disabled{opacity:.45;cursor:default}
-  .b-msg{font-size:12.5px;color:var(--text-faint);margin-left:auto}
+  .b-transport .b-go{min-width:170px;min-height:50px;font-size:15px;border-radius:14px}
+  .b-adjust{display:none!important}
+  .b-msg{font-size:13px;color:var(--text-faint);margin-left:auto}
+  .b-msg:empty{display:none}
+  .b-sensor{
+    display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;font-size:13.5px;color:var(--text-dim);
+    padding:12px 14px;border-radius:14px;background:var(--panel-2);
+  }
+  .b-sensor svg.i{color:var(--hr)}
+  .b-sensor .btn{margin-left:auto}
 
-  .b-controls{padding:20px 22px;display:grid;gap:18px}
+  .b-controls{
+    background:var(--panel);border-radius:22px;padding:20px;min-width:0;display:grid;gap:20px;
+    position:sticky;top:84px;max-height:calc(100vh - 100px);overflow-y:auto;scrollbar-width:thin;
+  }
+  .sheet-head{display:none}
   .b-note{
-    --c1:var(--b-in);
-    background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--radius-sm);
-    padding:12px 14px;font-size:13.5px;color:var(--text-dim);
+    --c1:var(--b-in);background:var(--panel-2);border-radius:14px;
+    padding:13px 15px;font-size:13.5px;color:var(--text-dim);
   }
   .b-note p{margin:0}
   .b-note details.ev{margin-top:10px;padding-top:10px}
-  .b-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px}
-  .b-fields .field label{margin-bottom:0}
-  .b-fields input[type=range]{margin:10px 0 4px}
+  .b-fields{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+  .b-fields input[type=range]{margin:12px 0 8px}
   .b-rate{
-    align-self:center;background:var(--panel-2);border:1px solid var(--line-soft);
-    border-radius:var(--radius-sm);padding:8px 12px;
+    order:-1;display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 10px;margin-bottom:8px;
+    background:var(--panel-2);border-radius:12px;padding:10px 13px;font-variant-numeric:tabular-nums;
   }
-  .b-rate{font-variant-numeric:tabular-nums}
-  .b-rate b{display:block;font-size:16px;color:var(--text);font-weight:650;letter-spacing:-.01em}
-  .b-rate span{display:block;font-size:11.5px;color:var(--text-faint);margin-top:1px}
-  .chip svg{width:15px;height:15px;margin-right:7px;flex:none}
-  .b-vol{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text-faint);max-width:320px}
+  .b-rate b{font-size:16px;color:var(--text);font-weight:780;letter-spacing:-.01em}
+  .b-rate span{font-size:12px;color:var(--text-faint)}
+  .b-vol{display:flex;align-items:center;gap:12px;font-size:12.5px;color:var(--text-faint);max-width:320px}
   .b-vol span{white-space:nowrap}
   .b-vol input[type=range]{margin:0}
   .prime-row .hint{margin:0}
   .b-safety{font-size:12.5px;color:var(--text-faint);margin:0;border-top:1px solid var(--line-soft);padding-top:14px}
-  .b-safety b{color:var(--text-dim);font-weight:600}
+  .b-safety b{color:var(--text-dim);font-weight:700}
+  .sheet-back{position:fixed;inset:0;z-index:84;background:rgba(5,8,16,.62)}
+
+  .b-stage.focus{
+    position:fixed;inset:0;z-index:90;border-radius:0;background:var(--bg);
+    padding-top:max(20px,env(safe-area-inset-top,0px));
+    padding-bottom:max(20px,env(safe-area-inset-bottom,0px));
+    padding-left:max(20px,env(safe-area-inset-left,0px));
+    padding-right:max(20px,env(safe-area-inset-right,0px));
+  }
+  .b-stage.focus .b-view{flex:1;height:auto;min-height:0}
+  .b-stage.focus .b-patrow,.b-stage.focus .b-adjust,.b-stage.focus .b-sensor{display:none!important}
+  .b-stage.focus .b-phase-name{font-size:clamp(34px,5vw,56px)}
+  body.b-lock{overflow:hidden}
+
+  @media (max-width:1023px){
+    .breath{grid-template-columns:minmax(0,1fr)}
+    .b-adjust{display:inline-flex!important}
+    .b-controls{
+      position:fixed;left:0;right:0;bottom:0;top:auto;z-index:85;max-height:86vh;
+      border-radius:24px 24px 0 0;padding:6px 18px calc(22px + env(safe-area-inset-bottom,0px));
+      padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));
+      box-shadow:0 -24px 60px rgba(0,0,0,.55);transform:translateY(104%);visibility:hidden;
+      transition:transform .3s cubic-bezier(.3,.7,.2,1),visibility 0s linear .3s;
+    }
+    .b-controls.open{transform:none;visibility:visible;transition:transform .3s cubic-bezier(.3,.7,.2,1),visibility 0s}
+    .sheet-head{
+      display:flex;align-items:center;justify-content:space-between;position:sticky;top:-6px;z-index:2;
+      background:var(--panel);margin:0 -18px;padding:12px 18px 10px;border-bottom:1px solid var(--line-soft);
+    }
+    .sheet-head::before{
+      content:"";position:absolute;left:50%;top:5px;width:40px;height:4px;border-radius:2px;
+      background:var(--line);transform:translateX(-50%);
+    }
+    .sheet-head h2{font-size:17px;font-weight:780;margin-top:6px}
+  }
+  @media (max-width:560px){
+    .b-stage{padding:14px;border-radius:20px;gap:12px}
+    .b-patrow{margin:0 -14px;padding:0 14px 2px}
+    .b-view{height:clamp(240px,40vh,420px);border-radius:14px}
+    .b-transport .b-go{flex:1 1 100%}
+    .b-transport .btn:not(.b-go){flex:1 1 0;padding:10px 8px}
+    .b-msg{margin-left:0;flex-basis:100%}
+    .b-fields{gap:6px 14px}
+  }
+
+  /* ---------- tracks ---------- */
+  .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:0 0 16px}
+  .count{font-size:13px;color:var(--text-faint);font-weight:600}
+  @media (max-width:560px){
+    .toolbar .tabs{
+      flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+      margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(16px,env(safe-area-inset-left,0px)) 2px;
+    }
+    .toolbar .tabs::-webkit-scrollbar{display:none}
+    .tab{white-space:nowrap}
+    .count{display:none}
+  }
+  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));margin:0;padding:0;list-style:none}
+  .card{
+    background:var(--panel);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;
+    position:relative;border:1px solid transparent;transition:border-color .18s,background .18s;
+  }
+  .card:hover{background:var(--panel-2)}
+  .card.is-playing{border-color:var(--c1);background:color-mix(in srgb,var(--c1) 6%,var(--panel))}
+  .card[data-cat="relax"]{--c1:var(--relax)}
+  .card[data-cat="stim"]{--c1:var(--stim)}
+  .card[data-cat="ther"]{--c1:var(--ther)}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .card h3{font-size:17px;font-weight:750;letter-spacing:-.015em}
+  .band{
+    display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:750;color:var(--c1);
+    white-space:nowrap;padding-top:2px;
+  }
+  .band::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c1)}
+  .card .desc{font-size:14px;color:var(--text-dim);margin:0;flex:1}
+  .specs{display:flex;gap:6px;flex-wrap:wrap}
+  .spec{
+    background:var(--panel-2);border:1px solid transparent;border-radius:8px;
+    padding:4px 9px;font-size:12px;color:var(--text-dim);font-weight:600;font-variant-numeric:tabular-nums;
+  }
+  .card:hover .spec{background:var(--panel-3)}
+  .spec b{color:var(--text);font-weight:750}
+  button.spec{cursor:pointer}
+  .notch-chip{border-color:color-mix(in srgb,var(--c1) 40%,transparent)!important;color:var(--c1)!important}
+  .notch-chip b{color:var(--c1)!important}
+  .play-btn{
+    font-size:14px;font-weight:750;cursor:pointer;min-height:44px;
+    background:var(--c1);color:#0b1120;border:0;border-radius:12px;
+    padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:filter .15s;
+  }
+  .play-btn:hover{filter:brightness(1.08)}
+  details.ev{border-top:1px solid var(--line-soft);padding-top:11px}
+  details.ev summary{
+    cursor:pointer;font-size:12.5px;font-weight:650;color:var(--text-faint);list-style:none;
+    display:flex;align-items:center;gap:8px;user-select:none;
+  }
+  details.ev summary::-webkit-details-marker{display:none}
+  details.ev summary::after{content:"›";transition:transform .2s;font-size:16px;line-height:1}
+  details.ev[open] summary::after{transform:rotate(90deg)}
+  details.ev summary:hover{color:var(--text-dim)}
+  .ev-body{font-size:13px;color:var(--text-dim);margin-top:9px}
+  .ev-body cite{display:block;margin-top:7px;font-style:normal;font-size:12px;color:var(--text-faint)}
+  .strength{display:inline-flex;gap:3px;margin-left:auto;align-items:center}
+  .strength i{width:14px;height:4px;border-radius:2px;background:var(--line);display:block}
+  .strength i.on{background:var(--c1)}
+
+  /* ---------- prime + builder ---------- */
+  .prime,.builder{background:var(--panel);border-radius:22px;padding:22px 24px;display:grid;gap:20px}
+  .prime-foot,.builder-foot{display:flex;flex-wrap:wrap;gap:14px;align-items:center;border-top:1px solid var(--line-soft);padding-top:18px}
+  .prime-foot .hint{margin:0;max-width:54ch;flex:1;min-width:220px;font-size:13px}
+  .fields{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .band-readout{font-size:13px;color:var(--text-dim);margin-left:auto;font-variant-numeric:tabular-nums}
+  .band-readout b{color:var(--text)}
+  @media (max-width:560px){ .prime,.builder{padding:18px} .prime-foot .btn,.builder-foot .btn{flex:1 1 100%} .band-readout{margin-left:0} }
 
   /* ---------- live heart data ---------- */
-  .hr{
-    margin-top:15px;background:linear-gradient(180deg,var(--panel),var(--bg-2));
-    border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;display:grid;gap:18px;
+  .hr{display:grid;gap:14px}
+  .hr-top{
+    display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between;
+    background:var(--panel);border-radius:22px;padding:20px 22px;
   }
-  .hr-top{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-start;justify-content:space-between}
-  .hr-intro{min-width:0;flex:1 1 360px}
-  .hr-intro h3{font-size:19px;font-weight:650;letter-spacing:-.015em;margin-top:6px;text-wrap:balance}
-  .hr-intro p{margin:6px 0 0;font-size:14px;color:var(--text-dim);max-width:66ch}
+  .hr-intro{min-width:0;flex:1 1 340px}
+  .hr-intro h3{font-size:21px;font-weight:800;letter-spacing:-.025em}
+  .hr-intro p{margin:6px 0 0;font-size:14px;color:var(--text-dim);max-width:62ch}
   .hr-intro .hr-msg{color:var(--b-hold)}
   .hr-intro .hr-msg:empty{display:none}
   .hr-conn{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .hr-conn .btn:disabled{opacity:.45;cursor:default}
   .hr-pill{
-    display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-dim);white-space:nowrap;
-    background:var(--panel-2);border:1px solid var(--line-soft);border-radius:999px;padding:5px 11px;
+    display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:650;color:var(--text-dim);white-space:nowrap;
+    background:var(--panel-2);border-radius:999px;padding:6px 12px;
   }
   .hr-pill i{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex:none}
   .hr[data-state="on"] .hr-pill i{background:var(--hr);box-shadow:0 0 8px var(--hr)}
   .hr[data-state="busy"] .hr-pill i,.hr[data-state="lost"] .hr-pill i{background:var(--b-hold)}
   .hr-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
-  .hr-meter{position:relative;height:6px;border-radius:99px;background:var(--line);margin:10px 0 16px}
+  .hr-tile{background:var(--panel);border-radius:16px;padding:14px 16px;min-width:0}
+  .hr-tile .k{font-size:12.5px;color:var(--text-faint);font-weight:700}
+  .hr-tile .v{
+    display:flex;align-items:baseline;gap:5px;margin-top:4px;
+    font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.15;font-variant-numeric:tabular-nums;
+  }
+  .hr-tile .v small{font-size:13px;color:var(--text-faint);font-weight:650;letter-spacing:0}
+  .hr-tile .s{font-size:12px;color:var(--text-faint);margin-top:3px}
+  .hr-tile.now .v{color:var(--hr)}
+  .hr-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--hr);opacity:.35;align-self:center;margin-left:4px;flex:none}
+  .hr-meter{position:relative;height:6px;border-radius:99px;background:var(--panel-3);margin:10px 0 16px}
   .hr-meter i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:99px;background:var(--hr);transition:width .6s}
   .hr-meter span{position:absolute;top:9px;font-size:10.5px;color:var(--text-faint);line-height:1}
   .hr-meter span:first-of-type{left:0}
   .hr-meter span:last-of-type{right:0}
-  .hr-col{display:grid;gap:15px;min-width:0;align-content:start}
-  .hr-tile{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:12px 14px;min-width:0}
-  .hr-tile .k{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);font-weight:650}
-  .hr-tile .v{
-    display:flex;align-items:baseline;gap:5px;margin-top:4px;
-    font-size:28px;font-weight:680;letter-spacing:-.02em;line-height:1.2;font-variant-numeric:tabular-nums;
-  }
-  .hr-tile .v small{font-size:13px;color:var(--text-faint);font-weight:550;letter-spacing:0}
-  .hr-tile .s{font-size:12px;color:var(--text-faint);margin-top:3px}
-  .hr-tile.now .v{color:var(--hr)}
-  .hr-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--hr);opacity:.35;align-self:center;margin-left:4px;flex:none}
-  .hr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:15px}
-  .hr-box{
-    border:1px solid var(--line-soft);border-radius:var(--radius-sm);background:var(--bg);
-    padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;
-  }
+  .hr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:12px}
+  .hr-col{display:grid;gap:12px;min-width:0;align-content:start}
+  .hr-box{background:var(--panel);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
   .hr-box-head{display:flex;justify-content:space-between;align-items:baseline;gap:4px 12px;flex-wrap:wrap}
-  .hr-box-head b{font-size:14.5px;font-weight:620}
+  .hr-box-head b{font-size:15px;font-weight:750}
   .hr-box-head .hint{margin:0}
-  .hr-chart{position:relative;height:140px}
+  .hr-chart{position:relative;height:140px;border-radius:12px;background:var(--bg-2)}
   .hr-chart.sm{height:130px}
+  .hr-chart.grow{flex:1 1 auto;height:auto;min-height:130px;max-height:260px}
   .hr-chart canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-  .hr-empty{
-    position:absolute;inset:0;margin:0;display:grid;place-items:center;text-align:center;
-    padding:0 10%;font-size:13px;color:var(--text-faint);
-  }
+  .hr-empty{position:absolute;inset:0;margin:0;display:grid;place-items:center;text-align:center;padding:0 10%;font-size:13px;color:var(--text-faint)}
   .hr-summary{margin:0;font-size:13px;color:var(--text-dim)}
   .hr-find-txt{margin:0;font-size:13.5px;color:var(--text-dim)}
   .hr-find-foot{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .hr-find-foot .btn:disabled{opacity:.45;cursor:default}
+  @media (max-width:1100px){
+    .hr-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .hr-tile.coh{grid-column:span 2}
+  }
+  @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr)} }
+  @media (max-width:640px){
+    .hr-top{padding:18px}
+    .hr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .hr-tile.coh{grid-column:1 / -1}
+    .hr-tile .v{font-size:26px}
+    .hr-conn{width:100%}
+  }
+
   /* connection guide */
-  .hr-guide{border:1px solid var(--line-soft);border-radius:var(--radius-sm);background:var(--bg)}
-  .hr-guide > summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:12px}
+  .hr-guide{background:var(--panel);border-radius:22px}
+  .hr-guide > summary{list-style:none;cursor:pointer;padding:16px 20px;display:flex;align-items:center;gap:12px}
   .hr-guide > summary::-webkit-details-marker{display:none}
-  .hr-guide > summary::after{content:"›";margin-left:auto;font-size:20px;line-height:1;color:var(--text-faint);transition:transform .2s;flex:none}
+  .hr-guide > summary::after{content:"›";margin-left:auto;font-size:22px;line-height:1;color:var(--text-faint);transition:transform .2s;flex:none}
   .hr-guide[open] > summary::after{transform:rotate(90deg)}
-  .hr-guide > summary:hover::after{color:var(--text)}
   .hr-guide-sum{min-width:0}
-  .hr-guide-sum b{display:block;font-size:15px;font-weight:620;color:var(--text)}
+  .hr-guide-sum b{display:block;font-size:15.5px;font-weight:750;color:var(--text)}
   .hr-guide-sum span{display:block;font-size:13px;color:var(--text-faint);margin-top:2px}
-  .hr-guide-body{
-    display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;
-    border-top:1px solid var(--line-soft);padding:16px;
-  }
+  .hr-guide-body{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;border-top:1px solid var(--line-soft);padding:18px 20px}
   .g-main{min-width:0}
-  .g-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+  .g-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
   .g-tab{font-size:13px;padding:7px 13px}
-  .g-steps{counter-reset:g;list-style:none;margin:0;padding:0;display:grid;gap:14px}
-  .g-steps li{counter-increment:g;position:relative;padding-left:38px;font-size:14px;color:var(--text-dim);max-width:68ch}
+  .g-steps{counter-reset:g;list-style:none;margin:0;padding:0;display:grid;gap:16px}
+  .g-steps li{counter-increment:g;position:relative;padding-left:40px;font-size:14px;color:var(--text-dim);max-width:68ch}
   .g-steps li::before{
-    content:counter(g);position:absolute;left:0;top:0;width:25px;height:25px;border-radius:50%;
-    background:var(--panel-2);border:1px solid var(--line);color:var(--text);
-    font-size:12px;font-weight:650;display:grid;place-items:center;
+    content:counter(g);position:absolute;left:0;top:0;width:27px;height:27px;border-radius:50%;
+    background:var(--panel-3);color:var(--text);font-size:12.5px;font-weight:800;display:grid;place-items:center;
   }
-  .g-steps li b{display:block;color:var(--text);font-weight:600;margin-bottom:2px}
+  .g-steps li b{display:block;color:var(--text);font-weight:750;margin-bottom:2px}
   .g-expect{
-    margin:16px 0 0;padding:11px 13px;border-radius:var(--radius-sm);font-size:13.5px;color:var(--text-dim);
-    background:color-mix(in srgb,var(--hr) 7%,transparent);border:1px solid color-mix(in srgb,var(--hr) 24%,transparent);
+    margin:18px 0 0;padding:12px 14px;border-radius:14px;font-size:13.5px;color:var(--text-dim);
+    background:color-mix(in srgb,var(--hr) 9%,transparent);
   }
-  .g-expect b{color:var(--text);font-weight:600}
+  .g-expect b{color:var(--text);font-weight:750}
   .g-side{display:grid;gap:12px;align-content:start;min-width:0}
-  .g-card{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:13px 14px}
-  .g-card h4{margin:6px 0 8px;font-size:14.5px;font-weight:620}
+  .g-card{background:var(--panel-2);border-radius:16px;padding:14px 16px}
+  .g-card h4{margin:4px 0 8px;font-size:15px;font-weight:750}
   .g-card ul{margin:0;padding-left:18px;font-size:13px;color:var(--text-dim)}
   .g-card ul li{margin-bottom:6px;overflow-wrap:anywhere}
   .g-card ul li:last-child{margin-bottom:0}
-  .g-check{list-style:none;padding:0 !important;margin:10px 0 14px !important;display:grid;gap:10px}
+  .g-check{list-style:none;padding:0 !important;margin:12px 0 14px !important;display:grid;gap:11px}
   .g-check li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;margin:0 !important}
   .g-check li i{
     width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);margin-top:1px;
     display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;line-height:1;color:var(--bg);
   }
-  .g-check li b{display:block;color:var(--text);font-weight:600;font-size:13px}
+  .g-check li b{display:block;color:var(--text);font-weight:700;font-size:13.5px}
   .g-check li .s{display:block;font-size:12px;color:var(--text-faint)}
   .g-check li.ok i{background:var(--relax);border-color:var(--relax)}
   .g-check li.ok i::after{content:"✓"}
@@ -488,136 +584,160 @@
   .g-check li.info i{border-color:var(--text-faint)}
   .g-check li.info i::after{content:"–";color:var(--text-faint)}
   .g-check li.no .s{color:var(--b-hold)}
-  .g-check + .btn:disabled{opacity:.45;cursor:default}
-  .g-trouble{border-top:1px solid var(--line-soft);padding:14px 16px 6px}
-  .g-trouble .prime-label{margin-bottom:4px}
+  .g-trouble{border-top:1px solid var(--line-soft);padding:16px 20px 8px}
   .g-trouble details{border-top:1px solid var(--line-soft)}
   .g-trouble details:first-of-type{border-top:0}
-  .g-trouble summary{cursor:pointer;list-style:none;display:flex;gap:9px;padding:10px 0;font-size:13.5px;font-weight:560;color:var(--text)}
+  .g-trouble summary{cursor:pointer;list-style:none;display:flex;gap:10px;padding:11px 0;font-size:14px;font-weight:650;color:var(--text)}
   .g-trouble summary::-webkit-details-marker{display:none}
-  .g-trouble summary::before{content:"+";width:12px;flex:none;color:var(--text-faint);font-weight:700}
+  .g-trouble summary::before{content:"+";width:12px;flex:none;color:var(--text-faint);font-weight:800}
   .g-trouble details[open] summary::before{content:"−"}
-  .g-trouble p{margin:0 0 12px 21px;font-size:13px;color:var(--text-dim);max-width:72ch}
+  .g-trouble p{margin:0 0 12px 22px;font-size:13.5px;color:var(--text-dim);max-width:72ch}
   @media (max-width:880px){ .hr-guide-body{grid-template-columns:minmax(0,1fr)} }
-  .b-stat.b-hr{color:var(--hr);border-color:color-mix(in srgb,var(--hr) 35%,transparent)}
-  .b-stat.b-hr b{color:var(--hr)}
-  .b-stat.b-hr .hr-dot{width:7px;height:7px;margin:0 6px 0 0;vertical-align:1px;opacity:.5}
-  .ear.ear-hr{border-color:color-mix(in srgb,var(--hr) 40%,transparent);color:var(--hr)}
-  .ear.ear-hr b{color:var(--hr)}
-  .hr-chart.grow{flex:1 1 auto;height:auto;min-height:130px;max-height:260px}
-  @media (max-width:1000px){
-    .hr-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .hr-tile.coh{grid-column:span 2}
-  }
-  @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr)} }
-  @media (max-width:640px){
-    .hr{padding:16px}
-    .hr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .hr-tile.coh{grid-column:1 / -1}
-    .hr-tile .v{font-size:24px}
+
+  /* ---------- learn ---------- */
+  .learn{display:grid;grid-template-columns:200px minmax(0,1fr);gap:40px;align-items:start}
+  .toc{position:sticky;top:96px;display:grid;gap:2px}
+  .toc a{display:block;padding:7px 12px;border-radius:9px;font-size:13.5px;font-weight:650;color:var(--text-dim)}
+  .toc a:hover{background:var(--panel);color:var(--text)}
+  .prose{color:var(--text-dim);font-size:15.5px;max-width:70ch;line-height:1.7}
+  .prose h2{font-size:clamp(24px,3vw,32px);font-weight:800;letter-spacing:-.03em;color:var(--text)}
+  .prose > p.v-lede{font-size:16.5px}
+  .prose h3{font-size:18px;color:var(--text);margin:36px 0 10px;font-weight:780;letter-spacing:-.015em;scroll-margin-top:84px}
+  .prose p{margin:0 0 14px}
+  .prose ul{margin:0 0 14px;padding-left:20px}
+  .prose li{margin-bottom:7px}
+  .prose strong{color:var(--text);font-weight:700}
+  .prose a,ol.refs a{color:var(--relax);border-bottom:1px solid rgba(94,234,212,.3)}
+  .prose a:hover,ol.refs a:hover{border-bottom-color:var(--relax)}
+  table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}
+  caption{text-align:left;font-size:13px;color:var(--text-faint);padding-bottom:10px}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  th{font-size:12.5px;color:var(--text-faint);font-weight:750;border-bottom-color:var(--line)}
+  td:first-child{color:var(--text);font-weight:700;white-space:nowrap}
+  .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .refs-sec{margin-top:48px;scroll-margin-top:84px}
+  .refs-sec h3{font-size:18px;font-weight:780;color:var(--text);margin-bottom:12px}
+  ol.refs{color:var(--text-dim);font-size:13.5px;padding-left:22px;margin:0}
+  ol.refs li{margin-bottom:11px}
+  .fineprint{border-top:1px solid var(--line-soft);margin-top:44px;padding-top:22px;color:var(--text-faint);font-size:13px}
+  .fineprint p{margin:0 0 9px;max-width:70ch}
+  .fineprint strong{color:var(--text-dim)}
+  @media (max-width:900px){
+    .learn{grid-template-columns:minmax(0,1fr);gap:8px}
+    .toc{
+      position:static;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+      margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(16px,env(safe-area-inset-left,0px)) 6px;
+    }
+    .toc::-webkit-scrollbar{display:none}
+    .toc a{background:var(--panel);white-space:nowrap;border-radius:999px;padding:7px 13px}
   }
 
-  /* Focus view: the stage takes the whole screen (and real fullscreen when allowed) */
-  .b-stage.focus{
-    position:fixed;inset:0;z-index:90;border:0;border-radius:0;background:var(--bg);
-    padding-top:max(20px,env(safe-area-inset-top,0px));
-    padding-bottom:max(20px,env(safe-area-inset-bottom,0px));
-    padding-left:max(20px,env(safe-area-inset-left,0px));
-    padding-right:max(20px,env(safe-area-inset-right,0px));
+  /* ---------- modals ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:20px;
+    background:rgba(5,8,16,.74);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
   }
-  .b-stage.focus .b-view{flex:1;height:auto;min-height:0}
-  .b-stage.focus .b-phase-name{font-size:clamp(30px,4.4vw,48px)}
-  body.b-lock{overflow:hidden}
+  .modal-card{
+    background:var(--panel);border-radius:22px;box-shadow:var(--shadow);
+    max-width:540px;width:100%;padding:26px;max-height:88vh;overflow-y:auto;
+  }
+  .modal-card h2{font-size:22px;font-weight:800;letter-spacing:-.025em;margin-bottom:11px}
+  .modal-card p{color:var(--text-dim);font-size:14.5px;margin:0 0 16px}
+  .sc-q{color:var(--text);font-weight:700;margin-bottom:11px}
+  .sc-answers{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(148px,1fr))}
+  .sc-result{border-radius:14px;padding:13px 15px;font-size:14px;margin-top:6px}
+  .sc-result.ok{background:rgba(94,234,212,.09);color:#99f6e4}
+  .sc-result.bad{background:rgba(251,113,133,.1);color:#fda4af}
+  .sc-result b{display:block;color:var(--text);margin-bottom:4px}
+  .sc-again{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+  .modal-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line-soft)}
+  .tone-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#0b1120;opacity:.6}
+  .pm-readout{display:flex;align-items:baseline;gap:10px;justify-content:center;background:var(--panel-2);border-radius:14px;padding:14px;margin:4px 0 16px}
+  .pm-hz{font-size:36px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .pm-unit{font-size:15px;color:var(--text-faint)}
+  .pm-oct{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+  .pm-warn{background:rgba(251,191,36,.1);color:#fcd34d;border-radius:12px;padding:11px 13px;font-size:13.5px;margin:14px 0 0}
+  .pm-med{background:rgba(251,113,133,.08);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--text-dim);margin:16px 0 0}
+  .pm-med b{color:var(--text);display:block;margin-bottom:3px}
+  .pm-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 
-  @media (max-width:880px){
-    .breath{grid-template-columns:minmax(0,1fr)}
-  }
-  @media (max-width:520px){
-    .b-stage{padding:16px}
-    .b-controls{padding:16px}
-    .b-view{height:280px}
-    .b-phase-name{font-size:25px}
-    .b-transport .btn{flex:1 1 auto}
-    .b-msg{margin-left:0;flex-basis:100%}
-    .b-fields{gap:6px 14px}
-  }
-
-  /* ---------- player ---------- */
+  /* ---------- mini player ---------- */
   .player{
     position:fixed;left:0;right:0;bottom:0;z-index:50;
-    background:rgba(12,17,30,.93);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-    border-top:1px solid var(--line);box-shadow:var(--shadow);
-    transform:translateY(102%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+    background:rgba(19,27,48,.95);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border-top:1px solid var(--line);box-shadow:0 -18px 40px -22px rgba(0,0,0,.8);
+    transform:translateY(110%);transition:transform .3s cubic-bezier(.4,0,.2,1);
   }
   .player.open{transform:translateY(0)}
-  .player-inner{
-    max-width:var(--maxw);margin:0 auto;display:grid;gap:16px;grid-template-columns:auto 1fr auto;align-items:center;
-    padding-top:16px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));
-    padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));
+  .cue{
+    background:color-mix(in srgb,var(--pc,var(--stim)) 22%,transparent);
+    padding:11px 20px;font-size:14.5px;font-weight:750;color:var(--text);text-align:center;
   }
-
-  .orb{position:relative;width:62px;height:62px;flex:none}
-  .orb svg{position:absolute;inset:0;transform:rotate(-90deg)}
+  .player-inner{
+    max-width:var(--maxw);display:grid;gap:8px 16px;align-items:center;
+    grid-template-columns:auto minmax(0,1fr) auto auto;
+    padding-top:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+    padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  }
+  .orb{position:relative;width:48px;height:48px;flex:none}
+  .orb svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
   .orb .ring-bg{fill:none;stroke:var(--line);stroke-width:4}
   .orb .ring-fg{fill:none;stroke:var(--pc,var(--relax));stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .4s linear}
-  .orb-core{
-    position:absolute;inset:13px;border-radius:50%;
-    background:radial-gradient(circle at 34% 30%,var(--pc,var(--relax)),transparent 72%);
-    opacity:.5;
-  }
+  .orb-core{position:absolute;inset:11px;border-radius:50%;background:radial-gradient(circle at 34% 30%,var(--pc,var(--relax)),transparent 72%);opacity:.5}
   .player.playing .orb-core{animation:breathe 6s ease-in-out infinite}
   @keyframes breathe{0%,100%{transform:scale(.82);opacity:.35}50%{transform:scale(1.06);opacity:.75}}
-  /* while the breathing guide runs, the orb follows the guide instead of its own 6 s loop */
   .player.breath-sync .orb-core{animation:none}
-
   .p-meta{min-width:0}
-  .p-name{font-size:15.5px;font-weight:620;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .p-sub{font-size:12.5px;color:var(--text-faint);margin-top:2px}
-  .ears{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-  .ear{
-    font-size:11.5px;background:var(--panel-2);border:1px solid var(--line-soft);
-    border-radius:5px;padding:3px 8px;color:var(--text-dim);
-  }
+  .p-name{font-size:15px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .p-sub{font-size:12.5px;color:var(--text-faint);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ears{display:flex;gap:6px;flex-wrap:wrap;grid-column:2 / -1;font-variant-numeric:tabular-nums}
+  .ear{font-size:11.5px;background:var(--panel-2);border-radius:6px;padding:3px 8px;color:var(--text-dim);font-weight:650;white-space:nowrap}
   .ear b{color:var(--text)}
-  .ear.beat{border-color:color-mix(in srgb,var(--pc,var(--relax)) 40%,transparent);color:var(--pc,var(--relax))}
+  .ear.beat{color:var(--pc,var(--relax));background:color-mix(in srgb,var(--pc,var(--relax)) 12%,transparent)}
   .ear.beat b{color:var(--pc,var(--relax))}
-
-  .p-controls{display:flex;align-items:center;gap:13px;flex-wrap:wrap;justify-content:flex-end}
+  .ear.ear-hr{color:var(--hr);background:color-mix(in srgb,var(--hr) 12%,transparent)}
+  .ear.ear-hr b{color:var(--hr)}
+  .p-controls{display:flex;align-items:center;gap:10px}
   .icon-btn{
     width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;flex:none;
-    background:var(--pc,var(--relax));color:#0a0e1a;font-size:16px;
-    display:grid;place-items:center;font-family:inherit;transition:filter .15s;
+    background:var(--pc,var(--relax));color:#0b1120;font-size:15px;
+    display:grid;place-items:center;transition:filter .15s;
   }
   .icon-btn:hover{filter:brightness(1.1)}
-  .icon-btn.ghost{background:var(--panel-2);color:var(--text-dim);border:1px solid var(--line);width:40px;height:40px;font-size:14px}
-  .icon-btn.ghost:hover{color:var(--text);background:#22304a}
-  .time{font-size:17px;font-weight:620;min-width:66px;text-align:right}
-  .vol{display:flex;align-items:center;gap:9px;min-width:150px}
-  .vol span{font-size:12px;color:var(--text-faint);white-space:nowrap}
+  .icon-btn.ghost{background:var(--panel-2);color:var(--text-dim);width:40px;height:40px;font-size:13px}
+  .icon-btn.ghost:hover{color:var(--text);background:var(--panel-3)}
+  .time{font-size:16px;font-weight:780;min-width:58px;text-align:right;font-variant-numeric:tabular-nums}
+  .vol{display:flex;align-items:center;gap:10px;min-width:170px}
+  .vol span{font-size:12.5px;color:var(--text-faint);white-space:nowrap;font-weight:650}
   .vol input[type=range]{margin:0}
-  .toggles{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--text-dim);grid-column:1/-1;border-top:1px solid var(--line-soft);padding-top:13px;align-items:center}
-  .toggles label{display:flex;align-items:center;gap:7px;cursor:pointer}
-  .toggles input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
+  .p-more svg{transition:transform .2s}
+  .player.expanded .p-more svg{transform:rotate(180deg)}
+  .toggles{
+    display:flex;gap:8px 16px;flex-wrap:wrap;font-size:13px;color:var(--text-dim);grid-column:1 / -1;
+    border-top:1px solid var(--line-soft);padding-top:10px;align-items:center;font-weight:600;
+  }
+  .toggles label{display:flex;align-items:center;gap:8px;cursor:pointer;min-height:32px}
+  .toggles input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
   .toggles label.off{opacity:.5;cursor:default}
   .toggles label.off input{cursor:default}
   .status{margin-left:auto;font-size:12.5px;color:var(--text-faint)}
-
-  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-
-  @media (max-width:760px){
-    body{padding-bottom:320px}
-    header{padding:36px 0 20px}
-    .player-inner{
-      grid-template-columns:auto 1fr;gap:13px;
-      padding-top:14px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));
-      padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
-    }
-    .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-    .p-controls{grid-column:1/-1;justify-content:space-between}
-    .vol{min-width:0;flex:1}
-    .orb{width:52px;height:52px}
+  @media (min-width:1024px){
+    .player{left:var(--rail)}
+    .player-inner{grid-template-columns:auto minmax(0,1fr) auto auto;margin:0 32px;padding-left:0;padding-right:0}
+    .p-more{display:none}
   }
+  @media (max-width:1023px){
+    .player{bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px))}
+    .player-inner{grid-template-columns:auto minmax(0,1fr) auto;padding-bottom:12px}
+    .player:not(.expanded) .ears,.player:not(.expanded) .vol,.player:not(.expanded) .toggles{display:none}
+    .player.expanded .vol{grid-column:1 / -1;min-width:0}
+    .player.expanded .ears{grid-column:1 / -1}
+    .orb{width:42px;height:42px}
+    .orb-core{inset:9px}
+    .time{min-width:50px;font-size:15px}
+    .p-controls{gap:8px}
+  }
+
   @media (prefers-reduced-motion:reduce){
     *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   }
@@ -625,150 +745,96 @@
 </head>
 <body>
 
-<div class="wrap">
-  <header>
-    <div class="brand">
-      <div class="brand-mark" aria-hidden="true"></div>
-      <div>
-        <div class="brand-name">Entrain</div>
-        <div class="brand-tag">Binaural beat generator</div>
-      </div>
-    </div>
-    <h1>Tones your brain <em>builds itself</em>.</h1>
-    <p class="lede">
-      Every track here is generated live in your browser from two pure sine tones — one per ear.
-      The beat you hear is the difference between them, and it exists only in your auditory brainstem.
-      Frequencies, carrier tones and session lengths are taken from the published literature, and each
-      card shows what the evidence actually says.
-    </p>
-    <div class="notices">
-      <div class="notice">
-        <span class="notice-ic" aria-hidden="true">🎧</span>
-        <span><b>Headphones are mandatory.</b> On speakers the two tones mix in the air and you get an ordinary acoustic beat, not a binaural one.</span>
-      </div>
-      <div class="notice">
-        <span class="notice-ic" aria-hidden="true">🔉</span>
-        <span><b>Keep it quiet.</b> Beats are perceived most clearly at low, comfortable levels. Loud does not mean stronger.</span>
-      </div>
-      <div class="notice warn">
-        <span class="notice-ic" aria-hidden="true">⚠︎</span>
-        <span><b>Not for everyone.</b> Avoid if you have epilepsy or a seizure disorder, wear a pacemaker, or are driving or operating machinery. This is not a medical device.</span>
-      </div>
-    </div>
-    <nav class="jump" aria-label="On this page">
-      <a href="#prime">Prime, then work</a>
-      <a href="#tracks">Tracks</a>
-      <a href="#builder">Build your own</a>
-      <a href="#breathe">Breathing guide</a>
-      <a href="#connect">Connect a heart sensor</a>
-      <a href="#science">The research</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4.5l8 6.7V19a1.5 1.5 0 0 1-1.5 1.5H15v-6H9v6H5.5A1.5 1.5 0 0 1 4 19z"/></symbol>
+  <symbol id="i-breathe" viewBox="0 0 24 24"><path d="M2.5 12c2.4-6.5 4.8-6.5 7.2 0s4.8 6.5 7.2 0c1.1-3 2.4-4.4 4.6-4.2"/></symbol>
+  <symbol id="i-sounds" viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 14.5h3.2v6H5.5A1.5 1.5 0 0 1 4 19zM20 14.5h-3.2v6h1.7A1.5 1.5 0 0 0 20 19z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></symbol>
+  <symbol id="i-learn" viewBox="0 0 24 24"><path d="M4 5.6A1.6 1.6 0 0 1 5.6 4H11v16H5.6A1.6 1.6 0 0 1 4 18.4zM20 5.6A1.6 1.6 0 0 0 18.4 4H13v16h5.4a1.6 1.6 0 0 0 1.6-1.6z"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.5h3.2L11.5 6v12l-4.3-3.5H4z"/><path d="M15 9.5a3.6 3.6 0 0 1 0 5M17.8 7a7.2 7.2 0 0 1 0 10"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4.2 2.8 19.5h18.4z"/><path d="M12 10v4.2M12 16.9v.1"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 14.5l6-6 6 6"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.2 3 5.5 13.5h5.8L10.4 21l8-10.6h-5.8z"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2.5 12.5h4l2.2-5 4.2 10 2.4-5h6.2"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="rail">
+    <a class="brand" href="#home" aria-label="Entrain home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Entrain</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#home" data-view="home"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg></span><span>Home</span></a>
+      <a href="#breathe" data-view="breathe"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-breathe"/></svg></span><span>Breathe</span></a>
+      <a href="#sounds" data-view="sounds"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg></span><span>Sounds</span></a>
+      <a href="#heart" data-view="heart"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg></span><span>Heart</span></a>
+      <a href="#learn" data-view="learn"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-learn"/></svg></span><span>Learn</span></a>
     </nav>
-  </header>
+    <p class="rail-foot">Everything runs in this page. Nothing is recorded or sent anywhere, and it works offline once it's open.</p>
+  </aside>
 
-
-  <section id="prime" class="prime-sec">
-    <div class="sec-head">
-      <h2>Prime, then work</h2>
-      <p>
-        The clearest finding in the meta-analysis is about timing rather than frequency: exposure
-        <em>before</em> a task — or before and during it — outperformed listening only while you work.
-        So prime first, get a cue when the block ends, and start.
-      </p>
-    </div>
-    <div class="prime">
-      <div class="prime-row">
-        <div class="prime-label" id="pfLab">Prime with</div>
-        <div class="chips" id="pfChips" role="radiogroup" aria-labelledby="pfLab">
-          <label class="chip"><input type="radio" name="pbeat" value="10|300"> Alpha 10 Hz</label>
-          <label class="chip on"><input type="radio" name="pbeat" value="14|320" checked> Beta 14 Hz</label>
-          <label class="chip"><input type="radio" name="pbeat" value="16|400"> Beta 16 Hz</label>
-          <label class="chip"><input type="radio" name="pbeat" value="24|400"> Beta 24 Hz</label>
-          <label class="chip"><input type="radio" name="pbeat" value="40|400"> Gamma 40 Hz</label>
-        </div>
+  <div class="main">
+    <header class="topbar">
+      <span class="brand-mark top-mark" aria-hidden="true"></span>
+      <h1 id="viewTitle">Home</h1>
+      <div class="top-actions">
+        <a class="pill" id="tbSensor" href="#heart" data-state="off"><i class="dot hr-dot" aria-hidden="true"></i><span id="tbSensorTxt">Connect sensor</span></a>
       </div>
-      <div class="prime-row">
-        <div class="prime-label" id="plLab">Prime for</div>
-        <div class="chips" id="plChips" role="radiogroup" aria-labelledby="plLab">
-          <label class="chip"><input type="radio" name="pmin" value="5"> 5 min</label>
-          <label class="chip on"><input type="radio" name="pmin" value="10" checked> 10 min</label>
-          <label class="chip"><input type="radio" name="pmin" value="15"> 15 min</label>
-          <label class="chip"><input type="radio" name="pmin" value="20"> 20 min</label>
-        </div>
-      </div>
-      <div class="prime-row">
-        <div class="prime-label" id="ptLab">Then, once you start working</div>
-        <div class="chips" id="ptChips" role="radiogroup" aria-labelledby="ptLab">
-          <label class="chip on"><input type="radio" name="pthen" value="continue" checked> Keep going, quieter</label>
-          <label class="chip"><input type="radio" name="pthen" value="noise"> Pink noise only</label>
-          <label class="chip"><input type="radio" name="pthen" value="silence"> Silence</label>
-        </div>
-      </div>
-      <div class="prime-foot">
-        <button class="btn primary" id="primeStart">Start 10-minute prime</button>
-        <p class="hint" id="primeHint"></p>
-      </div>
-    </div>
-  </section>
+    </header>
 
-  <div class="toolbar" id="tracks">
-    <div class="tabs" role="tablist" aria-label="Filter tracks">
-      <button class="tab" role="tab" aria-selected="true" data-filter="all">All tracks</button>
-      <button class="tab" role="tab" aria-selected="false" data-filter="relax">Relaxation &amp; sleep</button>
-      <button class="tab" role="tab" aria-selected="false" data-filter="stim">Stimulation &amp; focus</button>
-      <button class="tab" role="tab" aria-selected="false" data-filter="ther">Tinnitus</button>
-    </div>
-    <div class="count" id="count"></div>
-  </div>
+    <main id="views">
 
-  <ul class="grid" id="grid"></ul>
-
-  <section id="builder">
-    <div class="sec-head">
-      <h2>Build your own</h2>
-      <p>
-        Pick any beat frequency and carrier. Beats are perceived most robustly with carriers between roughly
-        200&nbsp;Hz and 500&nbsp;Hz, and the illusion breaks down as the difference between the two tones exceeds
-        about 30–35&nbsp;Hz — past that you start to hear two separate tones instead of one beating one.
-      </p>
-    </div>
-    <div class="builder">
-      <div class="fields">
-        <div class="field">
-          <label for="cBeat">Beat frequency <b id="cBeatV">10.0 Hz</b></label>
-          <input type="range" id="cBeat" min="0.5" max="40" step="0.5" value="10">
-          <p class="hint" id="cBand">Alpha — relaxed alertness</p>
+      <!-- ============ HOME ============ -->
+      <section class="view" id="v-home" aria-labelledby="viewTitle">
+        <div class="home-hero">
+          <div>
+            <h2 id="homePat">Resonance 5.5</h2>
+            <p id="homePatTxt">5.5 breaths a minute: in for 5.5 s, out for 5.5 s. A 5-minute session.</p>
+            <div class="home-actions">
+              <button class="btn primary b-go" id="homeStart">Start breathing</button>
+              <button class="btn" data-go="breathe">Change pattern</button>
+            </div>
+          </div>
+          <div class="home-wave" aria-hidden="true"><canvas id="homeWave"></canvas></div>
         </div>
-        <div class="field">
-          <label for="cCar">Carrier tone <b id="cCarV">250 Hz</b></label>
-          <input type="range" id="cCar" min="100" max="600" step="10" value="250">
-          <p class="hint">Lower carriers give a stronger, more stable beat percept.</p>
-        </div>
-        <div class="field">
-          <label for="cMin">Session length <b id="cMinV">20 min</b></label>
-          <input type="range" id="cMin" min="5" max="60" step="5" value="20">
-          <p class="hint">Longer exposures performed better in meta-analysis.</p>
-        </div>
-      </div>
-      <div class="builder-foot">
-        <button class="btn primary" id="cPlay">Play custom session</button>
-        <div class="band-readout">Left ear <b id="cL">250 Hz</b> · Right ear <b id="cR">260 Hz</b></div>
-      </div>
-    </div>
-  </section>
 
-  <section id="breathe">
-    <div class="sec-head">
-      <h2>Breathing guide</h2>
-      <p>
-        Slow breathing is the other well-studied route to the calm the relaxation tracks aim for, and it
-        runs on a much slower clock: six breaths a minute is a 0.1&nbsp;Hz rhythm. Pick a pattern, adjust
-        the timings, and follow whichever visual suits you. It runs on its own or alongside any track.
-      </p>
-    </div>
+        <div class="quick">
+          <button class="qk" data-go="heart" style="--qc:var(--hr)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
+          <button class="qk" data-go="sounds" data-seg="prime" style="--qc:var(--stim)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-bolt"/></svg></span><b>Prime before work</b><span id="qkPrime">10 min of 14 Hz beta, then start work</span></button>
+          <button class="qk" data-go="sounds" data-seg="tracks" style="--qc:var(--relax)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg></span><b>Listen to a track</b><span id="qkTracks">12 tracks for sleep, calm, focus and tinnitus</span></button>
+          <button class="qk" data-go="heart" style="--qc:var(--accent)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg></span><b id="qkSensorT">Heart sensor</b><span id="qkSensor">Not connected</span></button>
+        </div>
 
-    <div class="breath">
-      <div class="b-stage" id="bStage" data-phase="ready">
-        <div class="b-head">
+        <div class="home-cols">
+          <div class="note-card">
+            <h3>Last session</h3>
+            <p id="homeLast">After you breathe with a heart sensor connected, a summary of the session appears here.</p>
+            <div class="when" id="homeLastWhen"></div>
+          </div>
+          <div class="note-card">
+            <h3>Before you start</h3>
+            <ul class="safety">
+              <li><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Use headphones for the beats.</b> On speakers the two tones mix in the air and the binaural beat disappears.</span></li>
+              <li><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></li>
+              <li class="warn"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Not for everyone.</b> Avoid the beats if you have epilepsy or a seizure disorder, wear a pacemaker, or are driving or operating machinery. This is not a medical device.</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ BREATHE ============ -->
+      <section class="view" id="v-breathe" aria-labelledby="viewTitle" hidden>
+        <div class="breath">
+          <div class="b-stage" id="bStage" data-phase="ready">
+            <div class="chips b-patrow" id="bPats" role="radiogroup" aria-label="Breathing pattern">
+            <label class="chip on"><input type="radio" name="bpat" value="resonance" checked> Resonance 5.5</label>
+            <label class="chip"><input type="radio" name="bpat" value="sigh"> Cyclic sigh</label>
+            <label class="chip"><input type="radio" name="bpat" value="exhale"> Long exhale</label>
+            <label class="chip"><input type="radio" name="bpat" value="box"> Box 4-4-4-4</label>
+            <label class="chip"><input type="radio" name="bpat" value="478"> 4-7-8</label>
+            <label class="chip"><input type="radio" name="bpat" value="custom"> Custom</label>
+          </div>
+            <div class="b-head">
           <div class="b-phase">
             <div class="b-phase-name" id="bPhase">Ready</div>
             <div class="b-phase-hint" id="bHint">Press start, then follow the shape.</div>
@@ -780,42 +846,34 @@
             <span class="b-stat b-hr" id="bCohStat" title="Coherence score over the last 64 seconds, usually 0 to 8" hidden>coherence <b id="bCoh">—</b></span>
           </div>
         </div>
-
-        <div class="b-view" id="bView">
+            <div class="b-view" id="bView">
           <canvas id="bCanvas" aria-hidden="true"></canvas>
         </div>
-
-        <div class="b-line" aria-hidden="true">
+            <div class="b-line" aria-hidden="true">
           <div class="b-segs" id="bSegs">
             <div class="b-seg" data-k="in" style="flex:5.5 1 0">In 5.5s</div>
             <div class="b-seg" data-k="out" style="flex:5.5 1 0">Out 5.5s</div>
           </div>
           <div class="b-mark" id="bMark"></div>
         </div>
-
-        <div class="b-transport">
-          <button class="btn primary" id="bStart">Start breathing</button>
-          <button class="btn" id="bReset" disabled>Reset</button>
-          <button class="btn" id="bFocus">Focus view</button>
-          <span class="b-msg" id="bMsg" role="status"></span>
-        </div>
-        <div class="visually-hidden" id="bLive" aria-live="polite"></div>
-      </div>
-
-      <div class="b-controls">
-        <div class="prime-row">
-          <div class="prime-label" id="bpLab">Pattern</div>
-          <div class="chips" id="bPats" role="radiogroup" aria-labelledby="bpLab">
-            <label class="chip on"><input type="radio" name="bpat" value="resonance" checked> Resonance 5.5</label>
-            <label class="chip"><input type="radio" name="bpat" value="sigh"> Cyclic sigh</label>
-            <label class="chip"><input type="radio" name="bpat" value="exhale"> Long exhale</label>
-            <label class="chip"><input type="radio" name="bpat" value="box"> Box 4-4-4-4</label>
-            <label class="chip"><input type="radio" name="bpat" value="478"> 4-7-8</label>
-            <label class="chip"><input type="radio" name="bpat" value="custom"> Custom</label>
+            <div class="b-transport">
+              <button class="btn primary b-go" id="bStart">Start breathing</button>
+              <button class="btn b-adjust" id="bAdjust" aria-controls="bPanel" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg>Adjust</button>
+              <button class="btn" id="bReset" disabled>Reset</button>
+              <button class="btn" id="bFocus">Focus view</button>
+              <span class="b-msg" id="bMsg" role="status"></span>
+            </div>
+            <div class="b-sensor" id="bSensorRow">
+              <svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg>
+              <span id="bSensorTxt">Connect a heart sensor to watch your heart rate follow your breath.</span>
+              <button class="btn small" id="bSensorBtn" data-act="connect">Connect sensor</button>
+            </div>
+            <div class="visually-hidden" id="bLive" aria-live="polite"></div>
           </div>
-        </div>
 
-        <div class="b-note">
+          <div class="b-controls" id="bPanel" aria-label="Breathing settings">
+            <div class="sheet-head"><h2>Breathing settings</h2><button class="btn small" id="bPanelDone">Done</button></div>
+            <div class="b-note">
           <p id="bDesc">Equal, unhurried breaths in and out at about 5.5 a minute, with no holds. This is the pace used in heart-rate-variability biofeedback.</p>
           <details class="ev" id="bEv">
             <summary id="bEvSum">Evidence <span class="strength" title="Strength of supporting evidence: 3 of 3" aria-label="Evidence strength 3 of 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></summary>
@@ -891,10 +949,113 @@
           <b>Go gently.</b> Stop and breathe normally if you feel light-headed or tingly. Leave out the holds if
           you are pregnant or have a heart, lung or blood-pressure condition.
         </p>
+
+          </div>
+        </div>
+        <div class="sheet-back" id="sheetBack" hidden></div>
+      </section>
+
+      <!-- ============ SOUNDS ============ -->
+      <section class="view" id="v-sounds" aria-labelledby="viewTitle" hidden>
+        <div class="seg" role="tablist" aria-label="Sound sessions">
+          <button class="seg-b" role="tab" id="sg-tracks" data-seg="tracks" aria-controls="sp-tracks" aria-selected="true">Tracks</button>
+          <button class="seg-b" role="tab" id="sg-prime" data-seg="prime" aria-controls="sp-prime" aria-selected="false" tabindex="-1">Prime, then work</button>
+          <button class="seg-b" role="tab" id="sg-build" data-seg="build" aria-controls="sp-build" aria-selected="false" tabindex="-1">Build your own</button>
+        </div>
+
+        <div class="notice-strip">
+          <div class="ns"><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Headphones on.</b> Each ear gets its own tone; on speakers they mix and the beat disappears.</span><button class="btn small" id="scOpen2">Check headphones</button></div>
+          <div class="ns"><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></div>
+          <div class="ns warn"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Not for everyone.</b> Avoid with epilepsy or a seizure disorder, a pacemaker, or while driving or operating machinery. Not a medical device.</span></div>
+        </div>
+
+        <div class="seg-panel" id="sp-tracks" role="tabpanel" aria-labelledby="sg-tracks">
+          <div class="toolbar" id="tracks">
+            <div class="tabs" role="tablist" aria-label="Filter tracks">
+              <button class="tab" role="tab" aria-selected="true" data-filter="all">All</button>
+              <button class="tab" role="tab" aria-selected="false" data-filter="relax">Relaxation &amp; sleep</button>
+              <button class="tab" role="tab" aria-selected="false" data-filter="stim">Stimulation &amp; focus</button>
+              <button class="tab" role="tab" aria-selected="false" data-filter="ther">Tinnitus</button>
+            </div>
+            <div class="count" id="count"></div>
+          </div>
+          <ul class="grid" id="grid"></ul>
+        </div>
+
+        <div class="seg-panel" id="sp-prime" role="tabpanel" aria-labelledby="sg-prime" hidden>
+          <p class="v-lede">
+            The clearest finding in the meta-analysis is about timing: listening before a task, or before and during it,
+            beat listening only while you work. Prime first, get a cue when the block ends, then start.
+          </p>
+          <div class="prime">
+      <div class="prime-row">
+        <div class="prime-label" id="pfLab">Prime with</div>
+        <div class="chips" id="pfChips" role="radiogroup" aria-labelledby="pfLab">
+          <label class="chip"><input type="radio" name="pbeat" value="10|300"> Alpha 10 Hz</label>
+          <label class="chip on"><input type="radio" name="pbeat" value="14|320" checked> Beta 14 Hz</label>
+          <label class="chip"><input type="radio" name="pbeat" value="16|400"> Beta 16 Hz</label>
+          <label class="chip"><input type="radio" name="pbeat" value="24|400"> Beta 24 Hz</label>
+          <label class="chip"><input type="radio" name="pbeat" value="40|400"> Gamma 40 Hz</label>
+        </div>
+      </div>
+      <div class="prime-row">
+        <div class="prime-label" id="plLab">Prime for</div>
+        <div class="chips" id="plChips" role="radiogroup" aria-labelledby="plLab">
+          <label class="chip"><input type="radio" name="pmin" value="5"> 5 min</label>
+          <label class="chip on"><input type="radio" name="pmin" value="10" checked> 10 min</label>
+          <label class="chip"><input type="radio" name="pmin" value="15"> 15 min</label>
+          <label class="chip"><input type="radio" name="pmin" value="20"> 20 min</label>
+        </div>
+      </div>
+      <div class="prime-row">
+        <div class="prime-label" id="ptLab">Then, once you start working</div>
+        <div class="chips" id="ptChips" role="radiogroup" aria-labelledby="ptLab">
+          <label class="chip on"><input type="radio" name="pthen" value="continue" checked> Keep going, quieter</label>
+          <label class="chip"><input type="radio" name="pthen" value="noise"> Pink noise only</label>
+          <label class="chip"><input type="radio" name="pthen" value="silence"> Silence</label>
+        </div>
+      </div>
+      <div class="prime-foot">
+        <button class="btn primary" id="primeStart">Start 10-minute prime</button>
+        <p class="hint" id="primeHint"></p>
       </div>
     </div>
+        </div>
 
-    <div class="hr" id="hr" data-state="off">
+        <div class="seg-panel" id="sp-build" role="tabpanel" aria-labelledby="sg-build" hidden>
+          <p class="v-lede">
+            Pick any beat and carrier. Beats come through most clearly on carriers between about 200 and 500&nbsp;Hz,
+            and the effect breaks down once the two tones are more than 30 to 35&nbsp;Hz apart.
+          </p>
+          <div class="builder">
+      <div class="fields">
+        <div class="field">
+          <label for="cBeat">Beat frequency <b id="cBeatV">10.0 Hz</b></label>
+          <input type="range" id="cBeat" min="0.5" max="40" step="0.5" value="10">
+          <p class="hint" id="cBand">Alpha — relaxed alertness</p>
+        </div>
+        <div class="field">
+          <label for="cCar">Carrier tone <b id="cCarV">250 Hz</b></label>
+          <input type="range" id="cCar" min="100" max="600" step="10" value="250">
+          <p class="hint">Lower carriers give a stronger, more stable beat percept.</p>
+        </div>
+        <div class="field">
+          <label for="cMin">Session length <b id="cMinV">20 min</b></label>
+          <input type="range" id="cMin" min="5" max="60" step="5" value="20">
+          <p class="hint">Longer exposures performed better in meta-analysis.</p>
+        </div>
+      </div>
+      <div class="builder-foot">
+        <button class="btn primary" id="cPlay">Play custom session</button>
+        <div class="band-readout">Left ear <b id="cL">250 Hz</b> · Right ear <b id="cR">260 Hz</b></div>
+      </div>
+    </div>
+        </div>
+      </section>
+
+      <!-- ============ HEART ============ -->
+      <section class="view" id="v-heart" aria-labelledby="viewTitle" hidden>
+        <div class="hr" id="hr" data-state="off">
       <div class="hr-top">
         <div class="hr-intro">
           <div class="prime-label">Live heart data</div>
@@ -1086,15 +1247,25 @@
         </div>
       </div>
     </div>
-  </section>
+      </section>
 
-  <section id="science">
-    <div class="sec-head">
-      <h2>What the research actually supports</h2>
-      <p>The honest summary: real but modest effects, decent evidence for anxiety and attention, weaker and noisier evidence for memory.</p>
-    </div>
-    <div class="prose">
-      <h3>How a binaural beat is made</h3>
+      <!-- ============ LEARN ============ -->
+      <section class="view" id="v-learn" aria-labelledby="viewTitle" hidden>
+        <div class="learn">
+          <nav class="toc" aria-label="On this page">
+            <a href="#l-beats">How a beat is made</a>
+            <a href="#l-dosing">Timing and dose</a>
+            <a href="#l-evidence">Strongest evidence</a>
+            <a href="#l-tinnitus">The tinnitus track</a>
+            <a href="#l-breathing">Breathing and heart</a>
+            <a href="#l-bands">Frequency bands</a>
+            <a href="#references">References</a>
+          </nav>
+          <article class="prose" id="science">
+            <h2>What the research supports</h2>
+            <p class="v-lede">Real but modest effects: decent evidence for anxiety and attention, weaker and noisier evidence for memory.</p>
+            
+      <h3 id="l-beats">How a binaural beat is made</h3>
       <p>
         Feed 250&nbsp;Hz to the left ear and 260&nbsp;Hz to the right, and neither ear receives a 10&nbsp;Hz signal —
         yet you perceive a 10&nbsp;Hz pulsing. The beat is produced by binaural interaction in the superior olivary
@@ -1106,7 +1277,7 @@
         <li><strong>The beat has a ceiling.</strong> Beyond about a 35&nbsp;Hz difference, the two tones separate perceptually and the beat disappears — which is why gamma tracks sit at the edge of what this method can do.</li>
       </ul>
 
-      <h3>Dosing: timing beats frequency-picking</h3>
+      <h3 id="l-dosing">Dosing: timing beats frequency-picking</h3>
       <p>
         The 2019 meta-analysis of 22 studies (35 effect sizes) found an overall medium effect,
         <span class="mono">g&nbsp;=&nbsp;0.45</span>, and two practical findings that matter more than which exact
@@ -1118,7 +1289,7 @@
         <li><strong>Masking is optional.</strong> White or pink noise over the top gave similar effects to unmasked beats — so the noise bed in the player is for comfort, not potency.</li>
       </ul>
 
-      <h3>Where the evidence is strongest, and weakest</h3>
+      <h3 id="l-evidence">Where the evidence is strongest, and weakest</h3>
       <p>
         Anxiety is the best-supported outcome: theta/delta beats showed a medium-to-large effect,
         <span class="mono">g&nbsp;=&nbsp;0.69</span>. Attention and vigilance hold up reasonably well.
@@ -1133,7 +1304,7 @@
         is for that band, not a promise about your session.
       </p>
 
-      <h3>The tinnitus track works differently</h3>
+      <h3 id="l-tinnitus">The tinnitus track works differently</h3>
       <p>
         Everything else on this page rests on entrainment — a beat frequency nudging cortical rhythms.
         <strong>Notched Relief</strong> does not. Its active ingredient is the <em>absence</em> of sound:
@@ -1151,7 +1322,7 @@
         distress specifically, cognitive behavioural therapy remains the better-supported intervention.
       </p>
 
-      <h3>Breathing runs on a slower clock</h3>
+      <h3 id="l-breathing">Breathing runs on a slower clock</h3>
       <p>
         The breathing guide works through a different route from the beats. Each breath nudges heart rate up
         on the way in and down on the way out. At around six breaths a minute, a rhythm of
@@ -1189,7 +1360,7 @@
         The score needs beat-to-beat data; from a watch's smoothed heart rate it is an estimate that reads high.
       </p>
 
-      <h3>Frequency bands at a glance</h3>
+      <h3 id="l-bands">Frequency bands at a glance</h3>
       <div class="tbl-scroll">
       <table>
         <caption>Bands as used on this page, with the outcomes most often studied for each.</caption>
@@ -1205,15 +1376,10 @@
         </tbody>
       </table>
       </div>
-    </div>
-  </section>
-
-  <section id="references">
-    <div class="sec-head">
-      <h2>References</h2>
-      <p>Sources behind the frequencies, durations and claims on this page.</p>
-    </div>
-    <ol class="refs">
+    
+            <section class="refs-sec" id="references">
+              <h3>References</h3>
+              <ol class="refs">
       <li>Oster, G. (1973). Auditory beats in the brain. <em>Scientific American</em>, 229(4), 94–102. <a href="https://ia801406.us.archive.org/27/items/magazine-article-1973-scientific-american-auditory-beats-in-the-brain-gerald-oster/Magazine%20Article%201973%20%28Scientific%20American%29%20-%20Auditory%20Beats%20in%20the%20Brain%20-%20Gerald%20Oster%20_text.pdf" rel="noopener">PDF</a></li>
       <li>Garcia-Argibay, M., Santed, M. A., &amp; Reales, J. M. (2019). Efficacy of binaural auditory beats in cognition, anxiety, and pain perception: a meta-analysis. <em>Psychological Research</em>, 83, 357–372. <a href="https://link.springer.com/article/10.1007/s00426-018-1066-8" rel="noopener">Springer</a></li>
       <li>Ingendoh, R. M., Posny, E. S., &amp; Heine, A. (2023). Binaural beats to entrain the brain? / Potential of binaural beats intervention for improving memory and attention: meta-analysis and systematic review. <em>Psychological Research</em>. <a href="https://link.springer.com/article/10.1007/s00426-022-01706-7" rel="noopener">Springer</a></li>
@@ -1243,14 +1409,18 @@
       <li>Shaffer, F., &amp; Meehan, Z. M. (2020). A practical guide to resonance frequency assessment for heart rate variability biofeedback. <em>Frontiers in Neuroscience</em>, 14, 570400. <a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2020.570400/full" rel="noopener">Frontiers</a></li>
       <li>Vierra, J., Boonla, O., &amp; Prasertsri, P. (2022). Effects of sleep deprivation and 4-7-8 breathing control on heart rate variability, blood pressure, blood glucose, and endothelial function in healthy young adults. <em>Physiological Reports</em>, 10, e15389. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9277512/" rel="noopener">PMC</a></li>
     </ol>
-  </section>
-
-  <footer>
+            </section>
+            <div class="fineprint">
     <p><strong>Not medical advice.</strong> Binaural beats and paced breathing are self-help techniques, not treatments. Effects reported in the literature are modest and inconsistent across individuals. Nothing here diagnoses, treats or prevents any condition — talk to a clinician about sleep, anxiety or attention problems.</p>
     <p>All audio is synthesised in your browser with the Web Audio API. Nothing is downloaded, streamed, recorded or sent anywhere.</p>
-  </footer>
-</div>
+  </div>
+          </article>
+        </div>
+      </section>
 
+    </main>
+  </div>
+</div>
 
 <!-- ============ HEADPHONE CHECK ============ -->
 <div class="modal" id="scModal" hidden>
@@ -1334,7 +1504,8 @@
   </div>
 </div>
 
-<!-- ============ PLAYER ============ -->
+
+<!-- ============ MINI PLAYER ============ -->
 <div class="player" id="player">
   <div class="cue" id="cue" role="alert" hidden></div>
   <div class="player-inner">
@@ -1349,23 +1520,28 @@
     <div class="p-meta">
       <div class="p-name" id="pName">—</div>
       <div class="p-sub" id="pSub">—</div>
-      <div class="ears">
+      
+    </div>
+
+    <div class="p-controls">
+      <button class="icon-btn" id="toggle" aria-label="Play or pause">▶</button>
+      <div class="time" id="time" role="timer" aria-label="Session time">00:00</div>
+      <button class="icon-btn ghost" id="stop" aria-label="Stop session" title="Stop">■</button>
+      <button class="icon-btn ghost p-more" id="pMore" aria-label="More player options" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-up"/></svg></button>
+      
+    </div>
+
+    <div class="vol">
+        <span>Volume</span>
+        <input type="range" id="vol" min="0" max="100" step="1" value="35" aria-label="Volume">
+      </div>
+
+    <div class="ears">
         <span class="ear">L <b id="pL">—</b></span>
         <span class="ear">R <b id="pR">—</b></span>
         <span class="ear beat">beat <b id="pBeat">—</b></span>
         <span class="ear ear-hr" id="pHrChip" title="Heart rate now, and the change since the first minute of this session" hidden>HR <b id="pHr">—</b></span>
       </div>
-    </div>
-
-    <div class="p-controls">
-      <button class="icon-btn" id="toggle" aria-label="Play or pause">▶</button>
-      <div class="time mono" id="time" role="timer" aria-label="Session time">00:00</div>
-      <button class="icon-btn ghost" id="stop" aria-label="Stop session" title="Stop">■</button>
-      <div class="vol">
-        <span>Volume</span>
-        <input type="range" id="vol" min="0" max="100" step="1" value="35" aria-label="Volume">
-      </div>
-    </div>
 
     <div class="toggles">
       <label id="noiseLab"><input type="checkbox" id="noise"> <span id="noiseTxt">Pink-noise bed</span></label>
@@ -2445,8 +2621,8 @@
   var B_TONE = 698.46;      // F5: the rising tone runs F5 to C6, above every carrier on the page
   var B_CHIME = { "in": 1046.5, "sip": 1318.5, "hold": 783.99, "out": 659.25, "rest": 523.25 };
   var TONE_LEVEL = { "in": 1, "sip": 1, "hold": 0.5, "out": 0.22, "rest": 0.03 };
-  var B_SANS = 'ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-  var B_MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace';
+  var B_SANS = 'system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+  var B_MONO = '"Entrain Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';   // the big countdown digits
 
   var BC = {
     pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0,
@@ -3460,6 +3636,7 @@
         H.tries = 0;
         H.connAt = bNow();
         store.set("hrEver", "1");
+        if (H.guideAuto) { $("#connect").open = false; H.guideAuto = false; }
         hrMsg("");
         bSetT("#hrTitle", H.name);
         hrSetState("on", "Connected");
@@ -3604,7 +3781,7 @@
     else if (H.state === "lost") sub = "Reconnecting…";
     else if (H.state !== "on") sub = "Waiting for a sensor";
     else if (H.contact === false) sub = "No skin contact";
-    else if (!live) sub = "No readings. Is the sensor broadcasting?";
+    else if (!live) sub = (H.connAt && bNow() - H.connAt < 6) ? "Waiting for the first reading\u2026" : "No readings. Is the sensor broadcasting?";
     else sub = H.hasRR ? "Beat to beat" : "Smoothed rate from the sensor";
     bSetT("#hrNowS", sub);
 
@@ -3623,6 +3800,7 @@
     if (live) bSetT("#pHr", hrPlayerText());
     cohShow();
     guideCheck();
+    shellSensor();
   }
 
   /* ----- connection guide ----- */
@@ -3710,6 +3888,7 @@
   function guideInit() {
     var g = $("#connect");
     if (!store.get("hrEver") || location.hash === "#connect") g.open = true;    // open until the first connection
+    H.guideAuto = g.open;
     var tabs = Array.prototype.slice.call(document.querySelectorAll(".g-tab"));
     var pick = function (dev, focus) {
       tabs.forEach(function (t) {
@@ -3794,6 +3973,7 @@
     var el = $("#hrSummary");
     el.textContent = "Last session: " + parts.join(", ") + ".";
     el.hidden = false;
+    store.set("lastSummary", JSON.stringify({ at: Date.now(), text: el.textContent }));
   }
 
   /* ----- charts ----- */
@@ -3923,7 +4103,7 @@
     bResume();
     finderUI(0);
     drawFind();
-    try { $("#bStage").scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "start" }); } catch (e) {}
+    goView("breathe");
   }
   function finderTick(bt) {
     var F = B.finder;
@@ -3980,7 +4160,7 @@
     applyTimings();
     saveBreath();
     bSetT("#bMsg", "Set to " + H.find.best + " breaths a minute, your resonance test result.");
-    try { $("#bStage").scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "start" }); } catch (e) {}
+    goView("breathe");
   }
   function finderUI(bt) {
     var F = B.finder, btn = $("#hrFindStart"), use = $("#hrFindUse");
@@ -3990,6 +4170,7 @@
       use.hidden = true;
       var left = Math.max(0, FIND_STEP - Math.max(0, (typeof bt === "number" ? bt : breathTime()) - F.stepAt));
       bSetT("#hrFindWhen", "Pace " + (F.idx + 1) + " of " + FIND_RATES.length + " · " + FIND_RATES[F.idx] + " /min · " + fmt(left) + " left");
+      bSetT("#bMsg", "Resonance test, pace " + (F.idx + 1) + " of " + FIND_RATES.length + ": " + FIND_RATES[F.idx] + " a minute, " + fmt(left) + " left");
       return;
     }
     bSetT("#hrFindStart", H.find ? "Run the test again" : "Start resonance test");
@@ -4302,6 +4483,260 @@
     sizeCanvas();
   }
 
+  /* ---------------------------- app shell ----------------------------
+     Five views behind a hash router: #home, #breathe, #sounds, #heart and
+     #learn. Older in-page anchors (#prime, #tracks, #builder, #connect,
+     #science, #references) still work: they open the view that holds them.
+     Everything inside the views keeps its own ids and logic.
+  -------------------------------------------------------------------- */
+
+  var VIEWS = ["home", "breathe", "sounds", "heart", "learn"];
+  var V_TITLE = { home: "Home", breathe: "Breathe", sounds: "Sounds", heart: "Heart", learn: "Learn" };
+  var ALIAS = { prime: ["sounds", "prime"], tracks: ["sounds", "tracks"], builder: ["sounds", "build"] };
+  var BASE_TITLE = document.title;
+  var curView = "";
+  var MOBILE = window.matchMedia ? window.matchMedia("(max-width: 1023px)") : { matches: false };
+
+  function viewOf(el) {
+    while (el && !(el.classList && el.classList.contains("view"))) el = el.parentNode;
+    return el ? el.id.slice(2) : null;
+  }
+
+  function showView(v) {
+    if (VIEWS.indexOf(v) < 0) v = "home";
+    if (v !== "breathe") sheet(false);
+    VIEWS.forEach(function (n) { $("#v-" + n).hidden = n !== v; });
+    var links = document.querySelectorAll(".nav a");
+    for (var i = 0; i < links.length; i++) {
+      if (links[i].dataset.view === v) links[i].setAttribute("aria-current", "page");
+      else links[i].removeAttribute("aria-current");
+    }
+    bSetT("#viewTitle", V_TITLE[v]);
+    document.title = v === "home" ? BASE_TITLE : V_TITLE[v] + " | Entrain";
+    if (v !== curView) window.scrollTo(0, 0);
+    curView = v;
+    if (v === "home") homeRefresh();
+  }
+
+  function goView(v, seg) {
+    if (seg) segPick(seg);
+    if (location.hash.slice(1) !== v) location.hash = v;
+    else showView(v);
+  }
+
+  function route() {
+    var h = "";
+    try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
+    if (!h) { showView("home"); return; }
+    if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
+    if (ALIAS[h]) { segPick(ALIAS[h][1]); showView(ALIAS[h][0]); return; }
+    var el = document.getElementById(h), v = el && viewOf(el);
+    if (!v) { showView("home"); return; }
+    if (el.classList.contains("seg-panel")) segPick(el.id.slice(3));
+    showView(v);
+    if (el.tagName === "DETAILS") el.open = true;
+    setTimeout(function () {
+      try { el.scrollIntoView({ block: "start", behavior: RM ? "auto" : "smooth" }); } catch (e) { el.scrollIntoView(); }
+    }, 30);
+  }
+
+  /* ----- Sounds: Tracks / Prime / Build ----- */
+  function segPick(seg, focus) {
+    var bs = document.querySelectorAll(".seg-b");
+    for (var i = 0; i < bs.length; i++) {
+      var on = bs[i].dataset.seg === seg;
+      bs[i].setAttribute("aria-selected", on ? "true" : "false");
+      bs[i].tabIndex = on ? 0 : -1;
+      $("#sp-" + bs[i].dataset.seg).hidden = !on;
+      if (on && focus) bs[i].focus();
+    }
+    store.set("soundsSeg", seg);
+  }
+
+  /* ----- breathing settings: a side panel on desktop, a sheet on a phone ----- */
+  function sheet(open) {
+    var p = $("#bPanel"), b = $("#bAdjust"), was = p.classList.contains("open");
+    if (!MOBILE.matches) open = false;
+    p.classList.toggle("open", !!open);
+    $("#sheetBack").hidden = !open;
+    b.setAttribute("aria-expanded", open ? "true" : "false");
+    document.body.classList.toggle("sheet-lock", !!open);
+    if (open && !was) setTimeout(function () { $("#bPanelDone").focus(); }, 60);
+    if (!open && was) b.focus();
+  }
+
+  /* ----- heart sensor status, mirrored in the top bar, Home and Breathe ----- */
+  function shellSensor() {
+    var pill = $("#tbSensor");
+    if (!pill) return;
+    var st = H.state, live = hrLive(), txt;
+    var fresh = H.connAt && bNow() - H.connAt < 6;
+    pill.dataset.state = (st === "on" && !live) ? "busy" : st;
+    if (st === "on") txt = live ? Math.round(H.hr) + " bpm" : fresh ? "Waiting…" : "No readings";
+    else if (st === "busy") txt = "Connecting…";
+    else if (st === "lost") txt = "Reconnecting…";
+    else txt = hrSupported() ? "Connect sensor" : "Heart sensor";
+    bSetT("#tbSensorTxt", txt);
+    pill.title = st === "on" ? H.name : "Heart sensor";
+
+    bSetT("#qkSensorT", st === "on" ? H.name : "Heart sensor");
+    var sub;
+    if (st === "on") sub = live ? Math.round(H.hr) + " bpm" + (H.coh ? ", coherence " + H.coh.cs.toFixed(1) : "") : "Connected, waiting for readings";
+    else if (st === "busy") sub = "Connecting…";
+    else if (st === "lost") sub = "Reconnecting…";
+    else sub = hrSupported() ? "Not connected. Open to connect." : "Needs Chrome or Edge on Android or a computer";
+    bSetT("#qkSensor", sub);
+
+    var btn = $("#bSensorBtn");
+    if (st === "on" || st === "lost") {
+      bSetT("#bSensorTxt", (st === "lost" ? "Reconnecting to " : "Connected to ") + H.name + ". Heart rate and coherence show above the guide.");
+      bSetT("#bSensorBtn", "Heart details"); btn.dataset.act = "details";
+    } else if (st === "busy") {
+      bSetT("#bSensorTxt", "Connecting to your sensor…");
+      bSetT("#bSensorBtn", "Heart details"); btn.dataset.act = "details";
+    } else if (hrSupported()) {
+      bSetT("#bSensorTxt", "Connect a heart sensor to watch your heart rate follow your breath.");
+      bSetT("#bSensorBtn", "Connect sensor"); btn.dataset.act = "connect";
+    } else {
+      bSetT("#bSensorTxt", "Live heart data needs Chrome or Edge on an Android phone or a computer.");
+      bSetT("#bSensorBtn", "How to connect"); btn.dataset.act = "guide";
+    }
+  }
+
+  /* ----- Home ----- */
+  function fmtSec(s) { return (s % 1 ? s.toFixed(1) : String(s)) + " s"; }
+  function patLabel() {
+    var r = document.querySelector('input[name="bpat"]:checked');
+    return r ? r.parentNode.textContent.trim() : "Custom";
+  }
+
+  function homeRefresh() {
+    var rate = 60 / cycleOf(BC), parts = ["in for " + fmtSec(BC.inh)];
+    if (BC.sip) parts.push("a " + fmtSec(BC.sip) + " top-up");
+    if (BC.hold) parts.push("hold " + fmtSec(BC.hold));
+    parts.push("out for " + fmtSec(BC.exh));
+    if (BC.rest) parts.push("hold " + fmtSec(BC.rest));
+    bSetT("#homePat", patLabel());
+    bSetT("#homePatTxt", rate.toFixed(1) + " breaths a minute: " + parts.join(", ") + ". " +
+      (BC.minutes ? "A " + BC.minutes + "-minute session." : "Open-ended, until you stop."));
+    bSetT("#homeStart", B.state === "running" ? "Back to your session" : B.state === "paused" ? "Resume session" : "Start breathing");
+
+    if (H.find && H.find.best) {
+      var d = new Date(H.find.at).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+      bSetT("#qkFind", "Last result: " + H.find.best + " breaths a minute, " + d);
+    } else bSetT("#qkFind", "A 10-minute test with a heart sensor");
+    var c = primeCfg();
+    bSetT("#qkPrime", c.minutes + " min of " + c.beat + " Hz " + bandFor(c.beat).name.toLowerCase() + ", then start work");
+    bSetT("#qkTracks", TRACKS.length + " tracks for sleep, calm, focus and tinnitus");
+
+    var last = null;
+    try { last = JSON.parse(store.get("lastSummary") || "null"); } catch (e) {}
+    if (last && last.text) {
+      var t = last.text.replace(/^Last session: /, "");
+      bSetT("#homeLast", t.charAt(0).toUpperCase() + t.slice(1));
+      bSetT("#homeLastWhen", new Date(last.at).toLocaleString(undefined,
+        { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }));
+    }
+    shellSensor();
+    drawHomeWave();
+  }
+
+  /* The current pattern drawn as two and a half breaths, coloured by phase. */
+  function drawHomeWave() {
+    var cv = $("#homeWave");
+    if (!cv || $("#v-home").hidden || !BCOL.text) return;
+    var f = fitCanvas(cv);
+    if (!f) return;
+    var c = f.c, W = f.w, Hh = f.h, ph = buildPhases(BC), T = ph.cycle * 2.5, top = 12, bot = Hh - 12;
+    var at = function (t) {
+      var ct = t % ph.cycle, p = ph.list[ph.list.length - 1];
+      for (var i = 0; i < ph.list.length; i++) if (ct < ph.list[i].start + ph.list[i].secs) { p = ph.list[i]; break; }
+      var prog = Math.min(1, Math.max(0, (ct - p.start) / p.secs));
+      return { k: p.k, y: bot - (p.from + (p.to - p.from) * bEase(prog)) * (bot - top) };
+    };
+    var x, pt, g = c.createLinearGradient(0, top, 0, bot);
+    g.addColorStop(0, rgba(BCOL["b-in"], 0.18));
+    g.addColorStop(1, rgba(BCOL["b-in"], 0));
+    c.beginPath(); c.moveTo(0, bot);
+    for (x = 0; x <= W; x += 2) c.lineTo(x, at(x / W * T).y);
+    c.lineTo(W, bot); c.closePath(); c.fillStyle = g; c.fill();
+    c.lineWidth = 3; c.lineCap = "round"; c.lineJoin = "round";
+    var runK = null;
+    for (x = 0; x <= W + 1; x += 2) {
+      pt = at(Math.min(W, x) / W * T);
+      if (pt.k !== runK) {
+        if (runK !== null) { c.lineTo(x, pt.y); c.stroke(); }
+        c.beginPath(); c.strokeStyle = kc(pt.k); c.moveTo(x, pt.y); runK = pt.k;
+      } else c.lineTo(x, pt.y);
+    }
+    c.stroke();
+  }
+
+  function shellInit() {
+    // navigation
+    window.addEventListener("hashchange", route);
+    document.addEventListener("click", function (e) {
+      var go = e.target.closest("[data-go]");
+      if (!go) return;
+      e.preventDefault();
+      goView(go.dataset.go, go.dataset.seg);
+    });
+    $("#homeStart").addEventListener("click", function () {
+      goView("breathe");
+      if (B.state !== "running") bToggle();
+    });
+
+    // Sounds segments
+    var segs = Array.prototype.slice.call(document.querySelectorAll(".seg-b"));
+    segs.forEach(function (b, i) {
+      b.addEventListener("click", function () { segPick(b.dataset.seg); });
+      b.addEventListener("keydown", function (e) {
+        var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        segPick(segs[(i + d + segs.length) % segs.length].dataset.seg, true);
+      });
+    });
+    var seg = store.get("soundsSeg");
+    segPick(seg && $("#sp-" + seg) ? seg : "tracks");
+    $("#scOpen2").addEventListener("click", function () { pendingPlay = null; openCheck(); });
+
+    // breathing settings sheet
+    $("#bAdjust").addEventListener("click", function () { sheet(!$("#bPanel").classList.contains("open")); });
+    $("#bPanelDone").addEventListener("click", function () { sheet(false); });
+    $("#sheetBack").addEventListener("click", function () { sheet(false); });
+    if (MOBILE.addEventListener) MOBILE.addEventListener("change", function () { sheet(false); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && $("#bPanel").classList.contains("open")) sheet(false);
+    });
+    $("#bSensorBtn").addEventListener("click", function () {
+      var a = this.dataset.act;
+      if (a === "connect") hrConnect(false);
+      else if (a === "details") goView("heart");
+      else if (a === "guide") location.hash = "connect";
+    });
+
+    // mini player: compact on a phone, expandable for volume and options
+    $("#pMore").addEventListener("click", function () {
+      var p = $("#player"), on = !p.classList.contains("expanded");
+      p.classList.toggle("expanded", on);
+      this.setAttribute("aria-expanded", on ? "true" : "false");
+    });
+    var pl = $("#player"), syncDock = function () { document.body.classList.toggle("has-player", pl.classList.contains("open")); };
+    if (window.MutationObserver) new MutationObserver(syncDock).observe(pl, { attributes: true, attributeFilter: ["class"] });
+    syncDock();
+
+    // canvases drawn before the display font arrived get redrawn once it has
+    if (window.ResizeObserver) new ResizeObserver(drawHomeWave).observe($("#homeWave"));
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load('700 24px "Entrain Display"').then(function () {
+        draw(); drawSwings(); drawFind(); drawSpectrum(); drawHomeWave();
+      }).catch(function () {});
+    }
+
+    route();
+  }
+
   /* ------------------------------- init ------------------------------ */
 
 
@@ -4316,6 +4751,7 @@
   syncPrime();
   initBreath();
   hrInit();
+  shellInit();
   window.addEventListener("pagehide", function () {
     if (A.playing) hardStop(true);
     if (B.state === "running") bPause();
