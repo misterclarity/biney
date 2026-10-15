@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1120">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%238e98fc'/%3E%3Cstop offset='.5' stop-color='%23fbbf24'/%3E%3Cstop offset='1' stop-color='%235eead4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='10' fill='url%28%23g%29'/%3E%3Crect x='8' y='8' width='16' height='16' rx='4' fill='%230b1120'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>Entrain — Evidence-Based Binaural Beats</title>
 <meta name="description" content="Binaural beats, paced breathing and live heart-rate biofeedback in one offline page: research-based tracks, a breathing guide with five visuals, Bluetooth heart sensors, coherence and a resonance test.">
 <style>
@@ -271,6 +274,24 @@
   .safety li svg.i{width:18px;height:18px;margin-top:2px;color:var(--text-faint)}
   .safety li.warn svg.i{color:var(--danger)}
   .safety b{color:var(--text);font-weight:700}
+  .install{
+    display:flex;align-items:center;gap:14px;margin-top:12px;padding:14px 16px;border-radius:18px;
+    background:linear-gradient(100deg,color-mix(in srgb,var(--accent) 16%,var(--panel)),var(--panel) 70%);
+  }
+  .install[hidden]{display:none}
+  .inst-ic{
+    width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;
+    background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent);
+  }
+  .inst-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .inst-txt b{font-size:15px;font-weight:750}
+  .inst-txt span{font-size:13px;color:var(--text-dim);line-height:1.45}
+  .inst-act{display:flex;gap:8px;flex:none}
+  @media (max-width:560px){
+    .install{flex-wrap:wrap}
+    .inst-txt{flex-basis:calc(100% - 54px)}
+    .inst-act{flex-basis:100%;padding-left:54px}
+  }
   @media (max-width:860px){
     .home-hero{grid-template-columns:minmax(0,1fr);padding:22px}
     .home-wave{height:96px}
@@ -738,6 +759,26 @@
     .p-controls{gap:8px}
   }
 
+  /* ---------- notices (saved offline, update ready) ---------- */
+  .toast{
+    position:fixed;z-index:70;left:50%;bottom:24px;width:max-content;max-width:min(520px,calc(100vw - 32px));
+    display:flex;align-items:center;gap:10px;padding:10px 10px 10px 16px;border-radius:14px;
+    background:var(--panel-3);border:1px solid #33406a;box-shadow:0 18px 40px -16px rgba(0,0,0,.85);
+    font-size:14px;color:var(--text);
+    opacity:0;transform:translate(-50%,10px);transition:opacity .2s,transform .2s;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast[hidden]{display:none}
+  .toast span{flex:1;min-width:0;line-height:1.4}
+  .toast .btn{flex:none}
+  .toast-x{
+    width:34px;height:34px;flex:none;border:0;border-radius:10px;background:transparent;color:var(--text-faint);
+    display:grid;place-items:center;cursor:pointer;
+  }
+  .toast-x:hover{color:var(--text);background:var(--panel-2)}
+  .toast-x svg.i{width:18px;height:18px}
+  @media (min-width:1024px){ .toast{left:calc(var(--rail) + (100vw - var(--rail)) / 2)} }
+
   @media (prefers-reduced-motion:reduce){
     *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   }
@@ -758,6 +799,8 @@
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.2 3 5.5 13.5h5.8L10.4 21l8-10.6h-5.8z"/></symbol>
   <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2.5 12.5h4l2.2-5 4.2 10 2.4-5h6.2"/></symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+  <symbol id="i-install" viewBox="0 0 24 24"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M12 7.5v7M9.2 11.8 12 14.6l2.8-2.8"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
 </svg>
 
 <div class="app">
@@ -770,7 +813,7 @@
       <a href="#heart" data-view="heart"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg></span><span>Heart</span></a>
       <a href="#learn" data-view="learn"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-learn"/></svg></span><span>Learn</span></a>
     </nav>
-    <p class="rail-foot">Everything runs in this page. Nothing is recorded or sent anywhere, and it works offline once it's open.</p>
+    <p class="rail-foot">Everything runs on your device. Nothing is recorded or sent anywhere, and it keeps working offline.</p>
   </aside>
 
   <div class="main">
@@ -796,6 +839,12 @@
             </div>
           </div>
           <div class="home-wave" aria-hidden="true"><canvas id="homeWave"></canvas></div>
+        </div>
+
+        <div class="install" id="installCard" hidden>
+          <span class="inst-ic"><svg class="i" aria-hidden="true"><use href="#i-install"/></svg></span>
+          <div class="inst-txt"><b>Install Entrain as an app</b><span id="installTxt">It opens from your home screen in its own window and works without a connection.</span></div>
+          <div class="inst-act"><button class="btn primary small" id="installBtn">Install</button><button class="btn small" id="installLater">Not now</button></div>
         </div>
 
         <div class="quick">
@@ -1550,6 +1599,12 @@
       <div class="status" id="status" role="status" aria-live="polite">Ready</div>
     </div>
   </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+  <span id="toastTxt"></span>
+  <button class="btn small primary" id="toastAct" hidden></button>
+  <button class="toast-x" id="toastX" aria-label="Dismiss"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
 </div>
 
 <script>
@@ -4672,6 +4727,152 @@
     c.stroke();
   }
 
+  /* --------------------------- app: install and offline --------------------------- */
+  /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
+     keeps a copy on the device so it opens offline, and Chrome can install it as an app.
+     Opened as a saved file, or inside a preview frame, none of this runs. */
+  var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0 };
+
+  function standalone() {
+    return (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+  }
+
+  // the gap between the bottom of the window and whatever is docked there (tab bar, player)
+  function toastPlace() {
+    var t = $("#toast");
+    if (!t || t.hidden) return;
+    var top = window.innerHeight;
+    [document.querySelector(".rail"), $("#player")].forEach(function (el) {
+      if (!el || (el.id === "player" && !el.classList.contains("open"))) return;
+      var r = el.getBoundingClientRect();
+      if (r.height && r.top > window.innerHeight * 0.5 && r.top < top) top = r.top;
+    });
+    t.style.bottom = (window.innerHeight - top + 12) + "px";
+  }
+
+  function toast(msg, opt) {
+    opt = opt || {};
+    var t = $("#toast"), a = $("#toastAct");
+    if (!t) return;
+    if (APP.sticky && !opt.sticky) return;                  // a passing notice never hides an update offer
+    APP.sticky = !!opt.sticky;
+    clearTimeout(APP.tt);
+    $("#toastTxt").textContent = msg;
+    a.hidden = !opt.action;
+    a.textContent = opt.action || "";
+    a.onclick = opt.action ? function () { if (opt.onAct) opt.onAct(); if (!opt.keep) toastHide(); } : null;
+    t.hidden = false;
+    toastPlace();
+    requestAnimationFrame(function () { t.classList.add("show"); });
+    if (!opt.sticky) APP.tt = setTimeout(toastHide, opt.ms || 7000);
+  }
+  function toastHide() {
+    var t = $("#toast");
+    clearTimeout(APP.tt);
+    APP.sticky = false;
+    t.classList.remove("show");
+    APP.tt = setTimeout(function () { t.hidden = true; }, RM ? 0 : 250);
+  }
+
+  function updateReady(w) {
+    toast("A new version of Entrain is ready.", {
+      action: "Update", sticky: true, keep: true,
+      onAct: function () {
+        APP.reloading = true;
+        $("#toastAct").disabled = true;
+        $("#toastTxt").textContent = "Updating…";
+        w.postMessage("skipWaiting");
+      }
+    });
+  }
+
+  function installShow(ios) {
+    var c = $("#installCard");
+    if (!c || standalone()) return;
+    var later = +store.get("installLater") || 0;
+    if (Date.now() - later < 14 * 864e5) return;           // "Not now" holds for two weeks
+    $("#installTxt").textContent = ios
+      ? "In Safari, tap Share, then Add to Home Screen. It opens in its own window and works offline."
+      : /Android|Mobile/.test(navigator.userAgent)
+        ? "It opens from your home screen in its own window and works without a connection."
+        : "It opens in its own window from your apps or taskbar and works without a connection.";
+    $("#installBtn").hidden = !!ios;
+    $("#installLater").textContent = ios ? "Got it" : "Not now";
+    c.hidden = false;
+  }
+  function installHide() { var c = $("#installCard"); if (c) c.hidden = true; }
+
+  function appInit() {
+    $("#toastX").addEventListener("click", toastHide);
+    window.addEventListener("resize", toastPlace);
+    $("#installBtn").addEventListener("click", function () {
+      var p = APP.prompt;
+      if (!p) return;
+      APP.prompt = null;
+      installHide();
+      p.prompt();
+      if (p.userChoice) p.userChoice.then(function (r) {
+        if (r && r.outcome !== "accepted") store.set("installLater", String(Date.now()));
+      }).catch(function () {});
+    });
+    $("#installLater").addEventListener("click", function () {
+      store.set("installLater", String(Date.now()));
+      installHide();
+    });
+
+    // install needs the site, its app description and the worker; a saved copy or a preview has none
+    var site = document.querySelector('link[rel="manifest"]') && window.isSecureContext &&
+               /^https?:$/.test(location.protocol) && window.top === window.self;
+    if (!site) return;
+
+    window.addEventListener("beforeinstallprompt", function (e) {
+      e.preventDefault();                                   // offer it on Home instead of a browser bar
+      APP.prompt = e;
+      installShow(false);
+    });
+    window.addEventListener("appinstalled", function () {
+      APP.prompt = null;
+      installHide();
+      toast("Entrain is installed. Open it from your home screen or app list.");
+    });
+    var ua = navigator.userAgent;
+    if ((/iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) &&
+        /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua)) installShow(true);
+
+    if (!("serviceWorker" in navigator)) return;
+    var sw = navigator.serviceWorker;
+    APP.hadCtl = !!sw.controller;
+    sw.addEventListener("controllerchange", function () {
+      if (APP.reloading) location.reload();
+    });
+    var go = function () {
+      sw.register("sw.js").then(function (reg) {
+        APP.reg = reg;
+        APP.checked = Date.now();
+        if (reg.waiting && sw.controller) updateReady(reg.waiting);
+        reg.addEventListener("updatefound", function () {
+          var w = reg.installing;
+          if (w) w.addEventListener("statechange", function () {
+            if (w.state === "installed" && sw.controller) updateReady(w);
+          });
+        });
+      }).catch(function () {});
+      sw.ready.then(function () {
+        if (APP.hadCtl || store.get("offlineNoted")) return;
+        store.set("offlineNoted", "1");
+        toast("Saved on this device: Entrain now opens even without a connection.");
+      });
+    };
+    if (document.readyState === "complete") go(); else window.addEventListener("load", go);
+
+    // an installed app can stay open for days; look for a new version when it comes back to the front
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState !== "visible" || !APP.reg || Date.now() - APP.checked < 36e5) return;
+      APP.checked = Date.now();
+      APP.reg.update().catch(function () {});
+    });
+  }
+
   function shellInit() {
     // navigation
     window.addEventListener("hashchange", route);
@@ -4721,8 +4922,12 @@
       var p = $("#player"), on = !p.classList.contains("expanded");
       p.classList.toggle("expanded", on);
       this.setAttribute("aria-expanded", on ? "true" : "false");
+      toastPlace();
     });
-    var pl = $("#player"), syncDock = function () { document.body.classList.toggle("has-player", pl.classList.contains("open")); };
+    var pl = $("#player"), syncDock = function () {
+      document.body.classList.toggle("has-player", pl.classList.contains("open"));
+      setTimeout(toastPlace, 320);                          // after the player slides in or out
+    };
     if (window.MutationObserver) new MutationObserver(syncDock).observe(pl, { attributes: true, attributeFilter: ["class"] });
     syncDock();
 
@@ -4734,6 +4939,7 @@
       }).catch(function () {});
     }
 
+    appInit();
     route();
   }
 
