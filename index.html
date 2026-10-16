@@ -1020,10 +1020,16 @@
   .bm [data-r].tense{fill:var(--stim);stroke:var(--stim);filter:drop-shadow(0 0 6px rgba(251,191,36,.8))}
   .bm text{font-size:8px;font-weight:700;fill:var(--text-faint);text-anchor:middle}
   /* poses */
-  .pose line{stroke:var(--text);stroke-width:7;stroke-linecap:round}
-  .pose line.far{stroke:var(--text-faint);opacity:.6}
-  .pose line.gr{stroke:var(--line);stroke-width:2}
+  .pose path{stroke:var(--text);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;fill:none}
+  .pose path.far{stroke:var(--text-faint);opacity:.6}
+  .pose path.gr{stroke:var(--line);stroke-width:2}
   .pose .hd{fill:var(--panel-2);stroke:var(--text);stroke-width:5}
+  .pose .mat{fill:color-mix(in srgb,var(--panel-2) 70%,transparent);stroke:var(--line)}
+  .pose.mini path{stroke-width:9}
+  .pose.mini path.gr{stroke-width:3}
+  .pose.mini .hd{stroke-width:6}
+  .ses-fig.next svg{opacity:.45}
+  .ses-line.ana::before{content:"Anapana";display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--pcol);font-weight:750;margin-bottom:3px}
 
   /* ---------- practice: done ---------- */
   .ses-done{max-width:720px}
@@ -1044,6 +1050,88 @@
   .sd-chart span{font-size:12px;color:var(--text-faint)}
   .sd-act{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
   .sd-act .btn{text-decoration:none}
+
+
+  /* ---------- your own yoga ---------- */
+  .pc-meta span.mine{color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+  .pc-build .pc-a{background:transparent;border:1.5px dashed color-mix(in srgb,var(--accent) 45%,transparent)}
+  .pc-build .pc-a:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+  .si-edit{margin-top:14px;text-decoration:none}
+  .yb-head{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px}
+  .yb-name{flex:1;min-width:220px;display:flex;flex-direction:column;gap:6px;font-size:11.5px;font-weight:750;color:var(--text-faint);text-transform:uppercase;letter-spacing:.07em}
+  .yb-name input{font:inherit;font-size:20px;font-weight:750;text-transform:none;letter-spacing:-.01em;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-width:0}
+  .yb-name input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .yb-sum{display:flex;flex-direction:column;align-items:flex-end}
+  .yb-sum b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+  .yb-sum span{font-size:12.5px;color:var(--text-faint)}
+  .yb-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:14px;align-items:start}
+  .yb-seq,.yb-lib{background:var(--panel);border-radius:20px;padding:16px 16px 18px}
+  .yb-seq{position:sticky;top:calc(var(--top) + 12px);max-height:calc(100dvh - var(--top) - 130px);overflow:auto}
+  .yb-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .yb-sh h2{font-size:16px;font-weight:780}
+  .yb-sh span{font-size:12.5px;color:var(--text-faint)}
+  .yb-tpl{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .yb-tpl > span{font-size:12px;color:var(--text-faint);font-weight:650;margin-right:2px}
+  .yb-tpl .chip-b{font-size:12.5px;padding:6px 11px}
+  .yb-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+  .yb-row{display:grid;grid-template-columns:22px 48px minmax(0,1fr);gap:4px 10px;align-items:center;background:var(--panel-2);border-radius:14px;padding:8px 10px 8px 8px;transition:background .5s}
+  .yb-row .yb-fig{grid-row:span 2}
+  .yb-row .yb-n{grid-row:span 2}
+  .yb-row.flash{background:color-mix(in srgb,var(--accent) 30%,var(--panel-2));transition:none}
+  .yb-n{font-size:12px;color:var(--text-faint);font-weight:700;text-align:center;font-variant-numeric:tabular-nums}
+  .yb-fig{width:48px;height:48px;display:block}
+  .yb-fig svg,.yb-tfig svg{width:100%;height:100%;display:block}
+  .yb-nm{display:flex;flex-direction:column;min-width:0}
+  .yb-nm b{font-size:14px;font-weight:720;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .yb-nm small{font-size:11.5px;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .yb-ctl{grid-column:3;display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-start}
+  .yb-ctl .yb-mv{margin-left:auto}
+  .yb-sides{display:inline-flex;gap:2px;padding:2px;border-radius:8px;background:var(--bg-2)}
+  .yb-sides button{border:0;background:transparent;color:var(--text-faint);font-size:11.5px;font-weight:700;padding:5px 8px;border-radius:6px;cursor:pointer}
+  .yb-sides button[aria-pressed="true"]{background:var(--panel-3);color:var(--text)}
+  .yb-hold{display:inline-flex;align-items:center;gap:2px;background:var(--bg-2);border-radius:9px;padding:2px}
+  .yb-hold button{width:30px;height:30px;border:0;border-radius:7px;background:transparent;color:var(--text-dim);font-size:17px;font-weight:700;cursor:pointer}
+  .yb-hold button:hover{background:var(--panel-3);color:var(--text)}
+  .yb-hold b{min-width:44px;text-align:center;font-size:12.5px;font-variant-numeric:tabular-nums}
+  .yb-mv{display:inline-flex;gap:2px}
+  .yb-mv button{width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:var(--text-faint);display:grid;place-items:center;cursor:pointer}
+  .yb-mv button:hover:not(:disabled){background:var(--panel-3);color:var(--text)}
+  .yb-mv button:disabled{opacity:.3;cursor:default}
+  .yb-mv svg.i{width:16px;height:16px}
+  .yb-empty{font-size:13.5px;color:var(--text-faint);margin:6px 2px 0;line-height:1.5}
+  .yb-empty[hidden]{display:none}
+  .yb-tiles{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+  .yb-tile{position:relative;width:100%;height:100%;display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--panel-2);border:1px solid transparent;border-radius:14px;padding:10px;color:var(--text);cursor:pointer;font:inherit;transition:background .15s,border-color .15s}
+  .yb-tile:hover{background:var(--panel-3);border-color:var(--line)}
+  .yb-tfig{height:84px;display:block}
+  .yb-tt{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .yb-tt b{font-size:13.5px;font-weight:720;padding-right:22px}
+  .yb-tt small{font-size:11.5px;color:var(--text-faint);font-style:italic}
+  .yb-cue{font-size:11.5px;color:var(--text-dim);line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+  .yb-tm{font-size:11px;color:var(--text-faint);margin-top:2px}
+  .yb-tm em{font-style:normal;color:var(--stim)}
+  .yb-tm .lv{font-style:normal;margin-left:6px;letter-spacing:1px;color:var(--relax)}
+  .yb-tm .lv s{text-decoration:none;color:var(--line)}
+  .yb-plus{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#0b1120;display:grid;place-items:center;font-weight:800;font-size:17px;line-height:1}
+  .yb-bar{position:sticky;bottom:14px;z-index:30;display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 12px;border-radius:16px;
+    background:rgba(26,36,64,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:0 14px 34px -16px rgba(0,0,0,.8)}
+  .yb-bt{flex:1;font-size:13px;color:var(--text-dim);font-variant-numeric:tabular-nums;min-width:0}
+  .yb-bar .btn.primary svg.i{fill:currentColor;stroke:none;width:16px;height:16px}
+  #ybDel[hidden]{display:none}
+  #ybDel.armed{background:var(--danger);color:#0b1120;border-color:var(--danger)}
+  @media (max-width:1023px){ .yb-bar{bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 10px)} }
+  @media (max-width:880px){
+    .yb-grid{grid-template-columns:minmax(0,1fr)}
+    .yb-seq{position:static;max-height:none}
+  }
+  @media (max-width:560px){
+    .yb-fig{width:44px;height:44px}
+    .yb-row{grid-template-columns:22px 44px minmax(0,1fr)}
+    .yb-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .yb-sum b{font-size:22px}
+    .yb-bar .btn{padding:8px 12px}
+    .yb-bt{font-size:12px}
+  }
 
   @media (prefers-reduced-motion:reduce){
     *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -1079,6 +1167,7 @@
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5H5z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
   <symbol id="i-voice" viewBox="0 0 24 24"><path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4 3.5v-3.5H6.5a2 2 0 0 1-2-2z"/><path d="M8.5 10.5h7"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
 </svg>
 
 <div class="app">
@@ -1163,6 +1252,34 @@
         <div class="pr-filt" id="prFilt" role="group" aria-label="Filter practices"></div>
         <div id="prLib"></div>
         <p class="pr-note">These practices are for everyday stress, sleep and focus, not a treatment for any condition. Stop anything that makes you dizzy, breathless or distressed, and check with a clinician first if you have a heart, lung or seizure condition, are pregnant, or are in treatment for anxiety, trauma or depression. The research behind each one is under its Evidence button and in <a href="#l-practices">Learn</a>.</p>
+      </section>
+
+      <!-- ============ YOGA BUILDER ============ -->
+      <section class="view" id="v-yoga" aria-labelledby="viewTitle" hidden>
+        <a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Practices</a>
+        <div class="yb-head">
+          <label class="yb-name"><span>Sequence name</span><input id="ybName" maxlength="40" placeholder="My sequence" autocomplete="off"></label>
+          <div class="yb-sum"><b id="ybTime">00:00</b><span id="ybCount">No poses yet</span></div>
+        </div>
+        <div class="yb-grid">
+          <section class="yb-seq" aria-label="Your sequence">
+            <div class="yb-sh"><h2>Your sequence</h2></div>
+            <div class="yb-tpl" id="ybTpl"></div>
+            <ol class="yb-list" id="ybList"></ol>
+            <p class="yb-empty" id="ybEmpty">Tap poses in the library to add them, or start from one of the sequences above. Two-sided poses run right then left unless you pick one side, and transitions between standing, kneeling, seated and lying are added for you.</p>
+          </section>
+          <section class="yb-lib" aria-label="Asana library">
+            <div class="yb-sh"><h2>Asana library</h2><span id="ybLibN"></span></div>
+            <div class="pr-filt" id="ybCats" role="group" aria-label="Filter poses"></div>
+            <ul class="yb-tiles" id="ybLib"></ul>
+          </section>
+        </div>
+        <div class="yb-bar">
+          <button class="btn small" id="ybDel" hidden>Delete</button>
+          <span class="yb-bt" id="ybBarTime"></span>
+          <button class="btn" id="ybSave">Save</button>
+          <button class="btn primary" id="ybGo"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Save and start</button>
+        </div>
       </section>
 
       <!-- ============ SESSION ============ -->
@@ -1792,7 +1909,9 @@
               <b>Yoga and walking.</b> In 42 randomised trials, practices that included yoga postures lowered evening and
               waking cortisol, ambulatory blood pressure and resting heart rate, and raised high-frequency heart-rate
               variability compared with active controls (Pascoe et al., 2017). Walking itself reduced depressive symptoms
-              across 75 trials (Xu et al., 2024).
+              across 75 trials (Xu et al., 2024). The yoga builder draws on a library of 36 common asanas, each with its own
+              spoken cues and cautions. The evidence is for yoga practice in general rather than for any particular
+              sequence, so build what suits your body and skip anything that hurts.
             </p>
             <p>
               <b>Pranayama.</b> Most of this evidence comes from small physiological studies. Alternate nostril breathing
@@ -1805,6 +1924,17 @@
               works the other way, shifting heart-rate variability toward sympathetic activity (Raghuraj et al., 1998). It is
               an energiser with real contraindications, and fast breathwork is the least-studied corner of the field
               (Fincham et al., 2023).
+            </p>
+            <p>
+              <b>Wim Hof breathing.</b> Rounds of deep breathing followed by a hold on empty lungs are the best-studied fast
+              breathing. In a controlled endotoxin study, men trained in the method (breathing, cold and meditation) released
+              more adrenaline and had a weaker inflammatory response and fewer flu-like symptoms than untrained men (Kox et al.,
+              2014). A follow-up found the breathing alone produced the anti-inflammatory effect, and cold added to it (Zwaag
+              et al., 2022). A 2024 systematic review of eight small trials rated the risk of bias high and the evidence too
+              thin to recommend the method yet (Almahayni &amp; Hammond, 2024). The deep breathing lowers carbon dioxide, which
+              delays the urge to breathe during the hold, and fainting is possible. In water that can be fatal, so the
+              practice here is for sitting or lying down only, its hold ends by itself at three minutes, and it starts only
+              after you confirm the cautions.
             </p>
             <p>
               <b>Relaxation and sleep.</b> In a randomised comparison, progressive muscle relaxation increased felt
@@ -1821,7 +1951,8 @@
               beats with cyclic sighs and resonance breathing. Focus Primer puts a beta prime after brief heart-rate-variability
               breathing, which improved reaction times and accuracy on a stressful Stroop task (Prinsloo et al., 2011).
               Exercise Recovery joins theta beats with slow breathing after training (McConnell et al., 2014; Sugimoto et al.,
-              2025). No study has tested these combinations as packages, and a large 2023 trial found four weeks of coherent
+              2025). Anapana reminders can be added to any program: every few minutes, a quiet prompt brings attention back
+              to the breath at the nostrils, the anchor of breath-awareness practice. No study has tested these combinations as packages, and a large 2023 trial found four weeks of coherent
               breathing didn't beat a placebo pace on self-reported stress (Fincham, Strauss &amp; Cavanagh, 2023). A heart
               sensor is the honest check: each session ends with your own heart-rate change and coherence, so you can see
               what works for you.
@@ -1877,6 +2008,9 @@
       <li>Beaudoin, L. P., et al. (2016). Serial diverse imagining task: a new remedy for bedtime complaints of worrying and other sleep-disruptive mental activity. Abstract, <em>SLEEP 2016</em> meeting. <a href="https://sleepreviewmag.com/sleep-health/parameters/quality/need-better-sleep-consider-cognitive-shuffle/" rel="noopener">Report</a></li>
       <li>Prinsloo, G. E., Rauch, H. G. L., Lambert, M. I., Muench, F., Noakes, T. D., &amp; Derman, W. E. (2011). The effect of short duration heart rate variability (HRV) biofeedback on cognitive performance during laboratory induced cognitive stress. <em>Applied Cognitive Psychology</em>, 25(5). <a href="https://doi.org/10.1002/acp.1750" rel="noopener">DOI</a></li>
       <li>Sugimoto, T., Sugiyama, K., Matsumura, K., Michiue, K., Ono, K., &amp; Ishikawa, A. (2025). Effects of consciously controlled slow breathing on cardiac parasympathetic nervous activity postexercise in young healthy males. <em>Clinical Physiology and Functional Imaging</em>, 45(2), e70007. <a href="https://doi.org/10.1111/cpf.70007" rel="noopener">DOI</a></li>
+      <li>Kox, M., van Eijk, L. T., Zwaag, J., et al. (2014). Voluntary activation of the sympathetic nervous system and attenuation of the innate immune response in humans. <em>Proceedings of the National Academy of Sciences</em>, 111(20), 7379–7384. <a href="https://pubmed.ncbi.nlm.nih.gov/24799686/" rel="noopener">PubMed</a></li>
+      <li>Zwaag, J., Naaktgeboren, R., van Herwaarden, A. E., Pickkers, P., &amp; Kox, M. (2022). The effects of cold exposure training and a breathing exercise on the inflammatory response in humans: a pilot study. <em>Psychosomatic Medicine</em>, 84(4). <a href="https://ifp.nyu.edu/2024/journal-article-abstracts/the_effects_of_cold_exposure_training_and_a-8-aspx/" rel="noopener">Abstract</a></li>
+      <li>Almahayni, O., &amp; Hammond, L. (2024). Does the Wim Hof Method have a beneficial impact on physiological and psychological outcomes in healthy and non-healthy participants? A systematic review. <em>PLOS ONE</em>, 19(3), e0286933. <a href="https://doi.org/10.1371/journal.pone.0286933" rel="noopener">DOI</a></li>
       <li>Fincham, G. W., Strauss, C., &amp; Cavanagh, K. (2023). Effect of coherent breathing on mental health and wellbeing: a randomised placebo-controlled trial. <em>Scientific Reports</em>, 13. <a href="https://doaj.org/article/21a326834cdb4a7fbd35bc10ec8509f0" rel="noopener">DOAJ</a></li>
     </ol>
             </section>
@@ -4984,8 +5118,8 @@
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
 
-  var VIEWS = ["home", "practice", "breathe", "sounds", "heart", "learn", "session"];
-  var V_TITLE = { home: "Home", practice: "Practice", breathe: "Breathe", sounds: "Sounds", heart: "Heart", learn: "Learn", session: "Practice" };
+  var VIEWS = ["home", "practice", "breathe", "sounds", "heart", "learn", "session", "yoga"];
+  var V_TITLE = { home: "Home", practice: "Practice", breathe: "Breathe", sounds: "Sounds", heart: "Heart", learn: "Learn", session: "Practice", yoga: "Build your own" };
   var ALIAS = { prime: ["sounds", "prime"], tracks: ["sounds", "tracks"], builder: ["sounds", "build"] };
   var BASE_TITLE = document.title;
   var curView = "";
@@ -5000,7 +5134,7 @@
     if (VIEWS.indexOf(v) < 0) v = "home";
     if (v !== "breathe") sheet(false);
     VIEWS.forEach(function (n) { $("#v-" + n).hidden = n !== v; });
-    var links = document.querySelectorAll(".nav a"), navV = v === "session" ? "practice" : v;
+    var links = document.querySelectorAll(".nav a"), navV = (v === "session" || v === "yoga") ? "practice" : v;
     for (var i = 0; i < links.length; i++) {
       if (links[i].dataset.view === navV) links[i].setAttribute("aria-current", "page");
       else links[i].removeAttribute("aria-current");
@@ -5029,6 +5163,7 @@
     if (!h) { showView("home"); return; }
     if (h === "session") { location.replace("#practice"); return; }
     if (h.indexOf("practice/") === 0) { showView("session"); pIntro(h.slice(9)); return; }
+    if (h === "yoga" || h.indexOf("yoga/") === 0) { showView("yoga"); yOpen(h.slice(5)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
     if (ALIAS[h]) { segPick(ALIAS[h][1]); showView(ALIAS[h][0]); return; }
     var el = document.getElementById(h), v = el && viewOf(el);
@@ -5189,7 +5324,8 @@
     var t = $("#toast");
     if (!t || t.hidden) return;
     var top = window.innerHeight;
-    [document.querySelector(".rail"), $("#player")].forEach(function (el) {
+    var bar = $("#v-yoga") && !$("#v-yoga").hidden ? document.querySelector(".yb-bar") : null;
+    [document.querySelector(".rail"), $("#player"), bar].forEach(function (el) {
       if (!el || (el.id === "player" && !el.classList.contains("open"))) return;
       var r = el.getBoundingClientRect();
       if (r.height && r.top > window.innerHeight * 0.5 && r.top < top) top = r.top;
@@ -5391,6 +5527,333 @@
     pInit();
     route();
   }
+
+  /* ------------------------------- asana library -------------------------------
+     Each pose is drawn from joint angles, so every figure has the same proportions.
+     Angles are degrees with 0 pointing up, 90 right, 180 down and -90 left. Front
+     views face you (your right side is on the left of the picture); side views face
+     left. A two-sided pose is described for the right side and mirrored for the left.
+     Cues are spoken; {S} is the working side and {O} the other side.
+  ------------------------------------------------------------------------------ */
+
+  var FIG = { torso: 68, neck: 19, upper: 32, fore: 30, thigh: 52, shin: 52, hipW: 9, shW: 17, head: 12.5 };
+  function fDir(a) { var r = a * Math.PI / 180; return [Math.sin(r), -Math.cos(r)]; }
+  function fAdd(p, a, len) { var d = fDir(a); return [p[0] + d[0] * len, p[1] + d[1] * len]; }
+
+  /* Joint positions for a pose, with the hip at the origin. */
+  function figPts(f) {
+    var o = { hip: [0, 0] }, t = f.torso || 0;
+    o.neck = fAdd(o.hip, t, FIG.torso);
+    o.head = fAdd(o.neck, t + (f.head || 0), FIG.neck);
+    var sb = fAdd(o.neck, t + 180, 6);
+    if (f.view === "front") {
+      var pa = t + 90, pp = f.pelvis !== undefined ? f.pelvis + 90 : pa;
+      o.shR = fAdd(sb, pa, -FIG.shW); o.shL = fAdd(sb, pa, FIG.shW);
+      o.hipR = fAdd(o.hip, pp, -FIG.hipW); o.hipL = fAdd(o.hip, pp, FIG.hipW);
+      o.elR = fAdd(o.shR, f.armR[0], FIG.upper); o.haR = fAdd(o.elR, f.armR[1], FIG.fore);
+      o.elL = fAdd(o.shL, f.armL[0], FIG.upper); o.haL = fAdd(o.elL, f.armL[1], FIG.fore);
+      o.knR = fAdd(o.hipR, f.legR[0], FIG.thigh); o.ftR = fAdd(o.knR, f.legR[1], FIG.shin);
+      o.knL = fAdd(o.hipL, f.legL[0], FIG.thigh); o.ftL = fAdd(o.knL, f.legL[1], FIG.shin);
+    } else {
+      o.sh = sb;
+      o.el = fAdd(sb, f.arm[0], FIG.upper); o.ha = fAdd(o.el, f.arm[1], FIG.fore);
+      var a2 = f.arm2 || f.arm, l2 = f.leg2 || f.leg;
+      o.el2 = fAdd(sb, a2[0], FIG.upper); o.ha2 = fAdd(o.el2, a2[1], FIG.fore);
+      o.kn = fAdd(o.hip, f.leg[0], FIG.thigh); o.ft = fAdd(o.kn, f.leg[1], FIG.shin);
+      o.kn2 = fAdd(o.hip, l2[0], FIG.thigh); o.ft2 = fAdd(o.kn2, l2[1], FIG.shin);
+    }
+    return o;
+  }
+
+  /* An SVG of the pose, framed so it sits on its ground line. */
+  function figSVG(f, side, cls) {
+    var o = figPts(f), k, flip = side === "left", minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+    if (flip) for (k in o) o[k] = [-o[k][0], o[k][1]];
+    for (k in o) {
+      var r = k === "head" ? FIG.head + 3 : 4;
+      minX = Math.min(minX, o[k][0] - r); maxX = Math.max(maxX, o[k][0] + r);
+      minY = Math.min(minY, o[k][1] - r); maxY = Math.max(maxY, o[k][1] + r);
+    }
+    var ground = maxY + 3, w = Math.max(maxX - minX + 30, 200), h = Math.max(ground - minY + 26, 150);
+    var cx = (minX + maxX) / 2, x0 = cx - w / 2, y0 = ground + 12 - h;
+    var P = function (p) { return p[0].toFixed(1) + " " + p[1].toFixed(1); };
+    var seg = function (a, b, c) { return '<path class="' + (c || "") + '" d="M' + P(a) + "L" + P(b) + '"/>'; };
+    var limb = function (a, b, c, cl) { return seg(a, b, cl) + seg(b, c, cl); };
+    var h2 = "", far = function (p) { return [p[0] + (flip ? -4 : 4), p[1] - 2]; };
+    var torso = f.bend
+      ? (function () {
+          var m = [(o.hip[0] + o.neck[0]) / 2, (o.hip[1] + o.neck[1]) / 2], n = fAdd([0, 0], (f.torso || 0) + 90, f.bend);
+          if (flip) n[0] = -n[0];
+          return '<path d="M' + P(o.hip) + "Q" + P([m[0] + n[0] * 2, m[1] + n[1] * 2]) + " " + P(o.neck) + '"/>';
+        })()
+      : seg(o.hip, o.neck);
+    if (f.view === "front") {
+      h2 += torso + seg(o.shR, o.shL) + seg(o.hipR, o.hipL) +
+        limb(o.shR, o.elR, o.haR) + limb(o.shL, o.elL, o.haL) + limb(o.hipR, o.knR, o.ftR) + limb(o.hipL, o.knL, o.ftL);
+    } else {
+      h2 += limb(far(o.sh), far(o.el2), far(o.ha2), "far") + limb(far(o.hip), far(o.kn2), far(o.ft2), "far");
+      h2 += torso + seg(o.neck, o.sh) + limb(o.hip, o.kn, o.ft) + limb(o.sh, o.el, o.ha);
+    }
+    if (f.wall) h2 += '<path class="gr" d="M' + (o.hip[0] + (flip ? -10 : 10)).toFixed(1) + " " + ground.toFixed(1) + "V" + (minY - 4).toFixed(1) + '"/>';
+    h2 += '<circle class="hd" cx="' + o.head[0].toFixed(1) + '" cy="' + o.head[1].toFixed(1) + '" r="' + FIG.head + '"/>';
+    var base = f.top
+      ? '<rect class="mat" x="' + (minX - 10).toFixed(1) + '" y="' + (minY - 8).toFixed(1) + '" width="' + (maxX - minX + 20).toFixed(1) + '" height="' + (maxY - minY + 16).toFixed(1) + '" rx="10"/>'
+      : '<path class="gr" d="M' + (minX - 10).toFixed(1) + " " + ground.toFixed(1) + "H" + (maxX + 10).toFixed(1) + '"/>';
+    return '<svg class="pose' + (cls ? " " + cls : "") + '" viewBox="' + x0.toFixed(1) + " " + y0.toFixed(1) + " " + w.toFixed(1) + " " + h.toFixed(1) + '" aria-hidden="true">' +
+      base + h2 + "</svg>";
+  }
+
+  var STAND_LEGS = { legR: [181, 180], legL: [179, 180] };
+  var W2_LEGS = { legR: [-118, 180], legL: [137, 137] };
+  function F(view, o, legs) { var f = { view: view }; for (var k in legs || {}) f[k] = legs[k]; for (k in o) f[k] = o[k]; return f; }
+
+  /* pos: where the body is (stand, fours, prone, seat, supine), used for transitions. */
+  var ASANAS = [
+    /* ----- standing ----- */
+    { id: "mountain", en: "Mountain", sa: "Tadasana", cat: "standing", pos: "stand", hold: 30, level: 1,
+      fig: F("front", { torso: 0, armR: [188, 182], armL: [172, 178] }, STAND_LEGS),
+      cues: ["Mountain. Stand with your feet hip-width apart, weight spread through the whole foot.",
+        "Knees soft, tailbone heavy. Lengthen up through the crown of your head.", "Let the shoulders drop. Breathe slowly."] },
+    { id: "salute", en: "Upward Salute", sa: "Urdhva Hastasana", cat: "standing", pos: "stand", hold: 25, level: 1,
+      fig: F("front", { torso: 0, armR: [-14, -4], armL: [14, 4] }, STAND_LEGS),
+      cues: ["Upward salute. Breathe in and sweep your arms up overhead.", "Reach up through the fingertips, shoulders relaxed away from the ears."] },
+    { id: "sidebend", en: "Standing Side Bend", sa: "Indudalasana", cat: "standing", pos: "stand", sides: true, hold: 25, level: 1,
+      fig: F("front", { torso: -17, head: -4, armR: [-34, -20], armL: [-4, -26] }, STAND_LEGS),
+      cues: ["Side bend to the {S}. Arms overhead, lean gently to your {S}.", "Feel the stretch along your {O} side. Breathe into the ribs.", "Keep both feet grounded."] },
+    { id: "fold", en: "Standing Forward Fold", sa: "Uttanasana", cat: "standing", pos: "stand", hold: 40, level: 1, headDown: true,
+      fig: F("side", { torso: -150, head: 0, arm: [200, 120], leg: [-176, 176] }),
+      cues: ["Forward fold. Bend your knees and fold forward from the hips.", "Let the head and arms hang heavy. Bend the knees as much as you need.", "Sway a little if it feels good."],
+      caution: "Keep the knees bent if your back or hamstrings are tight. Head-down poses aren't advised with glaucoma or uncontrolled high blood pressure." },
+    { id: "halflift", en: "Halfway Lift", sa: "Ardha Uttanasana", cat: "standing", pos: "stand", hold: 20, level: 1,
+      fig: F("side", { torso: -96, head: -8, arm: [140, 150], leg: [180, 180] }),
+      cues: ["Halfway lift. Hands on your shins, lengthen the spine forward until your back is flat.", "Look at the floor a little ahead of you. Breathe."] },
+    { id: "chair", en: "Chair", sa: "Utkatasana", cat: "standing", pos: "stand", hold: 30, level: 2,
+      fig: F("side", { torso: -32, head: 0, arm: [-28, -24], leg: [-108, 158] }),
+      cues: ["Chair. Bend your knees as if sitting back into a chair, and reach your arms up.", "Weight in the heels, knees over the ankles.", "Steady breath. Come up when you need to."],
+      caution: "Sit back less deeply if your knees complain." },
+    { id: "warrior1", en: "Warrior I", sa: "Virabhadrasana I", cat: "standing", pos: "stand", sides: true, hold: 35, level: 2,
+      fig: F("side", { torso: 0, head: 0, arm: [-4, -2], leg: [-118, 180], leg2: [138, 138] }),
+      cues: ["Warrior one, {S} side. Step your {O} foot back a long stride and bend the {S} knee over the ankle.",
+        "Hips face forward. Reach your arms up.", "Strong legs, soft breath."] },
+    { id: "warrior2", en: "Warrior II", sa: "Virabhadrasana II", cat: "standing", pos: "stand", sides: true, hold: 35, level: 2,
+      fig: F("front", { torso: 0, armR: [-90, -90], armL: [90, 90] }, W2_LEGS),
+      cues: ["Warrior two, {S} side. Feet wide, {S} toes forward, {S} knee bent over the ankle.",
+        "Arms long at shoulder height. Gaze over your {S} hand.", "Sink into the legs and breathe."] },
+    { id: "reverse", en: "Reverse Warrior", sa: "Viparita Virabhadrasana", cat: "standing", pos: "stand", sides: true, hold: 25, level: 2,
+      fig: F("front", { torso: 18, head: 6, armR: [-8, 6], armL: [168, 172] }, W2_LEGS),
+      cues: ["Reverse warrior. From warrior two, slide your {O} hand down the back leg and reach the {S} arm up and back.",
+        "Keep the {S} knee bent. Breathe into the open side."] },
+    { id: "sideangle", en: "Extended Side Angle", sa: "Utthita Parsvakonasana", cat: "standing", pos: "stand", sides: true, hold: 30, level: 2,
+      fig: F("front", { torso: -58, head: -58, armR: [172, 168], armL: [-56, -56] }, W2_LEGS),
+      cues: ["Extended side angle. From warrior two, rest your {S} forearm on your {S} thigh.",
+        "Reach the {O} arm over your ear, one long line from the back foot to the fingertips.", "Breathe."] },
+    { id: "triangle", en: "Triangle", sa: "Utthita Trikonasana", cat: "standing", pos: "stand", sides: true, hold: 35, level: 2,
+      fig: F("front", { torso: -64, head: -64, armR: [180, 180], armL: [0, 0], legR: [-145, -145], legL: [145, 145] }),
+      cues: ["Triangle, {S} side. Feet wide, both legs straight. Reach forward over the {S} leg.",
+        "Lower your {S} hand to the shin and reach the {O} arm up.", "Open the chest to the side and breathe."] },
+    { id: "pyramid", en: "Pyramid", sa: "Parsvottanasana", cat: "standing", pos: "stand", sides: true, hold: 30, level: 2, headDown: true,
+      fig: F("side", { torso: -128, head: -10, arm: [-178, -176], leg: [-160, -160], leg2: [150, 150] }),
+      cues: ["Pyramid. A shorter stance with the {S} foot forward, both legs straight.",
+        "Hinge forward over the {S} leg, hands on the shin or on blocks.", "Lengthen the spine as you breathe in, fold a little as you breathe out."],
+      caution: "Keep a micro-bend in the front knee if the hamstring pulls." },
+    { id: "goddess", en: "Goddess", sa: "Utkata Konasana", cat: "standing", pos: "stand", hold: 30, level: 2,
+      fig: F("front", { torso: 0, armR: [-90, 0], armL: [90, 0], legR: [-120, 175], legL: [120, -175] }),
+      cues: ["Goddess. Step wide, toes turned out, and bend the knees over the toes.", "Arms in a cactus shape, palms forward.", "Sink a little lower and breathe."] },
+
+    /* ----- balance ----- */
+    { id: "tree", en: "Tree", sa: "Vrksasana", cat: "balance", pos: "stand", sides: true, hold: 35, level: 1,
+      fig: F("front", { torso: 0, armR: [-14, 30], armL: [14, -30], legR: [-130, 100], legL: [179, 180] }),
+      cues: ["Tree, {S} foot up. Shift your weight to the {O} foot and place the {S} sole on the calf or inner thigh, never on the knee.",
+        "Hands at the chest or overhead. Find a still point to look at.", "Wobbling is part of it."],
+      caution: "Keep a wall or chair within reach if balance is tricky." },
+    { id: "warrior3", en: "Warrior III", sa: "Virabhadrasana III", cat: "balance", pos: "stand", sides: true, hold: 25, level: 3,
+      fig: F("side", { torso: -86, head: 0, arm: [-88, -88], leg: [180, 180], leg2: [88, 88] }),
+      cues: ["Warrior three. Stand on your {S} leg and tip forward, lifting the {O} leg behind you.",
+        "Body and back leg in one long line. Arms forward or by your sides.", "Breathe, and come up slowly."],
+      caution: "Keep fingertips on a chair back if you need support." },
+    { id: "dancer", en: "Dancer", sa: "Natarajasana", cat: "balance", pos: "stand", sides: true, hold: 25, level: 3,
+      fig: F("side", { torso: -25, head: -6, arm: [-55, -50], arm2: [117, 117], leg: [180, 180], leg2: [120, -10] }),
+      cues: ["Dancer. Stand on your {S} leg, bend the {O} knee and hold the {O} foot behind you.",
+        "Reach the {S} arm forward and press the foot into the hand as you tip forward.", "Breathe and find your still point."],
+      caution: "Hold a wall with the free hand if you need to." },
+
+    /* ----- all fours ----- */
+    { id: "table", en: "Tabletop", sa: "Bharmanasana", cat: "fours", pos: "fours", hold: 20, level: 1,
+      fig: F("side", { torso: -82, head: 0, arm: [180, 180], leg: [180, 90] }),
+      cues: ["Tabletop. Hands under the shoulders, knees under the hips.", "Spine long and neutral. Breathe."] },
+    { id: "cat", en: "Cat", sa: "Marjaryasana", cat: "fours", pos: "fours", hold: 20, level: 1, bend: 1,
+      fig: F("side", { torso: -82, head: 50, bend: 13, arm: [180, 180], leg: [180, 90] }),
+      cues: ["Cat. As you breathe out, round your back up toward the ceiling.", "Tuck the chin and the tailbone. Press the floor away."] },
+    { id: "cow", en: "Cow", sa: "Bitilasana", cat: "fours", pos: "fours", hold: 20, level: 1,
+      fig: F("side", { torso: -82, head: -40, bend: -9, arm: [180, 180], leg: [180, 90] }),
+      cues: ["Cow. As you breathe in, let the belly drop and lift the chest and gaze.", "Broaden across the collarbones."] },
+    { id: "child", en: "Child's Pose", sa: "Balasana", cat: "rest", pos: "fours", hold: 45, level: 1,
+      fig: F("side", { torso: -99, head: 0, arm: [-120, -90], leg: [-120, 90] }),
+      cues: ["Child's pose. Knees wide or together, sit back toward your heels and lay the chest down.",
+        "Arms forward or alongside you. Forehead resting.", "Breathe into the back of the body."],
+      caution: "Put a cushion under the hips or between the calves and thighs if the knees complain." },
+    { id: "lowlunge", en: "Low Lunge", sa: "Anjaneyasana", cat: "fours", pos: "fours", sides: true, hold: 30, level: 1,
+      fig: F("side", { torso: 4, head: 0, arm: [-6, -2], leg: [-95, -172], leg2: [162, 92] }),
+      cues: ["Low lunge, {S} foot forward. Lower the {O} knee to the floor, cushioned if you like.",
+        "Sink the hips forward and lift the arms.", "Feel the stretch at the front of the {O} hip."] },
+    { id: "downdog", en: "Downward-Facing Dog", sa: "Adho Mukha Svanasana", cat: "fours", pos: "fours", hold: 35, level: 2, headDown: true,
+      fig: F("side", { torso: -138, head: 0, arm: [-138, -138], leg: [150, 150] }),
+      cues: ["Downward dog. From hands and knees, tuck the toes and lift the hips up and back.",
+        "Bend the knees generously and lengthen the spine. Heels don't need to touch.", "Let the head hang. Breathe."],
+      caution: "Ease off with sore wrists, glaucoma or uncontrolled high blood pressure; child's pose is a good alternative." },
+    { id: "plank", en: "Plank", sa: "Phalakasana", cat: "fours", pos: "fours", hold: 20, level: 2,
+      fig: F("side", { torso: -76, head: 0, arm: [180, 180], leg: [104, 104] }),
+      cues: ["Plank. Hands under the shoulders, step back to a long line from head to heels.", "Belly gently drawn in. Lower the knees if you need to.", "Breathe."] },
+
+    /* ----- lying on the front ----- */
+    { id: "sphinx", en: "Sphinx", sa: "Salamba Bhujangasana", cat: "lying", pos: "prone", hold: 40, level: 1,
+      fig: F("side", { torso: -72, head: -16, arm: [178, -90], leg: [92, 90] }),
+      cues: ["Sphinx. Lie on your front and prop yourself on your forearms, elbows under the shoulders.",
+        "Let the belly soften to the floor. A gentle curve in the low back.", "Breathe."] },
+    { id: "cobra", en: "Cobra", sa: "Bhujangasana", cat: "lying", pos: "prone", hold: 20, level: 2,
+      fig: F("side", { torso: -58, head: -20, arm: [190, 160], leg: [92, 90] }),
+      cues: ["Cobra. Hands under the shoulders, press lightly and lift the chest.", "Elbows soft and close to your sides. Only go as high as feels easy."],
+      caution: "Keep it low and gentle with back pain." },
+
+    /* ----- seated ----- */
+    { id: "easy", en: "Easy Seat", sa: "Sukhasana", cat: "seated", pos: "seat", hold: 45, level: 1,
+      fig: F("front", { torso: 0, armR: [204, 204], armL: [156, 156], legR: [-118, 88], legL: [118, -88] }),
+      cues: ["Easy seat. Sit cross-legged, on a cushion if your knees are higher than your hips.",
+        "Hands on the knees. Sit tall and let the shoulders soften.", "Breathe slowly."] },
+    { id: "staff", en: "Staff", sa: "Dandasana", cat: "seated", pos: "seat", hold: 25, level: 1,
+      fig: F("side", { torso: 0, head: 0, arm: [176, 176], leg: [-90, -90] }),
+      cues: ["Staff. Sit with the legs straight out in front, feet flexed.", "Hands beside the hips. Sit up tall."] },
+    { id: "seatfold", en: "Seated Forward Fold", sa: "Paschimottanasana", cat: "seated", pos: "seat", hold: 45, level: 1,
+      fig: F("side", { torso: -62, head: -10, arm: [-104, -96], leg: [-90, -90] }),
+      cues: ["Seated forward fold. From staff, breathe in and lengthen, breathe out and fold forward from the hips.",
+        "Bend the knees as much as you like. Hands rest on the legs.", "Let each out-breath soften you a little more."] },
+    { id: "butterfly", en: "Bound Angle", sa: "Baddha Konasana", cat: "seated", pos: "seat", hold: 45, level: 1,
+      fig: F("front", { torso: 0, armR: [176, 150], armL: [184, 210], legR: [-112, 60], legL: [112, -60] }),
+      cues: ["Bound angle. Bring the soles of the feet together and let the knees fall open.",
+        "Hold the feet and sit tall.", "Let gravity do the work. Breathe."] },
+    { id: "seattwist", en: "Seated Twist", sa: "Ardha Matsyendrasana", cat: "seated", pos: "seat", sides: true, hold: 30, level: 1,
+      fig: F("side", { torso: 0, head: 34, arm: [-128, -50], arm2: [160, 178], leg: [-28, 176], leg2: [-90, -90] }),
+      cues: ["Seated twist to the {S}. Bend the {S} knee and place the foot outside the {O} knee.",
+        "Hug the knee with your {O} arm and turn toward the {S}. {S} hand on the floor behind you.", "Lengthen as you breathe in, turn a little as you breathe out."] },
+
+    /* ----- lying on the back ----- */
+    { id: "kneeschest", en: "Knees to Chest", sa: "Apanasana", cat: "lying", pos: "supine", hold: 40, level: 1,
+      fig: F("side", { torso: -90, head: 0, arm: [-6, 40], leg: [-40, 52] }),
+      cues: ["Knees to chest. Lie on your back and hug both knees in.", "Rock gently side to side if it feels good.", "Breathe into the low back."] },
+    { id: "bridge", en: "Bridge", sa: "Setu Bandha Sarvangasana", cat: "lying", pos: "supine", hold: 30, level: 2,
+      fig: F("side", { torso: -108, head: -70, arm: [98, 92], leg: [68, 178] }),
+      cues: ["Bridge. Lie on your back with knees bent, feet hip-width apart.", "Press into the feet and lift the hips. Arms along the floor.", "Breathe, then roll down slowly, one bone at a time."],
+      caution: "Keep the head still; don't turn it while the hips are lifted." },
+    { id: "supinetwist", en: "Supine Twist", sa: "Supta Matsyendrasana", cat: "lying", pos: "supine", sides: true, hold: 45, level: 1,
+      fig: F("front", { top: true, torso: 0, armR: [-90, -90], armL: [90, 90], legR: [130, 210], legL: [136, 216] }),
+      cues: ["Supine twist. Lying down, hug the knees in and let them fall to the {S}.",
+        "Arms out wide, and turn your head to the {O} if the neck likes it.", "Breathe and let the twist settle."] },
+    { id: "happybaby", en: "Happy Baby", sa: "Ananda Balasana", cat: "lying", pos: "supine", hold: 40, level: 1,
+      fig: F("side", { torso: -90, head: 0, arm: [16, 4], leg: [-24, 6] }),
+      cues: ["Happy baby. Lying down, bring the knees toward the armpits and hold the outsides of the feet.",
+        "Soles face the ceiling. Let the low back be heavy.", "Rock a little if you like."] },
+    { id: "legswall", en: "Legs Up the Wall", sa: "Viparita Karani", cat: "rest", pos: "supine", hold: 120, level: 1,
+      fig: F("side", { torso: -90, head: 0, arm: [100, 96], leg: [0, 0], wall: true }),
+      cues: ["Legs up the wall. Sit sideways to a wall, then swing the legs up as you lie back.",
+        "Hips close to the wall or a little away. Arms resting.", "Let the legs be heavy and the breath slow."],
+      caution: "A mild inversion: skip it with glaucoma, or if your feet start to tingle." },
+    { id: "corpse", en: "Corpse", sa: "Savasana", cat: "rest", pos: "supine", hold: 180, level: 1,
+      fig: F("side", { torso: -90, head: 0, arm: [96, 92], leg: [90, 90] }),
+      cues: ["Rest. Lie on your back, legs long, arms a little away from the body, palms up.",
+        "Let the whole body be heavy. Nothing to do.", "Let the breath move by itself."] }
+  ];
+  var ASANA = {};
+  ASANAS.forEach(function (a) { ASANA[a.id] = a; });
+  var ACATS = [["all", "All"], ["standing", "Standing"], ["balance", "Balance"], ["fours", "All fours"], ["seated", "Seated"], ["lying", "Lying"], ["rest", "Rest"]];
+
+  /* Moving between positions gets a short spoken transition. */
+  var TRANS = {
+    stand: { fours: "Come down to your hands and knees.", prone: "Come down to the floor and lie on your front.",
+      seat: "Come down to sit on your mat.", supine: "Come down to the floor and lie on your back." },
+    fours: { stand: "Walk your hands back to your feet and roll up to standing, head last.", prone: "Lower down to lie on your front.",
+      seat: "Swing your legs around and come to sitting.", supine: "Come to sitting, then roll down onto your back." },
+    prone: { stand: "Press back to hands and knees, then come up to standing.", fours: "Press back onto your hands and knees.",
+      seat: "Press up and come round to sitting.", supine: "Roll over onto your back." },
+    seat: { stand: "Come up to standing, taking your time.", fours: "Come onto your hands and knees.",
+      prone: "Turn over and lie on your front.", supine: "Roll down slowly onto your back." },
+    supine: { stand: "Roll to your side, press up to sitting, then come up to standing slowly.", fours: "Roll to your side and come onto your hands and knees.",
+      prone: "Roll over onto your front.", seat: "Roll to your side and press up to sitting." }
+  };
+  var HOLD_EXTRA = ["Breathe slowly and evenly.", "Soften anything you don't need to hold.", "Stay with the breath.", "Notice the sensations, without forcing."];
+
+  function aCue(t, side) {
+    if (!side) return t.replace(/\{S\}|\{O\}/g, "");
+    var o = side === "right" ? "left" : "right";
+    return t.replace(/\{S\}/g, side).replace(/\{O\}/g, o).replace(/(^|\. )([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); });
+  }
+  function aTitle(a, side) { return a.en + (side ? ", " + side : ""); }
+
+  /* A list of {id, hold, side} into timed steps, with transitions and a close. */
+  function yogaSteps(items) {
+    var flat = [];
+    (items || []).forEach(function (it) {
+      var a = ASANA[it.id];
+      if (!a) return;
+      var hold = Math.max(10, Math.min(600, it.hold || a.hold));
+      var sides = !a.sides ? [null] : it.side === "right" ? ["right"] : it.side === "left" ? ["left"] : ["right", "left"];
+      sides.forEach(function (sd) { flat.push({ a: a, side: sd, hold: hold }); });
+    });
+    if (!flat.length) return [G(30, "Empty sequence", ["Add some poses to this sequence first."])];
+    var first = flat[0].a.pos, steps = [];
+    steps.push(G(25, "Get ready", [first === "stand" ? "Stand at the top of your mat, with some space around you." : first === "supine" ? "Lie down on your mat." : first === "seat" ? "Come to sit on your mat." : "Come onto your mat.",
+      "Move slowly and never into pain. Skip anything that doesn't suit your body today."]));
+    var prev = null;
+    flat.forEach(function (x, i) {
+      var a = x.a, lines = [];
+      if (prev) {
+        var t = prev.a.pos !== a.pos ? TRANS[prev.a.pos][a.pos]
+          : (prev.a.headDown && !a.headDown && a.pos === "stand") ? "Slowly roll up to standing, head coming up last." : null;
+        if (t) steps.push({ k: "guide", secs: 10, title: "Next: " + aTitle(a, x.side), lines: [[0, t]], pose: a.id, side: x.side, trans: true });
+      }
+      var sameAgain = prev && prev.a === a && prev.side && x.side && prev.side !== x.side;
+      var cues = a.cues.map(function (c) { return aCue(c, x.side); });
+      if (sameAgain) cues[0] = "Now the other side. " + cues[0];
+      var n = cues.length, h = x.hold;
+      lines.push([0, cues[0]]);
+      for (var c = 1; c < n; c++) lines.push([Math.round(Math.min(h - 4, 6 + (h - 10) * c / n)), cues[c]]);
+      for (var e = 0, tt = lines[lines.length - 1][0] + 30; tt < h - 8; tt += 30, e++) lines.push([tt, HOLD_EXTRA[(i + e) % HOLD_EXTRA.length]]);
+      steps.push({ k: "pose", secs: h, pose: a.id, side: x.side, title: aTitle(a, x.side), lines: lines });
+      prev = x;
+    });
+    var last = flat[flat.length - 1].a;
+    if (last.id !== "corpse") {
+      steps.push(G(30, "Closing", [last.pos === "stand" ? "Come back to standing, feet hip-width apart, hands together at your chest." :
+        last.pos === "supine" ? "Rest on your back for a few breaths." : "Come to a comfortable seat.",
+        "Take three slow breaths and notice how your body feels now."]));
+    }
+    return steps;
+  }
+  function yogaSecs(items) { return yogaSteps(items).reduce(function (a, s) { return a + s.secs; }, 0); }
+
+  /* Built-in sequences: practices in their own right, and starting points in the builder. */
+  var YOGA_SETS = [
+    { id: "standing-flow", name: "Standing Yoga Flow", items: [
+      { id: "mountain", hold: 45 }, { id: "salute", hold: 30 }, { id: "sidebend", hold: 30 }, { id: "fold", hold: 45 }, { id: "chair", hold: 30 },
+      { id: "warrior1", side: "right", hold: 40 }, { id: "warrior2", side: "right", hold: 40 }, { id: "triangle", side: "right", hold: 40 },
+      { id: "warrior1", side: "left", hold: 40 }, { id: "warrior2", side: "left", hold: 40 }, { id: "triangle", side: "left", hold: 40 },
+      { id: "tree", hold: 40 }, { id: "mountain", hold: 40 }] },
+    { id: "standing-reset", name: "Standing Reset", items: [
+      { id: "mountain", hold: 30 }, { id: "salute", hold: 25 }, { id: "sidebend", hold: 25 }, { id: "fold", hold: 40 }, { id: "chair", hold: 25 }, { id: "mountain", hold: 30 }] },
+    { id: "morning-yoga", name: "Morning Wake-Up", items: [
+      { id: "mountain", hold: 30 }, { id: "salute", hold: 25 }, { id: "sidebend", hold: 25 }, { id: "fold", hold: 35 }, { id: "halflift", hold: 20 },
+      { id: "plank", hold: 20 }, { id: "downdog", hold: 35 }, { id: "lowlunge", hold: 30 }, { id: "downdog", hold: 25 },
+      { id: "warrior2", hold: 30 }, { id: "goddess", hold: 30 }, { id: "mountain", hold: 30 }] },
+    { id: "back-hips", name: "Back and Hips", items: [
+      { id: "table", hold: 20 }, { id: "cat", hold: 20 }, { id: "cow", hold: 20 }, { id: "cat", hold: 20 }, { id: "cow", hold: 20 },
+      { id: "child", hold: 45 }, { id: "lowlunge", hold: 35 }, { id: "downdog", hold: 30 }, { id: "sphinx", hold: 40 }, { id: "child", hold: 30 },
+      { id: "bridge", hold: 30 }, { id: "kneeschest", hold: 40 }, { id: "supinetwist", hold: 45 }, { id: "corpse", hold: 150 }] },
+    { id: "evening-floor", name: "Evening Floor Flow", items: [
+      { id: "easy", hold: 60 }, { id: "cat", hold: 20 }, { id: "cow", hold: 20 }, { id: "child", hold: 45 }, { id: "butterfly", hold: 50 },
+      { id: "seatfold", hold: 50 }, { id: "seattwist", hold: 30 }, { id: "kneeschest", hold: 40 }, { id: "happybaby", hold: 40 },
+      { id: "supinetwist", hold: 45 }, { id: "legswall", hold: 150 }, { id: "corpse", hold: 180 }] },
+    { id: "balance-yoga", name: "Balance", items: [
+      { id: "mountain", hold: 30 }, { id: "tree", hold: 40 }, { id: "warrior3", hold: 25 }, { id: "dancer", hold: 25 }, { id: "chair", hold: 30 }, { id: "mountain", hold: 40 }] }
+  ];
   /* ------------------------- guided practices: content -------------------------
      Every practice is a list of timed steps. Step kinds:
        guide    spoken and captioned lines, optionally lighting regions of a body map
@@ -5403,6 +5866,7 @@
        shuffle  a new easy-to-picture word every few seconds (the cognitive shuffle)
        pmr      tense one muscle group, then release it
        drift    a dark screen while the sound carries on (sleep)
+       hold     a breath hold: open (tap Breathe in, capped) or a fixed count
      Lengths are in seconds. `lines` are [offset, text] pairs, or plain strings spread
      evenly across the step. Programs add `audio`: a binaural layer whose beat follows
      piecewise-linear points [[second, Hz], ...] across the whole program.
@@ -5428,6 +5892,7 @@
     return { k: "pmr", secs: 37, tense: 7, title: title, body: body,
       lines: [[0, tense], [7, "And release. Let it all go."], [19, after || "Notice the difference between tension and letting go."]] };
   }
+  function Hd(secs, title, o) { var l = o && o.lines; return ext({ k: "hold", secs: secs, title: title, lines: pLines(l, secs) }, o && (delete o.lines, o)); }
   function Dr(secs, title, lines) { return { k: "drift", secs: secs, title: title, dim: true, lines: pLines(lines, secs) }; }
 
   var TENSION = "If you notice tension, let it soften on the out-breath.";
@@ -5578,40 +6043,36 @@
     [["shinL", "footL"], "Left calf and foot", "Point the left toes away from you to tense the calf. Hold."]
   ];
 
-  /* Standing yoga: [pose, side, secs, title, lines] */
-  function flow(short) {
-    var L = [
-      G(30, "Get ready", ["Stand with your feet hip-width apart, with a little space around you.",
-        "Move slowly and never into pain. If balance is tricky, keep a chair or a wall within reach."]),
-      Po(45, "mountain", null, "Mountain", ["Mountain pose. Feet grounded, knees soft, arms by your sides.",
-        "Lengthen up through the crown of your head. Let the shoulders drop.", "Breathe slowly with the ring around the figure."]),
-      Po(30, "salute", null, "Upward salute", ["Breathe in and sweep your arms up overhead.", "Reach up, with the shoulders still relaxed. Breathe."]),
-      Po(30, "side", "right", "Side bend, right", ["Lean gently to your right, arms overhead.", "Feel the stretch along the left side of your body. Breathe into it."]),
-      Po(30, "side", "left", "Side bend, left", ["Come back through the centre, and lean to your left.", "Stretch along the right side. Keep breathing."]),
-      Po(45, "fold", null, "Forward fold", ["Bend your knees and fold forward from the hips.",
-        "Let your head and arms hang heavy. Bend the knees as much as you need.", "Sway a little if it feels good."]),
-      G(20, "Roll up", ["Slowly roll up to standing, one bone at a time, head coming up last."]),
-      Po(30, "chair", null, "Chair", ["Chair pose. Bend your knees as if sitting back into a chair, arms reaching up.",
-        "Weight in your heels. Breathe steadily."])
-    ];
-    if (!short) {
-      ["right", "left"].forEach(function (s) {
-        L.push(Po(40, "warrior1", s, "Warrior I, " + s, ["Step your " + (s === "right" ? "left" : "right") + " foot back a long stride. Bend the " + s + " knee over the ankle.",
-          "Hips face forward. Reach your arms up.", "Strong legs, soft breath."]));
-        L.push(Po(40, "warrior2", s, "Warrior II, " + s, ["Open your hips and arms to the side. The " + s + " knee stays bent over the ankle.",
-          "Arms long at shoulder height. Gaze over your " + s + " hand.", "Breathe."]));
-        L.push(Po(40, "triangle", s, "Triangle, " + s, ["Straighten the " + s + " leg. Reach forward, then lower your " + s + " hand to the shin.",
-          "The other arm reaches up. Open the chest to the side.", "Breathe, and step your feet together when you're ready."]));
-      });
+  function wimHof(rounds, breaths) {
+    rounds = rounds || 3; breaths = breaths || 30;
+    var cyc = 2.5, num = ["one", "two", "three", "four"];
+    var st = [G(70, "Before you start", ["Sit or lie down somewhere safe, away from water. Loosen anything tight around your waist.",
+      "Each round is a set of deep breaths: fully in through the belly and chest, then let each one go without pushing.",
+      "After the last breath, let it out and hold with empty lungs until you feel the urge to breathe. Then tap Breathe in.",
+      "Tingling and light-headedness are normal. If you feel unwell, stop and breathe normally."], { vis: "glow" })];
+    for (var r = 1; r <= rounds; r++) {
+      var secs = 3 + breaths * cyc;
+      st.push(Br(secs, "Round " + r + ": power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1, rest: 0 }, {
+        count: breaths, labels: { "in": "Breathe in fully", out: "Let go" },
+        hints: { "in": "Belly, then chest.", out: "Don't push. Just release." },
+        lines: [[0, "Round " + num[r - 1] + ". " + breaths + " deep breaths. Fully in, and let go."],
+          [Math.round(secs / 2), "Keep going. Fully in, let it go."], [Math.round(secs - 9), "Last few breaths."]] }));
+      st.push(Hd(180, "Round " + r + ": hold", { open: true, lungs: "empty",
+        lines: [[0, "Let the breath out, and hold with empty lungs. Relax. Tap Breathe in when you feel the urge."],
+          [30, "Stay relaxed."], [60, "One minute."], [90, "Relax the shoulders and the face."], [120, "Two minutes."],
+          [150, "Whenever you need to, breathe in."]] }));
+      st.push(Hd(15, "Recovery breath", { lungs: "full", lines: [[0, "Breathe in fully, and hold for fifteen seconds."], [12, "And let it go."]] }));
     }
-    L.push(Po(40, "tree", "right", "Tree, right", ["Shift your weight to the left foot. Place the right foot on the left calf or inner thigh, never on the knee.",
-      "Arms up, or hands together at your chest. Find a still point to look at.", "Wobbling is part of it."]));
-    L.push(Po(40, "tree", "left", "Tree, left", ["Change sides: weight on the right foot, left foot on the right calf or inner thigh.",
-      "Breathe slowly. Find your still point.", "Gently lower the foot when you're ready."]));
-    L.push(Po(short ? 30 : 45, "close", null, "Mountain, closing", ["Back to mountain, hands together at your chest.",
-      "Take three slow breaths and notice how your body feels now."]));
-    if (short) L = L.filter(function (s) { return s.pose !== "tree"; });
-    return L;
+    st.push(G(60, "Rest", ["Breathe normally now.", "Notice the tingling, the warmth, the alertness.", "Take your time before you stand up."], { vis: "glow" }));
+    return st;
+  }
+
+  var YOGA_EV = "Across 42 randomised trials, practices that included yoga postures lowered evening and waking cortisol, ambulatory blood pressure and resting heart rate, and raised high-frequency heart-rate variability compared with active controls. Particular sequences like this one haven't been tested on their own.";
+  function yogaSet(id) { for (var i = 0; i < YOGA_SETS.length; i++) if (YOGA_SETS[i].id === id) return YOGA_SETS[i]; return null; }
+  function yogaPractice(id, o) {
+    var set = yogaSet(id);
+    return ext({ id: id, yoga: id, group: "move", strength: 2, tone: "relax", voice: true, name: set.name,
+      build: function () { return yogaSteps(set.items); }, ev: YOGA_EV, cite: "Pascoe et al. 2017" }, o);
   }
 
   /* --------------------------- the library --------------------------- */
@@ -5669,7 +6130,7 @@
     },
     {
       id: "coherence", group: "program", tags: ["program", "calm"], name: "Heart Coherence", min: 15, strength: 2,
-      tone: "relax", sensor: "best",
+      tone: "relax", sensor: "best", anaStyle: "heart",
       blurb: "Heart-focused breathing at your resonance pace with live coherence, over a steady 6 Hz theta beat, the frequency tied to parasympathetic recovery.",
       parts: "Heart-focused resonance breathing · coherence feedback · 6 Hz binaural",
       audio: { name: "Heart Coherence", band: "Theta", carrier: 200, pts: [[0, 6], [900, 6]], fade: 8, cat: "relax" },
@@ -5948,26 +6409,31 @@
       ev: "Kapalabhati raised the sympathetic share of heart-rate variability and lowered the vagal share, the opposite of slow breathing, so it suits waking up rather than winding down. Fast breathwork is the least-studied part of the breathwork evidence, and its safety profile needs more work.",
       cite: "Raghuraj et al. 1998 · Fincham et al. 2023"
     },
+    {
+      id: "wim-hof", group: "breath", tags: ["breath", "focus"], name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1,
+      tone: "stim", confirm: true, sensor: "optional", open: true,
+      variant: { key: "breaths", label: "Breaths per round", opts: [[30, "30"], [40, "40"]], def: 30 },
+      blurb: "Rounds of deep, full breaths, then a relaxed hold on empty lungs for as long as is comfortable, then one recovery breath held for 15 seconds.",
+      caution: "Never do this in or near water, in a bath, while driving or standing: the breathing can make you faint without warning, and people have drowned combining it with water. Sit or lie down. Skip it if you are pregnant, or have epilepsy, heart disease, high blood pressure, or a history of fainting or panic attacks. Tingling and light-headedness are common; stop if you feel unwell.",
+      build: function (rounds, breaths) { return wimHof(rounds, breaths); },
+      how: "Each round is 30 (or 40) deep breaths, fully in through the belly and chest and let go, about 2.5 seconds each. Then breathe out and hold with empty lungs, and tap Breathe in when you feel the urge; the hold ends by itself at 3 minutes. A full recovery breath held for 15 seconds closes the round. Your hold times are shown at the end.",
+      ev: "Men trained in the method (breathing, cold exposure and meditation) released more adrenaline and had a weaker inflammatory response and fewer flu-like symptoms after an endotoxin injection than untrained controls. A follow-up found the breathing alone produced the anti-inflammatory effect. A 2024 systematic review of eight small trials judged the risk of bias high and the evidence not yet strong enough to recommend the method. It is activating, raising adrenaline, rather than calming.",
+      cite: "Kox et al. 2014 · Zwaag et al. 2022 · Almahayni & Hammond 2024"
+    },
 
     /* ===== movement ===== */
-    {
-      id: "standing-flow", group: "move", tags: ["move", "calm", "focus"], name: "Standing Yoga Flow", min: 11, strength: 2,
-      tone: "relax", voice: true, stand: true,
-      blurb: "Nine standing poses, held for a few breaths each: mountain, reach, side bends, forward fold, chair, the warriors, triangle and tree.",
-      build: function () { return flow(false); },
-      how: "Each pose has a drawing, spoken setup cues and a ring to breathe with (about 5.5 breaths a minute). Both sides for the warriors, triangle and tree.",
-      ev: "Across 42 randomised trials, practices that included yoga postures lowered evening and waking cortisol, ambulatory blood pressure and resting heart rate, and raised high-frequency heart-rate variability compared with active controls.",
-      cite: "Pascoe et al. 2017"
-    },
-    {
-      id: "standing-reset", group: "move", tags: ["move", "focus"], name: "Standing Reset", min: 5, strength: 2,
-      tone: "relax", voice: true, stand: true,
-      blurb: "A five-minute break from the desk: mountain, reach, side bends, a forward fold and chair.",
-      build: function () { return flow(true); },
-      how: "The opening of the standing flow, without the wide-stance poses, so it fits beside a desk.",
-      ev: "Yoga postures are associated with better regulation of stress physiology across 42 trials. A short break like this hasn't been tested on its own.",
-      cite: "Pascoe et al. 2017"
-    }
+    yogaPractice("standing-flow", { tags: ["move", "calm", "focus"], stand: true,
+      blurb: "Nine standing poses, held for a few breaths each: mountain, reach, side bends, forward fold, chair, the warriors, triangle and tree." }),
+    yogaPractice("standing-reset", { tags: ["move", "focus"], stand: true,
+      blurb: "A five-minute break from the desk: mountain, reach, side bends, a forward fold and chair." }),
+    yogaPractice("morning-yoga", { tags: ["move", "focus"], stand: true,
+      blurb: "A brisk sequence to wake the body: reach and fold, plank, downward dog, low lunges, warrior II and goddess." }),
+    yogaPractice("back-hips", { tags: ["move", "calm"], lie: true,
+      blurb: "Gentle floor work for a stiff back and tight hips: cat and cow, child's pose, lunges, sphinx, bridge and a twist, ending in rest." }),
+    yogaPractice("evening-floor", { tags: ["move", "calm", "sleep"], lie: true,
+      blurb: "A slow seated and lying sequence for the evening, ending with legs up the wall and a long rest." }),
+    yogaPractice("balance-yoga", { tags: ["move", "focus"], stand: true,
+      blurb: "Tree, warrior III and dancer, with mountain and chair to steady you. Keep a wall within reach." })
   ];
 
   /* Words for the cognitive shuffle: concrete, neutral, easy to picture. */
@@ -5986,7 +6452,7 @@
     { id: "mind", name: "Meditation", lede: "Attention training: the body, the breath, kindness and the senses." },
     { id: "breath", name: "Breathwork", lede: "Pranayama, guided phase by phase." },
     { id: "relax", name: "Relaxation and sleep", lede: "For winding down and falling asleep." },
-    { id: "move", name: "Movement", lede: "Standing yoga and walking." }
+    { id: "move", name: "Movement", lede: "Yoga from the asana library, your own sequences, and walking." }
   ];
   var FILTERS = [["all", "All"], ["program", "Programs"], ["sleep", "Sleep"], ["calm", "Calm"], ["focus", "Focus"],
     ["mind", "Meditation"], ["breath", "Breathwork"], ["move", "Movement"]];
@@ -6006,24 +6472,75 @@
     t0: 0, st: 0, idx: -1, li: 0, tick: 0, raf: 0,
     hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null, lock: null,
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
-    internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {},
-    opt: { voice: true, bells: true, cues: "tones", visual: "circle", audio: true, voiceName: "" }
+    internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
+    opt: { voice: true, bells: true, cues: "tones", visual: "circle", audio: true, voiceName: "", ana: 180 }
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
 
   function pBusy() { return P.state === "running" || P.state === "paused"; }
   function pT() { return P.state === "running" ? bNow() - P.t0 : P.st; }
-  function pDef(id) { for (var i = 0; i < PRACTICES.length; i++) if (PRACTICES[i].id === id) return PRACTICES[i]; return null; }
+  function pDef(id) {
+    for (var i = 0; i < PRACTICES.length; i++) if (PRACTICES[i].id === id) return PRACTICES[i];
+    if (id && id.indexOf("my-") === 0) { var q = yGet(id.slice(3)); if (q) return yDef(q); }
+    return null;
+  }
+  function pVar(d) {
+    if (!d.variant) return undefined;
+    var v = parseInt(store.get("pVar." + d.id), 10);
+    return d.variant.opts.some(function (o) { return o[0] === v; }) ? v : d.variant.def;
+  }
+  function pLenTxt(d, m) { return d.lenUnit ? m + " " + d.lenUnit + (m === 1 ? "" : "s") : m + " min"; }
   function pResRate() { return (H.find && H.find.best) ? H.find.best : 5.5; }
   function pLenOf(d, len) {
     if (!d.lengths) return 0;
     return d.lengths.indexOf(len) >= 0 ? len : d.lengths.indexOf(d.min) >= 0 ? d.min : d.lengths[0];
   }
   function pPlan(d, len) {
-    var steps = d.build(len), at = 0;
+    var steps = d.build(len, pVar(d)), at = 0;
     steps.forEach(function (s) { s.at = at; at += s.secs; });
+    if (d.group === "program" && P.opt.ana) pAna(d, steps, at, P.opt.ana);
     return { steps: steps, total: at };
   }
+
+  /* Anapana reminders for the programs: every few minutes, a quiet prompt to feel the breath
+     at the nostrils, worded for paced, natural or heart-focused breathing. They skip steps that
+     guide attention elsewhere (body regions, the dark drift) and never crowd another line. */
+  var ANA = {
+    paced: ["Keep a little attention at the nostrils: cool air coming in, warmer air going out.",
+      "Notice the touch of the breath just below the nostrils as you follow the pace.",
+      "If the mind has wandered, come back to the breath at the nostrils, and the next breath in.",
+      "Feel exactly where the air touches as it enters. Stay with this one breath."],
+    natural: ["Bring your attention to the small area below the nostrils. Feel the breath as it is.",
+      "If the mind has wandered, notice where it went, and come back to the breath at the nostrils.",
+      "Natural breath. Just observe its touch at the nostrils, in and out.",
+      "Is this breath long or short? Left nostril, right, or both? Just notice."],
+    sigh: ["Feel the cool touch of the air at the nostrils on each in-breath.",
+      "If the mind has wandered, come back to the in-breath at the nostrils."],
+    heart: ["Notice the breath at the nostrils for a moment, then let attention settle back at the heart.",
+      "If the mind has wandered, feel one breath at the nostrils, then return to the heart area."]
+  };
+  function pAna(d, steps, total, every) {
+    var n = 0, shifts = [0, 10, -10, 20, -20, 30, -30, 45, -45, 60, -60];
+    var ok = function (s, st) {
+      if (!s || s.k === "drift" || s.k === "shuffle" || s.quiet) return false;
+      if (["breath", "observe", "guide"].indexOf(s.k) < 0) return false;
+      if (s.k === "guide" && s.body && s.body.indexOf("all") < 0 && s.body.indexOf("belly") < 0) return false;
+      if (st < 12 || s.secs - st < 8) return false;
+      return !s.lines.some(function (l) { return Math.abs(l[0] - st) < 12; });
+    };
+    for (var t = every; t < total - 20; t += every) {
+      for (var k = 0; k < shifts.length; k++) {      // slide to the nearest quiet moment, up to a minute away
+        var tt = t + shifts[k], s = null;
+        for (var i = steps.length - 1; i >= 0; i--) if (tt >= steps[i].at) { s = steps[i]; break; }
+        if (!s || !ok(s, tt - s.at)) continue;
+        var pool = d.anaStyle === "heart" ? ANA.heart : s.k === "breath" ? (s.t.sip ? ANA.sigh : ANA.paced) : ANA.natural;
+        s.lines.push([tt - s.at, pool[n++ % pool.length], "ana"]);
+        s.lines.sort(function (a, b) { return a[0] - b[0]; });
+        break;
+      }
+    }
+  }
+
   function pMinutes(d, len) { return Math.max(1, Math.round(pPlan(d, pLenOf(d, len)).total / 60)); }
   function pSaveOpt() { store.set("pOpt", JSON.stringify(P.opt)); }
   function pColor(d) { return "var(--" + (d.tone || "relax") + ")"; }
@@ -6195,6 +6712,7 @@
       if (k === "in") { cap = "Fill the " + parts[i]; sub = "Belly, then ribs, then chest."; }
       if (k === "out") { cap = "Empty the " + parts[2 - i]; sub = "Chest, then ribs, then belly."; }
     }
+    if (s.count) sub = "Breath " + Math.min(s.count, L.count + 1) + " of " + s.count;
     return { cap: cap, sub: sub, n: S.count };
   }
 
@@ -6225,6 +6743,8 @@
     if (s.k === "shuffle") return "word";
     if (s.k === "count") return "count";
     if (s.k === "drift") return "dark";
+    if (s.k === "hold") return "hold";
+    if (s.k === "guide" && s.pose) return "pose";
     if (s.k === "pmr" || s.body) return "body";
     if (s.k === "observe") return s.vis || "still";
     return s.vis || "orb";
@@ -6245,18 +6765,21 @@
     var vis = pVis(s), fig = $("#sFig");
     $("#sStage").dataset.vis = vis;
     fig.hidden = !(vis === "pose" || vis === "body");
-    if (vis === "pose") fig.innerHTML = pPoseSVG(s.pose, s.side);
+    if (vis === "pose") fig.innerHTML = ASANA[s.pose] ? figSVG(ASANA[s.pose].fig, s.side) : "";
     else if (vis === "body") fig.innerHTML = pBodySVG(s.body || ["all"]);
+    fig.classList.toggle("next", !!s.trans);
     $("#sWord").hidden = vis !== "word";
     if (vis === "word") $("#sWord").textContent = "";
     $("#sNose").hidden = !(s.k === "breath" && s.mode === "nadi");
     $("#sDots").hidden = vis !== "count";
     if (vis === "count") pDots(s);
     var tap = $("#sTap");
-    tap.hidden = !(s.k === "count" || (s.k === "observe" && s.wander));
+    tap.hidden = !(s.k === "count" || (s.k === "observe" && s.wander) || (s.k === "hold" && s.open));
     if (s.k === "count") tap.textContent = "Found one";
+    else if (s.k === "hold") tap.textContent = "Breathe in";
     else if (s.wander) tap.textContent = "Mind wandered";
     bSetT("#sLine", "");
+    $("#sLine").classList.remove("ana");
     pSizeCanvas();
   }
   function pDots(s) {
@@ -6270,12 +6793,13 @@
     var T = pT();
     if (T >= P.total) { pFinish(false); return; }
     var i = pStepAt(T);
-    if (i !== P.idx) pEnter(i);
+    if (i !== P.idx) { pHoldLeave(T); pEnter(i); }
     var s = P.steps[P.idx], st = T - s.at;
     while (P.li < s.lines.length && s.lines[P.li][0] <= st + 0.05) {
       var ln = s.lines[P.li++];
-      if (st - ln[0] < 8) { pSay(ln[1], s.quiet); P.lineAt = bNow(); }
+      if (st - ln[0] < 8) { pSay(ln[1], s.quiet || ln[2] === "ana"); P.lineAt = bNow(); }
       bSetT("#sLine", ln[1]);
+      $("#sLine").classList.toggle("ana", ln[2] === "ana");
     }
     if (s.k === "breath") pBreathTick(s, st);
     else if (s.k === "pump") pPumpTick(s, st);
@@ -6283,6 +6807,13 @@
     else if (s.k === "pmr") pPmrTick(s, st);
     pAudioSync(T);
     pUI();
+  }
+  /* An open hold that ends by time (the cap) or by skipping still counts. */
+  function pHoldLeave(T) {
+    var s = P.steps[P.idx];
+    if (!s || s.k !== "hold" || !s.open || P.holdRec === P.idx) return;
+    P.holdRec = P.idx;
+    P.holds.push(Math.round(Math.min(s.secs, Math.max(0, T - s.at))));
   }
   function pPumpTick(s, st) {
     if (!A.ctx || !pBusOn()) return;
@@ -6321,7 +6852,13 @@
     if (s.k === "breath") {
       var w = pBreathWords(s); cap = w.cap; sub = w.sub;
     } else if (s.k === "pose") {
-      sub = "Hold for about " + Math.max(1, Math.round((s.secs - 6) / 11)) + " slow breaths";
+      var asa = ASANA[s.pose];
+      sub = (asa ? asa.sa + " · " : "") + "about " + Math.max(1, Math.round((s.secs - 4) / 11)) + " slow breaths";
+    } else if (s.k === "guide" && s.trans) {
+      sub = "";
+    } else if (s.k === "hold") {
+      cap = s.lungs === "full" ? "Hold, lungs full" : "Hold, lungs empty";
+      sub = s.open ? fmt(st) + " · tap Breathe in when you need to" : Math.max(0, Math.ceil(s.secs - st)) + " s";
     } else if (s.k === "pump") {
       var n = Math.floor((st - 3) * s.rate) + 1;
       if (st < 3) { cap = s.title; sub = "Get ready: " + Math.ceil(3 - st) + "…"; }
@@ -6392,6 +6929,7 @@
       else if (vis === "still") pStill(c, W, Hh, T, col);
       else if (vis === "pose") pPoseRing(c, W, Hh, T, col);
       else if (vis === "pump") pPump(c, W, Hh, s, st, col);
+      else if (vis === "hold") pHold(c, W, Hh, s, st, col);
     }
     P.raf = requestAnimationFrame(pDraw);
   }
@@ -6443,6 +6981,21 @@
     c.fillText(st < 3 ? String(Math.ceil(3 - st)) : String(Math.min(done, s.n)), cx, cy + 2);
   }
 
+  function pHold(c, W, Hh, s, st, col) {
+    var cx = W / 2, cy = Hh / 2, R = Math.min(W, Hh) * 0.36, f = Math.min(1, st / s.secs);
+    c.lineWidth = 6; c.strokeStyle = rgba(BCOL.line, 0.9);
+    c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.stroke();
+    c.strokeStyle = s.lungs === "full" ? BCOL["b-hold"] : col; c.lineCap = "round";
+    c.beginPath(); c.arc(cx, cy, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (s.open ? f : 1 - f)); c.stroke(); c.lineCap = "butt";
+    var g = c.createRadialGradient(cx, cy, 0, cx, cy, R * 0.9);
+    g.addColorStop(0, rgba(s.lungs === "full" ? BCOL["b-hold"] : col, s.lungs === "full" ? 0.28 : 0.1)); g.addColorStop(1, rgba(col, 0));
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, R * 0.9, 0, Math.PI * 2); c.fill();
+    c.font = "700 " + Math.round(R * (s.open ? 0.42 : 0.6)) + "px " + B_MONO; c.fillStyle = BCOL.text; c.textAlign = "center"; c.textBaseline = "middle";
+    c.fillText(s.open ? fmt(st) : String(Math.max(0, Math.ceil(s.secs - st))), cx, cy + 2);
+    c.font = "600 12.5px " + B_SANS; c.fillStyle = BCOL["text-faint"];
+    c.fillText(s.lungs === "full" ? "lungs full" : "lungs empty", cx, cy + R * 0.42);
+  }
+
   /* ----- figures: an original body map and stick-figure poses ----- */
   var BODY = [
     ["back", '<rect x="33" y="52" width="54" height="104" rx="16"/>'],
@@ -6470,53 +7023,6 @@
       '<text x="45" y="298">R</text><text x="75" y="298">L</text></svg>';
   }
 
-  // joints in a 200 x 240 box; front views face you (your right is on the left), side views face left
-  var MTN = { head: [100, 34], neck: [100, 52], shR: [82, 60], shL: [118, 60], elR: [76, 92], elL: [124, 92], haR: [74, 122], haL: [126, 122],
-    hip: [100, 120], hipR: [91, 122], hipL: [109, 122], knR: [92, 172], knL: [108, 172], ftR: [92, 224], ftL: [108, 224] };
-  function pJ(base, over) { var o = {}, k; for (k in base) o[k] = base[k].slice(); for (k in over) o[k] = over[k]; return o; }
-  function pRot(j, keys, c, deg) {
-    var a = deg * Math.PI / 180, cs = Math.cos(a), sn = Math.sin(a);
-    keys.forEach(function (k) { var x = j[k][0] - c[0], y = j[k][1] - c[1]; j[k] = [c[0] + x * cs - y * sn, c[1] + x * sn + y * cs]; });
-    return j;
-  }
-  var SALUTE = pJ(MTN, { elR: [86, 28], elL: [114, 28], haR: [93, 4], haL: [107, 4] });
-  var POSES = {
-    mountain: { j: MTN },
-    salute: { j: SALUTE },
-    side: { j: pRot(pJ(SALUTE, {}), ["head", "neck", "shR", "shL", "elR", "elL", "haR", "haL"], [100, 120], -17) },
-    close: { j: pJ(MTN, { elR: [80, 98], elL: [120, 98], haR: [97, 84], haL: [103, 84] }) },
-    fold: { side: true, j: { head: [80, 200], neck: [87, 181], sh: [88, 176], el: [84, 201], ha: [88, 224], hip: [117, 126], kn: [109, 178], ft: [113, 226] } },
-    chair: { side: true, j: { head: [86, 80], neck: [92, 98], sh: [93, 104], el: [82, 70], ha: [72, 38], hip: [116, 166], kn: [74, 180], ft: [94, 224] } },
-    warrior1: { side: true, j: { head: [98, 70], neck: [99, 88], sh: [99, 94], el: [97, 58], ha: [95, 26], hip: [102, 150],
-      kn: [58, 178], ft: [52, 224], kn2: [132, 188], ft2: [162, 224] } },
-    warrior2: { j: { head: [98, 72], neck: [102, 90], shR: [84, 96], shL: [120, 96], elR: [58, 96], elL: [146, 96], haR: [32, 96], haL: [172, 96],
-      hip: [102, 150], hipR: [93, 150], hipL: [111, 150], knR: [44, 182], knL: [139, 187], ftR: [38, 224], ftL: [166, 224] } },
-    triangle: { j: { head: [38, 95], neck: [50, 104], shR: [44, 112], shL: [58, 94], elR: [44, 150], elL: [59, 56], haR: [45, 188], haL: [60, 20],
-      hip: [104, 142], hipR: [96, 142], hipL: [112, 142], knR: [69, 183], knL: [135, 183], ftR: [42, 224], ftL: [158, 224] } },
-    tree: { j: pJ(MTN, { elR: [84, 28], elL: [116, 28], haR: [98, 6], haL: [102, 6], knR: [62, 148], ftR: [104, 162],
-      hipL: [109, 122], knL: [108, 172], ftL: [107, 224] }) }
-  };
-  function pPoseSVG(id, side) {
-    var P0 = POSES[id] || POSES.mountain, j = {}, k, flip = side === "left";
-    for (k in P0.j) j[k] = [flip ? 200 - P0.j[k][0] : P0.j[k][0], P0.j[k][1]];
-    var seg = function (a, b, cls) { return '<line class="' + (cls || "") + '" x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + b[0].toFixed(1) + '" y2="' + b[1].toFixed(1) + '"/>'; };
-    var h = "", far = function (p) { return [p[0] + (flip ? -5 : 5), p[1] - 1]; };
-    if (P0.side) {
-      // the far arm and leg sit a touch behind, dimmer
-      h += seg(far(j.sh), far(j.el), "far") + seg(far(j.el), far(j.ha), "far");
-      if (!j.kn2) h += seg(far(j.hip), far(j.kn), "far") + seg(far(j.kn), far(j.ft), "far");
-      h += seg(j.neck, j.hip) + seg(j.hip, j.kn) + seg(j.kn, j.ft);
-      if (j.kn2) h += seg(j.hip, j.kn2) + seg(j.kn2, j.ft2);
-      h += seg(j.sh, j.el) + seg(j.el, j.ha);
-    } else {
-      h += seg(j.neck, j.hip) + seg(j.shR, j.shL) + seg(j.hipR, j.hipL) +
-        seg(j.shR, j.elR) + seg(j.elR, j.haR) + seg(j.shL, j.elL) + seg(j.elL, j.haL) +
-        seg(j.hipR, j.knR) + seg(j.knR, j.ftR) + seg(j.hipL, j.knL) + seg(j.knL, j.ftL);
-    }
-    h += '<circle class="hd" cx="' + j.head[0].toFixed(1) + '" cy="' + j.head[1].toFixed(1) + '" r="12.5"/>';
-    return '<svg class="pose" viewBox="0 0 200 240" aria-hidden="true"><line class="gr" x1="16" y1="229" x2="184" y2="229"/>' + h + "</svg>";
-  }
-
   /* ----- transport ----- */
   function pStart() {
     var d = P.view;
@@ -6529,7 +7035,7 @@
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
       P.steps = plan.steps; P.total = plan.total;
-      P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null;
+      P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
       if (d.audio && P.opt.audio) {
@@ -6586,6 +7092,7 @@
     var T = pT(), i = P.idx, target;
     if (dir > 0) { if (i >= P.steps.length - 1) return; target = P.steps[i + 1].at; }
     else target = (T - P.steps[i].at > 3 || i === 0) ? P.steps[i].at : P.steps[i - 1].at;
+    pHoldLeave(T);
     if (P.state === "running") P.t0 = bNow() - target; else P.st = target;
     pHush();
     // a jump into a different breath pattern restarts the guide so it doesn't wait for the breath to end
@@ -6636,6 +7143,7 @@
     }
     if (P.sw.length) r.swing = avg(P.sw.map(function (s) { return s.amp; }));
     if (d.id === "anapana") r.wander = P.wander;
+    if (P.holds.length) r.holds = P.holds.slice();
     r.hrPts = hr;
     var parts = [d.name + ", " + Math.max(1, Math.round(T / 60)) + " min" + (early ? " (ended early)" : "")];
     if (r.hr0) parts.push("heart rate " + r.hr0 + " → " + r.hr1 + " bpm");
@@ -6643,6 +7151,7 @@
     if (r.coh) parts.push("average coherence " + r.coh.toFixed(1) + (r.cohEst ? " (estimated)" : ""));
     if (r.swing) parts.push("average swing " + r.swing.toFixed(1) + " bpm");
     if (r.wander !== undefined) parts.push("mind wandered " + r.wander + (r.wander === 1 ? " time" : " times") + " and you came back");
+    if (r.holds) parts.push("holds " + r.holds.map(fmt).join(", "));
     r.text = parts.join(", ") + ".";
     if (T >= 60) {
       store.set("lastSummary", JSON.stringify({ at: Date.now(), text: "Last session: " + r.text }));
@@ -6664,6 +7173,7 @@
     if (r.coh) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1) + (r.cohEst ? " (est.)" : "")]);
     if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath"]);
     if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath"]);
+    if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · ")]);
     var h = '<div class="sd-head"><span class="sd-ic">' + (early ? "" : '<svg class="i" aria-hidden="true"><use href="#i-check"/></svg>') + "</span>" +
       "<div><h2>" + (early ? "Session ended" : d.end ? esc(d.end) : "Nicely done") + "</h2><p>" + esc(d.name) + "</p></div></div>" +
       '<div class="sd-tiles">' + tiles.map(function (t) {
@@ -6721,7 +7231,7 @@
     P.view = d; P.len = len;
     if (!pBusy()) P.state = "intro";
     var plan = pPlan(d, len), hasB = plan.steps.some(function (s) { return s.k === "breath"; });
-    var mins = Math.max(1, Math.round(plan.total / 60));
+    var mins = Math.max(1, Math.round(plan.total / 60)), minsTxt = (d.open ? "up to " : "") + mins + " min";
     var segs = plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + s.secs + ' 1 0" title="' + esc(s.title) + '"></i>'; }).join("");
     // consecutive steps with the same title read as one row
     var rows = [];
@@ -6734,6 +7244,12 @@
     if (window.speechSynthesis) opts.push('<div class="so-row so-voice" id="sVoiceRow"' + (P.opt.voice ? "" : " hidden") + '><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
     opts.push(pToggle("sOptBells", "Bells between steps", P.opt.bells, ""));
     if (d.audio) opts.push(pToggle("sOptAudio", "Binaural layer", P.opt.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
+    if (d.variant) opts.push('<div class="so-row"><span class="so-l">' + d.variant.label + '</span><div class="mini-seg" id="sOptVar">' +
+      d.variant.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (pVar(d) === o[0]) + '">' + o[1] + "</button>"; }).join("") + "</div></div>");
+    if (d.group === "program") opts.push('<div class="so-row so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to feel the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
+      [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]].map(function (o) {
+        return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.ana === o[0]) + '">' + o[1] + "</button>";
+      }).join("") + "</div></div>");
     if (hasB) {
       opts.push('<div class="so-row"><span class="so-l">Breath cues</span><div class="mini-seg" id="sOptCues">' +
         [["tones", "Tone"], ["chimes", "Chimes"], ["off", "Silent"]].map(function (o) {
@@ -6747,20 +7263,22 @@
     var other = pBusy() && P.def !== d;
     var h = '<a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Practices</a>' +
       '<div class="si-head">' +
-        '<span class="si-kind">' + esc(GROUPS.filter(function (g) { return g.id === d.group; })[0].name) + " · " + mins + " min</span>" +
+        '<span class="si-kind">' + (d.custom ? "Your sequence" : esc(GROUPS.filter(function (g) { return g.id === d.group; })[0].name)) + " · " + minsTxt + "</span>" +
         "<h2>" + esc(d.name) + "</h2>" +
         '<p class="si-blurb">' + esc(d.blurb) + "</p>" +
         (d.parts ? '<p class="si-parts">' + esc(d.parts) + "</p>" : "") +
         (d.lengths ? '<div class="si-len" role="radiogroup" aria-label="Length">' + d.lengths.map(function (m) {
-          return '<button role="radio" data-len="' + m + '" aria-checked="' + (m === len) + '">' + m + " min</button>";
+          return '<button role="radio" data-len="' + m + '" aria-checked="' + (m === len) + '">' + pLenTxt(d, m) + "</button>";
         }).join("") + "</div>" : "") +
         '<div class="si-tl" aria-hidden="true">' + segs + "</div>" +
+        (d.custom ? '<a class="btn small si-edit" href="#yoga/' + d.custom + '">Edit sequence</a>'
+          : d.yoga ? '<a class="btn small si-edit" href="#yoga/copy/' + d.yoga + '">Customise a copy</a>' : "") +
       "</div>" +
       '<div class="si-grid"><div class="si-main">' +
         (pNeeds(d).length ? '<ul class="si-need">' + pNeeds(d).map(function (n) {
           return '<li><svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] + "</span></li>";
         }).join("") + "</ul>" : "") +
-        "<h3>How it runs</h3><p>" + esc(d.how) + "</p>" +
+        "<h3>How it runs</h3><p>" + esc(d.how || pYogaHow(plan)) + "</p>" +
         '<ol class="si-steps">' + rows.map(function (r) {
           return '<li data-k="' + r.k + '"><span>' + esc(r.title) + "</span><time>" + fmt(r.secs) + "</time></li>";
         }).join("") + "</ol>" +
@@ -6770,7 +7288,7 @@
       '<aside class="si-opts"><h3>Options</h3>' + opts.join("") +
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
-        '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Start ' + mins + " min</button>" +
+        '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Start' + (d.open ? "" : " " + mins + " min") + "</button>" +
       "</aside></div>";
     var el = $("#sIntro");
     el.innerHTML = h;
@@ -6782,6 +7300,12 @@
     document.title = d.name + " | Entrain";
     pIntroWire(d);
     pImmersive();
+  }
+  function pYogaHow(plan) {
+    var poses = plan.steps.filter(function (s) { return s.k === "pose"; }), names = [];
+    poses.forEach(function (s) { var a = ASANA[s.pose]; if (a && names.indexOf(a.en) < 0) names.push(a.en); });
+    return poses.length + " poses with a drawing and spoken cues each, a ring to breathe with, and short spoken transitions whenever you change position: " +
+      names.join(", ") + ".";
   }
   function pToggle(id, label, on, note, disabled) {
     return '<label class="so-row so-tg"><span class="so-l">' + label + (note ? "<small>" + note + "</small>" : "") + '</span>' +
@@ -6797,13 +7321,14 @@
     var t = $("#sVoiceTest");
     if (t) t.addEventListener("click", function () { pHush(); var v = P.opt.voice; P.opt.voice = true; pSay("Breathe in slowly, and let it go."); P.opt.voice = v; });
     pFillVoices();
-    [["#sOptCues", "cues"], ["#sOptVis", "visual"]].forEach(function (p) {
+    [["#sOptCues", "cues"], ["#sOptVis", "visual"], ["#sOptAna", "ana"], ["#sOptVar", "var"]].forEach(function (p) {
       var g = $(p[0]);
       if (!g) return;
       g.addEventListener("click", function (e) {
         var b = e.target.closest("button");
         if (!b) return;
-        P.opt[p[1]] = b.dataset.v; pSaveOpt();
+        if (p[1] === "var") { store.set("pVar." + d.id, b.dataset.v); pIntro(d.id); return; }
+        P.opt[p[1]] = p[1] === "ana" ? parseInt(b.dataset.v, 10) : b.dataset.v; pSaveOpt();
         var bs = g.querySelectorAll("button");
         for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
         if (p[1] === "cues" && b.dataset.v !== "off" && pBusOn() && ensureBus()) {
@@ -6877,7 +7402,8 @@
   var prFilter = "all";
   function pIcon(d) { return d.group === "program" ? "spark" : d.group === "mind" ? "practice" : d.group === "breath" ? "breathe" : d.group === "relax" ? "moon" : "move"; }
   function pCard(d) {
-    var mins = d.lengths ? d.lengths.join("/") : String(pMinutes(d)), meta = ['<span>' + mins + " min</span>"];
+    var mins = d.lengths ? d.lengths.join("/") + " " + (d.lenUnit ? d.lenUnit + "s" : "min") : (d.open ? "up to " : "") + pMinutes(d) + " min", meta = ['<span>' + mins + "</span>"];
+    if (d.custom) meta.unshift('<span class="mine">Yours</span>');
     if (d.audio) meta.push("<span>Binaural</span>");
     if (pHasBreathFast(d)) meta.push("<span>Paced breath</span>");
     if (d.sensor === "best") meta.push('<span class="hrm">Best with sensor</span>');
@@ -6907,10 +7433,15 @@
     }).join("");
     var h = "";
     GROUPS.forEach(function (g) {
-      var list = PRACTICES.filter(function (d) { return d.group === g.id && (prFilter === "all" || d.tags.indexOf(prFilter) >= 0); });
-      if (!list.length) return;
+      var all = g.id === "move" ? yLoad().map(yDef).concat(PRACTICES) : PRACTICES;
+      var list = all.filter(function (d) { return d.group === g.id && (prFilter === "all" || d.tags.indexOf(prFilter) >= 0); });
+      var build = g.id === "move" && (prFilter === "all" || prFilter === "move");
+      if (!list.length && !build) return;
       h += '<section class="pr-grp" data-g="' + g.id + '"><div class="pr-gh"><h2>' + g.name + "</h2><p>" + g.lede + "</p></div>" +
-        '<ul class="pr-list' + (g.id === "program" ? " progs" : "") + '">' + list.map(pCard).join("") + "</ul></section>";
+        '<ul class="pr-list' + (g.id === "program" ? " progs" : "") + '">' +
+        (build ? '<li class="pc pc-build" style="--pcol:var(--accent)"><a href="#yoga" class="pc-a"><span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span>' +
+          '<span class="pc-b"><b>Build your own yoga</b><span class="pc-blurb">Pick from ' + ASANAS.length + ' asanas, set each hold, and save the sequence. Every pose comes with its own drawing and spoken cues, offline.</span></span></a></li>' : "") +
+        list.map(pCard).join("") + "</ul></section>";
     });
     $("#prLib").innerHTML = h;
     pRenderWeek();
@@ -6989,6 +7520,10 @@
           var idx = P.idx;
           setTimeout(function () { if (P.idx === idx && P.state === "running") pJump(1); }, 900);
         }
+      } else if (s.k === "hold" && s.open) {
+        pHoldLeave(pT());
+        pJump(1);
+        return;
       } else if (s.wander) {
         P.wander++;
         bSetT("#sLine", "Noticed. Back to the breath at the nostrils.");
@@ -7019,8 +7554,175 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef };   // for automated tests only
+    yInit();
     pRenderLib();
+  }
+
+  /* ---------------------------- your own yoga ----------------------------
+     Sequences are lists of {id, hold, side} stored on this device. Each saved
+     sequence becomes a practice ("my-<uid>") that runs through yogaSteps(), so
+     it gets the same drawings, spoken cues, transitions and summary.
+  ------------------------------------------------------------------------ */
+
+  var Y = { uid: null, name: "", items: [], cat: "all", from: null, delArm: 0 };
+
+  function yLoad() {
+    try { var a = JSON.parse(store.get("yogaSeqs") || "[]"); return Array.isArray(a) ? a.filter(function (q) { return q && q.uid && Array.isArray(q.items); }) : []; }
+    catch (e) { return []; }
+  }
+  function yStore(list) { store.set("yogaSeqs", JSON.stringify(list)); }
+  function yGet(uid) { return yLoad().filter(function (q) { return q.uid === uid; })[0] || null; }
+  function yDef(q) {
+    var items = q.items.filter(function (i) { return ASANA[i.id]; }), names = [];
+    items.forEach(function (i) { var n = ASANA[i.id].en; if (names.indexOf(n) < 0) names.push(n); });
+    var pos = items.map(function (i) { return ASANA[i.id].pos; });
+    return {
+      id: "my-" + q.uid, custom: q.uid, group: "move", tags: ["move"], name: q.name || "My sequence", strength: 2, tone: "relax", voice: true,
+      stand: pos.indexOf("stand") >= 0, lie: pos.indexOf("supine") >= 0 || pos.indexOf("prone") >= 0,
+      blurb: names.length ? names.slice(0, 6).join(", ") + (names.length > 6 ? " and " + (names.length - 6) + " more." : ".") : "No poses yet.",
+      build: function () { return yogaSteps(items); }, ev: YOGA_EV, cite: "Pascoe et al. 2017"
+    };
+  }
+
+  /* ----- the builder screen ----- */
+  function yOpen(arg) {
+    var q;
+    if (arg && arg.indexOf("copy/") === 0) {
+      var set = yogaSet(arg.slice(5));
+      Y.uid = null; Y.from = set ? set.name : null;
+      Y.name = set ? set.name + " (mine)" : "";
+      Y.items = set ? set.items.map(function (i) { return { id: i.id, hold: i.hold, side: i.side }; }) : [];
+    } else if (arg && (q = yGet(arg))) {
+      Y.uid = q.uid; Y.name = q.name; Y.items = q.items.map(function (i) { return { id: i.id, hold: i.hold, side: i.side }; }); Y.from = null;
+    } else if (!arg && Y.uid) {
+      Y.uid = null; Y.name = ""; Y.items = []; Y.from = null;           // a fresh sequence
+    }
+    Y.delArm = 0;
+    $("#ybName").value = Y.name;
+    $("#ybDel").hidden = !Y.uid;
+    bSetT("#viewTitle", Y.uid ? "Edit sequence" : "Build your own");
+    document.title = (Y.uid ? "Edit sequence" : "Build your own yoga") + " | Entrain";
+    yRenderTpl(); yRenderSeq(); yRenderLib();
+  }
+  function yFig(id, side) { var a = ASANA[id]; return a ? figSVG(a.fig, side || (a.sides ? "right" : null), "mini") : ""; }
+  function yHoldStep(h, dir) {
+    var st = dir > 0 ? (h < 60 ? 5 : h < 180 ? 15 : 30) : (h <= 60 ? 5 : h <= 180 ? 15 : 30);
+    return Math.max(10, Math.min(600, h + dir * st));
+  }
+  function yHoldTxt(h) { return h < 60 ? h + " s" : Math.floor(h / 60) + ":" + ("0" + h % 60).slice(-2); }
+  function yRenderTpl() {
+    $("#ybTpl").innerHTML = '<span>Start from</span>' + YOGA_SETS.map(function (t) {
+      return '<button class="chip-b" data-tpl="' + t.id + '">' + esc(t.name) + "</button>";
+    }).join("");
+  }
+  function yRenderSeq() {
+    var it = Y.items;
+    $("#ybList").innerHTML = it.map(function (x, i) {
+      var a = ASANA[x.id];
+      if (!a) return "";
+      var sides = a.sides ? '<span class="yb-sides" role="group" aria-label="Sides">' + [["", "Both"], ["right", "R"], ["left", "L"]].map(function (o) {
+        return '<button data-a="side" data-v="' + o[0] + '" aria-pressed="' + ((x.side || "") === o[0]) + '">' + o[1] + "</button>";
+      }).join("") + "</span>" : "";
+      return '<li class="yb-row" data-i="' + i + '">' +
+        '<span class="yb-n">' + (i + 1) + "</span>" +
+        '<span class="yb-fig">' + yFig(x.id, x.side) + "</span>" +
+        '<span class="yb-nm"><b>' + esc(a.en) + "</b><small>" + esc(a.sa) + (a.sides ? " · " + (x.side ? x.side + " side" : "both sides") : "") + "</small></span>" +
+        '<span class="yb-ctl">' + sides +
+          '<span class="yb-hold"><button data-a="minus" aria-label="Shorter">−</button><b>' + yHoldTxt(x.hold) + '</b><button data-a="plus" aria-label="Longer">+</button></span>' +
+          '<span class="yb-mv"><button data-a="up" aria-label="Move up"' + (i ? "" : " disabled") + '><svg class="i"><use href="#i-up"/></svg></button>' +
+          '<button data-a="down" aria-label="Move down"' + (i < it.length - 1 ? "" : " disabled") + '><svg class="i" style="transform:rotate(180deg)"><use href="#i-up"/></svg></button>' +
+          '<button data-a="del" aria-label="Remove"><svg class="i"><use href="#i-x"/></svg></button></span>' +
+        "</span></li>";
+    }).join("");
+    $("#ybEmpty").hidden = it.length > 0;
+    var secs = it.length ? yogaSecs(it) : 0, n = it.length;
+    bSetT("#ybTime", fmt(secs));
+    bSetT("#ybCount", n ? n + (n === 1 ? " pose" : " poses") + (Y.from && !Y.uid ? " · from " + Y.from : "") : "No poses yet");
+    bSetT("#ybBarTime", n ? fmt(secs) + " · " + n + (n === 1 ? " pose" : " poses") : "Add poses to begin");
+    $("#ybGo").disabled = !n; $("#ybSave").disabled = !n;
+  }
+  function yRenderLib() {
+    $("#ybCats").innerHTML = ACATS.map(function (c) {
+      return '<button class="chip-b" data-cat="' + c[0] + '" aria-pressed="' + (Y.cat === c[0]) + '">' + c[1] + "</button>";
+    }).join("");
+    var list = ASANAS.filter(function (a) { return Y.cat === "all" || a.cat === Y.cat; });
+    bSetT("#ybLibN", list.length + " poses");
+    $("#ybLib").innerHTML = list.map(function (a) {
+      return '<li><button class="yb-tile" data-add="' + a.id + '" aria-label="Add ' + esc(a.en) + '">' +
+        '<span class="yb-tfig">' + yFig(a.id) + "</span>" +
+        '<span class="yb-tt"><b>' + esc(a.en) + "</b><small>" + esc(a.sa) + "</small>" +
+        '<span class="yb-cue">' + esc(aCue(a.cues[0], a.sides ? "right" : null)) + "</span>" +
+        '<span class="yb-tm">' + yHoldTxt(a.hold) + (a.sides ? " · both sides" : "") + '<i class="lv">' + "●●●".slice(0, a.level) + '<s>' + "●●●".slice(a.level) + "</s></i>" +
+        (a.caution ? ' · <em>caution</em>' : "") + "</span></span>" +
+        '<span class="yb-plus" aria-hidden="true">+</span></button></li>';
+    }).join("");
+  }
+  function ySave(quiet) {
+    if (!Y.items.length) return null;
+    var list = yLoad(), name = ($("#ybName").value || "").trim() || "My sequence " + (list.length + 1);
+    Y.name = name;
+    if (!Y.uid) Y.uid = Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
+    var q = { uid: Y.uid, name: name, items: Y.items.map(function (i) { var o = { id: i.id, hold: i.hold }; if (i.side) o.side = i.side; return o; }), at: Date.now() };
+    var k = -1;
+    list.forEach(function (x, i) { if (x.uid === q.uid) k = i; });
+    if (k >= 0) list[k] = q; else list.push(q);
+    yStore(list);
+    $("#ybName").value = name;
+    $("#ybDel").hidden = false;
+    if (!quiet) toast("Saved “" + name + "”. It's in Practice, under Movement.");
+    if (location.hash !== "#yoga/" + q.uid) history.replaceState(null, "", "#yoga/" + q.uid);
+    return q;
+  }
+  function yInit() {
+    $("#ybCats").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      Y.cat = b.dataset.cat; yRenderLib();
+    });
+    $("#ybLib").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-add]"); if (!b) return;
+      var a = ASANA[b.dataset.add];
+      Y.items.push({ id: a.id, hold: a.hold });
+      yRenderSeq();
+      var rows = $("#ybList").children, last = rows[rows.length - 1];
+      if (last) { last.classList.add("flash"); setTimeout(function () { last.classList.remove("flash"); }, 900); }
+      toast("Added " + a.en + (a.sides ? " (both sides)" : "") + ".", { ms: 1800 });
+    });
+    $("#ybList").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-a]"); if (!b) return;
+      var i = parseInt(b.closest(".yb-row").dataset.i, 10), it = Y.items, x = it[i], a = b.dataset.a;
+      if (a === "minus" || a === "plus") x.hold = yHoldStep(x.hold, a === "plus" ? 1 : -1);
+      else if (a === "up" && i > 0) { it[i] = it[i - 1]; it[i - 1] = x; }
+      else if (a === "down" && i < it.length - 1) { it[i] = it[i + 1]; it[i + 1] = x; }
+      else if (a === "del") it.splice(i, 1);
+      else if (a === "side") { if (b.dataset.v) x.side = b.dataset.v; else delete x.side; }
+      yRenderSeq();
+    });
+    $("#ybTpl").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-tpl]"); if (!b) return;
+      var set = yogaSet(b.dataset.tpl);
+      Y.items = set.items.map(function (i) { return { id: i.id, hold: i.hold, side: i.side }; });
+      var nm = $("#ybName").value.trim();
+      if (!Y.uid) Y.from = set.name;
+      if (!nm || / \(mine\)$/.test(nm)) { $("#ybName").value = set.name + " (mine)"; Y.name = $("#ybName").value; }
+      yRenderSeq();
+      toast("Loaded " + set.name + ". Change anything, then save.", { ms: 2600 });
+    });
+    $("#ybName").addEventListener("input", function () { Y.name = this.value; });
+    $("#ybSave").addEventListener("click", function () { ySave(false); });
+    $("#ybGo").addEventListener("click", function () { var q = ySave(true); if (q) location.hash = "practice/my-" + q.uid; });
+    $("#ybDel").addEventListener("click", function () {
+      if (!Y.uid) return;
+      if (!(Y.delArm && bNow() - Y.delArm < 3)) {
+        Y.delArm = bNow(); bSetT("#ybDel", "Tap again to delete"); this.classList.add("armed");
+        var b = this; setTimeout(function () { b.classList.remove("armed"); bSetT("#ybDel", "Delete"); }, 3000);
+        return;
+      }
+      yStore(yLoad().filter(function (q) { return q.uid !== Y.uid; }));
+      toast("Deleted “" + (Y.name || "sequence") + "”.");
+      Y.uid = null; Y.items = []; Y.name = "";
+      location.hash = "practice";
+    });
   }
 
   /* ------------------------------- init ------------------------------ */
