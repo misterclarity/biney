@@ -3,12 +3,12 @@
    (index.html) is still a complete, self-contained file; this worker only stores it, the app
    description and the icons. Nothing else is fetched, recorded or sent.
 
-   Version 5b22ef8ab3 is a hash of every stored file, so each new deploy changes this script.
+   Version f59ed84038 is a hash of every stored file, so each new deploy changes this script.
    The browser notices that, installs the new copy in the background, and the page offers an
    "Update" button; the old copy keeps serving until then. */
 "use strict";
 
-var CACHE = "entrain-5b22ef8ab3";
+var CACHE = "entrain-f59ed84038";
 var FILES = [
   "./",
   "manifest.webmanifest",
@@ -19,7 +19,8 @@ var FILES = [
   "icons/icon-512.png",
   "icons/maskable-192.png",
   "icons/maskable-512.png",
-  "icons/sounds-96.png"
+  "icons/practice-96.png",
+  "icons/sleep-96.png"
 ];
 
 self.addEventListener("install", function (e) {

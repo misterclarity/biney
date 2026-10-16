@@ -16,11 +16,13 @@
     { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
+    { "name": "Sleep Descent", "short_name": "Sleep", "description": "Slow breathing into a delta beat for falling asleep", "url": "./#practice/sleep-descent",
+      "icons": [{ "src": "icons/sleep-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Practices", "short_name": "Practice", "description": "Guided meditation, breathwork, yoga and programs", "url": "./#practice",
+      "icons": [{ "src": "icons/practice-96.png", "sizes": "96x96", "type": "image/png" }] },
     { "name": "Breathe", "short_name": "Breathe", "description": "Open the breathing guide", "url": "./#breathe",
       "icons": [{ "src": "icons/breathe-96.png", "sizes": "96x96", "type": "image/png" }] },
     { "name": "Heart", "short_name": "Heart", "description": "Connect a sensor and see your heart data", "url": "./#heart",
-      "icons": [{ "src": "icons/heart-96.png", "sizes": "96x96", "type": "image/png" }] },
-    { "name": "Sounds", "short_name": "Sounds", "description": "Binaural beat tracks and sessions", "url": "./#sounds",
-      "icons": [{ "src": "icons/sounds-96.png", "sizes": "96x96", "type": "image/png" }] }
+      "icons": [{ "src": "icons/heart-96.png", "sizes": "96x96", "type": "image/png" }] }
   ]
 }
