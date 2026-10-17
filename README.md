@@ -18,7 +18,7 @@ python3 src/build.py
 
 This writes `index.html`, `sw.js` and `manifest.webmanifest` at the top level. It also writes `entrain-page.html`, a preview page without the offline helper, which is not committed.
 
-`build.py` takes `src/legacy.html` (the original one-page version), applies small checked patches to it and inserts the newer modules, in the order listed in `build.py`. Each patch must match its expected number of times, or the build stops. All modules share one script scope.
+`build.py` takes `src/legacy.html` (the original one-page version), applies small checked patches to it and inserts the newer modules, in the order listed in `build.py`. Each patch must match its expected number of times, or the build stops. All modules share one script scope, so the build also stops if a top-level name is declared twice. Otherwise the second declaration would silently replace the first.
 
 ## Test
 

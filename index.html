@@ -3052,8 +3052,8 @@
     if (e.code !== "Space" || !A.track) return;
     if (!$("#scModal").hidden || !$("#pmModal").hidden) return;
     if ($("#bStage").classList.contains("focus")) return;   // focus view: Space drives the breathing guide
-    var tag = (e.target.tagName || "").toLowerCase();
-    if (tag === "input" || tag === "button" || tag === "select" || tag === "textarea" || tag === "summary") return;
+    if (kbSkip(e)) return;
+    if (pBusy() && (curView === "session" || pTrack())) return;
     e.preventDefault();
     if (A.playing) pause(); else play();
   });
@@ -5397,6 +5397,18 @@
     }, 30);
   }
 
+  /* ----- keyboard shortcuts -----
+     Space and the arrow keys leave alone a key meant for a focused control (a field, a button,
+     the feelings wheel) and a key another handler has already used. On the session's own
+     transport buttons only Space belongs to the button, so the arrows still move between steps. */
+  function kbSkip(e) {
+    if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return true;
+    var t = e.target;
+    if (!t || !t.closest) return false;
+    if (t.closest("#sPrev, #sPlay, #sNext")) return e.code === "Space";
+    return !!t.closest('input, select, textarea, button, a[href], summary, [role="button"], [role="radio"], [role="tab"], [contenteditable]');
+  }
+
   /* ----- Sounds: Tracks / Prime / Build ----- */
   function segPick(seg, focus) {
     var bs = document.querySelectorAll(".seg-b");
@@ -6203,7 +6215,7 @@
 
   /* ----- mobility keys ----- */
   var NECK = function (h) { return FX("front", { torso: 0, head: h }, STAND_LEGS, ARMS_DOWN); };
-  var CIRC = function (a) { return F("side", { torso: 0, head: 0, arm: [a, a], leg: [180, 180] }); };
+  var ARM_CIRC = function (a) { return F("side", { torso: 0, head: 0, arm: [a, a], leg: [180, 180] }); };
   var WIDE = { legR: [186, 180], legL: [174, 180] };
   var TWIST = FX("front", { torso: 0, head: -10, armR: [-112, -150], armL: [-138, -96] }, WIDE);
   var TW_MID = FX("front", { torso: 0 }, WIDE, ARMS_DOWN);
@@ -6246,7 +6258,7 @@
         "Roll the chin slowly down across the chest and up to the left. Then back the other way.", "Small and slow. Keep the shoulders soft."],
       caution: "Keep to half circles and skip the head-back part, which can pinch the neck." }),
     M({ id: "armcircles", en: "Arm Circles", sa: "Big circles, backwards", cat: "mobility", pos: "stand", hold: 40, level: 1,
-      keys: [CIRC(180), CIRC(270), CIRC(0), CIRC(90)], cycle: 4, lin: true, dwell: 0, still: 1,
+      keys: [ARM_CIRC(180), ARM_CIRC(270), ARM_CIRC(0), ARM_CIRC(90)], cycle: 4, lin: true, dwell: 0, still: 1,
       cues: ["Arm circles. Swing both arms forward and up, over the top and down behind you.",
         "Big, slow circles. Let the shoulder blades move.", "Breathe in as the arms rise, out as they fall."] }),
     M({ id: "twists", en: "Standing Twists", sa: "Loose arms swinging", cat: "mobility", pos: "stand", hold: 40, level: 1,
@@ -7638,7 +7650,7 @@
     hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null, lock: null,
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
-    mv: null, hasRhy: false, suds: [], tapAt: "", tickNext: 0, nvc: null,
+    mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null,
     opt: { voice: true, bells: true, cues: "tones", visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true }
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
@@ -7925,7 +7937,7 @@
   }
   function pEnter(i) {
     var prev = P.steps[P.idx], s = P.steps[i];
-    P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null;
+    P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1;
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
       var add = s.secs0 - s.secs;
@@ -7957,9 +7969,9 @@
     wr.hidden = vis !== "write";
     $("#ses").dataset.write = vis === "write" ? "1" : "";
     if (vis === "write") { wr.innerHTML = nvcRender(s); wr.scrollTop = 0; nvcCheck(s); }
-    if (vis === "rate") {
+    if (vis === "rate") {                             // back on a rating you gave: it shows, and a new tap replaces it
       var rb = document.querySelectorAll("#sRateG button");
-      for (var ri = 0; ri < rb.length; ri++) rb[ri].setAttribute("aria-pressed", "false");
+      for (var ri = 0; ri < rb.length; ri++) rb[ri].setAttribute("aria-pressed", String(P.sudsBy[P.idx] === +rb[ri].dataset.v));
     }
     fig.classList.toggle("next", !!s.trans);
     $("#sWord").hidden = vis !== "word";
@@ -8060,7 +8072,9 @@
     var s = P.steps[P.idx];
     if (!s || s.k !== "rate" || P.state !== "running" || P.rated === P.idx) return;
     P.rated = P.idx;
-    if (v !== null) P.suds.push(v);
+    P.sudsBy[P.idx] = v;                             // one rating per step: a later tap replaces it, Skip clears it
+    P.suds = Object.keys(P.sudsBy).map(Number).sort(function (a, b) { return a - b; })
+      .map(function (k) { return P.sudsBy[k]; }).filter(function (x) { return x !== null; });
     var bs = document.querySelectorAll("#sRateG button");
     for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", String(+bs[i].dataset.v === v));
     var idx = P.idx;
@@ -8341,7 +8355,7 @@
       P.steps = plan.steps; P.total = plan.total;
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
-      P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.rated = -1;
+      P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
       pAdaptReset(); napReset(); P.nvc = nvcNew();
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
@@ -8402,7 +8416,11 @@
   function pJump(dir) {
     if (!pBusy()) return;
     var T = pT(), i = P.idx, target;
-    if (dir > 0) { if (i >= P.steps.length - 1) return; target = P.steps[i + 1].at; }
+    if (dir > 0) {
+      if (i >= P.steps.length - 1) return;
+      if (P.steps[i].open) { pAdvance(); return; }       // an open step ends now and gives back its unused time
+      target = P.steps[i + 1].at;
+    }
     else target = ((T - P.steps[i].at > 3 && P.steps[i].k !== "write") || i === 0) ? P.steps[i].at : P.steps[i - 1].at;   // writing: back means the step before
     pHoldLeave(T);
     if (P.state === "running") P.t0 = bNow() - target; else P.st = target;
@@ -8468,7 +8486,7 @@
     if (P.suds.length) r.suds = P.suds.slice();
     var bl = AD.log.filter(function (x) { return x.src !== "base"; });
     if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatLog = AD.log.slice(); }
-    napSummary(r);
+    napSummary(r, T);
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(null, d.id === "nvc-choose" ? "choose" : "self");
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -8940,13 +8958,14 @@
       v.dispatchEvent(new Event("input"));
     });
     $("#bLockBtn").addEventListener("click", pOpen);
+    /* Space pauses and resumes the practice on its screen, and anywhere while the practice's own
+       sound is playing (the old Space shortcut leaves those to this one); the arrows move between steps. */
     document.addEventListener("keydown", function (e) {
-      if (curView !== "session" || !pBusy()) return;
-      var tag = (e.target.tagName || "").toLowerCase();
-      if (tag === "input" || tag === "select" || tag === "textarea") return;
-      if (e.code === "Space" && tag !== "button") { e.preventDefault(); if (P.state === "running") pPause(); else pResume(); }
-      else if (e.key === "ArrowRight") pJump(1);
-      else if (e.key === "ArrowLeft") pJump(-1);
+      if (!pBusy() || kbSkip(e)) return;
+      var here = curView === "session" && !$("#sRun").hidden;
+      if (e.code === "Space" && (here || pTrack())) { e.preventDefault(); if (P.state === "running") pPause(); else pResume(); }
+      else if (here && e.key === "ArrowRight") { e.preventDefault(); pJump(1); }
+      else if (here && e.key === "ArrowLeft") { e.preventDefault(); pJump(-1); }
     });
     document.addEventListener("visibilitychange", function () {
       if (!document.hidden && P.state === "running") { pLock(); pTick(); pLoop(); }
@@ -9076,7 +9095,7 @@
       G(45, "Lie down", ["Lie down somewhere you can rest, with headphones on, and the phone where you'll hear it.",
         "Close your eyes and let the breath slow down. You don't have to fall asleep: resting counts too.",
         "You'll be woken gently. With a heart sensor, the nap is timed from when your heart rate says you've dozed off."], { vis: "dark", dim: true }),
-      { k: "nap", nap: len, secs: (len + 25) * 60, title: "Nap", dim: true, quiet: true, lines: [[0, "Rest now."]] },
+      { k: "nap", nap: len, secs: (len + 25) * 60, title: "Nap", open: true, dim: true, quiet: true, lines: [[0, "Rest now."]] },
       { k: "wake", secs: 120, title: "Waking up", nobell: true, lines: [[0, "Time to wake up. Take a slow, deep breath."], [25, "Wiggle your fingers and toes."],
         [50, "Let some light in. Open your eyes when you're ready."], [80, "Stretch, and take your time."]] },
       G(30, "Up slowly", ["Sit up slowly before you stand. A glass of water helps.", "Notice how you feel."], { vis: "orb" })
@@ -9103,7 +9122,8 @@
       }
     }
     var len = s.nap * 60, lost = NP.base > 0 && !adHR(T, 120).length;
-    NP.wake = NP.onset ? NP.onset + len : (NP.base > 0 && !lost) ? s.at + 1200 : s.at + len + 300;
+    var giveUp = NP.since ? Math.max(s.at + 1200, NP.since + 220) : s.at + 1200;   // a drop being confirmed may be you dozing off: wait for the answer
+    NP.wake = NP.onset ? NP.onset + len : (NP.base > 0 && !lost) ? giveUp : s.at + len + 300;
     if (T >= NP.wake) pAdvance();
   }
   function pWakeTick(s, st) {
@@ -9117,12 +9137,14 @@
     }
     if ((st < 0.4 || Math.abs(st - 30) < 0.2 || Math.abs(st - 60) < 0.2) && navigator.vibrate) { try { navigator.vibrate([300, 150, 300]); } catch (e) {} }
   }
-  function napSummary(r) {
+  /* T is when the session ended: sleep runs from the estimated onset to the wake-up, or to
+     the moment you ended the session, if that came first. */
+  function napSummary(r, T) {
     var s = P.steps.filter(function (x) { return x.k === "nap"; })[0];
     if (!s) return;
-    var woke = P.steps.filter(function (x) { return x.k === "wake"; })[0];
+    var woke = P.steps.filter(function (x) { return x.k === "wake"; })[0], end = woke && woke.at <= T ? woke.at : T;
     r.nap = { sensor: NP.base > 0, base: NP.base > 0 ? Math.round(NP.base) : 0, low: NP.low ? Math.round(NP.low) : 0,
-      onset: NP.onset ? Math.round((NP.onset - s.at) / 60) : null, slept: NP.onset && woke ? Math.round((woke.at - NP.onset) / 60) : null,
+      onset: NP.onset ? Math.round((NP.onset - s.at) / 60) : null, slept: NP.onset ? Math.max(0, Math.round((end - NP.onset) / 60)) : null,
       onsetT: NP.onset || 0, len: s.nap };
   }
 

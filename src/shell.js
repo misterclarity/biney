@@ -63,6 +63,18 @@
     }, 30);
   }
 
+  /* ----- keyboard shortcuts -----
+     Space and the arrow keys leave alone a key meant for a focused control (a field, a button,
+     the feelings wheel) and a key another handler has already used. On the session's own
+     transport buttons only Space belongs to the button, so the arrows still move between steps. */
+  function kbSkip(e) {
+    if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return true;
+    var t = e.target;
+    if (!t || !t.closest) return false;
+    if (t.closest("#sPrev, #sPlay, #sNext")) return e.code === "Space";
+    return !!t.closest('input, select, textarea, button, a[href], summary, [role="button"], [role="radio"], [role="tab"], [contenteditable]');
+  }
+
   /* ----- Sounds: Tracks / Prime / Build ----- */
   function segPick(seg, focus) {
     var bs = document.querySelectorAll(".seg-b");

@@ -3,12 +3,12 @@
    (index.html) is still a complete, self-contained file; this worker only stores it, the app
    description and the icons. Nothing else is fetched, recorded or sent.
 
-   Version 3d39873c0e is a hash of every stored file, so each new deploy changes this script.
+   Version 343bf3f6ea is a hash of every stored file, so each new deploy changes this script.
    The browser notices that, installs the new copy in the background, and the page offers an
    "Update" button; the old copy keeps serving until then. */
 "use strict";
 
-var CACHE = "entrain-3d39873c0e";
+var CACHE = "entrain-343bf3f6ea";
 var FILES = [
   "./",
   "manifest.webmanifest",

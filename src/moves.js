@@ -11,7 +11,7 @@
 
   /* ----- mobility keys ----- */
   var NECK = function (h) { return FX("front", { torso: 0, head: h }, STAND_LEGS, ARMS_DOWN); };
-  var CIRC = function (a) { return F("side", { torso: 0, head: 0, arm: [a, a], leg: [180, 180] }); };
+  var ARM_CIRC = function (a) { return F("side", { torso: 0, head: 0, arm: [a, a], leg: [180, 180] }); };
   var WIDE = { legR: [186, 180], legL: [174, 180] };
   var TWIST = FX("front", { torso: 0, head: -10, armR: [-112, -150], armL: [-138, -96] }, WIDE);
   var TW_MID = FX("front", { torso: 0 }, WIDE, ARMS_DOWN);
@@ -54,7 +54,7 @@
         "Roll the chin slowly down across the chest and up to the left. Then back the other way.", "Small and slow. Keep the shoulders soft."],
       caution: "Keep to half circles and skip the head-back part, which can pinch the neck." }),
     M({ id: "armcircles", en: "Arm Circles", sa: "Big circles, backwards", cat: "mobility", pos: "stand", hold: 40, level: 1,
-      keys: [CIRC(180), CIRC(270), CIRC(0), CIRC(90)], cycle: 4, lin: true, dwell: 0, still: 1,
+      keys: [ARM_CIRC(180), ARM_CIRC(270), ARM_CIRC(0), ARM_CIRC(90)], cycle: 4, lin: true, dwell: 0, still: 1,
       cues: ["Arm circles. Swing both arms forward and up, over the top and down behind you.",
         "Big, slow circles. Let the shoulder blades move.", "Breathe in as the arms rise, out as they fall."] }),
     M({ id: "twists", en: "Standing Twists", sa: "Loose arms swinging", cat: "mobility", pos: "stand", hold: 40, level: 1,

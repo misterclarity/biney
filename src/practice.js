@@ -15,7 +15,7 @@
     hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null, lock: null,
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
-    mv: null, hasRhy: false, suds: [], tapAt: "", tickNext: 0, nvc: null,
+    mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null,
     opt: { voice: true, bells: true, cues: "tones", visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true }
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
@@ -302,7 +302,7 @@
   }
   function pEnter(i) {
     var prev = P.steps[P.idx], s = P.steps[i];
-    P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null;
+    P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1;
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
       var add = s.secs0 - s.secs;
@@ -334,9 +334,9 @@
     wr.hidden = vis !== "write";
     $("#ses").dataset.write = vis === "write" ? "1" : "";
     if (vis === "write") { wr.innerHTML = nvcRender(s); wr.scrollTop = 0; nvcCheck(s); }
-    if (vis === "rate") {
+    if (vis === "rate") {                             // back on a rating you gave: it shows, and a new tap replaces it
       var rb = document.querySelectorAll("#sRateG button");
-      for (var ri = 0; ri < rb.length; ri++) rb[ri].setAttribute("aria-pressed", "false");
+      for (var ri = 0; ri < rb.length; ri++) rb[ri].setAttribute("aria-pressed", String(P.sudsBy[P.idx] === +rb[ri].dataset.v));
     }
     fig.classList.toggle("next", !!s.trans);
     $("#sWord").hidden = vis !== "word";
@@ -437,7 +437,9 @@
     var s = P.steps[P.idx];
     if (!s || s.k !== "rate" || P.state !== "running" || P.rated === P.idx) return;
     P.rated = P.idx;
-    if (v !== null) P.suds.push(v);
+    P.sudsBy[P.idx] = v;                             // one rating per step: a later tap replaces it, Skip clears it
+    P.suds = Object.keys(P.sudsBy).map(Number).sort(function (a, b) { return a - b; })
+      .map(function (k) { return P.sudsBy[k]; }).filter(function (x) { return x !== null; });
     var bs = document.querySelectorAll("#sRateG button");
     for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", String(+bs[i].dataset.v === v));
     var idx = P.idx;
@@ -718,7 +720,7 @@
       P.steps = plan.steps; P.total = plan.total;
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
-      P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.rated = -1;
+      P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
       pAdaptReset(); napReset(); P.nvc = nvcNew();
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
@@ -779,7 +781,11 @@
   function pJump(dir) {
     if (!pBusy()) return;
     var T = pT(), i = P.idx, target;
-    if (dir > 0) { if (i >= P.steps.length - 1) return; target = P.steps[i + 1].at; }
+    if (dir > 0) {
+      if (i >= P.steps.length - 1) return;
+      if (P.steps[i].open) { pAdvance(); return; }       // an open step ends now and gives back its unused time
+      target = P.steps[i + 1].at;
+    }
     else target = ((T - P.steps[i].at > 3 && P.steps[i].k !== "write") || i === 0) ? P.steps[i].at : P.steps[i - 1].at;   // writing: back means the step before
     pHoldLeave(T);
     if (P.state === "running") P.t0 = bNow() - target; else P.st = target;
@@ -845,7 +851,7 @@
     if (P.suds.length) r.suds = P.suds.slice();
     var bl = AD.log.filter(function (x) { return x.src !== "base"; });
     if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatLog = AD.log.slice(); }
-    napSummary(r);
+    napSummary(r, T);
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(null, d.id === "nvc-choose" ? "choose" : "self");
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -1317,13 +1323,14 @@
       v.dispatchEvent(new Event("input"));
     });
     $("#bLockBtn").addEventListener("click", pOpen);
+    /* Space pauses and resumes the practice on its screen, and anywhere while the practice's own
+       sound is playing (the old Space shortcut leaves those to this one); the arrows move between steps. */
     document.addEventListener("keydown", function (e) {
-      if (curView !== "session" || !pBusy()) return;
-      var tag = (e.target.tagName || "").toLowerCase();
-      if (tag === "input" || tag === "select" || tag === "textarea") return;
-      if (e.code === "Space" && tag !== "button") { e.preventDefault(); if (P.state === "running") pPause(); else pResume(); }
-      else if (e.key === "ArrowRight") pJump(1);
-      else if (e.key === "ArrowLeft") pJump(-1);
+      if (!pBusy() || kbSkip(e)) return;
+      var here = curView === "session" && !$("#sRun").hidden;
+      if (e.code === "Space" && (here || pTrack())) { e.preventDefault(); if (P.state === "running") pPause(); else pResume(); }
+      else if (here && e.key === "ArrowRight") { e.preventDefault(); pJump(1); }
+      else if (here && e.key === "ArrowLeft") { e.preventDefault(); pJump(-1); }
     });
     document.addEventListener("visibilitychange", function () {
       if (!document.hidden && P.state === "running") { pLock(); pTick(); pLoop(); }

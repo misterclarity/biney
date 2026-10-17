@@ -10,6 +10,7 @@ const SUITES = [
   ['prrun', 'Practices: library, sessions, breath, yoga'],
   ['prrun2', 'Practices: programs, Wim Hof, builder'],
   ['prrun3', 'Capoeira, tapping, heart-led beats, nap, reflection'],
+  ['regress', 'Fixes from the October 2026 code review'],
   ['findtest', 'Resonance test with a sensor (about two minutes)']
 ];
 const pick = process.argv.slice(2);

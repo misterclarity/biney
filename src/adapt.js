@@ -115,7 +115,7 @@
       G(45, "Lie down", ["Lie down somewhere you can rest, with headphones on, and the phone where you'll hear it.",
         "Close your eyes and let the breath slow down. You don't have to fall asleep: resting counts too.",
         "You'll be woken gently. With a heart sensor, the nap is timed from when your heart rate says you've dozed off."], { vis: "dark", dim: true }),
-      { k: "nap", nap: len, secs: (len + 25) * 60, title: "Nap", dim: true, quiet: true, lines: [[0, "Rest now."]] },
+      { k: "nap", nap: len, secs: (len + 25) * 60, title: "Nap", open: true, dim: true, quiet: true, lines: [[0, "Rest now."]] },
       { k: "wake", secs: 120, title: "Waking up", nobell: true, lines: [[0, "Time to wake up. Take a slow, deep breath."], [25, "Wiggle your fingers and toes."],
         [50, "Let some light in. Open your eyes when you're ready."], [80, "Stretch, and take your time."]] },
       G(30, "Up slowly", ["Sit up slowly before you stand. A glass of water helps.", "Notice how you feel."], { vis: "orb" })
@@ -142,7 +142,8 @@
       }
     }
     var len = s.nap * 60, lost = NP.base > 0 && !adHR(T, 120).length;
-    NP.wake = NP.onset ? NP.onset + len : (NP.base > 0 && !lost) ? s.at + 1200 : s.at + len + 300;
+    var giveUp = NP.since ? Math.max(s.at + 1200, NP.since + 220) : s.at + 1200;   // a drop being confirmed may be you dozing off: wait for the answer
+    NP.wake = NP.onset ? NP.onset + len : (NP.base > 0 && !lost) ? giveUp : s.at + len + 300;
     if (T >= NP.wake) pAdvance();
   }
   function pWakeTick(s, st) {
@@ -156,11 +157,13 @@
     }
     if ((st < 0.4 || Math.abs(st - 30) < 0.2 || Math.abs(st - 60) < 0.2) && navigator.vibrate) { try { navigator.vibrate([300, 150, 300]); } catch (e) {} }
   }
-  function napSummary(r) {
+  /* T is when the session ended: sleep runs from the estimated onset to the wake-up, or to
+     the moment you ended the session, if that came first. */
+  function napSummary(r, T) {
     var s = P.steps.filter(function (x) { return x.k === "nap"; })[0];
     if (!s) return;
-    var woke = P.steps.filter(function (x) { return x.k === "wake"; })[0];
+    var woke = P.steps.filter(function (x) { return x.k === "wake"; })[0], end = woke && woke.at <= T ? woke.at : T;
     r.nap = { sensor: NP.base > 0, base: NP.base > 0 ? Math.round(NP.base) : 0, low: NP.low ? Math.round(NP.low) : 0,
-      onset: NP.onset ? Math.round((NP.onset - s.at) / 60) : null, slept: NP.onset && woke ? Math.round((woke.at - NP.onset) / 60) : null,
+      onset: NP.onset ? Math.round((NP.onset - s.at) / 60) : null, slept: NP.onset ? Math.max(0, Math.round((end - NP.onset) / 60)) : null,
       onsetT: NP.onset || 0, len: s.nap };
   }

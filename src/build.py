@@ -16,7 +16,8 @@ def rd(name): return open(os.path.join(HERE, name), encoding="utf-8").read()
 legacy = rd("legacy.html")
 css = rd("styles.css").replace("__POPPINS_BOLD__", rd("poppins.b64").strip())
 shell = rd("shell.js")
-practice = rd("asanas.js") + rd("moves.js") + rd("ambience.js") + rd("quotes.js") + rd("tapping.js") + rd("practice-data.js") + rd("practice.js") + rd("adapt.js") + rd("nvc.js") + rd("yoga.js")
+PRACTICE_FILES = ["asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "practice.js", "adapt.js", "nvc.js", "yoga.js"]
+practice = "".join(rd(f) for f in PRACTICE_FILES)
 views = rd("views.html")
 
 
@@ -636,6 +637,15 @@ s = sub(s, """  function bToggle() {
     if (B.state === "running") bPause();""", """  function bToggle() {
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();""")
+# Space plays and pauses the mini player, except on a focused control (kbSkip, in shell.js) and
+# while a practice is on screen or owns the sound: then the practice's own shortcut takes it
+s = sub(s, """    var tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "button" || tag === "select" || tag === "textarea" || tag === "summary") return;
+    e.preventDefault();
+    if (A.playing) pause(); else play();""", """    if (kbSkip(e)) return;
+    if (pBusy() && (curView === "session" || pTrack())) return;
+    e.preventDefault();
+    if (A.playing) pause(); else play();""")
 s = sub(s, """    var S = frameState();
     d2.clearRect(0, 0, CW, CH);
     d2.setLineDash([]);
@@ -656,6 +666,76 @@ s = sub(s, """    if (r && B.state === "running" && breathTime() >= 0) B.coh.pus
 s = sub(s, "  /* ------------------------------- init ------------------------------ */",
         shell + practice + "\n  /* ------------------------------- init ------------------------------ */")
 s = sub(s, "  initBreath();\n  hrInit();", "  initBreath();\n  hrInit();\n  shellInit();")
+
+
+# ---- every file shares the script's one scope: a name declared twice silently replaces the first ----
+def top_level_names(js):
+    """Names declared by `var` and `function` at the top of the shared scope (two-space indent),
+    with the line of each declaration. A light scanner, not a parser: it skips strings, comments
+    and regex literals, and splits a `var` statement on commas outside brackets."""
+    found, lines, starts = {}, js.split("\n"), [0]
+    for ln in lines:
+        starts.append(starts[-1] + len(ln) + 1)
+    name_re = re.compile(r"\s*([A-Za-z_$][\w$]*)")
+    for n, ln in enumerate(lines):
+        m = re.match(r"  function ([A-Za-z_$][\w$]*)\s*\(", ln)
+        if m:
+            found.setdefault(m.group(1), []).append(n + 1)
+            continue
+        if not ln.startswith("  var "):
+            continue
+        i, depth, want, prev = starts[n] + 6, 0, True, "="
+        while i < len(js):
+            if want:
+                m = name_re.match(js, i)
+                if not m:
+                    break
+                found.setdefault(m.group(1), []).append(n + 1)
+                i, want, prev = m.end(), False, "a"
+                continue
+            c = js[i]
+            if c in " \t\r\n":
+                i += 1
+            elif js.startswith("//", i):
+                i = js.index("\n", i)
+            elif js.startswith("/*", i):
+                i = js.index("*/", i) + 2
+            elif c in "\"'`":
+                j = i + 1
+                while js[j] != c:
+                    j += 2 if js[j] == "\\" else 1
+                i, prev = j + 1, "a"
+            elif c == "/" and (prev in "(,=:[!&|?{};" or re.search(r"(?<![\w$])(return|typeof|case|in|of|else|void|new)\s*$", js[max(0, i - 12):i])):   # a regex literal
+                j, cls = i + 1, False
+                while cls or js[j] != "/":
+                    if js[j] == "\\":
+                        j += 1
+                    elif js[j] in "[]":
+                        cls = js[j] == "["
+                    j += 1
+                i, prev = j + 1, "a"
+            else:
+                if c in "([{":
+                    depth += 1
+                elif c in ")]}":
+                    depth -= 1
+                elif depth == 0 and c == ",":
+                    want = True
+                elif depth == 0 and c == ";":
+                    break
+                i, prev = i + 1, c
+    return found
+
+
+SOURCES = [("legacy.html", legacy), ("shell.js", shell)] + [(f, rd(f)) for f in PRACTICE_FILES]
+def source_of(line):
+    text = line.strip()
+    return ", ".join(f for f, t in SOURCES if text in t) or "build.py"
+twice = {k: v for k, v in top_level_names(s).items() if len(v) > 1}
+if twice:
+    out_lines = s.split("\n")
+    sys.exit("declared more than once in the shared scope:\n" + "\n".join(
+        "  %s: %s" % (k, "; ".join(source_of(out_lines[n - 1]) for n in v)) for k, v in sorted(twice.items())))
 
 head = """<!DOCTYPE html>
 <html lang="en">
