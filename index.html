@@ -1114,6 +1114,31 @@
   .sw-have{margin:0;font-size:15px;line-height:1.45}
   .sw-why button{font-size:12.5px;padding:5px 10px}
   .sw-empty{margin:0;color:var(--text-faint)}
+  .sw-view{align-self:flex-start}
+  .sw-feel{display:flex;flex-direction:column;gap:12px}
+  .sw-wheel{width:100%;max-width:420px;align-self:center}
+  .nv-wheel{display:block;width:100%;height:auto;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+  .nv-wheel.zoom{animation:nvzoom .22s ease-out;transform-origin:50% 50%}
+  @keyframes nvzoom{from{transform:scale(.93);opacity:.35}to{transform:none;opacity:1}}
+  @media (prefers-reduced-motion:reduce){.nv-wheel.zoom{animation:none}}
+  .nv-wheel text{font-family:var(--font);pointer-events:none;text-anchor:middle;dominant-baseline:central}
+  .nv-wheel .wf-n{font-size:12.5px;font-weight:750;fill:#0b1120}
+  .nv-wheel .wf-c{font-size:10.5px;font-weight:750;fill:#0b1120;opacity:.72}
+  .nv-wheel .ww-r{font-size:9.5px;font-weight:600}
+  .nv-wheel .ww-n{font-size:15px;font-weight:700}
+  .nv-wheel .wc-bg{fill:var(--panel-2)}
+  .nv-wheel .wc-num{font-size:26px;font-weight:750;font-family:var(--display);fill:var(--text)}
+  .nv-wheel .wc-s{font-size:11.5px;font-weight:650;fill:var(--text-dim)}
+  .nv-wheel .wc-fam{font-size:17px;font-weight:750;fill:#0b1120}
+  .nv-wheel .wc-back{font-size:12px;font-weight:650;fill:#0b1120;opacity:.72}
+  .nv-wheel [role="button"]{cursor:pointer;outline:none}
+  .nv-wheel .wf:hover>path:first-child,.nv-wheel .ww:hover path{filter:brightness(1.12)}
+  .nv-wheel [role="button"]:focus-visible path,.nv-wheel .wc:focus-visible circle{stroke:var(--text);stroke-width:3;stroke-opacity:1}
+  .sw-chosen{display:flex;flex-direction:column;gap:6px}
+  .sw-chosen>span{font-size:11.5px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint)}
+  .sw-chosen em{font-style:normal;color:var(--text-faint);font-size:13.5px}
+  .sw-chips .sw-un{--fc:var(--pcol);background:var(--fc);border-color:var(--fc);color:#0b1120}
+  .sw-un i{font-style:normal;opacity:.65;margin-left:2px}
   .sd-nvc{background:var(--panel);border-radius:18px;padding:18px 20px;margin-top:12px}
   .sd-nvc h3{margin:0 0 8px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--pcol)}
   .nv-s{margin:0;font-size:17px;line-height:1.5;font-weight:600;color:var(--text)}
@@ -2121,7 +2146,9 @@
               (Epinat-Duclos et al., 2021), and a 2025 review of 15 mostly uncontrolled studies found gains in empathy alongside
               weak methods (Pereira &amp; Durgante, 2025). The parts the practices lean on are better studied. Putting feelings
               into words dampens their intensity (Torre &amp; Lieberman, 2018); people who tell their emotions apart more
-              precisely are less likely to cope in harmful ways when distressed (Kashdan et al., 2015); writing about difficult
+              precisely are less likely to cope in harmful ways when distressed (Kashdan et al., 2015), which is what the
+              feelings wheel is for: 88 words in 11 families, to get from &ldquo;bad&rdquo; to &ldquo;discouraged&rdquo; or
+              &ldquo;resentful&rdquo;; writing about difficult
               experiences has a small but reliable benefit across 146 randomised studies (Frattaroli, 2006); and in
               self-determination theory, acting from your own values goes with more well-being than acting from pressure, guilt
               or the need for approval (Ryan &amp; Deci, 2000). What you write stays on your device, and you can keep nothing at
@@ -7383,7 +7410,7 @@
       id: "nvc-self", group: "reflect", tags: ["reflect", "calm"], name: "Self-Empathy (NVC)", reflect: true, selfPaced: true, est: 15, strength: 1, tone: "ther",
       blurb: "Nonviolent communication turned inward: write what happened, hear out your judgments and question the rules behind them, then find the feelings and needs underneath, and a request you can act on.",
       build: function () { return nvcSelfSteps(); },
-      how: "Self-paced, with short pauses between the parts: what happened, written the way a camera would record it; your judgments, uncensored; one of the rules behind them, questioned; where you feel it in your body; your feelings and needs, picked from lists or in your own words; a guess at the other person's; and a request. Gentle checks point out words that carry a judgment, and feelings that are really interpretations of what someone did. You end with your own NVC sentence.",
+      how: "Self-paced, with short pauses between the parts: what happened, written the way a camera would record it; your judgments, uncensored; one of the rules behind them, questioned; where you feel it in your body; your feelings, picked from a feelings wheel of 88 words in 11 families (or a plain list, or your own words), and your needs; a guess at the other person's; and a request. Gentle checks point out words that carry a judgment, and feelings that are really interpretations of what someone did. You end with your own NVC sentence.",
       ev: "In a randomised study with 312 medical students, two and a half days of NVC training raised self-rated empathy three months later, though not other measures of empathy, and reviews call the evidence promising but methodologically weak. The parts this practice leans on are better supported: putting feelings into words dampens their intensity, telling emotions apart precisely goes with healthier coping under stress, and writing about difficult experiences has a small, reliable benefit across many trials.",
       cite: "Epinat-Duclos et al. 2021 · Torre & Lieberman 2018 · Kashdan et al. 2015 · Frattaroli 2006"
     },
@@ -9107,16 +9134,23 @@
      gets questioned. The word lists and the gentle checks are Entrain's own. Everything
      written stays on this device.
   ------------------------------------------------------------------------------ */
-  var NVC_FEEL = [
-    ["Afraid", ["scared", "anxious", "worried", "nervous", "tense", "uneasy", "wary", "vulnerable"]],
-    ["Angry", ["angry", "annoyed", "irritated", "frustrated", "resentful", "furious", "impatient", "bitter"]],
-    ["Sad", ["sad", "hurt", "disappointed", "lonely", "discouraged", "heartbroken", "hopeless", "gloomy"]],
-    ["Tired", ["tired", "exhausted", "overwhelmed", "drained", "numb", "flat"]],
-    ["Unsettled", ["confused", "torn", "unsure", "restless", "ambivalent", "lost"]],
-    ["Self-conscious", ["ashamed", "embarrassed", "guilty", "regretful", "awkward", "exposed"]],
-    ["Disconnected", ["withdrawn", "detached", "distant", "bored", "indifferent"]],
-    ["Also there", ["relieved", "tender", "hopeful", "grateful", "curious", "moved", "calm"]]
+  /* The feelings wheel: eleven families going round from the pleasant to the painful,
+     so high-energy anger sits next to high-energy joy and the quiet feelings sit together
+     at the bottom. Picking the exact word, not just "bad", is part of the practice. */
+  var NVC_WHEEL = [
+    { n: "Joyful", c: "#f6c453", w: ["happy", "glad", "excited", "delighted", "playful", "proud", "cheerful", "energetic"] },
+    { n: "Curious", c: "#93d99a", w: ["curious", "interested", "intrigued", "surprised", "amazed", "eager", "inspired", "hopeful"] },
+    { n: "Loving", c: "#f3a0c6", w: ["tender", "warm", "affectionate", "grateful", "moved", "compassionate", "trusting", "close"] },
+    { n: "Peaceful", c: "#62d6c6", w: ["calm", "relaxed", "content", "relieved", "comfortable", "rested", "serene", "satisfied"] },
+    { n: "Tired", c: "#9fb6cc", w: ["tired", "exhausted", "overwhelmed", "drained", "worn out", "sleepy", "depleted", "flat"] },
+    { n: "Numb", c: "#9196bd", w: ["numb", "detached", "distant", "withdrawn", "bored", "indifferent", "empty", "shut down"] },
+    { n: "Sad", c: "#73a9f2", w: ["sad", "hurt", "disappointed", "lonely", "discouraged", "heartbroken", "hopeless", "grieving"] },
+    { n: "Ashamed", c: "#dcaa7d", w: ["ashamed", "embarrassed", "guilty", "regretful", "awkward", "exposed", "self-conscious", "sheepish"] },
+    { n: "Confused", c: "#cfc06a", w: ["confused", "torn", "unsure", "restless", "ambivalent", "lost", "puzzled", "hesitant"] },
+    { n: "Afraid", c: "#bb98f2", w: ["scared", "anxious", "worried", "nervous", "tense", "uneasy", "vulnerable", "panicky"] },
+    { n: "Angry", c: "#f27b7e", w: ["angry", "annoyed", "irritated", "frustrated", "resentful", "furious", "impatient", "bitter"] }
   ];
+  var NVC_FEEL = NVC_WHEEL.map(function (f) { return [f.n, f.w]; });
   var NVC_NEED = [
     ["Connection", ["acceptance", "appreciation", "belonging", "closeness", "consideration", "empathy", "respect", "support", "trust", "understanding", "warmth", "to be heard", "to be seen", "to matter"]],
     ["Autonomy", ["choice", "freedom", "independence", "space", "self-expression"]],
@@ -9186,8 +9220,8 @@
         ph: "“People should always answer straight away.” I learned it at my first job, where…" }),
       G(25, "Into the body", ["Put the words aside for a moment. Where do you feel this in your body? Tight, heavy, hot, fluttery?",
         "Breathe into that place, and let it be there."], { vis: "glow" }),
-      Wr("Feelings", { field: "feel", input: "chips", sets: NVC_FEEL, other: true,
-        prompt: "Which feelings are here? Pick as many as fit, or add your own.",
+      Wr("Feelings", { field: "feel", input: "feel", sets: NVC_FEEL, other: true,
+        prompt: "Which feelings are here? Open a family on the wheel and pick the words that fit, as many as you like, or add your own.",
         hint: "Words like “ignored” or “rejected” describe what someone did. If one comes up, look for the feeling underneath it." }),
       Wr("Needs", { field: "need", input: "chips", sets: NVC_NEED, other: true,
         prompt: "What needs are behind those feelings? Pick the ones that matter most.",
@@ -9245,8 +9279,85 @@
     }).join("") + "</div></div>";
     return h;
   }
+  /* ----- the feelings wheel ----- */
+  var NV_C = 220;
+  function nvPt(r, a) { var t = (a - 90) * Math.PI / 180; return [NV_C + r * Math.cos(t), NV_C + r * Math.sin(t)]; }
+  function nvArc(r0, r1, a0, a1) {
+    var f = function (p) { return p[0].toFixed(1) + " " + p[1].toFixed(1); }, big = a1 - a0 > 180 ? 1 : 0;
+    return "M" + f(nvPt(r1, a0)) + "A" + r1 + " " + r1 + " 0 " + big + " 1 " + f(nvPt(r1, a1)) +
+      "L" + f(nvPt(r0, a1)) + "A" + r0 + " " + r0 + " 0 " + big + " 0 " + f(nvPt(r0, a0)) + "Z";
+  }
+  function nvText(x, y, t, cls, extra) {
+    return '<text class="' + cls + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '"' + (extra || "") + ">" + esc(t) + "</text>";
+  }
+  /* Radial words read outward on the right half and inward on the left, never upside down. */
+  function nvRadial(r, a, t, cls, fill) {
+    var p = nvPt(r, a), rot = a - 90;
+    if (a > 180) rot -= 180;
+    return '<text class="' + cls + '" fill="' + fill + '" transform="translate(' + p[0].toFixed(1) + " " + p[1].toFixed(1) + ") rotate(" + rot.toFixed(1) + ')">' + esc(t) + "</text>";
+  }
+  function nvcWheel(field) {
+    var sel = P.nvc[field], k = P.wheel[field], h = "", n = NVC_WHEEL.length, S = 360 / n;
+    if (k < 0) {                                                // every family, its words round the rim
+      NVC_WHEEL.forEach(function (f, i) {
+        var a0 = i * S, a1 = a0 + S, picked = f.w.filter(function (w) { return sel.indexOf(w) >= 0; }).length, m = nvPt(108, a0 + S / 2);
+        h += '<g class="wf" data-fam="' + i + '" role="button" tabindex="0" aria-label="' + f.n + ": " + f.w.length + " feelings" + (picked ? ", " + picked + " chosen" : "") + '">' +
+          '<path d="' + nvArc(48, 148, a0 + 0.4, a1 - 0.4) + '" fill="' + f.c + '"/>' +
+          nvText(m[0], m[1], f.n, "wf-n") + (picked ? nvText(m[0], m[1] + 15, picked + " \u2713", "wf-c") : "");
+        f.w.forEach(function (w, j) {
+          var b0 = a0 + j * S / 8, b1 = b0 + S / 8, on = sel.indexOf(w) >= 0;
+          h += '<path d="' + nvArc(151, 218, b0 + 0.15, b1 - 0.15) + '" fill="' + f.c + '" fill-opacity="' + (on ? 0.9 : 0.16) + '"/>' +
+            nvRadial(184.5, b0 + S / 16, w, "ww-r", on ? "#0b1120" : f.c);
+        });
+        h += "</g>";
+      });
+      var cnt = sel.length;
+      h += '<circle class="wc-bg" cx="' + NV_C + '" cy="' + NV_C + '" r="45"/>' +
+        (cnt ? nvText(NV_C, NV_C - 6, String(cnt), "wc-num") + nvText(NV_C, NV_C + 15, "chosen", "wc-s") : nvText(NV_C, NV_C - 7, "Tap a", "wc-s") + nvText(NV_C, NV_C + 10, "family", "wc-s"));
+    } else {                                                    // one family, its words big enough to tap
+      var f = NVC_WHEEL[k];
+      f.w.forEach(function (w, j) {
+        var a0 = j * 45 - 22.5, on = sel.indexOf(w) >= 0, m = nvPt(146, a0 + 22.5);
+        var parts = w.length > 12 && /[- ]/.test(w) ? w.replace(/([- ])/, "$1|").split("|") : [w];
+        h += '<g class="ww' + (on ? " on" : "") + '" data-wword="' + esc(w) + '" role="button" tabindex="0" aria-pressed="' + on + '" aria-label="' + esc(w) + '">' +
+          '<path d="' + nvArc(70, 216, a0 + 0.9, a0 + 44.1) + '" fill="' + f.c + '" fill-opacity="' + (on ? 1 : 0.18) + '" stroke="' + f.c + '" stroke-opacity="' + (on ? 1 : 0.55) + '"/>';
+        parts.forEach(function (t, q) {
+          h += nvText(m[0], m[1] + (q - (parts.length - 1) / 2) * 17, (on && !q ? "\u2713 " : "") + t.trim(), "ww-n", ' fill="' + (on ? "#0b1120" : f.c) + '"');
+        });
+        h += "</g>";
+      });
+      h += '<g class="wc" data-wback="1" role="button" tabindex="0" aria-label="Back to all feelings">' +
+        '<circle cx="' + NV_C + '" cy="' + NV_C + '" r="64" fill="' + f.c + '"/>' +
+        nvText(NV_C, NV_C - 6, f.n, "wc-fam") + nvText(NV_C, NV_C + 16, "\u2039 all feelings", "wc-back") + "</g>";
+    }
+    return '<svg class="nv-wheel' + (P.wheelAnim ? " zoom" : "") + '" viewBox="0 0 440 440" role="group" aria-label="Feelings wheel">' + h + "</svg>";
+  }
+  function nvcChosen(field) {
+    var sel = P.nvc[field];
+    return '<div class="sw-chosen"><span>Chosen</span>' + (sel.length ? '<div class="sw-chips">' + sel.map(function (w) {
+      var fam = NVC_WHEEL.filter(function (f) { return f.w.indexOf(w) >= 0; })[0];
+      return '<button class="sw-un" data-unpick="' + esc(w) + '" data-uf="' + field + '" aria-label="Remove ' + esc(w) + '"' + (fam ? ' style="--fc:' + fam.c + '"' : "") + ">" +
+        esc(w) + ' <i aria-hidden="true">\u00d7</i></button>';
+    }).join("") + "</div>" : "<em>Nothing yet</em>") + "</div>";
+  }
+  /* Wheel or list: the same words, your choice, remembered. */
+  function nvcFeelArea(field) {
+    var wheel = (store.get("nvcView") || "wheel") === "wheel";
+    return '<div class="mini-seg sw-view" role="group" aria-label="Show feelings as"><button data-view="wheel" aria-pressed="' + wheel + '">Wheel</button>' +
+      '<button data-view="list" aria-pressed="' + !wheel + '">List</button></div>' +
+      (wheel ? '<div class="sw-wheel">' + nvcWheel(field) + "</div>" + nvcChosen(field)
+        : '<div class="sw-sets" data-f="' + field + '">' + nvcChips(field, NVC_FEEL) + "</div>");
+  }
+  function nvcFeelRedraw(field, focus) {
+    var el = $("#sWrite").querySelector('.sw-feel[data-f="' + field + '"]');
+    if (!el) return;
+    el.innerHTML = nvcFeelArea(field);
+    P.wheelAnim = false;
+    if (focus) { var t = el.querySelector(focus); if (t) t.focus(); }
+  }
   function nvcRender(s) {
     var d = P.nvc, h = '<h3 class="sw-h">' + esc(s.title) + '</h3><p class="sw-p">' + esc(s.prompt) + "</p>";
+    P.wheel = { feel: -1, oFeel: -1 }; P.wheelAnim = false;
     if (s.ctx === "found") {
       var f = nvcJudgy(d.judg);
       h += f.length ? '<div class="sw-found"><span>From your judgments</span><div class="sw-chips">' + f.map(function (w) {
@@ -9255,11 +9366,14 @@
     }
     if (s.input === "text" || s.input === "list") {
       h += '<textarea class="sw-ta" data-f="' + s.field + '" rows="' + (s.rows || 4) + '" placeholder="' + esc(s.ph || "") + '" aria-label="' + esc(s.title) + '">' + esc(d[s.field] || "") + "</textarea>";
+    } else if (s.input === "feel") {
+      h += '<div class="sw-feel" data-f="feel">' + nvcFeelArea("feel") + "</div>";
+      if (s.other) h += '<input class="sw-other" data-f="feel" placeholder="Add your own, then press Enter" aria-label="Add your own" enterkeyhint="done">';
     } else if (s.input === "chips") {
       h += '<div class="sw-sets" data-f="' + s.field + '">' + nvcChips(s.field, s.sets) + "</div>";
       if (s.other) h += '<input class="sw-other" data-f="' + s.field + '" placeholder="Add your own, then press Enter" aria-label="Add your own" enterkeyhint="done">';
     } else if (s.input === "other") {
-      h += '<p class="sw-sub">They might have felt…</p><div class="sw-sets" data-f="oFeel">' + nvcChips("oFeel", NVC_FEEL.slice(0, 7)) + "</div>" +
+      h += '<p class="sw-sub">They might have felt…</p><div class="sw-feel" data-f="oFeel">' + nvcFeelArea("oFeel") + "</div>" +
         '<p class="sw-sub">…and needed</p><div class="sw-sets" data-f="oNeed">' + nvcChips("oNeed", NVC_NEED) + "</div>";
     } else if (s.input === "choose") {
       h += nvcChooseCards();
@@ -9307,7 +9421,7 @@
       if (/\b(don'?t|do not|stop|never|quit)\b/.test(r)) msg = "Requests tend to land better as what you do want. What would you like instead?";
       else if (nvcFind(r, NVC_SHOULD).length) msg = "That sounds like a demand. Would a no be okay? If not, look for the need behind it.";
       else if (r.trim().length > 12) msg = "If it's doable and specific, it's ready.";
-    } else if (s.input === "chips" && s.field === "feel") {
+    } else if (s.input === "feel") {
       var faux = d.feel.filter(function (w) { return NVC_FAUX[w]; });
       if (faux.length) {
         var w0 = faux[faux.length - 1];
@@ -9396,13 +9510,45 @@
       if (!t.value.trim()) return;
       nvcAddOwn(t.dataset.f, t.value);
       t.value = "";
-      host.querySelector('.sw-sets[data-f="' + t.dataset.f + '"]').innerHTML = nvcChips(t.dataset.f, s.sets);
+      if (t.dataset.f === "feel" || t.dataset.f === "oFeel") nvcFeelRedraw(t.dataset.f);
+      else host.querySelector('.sw-sets[data-f="' + t.dataset.f + '"]').innerHTML = nvcChips(t.dataset.f, s.sets);
       nvcCheck(s);
     });
+    host.addEventListener("keydown", function (e) {           // the wheel's parts work from the keyboard too
+      var g = e.target.closest && e.target.closest('[role="button"][data-fam], [role="button"][data-wword], [role="button"][data-wback]');
+      if (!g || (e.key !== "Enter" && e.key !== " ")) return;
+      e.preventDefault();
+      g.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
     host.addEventListener("click", function (e) {
-      var s = cur(), b = e.target.closest("button");
+      var s = cur(), w = e.target.closest("[data-fam], [data-wword], [data-wback]");
+      if (s && w) {
+        var fld = w.closest(".sw-feel").dataset.f, kb = e.detail === 0;   // detail 0: Enter or Space
+        if (w.dataset.fam !== undefined) { P.wheel[fld] = +w.dataset.fam; P.wheelAnim = true; nvcFeelRedraw(fld, kb ? '[data-wback]' : null); }
+        else if (w.dataset.wback) { var was = P.wheel[fld]; P.wheel[fld] = -1; P.wheelAnim = true; nvcFeelRedraw(fld, kb ? '[data-fam="' + was + '"]' : null); }
+        else {
+          var arr0 = P.nvc[fld], v0 = w.dataset.wword, k0 = arr0.indexOf(v0);
+          if (k0 >= 0) arr0.splice(k0, 1); else arr0.push(v0);
+          nvcFeelRedraw(fld, kb ? '[data-wword="' + v0 + '"]' : null);
+        }
+        nvcCheck(s);
+        return;
+      }
+      var b = e.target.closest("button");
       if (!s || !b) return;
       if (b.dataset.sw) { if (P.state === "running") pAdvance(); return; }
+      if (b.dataset.view) {
+        store.set("nvcView", b.dataset.view);
+        nvcFeelRedraw("feel"); nvcFeelRedraw("oFeel");
+        return;
+      }
+      if (b.dataset.unpick) {
+        var arr1 = P.nvc[b.dataset.uf], k1 = arr1.indexOf(b.dataset.unpick);
+        if (k1 >= 0) arr1.splice(k1, 1);
+        nvcFeelRedraw(b.dataset.uf);
+        nvcCheck(s);
+        return;
+      }
       if (b.dataset.f && b.dataset.v !== undefined) {
         var arr = P.nvc[b.dataset.f], v = b.dataset.v, k = arr.indexOf(v);
         if (k >= 0) arr.splice(k, 1); else arr.push(v);
@@ -9413,7 +9559,7 @@
         else if (fl.indexOf(b.dataset.add) < 0) fl.push(b.dataset.add);
         var dup = fl.indexOf(b.dataset.add);
         P.nvc.feel = fl.filter(function (w, k) { return w !== b.dataset.add || k === dup; });
-        host.querySelector('.sw-sets[data-f="feel"]').innerHTML = nvcChips("feel", s.sets);
+        nvcFeelRedraw("feel");
       } else if (b.dataset.pick) {
         var ta = host.querySelector(".sw-ta");
         ta.value = "“" + b.dataset.pick + "”: " + ta.value.replace(/^“[^”]*”: /, "");
