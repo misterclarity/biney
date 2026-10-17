@@ -1,0 +1,6 @@
+# the preview page for Claude's artifact viewer, rebuilt with the app
+entrain-page.html
+# screenshots and the served copy from the test suites
+tests/out/
+node_modules/
+__pycache__/

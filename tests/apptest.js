@@ -1,0 +1,87 @@
+const { chromium, APP, OUT: OUTDIR } = require('./pw');
+const OUT = OUTDIR;
+const mock = require('./sensor-mock');
+const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
+const t = (p, s) => p.$eval(s, e => e.textContent.trim()).catch(() => '(missing)');
+const vis = (p, s) => p.$eval(s, e => !!(e.offsetParent || e.getClientRects().length) && getComputedStyle(e).visibility !== 'hidden').catch(() => false);
+(async () => {
+  const browser = await chromium.launch(); const log = []; const ok = (c, m) => log.push((c ? 'PASS ' : 'FAIL ') + m);
+  // ---------- phone ----------
+  const ctx = await browser.newContext({ userAgent: S20, viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  const p = await ctx.newPage();
+  p.on('pageerror', e => log.push('PAGEERROR ' + e.message));
+  p.on('console', m => { if (m.type() === 'error') log.push('CONSOLE ' + m.text()); });
+  await p.addInitScript(mock, { speed: 1, rr: true });
+  await p.goto(APP);
+  ok(await t(p, '#viewTitle') === 'Home' && await vis(p, '#v-home'), 'opens on Home');
+  await p.click('#homeStart'); await p.waitForTimeout(300);
+  ok(await p.evaluate(() => location.hash) === '#breathe' && await t(p, '#bStart') === 'Pause', 'Home Start goes to Breathe and starts: ' + await t(p, '#bStart'));
+  ok(!(await vis(p, '#bPanel')), 'settings sheet hidden by default on phone');
+  await p.click('#bAdjust'); await p.waitForTimeout(400);
+  ok(await vis(p, '#bPanel') && await p.$eval('#bAdjust', e => e.getAttribute('aria-expanded')) === 'true', 'Adjust opens the sheet');
+  await p.screenshot({ path: OUT + 'phone-sheet.png' });
+  await p.click('#bPanelDone'); await p.waitForTimeout(400);
+  ok(!(await vis(p, '#bPanel')), 'Done closes the sheet');
+  await p.click('#bPats label:has(input[value=sigh])'); await p.waitForTimeout(200);
+  ok((await t(p, '#bRateV')).startsWith('6.0'), 'pattern chip on stage switches pattern: ' + await t(p, '#bRateV'));
+  await p.click('#bSensorBtn'); await p.waitForTimeout(3500);
+  ok(/bpm/.test(await t(p, '#tbSensorTxt')) && /Connected to/.test(await t(p, '#bSensorTxt')), 'sensor via Breathe row: pill="' + await t(p, '#tbSensorTxt') + '"');
+  await p.waitForTimeout(4000);
+  await p.screenshot({ path: OUT + 'phone-breathe-live.png' });
+  // sounds
+  await p.click('.nav a[data-view=sounds]'); await p.waitForTimeout(200);
+  await p.click('#sg-prime');
+  ok(await vis(p, '#primeStart') && !(await vis(p, '#grid')), 'Sounds segment switches to Prime');
+  await p.click('#sg-tracks');
+  await p.click('#grid .card:first-child .play-btn'); await p.waitForTimeout(300);
+  ok(await vis(p, '#scModal'), 'first play opens the headphone check');
+  await p.click('#scSkip'); await p.waitForTimeout(700);
+  ok(await p.$eval('body', b => b.classList.contains('has-player')) && await vis(p, '#toggle'), 'mini player docks after play');
+  ok(!(await vis(p, '#vol')), 'player is compact on phone');
+  await p.screenshot({ path: OUT + 'phone-player.png' });
+  await p.click('#pMore'); await p.waitForTimeout(300);
+  ok(await vis(p, '#vol'), 'More expands the player');
+  await p.screenshot({ path: OUT + 'phone-player-open.png' });
+  await p.click('#stop'); await p.click('#pMore');
+  // heart + resonance test
+  await p.click('.nav a[data-view=heart]'); await p.waitForTimeout(300);
+  ok(await t(p, '#hrNow') !== '—', 'Heart tiles live: ' + await t(p, '#hrNow') + ' bpm, RMSSD ' + await t(p, '#hrRmssd'));
+  await p.screenshot({ path: OUT + 'phone-heart-live.png', fullPage: false });
+  await p.click('#hrFindStart'); await p.waitForTimeout(1500);
+  ok(await p.evaluate(() => location.hash) === '#breathe' && /Resonance test, pace 1 of 5/.test(await t(p, '#bMsg')), 'resonance test switches to Breathe with progress: ' + await t(p, '#bMsg'));
+  await p.click('#bReset'); await p.waitForTimeout(200);
+  ok(await t(p, '#hrFindStart') !== 'Stop test', 'Reset stops the test');
+  // learn + anchors + history
+  await p.click('.nav a[data-view=learn]'); await p.waitForTimeout(200);
+  await p.click('.toc a[href="#l-dosing"]'); await p.waitForTimeout(900);
+  ok(await p.evaluate(() => location.hash) === '#l-dosing' && await vis(p, '#v-learn') && await p.evaluate(() => scrollY) > 200, 'TOC jumps within Learn (scrollY=' + await p.evaluate(() => Math.round(scrollY)) + ')');
+  await p.evaluate(() => { location.hash = 'connect'; }); await p.waitForTimeout(400);
+  ok(await vis(p, '#v-heart') && await p.$eval('#connect', d => d.open), '#connect opens Heart with the guide open');
+  await p.evaluate(() => { location.hash = 'prime'; }); await p.waitForTimeout(300);
+  ok(await vis(p, '#v-sounds') && await vis(p, '#primeStart'), '#prime opens Sounds on Prime');
+  await p.goBack(); await p.waitForTimeout(300);
+  ok(await vis(p, '#v-heart'), 'Back returns to the previous view');
+  ok(await p.evaluate(() => document.documentElement.scrollWidth - innerWidth) === 0, 'no horizontal overflow on phone');
+  await ctx.close();
+
+  // ---------- desktop: session summary reaches Home ----------
+  const d = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  d.on('pageerror', e => log.push('DESK PAGEERROR ' + e.message));
+  await d.addInitScript(mock, { speed: 20, rr: true });
+  await d.goto(APP + '#breathe');
+  ok(await vis(d, '#bPanel') && !(await vis(d, '#bAdjust')), 'desktop shows the side panel, no Adjust button');
+  await d.click('#bSensorBtn'); await d.waitForTimeout(300);
+  await d.click('#bPanel label:has(input[name=blen][value="2"])');
+  await d.click('#bStart'); await d.waitForTimeout(9000);
+  ok(await t(d, '#bPhase') === 'Done', 'sped-up 2-min session finishes: ' + await t(d, '#bPhase'));
+  await d.click('.nav a[data-view=home]'); await d.waitForTimeout(300);
+  ok(/average swing/.test(await t(d, '#homeLast')), 'Home shows last session: ' + (await t(d, '#homeLast')).slice(0, 90));
+  ok(/bpm/.test(await t(d, '#qkSensor')), 'Home sensor tile: ' + await t(d, '#qkSensor'));
+  await d.screenshot({ path: OUT + 'desk-home-after.png' });
+  await d.click('.nav a[data-view=breathe]'); await d.waitForTimeout(300);
+  await d.screenshot({ path: OUT + 'desk-breathe2.png' });
+  await d.click('.nav a[data-view=sounds]'); await d.waitForTimeout(300);
+  await d.screenshot({ path: OUT + 'desk-sounds2.png' });
+  await browser.close();
+  console.log(log.join('\n'));
+})();

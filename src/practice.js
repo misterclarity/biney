@@ -1,0 +1,1345 @@
+
+  /* ------------------------- guided practices: engine -------------------------
+     One clock (performance.now) drives a list of steps. Breath steps borrow the
+     breathing guide's engine (B): timings go into BC, glides become "pending"
+     edits that land on the next breath, and the guide's own visuals are drawn
+     onto the session canvas by swapping its drawing context. So heart-rate
+     swing, coherence and cue sounds behave exactly as they do in Breathe.
+     A program's binaural layer is an ordinary track (load/play/pause) whose
+     beat follows piecewise points; skipping a step seeks it to the new time.
+  ------------------------------------------------------------------------------ */
+
+  var P = {
+    def: null, view: null, len: 0, steps: [], total: 0, state: "idle",   // idle | intro | running | paused | done
+    t0: 0, st: 0, idx: -1, li: 0, tick: 0, raf: 0,
+    hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null, lock: null,
+    audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
+    internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
+    mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null,
+    opt: { voice: true, bells: true, cues: "tones", visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true }
+  };
+  var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
+
+  function pBusy() { return P.state === "running" || P.state === "paused"; }
+  function pT() { return P.state === "running" ? bNow() - P.t0 : P.st; }
+  function pDef(id) {
+    for (var i = 0; i < PRACTICES.length; i++) if (PRACTICES[i].id === id) return PRACTICES[i];
+    if (id && id.indexOf("my-") === 0) { var q = yGet(id.slice(3)); if (q) return yDef(q); }
+    return null;
+  }
+  function pVar(d) {
+    if (!d.variant) return undefined;
+    var v = parseInt(store.get("pVar." + d.id), 10);
+    return d.variant.opts.some(function (o) { return o[0] === v; }) ? v : d.variant.def;
+  }
+  function pLenTxt(d, m) { return d.lenFmt ? d.lenFmt(m) : d.lenUnit ? m + " " + d.lenUnit + (m === 1 ? "" : "s") : m + " min"; }
+  function pResRate() { return (H.find && H.find.best) ? H.find.best : 5.5; }
+  function pLenOf(d, len) {
+    if (!d.lengths) return 0;
+    return d.lengths.indexOf(len) >= 0 ? len : d.lengths.indexOf(d.min) >= 0 ? d.min : d.lengths[0];
+  }
+  function pPlan(d, len) {
+    var steps = d.build(len, pVar(d)), at = 0;
+    steps.forEach(function (s) { s.at = at; at += s.secs; });
+    if (d.group === "program" && P.opt.ana) pAna(d, steps, at, P.opt.ana);
+    var base = at;                                   // a program's sound covers the practice, not the tapping after it
+    if (tapOn(d)) tapShort().forEach(function (s) { s.at = at; at += s.secs; s.extra = true; steps.push(s); });
+    return { steps: steps, total: at, base: base };
+  }
+
+  /* Anapana reminders for the programs: every few minutes, a quiet prompt to feel the breath
+     at the nostrils, worded for paced, natural or heart-focused breathing. They skip steps that
+     guide attention elsewhere (body regions, the dark drift) and never crowd another line. */
+  var ANA = {
+    paced: ["Keep a little attention at the nostrils: cool air coming in, warmer air going out.",
+      "Notice the touch of the breath just below the nostrils as you follow the pace.",
+      "If the mind has wandered, come back to the breath at the nostrils, and the next breath in.",
+      "Feel exactly where the air touches as it enters. Stay with this one breath."],
+    natural: ["Bring your attention to the small area below the nostrils. Feel the breath as it is.",
+      "If the mind has wandered, notice where it went, and come back to the breath at the nostrils.",
+      "Natural breath. Just observe its touch at the nostrils, in and out.",
+      "Is this breath long or short? Left nostril, right, or both? Just notice."],
+    sigh: ["Feel the cool touch of the air at the nostrils on each in-breath.",
+      "If the mind has wandered, come back to the in-breath at the nostrils."],
+    heart: ["Notice the breath at the nostrils for a moment, then let attention settle back at the heart.",
+      "If the mind has wandered, feel one breath at the nostrils, then return to the heart area."]
+  };
+  function pAna(d, steps, total, every) {
+    var n = 0, shifts = [0, 10, -10, 20, -20, 30, -30, 45, -45, 60, -60];
+    var ok = function (s, st) {
+      if (!s || s.k === "drift" || s.k === "shuffle" || s.quiet) return false;
+      if (["breath", "observe", "guide"].indexOf(s.k) < 0) return false;
+      if (s.k === "guide" && s.body && s.body.indexOf("all") < 0 && s.body.indexOf("belly") < 0) return false;
+      if (st < 12 || s.secs - st < 8) return false;
+      return !s.lines.some(function (l) { return Math.abs(l[0] - st) < 12; });
+    };
+    for (var t = every; t < total - 20; t += every) {
+      for (var k = 0; k < shifts.length; k++) {      // slide to the nearest quiet moment, up to a minute away
+        var tt = t + shifts[k], s = null;
+        for (var i = steps.length - 1; i >= 0; i--) if (tt >= steps[i].at) { s = steps[i]; break; }
+        if (!s || !ok(s, tt - s.at)) continue;
+        var pool = d.anaStyle === "heart" ? ANA.heart : s.k === "breath" ? (s.t.sip ? ANA.sigh : ANA.paced) : ANA.natural;
+        s.lines.push([tt - s.at, pool[n++ % pool.length], "ana"]);
+        s.lines.sort(function (a, b) { return a[0] - b[0]; });
+        break;
+      }
+    }
+  }
+
+  function pMinutes(d, len) { return Math.max(1, Math.round(pPlan(d, pLenOf(d, len)).total / 60)); }
+  function pSaveOpt() { store.set("pOpt", JSON.stringify(P.opt)); }
+  function pColor(d) { return "var(--" + (d.tone || "relax") + ")"; }
+
+  /* ----- sound: a bell bus of its own, and the pump tick ----- */
+  function pBusOn() {
+    if (!ensureCtx()) return false;
+    if (!P.bus) { P.bus = A.ctx.createGain(); P.bus.gain.value = 0.55; P.bus.connect(A.ctx.destination); }
+    return true;
+  }
+  function pBell(peak, when, hz) {
+    if (!P.opt.bells || !pBusOn()) return;
+    var ctx = A.ctx, t = when || ctx.currentTime + 0.04, f = hz || 392;
+    [[1, 1, 6.5], [2.76, 0.32, 2.4], [5.4, 0.1, 1.1], [0.5, 0.22, 5]].forEach(function (p) {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "sine"; o.frequency.value = f * p[0];
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(peak * p[1] * 0.3, t + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + p[2]);
+      o.connect(g); g.connect(P.bus);
+      o.start(t); o.stop(t + p[2] + 0.1);
+      o.onended = function () { try { o.disconnect(); g.disconnect(); } catch (e) {} };
+    });
+  }
+  function pClick(when, peak) {
+    if (!pBusOn()) return;
+    var ctx = A.ctx, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = "triangle"; o.frequency.setValueAtTime(1250, when); o.frequency.exponentialRampToValueAtTime(600, when + 0.06);
+    g.gain.setValueAtTime(0, when); g.gain.linearRampToValueAtTime(peak || 0.16, when + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + 0.09);
+    o.connect(g); g.connect(P.bus); o.start(when); o.stop(when + 0.12);
+    o.onended = function () { try { o.disconnect(); g.disconnect(); } catch (e) {} };
+  }
+
+  /* ----- voice: the device's own text-to-speech, captions always shown ----- */
+  function pVoices() {
+    if (!window.speechSynthesis) return [];
+    var all = [];
+    try { all = speechSynthesis.getVoices() || []; } catch (e) {}
+    return all.filter(function (v) { return /^en/i.test(v.lang); })
+      .sort(function (a, b) { return (b.localService ? 1 : 0) - (a.localService ? 1 : 0); });
+  }
+  function pVoice() {
+    var vs = pVoices();
+    for (var i = 0; i < vs.length; i++) if (vs[i].name === P.opt.voiceName) return vs[i];
+    return vs[0] || null;
+  }
+  function pSay(text, soft) {
+    if (!P.opt.voice || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+    try {
+      var u = new SpeechSynthesisUtterance(text), v = pVoice();
+      if (v) { u.voice = v; u.lang = v.lang; } else u.lang = "en-US";
+      u.rate = soft ? 0.82 : 0.9; u.pitch = 1; u.volume = soft ? 0.7 : 1;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  function pHush() { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {} }
+
+  /* ----- screen wake lock (the breathing engine keeps its own) ----- */
+  function pLock() {
+    try {
+      if (!navigator.wakeLock || P.lock) return;
+      navigator.wakeLock.request("screen").then(function (l) {
+        if (P.state !== "running") { l.release().catch(function () {}); return; }
+        P.lock = l;
+        l.addEventListener("release", function () { if (P.lock === l) P.lock = null; });
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  function pUnlock() {
+    var l = P.lock; P.lock = null;
+    if (l) { try { var q = l.release(); if (q && q.catch) q.catch(function () {}); } catch (e) {} }
+  }
+
+  /* ----- breath steps run on the breathing guide's engine ----- */
+  function pCfgAt(s, st) {
+    var c = {}, f = s.to ? Math.min(1, Math.max(0, st / (s.glide || s.secs))) : 0;
+    B_KEYS.forEach(function (k) {
+      var a = s.t[k] || 0, b = s.to ? (s.to[k] || 0) : a;
+      c[k] = Math.round((a + (b - a) * f) * 10) / 10;
+    });
+    return c;
+  }
+  function pBreathOn(s, st) {
+    if (!P.saved) {
+      P.saved = {};
+      ["inh", "sip", "hold", "exh", "rest", "minutes", "sound", "cue", "visual"].forEach(function (k) { P.saved[k] = BC[k]; });
+    }
+    var c = pCfgAt(s, st || 0);
+    B_KEYS.forEach(function (k) { BC[k] = c[k]; });
+    BC.minutes = 0;
+    BC.visual = P.opt.visual;
+    var snd = P.opt.cues;
+    if (BC.sound !== snd && B.state === "running") { BC.sound = snd; cueOff(); if (snd !== "off") cueOn(); }
+    BC.sound = snd;
+    BC.cue = s.cueFade ? Math.round(40 * s.cueFade[0]) : 40;
+    P.usesB = true;
+    var ph = buildPhases(BC);
+    if (B.state === "running" || B.state === "paused") {
+      var bt = breathTime();
+      if (bt < 0) { B.ph = ph; B.pending = null; }
+      else { normalize(bt); B.pending = ph.sig === B.ph.sig ? null : ph; }
+      planTotal();
+    } else {
+      if (B.finder) finderCancel();
+      B.state = "idle";
+      bFresh();
+      if (P.state === "running") bResume();
+      else { B.state = "paused"; B.st = 0; syncTransport(); }
+    }
+    if (B.bus && A.ctx) B.bus.gain.setTargetAtTime(cueGain(), A.ctx.currentTime, 0.1);
+    pLockBreathe();
+  }
+  function pBreathOff() {
+    if (B.state === "idle") return;
+    var bt = breathTime();
+    if (bt >= 0) hrFinalize(locate(bt).count);
+    P.sw = P.sw.concat(B.swings);
+    P.internal = true;
+    bStop();
+    P.internal = false;
+    pRestore();                          // hand the guide back with your own settings
+  }
+  function pRestore() {
+    var s = P.saved;
+    P.usesB = false;
+    if (!s) return;
+    P.saved = null;
+    for (var k in s) BC[k] = s[k];
+    B.state = "idle";
+    applyTimings();
+    syncFields(); syncRate(); renderNote(); syncVisHint();
+    checkRadio("bvis", BC.visual); syncChips("#bVis");
+    $("#bCue").value = BC.cue;
+    pLockBreathe();
+  }
+  function pBreathTick(s, st) {
+    if (B.state === "idle" && P.state === "running") { pBreathOn(s, st); return; }   // something stopped it: pick up again
+    if (B.state !== "running") return;
+    var bt = breathTime();
+    if (s.to && bt >= 0) {
+      var c = pCfgAt(s, st), ph = buildPhases(c);
+      if (ph.sig !== (B.pending || B.ph).sig) {
+        B_KEYS.forEach(function (k) { BC[k] = c[k]; });
+        normalize(bt);
+        B.pending = ph.sig === B.ph.sig ? null : ph;
+      }
+    }
+    if (s.cueFade && B.bus && A.ctx) {
+      var f = Math.min(1, st / s.secs), v = s.cueFade[0] + (s.cueFade[1] - s.cueFade[0]) * f;
+      var cue = Math.round(40 * v);
+      if (cue !== BC.cue) { BC.cue = cue; B.bus.gain.setTargetAtTime(cueGain(), A.ctx.currentTime, 0.6); }
+    }
+  }
+  /* Phase words for the caption, including the two guided variants. */
+  function pBreathWords(s) {
+    var S = frameState();
+    if (!S.live) return { cap: "Get ready", sub: "" };
+    if (S.lead) return { cap: "Get ready", sub: "First breath in " + S.count + "…" };
+    var k = S.k, L = S.L, cap = (s.labels && s.labels[k]) || B_KIND[k].name, sub = (s.hints && s.hints[k]) || kindHint(k);
+    if (s.mode === "nadi" && (k === "in" || k === "out")) {
+      var odd = L.count % 2 === 1, side = k === "in" ? (odd ? "right" : "left") : (odd ? "left" : "right");
+      cap = (k === "in" ? "In through the " : "Out through the ") + side;
+      sub = k === "in" ? "The other nostril closed." : "Switch: close the other side.";
+      P.nose = side;
+    } else P.nose = null;
+    if (s.mode === "dirga") {
+      var parts = ["belly", "ribs", "chest"], i = Math.min(2, Math.floor(S.prog * 3));
+      if (k === "in") { cap = "Fill the " + parts[i]; sub = "Belly, then ribs, then chest."; }
+      if (k === "out") { cap = "Empty the " + parts[2 - i]; sub = "Chest, then ribs, then belly."; }
+    }
+    if (s.count) sub = "Breath " + Math.min(s.count, L.count + 1) + " of " + s.count;
+    return { cap: cap, sub: sub, n: S.count };
+  }
+
+  /* ----- the program's binaural layer ----- */
+  function pTrack() { return A.track && A.track.practice && A.track.pid === (P.def && P.def.id) ? A.track : null; }
+  function aSeek(sec) {
+    if (!A.track) return;
+    var was = A.playing;
+    if (was) { A.gen++; teardownVoices(0.25); stopNoise(); A.playing = false; clearTimeout(A.endTimer); cancelAnimationFrame(A.raf); }
+    A.elapsed = Math.max(0, Math.min(sec, A.track.minutes * 60 - 1));
+    if (was) play(); else paint();
+  }
+  function pAudioSync(T) {
+    var tr = pTrack();
+    if (!tr || !A.playing || !A.ctx) return;
+    if (Math.abs((A.ctx.currentTime - A.startedAt) - T) > 4) aSeek(T);
+  }
+
+  /* ----- steps ----- */
+  function pStepAt(T) {
+    for (var i = P.steps.length - 1; i >= 0; i--) if (T >= P.steps[i].at - 1e-6) return i;
+    return 0;
+  }
+  function pVis(s) {
+    if (s.k === "breath") return "breath";
+    if (s.k === "pose") return "pose";
+    if (s.k === "pump") return "pump";
+    if (s.k === "shuffle") return "word";
+    if (s.k === "count") return "count";
+    if (s.k === "drift") return "dark";
+    if (s.k === "hold") return "hold";
+    if (s.k === "guide" && s.pose) return "pose";
+    if (s.k === "tap" || s.tapfig) return "tap";
+    if (s.k === "rate") return "rate";
+    if (s.k === "adapt") return "adapt";
+    if (s.k === "write") return "write";
+    if (s.k === "nap") return "dark";
+    if (s.k === "wake") return "orb";
+    if (s.k === "pmr" || s.body) return "body";
+    if (s.k === "observe") return s.vis || "still";
+    return s.vis || "orb";
+  }
+  function pEnter(i) {
+    var prev = P.steps[P.idx], s = P.steps[i];
+    P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1;
+    if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
+    if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
+      var add = s.secs0 - s.secs;
+      s.secs = s.secs0;
+      for (var j = i + 1; j < P.steps.length; j++) P.steps[j].at += add;
+      P.total += add;
+    }
+    if (s.k === "breath") pBreathOn(s, pT() - s.at);
+    else if (P.usesB && B.state !== "idle") pBreathOff();
+    var flowing = s.k === "breath" && prev && prev.k === "breath";
+    if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
+    $("#ses").dataset.dim = s.dim ? "1" : "";
+    pStage(s);
+    pRenderSegs();
+    pUI();
+  }
+  function pStage(s) {
+    var vis = pVis(s), fig = $("#sFig");
+    $("#sStage").dataset.vis = vis;
+    fig.hidden = !(vis === "pose" || vis === "body" || vis === "tap");
+    P.tapAt = "";
+    var a = vis === "pose" && ASANA[s.pose];
+    P.mv = a && a.keys && s.k === "pose" ? { a: a, side: s.side, box: figBox(a, s.side), drawn: 0, ph: -1 } : null;
+    if (vis === "pose") fig.innerHTML = !a ? "" : P.mv ? figMove(a, pMovePhase(a, s, pT()), s.side, "", P.mv.box) : figSVG(a.fig, s.side);
+    else if (vis === "body") fig.innerHTML = pBodySVG(s.body || ["all"]);
+    else if (vis === "tap") { fig.innerHTML = tapSVG(null, []); pTapPoint(s, pT() - s.at); }
+    $("#sRate").hidden = vis !== "rate";
+    var wr = $("#sWrite");
+    wr.hidden = vis !== "write";
+    $("#ses").dataset.write = vis === "write" ? "1" : "";
+    if (vis === "write") { wr.innerHTML = nvcRender(s); wr.scrollTop = 0; nvcCheck(s); }
+    if (vis === "rate") {                             // back on a rating you gave: it shows, and a new tap replaces it
+      var rb = document.querySelectorAll("#sRateG button");
+      for (var ri = 0; ri < rb.length; ri++) rb[ri].setAttribute("aria-pressed", String(P.sudsBy[P.idx] === +rb[ri].dataset.v));
+    }
+    fig.classList.toggle("next", !!s.trans);
+    $("#sWord").hidden = vis !== "word";
+    if (vis === "word") $("#sWord").textContent = "";
+    $("#sNose").hidden = !(s.k === "breath" && s.mode === "nadi");
+    $("#sDots").hidden = vis !== "count";
+    if (vis === "count") pDots(s);
+    var tap = $("#sTap");
+    tap.hidden = !(s.k === "count" || (s.k === "observe" && s.wander) || (s.k === "hold" && s.open));
+    P.tickNext = 0;
+    if (s.k === "count") tap.textContent = "Found one";
+    else if (s.k === "hold") tap.textContent = "Breathe in";
+    else if (s.wander) tap.textContent = "Mind wandered";
+    bSetT("#sLine", "");
+    $("#sLine").classList.remove("ana");
+    pSizeCanvas();
+  }
+  function pDots(s) {
+    var h = "";
+    for (var i = 0; i < s.n; i++) h += '<i class="' + (i < P.taps ? "on" : "") + '"></i>';
+    $("#sDots").innerHTML = h;
+  }
+
+  function pTick() {
+    if (P.state !== "running") return;
+    var T = pT();
+    if (T >= P.total) { pFinish(false); return; }
+    var i = pStepAt(T);
+    if (i !== P.idx) { pHoldLeave(T); pEnter(i); }
+    var s = P.steps[P.idx], st = T - s.at;
+    while (P.li < s.lines.length && s.lines[P.li][0] <= st + 0.05) {
+      var ln = s.lines[P.li++];
+      if (st - ln[0] < 8) { pSay(ln[1], s.quiet || ln[2] === "ana"); P.lineAt = bNow(); }
+      bSetT("#sLine", ln[1]);
+      $("#sLine").classList.toggle("ana", ln[2] === "ana");
+    }
+    pRhythm(s, T);
+    if (s.k === "tap") { pTapPoint(s, st); pTapTick(s, st); }
+    else if (s.k === "adapt") pAdaptTick(s, st, T);
+    else if (s.k === "nap") pNapTick(s, st, T);
+    else if (s.k === "wake") pWakeTick(s, st);
+    if (s.k === "breath") pBreathTick(s, st);
+    else if (s.k === "pump") pPumpTick(s, st);
+    else if (s.k === "shuffle") pShuffleTick(s, st);
+    else if (s.k === "pmr") pPmrTick(s, st);
+    pAudioSync(T);
+    pUI();
+  }
+  /* ----- moving figures and the berimbau -----
+     A capoeira move's loop is counted in beats and starts on a bar line, so the figure
+     keeps time with the berimbau (which is itself locked to the practice clock). */
+  function pMovePhase(a, s, T) {
+    if (a.beats) {
+      var b = T / RHY.beat, b0 = Math.ceil(s.at / RHY.bar - 1e-6) * 2;
+      return b < b0 ? 0 : ((b - b0) / a.beats) % 1;
+    }
+    return ((T - s.at) / (a.cycle || 4)) % 1;
+  }
+  function pMoveFig(s, T) {
+    var m = P.mv;
+    if (!m || bNow() - m.drawn < 0.04) return;
+    m.drawn = bNow();
+    var ph = pMovePhase(m.a, s, T);
+    if (RM) {                                       // reduced motion: step from key to key instead of gliding
+      var mv = movePrep(m.a), i = 0;
+      while (i < mv.at.length - 2 && ph >= mv.at[i + 1]) i++;
+      ph = mv.at[i];
+    }
+    if (Math.abs(ph - m.ph) < 1e-4) return;
+    m.ph = ph;
+    $("#sFig").innerHTML = figMove(m.a, ph, m.side, "", m.box);
+  }
+  function pRhythm(s, T) {
+    var a = s && s.k === "pose" && ASANA[s.pose];
+    if (a && a.rhythm && P.opt.rhythm && P.state === "running") rhyPlay(T);
+    else if (RHY.on) rhyStop();
+  }
+  /* ----- tapping: which point is up, and an optional soft tick to tap along with ----- */
+  function pTapIdx(s, st) { return s.pts.length === 1 ? 0 : Math.max(0, Math.min(s.pts.length - 1, Math.floor((st - (s.lead || 0)) / s.per))); }
+  function pTapPoint(s, st) {
+    if (s.k !== "tap") return;
+    var i = pTapIdx(s, st), id = s.pts[i];
+    if (id === P.tapAt) return;
+    P.tapAt = id;
+    $("#sFig").innerHTML = tapSVG(id, s.pts.length > 1 ? s.pts.slice(0, i) : []);
+  }
+  function pTapTick(s, st) {
+    if (!P.opt.tapTick || !A.ctx || !pBusOn() || st < (s.lead || 2)) return;
+    var horizon = st + (document.hidden ? 2 : 0.6), gap = 0.5;
+    if (!P.tickNext) P.tickNext = Math.max(s.lead || 2, Math.ceil(st / gap) * gap);
+    while (P.tickNext < Math.min(horizon, s.secs - 1)) {
+      var inPt = s.pts.length === 1 || ((P.tickNext - (s.lead || 0)) % s.per) < s.per - 1.2;   // a pause while you move to the next point
+      if (inPt && P.tickNext >= st - 0.05) pClick(A.ctx.currentTime + (P.tickNext - st), 0.06);
+      P.tickNext += gap;
+    }
+  }
+  function pRate(v) {
+    var s = P.steps[P.idx];
+    if (!s || s.k !== "rate" || P.state !== "running" || P.rated === P.idx) return;
+    P.rated = P.idx;
+    P.sudsBy[P.idx] = v;                             // one rating per step: a later tap replaces it, Skip clears it
+    P.suds = Object.keys(P.sudsBy).map(Number).sort(function (a, b) { return a - b; })
+      .map(function (k) { return P.sudsBy[k]; }).filter(function (x) { return x !== null; });
+    var bs = document.querySelectorAll("#sRateG button");
+    for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", String(+bs[i].dataset.v === v));
+    var idx = P.idx;
+    setTimeout(function () { if (P.idx === idx && P.state === "running") pAdvance(); }, v === null ? 0 : 450);
+  }
+  function pPlanHasRhy(steps) { return steps.some(function (s) { return s.k === "pose" && ASANA[s.pose] && ASANA[s.pose].rhythm; }); }
+
+  /* An open step (a breath hold, a rating, the nap) that ends early gives its unused time
+     back to the plan, so the clock, the time left and the heart chart stay true. */
+  function pAdvance() {
+    var T = pT(), i = P.idx, s = P.steps[i];
+    if (!s || i >= P.steps.length - 1) { pJump(1); return; }
+    var cut = s.at + s.secs - T;
+    pHoldLeave(T);
+    if (cut > 0.05) {
+      if (!s.secs0) s.secs0 = s.secs;
+      s.secs -= cut;
+      for (var j = i + 1; j < P.steps.length; j++) P.steps[j].at -= cut;
+      P.total -= cut;
+    }
+    pHush();
+    pEnter(i + 1);
+    pUI();
+  }
+  /* An open hold that ends by time (the cap) or by skipping still counts. */
+  function pHoldLeave(T) {
+    var s = P.steps[P.idx];
+    if (!s || s.k !== "hold" || !s.open || P.holdRec === P.idx) return;
+    P.holdRec = P.idx;
+    P.holds.push(Math.round(Math.min(s.secs, Math.max(0, T - s.at))));
+  }
+  function pPumpTick(s, st) {
+    if (!A.ctx || !pBusOn()) return;
+    var horizon = st + (document.hidden ? 2 : 0.6);
+    while (P.pumpNext < s.n) {
+      var tp = 3 + P.pumpNext / s.rate;
+      if (tp > horizon) break;
+      if (tp >= st - 0.05) pClick(A.ctx.currentTime + (tp - st));
+      P.pumpNext++;
+    }
+  }
+  function pShuffleTick(s, st) {
+    var k = Math.floor((st - 1) / s.every);
+    if (st < 1 || k === P.wordAt) return;
+    P.wordAt = k;
+    var pool = SHUFFLE_WORDS.filter(function (w) { return !P.used[w]; });
+    if (!pool.length) { P.used = {}; pool = SHUFFLE_WORDS; }
+    var w = pool[Math.floor(Math.random() * pool.length)];
+    P.used[w] = 1;
+    $("#sWord").textContent = w;
+    pSay(w, true);
+  }
+  function pPmrTick(s, st) {
+    var ph = st < s.tense ? "tense" : "release";
+    if (ph === P.pmr) return;
+    P.pmr = ph;
+    var regs = document.querySelectorAll("#sFig [data-r]");
+    for (var i = 0; i < regs.length; i++) regs[i].classList.toggle("tense", ph === "tense" && regs[i].classList.contains("on"));
+    if (ph === "release" && P.state === "running") pBell(0.25, 0, 523.25);
+  }
+
+  /* ----- what's on screen ----- */
+  function pUI() {
+    if (!P.def || !P.steps.length) return;
+    var T = Math.min(pT(), P.total), s = P.steps[P.idx] || P.steps[0], st = T - s.at, cap = s.title, sub = "";
+    if (s.k === "breath") {
+      var w = pBreathWords(s); cap = w.cap; sub = w.sub;
+    } else if (s.k === "pose") {
+      var asa = ASANA[s.pose];
+      sub = asa && asa.move ? asa.sa + " · " + (asa.rhythm ? (P.opt.rhythm ? "with the berimbau" : "in your own rhythm") : "keep it flowing")
+        : (asa ? asa.sa + " · " : "") + "about " + Math.max(1, Math.round((s.secs - 4) / 11)) + " slow breaths";
+    } else if (s.k === "guide" && s.trans) {
+      sub = "";
+    } else if (s.k === "hold") {
+      cap = s.lungs === "full" ? "Hold, lungs full" : "Hold, lungs empty";
+      sub = s.open ? fmt(st) + " · tap Breathe in when you need to" : Math.max(0, Math.ceil(s.secs - st)) + " s";
+    } else if (s.k === "pump") {
+      var n = Math.floor((st - 3) * s.rate) + 1;
+      if (st < 3) { cap = s.title; sub = "Get ready: " + Math.ceil(3 - st) + "…"; }
+      else if (n <= s.n) { cap = "Pump " + n + " of " + s.n; sub = "Short, sharp exhales from the belly."; }
+      else { cap = "Breathe in fully"; sub = "Then let it all go."; }
+    } else if (s.k === "count") {
+      sub = Math.min(P.taps, s.n) + " of " + s.n + " found";
+    } else if (s.k === "pmr") {
+      sub = st < s.tense ? "Tense: " + Math.ceil(s.tense - st) : "Release";
+    } else if (s.k === "observe" && s.wander) {
+      sub = P.wander ? "Noticed " + P.wander + (P.wander === 1 ? " time" : " times") : "";
+    } else if (s.k === "shuffle") {
+      cap = ""; sub = "";
+    } else if (s.k === "tap") {
+      var ti = pTapIdx(s, st), tp = TAP_PT[s.pts[ti]];
+      cap = tp.name;
+      sub = s.pts.length === 1 ? "Tap gently while you say the set-up" : (st < (s.lead || 0) ? "Get ready: " + Math.ceil(s.lead - st) + "…" : "Point " + (ti + 1) + " of " + s.pts.length + " · " + tp.where);
+    } else if (s.k === "rate") {
+      sub = "0 is not at all, 10 is as strong as it gets";
+    } else if (s.k === "adapt") {
+      sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
+        : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
+        : AD.src === "script" ? "No heart data: a gentle scripted descent" : "";
+    } else if (s.k === "nap") {
+      cap = NP.onset ? "Asleep (estimated)" : "Resting";
+      sub = NP.onset ? "Dozed off at " + fmt(NP.onset - s.at) + " · waking at " + fmt(NP.wake - s.at)
+        : NP.base > 0 ? "Baseline " + Math.round(NP.base) + " bpm · listening for sleep"
+        : NP.base < 0 ? "No heart data · waking at " + fmt(NP.wake - s.at) : "Measuring your resting heart rate";
+    }
+    bSetT("#sCap", cap);
+    bSetT("#sSub", sub);
+    var nose = $("#sNose");
+    if (!nose.hidden) {
+      var sp = nose.children;
+      for (var i = 0; i < sp.length; i++) sp[i].classList.toggle("on", sp[i].dataset.s === P.nose);
+    }
+    var sp = P.def.selfPaced;
+    bSetT("#sLeft", sp ? "Your pace" : fmt(P.total - T) + " left");
+    bSetT("#sStepTxt", "Step " + (P.idx + 1) + " of " + P.steps.length + " · " + s.title);
+    $("#sFill").style.width = (sp ? (P.idx + Math.min(1, st / s.secs)) / P.steps.length * 100 : T / P.total * 100).toFixed(2) + "%";
+    // live chips
+    var live = hrLive(), tr = pTrack(), chips = [];
+    if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
+    if (live && H.coh) chips.push('<span class="lc coh">Coherence <b>' + H.coh.cs.toFixed(1) + "</b></span>");
+    if (tr && A.playing) chips.push('<span class="lc beat">' + esc(tr.band) + " <b>" + beatAt(tr, A.elapsed).toFixed(1) + "</b> Hz</span>");
+    else if (tr && !A.playing && P.state === "running") chips.push('<span class="lc off">Sound paused</span>');
+    var h = chips.join("");
+    if (P.chipsHtml !== h) { P.chipsHtml = h; $("#sLive").innerHTML = h; }
+    var play = $("#sPlay");
+    play.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-' + (P.state === "running" ? "pause" : "play") + '"/></svg>';
+    play.setAttribute("aria-label", P.state === "running" ? "Pause" : "Resume");
+    $("#sPrev").disabled = P.idx <= 0 && T < 3;
+    $("#sNext").disabled = P.idx >= P.steps.length - 1;
+    pPill();
+  }
+  function pRenderSegs() {
+    var sp = P.def && P.def.selfPaced;
+    var h = P.steps.map(function (s, i) {
+      return '<i class="' + (i < P.idx ? "past" : i === P.idx ? "now" : "") + '" data-k="' + s.k + '" style="flex:' + (sp ? 1 : s.secs) + ' 1 0"></i>';
+    }).join("");
+    $("#sSegs").innerHTML = h;
+  }
+
+  /* ----- drawing ----- */
+  function pSizeCanvas() {
+    var cv = P.cv;
+    if (!cv) return;
+    var r = cv.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    P.cw = r.width; P.ch = r.height;
+    cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+    P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function pDraw() {
+    P.raf = 0;
+    if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
+    if (!P.cw) pSizeCanvas();
+    var c = P.ctx, W = P.cw, Hh = P.ch, s = P.steps[P.idx];
+    if (W && s) {
+      c.clearRect(0, 0, W, Hh);
+      var vis = pVis(s), T = pT(), st = T - s.at, col = P.col[P.def.tone || "relax"] || BCOL["b-in"];
+      if (vis === "breath") pDrawBreath();
+      else if (vis === "orb" || vis === "glow") pOrb(c, W, Hh, T, vis === "glow" ? P.col.warm : col, 1);
+      else if (vis === "still") pStill(c, W, Hh, T, col);
+      else if (vis === "pose") { pPoseRing(c, W, Hh, T, col, s); if (P.mv) pMoveFig(s, T); }
+      else if (vis === "pump") pPump(c, W, Hh, s, st, col);
+      else if (vis === "hold") pHold(c, W, Hh, s, st, col);
+      else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
+    }
+    P.raf = requestAnimationFrame(pDraw);
+  }
+  function pLoop() { if (!P.raf) P.raf = requestAnimationFrame(pDraw); }
+  /* The breathing guide's visuals, drawn into the session canvas. */
+  function pDrawBreath() {
+    var sd = d2, sw = CW, sh = CH;
+    d2 = P.ctx; CW = P.cw; CH = P.ch;
+    try {
+      var S = frameState();
+      d2.setLineDash([]);
+      (BVIS[BC.visual] || BVIS.circle)(S);
+    } finally { d2 = sd; CW = sw; CH = sh; }
+  }
+  function pOrb(c, W, Hh, T, col, k) {
+    var cx = W / 2, cy = Hh / 2, R = Math.min(W, Hh) * 0.3 * k, p = RM ? 0.5 : (1 - Math.cos(T * Math.PI * 2 / 10)) / 2;
+    var r = R * (0.86 + 0.14 * p), g = c.createRadialGradient(cx, cy, r * 0.1, cx, cy, r * 1.5);
+    g.addColorStop(0, rgba(col, 0.42)); g.addColorStop(0.55, rgba(col, 0.12)); g.addColorStop(1, rgba(col, 0));
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, r * 1.5, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = rgba(col, 0.55); c.lineWidth = 1.5; c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.stroke();
+  }
+  function pStill(c, W, Hh, T, col) {
+    var cx = W / 2, cy = Hh / 2, sh = RM ? 0 : Math.sin(T * 0.7) * 0.06, r = Math.min(W, Hh) * 0.05;
+    var g = c.createRadialGradient(cx, cy, 0, cx, cy, r * 6);
+    g.addColorStop(0, rgba(col, 0.5 + sh)); g.addColorStop(0.2, rgba(col, 0.16)); g.addColorStop(1, rgba(col, 0));
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, r * 6, 0, Math.PI * 2); c.fill();
+    c.fillStyle = rgba(col, 0.95); c.beginPath(); c.arc(cx, cy, r * 0.5, 0, Math.PI * 2); c.fill();
+  }
+  function pPoseRing(c, W, Hh, T, col, s) {
+    var a = s && s.k === "pose" && ASANA[s.pose];
+    if (a && a.move) {                              // moving: a soft pulse on the beat (stronger on the bar) or a quiet ring
+      var cx0 = W / 2, cy0 = Hh / 2, R0 = Math.min(W, Hh) * 0.47, k = 0;
+      if (a.beats && !RM) { var b = T / RHY.beat, fr = b - Math.floor(b); k = Math.exp(-fr * 6) * (Math.floor(b) % 2 === 0 ? 1 : 0.55); }
+      c.strokeStyle = rgba(col, 0.14 + 0.3 * k); c.lineWidth = 2 + 2 * k;
+      c.beginPath(); c.arc(cx0, cy0, R0 * (0.95 + 0.03 * k), 0, Math.PI * 2); c.stroke();
+      return;
+    }
+    // breathe with the ring: about 5.5 breaths a minute
+    var cyc = 60 / 5.5, ph = (T % cyc) / cyc, lv = (1 - Math.cos(ph * Math.PI * 2)) / 2;
+    var cx = W / 2, cy = Hh / 2, R = Math.min(W, Hh) * 0.47, r = R * (0.84 + 0.16 * lv);
+    c.strokeStyle = rgba(col, 0.18 + 0.3 * lv); c.lineWidth = 2.5;
+    c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.stroke();
+    c.font = "600 12px " + B_SANS; c.fillStyle = rgba(BCOL["text-faint"], 0.9); c.textAlign = "center"; c.textBaseline = "bottom";
+    c.fillText(ph < 0.5 ? "breathe in" : "breathe out", cx, Hh - 4);
+  }
+  function pPump(c, W, Hh, s, st, col) {
+    var cx = W / 2, cy = Hh / 2, R = Math.min(W, Hh) * 0.28, x = (st - 3) * s.rate, k = 1;
+    if (st >= 3 && x < s.n) { var fr = x - Math.floor(x); k = 1 - 0.3 * Math.exp(-fr * 7); }
+    c.fillStyle = rgba(col, 0.2); c.beginPath(); c.arc(cx, cy, R * k, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = rgba(col, 0.85); c.lineWidth = 2.5; c.beginPath(); c.arc(cx, cy, R * k, 0, Math.PI * 2); c.stroke();
+    var done = Math.max(0, Math.min(s.n, Math.floor(x) + 1));
+    if (st >= 3) {
+      c.lineWidth = 4; c.lineCap = "round"; c.strokeStyle = col;
+      c.beginPath(); c.arc(cx, cy, R + 14, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * done / s.n); c.stroke(); c.lineCap = "butt";
+    }
+    c.font = "700 " + Math.round(R * 0.62) + "px " + B_MONO; c.fillStyle = BCOL.text; c.textAlign = "center"; c.textBaseline = "middle";
+    c.fillText(st < 3 ? String(Math.ceil(3 - st)) : String(Math.min(done, s.n)), cx, cy + 2);
+  }
+
+  function pHold(c, W, Hh, s, st, col) {
+    var cx = W / 2, cy = Hh / 2, R = Math.min(W, Hh) * 0.36, f = Math.min(1, st / s.secs);
+    c.lineWidth = 6; c.strokeStyle = rgba(BCOL.line, 0.9);
+    c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.stroke();
+    c.strokeStyle = s.lungs === "full" ? BCOL["b-hold"] : col; c.lineCap = "round";
+    c.beginPath(); c.arc(cx, cy, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (s.open ? f : 1 - f)); c.stroke(); c.lineCap = "butt";
+    var g = c.createRadialGradient(cx, cy, 0, cx, cy, R * 0.9);
+    g.addColorStop(0, rgba(s.lungs === "full" ? BCOL["b-hold"] : col, s.lungs === "full" ? 0.28 : 0.1)); g.addColorStop(1, rgba(col, 0));
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, R * 0.9, 0, Math.PI * 2); c.fill();
+    c.font = "700 " + Math.round(R * (s.open ? 0.42 : 0.6)) + "px " + B_MONO; c.fillStyle = BCOL.text; c.textAlign = "center"; c.textBaseline = "middle";
+    c.fillText(s.open ? fmt(st) : String(Math.max(0, Math.ceil(s.secs - st))), cx, cy + 2);
+    c.font = "600 12.5px " + B_SANS; c.fillStyle = BCOL["text-faint"];
+    c.fillText(s.lungs === "full" ? "lungs full" : "lungs empty", cx, cy + R * 0.42);
+  }
+
+  /* ----- figures: an original body map and stick-figure poses ----- */
+  var BODY = [
+    ["back", '<rect x="33" y="52" width="54" height="104" rx="16"/>'],
+    ["armR", '<rect x="18" y="54" width="12" height="50" rx="6"/><rect x="15" y="104" width="11" height="44" rx="5.5"/>'],
+    ["armL", '<rect x="90" y="54" width="12" height="50" rx="6"/><rect x="94" y="104" width="11" height="44" rx="5.5"/>'],
+    ["handR", '<ellipse cx="20" cy="157" rx="6.5" ry="9"/>'], ["handL", '<ellipse cx="100" cy="157" rx="6.5" ry="9"/>'],
+    ["shoulders", '<rect x="28" y="48" width="64" height="13" rx="6.5"/>'],
+    ["chest", '<rect x="35" y="62" width="50" height="34" rx="10"/>'],
+    ["belly", '<rect x="37" y="97" width="46" height="28" rx="10"/>'],
+    ["hips", '<rect x="35" y="126" width="50" height="26" rx="11"/>'],
+    ["thighR", '<rect x="38" y="153" width="20" height="60" rx="9"/>'], ["thighL", '<rect x="62" y="153" width="20" height="60" rx="9"/>'],
+    ["kneeR", '<ellipse cx="48" cy="217" rx="9.5" ry="8"/>'], ["kneeL", '<ellipse cx="72" cy="217" rx="9.5" ry="8"/>'],
+    ["shinR", '<rect x="40" y="224" width="16" height="50" rx="7"/>'], ["shinL", '<rect x="64" y="224" width="16" height="50" rx="7"/>'],
+    ["footR", '<ellipse cx="45" cy="282" rx="10" ry="6.5"/>'], ["footL", '<ellipse cx="75" cy="282" rx="10" ry="6.5"/>'],
+    ["neck", '<rect x="54" y="38" width="12" height="11" rx="3"/>'],
+    ["head", '<ellipse cx="60" cy="22" rx="15" ry="18"/>'],
+    ["face", '<ellipse cx="60" cy="26" rx="9.5" ry="10.5"/>']
+  ];
+  function pBodySVG(on) {
+    var all = on.indexOf("all") >= 0;
+    return '<svg class="bm' + (all ? " all" : "") + '" viewBox="0 0 120 300" aria-hidden="true">' +
+      BODY.map(function (r) {
+        return '<g data-r="' + r[0] + '" class="' + (all || on.indexOf(r[0]) >= 0 ? "on" : "") + '">' + r[1] + "</g>";
+      }).join("") +
+      '<text x="45" y="298">R</text><text x="75" y="298">L</text></svg>';
+  }
+
+  /* ----- transport ----- */
+  function pStart() {
+    var d = P.view;
+    if (!d) return;
+    if (d.confirm && !$("#sOk").checked) { $("#sOk").focus(); return; }
+    var go = function () {
+      if (pBusy()) pFinish(true, true);
+      P.def = d;
+      if (B.finder) finderCancel();
+      if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
+      var plan = pPlan(d, P.len);
+      P.steps = plan.steps; P.total = plan.total;
+      P.hasRhy = pPlanHasRhy(plan.steps);
+      if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
+      P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
+      pAdaptReset(); napReset(); P.nvc = nvcNew();
+      P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
+      ensureCtx(); pBusOn();
+      if (d.audio && P.opt.audio) {
+        var a = d.audio;
+        load({ id: "prac-" + d.id, pid: d.id, practice: true, cat: a.cat, band: a.band, name: a.name, carrier: a.carrier,
+          beat: a.dyn ? a.start : a.pts[a.pts.length - 1][1], pts: a.dyn ? null : a.pts, dyn: !!a.dyn, cur: a.start || 0,
+          minutes: plan.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "" });
+        P.audioOn = true;
+      } else P.audioOn = false;
+      P.audioHeld = false;
+      $("#ses").dataset.state = "run";
+      $("#sIntro").hidden = true; $("#sDone").hidden = true; $("#sRun").hidden = false;
+      P.endArm = 0; $("#sEnd").classList.remove("armed"); bSetT("#sEndTxt", "End");
+      bSetT("#sTitle", d.name);
+      $("#ses").style.setProperty("--pcol", pColor(d));
+      pQuickSync();
+      pImmersive();
+      pLockBreathe();
+      pBell(0.5);
+      pLock();
+      clearInterval(P.tick);
+      P.tick = setInterval(pTick, 200);
+      pTick();
+      pSizeCanvas();
+      pLoop();
+      ambSync();
+    };
+    if (d.audio && P.opt.audio) gate(go); else go();
+  }
+  function pPause() {
+    if (P.state !== "running") return;
+    P.st = pT();
+    P.state = "paused";
+    clearInterval(P.tick);
+    if (B.state === "running" && P.usesB) bPause();
+    if (pTrack() && A.playing) { pause(); P.audioHeld = true; }
+    rhyStop(0.3);
+    pHush();
+    pUnlock();
+    pUI();
+    ambSync();
+  }
+  function pResume() {
+    if (P.state !== "paused") return;
+    P.t0 = bNow() - P.st;
+    P.state = "running";
+    var s = P.steps[P.idx];
+    if (s && s.k === "breath" && P.usesB && B.state === "paused") bResume();
+    if (P.audioHeld && pTrack() && !A.playing && P.st < A.track.minutes * 60 - 2) { A.elapsed = P.st; play(); }
+    P.audioHeld = false;
+    pLock();
+    clearInterval(P.tick);
+    P.tick = setInterval(pTick, 200);
+    pTick(); pLoop();
+    ambSync();
+  }
+  function pJump(dir) {
+    if (!pBusy()) return;
+    var T = pT(), i = P.idx, target;
+    if (dir > 0) {
+      if (i >= P.steps.length - 1) return;
+      if (P.steps[i].open) { pAdvance(); return; }       // an open step ends now and gives back its unused time
+      target = P.steps[i + 1].at;
+    }
+    else target = ((T - P.steps[i].at > 3 && P.steps[i].k !== "write") || i === 0) ? P.steps[i].at : P.steps[i - 1].at;   // writing: back means the step before
+    pHoldLeave(T);
+    if (P.state === "running") P.t0 = bNow() - target; else P.st = target;
+    pHush();
+    // a jump into a different breath pattern restarts the guide so it doesn't wait for the breath to end
+    if (P.usesB && B.state !== "idle") pBreathOff();
+    P.idx = -1;
+    pEnter(pStepAt(target + 0.01));
+    if (RHY.on) rhyStop(0.15);
+    var tr = pTrack();
+    if (tr) { if (A.playing) aSeek(target); else A.elapsed = target; }
+    pUI();
+  }
+  function pFinish(early, quiet) {
+    var T = Math.min(pT(), P.total), d = P.def;
+    clearInterval(P.tick);
+    if (P.raf) { cancelAnimationFrame(P.raf); P.raf = 0; }
+    if (P.usesB && B.state !== "idle") pBreathOff();
+    pRestore();
+    pHush();
+    rhyStop();
+    P.mv = null;
+    if (pTrack()) {
+      var trk = A.track;
+      if (early) { if (A.playing) fadeOutAndStop("Practice ended.", 3); else hardStop(true); }
+      else if (A.playing) fadeOutAndStop("Practice complete.", 3);      // an open step finished early: the sound ends with the practice
+      setTimeout(function () {                                         // the practice's own sound isn't a track to replay: put the player away
+        if (A.track === trk && !A.playing) $("#player").classList.remove("open", "expanded");
+      }, 3700);
+    }
+    P.audioOn = false;
+    pUnlock();
+    P.state = "done";
+    $("#ses").dataset.dim = "";
+    if (!early && !quiet) {
+      pBell(0.5);
+      if (A.ctx) pBell(0.4, A.ctx.currentTime + 1.4, 523.25);
+      if (d.end) pSay(d.end);
+    }
+    var sum = pSummary(T, early);
+    if (!quiet) pDone(sum, early);
+    pImmersive();
+    pPill();
+    ambSync();
+  }
+
+  /* ----- summary and history ----- */
+  function pSummary(T, early) {
+    var d = P.def, r = { secs: Math.round(T), early: early }, hr = P.hr.filter(function (x) { return x.t >= 0 && x.t <= T; });
+    if (hr.length >= 20 && T >= 150) {           // first and last two minutes of readings (a sensor may join late or drop out early)
+      var span = Math.min(120, T / 3), ta = hr[0].t, tb = hr[hr.length - 1].t;
+      r.hr0 = Math.round(avg(hr.filter(function (x) { return x.t < ta + span; }).map(function (x) { return x.hr; })));
+      r.hr1 = Math.round(avg(hr.filter(function (x) { return x.t > tb - span; }).map(function (x) { return x.hr; })));
+    } else if (hr.length >= 5) r.hrAvg = Math.round(avg(hr.map(function (x) { return x.hr; })));
+    if (P.coh.length) {
+      r.coh = avg(P.coh.map(function (c) { return c.cs; }));
+      r.cohMax = Math.max.apply(null, P.coh.map(function (c) { return c.cs; }));
+      r.cohEst = !H.hasRR;
+    }
+    if (P.sw.length) r.swing = avg(P.sw.map(function (s) { return s.amp; }));
+    if (d.id === "anapana") r.wander = P.wander;
+    if (P.holds.length) r.holds = P.holds.slice();
+    if (P.suds.length) r.suds = P.suds.slice();
+    var bl = AD.log.filter(function (x) { return x.src !== "base"; });
+    if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatLog = AD.log.slice(); }
+    napSummary(r, T);
+    if (d.reflect) {                                   // what you wrote stays out of the shared summary text
+      r.nvc = nvcSummary(null, d.id === "nvc-choose" ? "choose" : "self");
+      if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
+    }
+    r.hrPts = hr;
+    var parts = [d.name + ", " + Math.max(1, Math.round(T / 60)) + " min" + (early ? " (ended early)" : "")];
+    if (r.hr0) parts.push("heart rate " + r.hr0 + " → " + r.hr1 + " bpm");
+    else if (r.hrAvg) parts.push("heart rate averaged " + r.hrAvg + " bpm");
+    if (r.coh) parts.push("average coherence " + r.coh.toFixed(1) + (r.cohEst ? " (estimated)" : ""));
+    if (r.swing) parts.push("average swing " + r.swing.toFixed(1) + " bpm");
+    if (r.wander !== undefined) parts.push("mind wandered " + r.wander + (r.wander === 1 ? " time" : " times") + " and you came back");
+    if (r.holds) parts.push("holds " + r.holds.map(fmt).join(", "));
+    if (r.suds) parts.push("intensity " + r.suds.join(" → ") + " out of 10");
+    if (r.beat0) parts.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
+    if (r.nap) parts.push(r.nap.onset !== null ? "fell asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (estimated)" : r.nap.sensor ? "no sleep detected" : "no heart data");
+    r.text = parts.join(", ") + ".";
+    if (T >= 60) {
+      store.set("lastSummary", JSON.stringify({ at: Date.now(), text: "Last session: " + r.text }));
+      var log = pLog();
+      log.push({ id: d.id, at: Date.now(), secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, coh: r.coh ? +r.coh.toFixed(2) : undefined });
+      while (log.length > 200) log.shift();
+      store.set("practiceLog", JSON.stringify(log));
+    }
+    return r;
+  }
+  function pLog() {
+    try { var l = JSON.parse(store.get("practiceLog") || "[]"); return Array.isArray(l) ? l : []; } catch (e) { return []; }
+  }
+  function pDone(r, early) {
+    var d = P.def, tiles = [];
+    tiles.push(["Time", fmt(r.secs), early ? "Ended early" : "Complete"]);
+    var napHR = r.nap && r.nap.base && r.nap.low;        // a nap has its own baseline-to-lowest tile
+    if (r.hr0 && !napHR) tiles.push(["Heart rate", r.hr0 + " → " + r.hr1, "bpm, start to end"]);
+    else if (r.hrAvg && !napHR) tiles.push(["Heart rate", String(r.hrAvg), "bpm average"]);
+    if (r.coh && !r.nap) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1) + (r.cohEst ? " (est.)" : "")]);
+    if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath"]);
+    if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath"]);
+    if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · ")]);
+    if (r.suds) tiles.push(["Intensity", r.suds.join(" → "), r.suds.length > 1 ? "out of 10, first to last" : "out of 10"]);
+    if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatHeart ? "Hz, led by your heart" : "Hz, scripted (no heart data)"]);
+    if (r.nap) {
+      if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated"]); }
+      else tiles.push(["Fell asleep", r.nap.sensor ? "Not detected" : "—", r.nap.sensor ? "resting still helps" : "no heart data"]);
+      if (r.nap.base && r.nap.low) tiles.push(["Heart rate", r.nap.base + " → " + r.nap.low, "bpm, baseline to lowest"]);
+    }
+    var h = '<div class="sd-head"><span class="sd-ic">' + (early ? "" : '<svg class="i" aria-hidden="true"><use href="#i-check"/></svg>') + "</span>" +
+      "<div><h2>" + (early ? "Session ended" : d.end ? esc(d.end) : "Nicely done") + "</h2><p>" + esc(d.name) + "</p></div></div>" +
+      '<div class="sd-tiles">' + tiles.map(function (t) {
+        return '<div class="sd-t"><span>' + t[0] + "</span><b>" + t[1] + "</b><small>" + t[2] + "</small></div>";
+      }).join("") + "</div>" +
+      (r.hrPts.length >= 20 ? '<div class="sd-chart"><canvas id="sdChart"></canvas><span>Heart rate across the session' + (r.beatLog ? ", with the beat in violet" : "") + "</span></div>" : "") +
+      (r.nvc ? nvcCard(r.nvc) : "") +
+      qCard(d.reflect ? ROGERS : qPick()) +
+      '<div class="sd-act"><a class="btn primary" href="#practice">Done</a><button class="btn" id="sdAgain">Do it again</button></div>';
+    var el = $("#sDone");
+    el.innerHTML = h;
+    $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
+    $("#ses").dataset.state = "done";
+    $("#sdAgain").addEventListener("click", function () { pIntro(d.id); });
+    if (r.hrPts.length >= 20) setTimeout(function () { pChart(r.hrPts, r.secs, r); }, 30);
+  }
+  function pChart(pts, T, r) {
+    var f = fitCanvas($("#sdChart"));
+    if (!f) return;
+    var c = f.c, W = f.w, Hh = f.h, pad = 8, lo = Infinity, hi = -Infinity;
+    // a 10-second running mean keeps the line readable
+    var sm = pts.map(function (p, i) {
+      var a = 0, n = 0;
+      for (var k = i; k >= 0 && pts[k].t > p.t - 10; k--) { a += pts[k].hr; n++; }
+      return { t: p.t, hr: a / n };
+    });
+    sm.forEach(function (p) { lo = Math.min(lo, p.hr); hi = Math.max(hi, p.hr); });
+    lo = Math.floor(lo - 2); hi = Math.ceil(hi + 2);
+    var X = function (t) { return pad + t / T * (W - pad * 2); }, Y = function (v) { return pad + (hi - v) / (hi - lo) * (Hh - pad * 2 - 14); };
+    c.strokeStyle = BCOL.line; c.lineWidth = 1;
+    P.steps.forEach(function (s) { if (s.at > 0 && s.at < T) { c.beginPath(); c.moveTo(X(s.at) + 0.5, pad); c.lineTo(X(s.at) + 0.5, Hh - 14); c.stroke(); } });
+    c.beginPath();
+    sm.forEach(function (p, i) { if (i) c.lineTo(X(p.t), Y(p.hr)); else c.moveTo(X(p.t), Y(p.hr)); });
+    c.strokeStyle = BCOL.hr; c.lineWidth = 2; c.stroke();
+    if (r && r.beatLog) {                       // the beat, on its own scale (3 to 11 Hz)
+      c.beginPath();
+      r.beatLog.forEach(function (p, i) { var y = pad + (11 - p.hz) / 8 * (Hh - pad * 2 - 14); if (i) c.lineTo(X(p.t), y); else c.moveTo(X(p.t), y); });
+      c.strokeStyle = BCOL["b-out"]; c.lineWidth = 2; c.stroke();
+    }
+    if (r && r.nap && r.nap.onsetT) {           // where sleep began (estimated)
+      c.strokeStyle = BCOL["b-hold"]; c.lineWidth = 1.5; c.setLineDash([4, 4]);
+      c.beginPath(); c.moveTo(X(r.nap.onsetT) + 0.5, pad); c.lineTo(X(r.nap.onsetT) + 0.5, Hh - 14); c.stroke(); c.setLineDash([]);
+      c.font = "600 10.5px " + B_SANS; c.fillStyle = BCOL["b-hold"]; c.textAlign = "left"; c.textBaseline = "top";
+      c.fillText("asleep (est.)", X(r.nap.onsetT) + 4, pad);
+    }
+    c.font = "500 10.5px " + B_SANS; c.fillStyle = BCOL["text-faint"]; c.textBaseline = "bottom";
+    c.textAlign = "left"; c.fillText(hi + " bpm", pad, Hh);
+    c.textAlign = "right"; c.fillText(lo + " bpm low", W - pad, Hh);
+  }
+
+  /* ----- the session screen: intro ----- */
+  function pNeeds(d) {
+    var n = [];
+    if (d.audio) n.push(["sounds", "Headphones", "for the binaural layer"]);
+    if (d.sensor === "best") n.push(["pulse", "Heart sensor", d.sensorWhy || "recommended: live heart rate and coherence"]);
+    else if (d.sensor === "optional" || pHasBreath(d)) n.push(["pulse", "Heart sensor", "optional: adds heart rate and coherence"]);
+    if (d.lie) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
+    if (d.room) n.push(["move", "Room to move", "about two metres clear around you, on a floor that isn't slippery"]);
+    else if (d.stand) n.push(["move", "Space to stand", "an arm's length all around"]);
+    if (d.voice) n.push(["voice", "Voice on", "the steps are spoken; eyes can stay closed"]);
+    if (d.reflect) n.push(["nvc", "A quiet place to write", "nothing you type leaves this device"]);
+    return n;
+  }
+  function pHasBreath(d) { return pPlan(d, pLenOf(d, P.len)).steps.some(function (s) { return s.k === "breath"; }); }
+  function pIntro(id) {
+    var d = pDef(id);
+    if (!d) { location.hash = "practice"; return; }
+    if (pBusy() && P.def === d) { pShowRun(); return; }
+    var len = pLenOf(d, P.view === d && P.len ? P.len : parseInt(store.get("pLen." + id), 10) || 0);
+    P.view = d; P.len = len;
+    if (!pBusy()) P.state = "intro";
+    var plan = pPlan(d, len), hasB = plan.steps.some(function (s) { return s.k === "breath"; });
+    var mins = Math.max(1, Math.round(plan.total / 60)), minsTxt = d.selfPaced ? "self-paced, about " + d.est + " min" : (d.open ? "up to " : "") + mins + " min";
+    var segs = plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + (d.selfPaced ? 1 : s.secs) + ' 1 0" title="' + esc(s.title) + '"></i>'; }).join("");
+    // consecutive steps with the same title read as one row
+    var rows = [];
+    plan.steps.forEach(function (s) {
+      var last = rows[rows.length - 1];
+      if (last && last.title === s.title) last.secs += s.secs; else rows.push({ title: s.title, secs: s.secs, k: s.k });
+    });
+    var opts = [];
+    opts.push(pToggle("sOptVoice", "Spoken guidance", P.opt.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
+    if (window.speechSynthesis) opts.push('<div class="so-row so-voice" id="sVoiceRow"' + (P.opt.voice ? "" : " hidden") + '><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
+    opts.push(pToggle("sOptBells", "Bells between steps", P.opt.bells, ""));
+    if (d.audio) opts.push(pToggle("sOptAudio", "Binaural layer", P.opt.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
+    if (pPlanHasRhy(plan.steps)) opts.push(pToggle("sOptRhy", "Berimbau", P.opt.rhythm, "A synthesized berimbau keeps time for the capoeira moves."));
+    if (d.reflect) opts.push(pToggle("sOptKeep", "Keep a copy on this device", P.opt.nvcSave, "Your writing is never sent anywhere. Turn this off to keep nothing once you finish."));
+    var hasTap = d.tapping || tapOffered(d);
+    if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
+    if (hasTap) {
+      opts.push('<div class="so-row so-phrase" id="sPhraseRow"' + (d.tapping || tapOn(d) ? "" : " hidden") + '><label class="so-l" for="sTapPhrase">Your phrase<small>A few words for what\'s bothering you, like “this stress” or “this tight chest”.</small></label>' +
+        '<input id="sTapPhrase" maxlength="48" autocomplete="off" placeholder="this stress" value="' + esc(store.get("tapPhrase") || "") + '"></div>');
+      opts.push('<div id="sTickRow"' + (d.tapping || tapOn(d) ? "" : " hidden") + ">" + pToggle("sOptTick", "Tapping tick", P.opt.tapTick, "A soft tick to tap along with.") + "</div>");
+    }
+    opts.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, made on your device.</small></span>' + ambCtl() + "</div>");
+    if (d.variant) opts.push('<div class="so-row"><span class="so-l">' + d.variant.label + '</span><div class="mini-seg" id="sOptVar">' +
+      d.variant.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (pVar(d) === o[0]) + '">' + o[1] + "</button>"; }).join("") + "</div></div>");
+    if (d.group === "program") opts.push('<div class="so-row so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to feel the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
+      [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]].map(function (o) {
+        return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.ana === o[0]) + '">' + o[1] + "</button>";
+      }).join("") + "</div></div>");
+    if (hasB) {
+      opts.push('<div class="so-row"><span class="so-l">Breath cues</span><div class="mini-seg" id="sOptCues">' +
+        [["tones", "Tone"], ["chimes", "Chimes"], ["off", "Silent"]].map(function (o) {
+          return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.cues === o[0]) + '">' + o[1] + "</button>";
+        }).join("") + "</div></div>");
+      opts.push('<div class="so-row"><span class="so-l">Breath visual</span><div class="mini-seg" id="sOptVis">' +
+        [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]].map(function (o) {
+          return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.visual === o[0]) + '">' + o[1] + "</button>";
+        }).join("") + "</div></div>");
+    }
+    var other = pBusy() && P.def !== d;
+    var h = '<a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Practices</a>' +
+      '<div class="si-head">' +
+        '<span class="si-kind">' + (d.custom ? "Your routine" : esc(GROUPS.filter(function (g) { return g.id === d.group; })[0].name)) + (d.exp ? " · Experimental" : "") + " · " + minsTxt + "</span>" +
+        "<h2>" + esc(d.name) + "</h2>" +
+        '<p class="si-blurb">' + esc(d.blurb) + "</p>" +
+        (d.parts ? '<p class="si-parts">' + esc(d.parts) + "</p>" : "") +
+        (d.lengths ? '<div class="si-len" role="radiogroup" aria-label="Length">' + d.lengths.map(function (m) {
+          return '<button role="radio" data-len="' + m + '" aria-checked="' + (m === len) + '">' + pLenTxt(d, m) + "</button>";
+        }).join("") + "</div>" : "") +
+        '<div class="si-tl" aria-hidden="true">' + segs + "</div>" +
+        (d.custom ? '<a class="btn small si-edit" href="#yoga/' + d.custom + '">Edit routine</a>'
+          : d.yoga ? '<a class="btn small si-edit" href="#yoga/copy/' + d.yoga + '">Customise a copy</a>' : "") +
+      "</div>" +
+      '<div class="si-grid"><div class="si-main">' +
+        (pNeeds(d).length ? '<ul class="si-need">' + pNeeds(d).map(function (n) {
+          return '<li><svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] + "</span></li>";
+        }).join("") + "</ul>" : "") +
+        "<h3>How it runs</h3><p>" + esc(d.how || pYogaHow(plan)) + "</p>" +
+        '<ol class="si-steps">' + rows.map(function (r) {
+          return '<li data-k="' + r.k + '"><span>' + esc(r.title) + "</span><time>" + (d.selfPaced && r.k === "write" ? "your pace" : fmt(r.secs)) + "</time></li>";
+        }).join("") + "</ol>" +
+        (d.reflect ? nvcJournal(d) : "") +
+        '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
+        (d.caution ? '<div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>' + esc(d.caution) + "</span></div>" : "") +
+      "</div>" +
+      '<aside class="si-opts"><h3>Options</h3>' + opts.join("") +
+        (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
+        (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
+        '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Start' + (d.open || d.selfPaced ? "" : " " + mins + " min") + "</button>" +
+      "</aside></div>";
+    var el = $("#sIntro");
+    el.innerHTML = h;
+    el.style.setProperty("--pcol", pColor(d));
+    $("#ses").style.setProperty("--pcol", pColor(d));
+    el.hidden = false; $("#sRun").hidden = true; $("#sDone").hidden = true;
+    $("#ses").dataset.state = "intro";
+    bSetT("#viewTitle", d.name);
+    document.title = d.name + " | Entrain";
+    pIntroWire(d);
+    pImmersive();
+  }
+  function pYogaHow(plan) {
+    var poses = plan.steps.filter(function (s) { return s.k === "pose"; }), names = [], moving = 0, rhy = false;
+    poses.forEach(function (s) {
+      var a = ASANA[s.pose];
+      if (!a) return;
+      if (names.indexOf(a.en) < 0) names.push(a.en);
+      if (a.move) moving++;
+      if (a.rhythm) rhy = true;
+    });
+    return poses.length + (moving ? " steps, each with a drawing (moving ones are animated) and spoken cues" : " poses with a drawing and spoken cues each, a ring to breathe with,") +
+      (rhy ? ", a berimbau to keep time for the capoeira," : "") + " and short spoken transitions whenever you change position: " + names.join(", ") + ".";
+  }
+  function pToggle(id, label, on, note, disabled) {
+    return '<label class="so-row so-tg"><span class="so-l">' + label + (note ? "<small>" + note + "</small>" : "") + '</span>' +
+      '<input type="checkbox" class="sw" id="' + id + '"' + (on && !disabled ? " checked" : "") + (disabled ? " disabled" : "") + "></label>";
+  }
+  function pIntroWire(d) {
+    var on = function (id, fn) { var el = $(id); if (el) el.addEventListener("change", fn); };
+    on("#sOptVoice", function () { P.opt.voice = this.checked; var r = $("#sVoiceRow"); if (r) r.hidden = !this.checked; pSaveOpt(); });
+    on("#sOptBells", function () { P.opt.bells = this.checked; pSaveOpt(); if (this.checked) pBell(0.4); });
+    on("#sOptAudio", function () { P.opt.audio = this.checked; pSaveOpt(); });
+    on("#sOptRhy", function () { P.opt.rhythm = this.checked; pSaveOpt(); });
+    on("#sOptTick", function () { P.opt.tapTick = this.checked; pSaveOpt(); });
+    on("#sOptKeep", function () { P.opt.nvcSave = this.checked; pSaveOpt(); });
+    on("#sOptTap", function () {
+      store.set("pTap." + d.id, this.checked ? "1" : "0");
+      pIntro(d.id);
+      var r = $("#sTapPhrase"); if (this.checked && r) r.focus();
+    });
+    var ph = $("#sTapPhrase");
+    if (ph) ph.addEventListener("input", function () { store.set("tapPhrase", this.value.trim()); });
+    on("#sOk", function () { $("#sGo").disabled = !this.checked; });
+    on("#sVoiceSel", function () { P.opt.voiceName = this.value; pSaveOpt(); });
+    var t = $("#sVoiceTest");
+    if (t) t.addEventListener("click", function () { pHush(); var v = P.opt.voice; P.opt.voice = true; pSay("Breathe in slowly, and let it go."); P.opt.voice = v; });
+    pFillVoices();
+    [["#sOptCues", "cues"], ["#sOptVis", "visual"], ["#sOptAna", "ana"], ["#sOptVar", "var"]].forEach(function (p) {
+      var g = $(p[0]);
+      if (!g) return;
+      g.addEventListener("click", function (e) {
+        var b = e.target.closest("button");
+        if (!b) return;
+        if (p[1] === "var") { store.set("pVar." + d.id, b.dataset.v); pIntro(d.id); return; }
+        P.opt[p[1]] = p[1] === "ana" ? parseInt(b.dataset.v, 10) : b.dataset.v; pSaveOpt();
+        var bs = g.querySelectorAll("button");
+        for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
+        if (p[1] === "cues" && b.dataset.v !== "off" && pBusOn() && ensureBus()) {
+          var tt = A.ctx.currentTime + 0.03;
+          if (b.dataset.v === "chimes") chime(B_CHIME["in"], tt, 0.2); else { var sv = BC.sound; BC.sound = "tones"; preview(); BC.sound = sv; }
+        }
+      });
+    });
+    var lens = document.querySelectorAll(".si-len button");
+    for (var i = 0; i < lens.length; i++) lens[i].addEventListener("click", function () {
+      P.len = parseInt(this.dataset.len, 10);
+      store.set("pLen." + d.id, String(P.len));
+      pIntro(d.id);
+    });
+    $("#sGo").addEventListener("click", pStart);
+  }
+  function pFillVoices() {
+    var sel = $("#sVoiceSel");
+    if (!sel) return;
+    var vs = pVoices(), cur = pVoice();
+    if (!vs.length) { sel.innerHTML = "<option>Default voice</option>"; sel.disabled = true; return; }
+    sel.disabled = false;
+    sel.innerHTML = vs.map(function (v) {
+      return '<option value="' + esc(v.name) + '"' + (cur && cur.name === v.name ? " selected" : "") + ">" +
+        esc(v.name.replace(/^(Microsoft|Google)\s+/, "")) + (v.localService ? "" : " (online)") + "</option>";
+    }).join("");
+  }
+
+  /* ----- the session screen: running ----- */
+  function pShowRun() {
+    $("#sIntro").hidden = true; $("#sDone").hidden = true; $("#sRun").hidden = false;
+    $("#ses").dataset.state = "run";
+    $("#ses").style.setProperty("--pcol", pColor(P.def));
+    bSetT("#viewTitle", P.def.name);
+    document.title = P.def.name + " | Entrain";
+    var s = P.steps[P.idx];
+    if (s) pStage(s);
+    pRenderSegs(); pQuickSync(); pUI(); pImmersive();
+    setTimeout(function () { pSizeCanvas(); pLoop(); }, 0);
+  }
+  function pQuickSync() {
+    $("#sqVoice").setAttribute("aria-pressed", P.opt.voice ? "true" : "false");
+    $("#sqBells").setAttribute("aria-pressed", P.opt.bells ? "true" : "false");
+    $("#sqRhy").hidden = !P.hasRhy;
+    $("#sqRhy").setAttribute("aria-pressed", P.opt.rhythm ? "true" : "false");
+    ambUI();
+    $("#sqVolRow").hidden = !P.audioOn;
+    $("#sqVol").value = $("#vol").value;
+  }
+  function pImmersive() {
+    var on = curView === "session" && pBusy();
+    document.body.classList.toggle("immersive", on);
+  }
+  function pPill() {
+    var pill = $("#tbPrac");
+    if (!pill) return;
+    var show = pBusy() && curView !== "session";
+    pill.hidden = !show;
+    if (show) {
+      pill.href = "#practice/" + P.def.id;
+      bSetT("#tbPracTxt", P.def.name + " · " + (P.state === "paused" ? "paused" : P.def.selfPaced ? "step " + (P.idx + 1) + " of " + P.steps.length : fmt(P.total - pT())));
+    }
+  }
+  function pLockBreathe() {
+    var on = pBusy() && P.usesB;
+    var br = document.querySelector(".breath");
+    if (br) br.classList.toggle("locked", on);
+    $("#bLockNote").hidden = !on;
+    if (on) bSetT("#bLockTxt", P.def.name + " is using the breathing guide.");
+  }
+  function pOpen() { if (P.def) location.hash = "practice/" + P.def.id; }
+
+  /* ----- the library ----- */
+  var prFilter = "all";
+  function pIcon(d) { return d.group === "program" ? "spark" : d.group === "mind" ? "practice" : d.group === "breath" ? "breathe" : d.group === "relax" ? "moon" : d.group === "reflect" ? "nvc" : "move"; }
+  function pCard(d) {
+    var mins = d.selfPaced ? "About " + d.est + " min" : d.lengths ? d.lengths.join("/") + " " + (d.lenUnit ? d.lenUnit + "s" : "min") : (d.open ? "up to " : "") + pMinutes(d) + " min", meta = ['<span>' + mins + "</span>"];
+    if (d.selfPaced) meta.push("<span>Self-paced</span>");
+    if (d.custom) meta.unshift('<span class="mine">Yours</span>');
+    if (d.exp) meta.unshift('<span class="exp">Experimental</span>');
+    if (d.audio) meta.push("<span>Binaural</span>");
+    if (pHasBreathFast(d)) meta.push("<span>Paced breath</span>");
+    if (d.sensor === "best") meta.push('<span class="hrm">Best with sensor</span>');
+    if (d.rhythm) meta.push("<span>Berimbau</span>");
+    else if (d.stand) meta.push("<span>Standing</span>");
+    if (d.caution) meta.push('<span class="cau">Cautions</span>');
+    var tl = "";
+    if (d.group === "program") {
+      var plan = pPlan(d, 0);
+      tl = '<span class="si-tl pc-tl" aria-hidden="true">' + plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + s.secs + ' 1 0"></i>'; }).join("") + "</span>";
+    }
+    return '<li class="pc' + (d.group === "program" ? " prog" : "") + '" style="--pcol:' + pColor(d) + '">' +
+      '<a href="#practice/' + d.id + '" class="pc-a">' +
+        '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + pIcon(d) + '"/></svg></span>' +
+        '<span class="pc-b"><b>' + esc(d.name) + "</b>" +
+          '<span class="pc-blurb">' + esc(d.blurb) + "</span>" + tl +
+          '<span class="pc-meta">' + meta.join("") + dots(d.strength) + "</span>" +
+        "</span></a></li>";
+  }
+  var pBreathCache = {};
+  function pHasBreathFast(d) {
+    if (!(d.id in pBreathCache)) pBreathCache[d.id] = pPlan(d, pLenOf(d, 0)).steps.some(function (s) { return s.k === "breath"; });
+    return pBreathCache[d.id];
+  }
+  function pRenderLib() {
+    $("#prFilt").innerHTML = FILTERS.map(function (f) {
+      return '<button class="chip-b" data-f="' + f[0] + '" aria-pressed="' + (f[0] === prFilter) + '">' + f[1] + "</button>";
+    }).join("");
+    var h = "";
+    GROUPS.forEach(function (g) {
+      var all = g.id === "move" ? yLoad().map(yDef).concat(PRACTICES) : PRACTICES;
+      var list = all.filter(function (d) { return d.group === g.id && (prFilter === "all" || d.tags.indexOf(prFilter) >= 0); });
+      var build = g.id === "move" && (prFilter === "all" || prFilter === "move");
+      if (!list.length && !build) return;
+      h += '<section class="pr-grp" data-g="' + g.id + '"><div class="pr-gh"><h2>' + g.name + "</h2><p>" + g.lede + "</p></div>" +
+        '<ul class="pr-list' + (g.id === "program" ? " progs" : "") + '">' +
+        (build ? '<li class="pc pc-build" style="--pcol:var(--accent)"><a href="#yoga" class="pc-a"><span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span>' +
+          '<span class="pc-b"><b>Build your own routine</b><span class="pc-blurb">Pick from ' + ASANAS.length + ' yoga poses, stretches, mobility drills and capoeira moves, set each one\'s time, and save the routine. Each comes with its own drawing and spoken cues, offline.</span></span></a></li>' : "") +
+        list.map(pCard).join("") + "</ul></section>";
+    });
+    $("#prLib").innerHTML = h;
+    pRenderWeek();
+  }
+  function pRenderWeek() {
+    var log = pLog(), wk = Date.now() - 7 * 864e5, recent = log.filter(function (e) { return e.at >= wk; });
+    var mins = Math.round(recent.reduce(function (a, e) { return a + e.secs; }, 0) / 60);
+    var last = log[log.length - 1], ld = last && pDef(last.id);
+    var el = $("#prWeek");
+    if (!log.length) {
+      el.innerHTML = '<p>Start with <a href="#practice/calm-reset">Calm Reset</a> for a stressful moment, <a href="#practice/sleep-descent">Sleep Descent</a> at bedtime, or <a href="#practice/anapana">Anapana</a> to train attention. With a heart sensor connected, each session ends with your heart-rate change.</p>';
+      return;
+    }
+    el.innerHTML = '<div class="pw-stat"><b>' + recent.length + "</b><span>" + (recent.length === 1 ? "session" : "sessions") + " this week</span></div>" +
+      '<div class="pw-stat"><b>' + mins + "</b><span>minutes this week</span></div>" +
+      (ld ? '<a class="pw-last" href="#practice/' + ld.id + '"><span>Last: <b>' + esc(ld.name) + "</b>" +
+        (last.hr0 ? ", heart rate " + last.hr0 + " → " + last.hr1 : "") + "</span><span class=\"pw-go\">Again</span></a>" : "");
+  }
+
+  /* ----- Home: a suggestion for the time of day ----- */
+  function pSuggest() {
+    var hr = new Date().getHours(), pick;
+    if (hr >= 5 && hr < 9) pick = ["standing-flow", "This morning", "Wake the body up with a few minutes of standing yoga."];
+    else if (hr >= 9 && hr < 12) pick = ["focus-primer", "Before you work", "Steady your breath, then prime with beta before you start."];
+    else if (hr >= 12 && hr < 17) pick = ["calm-reset", "This afternoon", "Ten minutes to bring stress down: cyclic sighs, then resonance breathing."];
+    else if (hr >= 17 && hr < 21) pick = ["coherence", "This evening", "Heart-focused breathing at your resonance pace, with live coherence."];
+    else pick = ["sleep-descent", "Tonight", "Slow breathing that fades into a delta beat as you fall asleep."];
+    var d = pDef(pick[0]);
+    bSetT("#sgWhen", pick[1]);
+    bSetT("#sgName", d.name + " · " + pMinutes(d) + " min");
+    bSetT("#sgTxt", pick[2]);
+    $("#sgGo").href = "#practice/" + d.id;
+    $("#homeSuggest").style.setProperty("--pcol", pColor(d));
+  }
+
+  function pInit() {
+    try {
+      var o = JSON.parse(store.get("pOpt") || "null");
+      if (o && typeof o === "object") for (var k in P.opt) if (typeof o[k] === typeof P.opt[k]) P.opt[k] = o[k];
+    } catch (e) {}
+    var cs = getComputedStyle(document.documentElement);
+    ["relax", "stim", "ther", "accent"].forEach(function (k) { P.col[k] = cs.getPropertyValue("--" + k).trim() || "#5eead4"; });
+    P.col.warm = "#f5b97a";
+    P.cv = $("#sCanvas");
+    P.ctx = P.cv && P.cv.getContext ? P.cv.getContext("2d") : null;
+    if (window.ResizeObserver && P.cv) new ResizeObserver(function () { pSizeCanvas(); }).observe($("#sStage"));
+    window.addEventListener("resize", pSizeCanvas);
+
+    $("#prFilt").addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      prFilter = b.dataset.f;
+      pRenderLib();
+    });
+    $("#sPlay").addEventListener("click", function () { if (P.state === "running") pPause(); else pResume(); });
+    $("#sPrev").addEventListener("click", function () { pJump(-1); });
+    $("#sNext").addEventListener("click", function () { pJump(1); });
+    $("#sEnd").addEventListener("click", function () {
+      if (!pBusy()) return;
+      if (P.endArm && bNow() - P.endArm < 3) { P.endArm = 0; pFinish(true); return; }
+      P.endArm = bNow();
+      bSetT("#sEndTxt", "Tap to end");
+      this.classList.add("armed");
+      var b = this;
+      setTimeout(function () { b.classList.remove("armed"); bSetT("#sEndTxt", "End"); }, 3000);
+    });
+    $("#sTap").addEventListener("click", function () {
+      var s = P.steps[P.idx];
+      if (!s || P.state !== "running") return;
+      if (s.k === "count") {
+        if (P.taps >= s.n) return;
+        P.taps++;
+        pDots(s);
+        if (P.taps >= s.n && !P.countDone) {
+          P.countDone = true;
+          var idx = P.idx;
+          setTimeout(function () { if (P.idx === idx && P.state === "running") pJump(1); }, 900);
+        }
+      } else if (s.k === "hold" && s.open) {
+        pAdvance();
+        return;
+      } else if (s.wander) {
+        P.wander++;
+        bSetT("#sLine", "Noticed. Back to the breath at the nostrils.");
+      }
+      pUI();
+    });
+    var rg = "";
+    for (var v = 0; v <= 10; v++) rg += '<button data-v="' + v + '" aria-pressed="false" style="--tint:' + v * 3 + '%">' + v + "</button>";
+    $("#sRateG").innerHTML = rg;
+    $("#sRateG").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) pRate(+b.dataset.v); });
+    $("#sRateSkip").addEventListener("click", function () { pRate(null); });
+    $("#sqVoice").addEventListener("click", function () {
+      P.opt.voice = !P.opt.voice; pSaveOpt(); if (!P.opt.voice) pHush(); pQuickSync();
+    });
+    $("#sqBells").addEventListener("click", function () { P.opt.bells = !P.opt.bells; pSaveOpt(); pQuickSync(); });
+    $("#sqRhy").addEventListener("click", function () {
+      P.opt.rhythm = !P.opt.rhythm; pSaveOpt(); pQuickSync();
+      if (P.state === "running") pRhythm(P.steps[P.idx], pT());
+    });
+    $("#sqAmb").addEventListener("click", function () {      // cycles: off, rain, crickets, both
+      var ks = AMB_KINDS.map(function (k) { return k[0]; });
+      ambSet(ks[(ks.indexOf(AMB.kind) + 1) % ks.length], true);
+    });
+    $("#sqVol").addEventListener("input", function () {
+      var v = $("#vol");
+      v.value = this.value;
+      v.dispatchEvent(new Event("input"));
+    });
+    $("#bLockBtn").addEventListener("click", pOpen);
+    /* Space pauses and resumes the practice on its screen, and anywhere while the practice's own
+       sound is playing (the old Space shortcut leaves those to this one); the arrows move between steps. */
+    document.addEventListener("keydown", function (e) {
+      if (!pBusy() || kbSkip(e)) return;
+      var here = curView === "session" && !$("#sRun").hidden;
+      if (e.code === "Space" && (here || pTrack())) { e.preventDefault(); if (P.state === "running") pPause(); else pResume(); }
+      else if (here && e.key === "ArrowRight") { e.preventDefault(); pJump(1); }
+      else if (here && e.key === "ArrowLeft") { e.preventDefault(); pJump(-1); }
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden && P.state === "running") { pLock(); pTick(); pLoop(); }
+    });
+    if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
+    window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
+    setInterval(function () { if (pBusy()) pPill(); }, 1000);
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; } };   // for automated tests only
+    yInit();
+    nvcInit();
+    pRenderLib();
+  }

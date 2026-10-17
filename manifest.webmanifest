@@ -1,0 +1,28 @@
+{
+  "id": "./",
+  "name": "Entrain: breathing, binaural beats and heart biofeedback",
+  "short_name": "Entrain",
+  "description": "Paced breathing with five visual guides, research-based binaural beats, and live heart rate, HRV and coherence from a Bluetooth sensor. Works offline.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1120",
+  "theme_color": "#0b1120",
+  "categories": ["health", "lifestyle", "music"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Sleep Descent", "short_name": "Sleep", "description": "Slow breathing into a delta beat for falling asleep", "url": "./#practice/sleep-descent",
+      "icons": [{ "src": "icons/sleep-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Practices", "short_name": "Practice", "description": "Guided meditation, breathwork, yoga and programs", "url": "./#practice",
+      "icons": [{ "src": "icons/practice-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Breathe", "short_name": "Breathe", "description": "Open the breathing guide", "url": "./#breathe",
+      "icons": [{ "src": "icons/breathe-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Heart", "short_name": "Heart", "description": "Connect a sensor and see your heart data", "url": "./#heart",
+      "icons": [{ "src": "icons/heart-96.png", "sizes": "96x96", "type": "image/png" }] }
+  ]
+}
