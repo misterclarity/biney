@@ -56,14 +56,14 @@ async function until(p, secs, max = 240000) {
     ok(cMid > 10.6 && cMid < 12.6 && Math.abs(cEnd - 13) < 0.25, 'glide lengthens the breath: ' + cMid.toFixed(1) + ' s mid-glide, ' + cEnd.toFixed(1) + ' s at the end');
     await until(p, 650);
     const fade = await p.evaluate(() => ({ cue: window.__entrain.BC.cue, dim: document.querySelector('#ses').dataset.dim }));
-    ok(fade.cue < 40 && fade.cue > 0 && fade.dim === '1', 'cue sounds fading and screen dimmed: ' + JSON.stringify(fade));
+    ok(fade.cue < 40 && fade.cue > 0 && !fade.dim, 'cue sounds fading, screen still at full brightness: ' + JSON.stringify(fade));
     await p.screenshot({ path: OUT + 'run-fade.png' });
     await until(p, 800);
     ok(await p.evaluate(() => window.__entrain.B.state) === 'idle' && await vis(p, '#sFig') && await t(p, '#sCap') === 'Body release', 'body release: guide stopped, body map shown');
     ok(await p.evaluate(() => { const BC = window.__entrain.BC; return BC.inh === 5.5 && BC.visual === 'wave' && document.querySelector('#bLockNote').hidden; }), 'between breath steps your own settings are back and Breathe is unlocked');
     await p.screenshot({ path: OUT + 'run-release.png' });
     await until(p, 1100);
-    ok(await p.$eval('#sStage', e => e.dataset.vis) === 'dark' && await t(p, '#sCap') === 'Drift', 'drift: dark stage');
+    ok(await p.$eval('#sStage', e => e.dataset.vis) === 'glow' && await t(p, '#sCap') === 'Drift', 'drift: a soft glow, the screen stays lit');
     await p.screenshot({ path: OUT + 'run-drift.png' });
     await p.waitForFunction(() => window.__entrain.P.state === 'done', null, { timeout: 120000 }).catch(() => {});
     await p.waitForTimeout(400);

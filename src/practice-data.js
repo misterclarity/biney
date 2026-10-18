@@ -9,7 +9,7 @@
        count    the 5-4-3-2-1 senses, tapped off one at a time
        shuffle  a new easy-to-picture word every few seconds (the cognitive shuffle)
        pmr      tense one muscle group, then release it
-       drift    a dark screen while the sound carries on (sleep)
+       drift    a soft glow while the sound carries on (sleep)
        hold     a breath hold: open (tap Breathe in, capped) or a fixed count
      Lengths are in seconds. `lines` are [offset, text] pairs, or plain strings spread
      evenly across the step. Programs add `audio`: a binaural layer whose beat follows
@@ -36,7 +36,7 @@
       lines: [[0, tense], [7, "And release. Let it all go."], [19, after || "Notice the difference between tension and letting go."]] };
   }
   function Hd(secs, title, o) { var l = o && o.lines; return ext({ k: "hold", secs: secs, title: title, lines: pLines(l, secs) }, o && (delete o.lines, o)); }
-  function Dr(secs, title, lines) { return { k: "drift", secs: secs, title: title, dim: true, lines: pLines(lines, secs) }; }
+  function Dr(secs, title, lines) { return { k: "drift", secs: secs, title: title, lines: pLines(lines, secs) }; }
 
   var TENSION = "If you notice tension, let it soften on the out-breath.";
   var WANDER = "If your mind has wandered, that's fine. Gently come back.";
@@ -45,16 +45,16 @@
   var SCAN = [
     [["all"], "Settling in", ["Lie on your back or sit comfortably, and let your eyes close if that feels okay.",
       "Feel where your body touches the floor, the bed or the chair. Let it take your weight.",
-      "There is nothing to achieve here. Just notice what you find, as it is."]],
-    [["belly"], "The breath", ["Notice your breathing, without changing it. Feel the belly rise and fall.",
+      "Observe whatever you find, exactly as it is."]],
+    [["belly"], "The breath", ["Let the breath flow at its own pace, and observe the belly rising and falling.",
       "Each out-breath is a small chance to let go.", WANDER]],
     [["footL"], "Left foot", ["Bring your attention down to your left foot: the toes, the sole, the heel.",
-      "Warmth, coolness, tingling, pressure, or nothing at all. All of it is fine.",
+      "Observe whatever is there: warmth, coolness, tingling, pressure, or the subtlest sensation.",
       "Breathe as if the breath could travel all the way down to the foot."]],
     [["shinL", "kneeL", "thighL"], "Left leg", ["Move up into the left ankle, the shin and the calf.",
       "Now the knee, and the long muscles of the thigh.", "Let the whole left leg feel heavy and supported."]],
     [["footR"], "Right foot", ["Now shift to your right foot: the toes, the sole, the heel.",
-      "Notice any sensation, and let it be just as it is.", "If you drifted off, simply come back to the right foot."]],
+      "Observe any sensation here, exactly as it is.", "If the mind has drifted, bring it back to the right foot."]],
     [["shinR", "kneeR", "thighR"], "Right leg", ["Move up through the right ankle, shin and calf.",
       "The knee, and the thigh.", "Let both legs rest, heavy and still."]],
     [["hips"], "Hips and pelvis", ["Bring your attention to your hips and pelvis, and where they meet the surface below you.",
@@ -62,10 +62,10 @@
     [["back"], "Back", ["Now your lower back. Notice its curve and any tightness.",
       "Move up along the spine to the middle and upper back, and the shoulder blades.",
       "On each out-breath, let the back widen and settle."]],
-    [["belly"], "Belly", ["Return to the belly. Feel it rise as you breathe in and fall as you breathe out.",
-      "Let it be soft, without holding anything in.", WANDER]],
+    [["belly"], "Belly", ["Return to the belly. Observe it rising as you breathe in and falling as you breathe out.",
+      "Let it be soft and loose.", WANDER]],
     [["chest"], "Chest", ["Move up to the chest. Notice the ribs widening and the breath moving.",
-      "You might feel your heartbeat. If you can, just notice it.", "Nothing to change. Just feeling."]],
+      "You might feel your heartbeat here. If you do, observe its rhythm.", "Observe the sensations of the chest, exactly as they are."]],
     [["handL", "armL"], "Left hand and arm", ["Bring your attention to your left hand: fingertips, palm, the back of the hand.",
       "Up through the wrist, the forearm, the elbow and the upper arm.", "Let the arm be heavy."]],
     [["handR", "armR"], "Right hand and arm", ["Now the right hand: fingertips, palm, the back of the hand.",
@@ -74,11 +74,11 @@
       "Let them drop away from the ears, and feel the neck lengthen.", TENSION]],
     [["face"], "Face", ["Bring your attention to your face. Unclench the jaw and let the teeth part a little.",
       "Soften the muscles around the eyes, and smooth the forehead.",
-      "Notice the air at the nostrils: cool on the way in, warmer on the way out."]],
+      "Observe the air at the nostrils: cool on the way in, warmer on the way out."]],
     [["head"], "Head", ["Move to the top of the head, and the back of the head where it rests.",
       "Let the scalp soften.", "If thoughts are passing through, let them pass."]],
     [["all"], "Whole body", ["Now widen your attention to take in the whole body at once, breathing.",
-      "Feel the body as one field of sensation, resting here.", "Stay with this for a few breaths."]]
+      "Observe the whole body as one field of sensation, resting here.", "Stay with this for a few breaths."]]
   ];
   var SCAN_END = {
     wake: [[["all"], "Closing", ["Let your breath deepen a little. Wiggle your fingers and toes.",
@@ -98,25 +98,51 @@
     });
   }
 
+  /* Anapana: the area of attention narrows in steps, from the triangle between the top of the nose and
+     the two corners of the upper lip down to the small dimple just beneath the ridge between the
+     nostrils, observing every sensation in each area. Short sittings take fewer steps; the reminders
+     thin out as the sitting gets longer, so an hour is mostly quiet. zone: the area drawn (pFaceSVG). */
+  var ANA_ZONES = [
+    { title: "The whole triangle", back: "the triangle",
+      start: "Bring your attention to the triangle from the top of your nose down to the two corners of your upper lip. Observe every sensation within it: the touch of the breath, warmth, coolness, tingling, itching, pressure.",
+      more: ["Stay with the whole triangle, from the top of the nose to the corners of the lip. Observe each sensation as it arises.",
+        "Let the breath come and go at its own pace, and observe its touch anywhere in the triangle."] },
+    { title: "Nostrils and upper lip", back: "the nostrils and the upper lip",
+      start: "Now narrow the area to the lower part of the nose, the nostrils and the whole upper lip. Observe all the sensations here.",
+      more: ["Observe the breath touching the inside of the nostrils as it comes in and as it goes out.",
+        "Each time the mind wanders, bring it back to the nostrils and the upper lip."] },
+    { title: "Around the nostrils", back: "the rims of the nostrils",
+      start: "Narrow it further, to the rims of the nostrils and the skin just around them. Observe the touch of each breath here, warmer or cooler, stronger or lighter.",
+      more: ["Observe which nostril the breath is flowing through: the left, the right, or both.",
+        "Stay with the rims of the nostrils. Observe each sensation, and then the next."] },
+    { title: "Below the nostrils", back: "the area below the nostrils",
+      start: "Now only the small area below the nostrils, above the upper lip. Observe whatever sensation is there: the touch of the breath, a tingle, warmth, a pulse.",
+      more: ["Keep your attention in this small area below the nostrils. Observe each sensation as it arises and as it passes.",
+        "Each time the mind wanders, return to the small area below the nostrils."] },
+    { title: "The small dimple", back: "the small dimple",
+      start: "Now narrow to the small dimple just beneath the ridge between the nostrils. Rest all your attention on this one small point, and observe every sensation there.",
+      more: ["Stay at the small dimple. Observe even the subtlest sensation, exactly as it is.",
+        "Each time the mind wanders, return to the small dimple beneath the ridge between the nostrils.",
+        "Observe the touch of the breath at this one small point, as it comes in and as it goes out."] }
+  ];
   function anapana(min) {
-    var total = min * 60, intro = min <= 5 ? 60 : 90, close = 45, obs = total - intro - close;
-    var pool = ["If the mind has wandered, notice where it went. Then come back to the breath at the nostrils.",
-      "Natural breath. Not long, not short on purpose. Just as it is.",
-      "Keep the attention on this small area below the nostrils. Feel the touch of each breath.",
-      "Is this breath coming through the left nostril, the right, or both? Just notice.",
-      "Each time you come back is the practice. There's no failing at this.",
-      "Feel the breath going in, and the breath going out."];
-    var n = Math.max(1, Math.floor(obs / 150)), lines = [];
-    for (var i = 0; i < n; i++) lines.push([Math.round((i + 1) * obs / (n + 1)), pool[i % pool.length]]);
-    return [
-      G(intro, "Settle and find the breath", ["Sit upright but relaxed, with your eyes closed.",
-        "Bring your attention to the small area below the nostrils, above the upper lip.",
-        "Feel the breath as it comes in and goes out. Don't control it. Just observe.",
-        "When you notice the mind has drifted, tap Mind wandered, then come back."]),
-      Ob(obs, "Observe the breath", lines, { wander: true }),
-      G(close, "Closing", ["Let go of the focus on the nostrils, and feel the whole body sitting here.",
-        "Take a fuller breath, and gently open your eyes."])
-    ];
+    var total = min * 60, intro = min <= 5 ? 60 : 90, close = min >= 60 ? 60 : 45, obs = total - intro - close;
+    var zones = min <= 5 ? [0, 3, 4] : min <= 10 ? [0, 1, 3, 4] : [0, 1, 2, 3, 4];
+    var w = zones.map(function (z, i) { return i === zones.length - 1 ? 1.4 : 1; }), sum = w.reduce(function (a, b) { return a + b; }, 0);
+    var gap = min >= 60 ? 300 : min >= 30 ? 210 : min >= 20 ? 150 : 90, used = 0;   // seconds between reminders
+    var steps = [G(intro, "Settle", ["Sit upright and relaxed, and close your eyes.",
+      "Let the breath flow at its own natural pace.",
+      "You'll observe the sensations around the nose, in an area that narrows step by step to one small point below the nostrils.",
+      "Each time you notice the mind has wandered, tap Mind wandered, then return to the area."], { vis: "face", zone: 0 })];
+    zones.forEach(function (z, i) {
+      var Z = ANA_ZONES[z], secs = i === zones.length - 1 ? obs - used : Math.round(obs * w[i] / sum), lines = [[0, Z.start]];
+      used += secs;
+      for (var t = gap, k = 0; t < secs - 60; t += gap, k++) lines.push([t, Z.more[k % Z.more.length]]);
+      steps.push(Ob(secs, Z.title, lines, { wander: true, vis: "face", zone: z, back: Z.back, nobell: i > 0 }));
+    });
+    steps.push(G(close, "Closing", ["Now widen your attention to the whole body, sitting here.",
+      "Take a fuller breath, and open your eyes when you're ready."], { vis: "glow" }));
+    return steps;
   }
 
   function lovingKindness(min) {
@@ -126,13 +152,13 @@
       ["Someone kind", "Bring to mind someone who has been kind to you. See their face.", "you"],
       ["A friend", "Now a good friend, or someone you care about.", "you"],
       ["Someone neutral", "Now someone you see but barely know: a neighbour, a shop assistant.", "you"],
-      ["Someone difficult", "If it feels okay, someone you find mildly difficult. Not the hardest person. Go gently.", "you"],
+      ["Someone difficult", "If it feels okay, someone you find mildly difficult: a small, everyday friction. Go gently.", "you"],
       ["Everyone", "Now let it widen to everyone: this town, this country, all living beings.", "all"]
     ];
     var each = Math.floor(mid / stages.length);
     var steps = [G(settle, "Settle in", ["Sit comfortably and let your eyes close.",
       "Rest a hand on your chest if you like, and breathe a little slower.",
-      "You'll repeat a few simple wishes silently. If a feeling doesn't come, that's fine. The intention is the practice."], { vis: "glow" })];
+      "You'll repeat a few simple wishes silently. Offer each one sincerely: the intention itself is the practice."], { vis: "glow" })];
     stages.forEach(function (s, i) {
       var who = s[2], ph = who === "I"
         ? ["May I be safe.", "May I be healthy.", "May I be happy.", "May I live with ease."]
@@ -153,7 +179,7 @@
       G(intro, "Set up your hand", ["Sit tall. Rest your left hand in your lap.",
         "With your right hand, fold the index and middle fingers in. The thumb closes the right nostril, the ring finger closes the left.",
         "You'll breathe in through one side, then out through the other, switching after each in-breath. The guide shows which side.",
-        "If a nostril is blocked, just imagine the breath moving through it."]),
+        "If a nostril feels blocked, imagine the breath moving through it."]),
       Br(total - intro - close, "Alternate nostril breathing", { inh: 4, sip: 0, hold: 0, exh: 6, rest: 0 },
         { mode: "nadi", lines: [[0, "Close the right nostril. Breathe in through the left."]] }),
       G(close, "Closing", ["Release the hand and breathe naturally through both nostrils.", "Notice the quiet after the practice."])
@@ -164,7 +190,7 @@
     return [
       G(45, "How it works", ["Get comfortable in bed and close your eyes.",
         "You'll hear or see a simple word every few seconds. Picture that thing in detail: its colour, its size, where it is.",
-        "When the next word comes, let the last one go. Don't link them into a story."], { vis: "dark", dim: true }),
+        "When the next word comes, let the last one go, and picture each word on its own."], { vis: "glow" }),
       Sh(min * 60 - 45, "Picture each word")
     ];
   }
@@ -176,7 +202,7 @@
     [["armL"], "Left upper arm", "Bend your left elbow and tense the upper arm. Hold."],
     [["head"], "Forehead", "Raise your eyebrows as high as they go, wrinkling the forehead. Hold."],
     [["face"], "Eyes and cheeks", "Squeeze your eyes shut and scrunch up your cheeks. Hold."],
-    [["face"], "Jaw", "Clench your jaw and press the lips together. Not too hard. Hold."],
+    [["face"], "Jaw", "Clench your jaw gently and press the lips together. Hold."],
     [["neck", "shoulders"], "Neck and shoulders", "Lift your shoulders up towards your ears. Hold them there."],
     [["chest", "back"], "Chest and upper back", "Take a breath in and pull the shoulder blades together. Hold."],
     [["belly"], "Belly", "Tighten your stomach muscles, as if bracing for a gentle push. Hold."],
@@ -190,14 +216,14 @@
     rounds = rounds || 3; breaths = breaths || 30;
     var cyc = 2.5, num = ["one", "two", "three", "four"];
     var st = [G(70, "Before you start", ["Sit or lie down somewhere safe, away from water. Loosen anything tight around your waist.",
-      "Each round is a set of deep breaths: fully in through the belly and chest, then let each one go without pushing.",
+      "Each round is a set of deep breaths: fully in through the belly and chest, then let each one fall out by itself.",
       "After the last breath, let it out and hold with empty lungs until you feel the urge to breathe. Then tap Breathe in.",
-      "Tingling and light-headedness are normal. If you feel unwell, stop and breathe normally."], { vis: "glow" })];
+      "Tingling and light-headedness are common. If you feel unwell, return to normal breathing and rest."], { vis: "glow" })];
     for (var r = 1; r <= rounds; r++) {
       var secs = 3 + breaths * cyc;
       st.push(Br(secs, "Round " + r + ": power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1, rest: 0 }, {
         count: breaths, labels: { "in": "Breathe in fully", out: "Let go" },
-        hints: { "in": "Belly, then chest.", out: "Don't push. Just release." },
+        hints: { "in": "Belly, then chest.", out: "Let it fall out by itself." },
         lines: [[0, "Round " + num[r - 1] + ". " + breaths + " deep breaths. Fully in, and let go."],
           [Math.round(secs / 2), "Keep going. Fully in, let it go."], [Math.round(secs - 9), "Last few breaths."]] }));
       st.push(Hd(180, "Round " + r + ": hold", { open: true, lungs: "empty",
@@ -239,15 +265,15 @@
               lines: [[2, "Breathe in through the nose as the tone rises, and out slowly as it falls."],
                 [180, "The breaths are getting longer. If it ever feels like effort, breathe a little faster. Ease matters more than the count."]] }),
           Br(180, "The guide fades", { inh: 5, sip: 0, hold: 0, exh: 8, rest: 0 },
-            { cueFade: [1, 0], dim: true, lines: [[0, "The guide will slowly fade. Keep this slow rhythm on your own."]] }),
+            { cueFade: [1, 0], lines: [[0, "The guide will slowly fade. Keep this slow rhythm on your own."]] }),
           G(300, "Body release", [[0, "Let your feet and legs grow heavy."], [40, "Your hips and lower back sink into the bed."],
             [80, "Your belly is soft, rising and falling by itself."], [120, "Your hands and arms are heavy and warm."],
             [160, "Shoulders drop. The neck is long."], [200, "Your jaw loosens, your eyes rest, your forehead is smooth."],
-            [250, "The whole body heavy, warm and still."]], { body: ["all"], dim: true, quiet: true }),
-          Dr(780, "Drift", [[0, "Nothing to do now. Let the sound carry you. It will fade out by itself."]])
+            [250, "The whole body heavy, warm and still."]], { body: ["all"], quiet: true }),
+          Dr(780, "Drift", [[0, "Rest now, and let the sound carry you. It fades out by itself."]])
         ];
       },
-      how: "The first eight minutes pace your breath from 6 down to about 4.6 breaths a minute, with the out-breath always the longer half: 4 s in and 6 s out, gliding to 5 s in and 8 s out. The fuller inhale keeps the slow pace easy rather than air-hungry as you get drowsy. Then the cue sounds fade over three minutes, a short body release follows, and the screen goes dark while the binaural beat slides from 6 Hz theta to 3 Hz delta, holds there and fades out.",
+      how: "The first eight minutes pace your breath from 6 down to about 4.6 breaths a minute, with the out-breath always the longer half: 4 s in and 6 s out, gliding to 5 s in and 8 s out. The fuller inhale keeps the slow pace easy rather than air-hungry as you get drowsy. Then the cue sounds fade over three minutes, a short body release follows, and a soft glow stays on the screen while the binaural beat slides from 6 Hz theta to 3 Hz delta, holds there and fades out.",
       ev: "Each part has its own evidence; the combination hasn't been tested as a package. Twenty minutes of slow breathing at six a minute before bed shortened sleep onset and reduced night waking in people with self-reported insomnia. At that pace a longer exhale was rated more relaxing than the reverse. Relaxation training is a recommended (conditional) treatment for chronic insomnia. A 3 Hz binaural beat lengthened deep sleep in a sleep-lab study.",
       cite: "Tsai et al. 2015 · Van Diest et al. 2014 · Edinger et al. 2021 (AASM) · Jirakittayakorn & Wongsawat 2018"
     },
@@ -287,9 +313,9 @@
           Br(780, "Heart-focused breathing", { inh: half, sip: 0, hold: 0, exh: half, rest: 0 },
             { lines: [[0, "Breathe evenly, " + r + " a minute, imagining the breath flowing in and out through the heart area."],
               [180, "Now call up a feeling of ease or appreciation: a person, a place or a pet you love. Let it be gentle."],
-              [420, "If the score drops, don't chase it. Come back to the even breath and the feeling."],
+              [420, "Whatever the score does, come back to the even breath and the feeling."],
               [660, "Keep the rhythm going for these last minutes."]] }),
-          G(75, "Return", ["Let the breath go back to its own pace.", "Notice how your body feels.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
+          G(75, "Return", ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
         ];
       },
       how: "Thirteen minutes of even breathing at your resonance rate (from the resonance test, or 5.5 a minute), with attention on the chest and, after three minutes, a gentle positive feeling: the core of HeartMath's quick coherence technique. The coherence score and your heart rate show live when a sensor is connected.",
@@ -304,7 +330,7 @@
       audio: { name: "Focus Primer", band: "Alpha → Beta", carrier: 400, pts: [[0, 10], [180, 10], [210, 16], [780, 16]], fade: 4, cat: "stim" },
       build: function () {
         return [
-          G(20, "Arrive", ["Sit at your desk with the task ready but not started. Headphones on."], { vis: "glow" }),
+          G(20, "Arrive", ["Sit at your desk with the task open and ready to begin. Headphones on."], { vis: "glow" }),
           Br(160, "Steady breathing", { inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0 },
             { lines: [[0, "Even breaths in and out through the nose, about five and a half a minute."]] }),
           Ob(600, "Prime", [[0, "Let your breath go back to normal and open your eyes."],
@@ -364,18 +390,18 @@
     {
       id: "body-scan", group: "mind", tags: ["mind", "calm", "sleep"], name: "Body Scan", lengths: [10, 20, 30], min: 10, strength: 1,
       tone: "relax", lie: true, voice: true,
-      blurb: "Move your attention slowly through the body, from the feet to the head, noticing sensations without trying to change them.",
+      blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation exactly as it is.",
       build: function (min) { return bodyScan(min, "wake"); },
       how: "Sixteen stops, from the feet up, each with a few spoken cues. The body map shows where you are. Choose 10, 20 or 30 minutes.",
       ev: "The body scan is a core practice of mindfulness-based stress reduction. On its own, a meta-analysis of about 15 trials found a small rise in mindfulness and no clear effect on stress or anxiety. Mindfulness programs that include it have moderate evidence for reducing anxiety, depression and pain.",
       cite: "Gan et al. 2022 · Goyal et al. 2014"
     },
     {
-      id: "anapana", group: "mind", tags: ["mind", "calm"], name: "Anapana", lengths: [5, 10, 20, 30], min: 10, strength: 2,
+      id: "anapana", group: "mind", tags: ["mind", "calm"], name: "Anapana", lengths: [5, 10, 20, 30, 60], min: 10, strength: 2,
       tone: "relax",
-      blurb: "Breath observation in the Vipassana tradition: attention rests on the small area below the nostrils, watching the natural breath.",
+      blurb: "Breath observation in the Vipassana tradition: the area of attention narrows step by step, from the triangle around the nose and upper lip to one small point beneath the nostrils.",
       build: function (min) { return anapana(min); },
-      how: "No pacing at all: you watch the breath as it is. Gentle reminders come every few minutes, and a Mind wandered button counts each time you notice you've drifted. Noticing is the skill being trained, so a high count is not a bad session.",
+      how: "The breath flows at its own natural pace while the area you observe narrows: the whole triangle from the top of the nose to the corners of the upper lip, then the nostrils and upper lip, the rims of the nostrils, the small area below them, and finally only the small dimple just beneath the ridge between the nostrils (three steps in 5 minutes, four in 10). In each area you observe every sensation, and a drawing shows where. Reminders come every few minutes, more sparsely in longer sittings: about every five minutes in the hour. Tap Mind wandered each time you notice you've drifted. Noticing is the skill being trained, so every tap is part of the practice.",
       ev: "Anapana is the first stage of the residential Vipassana course, which was followed by lower stress and higher well-being and mindfulness, partly lasting six months. Plain breath awareness slowed breathing in a controlled study. Mindfulness meditation programs have moderate evidence for anxiety (effect size 0.38), depression and pain.",
       cite: "Szekeres & Wertheim 2015 · Telles et al. 2014 · Goyal et al. 2014"
     },
@@ -391,15 +417,15 @@
     {
       id: "self-compassion", group: "mind", tags: ["mind", "calm"], name: "Self-Compassion Break", min: 5, strength: 2,
       tone: "stim",
-      blurb: "Three short steps for a hard moment: name it, remember you're not alone in it, and offer yourself some kindness.",
+      blurb: "Three short steps for a hard moment: name it, remember that others feel it too, and offer yourself some kindness.",
       build: function () {
         return [
-          G(40, "Bring it to mind", ["Think of something that's troubling you right now. Something moderate, not the hardest thing.",
+          G(40, "Bring it to mind", ["Think of something that's troubling you right now, something of moderate weight.",
             "Notice where you feel it in your body."], { vis: "glow" }),
           G(70, "This is hard", ["Say to yourself: this is a moment of difficulty.", "Or: this hurts. This is stress.",
-            "Just acknowledging it, without fixing anything."], { vis: "glow" }),
-          G(70, "You're not alone", ["Difficulty is part of being human. Other people feel this way too.",
-            "Everyone struggles sometimes. You're not alone in this."], { vis: "glow" }),
+            "Acknowledge it, exactly as it is."], { vis: "glow" }),
+          G(70, "Part of being human", ["Difficulty is part of being human. Other people feel this way too.",
+            "Everyone struggles sometimes. You share this with many others."], { vis: "glow" }),
           G(80, "Kindness", ["Place your hands over your heart, or anywhere that feels soothing. Feel their warmth.",
             "Say to yourself: may I be kind to myself.", "Or whatever you need to hear: may I accept myself as I am. May I be patient."], { vis: "glow" }),
           G(40, "Closing", ["Take a slow breath and let the words settle.", "Come back to the room when you're ready."], { vis: "glow" })
@@ -419,7 +445,7 @@
           Ct(70, 5, "5 things you can see", ["Look around and find five things you can see. Name each one to yourself, with a detail: its colour, its shape."], { sense: "see" }),
           Ct(60, 4, "4 things you can hear", ["Now listen. Find four things you can hear, near or far."], { sense: "hear" }),
           Ct(55, 3, "3 things you can feel", ["Find three things you can feel: your feet on the floor, the fabric on your skin, the air."], { sense: "feel" }),
-          Ct(45, 2, "2 things you can smell", ["Two things you can smell. If nothing comes, recall two smells you like."], { sense: "smell" }),
+          Ct(45, 2, "2 things you can smell", ["Two things you can smell, or two smells you remember and like."], { sense: "smell" }),
           Ct(35, 1, "1 thing you can taste", ["One thing you can taste, or one taste you enjoy."], { sense: "taste" }),
           G(30, "Breathe", ["Take two slow breaths, with a long exhale.", "Notice that you're here, now."])
         ];
@@ -439,9 +465,9 @@
           G(180, "Slow steps", [[0, "Begin to walk, much slower than usual."], [30, "Notice the lifting of the foot, the moving forward, the placing down."],
             [80, "At the end of your path, pause, turn slowly, and continue."], [130, WANDER]]),
           G(180, "Whole body", [[0, "Widen your attention to the whole body walking: the arms, the balance, the breath."],
-            [70, "Let your pace be natural but unhurried."], [130, "If thoughts pull you away, come back to the feeling of the next step."]]),
+            [70, "Let your pace be natural but unhurried."], [130, "If thoughts pull you away, come back to the sensations of the next step: lifting, moving, placing."]]),
           G(120, "Surroundings", [[0, "Now open to the surroundings: sounds, light, the air on your skin."], [60, "Keep a little attention in your feet as you take it all in."]]),
-          G(60, "Closing", ["Come to a stop. Stand for a few breaths.", "Notice how you feel before you move on."])
+          G(60, "Closing", ["Let your steps come to rest, and stand for a few breaths.", "Observe the sensations in your feet and legs before you move on."])
         ];
       },
       how: "Ten minutes in four stages: standing, slow steps, the whole body, then the surroundings. Works indoors on a short path.",
@@ -462,7 +488,7 @@
       id: "nvc-choose", group: "reflect", tags: ["reflect"], name: "From Should to Choose", reflect: true, selfPaced: true, est: 10, strength: 1, tone: "ther",
       blurb: "List what you do because you feel you have to, then check each one: would you still choose it, and for what? An exercise from nonviolent communication for looking at the rules you live by.",
       build: function () { return nvcChooseSteps(); },
-      how: "List the things you feel you have to, should or must do. Then for each, decide whether you'd still choose it, and why, picking from common reasons or writing your own. Reasons that are really pressure, like money, approval, or avoiding guilt, shame or punishment, are marked. You end with your list rewritten as \u201CI choose to\u2026 because I want\u2026\u201D, and what you'd rather stop.",
+      how: "List the things you feel you have to, should or must do. Then for each, decide whether you'd still choose it, and why, picking from common reasons or writing your own. Reasons that are really pressure, like money, approval, or avoiding guilt, shame or punishment, are marked. You end with your list rewritten as \u201CI choose to\u2026 because I want\u2026\u201D, and the ones you'd like to change.",
       ev: "This exercise comes from Marshall Rosenberg's book and hasn't been tested on its own. Motivation research points the same way: in self-determination theory, acting from your own values goes with more well-being and persistence than acting from pressure, guilt or the need for approval.",
       cite: "Ryan & Deci 2000"
     },
@@ -474,7 +500,7 @@
       blurb: "Tense each muscle group for a few seconds, then let go and feel the difference. Fourteen groups, hands to feet.",
       build: function () {
         var s = [G(50, "Get comfortable", ["Lie down or sit with your back supported.",
-          "You'll tense each muscle group for about seven seconds, firmly but not to the point of pain, then release for half a minute.",
+          "You'll tense each muscle group firmly, at about half your strength, for about seven seconds, then release it for half a minute.",
           "Skip any area that's injured or cramps easily."], { body: ["all"] })];
         PMR_GROUPS.forEach(function (g) { s.push(Pm(g[0], g[1], g[2])); });
         s.push(G(80, "Whole body", ["Now scan through the whole body. If any area is still tight, let it soften.",
@@ -490,7 +516,7 @@
       tone: "ther", lie: true,
       blurb: "For a racing mind at bedtime: picture a series of random, unrelated things, one every few seconds, until sleep takes over.",
       build: function (min) { return shuffle(min); },
-      how: "A simple word appears (and is said softly, with voice on) every 12 seconds on a dark screen. Picture each one, then let it go. Stop whenever you feel sleepy.",
+      how: "A simple word appears (and is said softly, with voice on) every 12 seconds. Picture each one, then let it go. Whenever sleep comes, let yourself drift off.",
       ev: "The idea is that scrambled, imagery-like thinking resembles the mind's own drift into sleep and crowds out worry. Its only test so far is a conference study of 154 students, where it matched structured problem-solving for reducing pre-sleep arousal. Promising but preliminary.",
       cite: "Beaudoin et al. 2016 (SLEEP abstract)"
     },
@@ -517,7 +543,7 @@
           Br(210, "Humming breath", { inh: 4, sip: 0, hold: 0, exh: 8, rest: 0 },
             { labels: { "in": "Breathe in", out: "Hum" },
               hints: { "in": "Quietly, through the nose.", out: "Lips closed, a soft steady mmm. Feel the buzz in your face." } }),
-          G(30, "Silence", ["Let the humming stop, and sit for a moment in the quiet.", "Notice any lingering vibration, and the stillness after it."])
+          G(30, "Silence", ["Let the humming fade, and sit for a moment in the quiet.", "Notice any lingering vibration, and the stillness after it."])
         ];
       },
       how: "4 seconds in, 8 seconds of humming out: a long exhale with sound, which naturally slows the breath.",
@@ -532,11 +558,11 @@
         return [
           G(60, "Find the sound", ["Breathe out through an open mouth as if fogging a mirror: haaa. Feel the slight narrowing at the back of the throat.",
             "Now close the mouth and keep that narrowing on the out-breath. It makes a soft ocean sound.",
-            "Breathe in normally through the nose, without the sound."]),
+            "Breathe in quietly through the nose."]),
           Br(270, "Ocean breath", { inh: 5, sip: 0, hold: 0, exh: 5, rest: 0 },
             { labels: { "in": "Breathe in", out: "Ocean breath out" },
-              hints: { "in": "Quietly through the nose, no sound.", out: "Throat slightly narrowed: a soft, steady ocean sound." } }),
-          G(30, "Release", ["Let the throat relax and breathe normally.", "Notice the calm."])
+              hints: { "in": "Quietly through the nose.", out: "Throat slightly narrowed: a soft, steady ocean sound." } }),
+          G(30, "Release", ["Let the throat relax and breathe normally.", "Observe the calm, and the breath settling at its own pace."])
         ];
       },
       how: "Even 5-second breaths in and out, six a minute, with the ujjayi sound on the exhale only.",
@@ -562,7 +588,7 @@
     {
       id: "kapalabhati", group: "breath", tags: ["breath", "focus"], name: "Kapalabhati", min: 6, strength: 1,
       tone: "stim", confirm: true,
-      blurb: "Skull-shining breath: short, sharp exhales from the belly with passive inhales, in three rounds. Energising, not calming.",
+      blurb: "Skull-shining breath: short, sharp exhales from the belly with passive inhales, in three rounds. An energising breath, for a lift in alertness.",
       caution: "Skip this one if you are pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks. Do it seated, on an empty stomach, and stop if you feel dizzy or tingly.",
       build: function () {
         var rec = function (n) {
@@ -572,7 +598,7 @@
           G(80, "Technique", ["Sit tall with your hands on your knees.",
             "Each pump is a short, sharp exhale through the nose, made by pulling the belly in quickly.",
             "The inhale happens by itself as the belly relaxes. Keep the shoulders and face still.",
-            "Follow the ticks: one pump each second. Stop at any point if you feel lightheaded."]),
+            "Follow the ticks: one pump each second. If you feel lightheaded, return to easy breathing."]),
           Pu(30, 1, "Round 1"), rec(1),
           Pu(30, 1, "Round 2"), rec(2),
           Pu(30, 1, "Round 3"), rec(3),

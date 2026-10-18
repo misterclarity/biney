@@ -24,12 +24,12 @@
   function heartLed(min) {
     var total = min * 60, settle = 60, base = 90, close = 60;
     return [
-      G(settle, "Settle", ["Sit back or lie down with headphones on. Breathe naturally; there's no pace to follow in this one.",
+      G(settle, "Settle", ["Sit back or lie down with headphones on, and breathe at your own natural pace.",
         "The beat will follow your heart. As your heart rate settles and its rhythm loosens, the beat slows from alpha toward theta.",
         "Let your attention rest on the sound, or on the breath at the nostrils."], { vis: "orb" }),
-      { k: "adapt", phase: "base", secs: base, title: "Listening to your heart", lines: [[0, "First, a minute and a half to measure your resting baseline. Just rest."]] },
+      { k: "adapt", phase: "base", secs: base, title: "Listening to your heart", lines: [[0, "First, a minute and a half to measure your resting baseline. Rest, and breathe at your own pace."]] },
       { k: "adapt", phase: "lead", secs: total - settle - base - close, title: "Heart-led beat",
-        lines: [[0, "Now the beat is following your heart. Nothing to do but rest."], [240, "Let the sound carry you."], [600, "Notice how quiet the body has become."]] },
+        lines: [[0, "Now the beat is following your heart. Rest, and let the sound carry you."], [240, "Let the sound carry you."], [600, "Notice how quiet the body has become."]] },
       G(close, "Closing", ["Let the sound fade. Take a fuller breath.", "Notice how you feel, and look at what your heart did on the next screen."], { vis: "orb" })
     ];
   }
@@ -113,12 +113,12 @@
     len = len || 20;
     return [
       G(45, "Lie down", ["Lie down somewhere you can rest, with headphones on, and the phone where you'll hear it.",
-        "Close your eyes and let the breath slow down. You don't have to fall asleep: resting counts too.",
-        "You'll be woken gently. With a heart sensor, the nap is timed from when your heart rate says you've dozed off."], { vis: "dark", dim: true }),
-      { k: "nap", nap: len, secs: (len + 25) * 60, title: "Nap", open: true, dim: true, quiet: true, lines: [[0, "Rest now."]] },
+        "Close your eyes and let the breath slow down. Resting counts as much as sleeping.",
+        "You'll be woken gently. With a heart sensor, the nap is timed from when your heart rate says you've dozed off."], { vis: "glow" }),
+      { k: "nap", nap: len, secs: (len + 25) * 60, title: "Nap", open: true, quiet: true, lines: [[0, "Rest now."]] },
       { k: "wake", secs: 120, title: "Waking up", nobell: true, lines: [[0, "Time to wake up. Take a slow, deep breath."], [25, "Wiggle your fingers and toes."],
         [50, "Let some light in. Open your eyes when you're ready."], [80, "Stretch, and take your time."]] },
-      G(30, "Up slowly", ["Sit up slowly before you stand. A glass of water helps.", "Notice how you feel."], { vis: "orb" })
+      G(30, "Up slowly", ["Sit up slowly before you stand. A glass of water helps.", "Observe how you feel now: your energy, and how clear your head is."], { vis: "orb" })
     ];
   }
   function pNapTick(s, st, T) {

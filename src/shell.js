@@ -1,6 +1,7 @@
   /* ---------------------------- app shell ----------------------------
      Views behind a hash router: #home, #practice, #breathe, #sounds, #heart
-     and #learn, plus #practice/<id> for a guided session. Older in-page anchors (#prime, #tracks, #builder, #connect,
+     and #learn, plus #practice/<id> for a guided session, and from search #track/<id>,
+     #breathe/<pattern> and #yoga/find/<pose>. Older in-page anchors (#prime, #tracks, #builder, #connect,
      #science, #references) still work: they open the view that holds them.
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
@@ -51,6 +52,8 @@
     if (h === "session") { location.replace("#practice"); return; }
     if (h.indexOf("practice/") === 0) { showView("session"); pIntro(h.slice(9)); return; }
     if (h === "yoga" || h.indexOf("yoga/") === 0) { showView("yoga"); yOpen(h.slice(5)); return; }
+    if (h.indexOf("track/") === 0) { segPick("tracks"); showView("sounds"); fdTrack(h.slice(6)); return; }      // from search
+    if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
     if (ALIAS[h]) { segPick(ALIAS[h][1]); showView(ALIAS[h][0]); return; }
     var el = document.getElementById(h), v = el && viewOf(el);
@@ -240,6 +243,7 @@
     APP.sticky = !!opt.sticky;
     clearTimeout(APP.tt);
     $("#toastTxt").textContent = msg;
+    t.classList.toggle("over", !!opt.over);                // one that matters during a session shows over it
     a.hidden = !opt.action;
     a.textContent = opt.action || "";
     a.onclick = opt.action ? function () { if (opt.onAct) opt.onAct(); if (!opt.keep) toastHide(); } : null;

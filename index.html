@@ -940,6 +940,7 @@
   /* ---------- practice: running session ---------- */
   .ses-run{display:flex;flex-direction:column;min-height:calc(100dvh - var(--top) - var(--tabbar) - 40px);color:var(--text)}
   body.immersive .topbar,body.immersive .rail,body.immersive .player,body.immersive .toast{display:none!important}
+  body.immersive .toast.over:not([hidden]){display:flex!important;top:calc(env(safe-area-inset-top,0px) + 84px);bottom:auto!important}
   body.immersive .main{margin-left:0!important;padding:0!important}
   body.immersive #views{padding:0}
   body.immersive #v-session{max-width:none}
@@ -1011,13 +1012,57 @@
   .qt-vol svg.i{width:16px;height:16px;flex:none}
   .qt-vol input{margin:0}
 
-  /* dimmed for sleep: almost nothing lit */
-  .ses[data-dim="1"] .ses-run{--text:#5d6785;--text-dim:#4a536e;--text-faint:#3a4259}
-  .ses[data-dim="1"] .ses-stage{opacity:.35;transition:opacity 4s}
-  .ses[data-dim="1"] .ses-b,.ses[data-dim="1"] .ses-x,.ses[data-dim="1"] .lc,.ses[data-dim="1"] .qt[aria-pressed="true"]{background:#0e1424}
-  .ses[data-dim="1"] .ses-b.main{background:#1f2a48;color:#7f8bb0}
-  .ses[data-dim="1"] .ses-fill{opacity:.25}
-  body:has(.ses[data-dim="1"]:not([hidden])).immersive{background:#04060c}
+  /* ---------- search ---------- */
+  .pill-ic{width:34px;padding:0;justify-content:center;color:var(--text-dim)}
+  .pill-ic svg.i{width:18px;height:18px}
+  .fd-back{position:fixed;inset:0;z-index:91;background:rgba(5,8,16,.62)}
+  .fd-back[hidden],.fd[hidden]{display:none}
+  .fd{
+    position:fixed;z-index:92;left:50%;top:max(8vh,calc(env(safe-area-inset-top,0px) + 16px));transform:translateX(-50%);
+    width:min(640px,calc(100vw - 32px));max-height:min(80vh,760px);display:flex;flex-direction:column;
+    background:var(--bg-2);border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 80px -24px rgba(0,0,0,.9);overflow:hidden;
+  }
+  @media (min-width:1024px){ .fd{left:calc(var(--rail) + (100vw - var(--rail)) / 2)} }
+  @media (max-width:1023px){
+    .fd{inset:0;transform:none;width:auto;max-height:none;border:0;border-radius:0;
+      padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+  }
+  body.fd-open{overflow:hidden}
+  .fd-head{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 16px;border-bottom:1px solid var(--line-soft)}
+  .fd-gl{display:grid;place-items:center;color:var(--text-faint)}
+  .fd-gl svg.i{width:20px;height:20px}
+  .fd-head input{flex:1;min-width:0;height:46px;border:0;background:transparent;color:var(--text);font:inherit;font-size:17px;outline:none}
+  .fd-head input::placeholder{color:var(--text-faint)}
+  .fd-head input::-webkit-search-cancel-button,.fd-head input::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+  .fd-x{width:40px;height:40px;flex:none;border:0;border-radius:12px;background:var(--panel);color:var(--text-dim);display:grid;place-items:center;cursor:pointer}
+  .fd-x:hover{color:var(--text);background:var(--panel-2)}
+  .fd-x svg.i{width:18px;height:18px}
+  .fd-count{margin:0;padding:8px 18px 0;font-size:12.5px;color:var(--text-faint);min-height:1.4em}
+  .fd-res{flex:1;overflow:auto;padding:2px 8px 18px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .fd-grp h3{display:flex;align-items:center;gap:8px;margin:14px 10px 6px;font-size:12px;font-weight:720;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint)}
+  .fd-grp h3 span{font-size:11px;letter-spacing:0;padding:1px 7px;border-radius:999px;background:var(--panel);color:var(--text-dim)}
+  .fd-grp ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+  .fd-it{display:flex;gap:12px;align-items:flex-start;padding:10px;border-radius:12px;color:var(--text);text-decoration:none}
+  .fd-it:hover{background:var(--panel)}
+  .fd-it:focus-visible{outline:none;background:var(--panel-2);box-shadow:inset 0 0 0 2px var(--accent)}
+  .fd-iic{width:36px;height:36px;flex:none;border-radius:11px;display:grid;place-items:center;color:var(--pcol,var(--accent));
+    background:color-mix(in srgb,var(--pcol,var(--accent)) 16%,transparent)}
+  .fd-iic svg.i{width:19px;height:19px}
+  .fd-tx{display:grid;gap:2px;min-width:0}
+  .fd-tx b{font-size:15px;font-weight:700;line-height:1.3}
+  .fd-tx small{font-size:12.5px;color:var(--text-dim);line-height:1.35}
+  .fd-sn{font-size:13px;color:var(--text-dim);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .fd-sn:empty{display:none}
+  .fd mark{background:color-mix(in srgb,var(--accent) 32%,transparent);color:var(--text);border-radius:3px;padding:0 1px}
+  .fd-more{margin:6px 10px 0;min-height:34px;padding:6px 12px;border-radius:10px;border:1px solid var(--line-soft);background:transparent;color:var(--text-dim);font:inherit;font-size:13px;cursor:pointer}
+  .fd-more:hover{color:var(--text);border-color:var(--line)}
+  .fd-empty{padding:16px 10px;color:var(--text-dim);font-size:14px;line-height:1.5}
+  .fd-empty p{margin:0;max-width:52ch}
+  .fd-try{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .fd-hit{animation:fdhit 2.6s ease-out}
+  @keyframes fdhit{0%,35%{box-shadow:0 0 0 3px var(--accent);background-color:color-mix(in srgb,var(--accent) 14%,transparent)}100%{box-shadow:0 0 0 3px transparent}}
+  @media (prefers-reduced-motion:reduce){ .fd-hit{animation:none;outline:3px solid var(--accent);outline-offset:3px} }
+  @media (max-width:560px){ .pill-prac span{max-width:30vw} }
 
   /* body map */
   .bm{overflow:visible}
@@ -1053,6 +1098,15 @@
   .tapfig .ring.on{animation:tapring .55s ease-out infinite}
   @keyframes tapring{0%{r:5px;opacity:.95}100%{r:15px;opacity:0}}
   @media (prefers-reduced-motion:reduce){.tapfig .ring.on{animation:none;opacity:.8;r:11px}}
+  /* anapana: the area being observed, on the nose and upper lip */
+  .anafig .ln{stroke:var(--text);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .anafig .ln.thin{stroke-width:2.2}
+  .anafig .ln.faint{stroke:var(--text-faint);stroke-width:1.8}
+  .anafig .zn{fill:color-mix(in srgb,var(--pcol) 30%,transparent);stroke:var(--pcol);stroke-width:2}
+  .anafig .zn.pt{fill:var(--pcol);stroke:none}
+  .anafig .zn-ring{fill:none;stroke:var(--pcol);stroke-width:2;transform-origin:100px 142px;animation:anaring 2.6s ease-out infinite}
+  @keyframes anaring{0%{opacity:.85;transform:scale(.55)}100%{opacity:0;transform:scale(1.9)}}
+  @media (prefers-reduced-motion:reduce){.anafig .zn-ring{animation:none;opacity:.6}}
   .ses-rate{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:0 4px}
   .ses-rate[hidden]{display:none}
   .rate-g{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:5px;width:100%;max-width:540px}
@@ -1292,6 +1346,7 @@
   <symbol id="i-drum" viewBox="0 0 24 24"><path d="M7.5 2.8c5.2 3.6 5.2 14.8 0 18.4"/><path d="M7.5 2.8v18.4"/><circle cx="14.6" cy="15.4" r="3.2"/><path d="M5 9.8l5 1.6"/></symbol>
   <symbol id="i-nvc" viewBox="0 0 24 24"><path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4 3.5v-3.5H6.5a2 2 0 0 1-2-2z"/><path d="M12 13.4s-2.9-1.6-2.9-3.6a1.5 1.5 0 0 1 2.9-.6 1.5 1.5 0 0 1 2.9.6c0 2-2.9 3.6-2.9 3.6z"/></symbol>
   <symbol id="i-rain" viewBox="0 0 24 24"><path d="M7.2 14.8a3.9 3.9 0 0 1 .4-7.8 5.2 5.2 0 0 1 10 1.6 3.1 3.1 0 0 1-.4 6.2z"/><path d="M8.5 18l-.9 2.4M12.4 18l-.9 2.4M16.3 18l-.9 2.4"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.6" cy="10.6" r="6.4"/><path d="M15.4 15.4 20.5 20.5"/></symbol>
 </svg>
 
 <div class="app">
@@ -1314,6 +1369,7 @@
       <h1 id="viewTitle">Home</h1>
       <div class="top-actions">
         <a class="pill pill-prac" id="tbPrac" href="#practice" hidden><svg class="i" aria-hidden="true"><use href="#i-practice"/></svg><span id="tbPracTxt"></span></a>
+        <button class="pill pill-ic" id="tbFind" aria-label="Search" title="Search (/)" aria-haspopup="dialog" aria-expanded="false" aria-keyshortcuts="/ Control+K"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></button>
         <a class="pill" id="tbSensor" href="#heart" data-state="off"><i class="dot hr-dot" aria-hidden="true"></i><span id="tbSensorTxt">Connect sensor</span></a>
       </div>
     </header>
@@ -2381,6 +2437,19 @@
   </div>
 </div>
 
+<!-- ============ SEARCH ============ -->
+<div class="fd-back" id="fdBack" hidden></div>
+<div class="fd" id="fd" role="dialog" aria-modal="true" aria-label="Search" hidden>
+  <div class="fd-head">
+    <span class="fd-gl"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></span>
+    <input id="fdIn" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"
+      placeholder="Practices, poses, sounds, Learn…" aria-label="Search Entrain" aria-describedby="fdCount" aria-controls="fdRes">
+    <button class="fd-x" id="fdX" aria-label="Close search"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
+  </div>
+  <p class="fd-count" id="fdCount" aria-live="polite"></p>
+  <div class="fd-res" id="fdRes"></div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite" hidden>
   <span id="toastTxt"></span>
   <button class="btn small primary" id="toastAct" hidden></button>
@@ -2934,6 +3003,7 @@
   function setStatus(msg) { $("#status").textContent = msg; }
 
   function markCard() {
+    wlKick();                            // a track started, paused or stopped: the screen lock follows
     var cards = document.querySelectorAll(".card");
     for (var i = 0; i < cards.length; i++) {
       var on = A.playing && A.track && cards[i].dataset.id === A.track.id;
@@ -3484,7 +3554,7 @@
     ph: null, pending: null,  // phases in use, and an edit waiting for the next breath
     epoch: 0, done: 0, total: 0,
     raf: 0, tick: 0, key: "", segOn: -1, schedTo: 0,
-    voice: null, bus: null, lock: null, doneMsg: "", doneCount: 0, doneSecs: 0,
+    voice: null, bus: null, doneMsg: "", doneCount: 0, doneSecs: 0,
     hr: [],                   // heart samples this session: {bt, hr, n (breath index), cyc}
     swings: [], hrDone: 0,    // per-breath heart-rate swing, and the next breath to score
     coh: [],                  // coherence scores taken during this session
@@ -3903,22 +3973,9 @@
     o.onended = function () { try { o.disconnect(); vg.disconnect(); } catch (e) {} };
   }
 
-  /* Keep the screen awake while a session runs; ignore refusals. */
-  function acquireLock() {
-    try {
-      if (!navigator.wakeLock || B.lock) return;
-      navigator.wakeLock.request("screen").then(function (l) {
-        if (B.state !== "running") { l.release().catch(function () {}); return; }
-        B.lock = l;
-        l.addEventListener("release", function () { if (B.lock === l) B.lock = null; });
-      }).catch(function () {});
-    } catch (e) {}
-  }
-  function releaseLock() {
-    var l = B.lock;
-    B.lock = null;
-    if (l) { try { var p = l.release(); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
-  }
+  /* The screen stays on while a session runs: one lock, shared with practices and tracks. */
+  function acquireLock() { wlKick(); }
+  function releaseLock() { wlKick(); }
 
   function setFocus(on) {
     var st = $("#bStage");
@@ -5339,7 +5396,8 @@
 
   /* ---------------------------- app shell ----------------------------
      Views behind a hash router: #home, #practice, #breathe, #sounds, #heart
-     and #learn, plus #practice/<id> for a guided session. Older in-page anchors (#prime, #tracks, #builder, #connect,
+     and #learn, plus #practice/<id> for a guided session, and from search #track/<id>,
+     #breathe/<pattern> and #yoga/find/<pose>. Older in-page anchors (#prime, #tracks, #builder, #connect,
      #science, #references) still work: they open the view that holds them.
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
@@ -5390,6 +5448,8 @@
     if (h === "session") { location.replace("#practice"); return; }
     if (h.indexOf("practice/") === 0) { showView("session"); pIntro(h.slice(9)); return; }
     if (h === "yoga" || h.indexOf("yoga/") === 0) { showView("yoga"); yOpen(h.slice(5)); return; }
+    if (h.indexOf("track/") === 0) { segPick("tracks"); showView("sounds"); fdTrack(h.slice(6)); return; }      // from search
+    if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
     if (ALIAS[h]) { segPick(ALIAS[h][1]); showView(ALIAS[h][0]); return; }
     var el = document.getElementById(h), v = el && viewOf(el);
@@ -5579,6 +5639,7 @@
     APP.sticky = !!opt.sticky;
     clearTimeout(APP.tt);
     $("#toastTxt").textContent = msg;
+    t.classList.toggle("over", !!opt.over);                // one that matters during a session shows over it
     a.hidden = !opt.action;
     a.textContent = opt.action || "";
     a.onclick = opt.action ? function () { if (opt.onAct) opt.onAct(); if (!opt.keep) toastHide(); } : null;
@@ -6010,7 +6071,7 @@
     /* ----- balance ----- */
     { id: "tree", en: "Tree", sa: "Vrksasana", cat: "balance", pos: "stand", sides: true, hold: 35, level: 1,
       fig: F("front", { torso: 0, armR: [-14, 30], armL: [14, -30], legR: [-130, 100], legL: [179, 180] }),
-      cues: ["Tree, {S} foot up. Shift your weight to the {O} foot and place the {S} sole on the calf or inner thigh, never on the knee.",
+      cues: ["Tree, {S} foot up. Shift your weight to the {O} foot and place the {S} sole on the calf or the inner thigh, above or below the knee.",
         "Hands at the chest or overhead. Find a still point to look at.", "Wobbling is part of it."],
       caution: "Keep a wall or chair within reach if balance is tricky." },
     { id: "warrior3", en: "Warrior III", sa: "Virabhadrasana III", cat: "balance", pos: "stand", sides: true, hold: 25, level: 3,
@@ -6046,7 +6107,7 @@
     { id: "downdog", en: "Downward-Facing Dog", sa: "Adho Mukha Svanasana", cat: "fours", pos: "fours", hold: 35, level: 2, headDown: true,
       fig: F("side", { torso: -138, head: 0, arm: [-138, -138], leg: [150, 150] }),
       cues: ["Downward dog. From hands and knees, tuck the toes and lift the hips up and back.",
-        "Bend the knees generously and lengthen the spine. Heels don't need to touch.", "Let the head hang. Breathe."],
+        "Bend the knees generously and lengthen the spine. Heels can stay lifted.", "Let the head hang. Breathe."],
       caution: "Ease off with sore wrists, glaucoma or uncontrolled high blood pressure; child's pose is a good alternative." },
     { id: "plank", en: "Plank", sa: "Phalakasana", cat: "fours", pos: "fours", hold: 20, level: 2,
       fig: F("side", { torso: -76, head: 0, arm: [180, 180], leg: [104, 104] }),
@@ -6090,7 +6151,7 @@
     { id: "bridge", en: "Bridge", sa: "Setu Bandha Sarvangasana", cat: "lying", pos: "supine", hold: 30, level: 2,
       fig: F("side", { torso: -108, head: -70, arm: [98, 92], leg: [68, 178] }),
       cues: ["Bridge. Lie on your back with knees bent, feet hip-width apart.", "Press into the feet and lift the hips. Arms along the floor.", "Breathe, then roll down slowly, one bone at a time."],
-      caution: "Keep the head still; don't turn it while the hips are lifted." },
+      caution: "Keep the head still and facing the ceiling while the hips are lifted." },
     { id: "supinetwist", en: "Supine Twist", sa: "Supta Matsyendrasana", cat: "lying", pos: "supine", sides: true, hold: 45, level: 1,
       fig: F("front", { top: true, torso: 0, armR: [-90, -90], armL: [90, 90], legR: [130, 210], legL: [136, 216] }),
       cues: ["Supine twist. Lying down, hug the knees in and let them fall to the {S}.",
@@ -6107,7 +6168,7 @@
     { id: "corpse", en: "Corpse", sa: "Savasana", cat: "rest", pos: "supine", hold: 180, level: 1,
       fig: F("side", { torso: -90, head: 0, arm: [96, 92], leg: [90, 90] }),
       cues: ["Rest. Lie on your back, legs long, arms a little away from the body, palms up.",
-        "Let the whole body be heavy. Nothing to do.", "Let the breath move by itself."] }
+        "Let the whole body be heavy and still.", "Let the breath move by itself."] }
   ];
   var ASANA = {};
   ASANAS.forEach(function (a) { ASANA[a.id] = a; });
@@ -6127,7 +6188,7 @@
     supine: { stand: "Roll to your side, press up to sitting, then come up to standing slowly.", fours: "Roll to your side and come onto your hands and knees.",
       prone: "Roll over onto your front.", seat: "Roll to your side and press up to sitting." }
   };
-  var HOLD_EXTRA = ["Breathe slowly and evenly.", "Soften anything you don't need to hold.", "Stay with the breath.", "Notice the sensations, without forcing."];
+  var HOLD_EXTRA = ["Breathe slowly and evenly.", "Let the face, jaw and shoulders soften.", "Stay with the breath.", "Observe the sensations, and breathe into them."];
   var MOVE_EXTRA = ["Keep breathing with the movement.", "Smaller is fine. Keep it comfortable.", "Relax the shoulders and the jaw.", "Smooth and steady."];
   var CAP_EXTRA = ["Eyes forward, on your imaginary partner.", "Stay low and light, knees soft.", "Let the berimbau set the pace.", "Breathe out on each effort."];
 
@@ -6153,7 +6214,7 @@
     if (!flat.length) return [G(30, "Empty sequence", ["Add some poses to this sequence first."])];
     var first = flat[0].a.pos, steps = [];
     steps.push(G(25, "Get ready", o.intro || [first === "stand" ? "Stand at the top of your mat, with some space around you." : first === "supine" ? "Lie down on your mat." : first === "seat" ? "Come to sit on your mat." : "Come onto your mat.",
-      "Move slowly and never into pain. Skip anything that doesn't suit your body today."]));
+      "Move slowly, within a comfortable range, and choose what suits your body today."]));
     var prev = null;
     flat.forEach(function (x, i) {
       var a = x.a, lines = [];
@@ -6312,7 +6373,7 @@
     { id: "neckside", en: "Seated Neck Stretch", sa: "Ear toward shoulder", cat: "mobility", pos: "seat", sides: true, hold: 30, level: 1,
       fig: F("front", { torso: 0, head: -32, armR: [-40, 80], armL: [160, 160], legR: [-118, 88], legL: [118, -88], over: ["armR"] }),
       cues: ["Neck stretch to the {S}. Sit tall and let your {S} ear drop toward your {S} shoulder.",
-        "Rest the {S} hand lightly on your head; no pulling. Let the {O} shoulder sink.", "Breathe into the side of the neck."] },
+        "Rest the {S} hand lightly on your head, letting its weight do the work. Let the {O} shoulder sink.", "Breathe into the side of the neck."] },
 
     /* ----- capoeira ----- */
     M({ id: "ginga", en: "Ginga", sa: "The rocking base step", cat: "capoeira", pos: "stand", hold: 60, level: 1, rhythm: true,
@@ -6345,7 +6406,7 @@
         BASE_F, figWith(farSide(BEN_K), { d: 0.5 }), figWith(farSide(BEN_P), { d: 0.7 }), BASE_F, PAR_S],
       beats: 10, dwell: 0.15, still: 2,
       cues: ["Bênção. From the ginga, bring the back knee up in front of you.",
-        "Push the sole of the foot forward at belly height, leaning back a little. Then step back into the ginga.", "A push, not a strike. Change legs each time."] }),
+        "Push the sole of the foot forward at belly height, leaning back a little. Then step back into the ginga.", "A pushing kick with the flat of the foot. Change legs each time."] }),
     M({ id: "au", en: "Aú", sa: "Capoeira cartwheel", cat: "capoeira", pos: "stand", hold: 45, level: 3, rhythm: true,
       keys: [figWith(AU0, { d: 2 }), figWith(AU1, { d: 0.6 }), figWith(AU2, { d: 0.6 }), figWith(AU3, { d: 0.6 }),
         figWith(AU0, { d: 2 }), figWith(figMirror(AU1), { d: 0.6 }), figWith(figMirror(AU2), { d: 0.6 }), figWith(figMirror(AU3), { d: 0.6 })],
@@ -6375,7 +6436,7 @@
       { id: "ginga", hold: 40 }, { id: "meialua", hold: 75 }, { id: "bencao", hold: 75 },
       { id: "ginga", hold: 90, title: "Free ginga", cues: CAP_FREE },
       { id: "quadstretch", hold: 30 }, { id: "calfstretch", hold: 30 }, { id: "chestopener", hold: 30 }, { id: "fold", hold: 40 }, { id: "mountain", hold: 30 }],
-      intro: ["Find a clear space with room to step and kick, on a floor that isn't slippery. Barefoot or trainers.",
+      intro: ["Find a clear space with room to step and kick, on a floor with good grip. Barefoot or trainers.",
         "A gentle warm-up comes first, then the ginga and a few basic moves to the berimbau. Go as low and as big as feels good today."],
       outro: ["Stand tall and let the breath slow down.", "Notice the warmth in your legs. Muito bem."] }
   );
@@ -6793,23 +6854,23 @@
     ["Simplify, simplify.", "Henry David Thoreau, Walden"],
     ["Paradoxically, change starts when you accept yourself as you are.", "Carl Rogers, paraphrased"],
     ["Every breath is a fresh place to start.", ""],
-    ["You don't have to feel calm to begin. Begin, and let the calm catch up.", ""],
+    ["Begin as you are, and let the calm catch up.", ""],
     ["Small sessions, often, add up to a steadier you.", ""],
     ["The body learns what you repeat.", ""],
-    ["Notice without judging. That is most of the practice.", ""],
+    ["Observe what's here, exactly as it is. That is most of the practice.", ""],
     ["Your heart keeps time for you. Listen in now and then.", ""],
     ["A long out-breath is the shortest way back to yourself.", ""],
     ["Five quiet minutes still count.", ""],
-    ["Stillness isn't empty. It's full of things you usually miss.", ""],
+    ["Stillness is full of small things you usually pass by.", ""],
     ["Come back as often as the mind wanders. Coming back is the training.", ""],
     ["Effort and ease can share the same breath.", ""],
-    ["Today's practice doesn't need to be perfect, only done.", ""],
-    ["Tension is information, not a verdict.", ""],
-    ["When you can't change this moment, you can still change the next breath.", ""],
+    ["Done is enough. Today's practice only needs doing.", ""],
+    ["Tension is information: a message from the body.", ""],
+    ["Whatever this moment holds, you can shape the next breath.", ""],
     ["Resting well is part of doing well.", ""],
     ["Move a little, breathe a little, and see what changes.", ""],
     ["Each time you return to the breath, attention gets a little stronger.", ""],
-    ["Kindness toward yourself is a strength, not a reward.", ""],
+    ["Kindness toward yourself is a strength, and it grows with practice.", ""],
     ["There is always time for one slow breath.", ""],
     ["Feel your feet on the floor. You're here.", ""],
     ["Progress is quiet. Keep going anyway.", ""],
@@ -6926,14 +6987,14 @@
     return { k: "tap", secs: lead + TAP_SEQ.length * per + 1, title: title, pts: TAP_SEQ, per: per, lead: lead, lines: lines };
   }
   function TBreath(secs) {
-    return { k: "guide", secs: secs, title: "Breathe", tapfig: true, lines: [[0, "Stop tapping. Take a slow, deep breath in, and let it go."]] };
+    return { k: "guide", secs: secs, title: "Breathe", tapfig: true, lines: [[0, "Rest your hands. Take a slow, deep breath in, and let it go."]] };
   }
   function tapSteps(rounds) {
     var p = tapPhrase(), P1 = tapCap(p) + ".", rem = tapCap(tapRemaining(p)) + ".";
     var st = [
       G(40, "Get set", ["Sit comfortably. Bring to mind what's bothering you, and notice where you feel it in your body.",
         "You'll tap gently with two or three fingertips, about seven times on each point, while saying a short phrase out loud or in your head.",
-        "If anything feels like too much, stop, breathe slowly, and look around the room."], { tapfig: true }),
+        "If anything feels like too much, rest your hands, breathe slowly, and look around the room."], { tapfig: true }),
       TRate("How strong is it?", "How strong is the feeling right now, from zero to ten? Tap a number."),
       TSetup(30, "Set-up", "Even though I have " + p + ", I deeply and completely accept myself.", 3),
       TRound("Round 1", [P1], 7, true),
@@ -6949,7 +7010,7 @@
       st.push(TBreath(12));
     }
     st.push(TRate("And now?", "One last check. From zero to ten, how strong is it now?"));
-    st.push(G(30, "Closing", ["Notice how you feel. If the feeling is still strong, another round often helps, or come back to it later.",
+    st.push(G(30, "Closing", ["Observe the feeling now, and where it sits in your body. If it's still strong, another round often helps, or come back to it later.",
       "Take one more slow breath before you carry on."], { tapfig: true }));
     return st;
   }
@@ -6981,7 +7042,7 @@
        count    the 5-4-3-2-1 senses, tapped off one at a time
        shuffle  a new easy-to-picture word every few seconds (the cognitive shuffle)
        pmr      tense one muscle group, then release it
-       drift    a dark screen while the sound carries on (sleep)
+       drift    a soft glow while the sound carries on (sleep)
        hold     a breath hold: open (tap Breathe in, capped) or a fixed count
      Lengths are in seconds. `lines` are [offset, text] pairs, or plain strings spread
      evenly across the step. Programs add `audio`: a binaural layer whose beat follows
@@ -7008,7 +7069,7 @@
       lines: [[0, tense], [7, "And release. Let it all go."], [19, after || "Notice the difference between tension and letting go."]] };
   }
   function Hd(secs, title, o) { var l = o && o.lines; return ext({ k: "hold", secs: secs, title: title, lines: pLines(l, secs) }, o && (delete o.lines, o)); }
-  function Dr(secs, title, lines) { return { k: "drift", secs: secs, title: title, dim: true, lines: pLines(lines, secs) }; }
+  function Dr(secs, title, lines) { return { k: "drift", secs: secs, title: title, lines: pLines(lines, secs) }; }
 
   var TENSION = "If you notice tension, let it soften on the out-breath.";
   var WANDER = "If your mind has wandered, that's fine. Gently come back.";
@@ -7017,16 +7078,16 @@
   var SCAN = [
     [["all"], "Settling in", ["Lie on your back or sit comfortably, and let your eyes close if that feels okay.",
       "Feel where your body touches the floor, the bed or the chair. Let it take your weight.",
-      "There is nothing to achieve here. Just notice what you find, as it is."]],
-    [["belly"], "The breath", ["Notice your breathing, without changing it. Feel the belly rise and fall.",
+      "Observe whatever you find, exactly as it is."]],
+    [["belly"], "The breath", ["Let the breath flow at its own pace, and observe the belly rising and falling.",
       "Each out-breath is a small chance to let go.", WANDER]],
     [["footL"], "Left foot", ["Bring your attention down to your left foot: the toes, the sole, the heel.",
-      "Warmth, coolness, tingling, pressure, or nothing at all. All of it is fine.",
+      "Observe whatever is there: warmth, coolness, tingling, pressure, or the subtlest sensation.",
       "Breathe as if the breath could travel all the way down to the foot."]],
     [["shinL", "kneeL", "thighL"], "Left leg", ["Move up into the left ankle, the shin and the calf.",
       "Now the knee, and the long muscles of the thigh.", "Let the whole left leg feel heavy and supported."]],
     [["footR"], "Right foot", ["Now shift to your right foot: the toes, the sole, the heel.",
-      "Notice any sensation, and let it be just as it is.", "If you drifted off, simply come back to the right foot."]],
+      "Observe any sensation here, exactly as it is.", "If the mind has drifted, bring it back to the right foot."]],
     [["shinR", "kneeR", "thighR"], "Right leg", ["Move up through the right ankle, shin and calf.",
       "The knee, and the thigh.", "Let both legs rest, heavy and still."]],
     [["hips"], "Hips and pelvis", ["Bring your attention to your hips and pelvis, and where they meet the surface below you.",
@@ -7034,10 +7095,10 @@
     [["back"], "Back", ["Now your lower back. Notice its curve and any tightness.",
       "Move up along the spine to the middle and upper back, and the shoulder blades.",
       "On each out-breath, let the back widen and settle."]],
-    [["belly"], "Belly", ["Return to the belly. Feel it rise as you breathe in and fall as you breathe out.",
-      "Let it be soft, without holding anything in.", WANDER]],
+    [["belly"], "Belly", ["Return to the belly. Observe it rising as you breathe in and falling as you breathe out.",
+      "Let it be soft and loose.", WANDER]],
     [["chest"], "Chest", ["Move up to the chest. Notice the ribs widening and the breath moving.",
-      "You might feel your heartbeat. If you can, just notice it.", "Nothing to change. Just feeling."]],
+      "You might feel your heartbeat here. If you do, observe its rhythm.", "Observe the sensations of the chest, exactly as they are."]],
     [["handL", "armL"], "Left hand and arm", ["Bring your attention to your left hand: fingertips, palm, the back of the hand.",
       "Up through the wrist, the forearm, the elbow and the upper arm.", "Let the arm be heavy."]],
     [["handR", "armR"], "Right hand and arm", ["Now the right hand: fingertips, palm, the back of the hand.",
@@ -7046,11 +7107,11 @@
       "Let them drop away from the ears, and feel the neck lengthen.", TENSION]],
     [["face"], "Face", ["Bring your attention to your face. Unclench the jaw and let the teeth part a little.",
       "Soften the muscles around the eyes, and smooth the forehead.",
-      "Notice the air at the nostrils: cool on the way in, warmer on the way out."]],
+      "Observe the air at the nostrils: cool on the way in, warmer on the way out."]],
     [["head"], "Head", ["Move to the top of the head, and the back of the head where it rests.",
       "Let the scalp soften.", "If thoughts are passing through, let them pass."]],
     [["all"], "Whole body", ["Now widen your attention to take in the whole body at once, breathing.",
-      "Feel the body as one field of sensation, resting here.", "Stay with this for a few breaths."]]
+      "Observe the whole body as one field of sensation, resting here.", "Stay with this for a few breaths."]]
   ];
   var SCAN_END = {
     wake: [[["all"], "Closing", ["Let your breath deepen a little. Wiggle your fingers and toes.",
@@ -7070,25 +7131,51 @@
     });
   }
 
+  /* Anapana: the area of attention narrows in steps, from the triangle between the top of the nose and
+     the two corners of the upper lip down to the small dimple just beneath the ridge between the
+     nostrils, observing every sensation in each area. Short sittings take fewer steps; the reminders
+     thin out as the sitting gets longer, so an hour is mostly quiet. zone: the area drawn (pFaceSVG). */
+  var ANA_ZONES = [
+    { title: "The whole triangle", back: "the triangle",
+      start: "Bring your attention to the triangle from the top of your nose down to the two corners of your upper lip. Observe every sensation within it: the touch of the breath, warmth, coolness, tingling, itching, pressure.",
+      more: ["Stay with the whole triangle, from the top of the nose to the corners of the lip. Observe each sensation as it arises.",
+        "Let the breath come and go at its own pace, and observe its touch anywhere in the triangle."] },
+    { title: "Nostrils and upper lip", back: "the nostrils and the upper lip",
+      start: "Now narrow the area to the lower part of the nose, the nostrils and the whole upper lip. Observe all the sensations here.",
+      more: ["Observe the breath touching the inside of the nostrils as it comes in and as it goes out.",
+        "Each time the mind wanders, bring it back to the nostrils and the upper lip."] },
+    { title: "Around the nostrils", back: "the rims of the nostrils",
+      start: "Narrow it further, to the rims of the nostrils and the skin just around them. Observe the touch of each breath here, warmer or cooler, stronger or lighter.",
+      more: ["Observe which nostril the breath is flowing through: the left, the right, or both.",
+        "Stay with the rims of the nostrils. Observe each sensation, and then the next."] },
+    { title: "Below the nostrils", back: "the area below the nostrils",
+      start: "Now only the small area below the nostrils, above the upper lip. Observe whatever sensation is there: the touch of the breath, a tingle, warmth, a pulse.",
+      more: ["Keep your attention in this small area below the nostrils. Observe each sensation as it arises and as it passes.",
+        "Each time the mind wanders, return to the small area below the nostrils."] },
+    { title: "The small dimple", back: "the small dimple",
+      start: "Now narrow to the small dimple just beneath the ridge between the nostrils. Rest all your attention on this one small point, and observe every sensation there.",
+      more: ["Stay at the small dimple. Observe even the subtlest sensation, exactly as it is.",
+        "Each time the mind wanders, return to the small dimple beneath the ridge between the nostrils.",
+        "Observe the touch of the breath at this one small point, as it comes in and as it goes out."] }
+  ];
   function anapana(min) {
-    var total = min * 60, intro = min <= 5 ? 60 : 90, close = 45, obs = total - intro - close;
-    var pool = ["If the mind has wandered, notice where it went. Then come back to the breath at the nostrils.",
-      "Natural breath. Not long, not short on purpose. Just as it is.",
-      "Keep the attention on this small area below the nostrils. Feel the touch of each breath.",
-      "Is this breath coming through the left nostril, the right, or both? Just notice.",
-      "Each time you come back is the practice. There's no failing at this.",
-      "Feel the breath going in, and the breath going out."];
-    var n = Math.max(1, Math.floor(obs / 150)), lines = [];
-    for (var i = 0; i < n; i++) lines.push([Math.round((i + 1) * obs / (n + 1)), pool[i % pool.length]]);
-    return [
-      G(intro, "Settle and find the breath", ["Sit upright but relaxed, with your eyes closed.",
-        "Bring your attention to the small area below the nostrils, above the upper lip.",
-        "Feel the breath as it comes in and goes out. Don't control it. Just observe.",
-        "When you notice the mind has drifted, tap Mind wandered, then come back."]),
-      Ob(obs, "Observe the breath", lines, { wander: true }),
-      G(close, "Closing", ["Let go of the focus on the nostrils, and feel the whole body sitting here.",
-        "Take a fuller breath, and gently open your eyes."])
-    ];
+    var total = min * 60, intro = min <= 5 ? 60 : 90, close = min >= 60 ? 60 : 45, obs = total - intro - close;
+    var zones = min <= 5 ? [0, 3, 4] : min <= 10 ? [0, 1, 3, 4] : [0, 1, 2, 3, 4];
+    var w = zones.map(function (z, i) { return i === zones.length - 1 ? 1.4 : 1; }), sum = w.reduce(function (a, b) { return a + b; }, 0);
+    var gap = min >= 60 ? 300 : min >= 30 ? 210 : min >= 20 ? 150 : 90, used = 0;   // seconds between reminders
+    var steps = [G(intro, "Settle", ["Sit upright and relaxed, and close your eyes.",
+      "Let the breath flow at its own natural pace.",
+      "You'll observe the sensations around the nose, in an area that narrows step by step to one small point below the nostrils.",
+      "Each time you notice the mind has wandered, tap Mind wandered, then return to the area."], { vis: "face", zone: 0 })];
+    zones.forEach(function (z, i) {
+      var Z = ANA_ZONES[z], secs = i === zones.length - 1 ? obs - used : Math.round(obs * w[i] / sum), lines = [[0, Z.start]];
+      used += secs;
+      for (var t = gap, k = 0; t < secs - 60; t += gap, k++) lines.push([t, Z.more[k % Z.more.length]]);
+      steps.push(Ob(secs, Z.title, lines, { wander: true, vis: "face", zone: z, back: Z.back, nobell: i > 0 }));
+    });
+    steps.push(G(close, "Closing", ["Now widen your attention to the whole body, sitting here.",
+      "Take a fuller breath, and open your eyes when you're ready."], { vis: "glow" }));
+    return steps;
   }
 
   function lovingKindness(min) {
@@ -7098,13 +7185,13 @@
       ["Someone kind", "Bring to mind someone who has been kind to you. See their face.", "you"],
       ["A friend", "Now a good friend, or someone you care about.", "you"],
       ["Someone neutral", "Now someone you see but barely know: a neighbour, a shop assistant.", "you"],
-      ["Someone difficult", "If it feels okay, someone you find mildly difficult. Not the hardest person. Go gently.", "you"],
+      ["Someone difficult", "If it feels okay, someone you find mildly difficult: a small, everyday friction. Go gently.", "you"],
       ["Everyone", "Now let it widen to everyone: this town, this country, all living beings.", "all"]
     ];
     var each = Math.floor(mid / stages.length);
     var steps = [G(settle, "Settle in", ["Sit comfortably and let your eyes close.",
       "Rest a hand on your chest if you like, and breathe a little slower.",
-      "You'll repeat a few simple wishes silently. If a feeling doesn't come, that's fine. The intention is the practice."], { vis: "glow" })];
+      "You'll repeat a few simple wishes silently. Offer each one sincerely: the intention itself is the practice."], { vis: "glow" })];
     stages.forEach(function (s, i) {
       var who = s[2], ph = who === "I"
         ? ["May I be safe.", "May I be healthy.", "May I be happy.", "May I live with ease."]
@@ -7125,7 +7212,7 @@
       G(intro, "Set up your hand", ["Sit tall. Rest your left hand in your lap.",
         "With your right hand, fold the index and middle fingers in. The thumb closes the right nostril, the ring finger closes the left.",
         "You'll breathe in through one side, then out through the other, switching after each in-breath. The guide shows which side.",
-        "If a nostril is blocked, just imagine the breath moving through it."]),
+        "If a nostril feels blocked, imagine the breath moving through it."]),
       Br(total - intro - close, "Alternate nostril breathing", { inh: 4, sip: 0, hold: 0, exh: 6, rest: 0 },
         { mode: "nadi", lines: [[0, "Close the right nostril. Breathe in through the left."]] }),
       G(close, "Closing", ["Release the hand and breathe naturally through both nostrils.", "Notice the quiet after the practice."])
@@ -7136,7 +7223,7 @@
     return [
       G(45, "How it works", ["Get comfortable in bed and close your eyes.",
         "You'll hear or see a simple word every few seconds. Picture that thing in detail: its colour, its size, where it is.",
-        "When the next word comes, let the last one go. Don't link them into a story."], { vis: "dark", dim: true }),
+        "When the next word comes, let the last one go, and picture each word on its own."], { vis: "glow" }),
       Sh(min * 60 - 45, "Picture each word")
     ];
   }
@@ -7148,7 +7235,7 @@
     [["armL"], "Left upper arm", "Bend your left elbow and tense the upper arm. Hold."],
     [["head"], "Forehead", "Raise your eyebrows as high as they go, wrinkling the forehead. Hold."],
     [["face"], "Eyes and cheeks", "Squeeze your eyes shut and scrunch up your cheeks. Hold."],
-    [["face"], "Jaw", "Clench your jaw and press the lips together. Not too hard. Hold."],
+    [["face"], "Jaw", "Clench your jaw gently and press the lips together. Hold."],
     [["neck", "shoulders"], "Neck and shoulders", "Lift your shoulders up towards your ears. Hold them there."],
     [["chest", "back"], "Chest and upper back", "Take a breath in and pull the shoulder blades together. Hold."],
     [["belly"], "Belly", "Tighten your stomach muscles, as if bracing for a gentle push. Hold."],
@@ -7162,14 +7249,14 @@
     rounds = rounds || 3; breaths = breaths || 30;
     var cyc = 2.5, num = ["one", "two", "three", "four"];
     var st = [G(70, "Before you start", ["Sit or lie down somewhere safe, away from water. Loosen anything tight around your waist.",
-      "Each round is a set of deep breaths: fully in through the belly and chest, then let each one go without pushing.",
+      "Each round is a set of deep breaths: fully in through the belly and chest, then let each one fall out by itself.",
       "After the last breath, let it out and hold with empty lungs until you feel the urge to breathe. Then tap Breathe in.",
-      "Tingling and light-headedness are normal. If you feel unwell, stop and breathe normally."], { vis: "glow" })];
+      "Tingling and light-headedness are common. If you feel unwell, return to normal breathing and rest."], { vis: "glow" })];
     for (var r = 1; r <= rounds; r++) {
       var secs = 3 + breaths * cyc;
       st.push(Br(secs, "Round " + r + ": power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1, rest: 0 }, {
         count: breaths, labels: { "in": "Breathe in fully", out: "Let go" },
-        hints: { "in": "Belly, then chest.", out: "Don't push. Just release." },
+        hints: { "in": "Belly, then chest.", out: "Let it fall out by itself." },
         lines: [[0, "Round " + num[r - 1] + ". " + breaths + " deep breaths. Fully in, and let go."],
           [Math.round(secs / 2), "Keep going. Fully in, let it go."], [Math.round(secs - 9), "Last few breaths."]] }));
       st.push(Hd(180, "Round " + r + ": hold", { open: true, lungs: "empty",
@@ -7211,15 +7298,15 @@
               lines: [[2, "Breathe in through the nose as the tone rises, and out slowly as it falls."],
                 [180, "The breaths are getting longer. If it ever feels like effort, breathe a little faster. Ease matters more than the count."]] }),
           Br(180, "The guide fades", { inh: 5, sip: 0, hold: 0, exh: 8, rest: 0 },
-            { cueFade: [1, 0], dim: true, lines: [[0, "The guide will slowly fade. Keep this slow rhythm on your own."]] }),
+            { cueFade: [1, 0], lines: [[0, "The guide will slowly fade. Keep this slow rhythm on your own."]] }),
           G(300, "Body release", [[0, "Let your feet and legs grow heavy."], [40, "Your hips and lower back sink into the bed."],
             [80, "Your belly is soft, rising and falling by itself."], [120, "Your hands and arms are heavy and warm."],
             [160, "Shoulders drop. The neck is long."], [200, "Your jaw loosens, your eyes rest, your forehead is smooth."],
-            [250, "The whole body heavy, warm and still."]], { body: ["all"], dim: true, quiet: true }),
-          Dr(780, "Drift", [[0, "Nothing to do now. Let the sound carry you. It will fade out by itself."]])
+            [250, "The whole body heavy, warm and still."]], { body: ["all"], quiet: true }),
+          Dr(780, "Drift", [[0, "Rest now, and let the sound carry you. It fades out by itself."]])
         ];
       },
-      how: "The first eight minutes pace your breath from 6 down to about 4.6 breaths a minute, with the out-breath always the longer half: 4 s in and 6 s out, gliding to 5 s in and 8 s out. The fuller inhale keeps the slow pace easy rather than air-hungry as you get drowsy. Then the cue sounds fade over three minutes, a short body release follows, and the screen goes dark while the binaural beat slides from 6 Hz theta to 3 Hz delta, holds there and fades out.",
+      how: "The first eight minutes pace your breath from 6 down to about 4.6 breaths a minute, with the out-breath always the longer half: 4 s in and 6 s out, gliding to 5 s in and 8 s out. The fuller inhale keeps the slow pace easy rather than air-hungry as you get drowsy. Then the cue sounds fade over three minutes, a short body release follows, and a soft glow stays on the screen while the binaural beat slides from 6 Hz theta to 3 Hz delta, holds there and fades out.",
       ev: "Each part has its own evidence; the combination hasn't been tested as a package. Twenty minutes of slow breathing at six a minute before bed shortened sleep onset and reduced night waking in people with self-reported insomnia. At that pace a longer exhale was rated more relaxing than the reverse. Relaxation training is a recommended (conditional) treatment for chronic insomnia. A 3 Hz binaural beat lengthened deep sleep in a sleep-lab study.",
       cite: "Tsai et al. 2015 · Van Diest et al. 2014 · Edinger et al. 2021 (AASM) · Jirakittayakorn & Wongsawat 2018"
     },
@@ -7259,9 +7346,9 @@
           Br(780, "Heart-focused breathing", { inh: half, sip: 0, hold: 0, exh: half, rest: 0 },
             { lines: [[0, "Breathe evenly, " + r + " a minute, imagining the breath flowing in and out through the heart area."],
               [180, "Now call up a feeling of ease or appreciation: a person, a place or a pet you love. Let it be gentle."],
-              [420, "If the score drops, don't chase it. Come back to the even breath and the feeling."],
+              [420, "Whatever the score does, come back to the even breath and the feeling."],
               [660, "Keep the rhythm going for these last minutes."]] }),
-          G(75, "Return", ["Let the breath go back to its own pace.", "Notice how your body feels.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
+          G(75, "Return", ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
         ];
       },
       how: "Thirteen minutes of even breathing at your resonance rate (from the resonance test, or 5.5 a minute), with attention on the chest and, after three minutes, a gentle positive feeling: the core of HeartMath's quick coherence technique. The coherence score and your heart rate show live when a sensor is connected.",
@@ -7276,7 +7363,7 @@
       audio: { name: "Focus Primer", band: "Alpha → Beta", carrier: 400, pts: [[0, 10], [180, 10], [210, 16], [780, 16]], fade: 4, cat: "stim" },
       build: function () {
         return [
-          G(20, "Arrive", ["Sit at your desk with the task ready but not started. Headphones on."], { vis: "glow" }),
+          G(20, "Arrive", ["Sit at your desk with the task open and ready to begin. Headphones on."], { vis: "glow" }),
           Br(160, "Steady breathing", { inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0 },
             { lines: [[0, "Even breaths in and out through the nose, about five and a half a minute."]] }),
           Ob(600, "Prime", [[0, "Let your breath go back to normal and open your eyes."],
@@ -7336,18 +7423,18 @@
     {
       id: "body-scan", group: "mind", tags: ["mind", "calm", "sleep"], name: "Body Scan", lengths: [10, 20, 30], min: 10, strength: 1,
       tone: "relax", lie: true, voice: true,
-      blurb: "Move your attention slowly through the body, from the feet to the head, noticing sensations without trying to change them.",
+      blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation exactly as it is.",
       build: function (min) { return bodyScan(min, "wake"); },
       how: "Sixteen stops, from the feet up, each with a few spoken cues. The body map shows where you are. Choose 10, 20 or 30 minutes.",
       ev: "The body scan is a core practice of mindfulness-based stress reduction. On its own, a meta-analysis of about 15 trials found a small rise in mindfulness and no clear effect on stress or anxiety. Mindfulness programs that include it have moderate evidence for reducing anxiety, depression and pain.",
       cite: "Gan et al. 2022 · Goyal et al. 2014"
     },
     {
-      id: "anapana", group: "mind", tags: ["mind", "calm"], name: "Anapana", lengths: [5, 10, 20, 30], min: 10, strength: 2,
+      id: "anapana", group: "mind", tags: ["mind", "calm"], name: "Anapana", lengths: [5, 10, 20, 30, 60], min: 10, strength: 2,
       tone: "relax",
-      blurb: "Breath observation in the Vipassana tradition: attention rests on the small area below the nostrils, watching the natural breath.",
+      blurb: "Breath observation in the Vipassana tradition: the area of attention narrows step by step, from the triangle around the nose and upper lip to one small point beneath the nostrils.",
       build: function (min) { return anapana(min); },
-      how: "No pacing at all: you watch the breath as it is. Gentle reminders come every few minutes, and a Mind wandered button counts each time you notice you've drifted. Noticing is the skill being trained, so a high count is not a bad session.",
+      how: "The breath flows at its own natural pace while the area you observe narrows: the whole triangle from the top of the nose to the corners of the upper lip, then the nostrils and upper lip, the rims of the nostrils, the small area below them, and finally only the small dimple just beneath the ridge between the nostrils (three steps in 5 minutes, four in 10). In each area you observe every sensation, and a drawing shows where. Reminders come every few minutes, more sparsely in longer sittings: about every five minutes in the hour. Tap Mind wandered each time you notice you've drifted. Noticing is the skill being trained, so every tap is part of the practice.",
       ev: "Anapana is the first stage of the residential Vipassana course, which was followed by lower stress and higher well-being and mindfulness, partly lasting six months. Plain breath awareness slowed breathing in a controlled study. Mindfulness meditation programs have moderate evidence for anxiety (effect size 0.38), depression and pain.",
       cite: "Szekeres & Wertheim 2015 · Telles et al. 2014 · Goyal et al. 2014"
     },
@@ -7363,15 +7450,15 @@
     {
       id: "self-compassion", group: "mind", tags: ["mind", "calm"], name: "Self-Compassion Break", min: 5, strength: 2,
       tone: "stim",
-      blurb: "Three short steps for a hard moment: name it, remember you're not alone in it, and offer yourself some kindness.",
+      blurb: "Three short steps for a hard moment: name it, remember that others feel it too, and offer yourself some kindness.",
       build: function () {
         return [
-          G(40, "Bring it to mind", ["Think of something that's troubling you right now. Something moderate, not the hardest thing.",
+          G(40, "Bring it to mind", ["Think of something that's troubling you right now, something of moderate weight.",
             "Notice where you feel it in your body."], { vis: "glow" }),
           G(70, "This is hard", ["Say to yourself: this is a moment of difficulty.", "Or: this hurts. This is stress.",
-            "Just acknowledging it, without fixing anything."], { vis: "glow" }),
-          G(70, "You're not alone", ["Difficulty is part of being human. Other people feel this way too.",
-            "Everyone struggles sometimes. You're not alone in this."], { vis: "glow" }),
+            "Acknowledge it, exactly as it is."], { vis: "glow" }),
+          G(70, "Part of being human", ["Difficulty is part of being human. Other people feel this way too.",
+            "Everyone struggles sometimes. You share this with many others."], { vis: "glow" }),
           G(80, "Kindness", ["Place your hands over your heart, or anywhere that feels soothing. Feel their warmth.",
             "Say to yourself: may I be kind to myself.", "Or whatever you need to hear: may I accept myself as I am. May I be patient."], { vis: "glow" }),
           G(40, "Closing", ["Take a slow breath and let the words settle.", "Come back to the room when you're ready."], { vis: "glow" })
@@ -7391,7 +7478,7 @@
           Ct(70, 5, "5 things you can see", ["Look around and find five things you can see. Name each one to yourself, with a detail: its colour, its shape."], { sense: "see" }),
           Ct(60, 4, "4 things you can hear", ["Now listen. Find four things you can hear, near or far."], { sense: "hear" }),
           Ct(55, 3, "3 things you can feel", ["Find three things you can feel: your feet on the floor, the fabric on your skin, the air."], { sense: "feel" }),
-          Ct(45, 2, "2 things you can smell", ["Two things you can smell. If nothing comes, recall two smells you like."], { sense: "smell" }),
+          Ct(45, 2, "2 things you can smell", ["Two things you can smell, or two smells you remember and like."], { sense: "smell" }),
           Ct(35, 1, "1 thing you can taste", ["One thing you can taste, or one taste you enjoy."], { sense: "taste" }),
           G(30, "Breathe", ["Take two slow breaths, with a long exhale.", "Notice that you're here, now."])
         ];
@@ -7411,9 +7498,9 @@
           G(180, "Slow steps", [[0, "Begin to walk, much slower than usual."], [30, "Notice the lifting of the foot, the moving forward, the placing down."],
             [80, "At the end of your path, pause, turn slowly, and continue."], [130, WANDER]]),
           G(180, "Whole body", [[0, "Widen your attention to the whole body walking: the arms, the balance, the breath."],
-            [70, "Let your pace be natural but unhurried."], [130, "If thoughts pull you away, come back to the feeling of the next step."]]),
+            [70, "Let your pace be natural but unhurried."], [130, "If thoughts pull you away, come back to the sensations of the next step: lifting, moving, placing."]]),
           G(120, "Surroundings", [[0, "Now open to the surroundings: sounds, light, the air on your skin."], [60, "Keep a little attention in your feet as you take it all in."]]),
-          G(60, "Closing", ["Come to a stop. Stand for a few breaths.", "Notice how you feel before you move on."])
+          G(60, "Closing", ["Let your steps come to rest, and stand for a few breaths.", "Observe the sensations in your feet and legs before you move on."])
         ];
       },
       how: "Ten minutes in four stages: standing, slow steps, the whole body, then the surroundings. Works indoors on a short path.",
@@ -7434,7 +7521,7 @@
       id: "nvc-choose", group: "reflect", tags: ["reflect"], name: "From Should to Choose", reflect: true, selfPaced: true, est: 10, strength: 1, tone: "ther",
       blurb: "List what you do because you feel you have to, then check each one: would you still choose it, and for what? An exercise from nonviolent communication for looking at the rules you live by.",
       build: function () { return nvcChooseSteps(); },
-      how: "List the things you feel you have to, should or must do. Then for each, decide whether you'd still choose it, and why, picking from common reasons or writing your own. Reasons that are really pressure, like money, approval, or avoiding guilt, shame or punishment, are marked. You end with your list rewritten as \u201CI choose to\u2026 because I want\u2026\u201D, and what you'd rather stop.",
+      how: "List the things you feel you have to, should or must do. Then for each, decide whether you'd still choose it, and why, picking from common reasons or writing your own. Reasons that are really pressure, like money, approval, or avoiding guilt, shame or punishment, are marked. You end with your list rewritten as \u201CI choose to\u2026 because I want\u2026\u201D, and the ones you'd like to change.",
       ev: "This exercise comes from Marshall Rosenberg's book and hasn't been tested on its own. Motivation research points the same way: in self-determination theory, acting from your own values goes with more well-being and persistence than acting from pressure, guilt or the need for approval.",
       cite: "Ryan & Deci 2000"
     },
@@ -7446,7 +7533,7 @@
       blurb: "Tense each muscle group for a few seconds, then let go and feel the difference. Fourteen groups, hands to feet.",
       build: function () {
         var s = [G(50, "Get comfortable", ["Lie down or sit with your back supported.",
-          "You'll tense each muscle group for about seven seconds, firmly but not to the point of pain, then release for half a minute.",
+          "You'll tense each muscle group firmly, at about half your strength, for about seven seconds, then release it for half a minute.",
           "Skip any area that's injured or cramps easily."], { body: ["all"] })];
         PMR_GROUPS.forEach(function (g) { s.push(Pm(g[0], g[1], g[2])); });
         s.push(G(80, "Whole body", ["Now scan through the whole body. If any area is still tight, let it soften.",
@@ -7462,7 +7549,7 @@
       tone: "ther", lie: true,
       blurb: "For a racing mind at bedtime: picture a series of random, unrelated things, one every few seconds, until sleep takes over.",
       build: function (min) { return shuffle(min); },
-      how: "A simple word appears (and is said softly, with voice on) every 12 seconds on a dark screen. Picture each one, then let it go. Stop whenever you feel sleepy.",
+      how: "A simple word appears (and is said softly, with voice on) every 12 seconds. Picture each one, then let it go. Whenever sleep comes, let yourself drift off.",
       ev: "The idea is that scrambled, imagery-like thinking resembles the mind's own drift into sleep and crowds out worry. Its only test so far is a conference study of 154 students, where it matched structured problem-solving for reducing pre-sleep arousal. Promising but preliminary.",
       cite: "Beaudoin et al. 2016 (SLEEP abstract)"
     },
@@ -7489,7 +7576,7 @@
           Br(210, "Humming breath", { inh: 4, sip: 0, hold: 0, exh: 8, rest: 0 },
             { labels: { "in": "Breathe in", out: "Hum" },
               hints: { "in": "Quietly, through the nose.", out: "Lips closed, a soft steady mmm. Feel the buzz in your face." } }),
-          G(30, "Silence", ["Let the humming stop, and sit for a moment in the quiet.", "Notice any lingering vibration, and the stillness after it."])
+          G(30, "Silence", ["Let the humming fade, and sit for a moment in the quiet.", "Notice any lingering vibration, and the stillness after it."])
         ];
       },
       how: "4 seconds in, 8 seconds of humming out: a long exhale with sound, which naturally slows the breath.",
@@ -7504,11 +7591,11 @@
         return [
           G(60, "Find the sound", ["Breathe out through an open mouth as if fogging a mirror: haaa. Feel the slight narrowing at the back of the throat.",
             "Now close the mouth and keep that narrowing on the out-breath. It makes a soft ocean sound.",
-            "Breathe in normally through the nose, without the sound."]),
+            "Breathe in quietly through the nose."]),
           Br(270, "Ocean breath", { inh: 5, sip: 0, hold: 0, exh: 5, rest: 0 },
             { labels: { "in": "Breathe in", out: "Ocean breath out" },
-              hints: { "in": "Quietly through the nose, no sound.", out: "Throat slightly narrowed: a soft, steady ocean sound." } }),
-          G(30, "Release", ["Let the throat relax and breathe normally.", "Notice the calm."])
+              hints: { "in": "Quietly through the nose.", out: "Throat slightly narrowed: a soft, steady ocean sound." } }),
+          G(30, "Release", ["Let the throat relax and breathe normally.", "Observe the calm, and the breath settling at its own pace."])
         ];
       },
       how: "Even 5-second breaths in and out, six a minute, with the ujjayi sound on the exhale only.",
@@ -7534,7 +7621,7 @@
     {
       id: "kapalabhati", group: "breath", tags: ["breath", "focus"], name: "Kapalabhati", min: 6, strength: 1,
       tone: "stim", confirm: true,
-      blurb: "Skull-shining breath: short, sharp exhales from the belly with passive inhales, in three rounds. Energising, not calming.",
+      blurb: "Skull-shining breath: short, sharp exhales from the belly with passive inhales, in three rounds. An energising breath, for a lift in alertness.",
       caution: "Skip this one if you are pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks. Do it seated, on an empty stomach, and stop if you feel dizzy or tingly.",
       build: function () {
         var rec = function (n) {
@@ -7544,7 +7631,7 @@
           G(80, "Technique", ["Sit tall with your hands on your knees.",
             "Each pump is a short, sharp exhale through the nose, made by pulling the belly in quickly.",
             "The inhale happens by itself as the belly relaxes. Keep the shoulders and face still.",
-            "Follow the ticks: one pump each second. Stop at any point if you feel lightheaded."]),
+            "Follow the ticks: one pump each second. If you feel lightheaded, return to easy breathing."]),
           Pu(30, 1, "Round 1"), rec(1),
           Pu(30, 1, "Round 2"), rec(2),
           Pu(30, 1, "Round 3"), rec(3),
@@ -7651,7 +7738,7 @@
   var P = {
     def: null, view: null, len: 0, steps: [], total: 0, state: "idle",   // idle | intro | running | paused | done
     t0: 0, st: 0, idx: -1, li: 0, tick: 0, raf: 0,
-    hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null, lock: null,
+    hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null,
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
@@ -7686,22 +7773,22 @@
     return { steps: steps, total: at, base: base };
   }
 
-  /* Anapana reminders for the programs: every few minutes, a quiet prompt to feel the breath
+  /* Anapana reminders for the programs: every few minutes, a quiet prompt to observe the breath
      at the nostrils, worded for paced, natural or heart-focused breathing. They skip steps that
-     guide attention elsewhere (body regions, the dark drift) and never crowd another line. */
+     guide attention elsewhere (body regions, the sleep drift) and never crowd another line. */
   var ANA = {
     paced: ["Keep a little attention at the nostrils: cool air coming in, warmer air going out.",
-      "Notice the touch of the breath just below the nostrils as you follow the pace.",
+      "Observe the touch of the breath just below the nostrils as you follow the pace.",
       "If the mind has wandered, come back to the breath at the nostrils, and the next breath in.",
-      "Feel exactly where the air touches as it enters. Stay with this one breath."],
-    natural: ["Bring your attention to the small area below the nostrils. Feel the breath as it is.",
+      "Observe exactly where the air touches as it enters. Stay with this one breath."],
+    natural: ["Bring your attention to the small area below the nostrils, and observe the touch of the breath there.",
       "If the mind has wandered, notice where it went, and come back to the breath at the nostrils.",
-      "Natural breath. Just observe its touch at the nostrils, in and out.",
-      "Is this breath long or short? Left nostril, right, or both? Just notice."],
-    sigh: ["Feel the cool touch of the air at the nostrils on each in-breath.",
+      "Breathe naturally, and observe the touch of the breath at the nostrils, in and out.",
+      "Observe this breath: long or short, through the left nostril, the right, or both."],
+    sigh: ["Observe the cool touch of the air at the nostrils on each in-breath.",
       "If the mind has wandered, come back to the in-breath at the nostrils."],
-    heart: ["Notice the breath at the nostrils for a moment, then let attention settle back at the heart.",
-      "If the mind has wandered, feel one breath at the nostrils, then return to the heart area."]
+    heart: ["Observe the touch of one breath at the nostrils, then let your attention settle back at the heart.",
+      "If the mind has wandered, observe one breath at the nostrils, then return to the heart area."]
   };
   function pAna(d, steps, total, every) {
     var n = 0, shifts = [0, 10, -10, 20, -20, 30, -30, 45, -45, 60, -60];
@@ -7783,21 +7870,50 @@
   }
   function pHush() { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {} }
 
-  /* ----- screen wake lock (the breathing engine keeps its own) ----- */
-  function pLock() {
-    try {
-      if (!navigator.wakeLock || P.lock) return;
-      navigator.wakeLock.request("screen").then(function (l) {
-        if (P.state !== "running") { l.release().catch(function () {}); return; }
-        P.lock = l;
-        l.addEventListener("release", function () { if (P.lock === l) P.lock = null; });
-      }).catch(function () {});
-    } catch (e) {}
+  /* ----- the screen stays on, at full brightness, through every session ----- */
+  // One lock for practices, the breathing guide and Sounds tracks. It's held while any of them runs, and
+  // for ten minutes after a pause, so the screen is still lit when you come back to it. The browser drops
+  // the lock whenever the page is hidden, so it's asked for again on return; a check every 15 seconds
+  // also catches a lock the system took back, and the end of a pause's ten minutes.
+  var WL = { lock: null, asking: false, stop: 0, told: false, failAt: 0 };
+  var WL_GRACE = 600000;
+  function wlNeed() {
+    if (P.state === "running" || B.state === "running" || A.playing) { WL.stop = 0; return true; }
+    if (!WL.stop) WL.stop = Date.now();               // the moment the last session paused or ended
+    var paused = P.state === "paused" || B.state === "paused" || (!!A.track && A.elapsed > 0);
+    return paused && Date.now() - WL.stop < WL_GRACE;
   }
-  function pUnlock() {
-    var l = P.lock; P.lock = null;
-    if (l) { try { var q = l.release(); if (q && q.catch) q.catch(function () {}); } catch (e) {} }
+  function wlSync() {
+    if (!wlNeed()) { wlDrop(); return; }
+    if (WL.lock || WL.asking || document.hidden) return;
+    if (!navigator.wakeLock || !navigator.wakeLock.request) { wlTell(false); return; }
+    if (WL.failAt && Date.now() - WL.failAt < 60000) return;   // turned down a moment ago: ask again in a minute
+    WL.asking = true;
+    var q;
+    try { q = navigator.wakeLock.request("screen"); } catch (e) { q = Promise.reject(e); }
+    q.then(function (l) {
+      WL.asking = false; WL.failAt = 0;
+      if (!wlNeed()) { wlFree(l); return; }
+      WL.lock = l;
+      l.addEventListener("release", function () {     // taken back by the system: ask again while it's still needed
+        if (WL.lock === l) { WL.lock = null; setTimeout(wlSync, 1000); }
+      });
+    }, function () {
+      WL.asking = false; WL.failAt = Date.now();
+      if (!document.hidden) wlTell(true);
+    });
   }
+  function wlFree(l) { try { var q = l.release(); if (q && q.catch) q.catch(function () {}); } catch (e) {} }
+  function wlDrop() { var l = WL.lock; WL.lock = null; if (l) wlFree(l); }
+  function wlTell(refused) {
+    if (WL.told) return;
+    WL.told = true;
+    toast(refused ? "The browser declined to keep the screen on, so for this session set a longer screen timeout in your device's display settings."
+      : "This browser can't keep the screen on by itself, so for long sessions set a longer screen timeout in your device's display settings.", { ms: 10000, over: true });
+  }
+  function wlKick() { setTimeout(wlSync, 0); }       // once the caller has finished changing state
+  function pLock() { wlKick(); }
+  function pUnlock() { wlKick(); }
 
   /* ----- breath steps run on the breathing guide's engine ----- */
   function pCfgAt(s, st) {
@@ -7926,14 +8042,14 @@
     if (s.k === "pump") return "pump";
     if (s.k === "shuffle") return "word";
     if (s.k === "count") return "count";
-    if (s.k === "drift") return "dark";
+    if (s.k === "drift") return "glow";
     if (s.k === "hold") return "hold";
     if (s.k === "guide" && s.pose) return "pose";
     if (s.k === "tap" || s.tapfig) return "tap";
     if (s.k === "rate") return "rate";
     if (s.k === "adapt") return "adapt";
     if (s.k === "write") return "write";
-    if (s.k === "nap") return "dark";
+    if (s.k === "nap") return "glow";
     if (s.k === "wake") return "orb";
     if (s.k === "pmr" || s.body) return "body";
     if (s.k === "observe") return s.vis || "still";
@@ -7955,7 +8071,6 @@
     else if (P.usesB && B.state !== "idle") pBreathOff();
     var flowing = s.k === "breath" && prev && prev.k === "breath";
     if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
-    $("#ses").dataset.dim = s.dim ? "1" : "";
     pStage(s);
     pRenderSegs();
     pUI();
@@ -7965,12 +8080,13 @@
   function pStage(s) {
     var vis = pVis(s), fig = $("#sFig");
     $("#sStage").dataset.vis = vis;
-    fig.hidden = !(vis === "pose" || vis === "body" || vis === "tap");
+    fig.hidden = !(vis === "pose" || vis === "body" || vis === "tap" || vis === "face");
     P.tapAt = "";
     var a = vis === "pose" && ASANA[s.pose];
     P.mv = a && a.keys && s.k === "pose" ? { a: a, side: s.side, box: figBox(a, s.side), drawn: 0, ph: -1 } : null;
     if (vis === "pose") fig.innerHTML = !a ? "" : P.mv ? figMove(a, pMovePhase(a, s, pT()), s.side, "", P.mv.box) : figSVG(a.fig, s.side);
     else if (vis === "body") fig.innerHTML = pBodySVG(s.body || ["all"]);
+    else if (vis === "face") fig.innerHTML = pFaceSVG(s.zone || 0);
     else if (vis === "tap") { fig.innerHTML = tapSVG(null, []); pTapPoint(s, pT() - s.at); }
     $("#sRate").hidden = vis !== "rate";
     var wr = $("#sWrite");
@@ -8350,6 +8466,27 @@
     ["head", '<ellipse cx="60" cy="22" rx="15" ry="18"/>'],
     ["face", '<ellipse cx="60" cy="26" rx="9.5" ry="10.5"/>']
   ];
+  /* Anapana's areas on a drawing of the nose and upper lip, each narrower than the one before:
+     the whole triangle, the nostrils and upper lip, the rims of the nostrils, the area below them,
+     and the small dimple just beneath the ridge between the nostrils. */
+  var FACE_ZONES = [
+    '<path class="zn" d="M100 16 L148 170 L52 170 Z"/>',
+    '<path class="zn" d="M78 98 Q100 90 122 98 L148 170 L52 170 Z"/>',
+    '<ellipse class="zn" cx="100" cy="129" rx="33" ry="17"/>',
+    '<ellipse class="zn" cx="100" cy="147" rx="13" ry="9"/>',
+    '<circle class="zn-ring" cx="100" cy="142" r="10"/><circle class="zn pt" cx="100" cy="142" r="4.5"/>'
+  ];
+  function pFaceSVG(z) {
+    return '<svg class="anafig" viewBox="0 0 200 212" aria-hidden="true">' + FACE_ZONES[Math.max(0, Math.min(4, z))] +
+      '<path class="ln thin" d="M38 46 Q54 55 70 46 M130 46 Q146 55 162 46"/>' +                                    // closed eyes
+      '<path class="ln" d="M91 28 Q89 80 79 111 M109 28 Q111 80 121 111"/>' +                                      // the bridge of the nose
+      '<path class="ln" d="M79 111 Q64 128 82 135 Q90 138 95 134 M121 111 Q136 128 118 135 Q110 138 105 134"/>' + // the wings
+      '<path class="ln thin" d="M95 134 Q100 139 105 134"/>' +                                                      // the ridge between the nostrils
+      '<ellipse class="ln thin" cx="88" cy="130" rx="6" ry="3" transform="rotate(14 88 130)"/><ellipse class="ln thin" cx="112" cy="130" rx="6" ry="3" transform="rotate(-14 112 130)"/>' +
+      '<path class="ln faint" d="M95.5 141 Q94 151 93 159 M104.5 141 Q106 151 107 159"/>' +                        // the groove below
+      '<path class="ln" d="M52 170 Q78 160 92 161 Q100 166 108 161 Q122 160 148 170 Q100 198 52 170 Z"/>' +       // the lips
+      "</svg>";
+  }
   function pBodySVG(on) {
     var all = on.indexOf("all") >= 0;
     return '<svg class="bm' + (all ? " all" : "") + '" viewBox="0 0 120 300" aria-hidden="true">' +
@@ -8476,7 +8613,6 @@
     P.audioOn = false;
     pUnlock();
     P.state = "done";
-    $("#ses").dataset.dim = "";
     if (!early && !quiet) {
       pBell(0.5);
       if (A.ctx) pBell(0.4, A.ctx.currentTime + 1.4, 523.25);
@@ -8652,7 +8788,7 @@
     opts.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, made on your device.</small></span>' + ambCtl() + "</div>");
     if (d.variant) opts.push('<div class="so-row"><span class="so-l">' + d.variant.label + '</span><div class="mini-seg" id="sOptVar">' +
       d.variant.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (pVar(d) === o[0]) + '">' + o[1] + "</button>"; }).join("") + "</div></div>");
-    if (d.group === "program") opts.push('<div class="so-row so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to feel the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
+    if (d.group === "program") opts.push('<div class="so-row so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
       [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]].map(function (o) {
         return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.ana === o[0]) + '">' + o[1] + "</button>";
       }).join("") + "</div></div>");
@@ -8970,7 +9106,7 @@
         return;
       } else if (s.wander) {
         P.wander++;
-        bSetT("#sLine", "Noticed. Back to the breath at the nostrils.");
+        bSetT("#sLine", "Noticed. Back to " + (s.back || "the breath at the nostrils") + ".");
       }
       pUI();
     });
@@ -9007,14 +9143,17 @@
       else if (here && e.key === "ArrowLeft") { e.preventDefault(); pJump(-1); }
     });
     document.addEventListener("visibilitychange", function () {
-      if (!document.hidden && P.state === "running") { pLock(); pTick(); pLoop(); }
+      if (!document.hidden) wlSync();
+      if (!document.hidden && P.state === "running") { pTick(); pLoop(); }
     });
+    setInterval(wlSync, 15000);
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; } };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync };   // for automated tests only
     yInit();
     nvcInit();
+    fdInit();
     pRenderLib();
   }
 
@@ -9043,12 +9182,12 @@
   function heartLed(min) {
     var total = min * 60, settle = 60, base = 90, close = 60;
     return [
-      G(settle, "Settle", ["Sit back or lie down with headphones on. Breathe naturally; there's no pace to follow in this one.",
+      G(settle, "Settle", ["Sit back or lie down with headphones on, and breathe at your own natural pace.",
         "The beat will follow your heart. As your heart rate settles and its rhythm loosens, the beat slows from alpha toward theta.",
         "Let your attention rest on the sound, or on the breath at the nostrils."], { vis: "orb" }),
-      { k: "adapt", phase: "base", secs: base, title: "Listening to your heart", lines: [[0, "First, a minute and a half to measure your resting baseline. Just rest."]] },
+      { k: "adapt", phase: "base", secs: base, title: "Listening to your heart", lines: [[0, "First, a minute and a half to measure your resting baseline. Rest, and breathe at your own pace."]] },
       { k: "adapt", phase: "lead", secs: total - settle - base - close, title: "Heart-led beat",
-        lines: [[0, "Now the beat is following your heart. Nothing to do but rest."], [240, "Let the sound carry you."], [600, "Notice how quiet the body has become."]] },
+        lines: [[0, "Now the beat is following your heart. Rest, and let the sound carry you."], [240, "Let the sound carry you."], [600, "Notice how quiet the body has become."]] },
       G(close, "Closing", ["Let the sound fade. Take a fuller breath.", "Notice how you feel, and look at what your heart did on the next screen."], { vis: "orb" })
     ];
   }
@@ -9132,12 +9271,12 @@
     len = len || 20;
     return [
       G(45, "Lie down", ["Lie down somewhere you can rest, with headphones on, and the phone where you'll hear it.",
-        "Close your eyes and let the breath slow down. You don't have to fall asleep: resting counts too.",
-        "You'll be woken gently. With a heart sensor, the nap is timed from when your heart rate says you've dozed off."], { vis: "dark", dim: true }),
-      { k: "nap", nap: len, secs: (len + 25) * 60, title: "Nap", open: true, dim: true, quiet: true, lines: [[0, "Rest now."]] },
+        "Close your eyes and let the breath slow down. Resting counts as much as sleeping.",
+        "You'll be woken gently. With a heart sensor, the nap is timed from when your heart rate says you've dozed off."], { vis: "glow" }),
+      { k: "nap", nap: len, secs: (len + 25) * 60, title: "Nap", open: true, quiet: true, lines: [[0, "Rest now."]] },
       { k: "wake", secs: 120, title: "Waking up", nobell: true, lines: [[0, "Time to wake up. Take a slow, deep breath."], [25, "Wiggle your fingers and toes."],
         [50, "Let some light in. Open your eyes when you're ready."], [80, "Stretch, and take your time."]] },
-      G(30, "Up slowly", ["Sit up slowly before you stand. A glass of water helps.", "Notice how you feel."], { vis: "orb" })
+      G(30, "Up slowly", ["Sit up slowly before you stand. A glass of water helps.", "Observe how you feel now: your energy, and how clear your head is."], { vis: "orb" })
     ];
   }
   function pNapTick(s, st, T) {
@@ -9296,9 +9435,9 @@
       Wr("The judgments", { field: "judg", input: "text", check: "should", rows: 5,
         prompt: "Now let the judgments speak, uncensored: about the other person, about yourself, about how things should be.",
         ph: "She never listens. I'm boring. People shouldn't…",
-        hint: "In NVC, judgments are clues: each one points at something you need that isn't being met." }),
+        hint: "In NVC, judgments are clues: each one points at a need of yours that's waiting to be met." }),
       Wr("Question one rule", { field: "rule", input: "text", optional: true, ctx: "found", rows: 5,
-        prompt: "Many judgments carry rules we absorbed without choosing them: from family, school, work or culture. Pick one and question it. Where did you learn it? Whose voice is it? Who gains when you believe it? What would you feel, or do, if you let it go?",
+        prompt: "Many judgments carry rules we picked up along the way: from family, school, work or culture. Pick one and question it. Where did you learn it? Whose voice is it? Who gains when you believe it? What would you feel, or do, if you let it go?",
         ph: "“People should always answer straight away.” I learned it at my first job, where…" }),
       G(25, "Into the body", ["Put the words aside for a moment. Where do you feel this in your body? Tight, heavy, hot, fluttery?",
         "Breathe into that place, and let it be there."], { vis: "glow" }),
@@ -9307,7 +9446,7 @@
         hint: "Words like “ignored” or “rejected” describe what someone did. If one comes up, look for the feeling underneath it." }),
       Wr("Needs", { field: "need", input: "chips", sets: NVC_NEED, other: true,
         prompt: "What needs are behind those feelings? Pick the ones that matter most.",
-        hint: "Needs are universal and don't depend on one person doing one thing. “I need her to put the phone away” is a strategy; the need might be connection, or to be heard." }),
+        hint: "Needs are universal, and many different actions could meet each one. “I need her to put the phone away” is a strategy; the need might be connection, or to be heard." }),
       G(45, "Let it land", [], { vis: "glow", mkLines: function () {
         var f = P.nvc.feel, n = P.nvc.need;
         if (!f.length && !n.length) return [[0, "Notice what you're feeling now, and what matters to you underneath it."], [14, "Stay with that for a few breaths."]];
@@ -9316,12 +9455,12 @@
           [22, "Stay with the need for a few breaths. Notice what changes when the need has a name, rather than the judgment."]];
       } }),
       Wr("The other side", { field: "other", input: "other", optional: true,
-        prompt: "If someone else is part of this, what might they have been feeling and needing? It's a guess, and understanding isn't agreeing." }),
+        prompt: "If someone else is part of this, what might they have been feeling and needing? It's a guess, and understanding is separate from agreeing." }),
       Wr("A request", { field: "req", input: "text", check: "req", optional: true,
-        prompt: "What would you like now, from yourself or from someone else? Make it a doable, specific action, phrased as what you want rather than what you don't, and open to a no.",
+        prompt: "What would you like now, from yourself or from someone else? Make it a doable, specific action, phrased as what you want, and leaving the other person free to decline.",
         ph: "Tonight I'll ask her if we can keep dinner phone-free, and hear what she thinks." }),
       G(30, "Closing", [], { vis: "glow", mkLines: function () {
-        return [[0, "Read back what you've written. It's a picture of this moment, not a verdict on anyone."],
+        return [[0, "Read back what you've written. It's a picture of this moment, and moments change."],
           [10, "Change often starts when you accept yourself as you are."]];
       } })
     ];
@@ -9329,18 +9468,18 @@
   function nvcChooseSteps() {
     return [
       G(30, "Arrive", ["Take a slow breath. This practice looks at the things you do because you feel you have to.",
-        "Rules like have to, should and must are often absorbed without being chosen. Here you'll check which ones you'd actually choose."], { vis: "glow" }),
+        "Rules like have to, should and must are often picked up along the way. Here you'll check which ones you'd actually choose."], { vis: "glow" }),
       Wr("I have to…", { field: "have", input: "list", rows: 6,
         prompt: "List what you do because you feel you have to, should or must, one per line: at work, at home, for others, for yourself.",
         ph: "Answer every email the same day\nCall my mother every Sunday\nGo to the gym" }),
       Wr("I choose to…", { field: "choose", input: "choose",
-        prompt: "For each one, say what you want from doing it. If you would still choose it, it becomes “I choose to… because I want…”. If not, mark it.",
+        prompt: "For each one, say what you want from doing it. If you would still choose it, it becomes “I choose to… because I want…”. Otherwise, mark it as one you'd rather change.",
         hint: "If the honest answer is money, approval, or avoiding guilt, shame or punishment, notice it. Those motives tend to cost joy, even when you keep doing the thing." }),
       G(30, "Notice", [], { vis: "glow", mkLines: function () {
         var c = P.nvc.choose.filter(function (x) { return x.choose === true; }).length, r = P.nvc.choose.filter(function (x) { return x.choose === false; }).length;
         return [[0, "Read your list back, saying I choose to instead of I have to."],
-          [8, c || r ? "You chose " + c + (c === 1 ? " thing" : " things") + (r ? ", and you'd rather not keep " + r + (r === 1 ? " other" : " others") + " as they are" : "") + "." : "Notice how I choose feels, compared with I have to."],
-          [18, "Anything you'd rather stop or change is worth a request, to yourself or to someone else."]];
+          [8, c || r ? "You chose " + c + (c === 1 ? " thing" : " things") + (r ? ", and you'd like to change " + r + (r === 1 ? " other" : " others") : "") + "." : "Notice how I choose feels, compared with I have to."],
+          [18, "Anything you'd like to change is worth a request, to yourself or to someone else."]];
       } }),
       G(20, "Closing", [], { vis: "glow", mkLines: function () { return [[0, "Change often starts when you accept yourself as you are."]]; } })
     ];
@@ -9475,7 +9614,7 @@
       var o = old.filter(function (x) { return x.item === it; })[0];
       return o || { item: it, choose: null, why: "", tags: [] };
     });
-    if (!items.length) return '<p class="sw-empty">Nothing listed yet. Go back a step and add a few things you feel you have to do.</p>';
+    if (!items.length) return '<p class="sw-empty">Your list is empty so far. Go back a step and add a few things you feel you have to do.</p>';
     return '<ol class="sw-cards">' + P.nvc.choose.map(function (c, i) {
       return '<li class="sw-card" data-i="' + i + '"><p class="sw-have">I have to <b>' + esc(nvcLower(c.item)) + "</b></p>" +
         '<div class="mini-seg" role="group" aria-label="Choose or not"><button data-ch="1" aria-pressed="' + (c.choose === true) + '">I choose to</button>' +
@@ -9501,7 +9640,7 @@
     } else if (s.check === "req") {
       var r = d.req.toLowerCase();
       if (/\b(don'?t|do not|stop|never|quit)\b/.test(r)) msg = "Requests tend to land better as what you do want. What would you like instead?";
-      else if (nvcFind(r, NVC_SHOULD).length) msg = "That sounds like a demand. Would a no be okay? If not, look for the need behind it.";
+      else if (nvcFind(r, NVC_SHOULD).length) msg = "That sounds like a demand. A request leaves the other person free to decline: what need is behind this one?";
       else if (r.trim().length > 12) msg = "If it's doable and specific, it's ready.";
     } else if (s.input === "feel") {
       var faux = d.feel.filter(function (w) { return NVC_FAUX[w]; });
@@ -9788,8 +9927,11 @@
 
   /* ----- the builder screen ----- */
   function yOpen(arg) {
-    var q;
-    if (arg && arg.indexOf("copy/") === 0) {
+    var q, find = arg && arg.indexOf("find/") === 0 ? ASANA[arg.slice(5)] : null;
+    if (arg && arg.indexOf("find/") === 0) {
+      // from search: the routine you're building stays as it is, and the library shows the pose
+      if (find) Y.cat = ACATS.some(function (c) { return c[0] === find.cat; }) ? find.cat : "all";
+    } else if (arg && arg.indexOf("copy/") === 0) {
       var set = yogaSet(arg.slice(5));
       Y.uid = null; Y.from = set ? set.name : null;
       Y.name = set ? set.name + " (mine)" : "";
@@ -9805,6 +9947,13 @@
     bSetT("#viewTitle", Y.uid ? "Edit routine" : "Build your own");
     document.title = (Y.uid ? "Edit routine" : "Build your own routine") + " | Entrain";
     yRenderTpl(); yRenderSeq(); yRenderLib();
+    if (find) setTimeout(function () {
+      var b = document.querySelector('#ybLib [data-add="' + find.id + '"]');
+      if (!b) return;
+      try { b.scrollIntoView({ block: "center", behavior: RM ? "auto" : "smooth" }); } catch (e) { b.scrollIntoView(); }
+      try { b.focus({ preventScroll: true }); } catch (e) {}
+      fdHit(b);
+    }, 60);
   }
   function yFig(id, side) { var a = ASANA[id]; return a ? figSVG(a.fig, side || (a.sides ? "right" : null), "mini") : ""; }
   function yHoldStep(h, dir) {
@@ -9923,6 +10072,404 @@
       toast("Deleted “" + (Y.name || "routine") + "”.");
       Y.uid = null; Y.items = []; Y.name = "";
       location.hash = "practice";
+    });
+  }
+  /* ------------------------------- search -------------------------------
+     One box for everything: practices and your own routines, the movement library, breathing
+     patterns, Sounds tracks, the Heart tools and every paragraph and reference in Learn.
+     Matching ignores case and accents, and each word you type has to match the start of a word
+     somewhere in the entry, so "anap" finds Anapana and "bencao" finds Bênção. Results come in
+     groups, the group with the best match first. Enter opens the top result; "/" or Ctrl+K opens
+     the box from anywhere outside a field.
+  ------------------------------------------------------------------------ */
+
+  var FD = { open: false, base: null, items: [], q: "", more: {}, pushed: false, back: null, t: 0 };
+  var FD_KINDS = [["practice", "Practices"], ["pose", "Poses and moves"], ["breath", "Breathing"],
+    ["sound", "Sounds"], ["heart", "Heart"], ["learn", "Learn"]];
+  var FD_CAP = 6;                        // results shown per group until you ask for the rest
+  var FD_TRY = ["Sleep", "Anapana", "Tree", "4-7-8", "Coherence", "Tinnitus", "Capoeira", "Needs"];
+
+  /* ----- folding text for matching: lower case, no accents, anything else a space ----- */
+  function fdFold(s) {
+    s = String(s || "").toLowerCase();
+    if (s.normalize) s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return " " + s.replace(/[^a-z0-9]+/g, " ").trim() + " ";      // padded, so " term" marks a word start
+  }
+  // each word, trimmed back to a stem so plurals and -ing forms find the plain word too:
+  // "nostrils" finds nostril, "bodies" body, "tapping" tap
+  function fdStem(w) {
+    if (w.length > 5 && /ing$/.test(w)) { w = w.slice(0, -3); if (/([bcdfgklmnprstvz])\1$/.test(w)) w = w.slice(0, -1); return w; }
+    if (w.length > 4 && /ies$/.test(w)) return w.slice(0, -3);
+    if (w.length > 3 && /[^s]s$/.test(w)) return w.slice(0, -1);
+    return w;
+  }
+  function fdTerms(q) { return fdFold(q).trim().split(" ").filter(Boolean).map(fdStem); }
+  function fdHas(f, t) { return f.indexOf(" " + t) >= 0; }
+  // the same folding, keeping where each folded character came from, to mark matches in the original
+  function fdMap(s) {
+    var f = " ", at = [-1];
+    for (var i = 0; i < s.length; i++) {
+      var c = s.charAt(i).toLowerCase();
+      if (c.normalize) c = c.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (!/^[a-z0-9]+$/.test(c)) c = " ";
+      for (var j = 0; j < c.length; j++) { f += c.charAt(j); at.push(i); }
+    }
+    return { f: f, at: at };
+  }
+  function fdSpans(s, terms) {           // [start, end) in s of every word a term starts, merged
+    var m = fdMap(s), out = [];
+    terms.forEach(function (t) {
+      var i = m.f.indexOf(" " + t);
+      while (i >= 0) {
+        var e = i + t.length;
+        while (e + 1 < m.f.length && m.f.charAt(e + 1) !== " ") e++;   // mark the whole word, not just its start
+        var a = m.at[i + 1], b = m.at[e] + 1;
+        if (a >= 0) out.push([a, b]);
+        i = m.f.indexOf(" " + t, i + 1);
+      }
+    });
+    out.sort(function (x, y) { return x[0] - y[0]; });
+    var merged = [];
+    out.forEach(function (r) {
+      var l = merged[merged.length - 1];
+      if (l && r[0] <= l[1]) l[1] = Math.max(l[1], r[1]); else merged.push([r[0], r[1]]);
+    });
+    return merged;
+  }
+  function fdMark(s, terms) {
+    var h = "", at = 0;
+    fdSpans(s, terms).forEach(function (r) { h += esc(s.slice(at, r[0])) + "<mark>" + esc(s.slice(r[0], r[1])) + "</mark>"; at = r[1]; });
+    return h + esc(s.slice(at));
+  }
+  // a short excerpt around the first match, cut at word boundaries
+  function fdSnip(s, terms, len) {
+    len = len || 150;
+    var sp = fdSpans(s, terms), a = 0, b = s.length;
+    if (sp.length && s.length > len) {
+      a = Math.max(0, sp[0][0] - Math.round(len * 0.3));
+      b = Math.min(s.length, a + len);
+      a = Math.max(0, Math.min(a, b - len));
+    } else if (s.length > len) b = len;
+    if (a > 0) { var sa = s.indexOf(" ", a); if (sa > 0 && sa < (sp.length ? sp[0][0] : b)) a = sa + 1; }
+    if (b < s.length) { var sb = s.lastIndexOf(" ", b); if (sb > a + 40) b = sb; }
+    return (a > 0 ? "…" : "") + fdMark(s.slice(a, b), terms) + (b < s.length ? "…" : "");
+  }
+
+  /* ----- the index ----- */
+  function fdTxt(el) { return el ? el.textContent.replace(/\s+/g, " ").trim() : ""; }
+  function fdEntry(k, t, s, xs, h, o) {
+    o = o || {};
+    xs = xs.filter(Boolean);
+    var bare = !!o.bare;                 // a paragraph shown under its section's name: only its own words count
+    return { k: k, t: t, s: s || "", xs: xs, h: h, ic: o.ic || "spark", col: o.col || "", w: o.w || 1,
+      tn: bare ? " " : fdFold(t), ti: bare ? " " : fdFold(t + " " + (o.alias || "")), si: bare ? " " : fdFold(s + " " + (o.tags || "")), xi: fdFold(xs.join(" ")) };
+  }
+  function fdMins(d) {
+    if (d.selfPaced) return "self-paced, about " + d.est + " min";
+    if (d.lengths) return d.lengths[0] + "–" + d.lengths[d.lengths.length - 1] + " " + (d.lenUnit ? d.lenUnit + "s" : "min");
+    return (d.open ? "up to " : "") + pMinutes(d) + " min";
+  }
+  function fdPractice(d) {
+    var g = GROUPS.filter(function (x) { return x.id === d.group; })[0], steps = [];
+    (d.lengths || [0]).forEach(function (L) {   // step names at every length: longer sittings have more of them
+      try { pPlan(d, L).steps.forEach(function (s) { if (s.title && steps.indexOf(s.title) < 0) steps.push(s.title); }); } catch (e) {}
+    });
+    return fdEntry("practice", d.name, (d.custom ? "Your routine" : g ? g.name : "Practice") + " · " + fdMins(d),
+      [d.blurb, d.parts, steps.join(" · "), d.how], "#practice/" + d.id,
+      { ic: pIcon(d), col: pColor(d), w: 1.25, tags: (d.tags || []).join(" ") + " " + d.id.replace(/-/g, " ") });
+  }
+  function fdBuildBase() {
+    var out = [];
+    PRACTICES.forEach(function (d) { out.push(fdPractice(d)); });
+    var cats = {};
+    ACATS.forEach(function (c) { cats[c[0]] = c[1]; });
+    ASANAS.forEach(function (a) {
+      out.push(fdEntry("pose", a.en, a.sa + " · " + (cats[a.cat] || "Pose") + (a.sides ? " · both sides" : "") + (a.move ? " · moving" : ""),
+        a.cues.map(function (c) { return aCue(c, a.sides ? "right" : null); }).concat([a.caution]), "#yoga/find/" + a.id,
+        { ic: a.cat === "capoeira" ? "drum" : "move", col: "var(--accent)", w: 1, alias: a.sa }));
+    });
+    out.push(fdEntry("pose", "Build your own routine", "Movement · " + ASANAS.length + " poses and moves",
+      ["Pick yoga poses, stretches, mobility drills and capoeira moves, set each one's time, and save the routine."], "#yoga",
+      { ic: "plus", col: "var(--accent)", w: 1.1, tags: "yoga builder custom sequence" }));
+    BREATHS.forEach(function (b) {
+      var lab = document.querySelector('#bPats input[value="' + b.id + '"]'), t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
+      var name = lab ? fdTxt(lab.parentNode) : b.id;
+      out.push(fdEntry("breath", name, "Breathing pattern · " + (Math.round(600 / per) / 10) + " breaths a minute",
+        [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id }));
+    });
+    out.push(fdEntry("breath", "Breathing guide", "Breathe · paced breathing",
+      ["Paced breathing with five visuals, timed sessions, sound cues and live heart data."], "#breathe",
+      { ic: "breathe", col: "var(--b-in)", w: 1, tags: "breathe pace" }));
+    var tcat = { relax: "Relaxation and sleep", stim: "Stimulation and focus", ther: "Tinnitus" };
+    TRACKS.forEach(function (t) {
+      out.push(fdEntry("sound", t.name, t.band + " · " + t.minutes + " min · " + (tcat[t.cat] || "Track"), [t.desc, t.ev], "#track/" + t.id,
+        { ic: "sounds", col: "var(--relax)", w: 1, alias: t.cat === "ther" ? "tinnitus" : "", tags: "binaural beat track " + tcat[t.cat] }));
+    });
+    out.push(fdEntry("sound", "Prime, then work", "Sounds · 5 to 20 min before a task",
+      ["Listen to a beat before you start a task, get a cue when the block ends, then begin working."], "#prime",
+      { ic: "bolt", col: "var(--relax)", w: 1, tags: "binaural focus primer alpha beta gamma" }));
+    out.push(fdEntry("sound", "Build your own beat", "Sounds · any beat and carrier",
+      ["Pick the beat frequency, the carrier tone and the session length, then play it."], "#builder",
+      { ic: "sliders", col: "var(--relax)", w: 1, tags: "binaural custom builder carrier frequency" }));
+    out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
+      ["Pair a Garmin watch set to broadcast, a HeartMath ear-clip sensor or a chest strap, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
+      { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));
+    out.push(fdEntry("heart", "Sensor connection guide", "Heart · step by step",
+      ["Step by step for a Garmin Venu 4, a HeartMath sensor or a chest strap, with a live check of each step."], "#connect",
+      { ic: "heart", col: "var(--hr)", w: 1, tags: "garmin venu heartmath strap broadcast pair help" }));
+    out.push(fdEntry("heart", "Resonance test", "Heart · about 10 minutes",
+      ["Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the biggest heart-rate swing."], "#resonance-test",
+      { ic: "target", col: "var(--hr)", w: 1.1, tags: "resonance frequency rate pace hrv" }));
+    out.push(fdEntry("heart", "Live heart data and coherence", "Heart · rate, swing, RMSSD, coherence",
+      ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
+      { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));
+    fdLearn(out);
+    return out;
+  }
+  // Learn: headings, paragraphs, list items and references (fdInit gives each an id to land on)
+  var FD_LEARN = "#v-learn h2, #v-learn h3, #v-learn .prose p, #v-learn .prose li, #v-learn .refs li";
+  function fdLearn(out) {
+    var head = "Learn";
+    document.querySelectorAll(FD_LEARN).forEach(function (el) {
+      if (el.closest(".toc") || !el.id) return;
+      var tag = el.tagName, txt = fdTxt(el);
+      if (!txt) return;
+      if (tag === "H2" || tag === "H3") {
+        if (txt === "References") { head = txt; return; }
+        head = txt;
+        out.push(fdEntry("learn", txt, "Learn", [fdTxt(el.nextElementSibling)], "#" + el.id, { ic: "learn", w: 0.75 }));
+        return;
+      }
+      if (el.closest(".refs")) {
+        var c = el.cloneNode(true);
+        c.querySelectorAll("a").forEach(function (a) { a.remove(); });
+        var ref = fdTxt(c), m = ref.match(/^(.*?\(\d{4}[a-z]?\))/), who = m ? m[1] : ref.slice(0, 60);
+        if (who.length > 64) who = who.split(",")[0] + " et al. " + (who.match(/\(\d{4}[a-z]?\)/) || [""])[0];
+        out.push(fdEntry("learn", who, "Learn · Reference", [ref.slice(m ? m[1].length : 0).replace(/^[.\s]+/, "")], "#" + el.id, { ic: "learn", w: 0.45 }));
+        return;
+      }
+      var b = el.firstElementChild, lead = "";
+      if (b && (b.tagName === "B" || b.tagName === "STRONG") && txt.indexOf(fdTxt(b)) === 0) lead = fdTxt(b).replace(/[.:]$/, "");
+      out.push(fdEntry("learn", lead || head, "Learn · " + head, [lead ? txt.slice(fdTxt(b).length).trim() : txt], "#" + el.id, { ic: "learn", w: lead ? 0.7 : 0.6, bare: !lead }));
+    });
+  }
+  function fdIndex() {
+    if (!FD.base) FD.base = fdBuildBase();
+    var mine = [];
+    try { yLoad().forEach(function (q) { mine.push(fdPractice(yDef(q))); }); } catch (e) {}
+    return mine.concat(FD.base);         // your routines can change between searches; the rest can't
+  }
+
+  /* ----- matching and ranking ----- */
+  function fdScore(e, terms, whole) {
+    var sc = 0;
+    for (var i = 0; i < terms.length; i++) {
+      var t = terms[i];
+      if (fdHas(e.ti, t)) sc += 10;
+      else if (fdHas(e.si, t)) sc += 5;
+      else if (fdHas(e.xi, t)) sc += 2;
+      else return 0;                     // every word has to match somewhere
+    }
+    if (e.tn === " " + whole + " ") sc += 14;                 // the exact name
+    else if (e.tn.indexOf(" " + whole) === 0) sc += 7;        // the name starts with what you typed
+    return sc * e.w;
+  }
+  function fdSearch(q) {
+    var terms = fdTerms(q), whole = terms.join(" ");
+    if (!terms.length) return [];
+    var hits = [];
+    fdIndex().forEach(function (e, i) {
+      var sc = fdScore(e, terms, whole);
+      if (sc > 0) hits.push({ e: e, sc: sc, i: i });
+    });
+    var ord = {};
+    FD_KINDS.forEach(function (k, i) { ord[k[0]] = i; });
+    hits.sort(function (a, b) { return b.sc - a.sc || ord[a.e.k] - ord[b.e.k] || a.e.t.length - b.e.t.length || a.i - b.i; });
+    var groups = {}, list = [];
+    hits.forEach(function (h) {
+      if (!groups[h.e.k]) { groups[h.e.k] = { k: h.e.k, top: h.sc, items: [] }; list.push(groups[h.e.k]); }
+      groups[h.e.k].items.push(h.e);
+    });
+    return list;                         // groups in order of their best match
+  }
+
+  /* ----- the panel ----- */
+  function fdLine(e, terms) {
+    for (var i = 0; i < e.xs.length; i++) {
+      var f = fdFold(e.xs[i]);
+      if (terms.some(function (t) { return !fdHas(e.ti, t) && fdHas(f, t); })) return fdSnip(e.xs[i], terms);
+    }
+    return e.xs.length ? fdSnip(e.xs[0], terms) : "";
+  }
+  function fdRender() {
+    var q = $("#fdIn").value, terms = fdTerms(q), res = $("#fdRes");
+    FD.q = q;
+    FD.items = [];
+    if (!terms.length) {
+      res.innerHTML = '<div class="fd-empty"><p>Search the practices, poses and moves, breathing patterns, tracks and everything in Learn.</p>' + fdTryRow() + "</div>";
+      bSetT("#fdCount", "");
+      return;
+    }
+    var groups = fdSearch(q), n = 0, h = "";
+    groups.forEach(function (g) {
+      var name = FD_KINDS.filter(function (k) { return k[0] === g.k; })[0][1], all = FD.more[g.k], show = all ? g.items : g.items.slice(0, FD_CAP);
+      n += g.items.length;
+      h += '<section class="fd-grp"><h3>' + name + " <span>" + g.items.length + "</span></h3><ul>";
+      show.forEach(function (e) {
+        var i = FD.items.push(e) - 1;
+        h += '<li><a class="fd-it" href="' + esc(e.h) + '" data-i="' + i + '"' + (e.col ? ' style="--pcol:' + e.col + '"' : "") + ">" +
+          '<span class="fd-iic"><svg class="i" aria-hidden="true"><use href="#i-' + e.ic + '"/></svg></span>' +
+          '<span class="fd-tx"><b>' + fdMark(e.t, terms) + "</b><small>" + fdMark(e.s, terms) + "</small>" +
+          '<span class="fd-sn">' + fdLine(e, terms) + "</span></span></a></li>";
+      });
+      h += "</ul>";
+      if (g.items.length > show.length) h += '<button class="fd-more" data-k="' + g.k + '">Show ' + (g.items.length - show.length) + " more</button>";
+      h += "</section>";
+    });
+    if (!n) h = '<div class="fd-empty"><p>Nothing found for “' + esc(q.trim()) + '”. A shorter word, or one of these, may find it:</p>' + fdTryRow() + "</div>";
+    res.innerHTML = h;
+    bSetT("#fdCount", n ? n + (n === 1 ? " result" : " results") + (n > 1 ? ". Enter opens the first." : ". Enter opens it.") : "No results");
+  }
+  function fdTryRow() {
+    return '<div class="fd-try">' + FD_TRY.map(function (w) { return '<button class="chip-b" data-try="' + esc(w) + '">' + esc(w) + "</button>"; }).join("") + "</div>";
+  }
+  function fdOpen(q) {
+    if (FD.open) { $("#fdIn").focus(); return; }
+    FD.open = true; FD.more = {};
+    FD.back = document.activeElement;
+    $("#fd").hidden = false; $("#fdBack").hidden = false;
+    document.body.classList.add("fd-open");
+    $("#tbFind").setAttribute("aria-expanded", "true");
+    try { history.pushState({ fd: 1 }, ""); FD.pushed = true; } catch (e) { FD.pushed = false; }
+    var inp = $("#fdIn");
+    if (typeof q === "string") inp.value = q;
+    fdRender();
+    setTimeout(function () { inp.focus(); inp.select(); }, 30);
+  }
+  // popped: the back button already took the panel's history entry away
+  function fdClose(popped, keepFocus) {
+    if (!FD.open) return;
+    FD.open = false;
+    $("#fd").hidden = true; $("#fdBack").hidden = true;
+    document.body.classList.remove("fd-open");
+    $("#tbFind").setAttribute("aria-expanded", "false");
+    if (FD.pushed && !popped) { FD.pushed = false; try { history.back(); } catch (e) {} }
+    FD.pushed = false;
+    if (!keepFocus && FD.back && FD.back.focus && document.contains(FD.back)) try { FD.back.focus({ preventScroll: true }); } catch (e) {}
+  }
+  function fdGo(e) {
+    if (!e) return;
+    var popped = false;
+    if (FD.pushed) { try { history.replaceState(null, "", e.h); popped = true; } catch (x) {} }   // the result takes the panel's place in history
+    fdClose(popped, true);
+    if (popped) route();
+    else if (location.hash === e.h) route();
+    else location.hash = e.h;
+    var id = e.h.slice(1);
+    if (/^(lx-|l-|connect$|resonance-test$|references$)/.test(id)) setTimeout(function () { fdHit(document.getElementById(id)); }, 80);
+  }
+  function fdHit(el) {
+    if (!el) return;
+    el.classList.remove("fd-hit");
+    void el.offsetWidth;                 // restart the highlight if it's already running
+    el.classList.add("fd-hit");
+    clearTimeout(el.fdT);
+    el.fdT = setTimeout(function () { el.classList.remove("fd-hit"); }, 2600);
+  }
+  function fdKeys(e) {
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); fdClose(); return; }
+    var links = Array.prototype.slice.call($("#fdRes").querySelectorAll(".fd-it")), i = links.indexOf(document.activeElement);
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      if (!links.length) return;
+      e.preventDefault();
+      var d = e.key === "ArrowDown" ? 1 : -1;
+      if (e.target === $("#fdIn")) { if (d > 0) links[0].focus(); return; }
+      if (i < 0) return;
+      if (i + d < 0) $("#fdIn").focus(); else links[Math.min(links.length - 1, i + d)].focus();
+      return;
+    }
+    if (e.key === "Tab") {                // stay inside the panel
+      var f = Array.prototype.slice.call($("#fd").querySelectorAll("input, button, a[href]")).filter(function (x) { return !x.disabled && x.offsetParent; });
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    }
+  }
+
+  /* ----- landing on a track or a breathing pattern ----- */
+  function fdTrack(id) {
+    var t = TRACKS.filter(function (x) { return x.id === id; })[0];
+    if (!t) return;
+    if (curFilter !== "all" && curFilter !== t.cat) { var all = document.querySelector('.tab[data-filter="all"]'); if (all) all.click(); }
+    setTimeout(function () {
+      var card = document.querySelector('#grid .card[data-id="' + id + '"]');
+      if (!card) return;
+      try { card.scrollIntoView({ block: "center", behavior: RM ? "auto" : "smooth" }); } catch (e) { card.scrollIntoView(); }
+      fdHit(card);
+    }, 40);
+  }
+  function fdPattern(id) {
+    var inp = document.querySelector('#bPats input[value="' + id + '"]');
+    if (!inp) return;
+    if (!(pBusy() && P.usesB) && BC.pattern !== id) {    // a practice running the guide keeps it
+      inp.checked = true;
+      inp.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    setTimeout(function () { fdHit(inp.closest("label")); }, 40);
+  }
+
+  function fdInit() {
+    var tb = $("#tbFind");
+    tb.addEventListener("click", function () { fdOpen(); });
+    $("#fdX").addEventListener("click", function () { fdClose(); });
+    $("#fdBack").addEventListener("click", function () { fdClose(); });
+    $("#fdIn").addEventListener("input", function () {
+      FD.more = {};
+      clearTimeout(FD.t);
+      FD.t = setTimeout(fdRender, 60);
+    });
+    $("#fdIn").addEventListener("keydown", function (e) {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      clearTimeout(FD.t); fdRender();
+      if (FD.items.length) fdGo(FD.items[0]);
+    });
+    $("#fd").addEventListener("keydown", fdKeys);
+    $("#fdRes").addEventListener("click", function (e) {
+      var tr = e.target.closest("[data-try]");
+      if (tr) { $("#fdIn").value = tr.dataset.try; FD.more = {}; fdRender(); $("#fdIn").focus(); return; }
+      var mo = e.target.closest(".fd-more");
+      if (mo) {
+        FD.more[mo.dataset.k] = true;
+        var at = FD.items.length;
+        fdRender();
+        var nx = $("#fdRes").querySelector('.fd-it[data-i="' + at + '"]');
+        if (nx) nx.focus();
+        return;
+      }
+      var a = e.target.closest(".fd-it");
+      if (!a || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      e.preventDefault();
+      fdGo(FD.items[+a.dataset.i]);
+    });
+    window.addEventListener("popstate", function () {
+      if (FD.open && !(history.state && history.state.fd)) fdClose(true);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (FD.open) return;
+      var k = (e.key === "k" || e.key === "K") && (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey;
+      var typing = e.target && e.target.closest && e.target.closest('input, textarea, select, [contenteditable]');
+      if (!k && (e.key !== "/" || typing || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey)) return;
+      if (document.body.classList.contains("immersive")) return;    // a session on screen keeps the keys
+      e.preventDefault();
+      fdOpen();
+    });
+    // places a result can land on that have no id of their own
+    var rt = $("#hrFindTxt") && $("#hrFindTxt").closest(".hr-box");
+    if (rt && !rt.id) rt.id = "resonance-test";
+    var n = 0;
+    document.querySelectorAll(FD_LEARN).forEach(function (el) {
+      if (!el.closest(".toc") && !el.id) el.id = "lx-" + (n++);
     });
   }
 

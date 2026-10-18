@@ -12,7 +12,7 @@
   var P = {
     def: null, view: null, len: 0, steps: [], total: 0, state: "idle",   // idle | intro | running | paused | done
     t0: 0, st: 0, idx: -1, li: 0, tick: 0, raf: 0,
-    hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null, lock: null,
+    hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null,
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
@@ -47,22 +47,22 @@
     return { steps: steps, total: at, base: base };
   }
 
-  /* Anapana reminders for the programs: every few minutes, a quiet prompt to feel the breath
+  /* Anapana reminders for the programs: every few minutes, a quiet prompt to observe the breath
      at the nostrils, worded for paced, natural or heart-focused breathing. They skip steps that
-     guide attention elsewhere (body regions, the dark drift) and never crowd another line. */
+     guide attention elsewhere (body regions, the sleep drift) and never crowd another line. */
   var ANA = {
     paced: ["Keep a little attention at the nostrils: cool air coming in, warmer air going out.",
-      "Notice the touch of the breath just below the nostrils as you follow the pace.",
+      "Observe the touch of the breath just below the nostrils as you follow the pace.",
       "If the mind has wandered, come back to the breath at the nostrils, and the next breath in.",
-      "Feel exactly where the air touches as it enters. Stay with this one breath."],
-    natural: ["Bring your attention to the small area below the nostrils. Feel the breath as it is.",
+      "Observe exactly where the air touches as it enters. Stay with this one breath."],
+    natural: ["Bring your attention to the small area below the nostrils, and observe the touch of the breath there.",
       "If the mind has wandered, notice where it went, and come back to the breath at the nostrils.",
-      "Natural breath. Just observe its touch at the nostrils, in and out.",
-      "Is this breath long or short? Left nostril, right, or both? Just notice."],
-    sigh: ["Feel the cool touch of the air at the nostrils on each in-breath.",
+      "Breathe naturally, and observe the touch of the breath at the nostrils, in and out.",
+      "Observe this breath: long or short, through the left nostril, the right, or both."],
+    sigh: ["Observe the cool touch of the air at the nostrils on each in-breath.",
       "If the mind has wandered, come back to the in-breath at the nostrils."],
-    heart: ["Notice the breath at the nostrils for a moment, then let attention settle back at the heart.",
-      "If the mind has wandered, feel one breath at the nostrils, then return to the heart area."]
+    heart: ["Observe the touch of one breath at the nostrils, then let your attention settle back at the heart.",
+      "If the mind has wandered, observe one breath at the nostrils, then return to the heart area."]
   };
   function pAna(d, steps, total, every) {
     var n = 0, shifts = [0, 10, -10, 20, -20, 30, -30, 45, -45, 60, -60];
@@ -144,21 +144,50 @@
   }
   function pHush() { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {} }
 
-  /* ----- screen wake lock (the breathing engine keeps its own) ----- */
-  function pLock() {
-    try {
-      if (!navigator.wakeLock || P.lock) return;
-      navigator.wakeLock.request("screen").then(function (l) {
-        if (P.state !== "running") { l.release().catch(function () {}); return; }
-        P.lock = l;
-        l.addEventListener("release", function () { if (P.lock === l) P.lock = null; });
-      }).catch(function () {});
-    } catch (e) {}
+  /* ----- the screen stays on, at full brightness, through every session ----- */
+  // One lock for practices, the breathing guide and Sounds tracks. It's held while any of them runs, and
+  // for ten minutes after a pause, so the screen is still lit when you come back to it. The browser drops
+  // the lock whenever the page is hidden, so it's asked for again on return; a check every 15 seconds
+  // also catches a lock the system took back, and the end of a pause's ten minutes.
+  var WL = { lock: null, asking: false, stop: 0, told: false, failAt: 0 };
+  var WL_GRACE = 600000;
+  function wlNeed() {
+    if (P.state === "running" || B.state === "running" || A.playing) { WL.stop = 0; return true; }
+    if (!WL.stop) WL.stop = Date.now();               // the moment the last session paused or ended
+    var paused = P.state === "paused" || B.state === "paused" || (!!A.track && A.elapsed > 0);
+    return paused && Date.now() - WL.stop < WL_GRACE;
   }
-  function pUnlock() {
-    var l = P.lock; P.lock = null;
-    if (l) { try { var q = l.release(); if (q && q.catch) q.catch(function () {}); } catch (e) {} }
+  function wlSync() {
+    if (!wlNeed()) { wlDrop(); return; }
+    if (WL.lock || WL.asking || document.hidden) return;
+    if (!navigator.wakeLock || !navigator.wakeLock.request) { wlTell(false); return; }
+    if (WL.failAt && Date.now() - WL.failAt < 60000) return;   // turned down a moment ago: ask again in a minute
+    WL.asking = true;
+    var q;
+    try { q = navigator.wakeLock.request("screen"); } catch (e) { q = Promise.reject(e); }
+    q.then(function (l) {
+      WL.asking = false; WL.failAt = 0;
+      if (!wlNeed()) { wlFree(l); return; }
+      WL.lock = l;
+      l.addEventListener("release", function () {     // taken back by the system: ask again while it's still needed
+        if (WL.lock === l) { WL.lock = null; setTimeout(wlSync, 1000); }
+      });
+    }, function () {
+      WL.asking = false; WL.failAt = Date.now();
+      if (!document.hidden) wlTell(true);
+    });
   }
+  function wlFree(l) { try { var q = l.release(); if (q && q.catch) q.catch(function () {}); } catch (e) {} }
+  function wlDrop() { var l = WL.lock; WL.lock = null; if (l) wlFree(l); }
+  function wlTell(refused) {
+    if (WL.told) return;
+    WL.told = true;
+    toast(refused ? "The browser declined to keep the screen on, so for this session set a longer screen timeout in your device's display settings."
+      : "This browser can't keep the screen on by itself, so for long sessions set a longer screen timeout in your device's display settings.", { ms: 10000, over: true });
+  }
+  function wlKick() { setTimeout(wlSync, 0); }       // once the caller has finished changing state
+  function pLock() { wlKick(); }
+  function pUnlock() { wlKick(); }
 
   /* ----- breath steps run on the breathing guide's engine ----- */
   function pCfgAt(s, st) {
@@ -287,14 +316,14 @@
     if (s.k === "pump") return "pump";
     if (s.k === "shuffle") return "word";
     if (s.k === "count") return "count";
-    if (s.k === "drift") return "dark";
+    if (s.k === "drift") return "glow";
     if (s.k === "hold") return "hold";
     if (s.k === "guide" && s.pose) return "pose";
     if (s.k === "tap" || s.tapfig) return "tap";
     if (s.k === "rate") return "rate";
     if (s.k === "adapt") return "adapt";
     if (s.k === "write") return "write";
-    if (s.k === "nap") return "dark";
+    if (s.k === "nap") return "glow";
     if (s.k === "wake") return "orb";
     if (s.k === "pmr" || s.body) return "body";
     if (s.k === "observe") return s.vis || "still";
@@ -316,7 +345,6 @@
     else if (P.usesB && B.state !== "idle") pBreathOff();
     var flowing = s.k === "breath" && prev && prev.k === "breath";
     if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
-    $("#ses").dataset.dim = s.dim ? "1" : "";
     pStage(s);
     pRenderSegs();
     pUI();
@@ -326,12 +354,13 @@
   function pStage(s) {
     var vis = pVis(s), fig = $("#sFig");
     $("#sStage").dataset.vis = vis;
-    fig.hidden = !(vis === "pose" || vis === "body" || vis === "tap");
+    fig.hidden = !(vis === "pose" || vis === "body" || vis === "tap" || vis === "face");
     P.tapAt = "";
     var a = vis === "pose" && ASANA[s.pose];
     P.mv = a && a.keys && s.k === "pose" ? { a: a, side: s.side, box: figBox(a, s.side), drawn: 0, ph: -1 } : null;
     if (vis === "pose") fig.innerHTML = !a ? "" : P.mv ? figMove(a, pMovePhase(a, s, pT()), s.side, "", P.mv.box) : figSVG(a.fig, s.side);
     else if (vis === "body") fig.innerHTML = pBodySVG(s.body || ["all"]);
+    else if (vis === "face") fig.innerHTML = pFaceSVG(s.zone || 0);
     else if (vis === "tap") { fig.innerHTML = tapSVG(null, []); pTapPoint(s, pT() - s.at); }
     $("#sRate").hidden = vis !== "rate";
     var wr = $("#sWrite");
@@ -711,6 +740,27 @@
     ["head", '<ellipse cx="60" cy="22" rx="15" ry="18"/>'],
     ["face", '<ellipse cx="60" cy="26" rx="9.5" ry="10.5"/>']
   ];
+  /* Anapana's areas on a drawing of the nose and upper lip, each narrower than the one before:
+     the whole triangle, the nostrils and upper lip, the rims of the nostrils, the area below them,
+     and the small dimple just beneath the ridge between the nostrils. */
+  var FACE_ZONES = [
+    '<path class="zn" d="M100 16 L148 170 L52 170 Z"/>',
+    '<path class="zn" d="M78 98 Q100 90 122 98 L148 170 L52 170 Z"/>',
+    '<ellipse class="zn" cx="100" cy="129" rx="33" ry="17"/>',
+    '<ellipse class="zn" cx="100" cy="147" rx="13" ry="9"/>',
+    '<circle class="zn-ring" cx="100" cy="142" r="10"/><circle class="zn pt" cx="100" cy="142" r="4.5"/>'
+  ];
+  function pFaceSVG(z) {
+    return '<svg class="anafig" viewBox="0 0 200 212" aria-hidden="true">' + FACE_ZONES[Math.max(0, Math.min(4, z))] +
+      '<path class="ln thin" d="M38 46 Q54 55 70 46 M130 46 Q146 55 162 46"/>' +                                    // closed eyes
+      '<path class="ln" d="M91 28 Q89 80 79 111 M109 28 Q111 80 121 111"/>' +                                      // the bridge of the nose
+      '<path class="ln" d="M79 111 Q64 128 82 135 Q90 138 95 134 M121 111 Q136 128 118 135 Q110 138 105 134"/>' + // the wings
+      '<path class="ln thin" d="M95 134 Q100 139 105 134"/>' +                                                      // the ridge between the nostrils
+      '<ellipse class="ln thin" cx="88" cy="130" rx="6" ry="3" transform="rotate(14 88 130)"/><ellipse class="ln thin" cx="112" cy="130" rx="6" ry="3" transform="rotate(-14 112 130)"/>' +
+      '<path class="ln faint" d="M95.5 141 Q94 151 93 159 M104.5 141 Q106 151 107 159"/>' +                        // the groove below
+      '<path class="ln" d="M52 170 Q78 160 92 161 Q100 166 108 161 Q122 160 148 170 Q100 198 52 170 Z"/>' +       // the lips
+      "</svg>";
+  }
   function pBodySVG(on) {
     var all = on.indexOf("all") >= 0;
     return '<svg class="bm' + (all ? " all" : "") + '" viewBox="0 0 120 300" aria-hidden="true">' +
@@ -837,7 +887,6 @@
     P.audioOn = false;
     pUnlock();
     P.state = "done";
-    $("#ses").dataset.dim = "";
     if (!early && !quiet) {
       pBell(0.5);
       if (A.ctx) pBell(0.4, A.ctx.currentTime + 1.4, 523.25);
@@ -1013,7 +1062,7 @@
     opts.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, made on your device.</small></span>' + ambCtl() + "</div>");
     if (d.variant) opts.push('<div class="so-row"><span class="so-l">' + d.variant.label + '</span><div class="mini-seg" id="sOptVar">' +
       d.variant.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (pVar(d) === o[0]) + '">' + o[1] + "</button>"; }).join("") + "</div></div>");
-    if (d.group === "program") opts.push('<div class="so-row so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to feel the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
+    if (d.group === "program") opts.push('<div class="so-row so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
       [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]].map(function (o) {
         return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.ana === o[0]) + '">' + o[1] + "</button>";
       }).join("") + "</div></div>");
@@ -1331,7 +1380,7 @@
         return;
       } else if (s.wander) {
         P.wander++;
-        bSetT("#sLine", "Noticed. Back to the breath at the nostrils.");
+        bSetT("#sLine", "Noticed. Back to " + (s.back || "the breath at the nostrils") + ".");
       }
       pUI();
     });
@@ -1368,13 +1417,16 @@
       else if (here && e.key === "ArrowLeft") { e.preventDefault(); pJump(-1); }
     });
     document.addEventListener("visibilitychange", function () {
-      if (!document.hidden && P.state === "running") { pLock(); pTick(); pLoop(); }
+      if (!document.hidden) wlSync();
+      if (!document.hidden && P.state === "running") { pTick(); pLoop(); }
     });
+    setInterval(wlSync, 15000);
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; } };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync };   // for automated tests only
     yInit();
     nvcInit();
+    fdInit();
     pRenderLib();
   }

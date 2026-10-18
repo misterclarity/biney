@@ -73,14 +73,14 @@
     return { k: "tap", secs: lead + TAP_SEQ.length * per + 1, title: title, pts: TAP_SEQ, per: per, lead: lead, lines: lines };
   }
   function TBreath(secs) {
-    return { k: "guide", secs: secs, title: "Breathe", tapfig: true, lines: [[0, "Stop tapping. Take a slow, deep breath in, and let it go."]] };
+    return { k: "guide", secs: secs, title: "Breathe", tapfig: true, lines: [[0, "Rest your hands. Take a slow, deep breath in, and let it go."]] };
   }
   function tapSteps(rounds) {
     var p = tapPhrase(), P1 = tapCap(p) + ".", rem = tapCap(tapRemaining(p)) + ".";
     var st = [
       G(40, "Get set", ["Sit comfortably. Bring to mind what's bothering you, and notice where you feel it in your body.",
         "You'll tap gently with two or three fingertips, about seven times on each point, while saying a short phrase out loud or in your head.",
-        "If anything feels like too much, stop, breathe slowly, and look around the room."], { tapfig: true }),
+        "If anything feels like too much, rest your hands, breathe slowly, and look around the room."], { tapfig: true }),
       TRate("How strong is it?", "How strong is the feeling right now, from zero to ten? Tap a number."),
       TSetup(30, "Set-up", "Even though I have " + p + ", I deeply and completely accept myself.", 3),
       TRound("Round 1", [P1], 7, true),
@@ -96,7 +96,7 @@
       st.push(TBreath(12));
     }
     st.push(TRate("And now?", "One last check. From zero to ten, how strong is it now?"));
-    st.push(G(30, "Closing", ["Notice how you feel. If the feeling is still strong, another round often helps, or come back to it later.",
+    st.push(G(30, "Closing", ["Observe the feeling now, and where it sits in your body. If it's still strong, another round often helps, or come back to it later.",
       "Take one more slow breath before you carry on."], { tapfig: true }));
     return st;
   }

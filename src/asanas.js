@@ -241,7 +241,7 @@
     /* ----- balance ----- */
     { id: "tree", en: "Tree", sa: "Vrksasana", cat: "balance", pos: "stand", sides: true, hold: 35, level: 1,
       fig: F("front", { torso: 0, armR: [-14, 30], armL: [14, -30], legR: [-130, 100], legL: [179, 180] }),
-      cues: ["Tree, {S} foot up. Shift your weight to the {O} foot and place the {S} sole on the calf or inner thigh, never on the knee.",
+      cues: ["Tree, {S} foot up. Shift your weight to the {O} foot and place the {S} sole on the calf or the inner thigh, above or below the knee.",
         "Hands at the chest or overhead. Find a still point to look at.", "Wobbling is part of it."],
       caution: "Keep a wall or chair within reach if balance is tricky." },
     { id: "warrior3", en: "Warrior III", sa: "Virabhadrasana III", cat: "balance", pos: "stand", sides: true, hold: 25, level: 3,
@@ -277,7 +277,7 @@
     { id: "downdog", en: "Downward-Facing Dog", sa: "Adho Mukha Svanasana", cat: "fours", pos: "fours", hold: 35, level: 2, headDown: true,
       fig: F("side", { torso: -138, head: 0, arm: [-138, -138], leg: [150, 150] }),
       cues: ["Downward dog. From hands and knees, tuck the toes and lift the hips up and back.",
-        "Bend the knees generously and lengthen the spine. Heels don't need to touch.", "Let the head hang. Breathe."],
+        "Bend the knees generously and lengthen the spine. Heels can stay lifted.", "Let the head hang. Breathe."],
       caution: "Ease off with sore wrists, glaucoma or uncontrolled high blood pressure; child's pose is a good alternative." },
     { id: "plank", en: "Plank", sa: "Phalakasana", cat: "fours", pos: "fours", hold: 20, level: 2,
       fig: F("side", { torso: -76, head: 0, arm: [180, 180], leg: [104, 104] }),
@@ -321,7 +321,7 @@
     { id: "bridge", en: "Bridge", sa: "Setu Bandha Sarvangasana", cat: "lying", pos: "supine", hold: 30, level: 2,
       fig: F("side", { torso: -108, head: -70, arm: [98, 92], leg: [68, 178] }),
       cues: ["Bridge. Lie on your back with knees bent, feet hip-width apart.", "Press into the feet and lift the hips. Arms along the floor.", "Breathe, then roll down slowly, one bone at a time."],
-      caution: "Keep the head still; don't turn it while the hips are lifted." },
+      caution: "Keep the head still and facing the ceiling while the hips are lifted." },
     { id: "supinetwist", en: "Supine Twist", sa: "Supta Matsyendrasana", cat: "lying", pos: "supine", sides: true, hold: 45, level: 1,
       fig: F("front", { top: true, torso: 0, armR: [-90, -90], armL: [90, 90], legR: [130, 210], legL: [136, 216] }),
       cues: ["Supine twist. Lying down, hug the knees in and let them fall to the {S}.",
@@ -338,7 +338,7 @@
     { id: "corpse", en: "Corpse", sa: "Savasana", cat: "rest", pos: "supine", hold: 180, level: 1,
       fig: F("side", { torso: -90, head: 0, arm: [96, 92], leg: [90, 90] }),
       cues: ["Rest. Lie on your back, legs long, arms a little away from the body, palms up.",
-        "Let the whole body be heavy. Nothing to do.", "Let the breath move by itself."] }
+        "Let the whole body be heavy and still.", "Let the breath move by itself."] }
   ];
   var ASANA = {};
   ASANAS.forEach(function (a) { ASANA[a.id] = a; });
@@ -358,7 +358,7 @@
     supine: { stand: "Roll to your side, press up to sitting, then come up to standing slowly.", fours: "Roll to your side and come onto your hands and knees.",
       prone: "Roll over onto your front.", seat: "Roll to your side and press up to sitting." }
   };
-  var HOLD_EXTRA = ["Breathe slowly and evenly.", "Soften anything you don't need to hold.", "Stay with the breath.", "Notice the sensations, without forcing."];
+  var HOLD_EXTRA = ["Breathe slowly and evenly.", "Let the face, jaw and shoulders soften.", "Stay with the breath.", "Observe the sensations, and breathe into them."];
   var MOVE_EXTRA = ["Keep breathing with the movement.", "Smaller is fine. Keep it comfortable.", "Relax the shoulders and the jaw.", "Smooth and steady."];
   var CAP_EXTRA = ["Eyes forward, on your imaginary partner.", "Stay low and light, knees soft.", "Let the berimbau set the pace.", "Breathe out on each effort."];
 
@@ -384,7 +384,7 @@
     if (!flat.length) return [G(30, "Empty sequence", ["Add some poses to this sequence first."])];
     var first = flat[0].a.pos, steps = [];
     steps.push(G(25, "Get ready", o.intro || [first === "stand" ? "Stand at the top of your mat, with some space around you." : first === "supine" ? "Lie down on your mat." : first === "seat" ? "Come to sit on your mat." : "Come onto your mat.",
-      "Move slowly and never into pain. Skip anything that doesn't suit your body today."]));
+      "Move slowly, within a comfortable range, and choose what suits your body today."]));
     var prev = null;
     flat.forEach(function (x, i) {
       var a = x.a, lines = [];

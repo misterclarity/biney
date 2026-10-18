@@ -1,4 +1,5 @@
 // Regression checks for the October 2026 code review: each group reproduces a bug that was fixed.
+// O to R cover the requests that followed: Anapana's narrowing focus, wording, the screen lock and search.
 // Run: node tests/regress.js [group letter]
 const { chromium, APP, ROOT } = require('./pw');
 const fs = require('fs'), path = require('path'), os = require('os'), { spawnSync } = require('child_process');
@@ -360,6 +361,195 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       ok(writing === 0 && breathing !== 0, 'canvas loop off while writing, on while breathing (' + writing + ', ' + breathing + ')');
       ok(muts === 0, 'the play button is left alone while nothing changes (' + muts + ' changes in 1.5 s)');
       await p.close();
+    }
+
+    /* O. Anapana narrows from the whole triangle to the small dimple, and sits for an hour */
+    if (!only || only === 'O') {
+      const p = await page(null, OPT());
+      const plans = await E(p, () => {
+        const X = window.__entrain, d = X.pDef('anapana'), out = {};
+        d.lengths.forEach(L => {
+          const pl = X.pPlan(d, L), obs = pl.steps.filter(s => s.wander);
+          out[L] = { total: pl.total, titles: obs.map(s => s.title), zones: obs.map(s => s.zone), secs: obs.map(s => s.secs),
+            gaps: obs.map(s => s.lines.slice(1).map((l, i) => l[0] - s.lines[i][0])), first: obs[0].lines[0][1], last: obs[obs.length - 1].lines[0][1] };
+        });
+        return { lengths: d.lengths, out };
+      });
+      const P5 = plans.out[5], P10 = plans.out[10], P60 = plans.out[60];
+      ok(plans.lengths.join() === '5,10,20,30,60' && P60.total === 3600, 'Anapana offers 5 to 60 minutes; the hour is ' + P60.total + ' s');
+      ok(P5.zones.join() === '0,3,4' && P10.zones.join() === '0,1,3,4' && plans.out[20].zones.join() === '0,1,2,3,4' && P60.zones.join() === '0,1,2,3,4',
+        'the area narrows in order: ' + P60.titles.join(' → '));
+      ok(/triangle from the top of your nose down to the two corners of your upper lip/.test(P60.first) && /small dimple just beneath the ridge between the nostrils/.test(P60.last),
+        'starts on the whole triangle, ends on the dimple: "' + P60.last.slice(0, 60) + '…"');
+      ok(P60.secs[4] > P60.secs[0] * 1.3, 'the last, smallest area gets the most time (' + P60.secs.join(', ') + ' s)');
+      const g60 = [].concat(...P60.gaps), g10 = [].concat(...P10.gaps);
+      ok(g60.length && g60.every(g => g === 300) && g10.every(g => g === 90), 'reminders every 5 min in the hour, every 90 s in 10 min');
+      // live: the drawing follows the area, and Mind wandered names it
+      await p.evaluate(() => location.hash = 'practice/anapana'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(250);
+      await jumpTo(p, /^The whole triangle$/);
+      const z0 = await E(p, () => ({ fig: !document.querySelector('#sFig').hidden, vis: document.querySelector('#sStage').dataset.vis, pt: !!document.querySelector('#sFig .zn.pt'), zn: !!document.querySelector('#sFig .zn') }));
+      await p.click('#sTap'); await p.waitForTimeout(120);
+      const fb = await t(p, '#sLine');
+      await jumpTo(p, /^The small dimple$/);
+      const z4 = await E(p, () => ({ pt: !!document.querySelector('#sFig .zn.pt'), ring: !!document.querySelector('#sFig .zn-ring') }));
+      ok(z0.fig && z0.vis === 'face' && z0.zn && !z0.pt && z4.pt && z4.ring, 'the face drawing shades the triangle, then marks the dimple');
+      ok(/Back to the triangle/.test(fb), 'Mind wandered brings you back to the area you are on: "' + fb + '"');
+      await endNow(p); await p.close();
+    }
+
+    /* P. guidance says what to do: no "don't", "nothing", "never" or "feel the breath" in what's spoken or shown */
+    if (!only || only === 'P') {
+      const p = await page(null, OPT());
+      const bad = await E(p, () => {
+        const X = window.__entrain, seen = [], add = (src, x) => { if (typeof x === 'string' && x.trim()) seen.push([src, x]); };
+        const RE = /n't\b|\b(do not|never|nothing|without|stop|avoid|none)\b|feel the breath/i;
+        const ids = [...document.querySelectorAll('.pc-a')].map(a => a.getAttribute('href').replace('#practice/', '')).filter(x => x && x[0] !== '#');
+        ids.forEach(id => {
+          const d = X.pDef(id); if (!d) return;
+          (d.lengths || [0]).forEach(L => (d.variant ? d.variant.opts.map(o => o[0]) : [undefined]).forEach(v => {
+            if (v !== undefined) localStorage.setItem('entrain.pVar.' + id, String(v));
+            X.pPlan(d, L).steps.forEach(s => {
+              (s.mkLines ? s.mkLines() : s.lines).forEach(l => add(id + ' / ' + s.title, l[1]));
+              add(id + ' / title', s.title); add(id + ' / prompt', s.prompt); add(id + ' / hint', s.hint);
+              if (s.hints) Object.values(s.hints).forEach(h => add(id + ' / hint', h));
+            });
+          }));
+          add(id + ' / blurb', d.blurb); add(id + ' / end', d.end);
+        });
+        Object.values(X.ASANA).forEach(a => a.cues.forEach(c => add('pose ' + a.id, c)));
+        X.QUOTES.forEach(q => { if (!q[1]) add('quote', q[0]); });     // Entrain's own lines; quoted authors stay as written
+        return { n: seen.length, bad: seen.filter(x => RE.test(x[1])).map(x => x[0] + ': ' + x[1]) };
+      });
+      ok(bad.n > 800 && bad.bad.length === 0, bad.n + ' spoken and shown lines checked; worded as what to do' + (bad.bad.length ? ': ' + bad.bad.slice(0, 4).join(' | ') : ''));
+      await p.close();
+    }
+
+    /* Q. the screen stays on and at full brightness through every kind of session */
+    if (!only || only === 'Q') {
+      const p = await page(null, OPT());
+      const W = () => E(p, () => window.__wl.held);
+      await p.evaluate(() => location.hash = 'practice/body-scan'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      const run = await W();
+      await p.click('#sPlay'); await p.waitForTimeout(200);
+      const paused = await W();
+      await E(p, () => { window.__entrain.WL.stop = Date.now() - 601000; window.__entrain.wlSync(); }); await p.waitForTimeout(100);
+      const later = await W();
+      await p.click('#sPlay'); await p.waitForTimeout(200);
+      const back = await W();
+      await endNow(p); await p.waitForTimeout(300);
+      ok(run === 1 && paused === 1 && later === 0 && back === 1 && await W() === 0, 'practice: on while running, kept 10 min into a pause, off once it ends (' + [run, paused, later, back].join(' ') + ')');
+      await p.evaluate(() => location.hash = 'breathe'); await p.waitForTimeout(250);
+      await p.click('#bStart'); await p.waitForTimeout(300);
+      const br = await W();
+      await p.click('#bStart'); await p.waitForTimeout(150); await p.click('#bReset'); await p.waitForTimeout(250);
+      ok(br === 1 && await W() === 0, 'breathing guide: on while it runs, off after Reset');
+      await playTrack(p, 'theta-meditation');
+      const tr = await W(), req0 = await E(p, () => window.__wl.req);
+      await E(p, () => window.__wl.last.release()); await p.waitForTimeout(1400);   // the system takes it back, as when the page is hidden
+      const again = await E(p, () => [window.__wl.held, window.__wl.req]);
+      await p.click('#stop'); await p.waitForTimeout(400);
+      ok(tr === 1 && again[0] === 1 && again[1] === req0 + 1 && await W() === 0, 'Sounds track: on while playing, asked for again after the system drops it, off when stopped');
+      // no dimming in the sleep steps
+      await p.evaluate(() => location.hash = 'practice/sleep-descent'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(250);
+      await jumpTo(p, /^Drift$/); await p.waitForTimeout(200);
+      const drift = await E(p, () => ({ dim: document.querySelector('#ses').dataset.dim || '', vis: document.querySelector('#sStage').dataset.vis, op: getComputedStyle(document.querySelector('#sStage')).opacity, held: window.__wl.held }));
+      ok(!drift.dim && drift.vis === 'glow' && drift.op === '1' && drift.held === 1, 'Sleep Descent drift: a soft glow at full brightness, screen kept on ' + JSON.stringify(drift));
+      await endNow(p); await p.close();
+      // turned down, or not there at all: say so once, over the session
+      for (const [mode, re] of [['deny', /declined to keep the screen on/], ['none', /can't keep the screen on by itself/]]) {
+        const q = await page(null, OPT());
+        await E(q, m => localStorage.setItem('test.wl', m), mode);
+        await q.evaluate(() => location.hash = 'practice/anapana'); await q.waitForTimeout(250);
+        await q.click('#sGo'); await q.waitForTimeout(400);
+        const msg = await t(q, '#toastTxt'), shown = await q.$eval('#toast', e => getComputedStyle(e).display !== 'none' && !e.hidden);
+        await q.click('#sPlay'); await q.waitForTimeout(100); await q.click('#sPlay'); await q.waitForTimeout(200);
+        await E(q, () => { window.__entrain.WL.failAt = 0; window.__entrain.wlSync(); }); await q.waitForTimeout(200);
+        const once = await E(q, () => document.querySelector('#toast').classList.contains('show') ? document.querySelector('#toastTxt').textContent : '');
+        ok(re.test(msg) && shown, mode + ': the notice shows over the session: "' + msg + '"');
+        ok(!once || once === msg, mode + ': and only once');
+        await endNow(q); await q.close();
+      }
+    }
+
+    /* R. search finds practices, poses, patterns, tracks and Learn, and lands on them */
+    if (!only || only === 'R') {
+      const p = await page(null, OPT());
+      const find = async (q) => {
+        if (await p.$eval('#fd', e => e.hidden)) { await p.click('#tbFind'); await p.waitForTimeout(150); }
+        await p.fill('#fdIn', q); await p.waitForTimeout(200);
+        return E(p, () => [...document.querySelectorAll('.fd-grp')].map(g => ({ k: g.querySelector('h3').firstChild.textContent.trim(), items: [...g.querySelectorAll('.fd-it')].map(a => ({ t: a.querySelector('b').textContent, h: a.getAttribute('href') })) })));
+      };
+      await p.evaluate(() => location.hash = 'learn'); await p.waitForTimeout(200);
+      let r = await find('anap');
+      ok(r[0] && r[0].k === 'Practices' && r[0].items[0].t === 'Anapana', 'a few letters find Anapana first');
+      await p.press('#fdIn', 'Enter'); await p.waitForTimeout(300);
+      const went = await E(p, () => [location.hash, document.querySelector('#fd').hidden]);
+      await p.goBack(); await p.waitForTimeout(300);
+      ok(went[0] === '#practice/anapana' && went[1] && await E(p, () => location.hash) === '#learn', 'Enter opens it; Back returns to where you searched from');
+      r = await find('bencao');
+      ok(r[0] && r[0].items[0].t === 'Bênção', 'accents are optional: "bencao" finds Bênção');
+      r = await find('box breathing');
+      ok(r[0] && r[0].k === 'Breathing' && r[0].items[0].h === '#breathe/box', 'several words narrow it down: ' + (r[0] && r[0].items[0].t));
+      await p.click('.fd-it[href="#breathe/box"]'); await p.waitForTimeout(300);
+      ok(await E(p, () => window.__entrain.BC.pattern) === 'box' && await E(p, () => location.hash) === '#breathe/box', 'a pattern result selects it in the breathing guide');
+      // a pose lands in the builder without touching the routine you're making
+      await p.evaluate(() => location.hash = 'yoga'); await p.waitForTimeout(250);
+      await p.click('#ybLib [data-add="mountain"]'); await p.waitForTimeout(150);
+      r = await find('tree');
+      await p.click('.fd-it[href="#yoga/find/tree"]'); await p.waitForTimeout(500);
+      const pose = await E(p, () => ({ f: document.activeElement && document.activeElement.dataset.add, hit: document.activeElement && document.activeElement.classList.contains('fd-hit'), n: document.querySelectorAll('#ybList .yb-row').length }));
+      ok(pose.f === 'tree' && pose.hit && pose.n === 1, 'a pose result shows it in the builder, and your routine stays as it was (' + JSON.stringify(pose) + ')');
+      // a track lands on its card even when the list is filtered
+      await p.evaluate(() => location.hash = 'sounds'); await p.waitForTimeout(200);
+      await p.click('.tab[data-filter="stim"]'); await p.waitForTimeout(150);
+      r = await find('tinnitus');
+      ok(r[0] && r[0].k === 'Sounds' && r[0].items[0].h === '#track/tinnitus-notch', 'the tinnitus track leads its group: ' + JSON.stringify(r.map(g => g.k)));
+      await p.click('.fd-it[href="#track/tinnitus-notch"]'); await p.waitForTimeout(500);
+      ok(await E(p, () => !!document.querySelector('#grid .card[data-id="tinnitus-notch"].fd-hit')), 'a track result shows its card, highlighted');
+      // Learn paragraphs and references
+      r = await find('baroreflex');
+      const lh = (r.find(g => g.k === 'Learn') || { items: [] }).items.map(i => i.h);
+      ok(lh.length >= 2, 'Learn paragraphs are searchable: ' + lh.length + ' for "baroreflex"');
+      await p.click('.fd-it[href="' + lh[0] + '"]'); await p.waitForTimeout(700);
+      ok(await E(p, (h) => location.hash === h && document.getElementById(h.slice(1)).classList.contains('fd-hit') && !document.querySelector('#v-learn').hidden, lh[0]), 'and a Learn result scrolls to it and highlights it');
+      // your own routines
+      await p.evaluate(() => { localStorage.setItem('entrain.yogaSeqs', JSON.stringify([{ uid: 'r1', name: 'Morning Mix', items: [{ id: 'tree', hold: 30 }], at: 1 }])); });
+      r = await find('morning mix');
+      ok(r[0] && r[0].items[0].h === '#practice/my-r1', 'saved routines are found too');
+      // nothing found, and what you type stays text
+      r = await find('<img src=x onerror=window.__x=1>');
+      ok(r.length === 0 && await E(p, () => !document.querySelector('#fdRes img') && !window.__x && /Nothing found/.test(document.querySelector('#fdRes').textContent)), 'no results: says so, and the query is shown as text');
+      // keys: Escape closes and gives focus back; "/" opens; Back closes
+      await p.keyboard.press('Escape'); await p.waitForTimeout(150);
+      const closed = await E(p, () => [document.querySelector('#fd').hidden, document.activeElement && document.activeElement.id]);
+      await p.keyboard.press('/'); await p.waitForTimeout(150);
+      const opened = await E(p, () => !document.querySelector('#fd').hidden && document.activeElement.id === 'fdIn');
+      const h0 = await E(p, () => location.hash);
+      await p.goBack(); await p.waitForTimeout(250);
+      ok(closed[0] && closed[1] === 'tbFind' && opened && await E(p, () => document.querySelector('#fd').hidden && location.hash) === h0, 'Escape closes (focus back on the button), "/" opens, the Back button closes it');
+      // a running session keeps the keys
+      await p.evaluate(() => location.hash = 'practice/body-scan'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(250);
+      await p.keyboard.press('/'); await p.waitForTimeout(150);
+      ok(await E(p, () => document.querySelector('#fd').hidden), '"/" stays with the session while one is on screen');
+      await endNow(p); await p.close();
+      // desktop, phone width: the panel fits
+      const d = await page(null, OPT(), true);
+      await d.keyboard.press('Control+k'); await d.waitForTimeout(150);
+      await d.fill('#fdIn', 'sleep'); await d.waitForTimeout(200);
+      const box = await d.$eval('#fd', e => { const r = e.getBoundingClientRect(); return [r.left, r.right, r.width]; });
+      ok(box[2] <= 640 && box[0] > 220, 'desktop: Ctrl+K opens it, centred beside the rail (' + box.map(Math.round).join(', ') + ')');
+      await d.screenshot({ path: path.join(ROOT, 'tests', 'out', 'search-desk.png') });
+      await d.close();
+      const m = await page(null, OPT());
+      await m.click('#tbFind'); await m.waitForTimeout(150); await m.fill('#fdIn', 'breath'); await m.waitForTimeout(200);
+      const fit = await m.evaluate(() => ({ over: document.documentElement.scrollWidth - innerWidth, w: document.querySelector('#fd').getBoundingClientRect().width }));
+      ok(fit.over === 0 && fit.w === 412, 'phone: full screen, nothing wider than the screen');
+      await m.screenshot({ path: path.join(ROOT, 'tests', 'out', 'search-phone.png') });
+      await m.close();
     }
   } catch (e) { log.push('ERROR ' + e.message); }
   console.log(log.join('\n'));

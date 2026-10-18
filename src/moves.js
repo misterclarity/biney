@@ -103,7 +103,7 @@
     { id: "neckside", en: "Seated Neck Stretch", sa: "Ear toward shoulder", cat: "mobility", pos: "seat", sides: true, hold: 30, level: 1,
       fig: F("front", { torso: 0, head: -32, armR: [-40, 80], armL: [160, 160], legR: [-118, 88], legL: [118, -88], over: ["armR"] }),
       cues: ["Neck stretch to the {S}. Sit tall and let your {S} ear drop toward your {S} shoulder.",
-        "Rest the {S} hand lightly on your head; no pulling. Let the {O} shoulder sink.", "Breathe into the side of the neck."] },
+        "Rest the {S} hand lightly on your head, letting its weight do the work. Let the {O} shoulder sink.", "Breathe into the side of the neck."] },
 
     /* ----- capoeira ----- */
     M({ id: "ginga", en: "Ginga", sa: "The rocking base step", cat: "capoeira", pos: "stand", hold: 60, level: 1, rhythm: true,
@@ -136,7 +136,7 @@
         BASE_F, figWith(farSide(BEN_K), { d: 0.5 }), figWith(farSide(BEN_P), { d: 0.7 }), BASE_F, PAR_S],
       beats: 10, dwell: 0.15, still: 2,
       cues: ["Bênção. From the ginga, bring the back knee up in front of you.",
-        "Push the sole of the foot forward at belly height, leaning back a little. Then step back into the ginga.", "A push, not a strike. Change legs each time."] }),
+        "Push the sole of the foot forward at belly height, leaning back a little. Then step back into the ginga.", "A pushing kick with the flat of the foot. Change legs each time."] }),
     M({ id: "au", en: "Aú", sa: "Capoeira cartwheel", cat: "capoeira", pos: "stand", hold: 45, level: 3, rhythm: true,
       keys: [figWith(AU0, { d: 2 }), figWith(AU1, { d: 0.6 }), figWith(AU2, { d: 0.6 }), figWith(AU3, { d: 0.6 }),
         figWith(AU0, { d: 2 }), figWith(figMirror(AU1), { d: 0.6 }), figWith(figMirror(AU2), { d: 0.6 }), figWith(figMirror(AU3), { d: 0.6 })],
@@ -166,7 +166,7 @@
       { id: "ginga", hold: 40 }, { id: "meialua", hold: 75 }, { id: "bencao", hold: 75 },
       { id: "ginga", hold: 90, title: "Free ginga", cues: CAP_FREE },
       { id: "quadstretch", hold: 30 }, { id: "calfstretch", hold: 30 }, { id: "chestopener", hold: 30 }, { id: "fold", hold: 40 }, { id: "mountain", hold: 30 }],
-      intro: ["Find a clear space with room to step and kick, on a floor that isn't slippery. Barefoot or trainers.",
+      intro: ["Find a clear space with room to step and kick, on a floor with good grip. Barefoot or trainers.",
         "A gentle warm-up comes first, then the ginga and a few basic moves to the berimbau. Go as low and as big as feels good today."],
       outro: ["Stand tall and let the breath slow down.", "Notice the warmth in your legs. Muito bem."] }
   );

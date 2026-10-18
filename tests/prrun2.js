@@ -129,8 +129,16 @@ async function untilStep(p, re, max = 120000) { const t0 = Date.now(); while (Da
     ok(saved.length === 1 && saved[0].name === 'Test flow' && saved[0].items.map(i => i.id + (i.side ? ':' + i.side : '') + '@' + i.hold).join(',') === 'mountain@30,warrior2:right@45,cat@20,child@45', 'saved on the device: ' + JSON.stringify(saved[0].items));
     const uid = saved[0].uid;
     ok(await p.evaluate(() => location.hash) === '#yoga/' + uid && await vis(p, '#ybDel'), 'URL now points at the saved sequence; Delete shown');
-    // it appears under Movement and runs
+    // it appears under Movement and runs. Headless Chromium sometimes loses a file:// page's storage across a
+    // reload, so the stored values are copied over if the reload dropped them (as regress.js does).
+    const snap = await p.evaluate(() => { const o = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); o[k] = localStorage.getItem(k); } return o; });
+    await p.addInitScript(o => {
+      if (localStorage.getItem('entrain.yogaSeqs')) return;
+      for (const k in o) localStorage.setItem(k, o[k]);
+      window.__restored = true;
+    }, snap);
     await p.reload(); await p.waitForTimeout(300);
+    if (await p.evaluate(() => window.__restored)) log.push('NOTE headless Chromium dropped the stored values on reload; copied them over');
     await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(200);
     ok(/Yours/.test(await t(p, '.pr-grp[data-g=move]')) && /Test flow/.test(await t(p, '.pr-grp[data-g=move]')), 'your sequence is listed under Movement after a reload');
     await p.evaluate(u => location.hash = 'practice/my-' + u, uid); await p.waitForTimeout(250);

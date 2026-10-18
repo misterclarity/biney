@@ -27,8 +27,11 @@
 
   /* ----- the builder screen ----- */
   function yOpen(arg) {
-    var q;
-    if (arg && arg.indexOf("copy/") === 0) {
+    var q, find = arg && arg.indexOf("find/") === 0 ? ASANA[arg.slice(5)] : null;
+    if (arg && arg.indexOf("find/") === 0) {
+      // from search: the routine you're building stays as it is, and the library shows the pose
+      if (find) Y.cat = ACATS.some(function (c) { return c[0] === find.cat; }) ? find.cat : "all";
+    } else if (arg && arg.indexOf("copy/") === 0) {
       var set = yogaSet(arg.slice(5));
       Y.uid = null; Y.from = set ? set.name : null;
       Y.name = set ? set.name + " (mine)" : "";
@@ -44,6 +47,13 @@
     bSetT("#viewTitle", Y.uid ? "Edit routine" : "Build your own");
     document.title = (Y.uid ? "Edit routine" : "Build your own routine") + " | Entrain";
     yRenderTpl(); yRenderSeq(); yRenderLib();
+    if (find) setTimeout(function () {
+      var b = document.querySelector('#ybLib [data-add="' + find.id + '"]');
+      if (!b) return;
+      try { b.scrollIntoView({ block: "center", behavior: RM ? "auto" : "smooth" }); } catch (e) { b.scrollIntoView(); }
+      try { b.focus({ preventScroll: true }); } catch (e) {}
+      fdHit(b);
+    }, 60);
   }
   function yFig(id, side) { var a = ASANA[id]; return a ? figSVG(a.fig, side || (a.sides ? "right" : null), "mini") : ""; }
   function yHoldStep(h, dir) {

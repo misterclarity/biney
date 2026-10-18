@@ -270,7 +270,7 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     await p.click('#sGo'); await p.waitForTimeout(400);
     await untilStep(p, /^Nap$/);
     await p.waitForTimeout(500);
-    ok(await t(p, '#sCap') === 'Resting' && /Measuring your resting heart rate/.test(await t(p, '#sSub')) && await p.$eval('#ses', e => e.dataset.dim) === '1', 'nap: dimmed, measuring');
+    ok(await t(p, '#sCap') === 'Resting' && /Measuring your resting heart rate/.test(await t(p, '#sSub')) && !(await p.$eval('#ses', e => e.dataset.dim)), 'nap: measuring, screen at full brightness');
     await until(p, 45 + 175);
     ok(/Baseline 6\d bpm · listening for sleep/.test(await t(p, '#sSub')), 'baseline set: ' + await t(p, '#sSub'));
     ok(await E(p, () => window.__entrain.NP().wake - window.__entrain.P.steps[1].at) === 1200, 'with a sensor and no sign of sleep, wake at 20 min');
@@ -286,7 +286,7 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     const tot1 = await E(p, () => window.__entrain.P.total);
     ok(tot1 < tot0 - 60, 'the nap step gave back its unused time (' + Math.round(tot0) + ' → ' + Math.round(tot1) + ' s)');
     await p.waitForTimeout(1500);
-    ok(await E(p, () => window.__entrain.A.track.cur) > 6 && await p.$eval('#ses', e => e.dataset.dim) === '', 'waking: screen bright, beat rising (' + await E(p, () => window.__entrain.A.track.cur) + ' Hz)');
+    ok(await E(p, () => window.__entrain.A.track.cur) > 6 && !(await p.$eval('#ses', e => e.dataset.dim)), 'waking: screen bright, beat rising (' + await E(p, () => window.__entrain.A.track.cur) + ' Hz)');
     await p.screenshot({ path: OUT + 'nap-wake.png' });
     await untilStep(p, /^Up slowly$/, 60000);
     await p.evaluate(() => { const P = window.__entrain.P; P.t0 -= 60; }); await p.waitForTimeout(800);
@@ -424,7 +424,7 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     await q.screenshot({ path: OUT + 'nvc-choose.png' });
     await q.click('#sWrite [data-sw="next"]'); await q.waitForTimeout(1500);
     const said2 = (await q.evaluate(() => window.__said.map(x => x.t))).join(' | ');
-    ok(/You chose 2 things, and you'd rather not keep 1 other as they are\./.test(said2), 'the count is read back');
+    ok(/You chose 2 things, and you'd like to change 1 other\./.test(said2), 'the count is read back');
     await q.evaluate(() => { const P = window.__entrain.P; P.t0 -= P.total; }); await q.waitForTimeout(800);
     const items = await q.$$eval('.sd-nvc li', l => l.map(x => x.textContent));
     ok(items[0] === 'I choose to answer every email the same day because I want calm mornings without a backlog.' && items[1] === 'I choose to call my mother every Sunday because I want to avoid guilt.' && items[2] === "I'd rather not go to the gym.", 'your choices: ' + items.join(' | '));

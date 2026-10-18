@@ -10,11 +10,13 @@ Each suite opens the built `index.html` in headless Chromium, mostly as a Samsun
 | `prrun.js` | Sleep Descent and Calm Reset end to end, the guided practices (grounding, kapalabhati, PMR, shuffle, anapana, nadi), every standing pose, the binaural layer |
 | `prrun2.js` | Wim Hof, anapana reminders in programs, the routine builder, a built-in floor sequence |
 | `prrun3.js` | Capoeira and the berimbau, background sound, quotes, tapping, heart-led beats, the power nap, the NVC practices and the feelings wheel |
-| `regress.js` | The bugs fixed after the October 2026 code review |
+| `regress.js` | The bugs fixed after the October 2026 code review, then Anapana's narrowing focus and hour-long sitting, the wording of all guidance, the screen lock and search |
 | `findtest.js` | The resonance test end to end with a beat-to-beat sensor |
 
 ## Helpers
 
 - `pw.js` loads Playwright. It tries `$PLAYWRIGHT`, then `playwright`, then `/opt/npm-tools/node_modules/playwright`. It also gives the suites the app's location and `tests/out/` for screenshots.
+- `wake-mock.js` stands in for the Screen Wake Lock API on every page (headless Chromium refuses the real one). `window.__wl` counts requests and releases; localStorage `test.wl` set to `deny` or `none` makes requests fail or hides the API.
 - `sensor-mock.js` is a stand-in Bluetooth heart-rate sensor, injected with `page.addInitScript(mock, { speed, rr, fail })`. Its `speed` option runs the page's clock faster, so a 30-minute nap takes a minute.
 - Setting localStorage `entrain.debug` to `1` exposes the app's state as `window.__entrain` for the checks.
+- Headless Chromium sometimes loses a `file://` page's storage across a reload. Checks that reload copy the stored values over (`reopen()` in `regress.js`, the builder in `prrun2.js`) and print a `NOTE` line when they had to.

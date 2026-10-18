@@ -16,7 +16,7 @@ def rd(name): return open(os.path.join(HERE, name), encoding="utf-8").read()
 legacy = rd("legacy.html")
 css = rd("styles.css").replace("__POPPINS_BOLD__", rd("poppins.b64").strip())
 shell = rd("shell.js")
-PRACTICE_FILES = ["asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "practice.js", "adapt.js", "nvc.js", "yoga.js"]
+PRACTICE_FILES = ["asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "practice.js", "adapt.js", "nvc.js", "yoga.js", "search.js"]
 practice = "".join(rd(f) for f in PRACTICE_FILES)
 views = rd("views.html")
 
@@ -137,6 +137,7 @@ ICONS = {
     "drum": '<path d="M7.5 2.8c5.2 3.6 5.2 14.8 0 18.4"/><path d="M7.5 2.8v18.4"/><circle cx="14.6" cy="15.4" r="3.2"/><path d="M5 9.8l5 1.6"/>',
     "nvc": '<path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4 3.5v-3.5H6.5a2 2 0 0 1-2-2z"/><path d="M12 13.4s-2.9-1.6-2.9-3.6a1.5 1.5 0 0 1 2.9-.6 1.5 1.5 0 0 1 2.9.6c0 2-2.9 3.6-2.9 3.6z"/>',
     "rain": '<path d="M7.2 14.8a3.9 3.9 0 0 1 .4-7.8 5.2 5.2 0 0 1 10 1.6 3.1 3.1 0 0 1-.4 6.2z"/><path d="M8.5 18l-.9 2.4M12.4 18l-.9 2.4M16.3 18l-.9 2.4"/>',
+    "search": '<circle cx="10.6" cy="10.6" r="6.4"/><path d="M15.4 15.4 20.5 20.5"/>',
 }
 sprite = '<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">\n' + "\n".join(
     '  <symbol id="i-%s" viewBox="0 0 24 24">%s</symbol>' % (k, v) for k, v in ICONS.items()) + "\n</svg>"
@@ -360,6 +361,7 @@ body = f"""
       <h1 id="viewTitle">Home</h1>
       <div class="top-actions">
         <a class="pill pill-prac" id="tbPrac" href="#practice" hidden>{ic("practice")}<span id="tbPracTxt"></span></a>
+        <button class="pill pill-ic" id="tbFind" aria-label="Search" title="Search (/)" aria-haspopup="dialog" aria-expanded="false" aria-keyshortcuts="/ Control+K">{ic("search")}</button>
         <a class="pill" id="tbSensor" href="#heart" data-state="off"><i class="dot hr-dot" aria-hidden="true"></i><span id="tbSensorTxt">Connect sensor</span></a>
       </div>
     </header>
@@ -538,6 +540,19 @@ body = f"""
 <!-- ============ MINI PLAYER ============ -->
 {player}
 
+<!-- ============ SEARCH ============ -->
+<div class="fd-back" id="fdBack" hidden></div>
+<div class="fd" id="fd" role="dialog" aria-modal="true" aria-label="Search" hidden>
+  <div class="fd-head">
+    <span class="fd-gl">{ic("search")}</span>
+    <input id="fdIn" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"
+      placeholder="Practices, poses, sounds, Learn…" aria-label="Search Entrain" aria-describedby="fdCount" aria-controls="fdRes">
+    <button class="fd-x" id="fdX" aria-label="Close search">{ic("x")}</button>
+  </div>
+  <p class="fd-count" id="fdCount" aria-live="polite"></p>
+  <div class="fd-res" id="fdRes"></div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite" hidden>
   <span id="toastTxt"></span>
   <button class="btn small primary" id="toastAct" hidden></button>
@@ -661,6 +676,31 @@ s = sub(s, """  function hrRecord(pt) {
 s = sub(s, """    if (r && B.state === "running" && breathTime() >= 0) B.coh.push(r.cs);""",
            """    if (r && B.state === "running" && breathTime() >= 0) B.coh.push(r.cs);
     if (r && P.state === "running") P.coh.push({ t: pT(), cs: r.cs });""")
+
+# the breathing guide and the Sounds player share one screen lock with practices (wlSync, in practice.js)
+s = sub(s, """  /* Keep the screen awake while a session runs; ignore refusals. */
+  function acquireLock() {
+    try {
+      if (!navigator.wakeLock || B.lock) return;
+      navigator.wakeLock.request("screen").then(function (l) {
+        if (B.state !== "running") { l.release().catch(function () {}); return; }
+        B.lock = l;
+        l.addEventListener("release", function () { if (B.lock === l) B.lock = null; });
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  function releaseLock() {
+    var l = B.lock;
+    B.lock = null;
+    if (l) { try { var p = l.release(); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
+  }""", """  /* The screen stays on while a session runs: one lock, shared with practices and tracks. */
+  function acquireLock() { wlKick(); }
+  function releaseLock() { wlKick(); }""")
+s = sub(s, """  function markCard() {
+    var cards = document.querySelectorAll(".card");""", """  function markCard() {
+    wlKick();                            // a track started, paused or stopped: the screen lock follows
+    var cards = document.querySelectorAll(".card");""")
+s = sub(s, """    voice: null, bus: null, lock: null, doneMsg: "",""", """    voice: null, bus: null, doneMsg: "",""")
 
 # insert the shell and start it last
 s = sub(s, "  /* ------------------------------- init ------------------------------ */",

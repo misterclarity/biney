@@ -87,9 +87,9 @@
       Wr("The judgments", { field: "judg", input: "text", check: "should", rows: 5,
         prompt: "Now let the judgments speak, uncensored: about the other person, about yourself, about how things should be.",
         ph: "She never listens. I'm boring. People shouldn't…",
-        hint: "In NVC, judgments are clues: each one points at something you need that isn't being met." }),
+        hint: "In NVC, judgments are clues: each one points at a need of yours that's waiting to be met." }),
       Wr("Question one rule", { field: "rule", input: "text", optional: true, ctx: "found", rows: 5,
-        prompt: "Many judgments carry rules we absorbed without choosing them: from family, school, work or culture. Pick one and question it. Where did you learn it? Whose voice is it? Who gains when you believe it? What would you feel, or do, if you let it go?",
+        prompt: "Many judgments carry rules we picked up along the way: from family, school, work or culture. Pick one and question it. Where did you learn it? Whose voice is it? Who gains when you believe it? What would you feel, or do, if you let it go?",
         ph: "“People should always answer straight away.” I learned it at my first job, where…" }),
       G(25, "Into the body", ["Put the words aside for a moment. Where do you feel this in your body? Tight, heavy, hot, fluttery?",
         "Breathe into that place, and let it be there."], { vis: "glow" }),
@@ -98,7 +98,7 @@
         hint: "Words like “ignored” or “rejected” describe what someone did. If one comes up, look for the feeling underneath it." }),
       Wr("Needs", { field: "need", input: "chips", sets: NVC_NEED, other: true,
         prompt: "What needs are behind those feelings? Pick the ones that matter most.",
-        hint: "Needs are universal and don't depend on one person doing one thing. “I need her to put the phone away” is a strategy; the need might be connection, or to be heard." }),
+        hint: "Needs are universal, and many different actions could meet each one. “I need her to put the phone away” is a strategy; the need might be connection, or to be heard." }),
       G(45, "Let it land", [], { vis: "glow", mkLines: function () {
         var f = P.nvc.feel, n = P.nvc.need;
         if (!f.length && !n.length) return [[0, "Notice what you're feeling now, and what matters to you underneath it."], [14, "Stay with that for a few breaths."]];
@@ -107,12 +107,12 @@
           [22, "Stay with the need for a few breaths. Notice what changes when the need has a name, rather than the judgment."]];
       } }),
       Wr("The other side", { field: "other", input: "other", optional: true,
-        prompt: "If someone else is part of this, what might they have been feeling and needing? It's a guess, and understanding isn't agreeing." }),
+        prompt: "If someone else is part of this, what might they have been feeling and needing? It's a guess, and understanding is separate from agreeing." }),
       Wr("A request", { field: "req", input: "text", check: "req", optional: true,
-        prompt: "What would you like now, from yourself or from someone else? Make it a doable, specific action, phrased as what you want rather than what you don't, and open to a no.",
+        prompt: "What would you like now, from yourself or from someone else? Make it a doable, specific action, phrased as what you want, and leaving the other person free to decline.",
         ph: "Tonight I'll ask her if we can keep dinner phone-free, and hear what she thinks." }),
       G(30, "Closing", [], { vis: "glow", mkLines: function () {
-        return [[0, "Read back what you've written. It's a picture of this moment, not a verdict on anyone."],
+        return [[0, "Read back what you've written. It's a picture of this moment, and moments change."],
           [10, "Change often starts when you accept yourself as you are."]];
       } })
     ];
@@ -120,18 +120,18 @@
   function nvcChooseSteps() {
     return [
       G(30, "Arrive", ["Take a slow breath. This practice looks at the things you do because you feel you have to.",
-        "Rules like have to, should and must are often absorbed without being chosen. Here you'll check which ones you'd actually choose."], { vis: "glow" }),
+        "Rules like have to, should and must are often picked up along the way. Here you'll check which ones you'd actually choose."], { vis: "glow" }),
       Wr("I have to…", { field: "have", input: "list", rows: 6,
         prompt: "List what you do because you feel you have to, should or must, one per line: at work, at home, for others, for yourself.",
         ph: "Answer every email the same day\nCall my mother every Sunday\nGo to the gym" }),
       Wr("I choose to…", { field: "choose", input: "choose",
-        prompt: "For each one, say what you want from doing it. If you would still choose it, it becomes “I choose to… because I want…”. If not, mark it.",
+        prompt: "For each one, say what you want from doing it. If you would still choose it, it becomes “I choose to… because I want…”. Otherwise, mark it as one you'd rather change.",
         hint: "If the honest answer is money, approval, or avoiding guilt, shame or punishment, notice it. Those motives tend to cost joy, even when you keep doing the thing." }),
       G(30, "Notice", [], { vis: "glow", mkLines: function () {
         var c = P.nvc.choose.filter(function (x) { return x.choose === true; }).length, r = P.nvc.choose.filter(function (x) { return x.choose === false; }).length;
         return [[0, "Read your list back, saying I choose to instead of I have to."],
-          [8, c || r ? "You chose " + c + (c === 1 ? " thing" : " things") + (r ? ", and you'd rather not keep " + r + (r === 1 ? " other" : " others") + " as they are" : "") + "." : "Notice how I choose feels, compared with I have to."],
-          [18, "Anything you'd rather stop or change is worth a request, to yourself or to someone else."]];
+          [8, c || r ? "You chose " + c + (c === 1 ? " thing" : " things") + (r ? ", and you'd like to change " + r + (r === 1 ? " other" : " others") : "") + "." : "Notice how I choose feels, compared with I have to."],
+          [18, "Anything you'd like to change is worth a request, to yourself or to someone else."]];
       } }),
       G(20, "Closing", [], { vis: "glow", mkLines: function () { return [[0, "Change often starts when you accept yourself as you are."]]; } })
     ];
@@ -266,7 +266,7 @@
       var o = old.filter(function (x) { return x.item === it; })[0];
       return o || { item: it, choose: null, why: "", tags: [] };
     });
-    if (!items.length) return '<p class="sw-empty">Nothing listed yet. Go back a step and add a few things you feel you have to do.</p>';
+    if (!items.length) return '<p class="sw-empty">Your list is empty so far. Go back a step and add a few things you feel you have to do.</p>';
     return '<ol class="sw-cards">' + P.nvc.choose.map(function (c, i) {
       return '<li class="sw-card" data-i="' + i + '"><p class="sw-have">I have to <b>' + esc(nvcLower(c.item)) + "</b></p>" +
         '<div class="mini-seg" role="group" aria-label="Choose or not"><button data-ch="1" aria-pressed="' + (c.choose === true) + '">I choose to</button>' +
@@ -292,7 +292,7 @@
     } else if (s.check === "req") {
       var r = d.req.toLowerCase();
       if (/\b(don'?t|do not|stop|never|quit)\b/.test(r)) msg = "Requests tend to land better as what you do want. What would you like instead?";
-      else if (nvcFind(r, NVC_SHOULD).length) msg = "That sounds like a demand. Would a no be okay? If not, look for the need behind it.";
+      else if (nvcFind(r, NVC_SHOULD).length) msg = "That sounds like a demand. A request leaves the other person free to decline: what need is behind this one?";
       else if (r.trim().length > 12) msg = "If it's doable and specific, it's ready.";
     } else if (s.input === "feel") {
       var faux = d.feel.filter(function (w) { return NVC_FAUX[w]; });
