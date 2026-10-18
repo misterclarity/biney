@@ -16,7 +16,8 @@ def rd(name): return open(os.path.join(HERE, name), encoding="utf-8").read()
 legacy = rd("legacy.html")
 css = rd("styles.css").replace("__POPPINS_BOLD__", rd("poppins.b64").strip())
 shell = rd("shell.js")
-PRACTICE_FILES = ["asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "practice.js", "adapt.js", "nvc.js", "yoga.js", "search.js"]
+PRACTICE_FILES = ["asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "taxonomy.js", "practice.js",
+                  "library.js", "settings.js", "adapt.js", "nvc.js", "yoga.js", "search.js"]
 practice = "".join(rd(f) for f in PRACTICE_FILES)
 views = rd("views.html")
 
@@ -138,6 +139,8 @@ ICONS = {
     "nvc": '<path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4 3.5v-3.5H6.5a2 2 0 0 1-2-2z"/><path d="M12 13.4s-2.9-1.6-2.9-3.6a1.5 1.5 0 0 1 2.9-.6 1.5 1.5 0 0 1 2.9.6c0 2-2.9 3.6-2.9 3.6z"/>',
     "rain": '<path d="M7.2 14.8a3.9 3.9 0 0 1 .4-7.8 5.2 5.2 0 0 1 10 1.6 3.1 3.1 0 0 1-.4 6.2z"/><path d="M8.5 18l-.9 2.4M12.4 18l-.9 2.4M16.3 18l-.9 2.4"/>',
     "search": '<circle cx="10.6" cy="10.6" r="6.4"/><path d="M15.4 15.4 20.5 20.5"/>',
+    "recover": '<rect x="3" y="7.5" width="15.5" height="9" rx="2.2"/><path d="M21 10.5v3"/><path d="M11.6 9.2 9.4 12h3.2l-2.2 2.8"/>',
+    "gear": '<path d="M9.8 5.5 10.2 3h3.6l.4 2.5.9.3 2-1.4 2.5 2.5-1.4 2 .3.9 2.5.4v3.6l-2.5.4-.3.9 1.4 2-2.5 2.5-2-1.4-.9.3-.4 2.5h-3.6l-.4-2.5-.9-.3-2 1.4-2.5-2.5 1.4-2-.3-.9L3 13.8v-3.6l2.5-.4.3-.9-1.4-2 2.5-2.5 2 1.4z"/><circle cx="12" cy="12" r="3"/>',
 }
 sprite = '<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">\n' + "\n".join(
     '  <symbol id="i-%s" viewBox="0 0 24 24">%s</symbol>' % (k, v) for k, v in ICONS.items()) + "\n</svg>"
@@ -150,7 +153,7 @@ def nav_link(view, label):
 
 # ---- the Practice and session views ----
 views_html = views
-for k, name in [("x", "x"), ("prev", "prev"), ("pause", "pause"), ("next", "next"), ("voice", "voice"), ("bell", "bell"), ("volume", "volume"), ("back", "back"), ("play", "play"), ("drum", "drum"), ("rain", "rain")]:
+for k, name in [("x", "x"), ("prev", "prev"), ("pause", "pause"), ("next", "next"), ("voice", "voice"), ("bell", "bell"), ("volume", "volume"), ("back", "back"), ("play", "play"), ("drum", "drum"), ("rain", "rain"), ("sliders", "sliders"), ("gear", "gear")]:
     views_html = views_html.replace("{" + k + "}", ic(name))
 assert "{" not in views_html, "unfilled placeholder in views.html"
 
@@ -362,6 +365,7 @@ body = f"""
       <div class="top-actions">
         <a class="pill pill-prac" id="tbPrac" href="#practice" hidden>{ic("practice")}<span id="tbPracTxt"></span></a>
         <button class="pill pill-ic" id="tbFind" aria-label="Search" title="Search (/)" aria-haspopup="dialog" aria-expanded="false" aria-keyshortcuts="/ Control+K">{ic("search")}</button>
+        <a class="pill pill-ic" id="tbSet" href="#settings" aria-label="Settings" title="Settings">{ic("gear")}</a>
         <a class="pill" id="tbSensor" href="#heart" data-state="off"><i class="dot hr-dot" aria-hidden="true"></i><span id="tbSensorTxt">Connect sensor</span></a>
       </div>
     </header>
@@ -401,7 +405,7 @@ body = f"""
 
         <div class="quick">
           <button class="qk" data-go="heart" style="--qc:var(--hr)"><span class="qi">{ic("target")}</span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
-          <button class="qk" data-go="sounds" data-seg="prime" style="--qc:var(--stim)"><span class="qi">{ic("bolt")}</span><b>Prime before work</b><span id="qkPrime">10 min of 14 Hz beta, then start work</span></button>
+          <button class="qk" data-go="sounds" data-seg="prime" style="--qc:var(--stim)"><span class="qi">{ic("bolt")}</span><b>Custom primer</b><span id="qkPrime">10 min of 14 Hz beta, then start work</span></button>
           <button class="qk" data-go="sounds" data-seg="tracks" style="--qc:var(--relax)"><span class="qi">{ic("sounds")}</span><b>Listen to a track</b><span id="qkTracks">12 tracks for sleep, calm, focus and tinnitus</span></button>
           <button class="qk" data-go="heart" style="--qc:var(--accent)"><span class="qi">{ic("pulse")}</span><b id="qkSensorT">Heart sensor</b><span id="qkSensor">Not connected</span></button>
         </div>
@@ -460,8 +464,8 @@ body = f"""
       <section class="view" id="v-sounds" aria-labelledby="viewTitle" hidden>
         <div class="seg" role="tablist" aria-label="Sound sessions">
           <button class="seg-b" role="tab" id="sg-tracks" data-seg="tracks" aria-controls="sp-tracks" aria-selected="true">Tracks</button>
-          <button class="seg-b" role="tab" id="sg-prime" data-seg="prime" aria-controls="sp-prime" aria-selected="false" tabindex="-1">Prime, then work</button>
-          <button class="seg-b" role="tab" id="sg-build" data-seg="build" aria-controls="sp-build" aria-selected="false" tabindex="-1">Build your own</button>
+          <button class="seg-b" role="tab" id="sg-prime" data-seg="prime" aria-controls="sp-prime" aria-selected="false" tabindex="-1">Custom primer</button>
+          <button class="seg-b" role="tab" id="sg-build" data-seg="build" aria-controls="sp-build" aria-selected="false" tabindex="-1">Beat builder</button>
         </div>
 
         <div class="notice-strip">
@@ -472,11 +476,13 @@ body = f"""
 
         <div class="seg-panel" id="sp-tracks" role="tabpanel" aria-labelledby="sg-tracks">
           <div class="toolbar" id="tracks">
-            <div class="tabs" role="tablist" aria-label="Filter tracks">
-              <button class="tab" role="tab" aria-selected="true" data-filter="all">All</button>
-              <button class="tab" role="tab" aria-selected="false" data-filter="relax">Relaxation &amp; sleep</button>
-              <button class="tab" role="tab" aria-selected="false" data-filter="stim">Stimulation &amp; focus</button>
-              <button class="tab" role="tab" aria-selected="false" data-filter="ther">Tinnitus</button>
+            <div class="tabs" role="group" aria-label="Filter tracks by goal">
+              <button class="tab" aria-pressed="true" data-filter="all">All</button>
+              <button class="tab" aria-pressed="false" data-filter="sleep">Sleep</button>
+              <button class="tab" aria-pressed="false" data-filter="calm">Calm</button>
+              <button class="tab" aria-pressed="false" data-filter="focus">Focus</button>
+              <button class="tab" aria-pressed="false" data-filter="recover">Recover</button>
+              <button class="tab" aria-pressed="false" data-filter="tinnitus">Tinnitus</button>
             </div>
             <div class="count" id="count"></div>
           </div>
@@ -677,6 +683,15 @@ s = sub(s, """    if (r && B.state === "running" && breathTime() >= 0) B.coh.pus
            """    if (r && B.state === "running" && breathTime() >= 0) B.coh.push(r.cs);
     if (r && P.state === "running") P.coh.push({ t: pT(), cs: r.cs });""")
 
+# the track list filters by goal (taxonomy.js), its filter buttons are toggles rather than tabs, and the
+# sleep track gets a name of its own so it isn't mistaken for the Sleep Descent program
+s = sub(s, """      for (var j = 0; j < tabs.length; j++) tabs[j].setAttribute("aria-selected", "false");
+      e.currentTarget.setAttribute("aria-selected", "true");""", """      for (var j = 0; j < tabs.length; j++) tabs[j].setAttribute("aria-pressed", "false");
+      e.currentTarget.setAttribute("aria-pressed", "true");""")
+s = sub(s, """    var list = TRACKS.filter(function (t) { return filter === "all" || t.cat === filter; });""",
+           """    var list = TRACKS.filter(function (t) { return filter === "all" || t.goal === filter; });""")
+s = sub(s, """id: "sleep-descent", cat: "relax", band: "Delta", name: "Deep Sleep Descent",""",
+           """id: "sleep-descent", cat: "relax", band: "Delta", name: "Delta Sleep",""")
 # the breathing guide and the Sounds player share one screen lock with practices (wlSync, in practice.js)
 s = sub(s, """  /* Keep the screen awake while a session runs; ignore refusals. */
   function acquireLock() {

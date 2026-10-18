@@ -4,6 +4,7 @@ const URL0 = APP;
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
 const mock = require('./sensor-mock');
 const only = process.argv[2] || '';
+const opts = async p => { if (await p.$eval('#sOpts', e => e.hidden).catch(() => false)) { await p.click('#sOptsBtn'); await p.waitForTimeout(60); } };   // options are folded by default
 const t = (p, s) => p.$eval(s, e => e.textContent.trim()).catch(() => '(missing)');
 const vis = (p, s) => p.$eval(s, e => !e.hidden && !!(e.offsetParent || e.getClientRects().length) && getComputedStyle(e).visibility !== 'hidden').catch(() => false);
 const T = p => p.evaluate(() => { const P = window.__entrain.P; return P.state === 'running' ? performance.now() / 1000 - P.t0 : P.st; });
@@ -35,7 +36,8 @@ async function untilStep(p, re, max = 120000) { const t0 = Date.now(); while (Da
     const p = await page({ speed: 6, rr: true }, NOAUDIO());
     await p.click('#tbSensor'); await p.waitForTimeout(200); await p.click('#hrConnect'); await p.waitForTimeout(400);
     await p.evaluate(() => location.hash = 'practice/wim-hof'); await p.waitForTimeout(200);
-    ok(await p.$eval('#sGo', b => b.disabled) && /drowned/.test(await t(p, '.si-caution')) && await t(p, '.si-kind') === 'Breathwork · up to 16 min', 'Wim Hof: water warning, Start locked, "up to" time: ' + await t(p, '.si-kind'));
+    ok(await p.$eval('#sGo', b => b.disabled) && /drowned/.test(await t(p, '.si-caution')) && await t(p, '.si-kind') === 'Energy · Breathing · up to 16 min', 'Wim Hof: water warning, Start locked, "up to" time: ' + await t(p, '.si-kind'));
+    await opts(p);
     ok((await p.$$eval('.si-len button', b => b.map(x => x.textContent))).join('/') === '3 rounds/4 rounds' && (await p.$$eval('#sOptVar button', b => b.map(x => x.textContent))).join('/') === '30/40', 'rounds and breaths options');
     await p.click('#sOptVar button[data-v="40"]'); await p.waitForTimeout(150);
     const r40 = await p.evaluate(() => { const E = window.__entrain; return E.pPlan(E.pDef('wim-hof'), 3).steps[1].secs; });
@@ -83,6 +85,7 @@ async function untilStep(p, re, max = 120000) { const t0 = Date.now(); while (Da
     ok(plan['anapana'].length === 0 && plan['body-scan'].length === 0, 'single practices are left as they are');
     // the option itself
     await p.evaluate(() => location.hash = 'practice/calm-reset'); await p.waitForTimeout(200);
+    await opts(p);
     ok(await p.$eval('#sOptAna button[aria-pressed=true]', b => b.textContent) === '2 min', 'intro shows the reminder setting');
     await p.click('#sOptAna button[data-v="0"]'); await p.waitForTimeout(100);
     const off = await p.evaluate(() => { const E = window.__entrain; return E.pPlan(E.pDef('calm-reset'), 0).steps.reduce((a, s) => a + s.lines.filter(l => l[2] === 'ana').length, 0); });
@@ -106,12 +109,14 @@ async function untilStep(p, re, max = 120000) { const t0 = Date.now(); while (Da
   if (!only || only === 'M') {
     const p = await page({ speed: 10, rr: false }, NOAUDIO());
     await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(200);
-    ok(await vis(p, '.pc-build'), 'Practice shows "Build your own yoga"');
+    ok(await vis(p, '.pc-build') && /Routine builder/.test(await t(p, '.pc-build')), 'Practice shows the Routine builder');
     await p.click('.pc-build a'); await p.waitForTimeout(300);
     ok(await p.evaluate(() => location.hash) === '#yoga' && await p.$$eval('#ybLib li', l => l.length) === 56 && await t(p, '#ybLibN') === '56 in all' && await vis(p, '#ybEmpty'), 'builder opens with the 56-item movement library');
-    await p.click('#ybCats [data-cat=balance]'); await p.waitForTimeout(100);
-    ok(await p.$$eval('#ybLib li', l => l.length) === 3, 'category filter: 3 balance poses');
-    await p.click('#ybCats [data-cat=all]'); await p.waitForTimeout(100);
+    await p.click('#ybPos [data-pos=seat]'); await p.waitForTimeout(100);
+    ok(await p.$$eval('#ybLib li', l => l.length) === 7 && await t(p, '#ybLibN') === '7 poses and moves', 'position filter: 7 seated poses and stretches');
+    await p.click('#ybCats [data-cat=yoga]'); await p.waitForTimeout(100);
+    ok(await p.$$eval('#ybLib li', l => l.length) === 5 && await t(p, '#ybLibN') === '5 poses', 'with yoga poses only: 5');
+    await p.click('#ybCats [data-cat=all]'); await p.click('#ybPos [data-pos=all]'); await p.waitForTimeout(100);
     for (const id of ['mountain', 'warrior2', 'child', 'cat', 'corpse']) { await p.click('[data-add=' + id + ']'); await p.waitForTimeout(80); }
     ok(await p.$$eval('#ybList .yb-row', r => r.length) === 5, 'five poses added');
     await p.screenshot({ path: OUT + 'yb-added.png' });
@@ -140,7 +145,7 @@ async function untilStep(p, re, max = 120000) { const t0 = Date.now(); while (Da
     await p.reload(); await p.waitForTimeout(300);
     if (await p.evaluate(() => window.__restored)) log.push('NOTE headless Chromium dropped the stored values on reload; copied them over');
     await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(200);
-    ok(/Yours/.test(await t(p, '.pr-grp[data-g=move]')) && /Test flow/.test(await t(p, '.pr-grp[data-g=move]')), 'your sequence is listed under Movement after a reload');
+    ok(/Yours/.test(await t(p, '.pr-grp[data-g=mine]')) && /Test flow/.test(await t(p, '.pr-grp[data-g=mine]')), 'your sequence is listed under Your routines after a reload');
     await p.evaluate(u => location.hash = 'practice/my-' + u, uid); await p.waitForTimeout(250);
     const rows = await p.$$eval('.si-steps li span', l => l.map(x => x.textContent));
     ok(rows.join(' | ') === 'Get ready | Mountain | Warrior II, right | Next: Cat | Cat | Child\'s Pose | Closing', 'steps with a transition: ' + rows.join(' | '));

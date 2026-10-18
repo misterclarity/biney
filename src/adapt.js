@@ -114,7 +114,7 @@
     return [
       G(45, "Lie down", ["Lie down somewhere you can rest, with headphones on, and the phone where you'll hear it.",
         "Close your eyes and let the breath slow down. Resting counts as much as sleeping.",
-        "You'll be woken gently. With a heart sensor, the nap is timed from when your heart rate says you've dozed off."], { vis: "glow" }),
+        "You'll be woken gently. With a heart sensor, the nap is timed from when your heart rate says you've dozed off."], { vis: "glow", sleepy: true }),
       { k: "nap", nap: len, secs: (len + 25) * 60, title: "Nap", open: true, quiet: true, lines: [[0, "Rest now."]] },
       { k: "wake", secs: 120, title: "Waking up", nobell: true, lines: [[0, "Time to wake up. Take a slow, deep breath."], [25, "Wiggle your fingers and toes."],
         [50, "Let some light in. Open your eyes when you're ready."], [80, "Stretch, and take your time."]] },

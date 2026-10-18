@@ -342,8 +342,11 @@
   ];
   var ASANA = {};
   ASANAS.forEach(function (a) { ASANA[a.id] = a; });
-  var ACATS = [["all", "All"], ["standing", "Standing"], ["balance", "Balance"], ["fours", "All fours"], ["seated", "Seated"], ["lying", "Lying"], ["rest", "Rest"],
-    ["mobility", "Mobility"], ["capoeira", "Capoeira"]];
+  // the library filters by two things: what kind of movement, and the position it starts from
+  var A_TYPES = [["all", "All"], ["yoga", "Yoga poses"], ["stretch", "Stretches"], ["mobility", "Mobility"], ["capoeira", "Capoeira"]];
+  var A_POSES = [["all", "Any position"], ["stand", "Standing"], ["fours", "All fours"], ["seat", "Seated"], ["lie", "Lying"]];
+  function aType(a) { return a.cat === "capoeira" ? "capoeira" : a.cat === "mobility" ? (a.move ? "mobility" : "stretch") : "yoga"; }
+  function aPos(a) { return a.pos === "supine" || a.pos === "prone" ? "lie" : a.pos; }
 
   /* Moving between positions gets a short spoken transition. */
   var TRANS = {

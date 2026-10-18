@@ -41,7 +41,7 @@
   function pPlan(d, len) {
     var steps = d.build(len, pVar(d)), at = 0;
     steps.forEach(function (s) { s.at = at; at += s.secs; });
-    if (d.group === "program" && P.opt.ana) pAna(d, steps, at, P.opt.ana);
+    if (d.method === "program" && P.opt.ana) pAna(d, steps, at, P.opt.ana);
     var base = at;                                   // a program's sound covers the practice, not the tapping after it
     if (tapOn(d)) tapShort().forEach(function (s) { s.at = at; at += s.secs; s.extra = true; steps.push(s); });
     return { steps: steps, total: at, base: base };
@@ -87,7 +87,48 @@
   }
 
   function pMinutes(d, len) { return Math.max(1, Math.round(pPlan(d, pLenOf(d, len)).total / 60)); }
-  function pSaveOpt() { store.set("pOpt", JSON.stringify(P.opt)); }
+  /* ----- options: defaults for every practice (in Settings), and each practice's own changes on top.
+     Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself. ----- */
+  var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "visual"];
+  function storeDel(k) { try { localStorage.removeItem("entrain." + k); } catch (e) {} }
+  function pOptDefaults() {
+    var o = JSON.parse(JSON.stringify(P_OPT0));
+    try {
+      var g = JSON.parse(store.get("pOpt") || "null");
+      if (g && typeof g === "object") for (var k in o) if (typeof g[k] === typeof o[k]) o[k] = g[k];
+    } catch (e) {}
+    return o;
+  }
+  function pOptOwn(id) {
+    try { var v = JSON.parse(store.get("pOpt." + id) || "null"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; }
+  }
+  function pOptsOf(id) {
+    var o = pOptDefaults(), own = pOptOwn(id);
+    P_OWN.forEach(function (k) { if (k in own && typeof own[k] === typeof o[k]) o[k] = own[k]; });
+    return o;
+  }
+  // what differs from the defaults is kept for this practice; voice choice and keeping reflections go to the defaults
+  function pOptSave(id, o) {
+    var g = pOptDefaults(), own = {}, n = 0;
+    P_OWN.forEach(function (k) { if (o[k] !== g[k]) { own[k] = o[k]; n++; } });
+    for (var k in g) if (P_OWN.indexOf(k) < 0) g[k] = o[k];
+    store.set("pOpt", JSON.stringify(g));
+    if (n) store.set("pOpt." + id, JSON.stringify(own)); else storeDel("pOpt." + id);
+  }
+  function pOptMakeDefault(id, o) {
+    var g = pOptDefaults();
+    P_OWN.forEach(function (k) { g[k] = o[k]; });
+    store.set("pOpt", JSON.stringify(g));
+    storeDel("pOpt." + id);
+  }
+  function pSaveOpt() { if (P.optFor) pOptSave(P.optFor, P.opt); else store.set("pOpt", JSON.stringify(P.opt)); }
+  // the options an intro shows and edits: the running practice's own stay as they are
+  function pIntroOpts(d) {
+    if (pBusy() && P.def !== d) return pOptsOf(d.id);
+    P.opt = pOptsOf(d.id); P.optFor = d.id;
+    return P.opt;
+  }
   function pColor(d) { return "var(--" + (d.tone || "relax") + ")"; }
 
   /* ----- sound: a bell bus of its own, and the pump tick ----- */
@@ -152,9 +193,10 @@
   var WL = { lock: null, asking: false, stop: 0, told: false, failAt: 0 };
   var WL_GRACE = 600000;
   function wlNeed() {
-    if (P.state === "running" || B.state === "running" || A.playing) { WL.stop = 0; return true; }
+    var ses = ST.screenSessions, trk = ST.screenTracks;
+    if ((ses && (P.state === "running" || B.state === "running")) || (trk && A.playing)) { WL.stop = 0; return true; }
     if (!WL.stop) WL.stop = Date.now();               // the moment the last session paused or ended
-    var paused = P.state === "paused" || B.state === "paused" || (!!A.track && A.elapsed > 0);
+    var paused = (ses && (P.state === "paused" || B.state === "paused")) || (trk && !!A.track && A.elapsed > 0);
     return paused && Date.now() - WL.stop < WL_GRACE;
   }
   function wlSync() {
@@ -316,6 +358,7 @@
     if (s.k === "pump") return "pump";
     if (s.k === "shuffle") return "word";
     if (s.k === "count") return "count";
+    if (ST.sleepDim && pSleepyStep(s)) return s.k === "shuffle" ? "word" : "dark";   // dimmed for sleep (Settings)
     if (s.k === "drift") return "glow";
     if (s.k === "hold") return "hold";
     if (s.k === "guide" && s.pose) return "pose";
@@ -345,6 +388,7 @@
     else if (P.usesB && B.state !== "idle") pBreathOff();
     var flowing = s.k === "breath" && prev && prev.k === "breath";
     if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
+    $("#ses").dataset.dim = ST.sleepDim && pSleepyStep(s) ? "1" : "";
     pStage(s);
     pRenderSegs();
     pUI();
@@ -779,6 +823,7 @@
     var go = function () {
       if (pBusy()) pFinish(true, true);
       P.def = d;
+      P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
       if (B.finder) finderCancel();
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
@@ -880,13 +925,15 @@
       var trk = A.track;
       if (early) { if (A.playing) fadeOutAndStop("Practice ended.", 3); else hardStop(true); }
       else if (A.playing) fadeOutAndStop("Practice complete.", 3);      // an open step finished early: the sound ends with the practice
-      setTimeout(function () {                                         // the practice's own sound isn't a track to replay: put the player away
+      $("#player").classList.remove("open", "expanded");               // the practice's own sound isn't a track to replay: the player stays away
+      setTimeout(function () {                                         // while it fades out
         if (A.track === trk && !A.playing) $("#player").classList.remove("open", "expanded");
       }, 3700);
     }
     P.audioOn = false;
     pUnlock();
     P.state = "done";
+    $("#ses").dataset.dim = "";
     if (!early && !quiet) {
       pBell(0.5);
       if (A.ctx) pBell(0.4, A.ctx.currentTime + 1.4, 523.25);
@@ -1022,7 +1069,7 @@
     if (d.sensor === "best") n.push(["pulse", "Heart sensor", d.sensorWhy || "recommended: live heart rate and coherence"]);
     else if (d.sensor === "optional" || pHasBreath(d)) n.push(["pulse", "Heart sensor", "optional: adds heart rate and coherence"]);
     if (d.lie) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
-    if (d.room) n.push(["move", "Room to move", "about two metres clear around you, on a floor that isn't slippery"]);
+    if (d.room) n.push(["move", "Room to move", "about two metres clear around you, on a floor with good grip"]);
     else if (d.stand) n.push(["move", "Space to stand", "an arm's length all around"]);
     if (d.voice) n.push(["voice", "Voice on", "the steps are spoken; eyes can stay closed"]);
     if (d.reflect) n.push(["nvc", "A quiet place to write", "nothing you type leaves this device"]);
@@ -1045,41 +1092,44 @@
       var last = rows[rows.length - 1];
       if (last && last.title === s.title) last.secs += s.secs; else rows.push({ title: s.title, secs: s.secs, k: s.k });
     });
-    var opts = [];
-    opts.push(pToggle("sOptVoice", "Spoken guidance", P.opt.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
-    if (window.speechSynthesis) opts.push('<div class="so-row so-voice" id="sVoiceRow"' + (P.opt.voice ? "" : " hidden") + '><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
-    opts.push(pToggle("sOptBells", "Bells between steps", P.opt.bells, ""));
-    if (d.audio) opts.push(pToggle("sOptAudio", "Binaural layer", P.opt.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
-    if (pPlanHasRhy(plan.steps)) opts.push(pToggle("sOptRhy", "Berimbau", P.opt.rhythm, "A synthesized berimbau keeps time for the capoeira moves."));
-    if (d.reflect) opts.push(pToggle("sOptKeep", "Keep a copy on this device", P.opt.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
+    var O = pIntroOpts(d), own = Object.keys(pOptOwn(d.id)).length > 0, hasRhy = pPlanHasRhy(plan.steps);
+    var opts = [], every = [];
+    opts.push(pToggle("sOptVoice", "Spoken guidance", O.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
+    opts.push(pToggle("sOptBells", "Bells between steps", O.bells, ""));
+    if (d.audio) opts.push(pToggle("sOptAudio", "Binaural layer", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
+    if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesized berimbau keeps time for the capoeira moves."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
     if (hasTap) {
       opts.push('<div class="so-row so-phrase" id="sPhraseRow"' + (d.tapping || tapOn(d) ? "" : " hidden") + '><label class="so-l" for="sTapPhrase">Your phrase<small>A few words for what\'s bothering you, like “this stress” or “this tight chest”.</small></label>' +
         '<input id="sTapPhrase" maxlength="48" autocomplete="off" placeholder="this stress" value="' + esc(store.get("tapPhrase") || "") + '"></div>');
-      opts.push('<div id="sTickRow"' + (d.tapping || tapOn(d) ? "" : " hidden") + ">" + pToggle("sOptTick", "Tapping tick", P.opt.tapTick, "A soft tick to tap along with.") + "</div>");
+      opts.push('<div id="sTickRow"' + (d.tapping || tapOn(d) ? "" : " hidden") + ">" + pToggle("sOptTick", "Tapping tick", O.tapTick, "A soft tick to tap along with.") + "</div>");
     }
-    opts.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, made on your device.</small></span>' + ambCtl() + "</div>");
-    if (d.variant) opts.push('<div class="so-row"><span class="so-l">' + d.variant.label + '</span><div class="mini-seg" id="sOptVar">' +
+    if (d.variant) opts.push('<div class="so-row so-seg"><span class="so-l">' + d.variant.label + '</span><div class="mini-seg" id="sOptVar">' +
       d.variant.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (pVar(d) === o[0]) + '">' + o[1] + "</button>"; }).join("") + "</div></div>");
-    if (d.group === "program") opts.push('<div class="so-row so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
+    if (d.method === "program") opts.push('<div class="so-row so-seg so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
       [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]].map(function (o) {
-        return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.ana === o[0]) + '">' + o[1] + "</button>";
+        return '<button data-v="' + o[0] + '" aria-pressed="' + (O.ana === o[0]) + '">' + o[1] + "</button>";
       }).join("") + "</div></div>");
     if (hasB) {
-      opts.push('<div class="so-row"><span class="so-l">Breath cues</span><div class="mini-seg" id="sOptCues">' +
+      opts.push('<div class="so-row so-seg"><span class="so-l">Breath cues</span><div class="mini-seg" id="sOptCues">' +
         [["tones", "Tone"], ["chimes", "Chimes"], ["off", "Silent"]].map(function (o) {
-          return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.cues === o[0]) + '">' + o[1] + "</button>";
+          return '<button data-v="' + o[0] + '" aria-pressed="' + (O.cues === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
-      opts.push('<div class="so-row"><span class="so-l">Breath visual</span><div class="mini-seg" id="sOptVis">' +
+      opts.push('<div class="so-row so-seg"><span class="so-l">Breath visual</span><div class="mini-seg" id="sOptVis">' +
         [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]].map(function (o) {
-          return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.visual === o[0]) + '">' + o[1] + "</button>";
+          return '<button data-v="' + o[0] + '" aria-pressed="' + (O.visual === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
     }
+    // the same in every session: which voice, the sound underneath, and what's kept of a reflection
+    if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
+    every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, made on your device.</small></span>' + ambCtl() + "</div>");
+    if (d.reflect) every.push(pToggle("sOptKeep", "Keep a copy on this device", O.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
+    var openOpts = store.get("optsOpen") === "1";
     var other = pBusy() && P.def !== d;
     var h = '<a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Practices</a>' +
       '<div class="si-head">' +
-        '<span class="si-kind">' + (d.custom ? "Your routine" : esc(GROUPS.filter(function (g) { return g.id === d.group; })[0].name)) + (d.exp ? " · Experimental" : "") + " · " + minsTxt + "</span>" +
+        '<span class="si-kind">' + [d.custom ? "Your routine" : goalOf(d.goal) ? goalOf(d.goal).name : "", methodName(d.method)].filter(Boolean).join(" · ") + (d.exp ? " · Experimental" : "") + " · " + minsTxt + "</span>" +
         "<h2>" + esc(d.name) + "</h2>" +
         '<p class="si-blurb">' + esc(d.blurb) + "</p>" +
         (d.parts ? '<p class="si-parts">' + esc(d.parts) + "</p>" : "") +
@@ -1102,12 +1152,23 @@
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution ? '<div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>' + esc(d.caution) + "</span></div>" : "") +
       "</div>" +
-      '<aside class="si-opts">' + (d.reflect ? nvcDraftStrip(d) : "") +     // first thing on a phone, next to Start on a computer
-        "<h3>Options</h3>" + opts.join("") +
+      '<div class="si-side">' +                     // Start first: above the options on a computer, last on a phone (order)
+      '<div class="si-bar">' +
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
         '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Start' + (d.open || d.selfPaced ? "" : " " + mins + " min") + "</button>" +
-      "</aside></div>";
+      "</div>" +
+      '<aside class="si-opts">' + (d.reflect ? nvcDraftStrip(d) : "") +     // first thing on a phone, beside the steps on a computer
+        '<button class="so-sum" id="sOptsBtn" aria-expanded="' + openOpts + '" aria-controls="sOpts"><span class="so-sum-t"><b>Options</b>' +
+          '<span id="sOptsSum">' + esc(pOptSumTxt(d, O, hasRhy)) + "</span></span>" + '<svg class="i" aria-hidden="true"><use href="#i-up"/></svg></button>' +
+        '<div class="so-list" id="sOpts"' + (openOpts ? "" : " hidden") + ">" +
+          '<p class="so-scope" id="sOptsScope">' + pOptScope(d, own) + "</p>" +
+          opts.join("") +
+          '<div class="so-acts" id="sOptsActs"' + (own ? "" : " hidden") + '><button class="btn small" id="sOptsAll">Use these for every practice</button><button class="btn small" id="sOptsReset">Back to the defaults</button></div>' +
+          '<div class="so-every"><h4>In every session</h4>' + every.join("") + "</div>" +
+        "</div>" +
+      "</aside>" +
+      "</div></div>";
     var el = $("#sIntro");
     el.innerHTML = h;
     el.style.setProperty("--pcol", pColor(d));
@@ -1116,8 +1177,23 @@
     $("#ses").dataset.state = "intro";
     bSetT("#viewTitle", d.name);
     document.title = d.name + " | Entrain";
-    pIntroWire(d);
+    pIntroWire(d, O, hasRhy);
     pImmersive();
+    edgeFade(el.querySelector(".si-len"));
+  }
+  function pOptScope(d, own) {
+    return (own ? "You've changed these for " + esc(d.name) + ". " : "For " + esc(d.name) + " only. ") +
+      'The defaults for every practice are in <a href="#settings">Settings</a>.';
+  }
+  function pOptSumTxt(d, O, hasRhy) {
+    var s = [O.voice && window.speechSynthesis ? "Voice" : "No voice"];
+    if (O.bells) s.push("Bells");
+    if (d.audio) s.push(O.audio ? "Binaural" : "No beats");
+    if (hasRhy && O.rhythm) s.push("Berimbau");
+    if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
+    if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
+    if (AMB.kind !== "off") s.push(AMB.kind === "night" ? "Rain and crickets" : AMB.kind === "rain" ? "Rain" : "Crickets");
+    return s.join(" · ");
   }
   function pYogaHow(plan) {
     var poses = plan.steps.filter(function (s) { return s.k === "pose"; }), names = [], moving = 0, rhy = false;
@@ -1135,14 +1211,21 @@
     return '<label class="so-row so-tg"><span class="so-l">' + label + (note ? "<small>" + note + "</small>" : "") + '</span>' +
       '<input type="checkbox" class="sw" id="' + id + '"' + (on && !disabled ? " checked" : "") + (disabled ? " disabled" : "") + "></label>";
   }
-  function pIntroWire(d) {
+  function pIntroWire(d, O, hasRhy) {
     var on = function (id, fn) { var el = $(id); if (el) el.addEventListener("change", fn); };
-    on("#sOptVoice", function () { P.opt.voice = this.checked; var r = $("#sVoiceRow"); if (r) r.hidden = !this.checked; pSaveOpt(); });
-    on("#sOptBells", function () { P.opt.bells = this.checked; pSaveOpt(); if (this.checked) pBell(0.4); });
-    on("#sOptAudio", function () { P.opt.audio = this.checked; pSaveOpt(); });
-    on("#sOptRhy", function () { P.opt.rhythm = this.checked; pSaveOpt(); });
-    on("#sOptTick", function () { P.opt.tapTick = this.checked; pSaveOpt(); });
-    on("#sOptKeep", function () { P.opt.nvcSave = this.checked; pSaveOpt(); });
+    var sum = function () { var el = $("#sOptsSum"); if (el) el.textContent = pOptSumTxt(d, O, hasRhy); };
+    var save = function () {                          // kept for this practice; the scope line and its two buttons follow
+      pOptSave(d.id, O); sum();
+      var own = Object.keys(pOptOwn(d.id)).length > 0;
+      $("#sOptsScope").innerHTML = pOptScope(d, own);
+      $("#sOptsActs").hidden = !own;
+    };
+    on("#sOptVoice", function () { O.voice = this.checked; var r = $("#sVoiceRow"); if (r) r.hidden = !this.checked; save(); });
+    on("#sOptBells", function () { O.bells = this.checked; save(); if (this.checked) pBell(0.4, 0, 0, 0, true); });
+    on("#sOptAudio", function () { O.audio = this.checked; save(); });
+    on("#sOptRhy", function () { O.rhythm = this.checked; save(); });
+    on("#sOptTick", function () { O.tapTick = this.checked; save(); });
+    on("#sOptKeep", function () { O.nvcSave = this.checked; save(); });
     on("#sOptTap", function () {
       store.set("pTap." + d.id, this.checked ? "1" : "0");
       pIntro(d.id);
@@ -1161,10 +1244,31 @@
       }
       nvcDraftClear(d.id); pIntro(d.id);
     });
-    on("#sVoiceSel", function () { P.opt.voiceName = this.value; pSaveOpt(); });
+    on("#sVoiceSel", function () { O.voiceName = this.value; save(); });
     var t = $("#sVoiceTest");
-    if (t) t.addEventListener("click", function () { pHush(); var v = P.opt.voice; P.opt.voice = true; pSay("Breathe in slowly, and let it go."); P.opt.voice = v; });
-    pFillVoices();
+    if (t) t.addEventListener("click", function () {
+      pHush();
+      var v = P.opt.voice, n = P.opt.voiceName;
+      P.opt.voice = true; P.opt.voiceName = O.voiceName;
+      pSay("Breathe in slowly, and let it go.");
+      P.opt.voice = v; P.opt.voiceName = n;
+    });
+    pFillVoices(O.voiceName);
+    $("#sOptsBtn").addEventListener("click", function () {
+      var open = this.getAttribute("aria-expanded") !== "true";
+      this.setAttribute("aria-expanded", open ? "true" : "false");
+      $("#sOpts").hidden = !open;
+      store.set("optsOpen", open ? "1" : "0");
+      if (open) edgeFadeAll();
+    });
+    var all = $("#sOptsAll"), reset = $("#sOptsReset");
+    all.addEventListener("click", function () {
+      pOptMakeDefault(d.id, O);
+      pIntro(d.id);
+      toast("These are now the options for every practice that hasn't set its own.");
+    });
+    reset.addEventListener("click", function () { storeDel("pOpt." + d.id); pIntro(d.id); });
+    $("#sOpts").addEventListener("click", function (e) { if (e.target.closest("[data-amb]")) setTimeout(sum, 0); });
     [["#sOptCues", "cues"], ["#sOptVis", "visual"], ["#sOptAna", "ana"], ["#sOptVar", "var"]].forEach(function (p) {
       var g = $(p[0]);
       if (!g) return;
@@ -1172,7 +1276,7 @@
         var b = e.target.closest("button");
         if (!b) return;
         if (p[1] === "var") { store.set("pVar." + d.id, b.dataset.v); pIntro(d.id); return; }
-        P.opt[p[1]] = p[1] === "ana" ? parseInt(b.dataset.v, 10) : b.dataset.v; pSaveOpt();
+        O[p[1]] = p[1] === "ana" ? parseInt(b.dataset.v, 10) : b.dataset.v; save();
         var bs = g.querySelectorAll("button");
         for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
         if (p[1] === "cues" && b.dataset.v !== "off" && pBusOn() && ensureBus()) {
@@ -1189,10 +1293,10 @@
     });
     $("#sGo").addEventListener("click", pStart);
   }
-  function pFillVoices() {
-    var sel = $("#sVoiceSel");
+  function pFillVoices(name, id) {
+    var sel = $(id || "#sVoiceSel");
     if (!sel) return;
-    var vs = pVoices(), cur = pVoice();
+    var vs = pVoices(), pick = typeof name === "string" && name ? vs.filter(function (v) { return v.name === name; })[0] : null, cur = pick || pVoice();
     if (!vs.length) { sel.innerHTML = "<option>Default voice</option>"; sel.disabled = true; return; }
     sel.disabled = false;
     sel.innerHTML = vs.map(function (v) {
@@ -1249,57 +1353,7 @@
   }
   function pOpen() { if (P.def) location.hash = "practice/" + P.def.id; }
 
-  /* ----- the library ----- */
-  var prFilter = "all";
-  function pIcon(d) { return d.group === "program" ? "spark" : d.group === "mind" ? "practice" : d.group === "breath" ? "breathe" : d.group === "relax" ? "moon" : d.group === "reflect" ? "nvc" : "move"; }
-  function pCard(d) {
-    var mins = d.selfPaced ? "About " + d.est + " min" : d.lengths ? d.lengths.join("/") + " " + (d.lenUnit ? d.lenUnit + "s" : "min") : (d.open ? "up to " : "") + pMinutes(d) + " min", meta = ['<span>' + mins + "</span>"];
-    if (d.selfPaced) meta.push("<span>Self-paced</span>");
-    if (d.custom) meta.unshift('<span class="mine">Yours</span>');
-    if (d.exp) meta.unshift('<span class="exp">Experimental</span>');
-    if (d.audio) meta.push("<span>Binaural</span>");
-    if (pHasBreathFast(d)) meta.push("<span>Paced breath</span>");
-    if (d.sensor === "best") meta.push('<span class="hrm">Best with sensor</span>');
-    if (d.rhythm) meta.push("<span>Berimbau</span>");
-    else if (d.stand) meta.push("<span>Standing</span>");
-    if (d.caution) meta.push('<span class="cau">Cautions</span>');
-    var tl = "";
-    if (d.group === "program") {
-      var plan = pPlan(d, 0);
-      tl = '<span class="si-tl pc-tl" aria-hidden="true">' + plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + s.secs + ' 1 0"></i>'; }).join("") + "</span>";
-    }
-    return '<li class="pc' + (d.group === "program" ? " prog" : "") + '" style="--pcol:' + pColor(d) + '">' +
-      '<a href="#practice/' + d.id + '" class="pc-a">' +
-        '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + pIcon(d) + '"/></svg></span>' +
-        '<span class="pc-b"><b>' + esc(d.name) + "</b>" +
-          '<span class="pc-blurb">' + esc(d.blurb) + "</span>" + tl +
-          '<span class="pc-meta">' + meta.join("") + dots(d.strength) + "</span>" +
-        "</span></a></li>";
-  }
-  var pBreathCache = {};
-  function pHasBreathFast(d) {
-    if (!(d.id in pBreathCache)) pBreathCache[d.id] = pPlan(d, pLenOf(d, 0)).steps.some(function (s) { return s.k === "breath"; });
-    return pBreathCache[d.id];
-  }
-  function pRenderLib() {
-    $("#prFilt").innerHTML = FILTERS.map(function (f) {
-      return '<button class="chip-b" data-f="' + f[0] + '" aria-pressed="' + (f[0] === prFilter) + '">' + f[1] + "</button>";
-    }).join("");
-    var h = "";
-    GROUPS.forEach(function (g) {
-      var all = g.id === "move" ? yLoad().map(yDef).concat(PRACTICES) : PRACTICES;
-      var list = all.filter(function (d) { return d.group === g.id && (prFilter === "all" || d.tags.indexOf(prFilter) >= 0); });
-      var build = g.id === "move" && (prFilter === "all" || prFilter === "move");
-      if (!list.length && !build) return;
-      h += '<section class="pr-grp" data-g="' + g.id + '"><div class="pr-gh"><h2>' + g.name + "</h2><p>" + g.lede + "</p></div>" +
-        '<ul class="pr-list' + (g.id === "program" ? " progs" : "") + '">' +
-        (build ? '<li class="pc pc-build" style="--pcol:var(--accent)"><a href="#yoga" class="pc-a"><span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span>' +
-          '<span class="pc-b"><b>Build your own routine</b><span class="pc-blurb">Pick from ' + ASANAS.length + ' yoga poses, stretches, mobility drills and capoeira moves, set each one\'s time, and save the routine. Each comes with its own drawing and spoken cues, offline.</span></span></a></li>' : "") +
-        list.map(pCard).join("") + "</ul></section>";
-    });
-    $("#prLib").innerHTML = h;
-    pRenderWeek();
-  }
+  /* ----- the library is in library.js; this is the week strip above it ----- */
   function pRenderWeek() {
     var log = pLog(), wk = Date.now() - 7 * 864e5, recent = log.filter(function (e) { return e.at >= wk; });
     var mins = Math.round(recent.reduce(function (a, e) { return a + e.secs; }, 0) / 60);
@@ -1331,11 +1385,10 @@
     $("#homeSuggest").style.setProperty("--pcol", pColor(d));
   }
 
+  function pSleepyStep(s) { return !!s.sleepy || s.k === "drift" || s.k === "nap" || s.k === "shuffle"; }
   function pInit() {
-    try {
-      var o = JSON.parse(store.get("pOpt") || "null");
-      if (o && typeof o === "object") for (var k in P.opt) if (typeof o[k] === typeof P.opt[k]) P.opt[k] = o[k];
-    } catch (e) {}
+    stLoad();
+    P.opt = pOptDefaults();
     var cs = getComputedStyle(document.documentElement);
     ["relax", "stim", "ther", "accent"].forEach(function (k) { P.col[k] = cs.getPropertyValue("--" + k).trim() || "#5eead4"; });
     P.col.warm = "#f5b97a";
@@ -1344,12 +1397,7 @@
     if (window.ResizeObserver && P.cv) new ResizeObserver(function () { pSizeCanvas(); }).observe($("#sStage"));
     window.addEventListener("resize", pSizeCanvas);
 
-    $("#prFilt").addEventListener("click", function (e) {
-      var b = e.target.closest("button");
-      if (!b) return;
-      prFilter = b.dataset.f;
-      pRenderLib();
-    });
+    libInit();
     $("#sPlay").addEventListener("click", function () { if (P.state === "running") pPause(); else pResume(); });
     $("#sPrev").addEventListener("click", function () { pJump(-1); });
     $("#sNext").addEventListener("click", function () { pJump(1); });
@@ -1424,7 +1472,7 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf };   // for automated tests only
     yInit();
     nvcInit();
     fdInit();

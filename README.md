@@ -1,6 +1,6 @@
 # Entrain
 
-Paced breathing, binaural beats and live heart-rate biofeedback in one offline web app. It covers guided practices and programs, yoga and capoeira routines, tapping, a monitored power nap and nonviolent-communication reflection, with one search box across all of it and Learn. The screen stays on and at full brightness through every session. Everything runs on the device; nothing is recorded or sent anywhere.
+Paced breathing, binaural beats and live heart-rate biofeedback in one offline web app. It covers guided practices and programs, yoga and capoeira routines, tapping, a monitored power nap and nonviolent-communication reflection, with one search box across all of it and Learn. Everything has one goal (Sleep, Calm, Focus, Energy, Recover or Reflect), and the Practice library is organised by it, with filters for method, length, posture and needs. Options are kept per practice over defaults in Settings, which also decides how the screen behaves; by default it stays on and at full brightness through every session. Everything runs on the device; nothing is recorded or sent anywhere.
 
 ## Layout
 

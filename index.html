@@ -25,7 +25,7 @@
     --line-soft:#1d2741;
     --text:#ebf0f9;
     --text-dim:#a2aec8;
-    --text-faint:#6f7b9d;
+    --text-faint:#808cad;
     --relax:#5eead4;
     --relax-deep:#2dd4bf;
     --stim:#fbbf24;
@@ -102,7 +102,7 @@
     padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));
     background:rgba(11,17,32,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   }
-  .topbar h1{font-size:20px;font-weight:780;letter-spacing:-.025em}
+  .topbar h1{font-size:20px;font-weight:780;letter-spacing:-.025em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .top-mark{display:none}
   .top-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
   .pill{
@@ -118,6 +118,9 @@
   .pill .hr-dot{margin:0;width:8px;height:8px;align-self:center}
   .pill:not([data-state="on"]) .hr-dot{opacity:1}
   body.sheet-lock{overflow:hidden}
+  /* what's scrolled to, or focused, stays clear of the tab bar and the practice page's Start bar */
+  @media (max-width:1023px){ html{scroll-padding-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 12px)} }
+  @media (max-width:880px){ html:has(#v-session:not([hidden]) #sIntro:not([hidden])){scroll-padding-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 150px)} }
 
   .view{max-width:var(--maxw);padding-top:6px}
   .v-lede{color:var(--text-dim);margin:2px 0 18px;max-width:66ch;font-size:15px}
@@ -193,7 +196,7 @@
     transition:background .15s,color .15s;
   }
   .tab:hover,.g-tab:hover{color:var(--text);background:var(--panel-3)}
-  .tab[aria-selected="true"],.g-tab[aria-selected="true"]{background:var(--text);color:var(--bg)}
+  .tab[aria-pressed="true"],.g-tab[aria-selected="true"]{background:var(--text);color:var(--bg)}
 
   .seg{
     display:inline-flex;gap:4px;padding:4px;border-radius:14px;background:var(--panel);
@@ -687,9 +690,10 @@
     position:fixed;left:0;right:0;bottom:0;z-index:50;
     background:rgba(19,27,48,.95);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
     border-top:1px solid var(--line);box-shadow:0 -18px 40px -22px rgba(0,0,0,.8);
-    transform:translateY(110%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+    transform:translateY(110%);transition:transform .3s cubic-bezier(.4,0,.2,1),visibility 0s linear .3s;
+    visibility:hidden;                              /* closed: out of sight behind the tab bar, and out of the tab order */
   }
-  .player.open{transform:translateY(0)}
+  .player.open{transform:translateY(0);visibility:visible;transition:transform .3s cubic-bezier(.4,0,.2,1),visibility 0s}
   .cue{
     background:color-mix(in srgb,var(--pc,var(--stim)) 22%,transparent);
     padding:11px 20px;font-size:14.5px;font-weight:750;color:var(--text);text-align:center;
@@ -784,7 +788,7 @@
   .pill-prac{gap:7px;color:var(--text)!important;background:color-mix(in srgb,var(--accent) 22%,var(--panel-2))!important}
   .pill-prac svg.i{width:16px;height:16px}
   .pill-prac[hidden]{display:none}
-  .top-actions{display:flex;gap:8px;align-items:center;min-width:0}
+  .top-actions{display:flex;gap:8px;align-items:center;flex:none}     /* the title gives way, with an ellipsis */
   @media (max-width:560px){ .pill-prac span{max-width:38vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} }
 
   .suggest{
@@ -824,45 +828,69 @@
   .pw-last b{color:var(--text)}
   .pw-last span:first-child{flex:1}
   .pw-go{font-weight:750;color:var(--accent)}
-  .pr-filt{display:flex;gap:7px;margin:0 0 6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+  .pr-bar{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+  .pr-filt{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;flex:1;min-width:0}
   .pr-filt::-webkit-scrollbar{display:none}
+  .pr-fbtn{display:inline-flex;align-items:center;gap:6px;flex:none;margin-bottom:2px}
+  .pr-fbtn svg.i{width:16px;height:16px}
+  .pr-fbtn.on{background:color-mix(in srgb,var(--accent) 24%,var(--panel-2));color:var(--text)}
+  .pr-panel{background:var(--panel);border-radius:16px;padding:12px 14px;margin:0 0 10px;display:grid;gap:10px}
+  .pr-panel[hidden]{display:none}
+  .pf-row{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:start}
+  .pf-l{font-size:12.5px;font-weight:700;color:var(--text-dim);padding-top:7px}
+  .pf-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip-b.small{padding:6px 11px;font-size:12.5px}
+  .pf-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--text-faint)}
+  @media (max-width:560px){ .pf-row{grid-template-columns:minmax(0,1fr);gap:6px} .pf-l{padding-top:0} }
+  .pr-legend{display:flex;align-items:center;gap:4px 14px;flex-wrap:wrap;margin:2px 0 4px;font-size:12px;color:var(--text-faint);--c1:var(--text-dim)}
+  .pr-legend > span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .pr-legend .strength{margin:0}
   .chip-b{
     background:var(--panel-2);color:var(--text-dim);border:0;white-space:nowrap;
     padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:650;cursor:pointer;
   }
   .chip-b:hover{color:var(--text);background:var(--panel-3)}
   .chip-b[aria-pressed="true"]{background:var(--text);color:var(--bg)}
-  @media (max-width:560px){ .pr-filt{margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(16px,env(safe-area-inset-left,0px)) 2px} }
+  @media (max-width:560px){ .pr-bar{margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-right:0} .pr-filt{padding-left:max(16px,env(safe-area-inset-left,0px))} }
   .pr-grp{margin-top:22px}
-  .pr-gh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}
-  .pr-gh h2{font-size:18px;font-weight:780;letter-spacing:-.015em}
+  .pr-gh{display:flex;align-items:baseline;gap:4px 12px;flex-wrap:wrap;margin-bottom:10px}
+  .pr-gh h2{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:780;letter-spacing:-.015em}
+  .pr-gh h2 svg.i{width:19px;height:19px;color:var(--text-dim)}
   .pr-gh p{margin:0;color:var(--text-faint);font-size:13.5px}
-  .pr-list{list-style:none;margin:0;padding:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
-  .pr-list.progs{grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
+  .pr-list{list-style:none;margin:0;padding:0;display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+  .pr-list > li[hidden]{display:none}
+  .pr-more{margin-top:8px;min-height:36px;padding:7px 14px;border-radius:10px;border:1px solid var(--line-soft);background:transparent;color:var(--text-dim);font:inherit;font-size:13px;font-weight:650;cursor:pointer}
+  .pr-more:hover{color:var(--text);border-color:var(--line)}
+  .pr-empty{margin-top:18px;padding:18px;border-radius:16px;background:var(--panel);color:var(--text-dim);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .pr-empty p{margin:0}
   .pc{--c1:var(--pcol)}
   .pc-a{
-    display:flex;gap:14px;align-items:flex-start;height:100%;padding:16px;border-radius:18px;background:var(--panel);
+    display:flex;gap:12px;align-items:flex-start;height:100%;padding:13px 14px;border-radius:16px;background:var(--panel);
     color:var(--text);text-decoration:none;transition:background .15s;border:1px solid transparent;
   }
   .pc-a:hover{background:var(--panel-2)}
   .pc.prog .pc-a{background:linear-gradient(160deg,color-mix(in srgb,var(--pcol) 11%,var(--panel)),var(--panel) 60%);border-color:color-mix(in srgb,var(--pcol) 22%,transparent)}
-  .pc-ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:none;
+  .pc-ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none;
     background:color-mix(in srgb,var(--pcol) 16%,transparent);color:var(--pcol)}
-  .pc-b{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
-  .pc-b b{font-size:15.5px;font-weight:750;letter-spacing:-.01em}
-  .pc-blurb{font-size:13.5px;color:var(--text-dim);line-height:1.45}
-  .pc-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px}
+  .pc-b{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+  .pc-top{display:flex;align-items:center;gap:8px}
+  .pc-top b{font-size:15.5px;font-weight:750;letter-spacing:-.01em;flex:1;min-width:0}
+  .pc-top .strength{flex:none}
+  .pc-blurb{font-size:13.5px;color:var(--text-dim);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  @media (max-width:560px){ .pc-blurb{-webkit-line-clamp:1} }
+  .pc-meta{display:flex;gap:5px 6px;flex-wrap:wrap;align-items:center}
   .pc-meta span{font-size:11.5px;font-weight:650;color:var(--text-dim);background:var(--panel-2);border-radius:7px;padding:3px 8px}
+  .pc-meta span.pc-sub{background:none;padding:0 4px 0 0;font-size:12.5px;font-weight:600;color:var(--text-dim)}
   .pc-meta span.hrm{color:var(--hr);background:color-mix(in srgb,var(--hr) 12%,transparent)}
   .pc-meta span.cau{color:var(--stim);background:color-mix(in srgb,var(--stim) 12%,transparent)}
   .pc-meta span.exp{color:var(--ther);background:color-mix(in srgb,var(--ther) 14%,transparent)}
-  .pc-meta .strength{margin-left:auto;background:none!important;padding:0!important}
+
   .pr-note{font-size:12.5px;color:var(--text-faint);margin:26px 0 0;max-width:80ch;line-height:1.55}
   .pr-note a{color:var(--text-dim)}
 
   /* step timeline: one colour per kind of step */
   .si-tl{display:flex;gap:2px;height:8px;border-radius:5px;overflow:hidden;margin-top:14px}
-  .pc-tl{height:5px;margin:4px 0 2px}
+  .pc-tl{height:4px;margin:3px 0 1px}
   .si-tl i,.ses-segs i{display:block;min-width:2px;background:var(--panel-3)}
   [data-k="breath"]{--kc:var(--b-in)}
   [data-k="guide"]{--kc:var(--accent)}
@@ -901,11 +929,30 @@
   .si-ev{margin-top:4px}
   .si-caution{display:flex;gap:10px;margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(251,191,36,.09);color:#fcd34d;font-size:13.5px}
   .si-caution svg.i{width:18px;height:18px;flex:none;margin-top:1px}
-  .si-opts{background:var(--panel);border-radius:20px;padding:18px 18px 20px;display:flex;flex-direction:column;gap:12px;position:sticky;top:calc(var(--top) + 16px)}
+  .si-side{display:flex;flex-direction:column;gap:12px;position:sticky;top:calc(var(--top) + 16px)}
+  .si-opts{background:var(--panel);border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+  .so-sum{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:0;color:var(--text);font:inherit;text-align:left;cursor:pointer;min-height:40px}
+  .so-sum-t{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+  .so-sum-t b{font-size:15px;font-weight:750}
+  .so-sum-t span{font-size:12.5px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .so-sum svg.i{width:18px;height:18px;flex:none;color:var(--text-faint);transform:rotate(180deg);transition:transform .2s}
+  .so-sum[aria-expanded="true"] svg.i{transform:none}
+  .so-list{display:flex;flex-direction:column;gap:12px}
+  .so-list[hidden]{display:none}
+  .so-scope{margin:0;font-size:12.5px;color:var(--text-faint);line-height:1.45}
+  .so-scope a{color:var(--text-dim)}
+  .si-opts .so-seg{flex-direction:column;align-items:stretch;gap:8px}
+  .si-opts .so-seg .mini-seg{align-self:flex-start;max-width:100%;overflow-x:auto}
+  .so-acts{display:flex;gap:8px;flex-wrap:wrap}
+  .so-acts[hidden]{display:none}
+  .so-every{display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line-soft);padding-top:12px}
+  .so-every h4{margin:0;font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint)}
+  .si-bar{background:var(--panel);border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:10px}
   .so-row{display:flex;align-items:center;gap:12px;justify-content:space-between;font-size:14px;font-weight:650}
   .so-l{display:flex;flex-direction:column;gap:2px;min-width:0}
   .so-l small{font-size:12px;color:var(--text-faint);font-weight:500;line-height:1.4}
   .so-amb{flex-direction:column;align-items:stretch;gap:9px}
+  @media (max-width:560px){ .so-seg{flex-direction:column;align-items:stretch;gap:8px} .so-seg .mini-seg{align-self:flex-start;max-width:100%;overflow-x:auto} }
   .so-amb .mini-seg{align-self:flex-start}
   .so-amb .amb-volrow{max-width:none}
   .amb-ctl{display:flex;flex-direction:column;gap:10px;align-items:flex-start;margin-top:8px}
@@ -915,6 +962,7 @@
   .amb-pl select{background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:5px 8px;font:inherit;font-size:12.5px}
   .so-tg{cursor:pointer}
   .so-voice{gap:8px}
+  .so-voice .so-l{flex:none}
   .so-voice select{flex:1;min-width:0;background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:7px 9px;font:inherit;font-size:13px}
   .so-voice[hidden]{display:none}
   input.sw{-webkit-appearance:none;appearance:none;width:42px;height:24px;border-radius:99px;background:var(--panel-3);position:relative;cursor:pointer;flex:none;transition:background .15s;margin:0}
@@ -928,12 +976,16 @@
   .so-ok{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);cursor:pointer;line-height:1.4}
   .so-ok input{accent-color:var(--pcol);width:17px;height:17px;margin-top:1px;flex:none}
   .si-other{font-size:12.5px;color:var(--stim);margin:0}
-  .si-go{min-height:52px;font-size:16px;margin-top:4px;background:var(--pcol);border-color:var(--pcol)}
+  .si-go{min-height:52px;font-size:16px;background:var(--pcol);border-color:var(--pcol)}
   .si-go:hover{background:var(--pcol)}
   .si-go svg.i{fill:currentColor;stroke:none}
   @media (max-width:880px){
     .si-grid{grid-template-columns:minmax(0,1fr)}
-    .si-opts{position:static;order:-1}
+    .si-side{display:contents}                     /* options first, Start last and always in reach */
+    .si-opts{order:-1}
+    .si-bar{order:2;position:sticky;bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 10px);z-index:5;
+      border:1px solid var(--line);box-shadow:0 -12px 32px -14px rgba(0,0,0,.85)}
+    body.has-player .si-bar{bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 84px)}
     .si-head{padding:20px}
   }
 
@@ -1012,9 +1064,15 @@
   .qt-vol svg.i{width:16px;height:16px;flex:none}
   .qt-vol input{margin:0}
 
+  /* rows of chips that scroll sideways fade out at an edge with more beyond it */
+  .efade.fade-r{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 40px),transparent)}
+  .efade.fade-l{-webkit-mask-image:linear-gradient(to left,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to left,#000 calc(100% - 40px),transparent)}
+  .efade.fade-l.fade-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to right,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
+
   /* ---------- search ---------- */
   .pill-ic{width:34px;padding:0;justify-content:center;color:var(--text-dim)}
   .pill-ic svg.i{width:18px;height:18px}
+  .pill-ic[aria-current="page"]{color:var(--text);background:var(--panel-2);border-color:var(--line)}
   .fd-back{position:fixed;inset:0;z-index:91;background:rgba(5,8,16,.62)}
   .fd-back[hidden],.fd[hidden]{display:none}
   .fd{
@@ -1062,7 +1120,27 @@
   .fd-hit{animation:fdhit 2.6s ease-out}
   @keyframes fdhit{0%,35%{box-shadow:0 0 0 3px var(--accent);background-color:color-mix(in srgb,var(--accent) 14%,transparent)}100%{box-shadow:0 0 0 3px transparent}}
   @media (prefers-reduced-motion:reduce){ .fd-hit{animation:none;outline:3px solid var(--accent);outline-offset:3px} }
-  @media (max-width:560px){ .pill-prac span{max-width:30vw} }
+  @media (max-width:560px){
+    .pill-prac span{max-width:30vw}
+    .top-actions:has(#tbPrac:not([hidden])) #tbSet{display:none}
+  }
+  @media (max-width:400px){ .top-actions:has(#tbPrac:not([hidden])) #tbSensorTxt{display:none} }
+
+  /* dimmed for sleep, when Settings asks for it: almost nothing lit */
+  .ses[data-dim="1"] .ses-run{--text:#5d6785;--text-dim:#4a536e;--text-faint:#3a4259}
+  .ses[data-dim="1"] .ses-stage{opacity:.35;transition:opacity 4s}
+  .ses[data-dim="1"] .ses-b,.ses[data-dim="1"] .ses-x,.ses[data-dim="1"] .lc,.ses[data-dim="1"] .qt[aria-pressed="true"]{background:#0e1424}
+  .ses[data-dim="1"] .ses-b.main{background:#1f2a48;color:#7f8bb0}
+  .ses[data-dim="1"] .ses-fill{opacity:.25}
+  body:has(.ses[data-dim="1"]:not([hidden])).immersive{background:#04060c}
+
+  /* ---------- settings ---------- */
+  .st{display:grid;gap:14px;max-width:760px;--pcol:var(--accent)}
+  .st-card{background:var(--panel);border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+  .st-card h2{font-size:17px;font-weight:780;letter-spacing:-.01em}
+  .st-note{margin:-6px 0 0;font-size:13px;color:var(--text-faint);line-height:1.45}
+  .st-own{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:12px;background:var(--panel-2);font-size:13.5px;color:var(--text-dim)}
+  .st-card .amb-seg{align-self:flex-start}
 
   /* body map */
   .bm{overflow:visible}
@@ -1236,6 +1314,9 @@
   .yb-name{flex:1;min-width:220px;display:flex;flex-direction:column;gap:6px;font-size:11.5px;font-weight:750;color:var(--text-faint);text-transform:uppercase;letter-spacing:.07em}
   .yb-name input{font:inherit;font-size:20px;font-weight:750;text-transform:none;letter-spacing:-.01em;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-width:0}
   .yb-name input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .yb-goal{display:flex;flex-direction:column;gap:6px;font-size:11.5px;font-weight:750;color:var(--text-faint);text-transform:uppercase;letter-spacing:.07em}
+  .yb-goal select{font:inherit;font-size:15px;font-weight:650;text-transform:none;letter-spacing:0;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 12px;min-height:48px}
+  @media (max-width:560px){ .yb-name{flex-basis:100%} .yb-goal{flex:1 1 0;min-width:0} }
   .yb-sum{display:flex;flex-direction:column;align-items:flex-end}
   .yb-sum b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
   .yb-sum span{font-size:12.5px;color:var(--text-faint)}
@@ -1347,6 +1428,8 @@
   <symbol id="i-nvc" viewBox="0 0 24 24"><path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4 3.5v-3.5H6.5a2 2 0 0 1-2-2z"/><path d="M12 13.4s-2.9-1.6-2.9-3.6a1.5 1.5 0 0 1 2.9-.6 1.5 1.5 0 0 1 2.9.6c0 2-2.9 3.6-2.9 3.6z"/></symbol>
   <symbol id="i-rain" viewBox="0 0 24 24"><path d="M7.2 14.8a3.9 3.9 0 0 1 .4-7.8 5.2 5.2 0 0 1 10 1.6 3.1 3.1 0 0 1-.4 6.2z"/><path d="M8.5 18l-.9 2.4M12.4 18l-.9 2.4M16.3 18l-.9 2.4"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.6" cy="10.6" r="6.4"/><path d="M15.4 15.4 20.5 20.5"/></symbol>
+  <symbol id="i-recover" viewBox="0 0 24 24"><rect x="3" y="7.5" width="15.5" height="9" rx="2.2"/><path d="M21 10.5v3"/><path d="M11.6 9.2 9.4 12h3.2l-2.2 2.8"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path d="M9.8 5.5 10.2 3h3.6l.4 2.5.9.3 2-1.4 2.5 2.5-1.4 2 .3.9 2.5.4v3.6l-2.5.4-.3.9 1.4 2-2.5 2.5-2-1.4-.9.3-.4 2.5h-3.6l-.4-2.5-.9-.3-2 1.4-2.5-2.5 1.4-2-.3-.9L3 13.8v-3.6l2.5-.4.3-.9-1.4-2 2.5-2.5 2 1.4z"/><circle cx="12" cy="12" r="3"/></symbol>
 </svg>
 
 <div class="app">
@@ -1370,6 +1453,7 @@
       <div class="top-actions">
         <a class="pill pill-prac" id="tbPrac" href="#practice" hidden><svg class="i" aria-hidden="true"><use href="#i-practice"/></svg><span id="tbPracTxt"></span></a>
         <button class="pill pill-ic" id="tbFind" aria-label="Search" title="Search (/)" aria-haspopup="dialog" aria-expanded="false" aria-keyshortcuts="/ Control+K"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></button>
+        <a class="pill pill-ic" id="tbSet" href="#settings" aria-label="Settings" title="Settings"><svg class="i" aria-hidden="true"><use href="#i-gear"/></svg></a>
         <a class="pill" id="tbSensor" href="#heart" data-state="off"><i class="dot hr-dot" aria-hidden="true"></i><span id="tbSensorTxt">Connect sensor</span></a>
       </div>
     </header>
@@ -1409,7 +1493,7 @@
 
         <div class="quick">
           <button class="qk" data-go="heart" style="--qc:var(--hr)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
-          <button class="qk" data-go="sounds" data-seg="prime" style="--qc:var(--stim)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-bolt"/></svg></span><b>Prime before work</b><span id="qkPrime">10 min of 14 Hz beta, then start work</span></button>
+          <button class="qk" data-go="sounds" data-seg="prime" style="--qc:var(--stim)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-bolt"/></svg></span><b>Custom primer</b><span id="qkPrime">10 min of 14 Hz beta, then start work</span></button>
           <button class="qk" data-go="sounds" data-seg="tracks" style="--qc:var(--relax)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg></span><b>Listen to a track</b><span id="qkTracks">12 tracks for sleep, calm, focus and tinnitus</span></button>
           <button class="qk" data-go="heart" style="--qc:var(--accent)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg></span><b id="qkSensorT">Heart sensor</b><span id="qkSensor">Not connected</span></button>
         </div>
@@ -1434,9 +1518,22 @@
       <!-- ============ PRACTICE ============ -->
       <section class="view" id="v-practice" aria-labelledby="viewTitle" hidden>
         <div class="pr-week" id="prWeek"></div>
-        <div class="pr-filt" id="prFilt" role="group" aria-label="Filter practices"></div>
+        <div class="pr-bar">
+          <div class="pr-filt" id="prFilt" role="group" aria-label="Goals"></div>
+          <button class="chip-b pr-fbtn" id="prFbtn" aria-expanded="false" aria-controls="prPanel"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg><span id="prFbtnTxt">Filters</span></button>
+        </div>
+        <div class="pr-panel" id="prPanel" hidden></div>
+        <p class="pr-legend">Evidence
+          <span><span class="strength" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>strong</span>
+          <span><span class="strength" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i></span>moderate</span>
+          <span><span class="strength" aria-hidden="true"><i class="on"></i><i></i><i></i></span>limited</span></p>
         <div id="prLib"></div>
         <p class="pr-note">These practices are for everyday stress, sleep and focus, not a treatment for any condition. Stop anything that makes you dizzy, breathless or distressed, and check with a clinician first if you have a heart, lung or seizure condition, are pregnant, or are in treatment for anxiety, trauma or depression. The research behind each one is under its Evidence button and in <a href="#l-practices">Learn</a>.</p>
+      </section>
+
+      <!-- ============ SETTINGS ============ -->
+      <section class="view" id="v-settings" aria-labelledby="viewTitle" hidden>
+        <div class="st" id="stBody"></div>
       </section>
 
       <!-- ============ YOGA BUILDER ============ -->
@@ -1444,6 +1541,9 @@
         <a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Practices</a>
         <div class="yb-head">
           <label class="yb-name"><span>Routine name</span><input id="ybName" maxlength="40" placeholder="My routine" autocomplete="off"></label>
+          <label class="yb-goal"><span>What it's for</span><select id="ybGoal">
+            <option value="">Any time</option><option value="sleep">Sleep</option><option value="calm">Calm</option><option value="focus">Focus</option>
+            <option value="energy">Energy</option><option value="recover">Recover</option><option value="reflect">Reflect</option></select></label>
           <div class="yb-sum"><b id="ybTime">00:00</b><span id="ybCount">No poses yet</span></div>
         </div>
         <div class="yb-grid">
@@ -1455,7 +1555,8 @@
           </section>
           <section class="yb-lib" aria-label="Asana library">
             <div class="yb-sh"><h2>Movement library</h2><span id="ybLibN"></span></div>
-            <div class="pr-filt" id="ybCats" role="group" aria-label="Filter poses"></div>
+            <div class="pr-filt" id="ybCats" role="group" aria-label="Kind of movement"></div>
+            <div class="pr-filt yb-pos" id="ybPos" role="group" aria-label="Starting position"></div>
             <ul class="yb-tiles" id="ybLib"></ul>
           </section>
         </div>
@@ -1662,8 +1763,8 @@
       <section class="view" id="v-sounds" aria-labelledby="viewTitle" hidden>
         <div class="seg" role="tablist" aria-label="Sound sessions">
           <button class="seg-b" role="tab" id="sg-tracks" data-seg="tracks" aria-controls="sp-tracks" aria-selected="true">Tracks</button>
-          <button class="seg-b" role="tab" id="sg-prime" data-seg="prime" aria-controls="sp-prime" aria-selected="false" tabindex="-1">Prime, then work</button>
-          <button class="seg-b" role="tab" id="sg-build" data-seg="build" aria-controls="sp-build" aria-selected="false" tabindex="-1">Build your own</button>
+          <button class="seg-b" role="tab" id="sg-prime" data-seg="prime" aria-controls="sp-prime" aria-selected="false" tabindex="-1">Custom primer</button>
+          <button class="seg-b" role="tab" id="sg-build" data-seg="build" aria-controls="sp-build" aria-selected="false" tabindex="-1">Beat builder</button>
         </div>
 
         <div class="notice-strip">
@@ -1674,11 +1775,13 @@
 
         <div class="seg-panel" id="sp-tracks" role="tabpanel" aria-labelledby="sg-tracks">
           <div class="toolbar" id="tracks">
-            <div class="tabs" role="tablist" aria-label="Filter tracks">
-              <button class="tab" role="tab" aria-selected="true" data-filter="all">All</button>
-              <button class="tab" role="tab" aria-selected="false" data-filter="relax">Relaxation &amp; sleep</button>
-              <button class="tab" role="tab" aria-selected="false" data-filter="stim">Stimulation &amp; focus</button>
-              <button class="tab" role="tab" aria-selected="false" data-filter="ther">Tinnitus</button>
+            <div class="tabs" role="group" aria-label="Filter tracks by goal">
+              <button class="tab" aria-pressed="true" data-filter="all">All</button>
+              <button class="tab" aria-pressed="false" data-filter="sleep">Sleep</button>
+              <button class="tab" aria-pressed="false" data-filter="calm">Calm</button>
+              <button class="tab" aria-pressed="false" data-filter="focus">Focus</button>
+              <button class="tab" aria-pressed="false" data-filter="recover">Recover</button>
+              <button class="tab" aria-pressed="false" data-filter="tinnitus">Tinnitus</button>
             </div>
             <div class="count" id="count"></div>
           </div>
@@ -2469,7 +2572,7 @@
   var TRACKS = [
     /* ---------- RELAXATION ---------- */
     {
-      id: "sleep-descent", cat: "relax", band: "Delta", name: "Deep Sleep Descent",
+      id: "sleep-descent", cat: "relax", band: "Delta", name: "Delta Sleep",
       carrier: 200, beat: 3, rampFrom: 6, minutes: 30, strength: 3,
       desc: "Starts in theta and slides down into a 3 Hz delta beat, the frequency used in the sleep-stage trial.",
       ev: "A 3 Hz binaural beat significantly increased delta activity and lengthened stage-3 (deep) sleep versus control nights. The descent from 6 Hz mirrors the common protocol of easing through theta before settling into delta.",
@@ -3030,7 +3133,7 @@
   var curFilter = "all";
   function render(filter) {
     curFilter = filter;
-    var list = TRACKS.filter(function (t) { return filter === "all" || t.cat === filter; });
+    var list = TRACKS.filter(function (t) { return filter === "all" || t.goal === filter; });
     var html = list.map(function (t) {
       var beatTxt = typeof t.rampFrom === "number"
         ? t.rampFrom + "→" + t.beat + " Hz"
@@ -3087,8 +3190,8 @@
   var tabs = document.querySelectorAll(".tab");
   for (var i = 0; i < tabs.length; i++) {
     tabs[i].addEventListener("click", function (e) {
-      for (var j = 0; j < tabs.length; j++) tabs[j].setAttribute("aria-selected", "false");
-      e.currentTarget.setAttribute("aria-selected", "true");
+      for (var j = 0; j < tabs.length; j++) tabs[j].setAttribute("aria-pressed", "false");
+      e.currentTarget.setAttribute("aria-pressed", "true");
       render(e.currentTarget.dataset.filter);
     });
   }
@@ -5402,8 +5505,8 @@
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
 
-  var VIEWS = ["home", "practice", "breathe", "sounds", "heart", "learn", "session", "yoga"];
-  var V_TITLE = { home: "Home", practice: "Practice", breathe: "Breathe", sounds: "Sounds", heart: "Heart", learn: "Learn", session: "Practice", yoga: "Build your own" };
+  var VIEWS = ["home", "practice", "breathe", "sounds", "heart", "learn", "session", "yoga", "settings"];
+  var V_TITLE = { home: "Home", practice: "Practice", breathe: "Breathe", sounds: "Sounds", heart: "Heart", learn: "Learn", session: "Practice", yoga: "Routine builder", settings: "Settings" };
   var ALIAS = { prime: ["sounds", "prime"], tracks: ["sounds", "tracks"], builder: ["sounds", "build"] };
   var BASE_TITLE = document.title;
   var curView = "";
@@ -5428,11 +5531,15 @@
     if (v !== curView) window.scrollTo(0, 0);
     curView = v;
     if (v === "home") homeRefresh();
-    if (v === "practice") pRenderWeek();
+    if (v === "practice") pRenderLib();               // your routines may have changed
+    if (v === "settings") stRender();
+    var gear = $("#tbSet");
+    if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
     if (v === "breathe") setTimeout(sizeCanvas, 0);
     if (v !== "session" && P.state === "done") P.state = "idle";
     pImmersive();
     pPill();
+    setTimeout(edgeFadeAll, 0);                         // widths are known once the view shows
   }
 
   function goView(v, seg) {
@@ -5473,6 +5580,21 @@
     if (t.closest("#sPrev, #sPlay, #sNext")) return e.code === "Space";
     return !!t.closest('input, select, textarea, button, a[href], summary, [role="button"], [role="radio"], [role="tab"], [contenteditable]');
   }
+
+  /* ----- rows of chips that scroll sideways fade out at an edge with more beyond it ----- */
+  function edgeFade(el) {
+    if (!el) return;
+    el.classList.add("efade");
+    var upd = function () {
+      var max = el.scrollWidth - el.clientWidth;
+      el.classList.toggle("fade-l", el.scrollLeft > 2);
+      el.classList.toggle("fade-r", max - el.scrollLeft > 2);
+    };
+    if (!el.efade) { el.efade = upd; el.addEventListener("scroll", upd, { passive: true }); }
+    upd();
+  }
+  var EDGE_ROWS = ["#prFilt", "#bPats", ".toc", "#tracks .tabs", "#ybCats", "#ybPos", ".si-len"];
+  function edgeFadeAll() { EDGE_ROWS.forEach(function (q) { document.querySelectorAll(q).forEach(edgeFade); }); }
 
   /* ----- Sounds: Tracks / Prime / Build ----- */
   function segPick(seg, focus) {
@@ -5561,7 +5683,7 @@
     } else bSetT("#qkFind", "A 10-minute test with a heart sensor");
     var c = primeCfg();
     bSetT("#qkPrime", c.minutes + " min of " + c.beat + " Hz " + bandFor(c.beat).name.toLowerCase() + ", then start work");
-    bSetT("#qkTracks", TRACKS.length + " tracks for sleep, calm, focus and tinnitus");
+    bSetT("#qkTracks", TRACKS.length + " tracks for sleep, calm, focus, recovery and tinnitus");
 
     var last = null;
     try { last = JSON.parse(store.get("lastSummary") || "null"); } catch (e) {}
@@ -5822,6 +5944,8 @@
       }).catch(function () {});
     }
 
+    var fadeT = 0;
+    window.addEventListener("resize", function () { clearTimeout(fadeT); fadeT = setTimeout(edgeFadeAll, 150); });
     appInit();
     ambInit();
     qInit();
@@ -6172,8 +6296,11 @@
   ];
   var ASANA = {};
   ASANAS.forEach(function (a) { ASANA[a.id] = a; });
-  var ACATS = [["all", "All"], ["standing", "Standing"], ["balance", "Balance"], ["fours", "All fours"], ["seated", "Seated"], ["lying", "Lying"], ["rest", "Rest"],
-    ["mobility", "Mobility"], ["capoeira", "Capoeira"]];
+  // the library filters by two things: what kind of movement, and the position it starts from
+  var A_TYPES = [["all", "All"], ["yoga", "Yoga poses"], ["stretch", "Stretches"], ["mobility", "Mobility"], ["capoeira", "Capoeira"]];
+  var A_POSES = [["all", "Any position"], ["stand", "Standing"], ["fours", "All fours"], ["seat", "Seated"], ["lie", "Lying"]];
+  function aType(a) { return a.cat === "capoeira" ? "capoeira" : a.cat === "mobility" ? (a.move ? "mobility" : "stretch") : "yoga"; }
+  function aPos(a) { return a.pos === "supine" || a.pos === "prone" ? "lie" : a.pos; }
 
   /* Moving between positions gets a short spoken transition. */
   var TRANS = {
@@ -7028,7 +7155,7 @@
   }
   /* Practices that end in sleep or are tapping already don't offer it. */
   function tapOffered(d) {
-    return !d.tapping && !d.nap && !d.selfPaced && d.tags.indexOf("sleep") < 0;
+    return !d.tapping && !d.nap && !d.selfPaced && !pSleepy(d);
   }
   function tapOn(d) { return tapOffered(d) && store.get("pTap." + d.id) === "1"; }
   /* ------------------------- guided practices: content -------------------------
@@ -7223,7 +7350,7 @@
     return [
       G(45, "How it works", ["Get comfortable in bed and close your eyes.",
         "You'll hear or see a simple word every few seconds. Picture that thing in detail: its colour, its size, where it is.",
-        "When the next word comes, let the last one go, and picture each word on its own."], { vis: "glow" }),
+        "When the next word comes, let the last one go, and picture each word on its own."], { vis: "glow", sleepy: true }),
       Sh(min * 60 - 45, "Picture each word")
     ];
   }
@@ -7275,7 +7402,7 @@
   function yogaSet(id) { for (var i = 0; i < YOGA_SETS.length; i++) if (YOGA_SETS[i].id === id) return YOGA_SETS[i]; return null; }
   function yogaPractice(id, o) {
     var set = yogaSet(id);
-    return ext({ id: id, yoga: id, group: "move", strength: 2, tone: "relax", voice: true, name: set.name,
+    return ext({ id: id, yoga: id, strength: 2, tone: "relax", voice: true, name: set.name,
       build: function () { return yogaSteps(set.items, set); }, ev: YOGA_EV, cite: "Pascoe et al. 2017" }, o);
   }
 
@@ -7283,11 +7410,11 @@
   var PRACTICES = [
     /* ===== combined programs ===== */
     {
-      id: "sleep-descent", group: "program", tags: ["program", "sleep"], name: "Sleep Descent", min: 30, strength: 2,
+      id: "sleep-descent", name: "Sleep Descent", min: 30, strength: 2,
       tone: "ther", lie: true, sensor: "optional",
-      blurb: "The Deep Sleep Descent beat with a slowing, long-exhale breath that fades out, then a short body release while the beat settles into delta.",
+      blurb: "The Delta Sleep beat with a slowing, long-exhale breath that fades out, then a short body release while the beat settles into delta.",
       parts: "Slow breathing 6 → 4.6 a minute · body release · drift · 6 → 3 Hz binaural",
-      audio: { name: "Deep Sleep Descent", band: "Theta → Delta", carrier: 200, pts: [[0, 6], [1200, 3], [1800, 3]], fade: 120, cat: "relax" },
+      audio: { name: "Delta Sleep", band: "Theta → Delta", carrier: 200, pts: [[0, 6], [1200, 3], [1800, 3]], fade: 120, cat: "relax" },
       build: function () {
         return [
           G(60, "Settle in", ["Lie down with the lights off and your headphones comfortable. Set the volume low, just above hearing.",
@@ -7298,11 +7425,11 @@
               lines: [[2, "Breathe in through the nose as the tone rises, and out slowly as it falls."],
                 [180, "The breaths are getting longer. If it ever feels like effort, breathe a little faster. Ease matters more than the count."]] }),
           Br(180, "The guide fades", { inh: 5, sip: 0, hold: 0, exh: 8, rest: 0 },
-            { cueFade: [1, 0], lines: [[0, "The guide will slowly fade. Keep this slow rhythm on your own."]] }),
+            { cueFade: [1, 0], sleepy: true, lines: [[0, "The guide will slowly fade. Keep this slow rhythm on your own."]] }),
           G(300, "Body release", [[0, "Let your feet and legs grow heavy."], [40, "Your hips and lower back sink into the bed."],
             [80, "Your belly is soft, rising and falling by itself."], [120, "Your hands and arms are heavy and warm."],
             [160, "Shoulders drop. The neck is long."], [200, "Your jaw loosens, your eyes rest, your forehead is smooth."],
-            [250, "The whole body heavy, warm and still."]], { body: ["all"], quiet: true }),
+            [250, "The whole body heavy, warm and still."]], { body: ["all"], quiet: true, sleepy: true }),
           Dr(780, "Drift", [[0, "Rest now, and let the sound carry you. It fades out by itself."]])
         ];
       },
@@ -7311,7 +7438,7 @@
       cite: "Tsai et al. 2015 · Van Diest et al. 2014 · Edinger et al. 2021 (AASM) · Jirakittayakorn & Wongsawat 2018"
     },
     {
-      id: "calm-reset", group: "program", tags: ["program", "calm"], name: "Calm Reset", min: 10, strength: 2,
+      id: "calm-reset", name: "Calm Reset", min: 10, strength: 2,
       tone: "relax", sensor: "optional",
       blurb: "For a stressful moment: cyclic sighs to bring arousal down fast, then even breathing at your resonance pace, under an alpha-to-theta beat.",
       parts: "Cyclic sighs · resonance breathing · 10 → 6 Hz binaural",
@@ -7333,7 +7460,7 @@
       cite: "Balban et al. 2023 · Laborde et al. 2022 · Garcia-Argibay et al. 2019 · Fincham et al. 2023 (RCT)"
     },
     {
-      id: "coherence", group: "program", tags: ["program", "calm"], name: "Heart Coherence", min: 15, strength: 2,
+      id: "coherence", name: "Heart Coherence", min: 15, strength: 2,
       tone: "relax", sensor: "best", anaStyle: "heart",
       blurb: "Heart-focused breathing at your resonance pace with live coherence, over a steady 6 Hz theta beat, the frequency tied to parasympathetic recovery.",
       parts: "Heart-focused resonance breathing · coherence feedback · 6 Hz binaural",
@@ -7356,7 +7483,7 @@
       cite: "Lehrer & Gevirtz 2014 · McCraty et al. 2009 · McConnell et al. 2014"
     },
     {
-      id: "focus-primer", group: "program", tags: ["program", "focus"], name: "Focus Primer", min: 13, strength: 2,
+      id: "focus-primer", name: "Focus Primer", min: 13, strength: 2,
       tone: "stim", sensor: "optional",
       blurb: "Three minutes of resonance breathing to steady you, then ten of 16 Hz beta while you set your intention. Start work when the bell rings.",
       parts: "Resonance breathing · intention · 10 → 16 Hz binaural · start cue",
@@ -7378,7 +7505,7 @@
       cite: "Garcia-Argibay et al. 2019 · Lane et al. 1998 · Prinsloo et al. 2011"
     },
     {
-      id: "nsdr", group: "program", tags: ["program", "calm", "sleep", "mind"], name: "Body Scan + Theta", min: 20, strength: 2,
+      id: "nsdr", name: "Body Scan + Theta", min: 20, strength: 2,
       tone: "relax", lie: true, sensor: "optional",
       blurb: "A 20-minute guided body scan over a 6 Hz theta beat: a deep rest in the daytime (sometimes called NSDR), or a way into sleep.",
       parts: "Guided body scan · 6 Hz binaural",
@@ -7389,7 +7516,7 @@
       cite: "Gan et al. 2022 · Moszeik et al. 2025 · Jirakittayakorn & Wongsawat 2017"
     },
     {
-      id: "recovery", group: "program", tags: ["program", "calm"], name: "Exercise Recovery", min: 10, strength: 2,
+      id: "recovery", name: "Exercise Recovery", min: 10, strength: 2,
       tone: "relax", sensor: "best",
       blurb: "After training: slow breathing at six a minute with a long exhale, under the theta beat from the post-exercise HRV study. Watch your heart rate come down.",
       parts: "Slow long-exhale breathing · 6 Hz binaural · heart-rate drop",
@@ -7409,7 +7536,7 @@
     },
 
     {
-      id: "heart-led", group: "program", tags: ["program", "calm"], name: "Heart-Led Beats", exp: true, lengths: [15, 20, 30], min: 20, strength: 1,
+      id: "heart-led", name: "Heart-Led Beats", exp: true, lengths: [15, 20, 30], min: 20, strength: 1,
       sensor: "best", sensorWhy: "the beat follows it; without one, it runs a scripted descent",
       audio: { dyn: true, start: 10, cat: "relax", band: "Alpha to theta, led by your heart", name: "Heart-led beat", carrier: 200, fade: 20 },
       blurb: "An experiment in biofeedback through sound: the binaural beat follows your heart, gliding from alpha toward theta as your heart rate settles and its rhythm loosens.",
@@ -7421,7 +7548,7 @@
 
     /* ===== meditation and mindfulness ===== */
     {
-      id: "body-scan", group: "mind", tags: ["mind", "calm", "sleep"], name: "Body Scan", lengths: [10, 20, 30], min: 10, strength: 1,
+      id: "body-scan", name: "Body Scan", lengths: [10, 20, 30], min: 10, strength: 1,
       tone: "relax", lie: true, voice: true,
       blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation exactly as it is.",
       build: function (min) { return bodyScan(min, "wake"); },
@@ -7430,7 +7557,7 @@
       cite: "Gan et al. 2022 · Goyal et al. 2014"
     },
     {
-      id: "anapana", group: "mind", tags: ["mind", "calm"], name: "Anapana", lengths: [5, 10, 20, 30, 60], min: 10, strength: 2,
+      id: "anapana", name: "Anapana", lengths: [5, 10, 20, 30, 60], min: 10, strength: 2,
       tone: "relax",
       blurb: "Breath observation in the Vipassana tradition: the area of attention narrows step by step, from the triangle around the nose and upper lip to one small point beneath the nostrils.",
       build: function (min) { return anapana(min); },
@@ -7439,7 +7566,7 @@
       cite: "Szekeres & Wertheim 2015 · Telles et al. 2014 · Goyal et al. 2014"
     },
     {
-      id: "metta", group: "mind", tags: ["mind", "calm"], name: "Loving-Kindness", lengths: [10, 15], min: 10, strength: 2,
+      id: "metta", name: "Loving-Kindness", lengths: [10, 15], min: 10, strength: 2,
       tone: "stim",
       blurb: "Silently offer simple wishes of safety, health and ease to yourself, then to others, widening the circle step by step.",
       build: function (min) { return lovingKindness(min); },
@@ -7448,7 +7575,7 @@
       cite: "Zeng et al. 2015"
     },
     {
-      id: "self-compassion", group: "mind", tags: ["mind", "calm"], name: "Self-Compassion Break", min: 5, strength: 2,
+      id: "self-compassion", name: "Self-Compassion Break", min: 5, strength: 2,
       tone: "stim",
       blurb: "Three short steps for a hard moment: name it, remember that others feel it too, and offer yourself some kindness.",
       build: function () {
@@ -7469,7 +7596,7 @@
       cite: "Ferrari et al. 2019"
     },
     {
-      id: "grounding", group: "mind", tags: ["mind", "calm"], name: "5-4-3-2-1 Grounding", min: 5, strength: 1,
+      id: "grounding", name: "5-4-3-2-1 Grounding", min: 5, strength: 1,
       tone: "relax",
       blurb: "When anxiety spirals: find 5 things you can see, 4 you can hear, 3 you can feel, 2 you can smell and 1 you can taste. Tap each one.",
       build: function () {
@@ -7488,7 +7615,7 @@
       cite: "Clinical practice; no direct trials"
     },
     {
-      id: "walking", group: "move", tags: ["move", "mind", "calm"], name: "Walking Meditation", min: 10, strength: 1,
+      id: "walking", name: "Walking Meditation", min: 10, strength: 1,
       tone: "relax", voice: true,
       blurb: "Walk slowly and attend to each step: lifting, moving, placing. Phone in your pocket, voice guidance on.",
       build: function () {
@@ -7510,7 +7637,7 @@
 
     /* ===== reflection ===== */
     {
-      id: "nvc-self", group: "reflect", tags: ["reflect", "calm"], name: "Self-Empathy (NVC)", reflect: true, selfPaced: true, est: 15, strength: 1, tone: "ther",
+      id: "nvc-self", name: "Self-Empathy (NVC)", reflect: true, selfPaced: true, est: 15, strength: 1, tone: "ther",
       blurb: "Nonviolent communication turned inward: write what happened, hear out your judgments and question the rules behind them, then find the feelings and needs underneath, and a request you can act on.",
       build: function () { return nvcSelfSteps(); },
       how: "Self-paced, with short pauses between the parts: what happened, written the way a camera would record it; your judgments, uncensored; one of the rules behind them, questioned; where you feel it in your body; your feelings, picked from a feelings wheel of 88 words in 11 families (or a plain list, or your own words), and your needs; a guess at the other person's; and a request. Gentle checks point out words that carry a judgment, and feelings that are really interpretations of what someone did. You end with your own NVC sentence.",
@@ -7518,7 +7645,7 @@
       cite: "Epinat-Duclos et al. 2021 · Torre & Lieberman 2018 · Kashdan et al. 2015 · Frattaroli 2006"
     },
     {
-      id: "nvc-choose", group: "reflect", tags: ["reflect"], name: "From Should to Choose", reflect: true, selfPaced: true, est: 10, strength: 1, tone: "ther",
+      id: "nvc-choose", name: "From Should to Choose", reflect: true, selfPaced: true, est: 10, strength: 1, tone: "ther",
       blurb: "List what you do because you feel you have to, then check each one: would you still choose it, and for what? An exercise from nonviolent communication for looking at the rules you live by.",
       build: function () { return nvcChooseSteps(); },
       how: "List the things you feel you have to, should or must do. Then for each, decide whether you'd still choose it, and why, picking from common reasons or writing your own. Reasons that are really pressure, like money, approval, or avoiding guilt, shame or punishment, are marked. You end with your list rewritten as \u201CI choose to\u2026 because I want\u2026\u201D, and the ones you'd like to change.",
@@ -7528,7 +7655,7 @@
 
     /* ===== relaxation and sleep ===== */
     {
-      id: "pmr", group: "relax", tags: ["calm", "sleep"], name: "Progressive Muscle Relaxation", min: 12, strength: 2,
+      id: "pmr", name: "Progressive Muscle Relaxation", min: 12, strength: 2,
       tone: "relax", lie: true, voice: true,
       blurb: "Tense each muscle group for a few seconds, then let go and feel the difference. Fourteen groups, hands to feet.",
       build: function () {
@@ -7545,7 +7672,7 @@
       cite: "Toussaint et al. 2021 · Edinger et al. 2021 (AASM)"
     },
     {
-      id: "shuffle", group: "relax", tags: ["sleep"], name: "Cognitive Shuffle", lengths: [10, 20], min: 10, strength: 1,
+      id: "shuffle", name: "Cognitive Shuffle", lengths: [10, 20], min: 10, strength: 1,
       tone: "ther", lie: true,
       blurb: "For a racing mind at bedtime: picture a series of random, unrelated things, one every few seconds, until sleep takes over.",
       build: function (min) { return shuffle(min); },
@@ -7556,7 +7683,7 @@
 
     /* ===== breathwork (pranayama) ===== */
     {
-      id: "nadi", group: "breath", tags: ["breath", "calm"], name: "Nadi Shodhana", lengths: [5, 10], min: 5, strength: 2,
+      id: "nadi", name: "Nadi Shodhana", lengths: [5, 10], min: 5, strength: 2,
       tone: "relax", sensor: "optional",
       blurb: "Alternate nostril breathing: in through one side, out through the other, switching each breath. The guide shows which nostril.",
       build: function (min) { return nadi(min); },
@@ -7565,7 +7692,7 @@
       cite: "Telles et al. 2014 · Raghuraj et al. 1998"
     },
     {
-      id: "bhramari", group: "breath", tags: ["breath", "calm", "sleep"], name: "Bhramari", min: 5, strength: 2,
+      id: "bhramari", name: "Bhramari", min: 5, strength: 2,
       tone: "relax", sensor: "optional",
       blurb: "Humming bee breath: a quiet breath in, then a long, low hum on the way out. Simple, soothing, and easy to do with eyes closed.",
       build: function () {
@@ -7584,7 +7711,7 @@
       cite: "Weitzberg & Lundberg 2002 · Woo & Kim 2025"
     },
     {
-      id: "ujjayi", group: "breath", tags: ["breath", "calm"], name: "Ujjayi", min: 6, strength: 2,
+      id: "ujjayi", name: "Ujjayi", min: 6, strength: 2,
       tone: "relax", sensor: "optional",
       blurb: "Ocean breath at six a minute, with the soft throat sound on the out-breath only, the version that worked best for beginners.",
       build: function () {
@@ -7603,7 +7730,7 @@
       cite: "Mason et al. 2013"
     },
     {
-      id: "dirga", group: "breath", tags: ["breath", "calm"], name: "Three-Part Breath", min: 5, strength: 1,
+      id: "dirga", name: "Three-Part Breath", min: 5, strength: 1,
       tone: "relax", sensor: "optional",
       blurb: "Dirga pranayama: fill the belly, then the ribs, then the chest, and empty in reverse. A slow, full breath that teaches diaphragmatic breathing.",
       build: function () {
@@ -7619,7 +7746,7 @@
       cite: "Laborde et al. 2022 · Van Diest et al. 2014"
     },
     {
-      id: "kapalabhati", group: "breath", tags: ["breath", "focus"], name: "Kapalabhati", min: 6, strength: 1,
+      id: "kapalabhati", name: "Kapalabhati", min: 6, strength: 1,
       tone: "stim", confirm: true,
       blurb: "Skull-shining breath: short, sharp exhales from the belly with passive inhales, in three rounds. An energising breath, for a lift in alertness.",
       caution: "Skip this one if you are pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks. Do it seated, on an empty stomach, and stop if you feel dizzy or tingly.",
@@ -7643,7 +7770,7 @@
       cite: "Raghuraj et al. 1998 · Fincham et al. 2023"
     },
     {
-      id: "wim-hof", group: "breath", tags: ["breath", "focus"], name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1,
+      id: "wim-hof", name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1,
       tone: "stim", confirm: true, sensor: "optional", open: true,
       variant: { key: "breaths", label: "Breaths per round", opts: [[30, "30"], [40, "40"]], def: 30 },
       blurb: "Rounds of deep, full breaths, then a relaxed hold on empty lungs for as long as is comfortable, then one recovery breath held for 15 seconds.",
@@ -7655,7 +7782,7 @@
     },
 
     {
-      id: "tapping", group: "relax", tags: ["calm"], name: "Tapping", tapping: true, open: true, min: 7, strength: 1, tone: "ther",
+      id: "tapping", name: "Tapping", tapping: true, open: true, min: 7, strength: 1, tone: "ther",
       variant: { key: "rounds", label: "Rounds", opts: [[2, "2"], [3, "3"]], def: 2 },
       blurb: "Rate what's bothering you, then tap nine acupressure points with your fingertips while saying a short phrase. Two or three rounds, then rate it again.",
       caution: "Tapping isn't a treatment for trauma or a mental-health condition. If strong feelings or memories come up, stop, breathe slowly and look around the room, and talk to a professional if it keeps happening. Tap gently.",
@@ -7666,7 +7793,7 @@
     },
 
     {
-      id: "power-nap", group: "relax", tags: ["calm"], name: "Power Nap", nap: true, open: true, lengths: [10, 20, 30], min: 20, strength: 2,
+      id: "power-nap", name: "Power Nap", nap: true, open: true, lengths: [10, 20, 30], min: 20, strength: 2,
       lenFmt: function (m) { return m + " min nap"; },
       sensor: "best", sensorWhy: "times the nap from when your heart rate says you've dozed off", lie: true, voice: true,
       audio: { dyn: true, start: 6, cat: "relax", band: "Theta to delta, then up to alpha to wake", name: "Nap beat", carrier: 180, fade: 6 },
@@ -7679,25 +7806,25 @@
     },
 
     /* ===== movement ===== */
-    yogaPractice("standing-flow", { tags: ["move", "calm", "focus"], stand: true,
+    yogaPractice("standing-flow", { stand: true,
       blurb: "Nine standing poses, held for a few breaths each: mountain, reach, side bends, forward fold, chair, the warriors, triangle and tree." }),
-    yogaPractice("standing-reset", { tags: ["move", "focus"], stand: true,
+    yogaPractice("standing-reset", { stand: true,
       blurb: "A five-minute break from the desk: mountain, reach, side bends, a forward fold and chair." }),
-    yogaPractice("morning-yoga", { tags: ["move", "focus"], stand: true,
+    yogaPractice("morning-yoga", { stand: true,
       blurb: "A brisk sequence to wake the body: reach and fold, plank, downward dog, low lunges, warrior II and goddess." }),
-    yogaPractice("back-hips", { tags: ["move", "calm"], lie: true,
+    yogaPractice("back-hips", { lie: true,
       blurb: "Gentle floor work for a stiff back and tight hips: cat and cow, child's pose, lunges, sphinx, bridge and a twist, ending in rest." }),
-    yogaPractice("evening-floor", { tags: ["move", "calm", "sleep"], lie: true,
+    yogaPractice("evening-floor", { lie: true,
       blurb: "A slow seated and lying sequence for the evening, ending with legs up the wall and a long rest." }),
-    yogaPractice("balance-yoga", { tags: ["move", "focus"], stand: true,
+    yogaPractice("balance-yoga", { stand: true,
       blurb: "Tree, warrior III and dancer, with mountain and chair to steady you. Keep a wall within reach." }),
-    yogaPractice("morning-stretch", { tags: ["move", "focus"], stand: true, strength: 1,
+    yogaPractice("morning-stretch", { stand: true, strength: 1,
       blurb: "Ten minutes to loosen up after sleep: neck rolls, arm circles, twists, hip circles, squats, then calf, quad and chest stretches.",
       ev: STRETCH_EV, cite: "Montero-Marín et al. 2013" }),
-    yogaPractice("evening-stretch", { tags: ["move", "calm", "sleep"], lie: true, strength: 1,
+    yogaPractice("evening-stretch", { lie: true, strength: 1,
       blurb: "Slow floor stretches to let the day go: neck and side stretches, cat-cow, hips and hamstrings, a twist and a long rest.",
       ev: STRETCH_EV, cite: "Montero-Marín et al. 2013" }),
-    yogaPractice("solo-capoeira", { tags: ["move", "focus"], stand: true, room: true, rhythm: true, strength: 1, tone: "stim",
+    yogaPractice("solo-capoeira", { stand: true, room: true, rhythm: true, strength: 1, tone: "stim",
       blurb: "A warm-up, then the ginga, dodges, the negativa and two kicks to a berimbau, a free ginga to play with, and a cool-down stretch.",
       caution: "Capoeira asks a lot of the knees, hips and ankles. Squat and kick only as deep and as high as is comfortable, keep clear space around you, and skip the moves that hurt.",
       ev: CAPO_EV, cite: "Köhler et al. 2025" })
@@ -7714,16 +7841,80 @@
     "sock,spoon,squirrel,star,strawberry,stream,sunflower,swan,swing,table,teapot,tent,tomato,towel,tractor,train,tree,tulip,turtle," +
     "umbrella,valley,vase,violin,wagon,waterfall,whale,wheat,window,windmill,wool,yacht,zebra").split(",");
 
-  var GROUPS = [
-    { id: "program", name: "Programs", lede: "Binaural beats, paced breathing and your heart data in one session." },
-    { id: "mind", name: "Meditation", lede: "Attention training: the body, the breath, kindness and the senses." },
-    { id: "reflect", name: "Reflection", lede: "Writing and self-inquiry: question your judgments, and find the feelings and needs beneath them." },
-    { id: "breath", name: "Breathwork", lede: "Pranayama, guided phase by phase." },
-    { id: "relax", name: "Relaxation and sleep", lede: "For stress, winding down and falling asleep." },
-    { id: "move", name: "Movement", lede: "Yoga, stretching and capoeira from the movement library, your own routines, and walking." }
+  /* ------------------------------ categories ------------------------------
+     Every practice, breathing pattern and track has one goal, what it's for, so it has one home
+     in the library. A few also carry "also good for" goals, shown as such. How it works (the
+     method), how long it takes, the posture and what it needs are separate facets for filtering.
+     Within each goal the lists below are in the order its section shows them.
+  -------------------------------------------------------------------------- */
+
+  var GOALS = [
+    { id: "sleep", name: "Sleep", lede: "Winding down and falling asleep at night.", icon: "moon" },
+    { id: "calm", name: "Calm", lede: "Bringing stress or anxiety down, now.", icon: "breathe" },
+    { id: "focus", name: "Focus", lede: "Concentrating on a task, or training attention.", icon: "target" },
+    { id: "energy", name: "Energy", lede: "Waking up the body and mind.", icon: "bolt" },
+    { id: "recover", name: "Recover", lede: "Resting in the day, or recovering after training.", icon: "recover" },
+    { id: "reflect", name: "Reflect", lede: "Feelings, needs and kindness, toward yourself and others.", icon: "nvc" }
   ];
-  var FILTERS = [["all", "All"], ["program", "Programs"], ["sleep", "Sleep"], ["calm", "Calm"], ["focus", "Focus"],
-    ["mind", "Meditation"], ["reflect", "Reflection"], ["breath", "Breathwork"], ["move", "Movement"]];
+  var METHODS = [["breath", "Breathing", "breathe"], ["meditate", "Meditation", "practice"], ["move", "Movement", "move"],
+    ["relax", "Relaxation", "moon"], ["sound", "Sound", "sounds"], ["write", "Writing", "nvc"], ["program", "Program", "spark"]];
+  var POSTURES = [["sit", "Sitting"], ["lie", "Lying"], ["stand", "Standing"], ["walk", "Walking"]];
+  var NEEDS = [["none", "Just the phone"], ["phones", "Headphones"], ["sensor", "Heart sensor"], ["space", "Room to move"]];
+
+  // [item, method, postures]: practices by id, b: a breathing pattern, t: a track, x: a tool
+  var CATS = {
+    sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
+      ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
+    calm: [["calm-reset", "program", "sit"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
+      ["coherence", "program", "sit"], ["grounding", "meditate", "sit"], ["tapping", "relax", "sit"],
+      ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
+      ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
+      ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
+      ["t:preop-calm", "sound", "lie"]],
+    focus: [["focus-primer", "program", "sit"], ["anapana", "meditate", "sit"], ["b:box", "breath", "sit"],
+      ["x:prime", "sound", "sit"], ["t:deep-work", "sound", "sit"], ["t:sustained-24", "sound", "sit"],
+      ["t:vigilance-16", "sound", "sit"], ["t:gamma-40", "sound", "sit"], ["t:gamma-memory", "sound", "sit"],
+      ["t:creative-reverie", "sound", "sit"]],
+    energy: [["morning-yoga", "move", "stand"], ["standing-flow", "move", "stand"], ["morning-stretch", "move", "stand"],
+      ["standing-reset", "move", "stand"], ["balance-yoga", "move", "stand"], ["kapalabhati", "breath", "sit"],
+      ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"]],
+    recover: [["recovery", "program", "sit"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
+      ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"]],
+    reflect: [["nvc-self", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
+      ["metta", "meditate", "sit"]],
+    tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: Sounds only
+  };
+  var ALSO = {
+    "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],
+    anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], "back-hips": ["calm"],
+    "standing-reset": ["focus"], "balance-yoga": ["focus"]
+  };
+  var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8" };
+  var TOOLS = {
+    prime: { name: "Custom primer", href: "#prime", icon: "bolt", strength: 2,
+      blurb: "Pick a beat and 5 to 20 minutes of priming. When the bell rings, start work with the beat quieter, pink noise, or silence." },
+    beats: { name: "Beat builder", href: "#builder", icon: "sliders", strength: 2,
+      blurb: "Pick any beat, carrier tone and session length, and play it." },
+    routine: { name: "Routine builder", href: "#yoga", icon: "plus", strength: 2 }
+  };
+
+  var CAT = {};                              // item key → { goal, also, method, posture, rank }
+  (function () {
+    for (var g in CATS) CATS[g].forEach(function (r, i) {
+      CAT[r[0]] = { goal: g, also: ALSO[r[0]] || [], method: r[1], posture: r[2].split(" "), rank: i };
+    });
+    var put = function (o, key) { var c = CAT[key]; if (c) for (var k in c) o[k] = c[k]; };
+    PRACTICES.forEach(function (d) { put(d, d.id); });
+    BREATHS.forEach(function (b) { put(b, "b:" + b.id); });
+    TRACKS.forEach(function (t) { put(t, "t:" + t.id); });
+  })();
+
+  function goalOf(id) { for (var i = 0; i < GOALS.length; i++) if (GOALS[i].id === id) return GOALS[i]; return null; }
+  function methodName(id) { for (var i = 0; i < METHODS.length; i++) if (METHODS[i][0] === id) return METHODS[i][1]; return ""; }
+  function methodIcon(id) { for (var i = 0; i < METHODS.length; i++) if (METHODS[i][0] === id) return METHODS[i][2]; return "spark"; }
+  function postureName(id) { for (var i = 0; i < POSTURES.length; i++) if (POSTURES[i][0] === id) return POSTURES[i][1]; return ""; }
+  // a practice meant for falling asleep, or good for it: no tapping round at its end
+  function pSleepy(d) { return d.goal === "sleep" || (d.also || []).indexOf("sleep") >= 0; }
 
   /* ------------------------- guided practices: engine -------------------------
      One clock (performance.now) drives a list of steps. Breath steps borrow the
@@ -7767,7 +7958,7 @@
   function pPlan(d, len) {
     var steps = d.build(len, pVar(d)), at = 0;
     steps.forEach(function (s) { s.at = at; at += s.secs; });
-    if (d.group === "program" && P.opt.ana) pAna(d, steps, at, P.opt.ana);
+    if (d.method === "program" && P.opt.ana) pAna(d, steps, at, P.opt.ana);
     var base = at;                                   // a program's sound covers the practice, not the tapping after it
     if (tapOn(d)) tapShort().forEach(function (s) { s.at = at; at += s.secs; s.extra = true; steps.push(s); });
     return { steps: steps, total: at, base: base };
@@ -7813,7 +8004,48 @@
   }
 
   function pMinutes(d, len) { return Math.max(1, Math.round(pPlan(d, pLenOf(d, len)).total / 60)); }
-  function pSaveOpt() { store.set("pOpt", JSON.stringify(P.opt)); }
+  /* ----- options: defaults for every practice (in Settings), and each practice's own changes on top.
+     Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself. ----- */
+  var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "visual"];
+  function storeDel(k) { try { localStorage.removeItem("entrain." + k); } catch (e) {} }
+  function pOptDefaults() {
+    var o = JSON.parse(JSON.stringify(P_OPT0));
+    try {
+      var g = JSON.parse(store.get("pOpt") || "null");
+      if (g && typeof g === "object") for (var k in o) if (typeof g[k] === typeof o[k]) o[k] = g[k];
+    } catch (e) {}
+    return o;
+  }
+  function pOptOwn(id) {
+    try { var v = JSON.parse(store.get("pOpt." + id) || "null"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; }
+  }
+  function pOptsOf(id) {
+    var o = pOptDefaults(), own = pOptOwn(id);
+    P_OWN.forEach(function (k) { if (k in own && typeof own[k] === typeof o[k]) o[k] = own[k]; });
+    return o;
+  }
+  // what differs from the defaults is kept for this practice; voice choice and keeping reflections go to the defaults
+  function pOptSave(id, o) {
+    var g = pOptDefaults(), own = {}, n = 0;
+    P_OWN.forEach(function (k) { if (o[k] !== g[k]) { own[k] = o[k]; n++; } });
+    for (var k in g) if (P_OWN.indexOf(k) < 0) g[k] = o[k];
+    store.set("pOpt", JSON.stringify(g));
+    if (n) store.set("pOpt." + id, JSON.stringify(own)); else storeDel("pOpt." + id);
+  }
+  function pOptMakeDefault(id, o) {
+    var g = pOptDefaults();
+    P_OWN.forEach(function (k) { g[k] = o[k]; });
+    store.set("pOpt", JSON.stringify(g));
+    storeDel("pOpt." + id);
+  }
+  function pSaveOpt() { if (P.optFor) pOptSave(P.optFor, P.opt); else store.set("pOpt", JSON.stringify(P.opt)); }
+  // the options an intro shows and edits: the running practice's own stay as they are
+  function pIntroOpts(d) {
+    if (pBusy() && P.def !== d) return pOptsOf(d.id);
+    P.opt = pOptsOf(d.id); P.optFor = d.id;
+    return P.opt;
+  }
   function pColor(d) { return "var(--" + (d.tone || "relax") + ")"; }
 
   /* ----- sound: a bell bus of its own, and the pump tick ----- */
@@ -7878,9 +8110,10 @@
   var WL = { lock: null, asking: false, stop: 0, told: false, failAt: 0 };
   var WL_GRACE = 600000;
   function wlNeed() {
-    if (P.state === "running" || B.state === "running" || A.playing) { WL.stop = 0; return true; }
+    var ses = ST.screenSessions, trk = ST.screenTracks;
+    if ((ses && (P.state === "running" || B.state === "running")) || (trk && A.playing)) { WL.stop = 0; return true; }
     if (!WL.stop) WL.stop = Date.now();               // the moment the last session paused or ended
-    var paused = P.state === "paused" || B.state === "paused" || (!!A.track && A.elapsed > 0);
+    var paused = (ses && (P.state === "paused" || B.state === "paused")) || (trk && !!A.track && A.elapsed > 0);
     return paused && Date.now() - WL.stop < WL_GRACE;
   }
   function wlSync() {
@@ -8042,6 +8275,7 @@
     if (s.k === "pump") return "pump";
     if (s.k === "shuffle") return "word";
     if (s.k === "count") return "count";
+    if (ST.sleepDim && pSleepyStep(s)) return s.k === "shuffle" ? "word" : "dark";   // dimmed for sleep (Settings)
     if (s.k === "drift") return "glow";
     if (s.k === "hold") return "hold";
     if (s.k === "guide" && s.pose) return "pose";
@@ -8071,6 +8305,7 @@
     else if (P.usesB && B.state !== "idle") pBreathOff();
     var flowing = s.k === "breath" && prev && prev.k === "breath";
     if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
+    $("#ses").dataset.dim = ST.sleepDim && pSleepyStep(s) ? "1" : "";
     pStage(s);
     pRenderSegs();
     pUI();
@@ -8505,6 +8740,7 @@
     var go = function () {
       if (pBusy()) pFinish(true, true);
       P.def = d;
+      P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
       if (B.finder) finderCancel();
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
@@ -8606,13 +8842,15 @@
       var trk = A.track;
       if (early) { if (A.playing) fadeOutAndStop("Practice ended.", 3); else hardStop(true); }
       else if (A.playing) fadeOutAndStop("Practice complete.", 3);      // an open step finished early: the sound ends with the practice
-      setTimeout(function () {                                         // the practice's own sound isn't a track to replay: put the player away
+      $("#player").classList.remove("open", "expanded");               // the practice's own sound isn't a track to replay: the player stays away
+      setTimeout(function () {                                         // while it fades out
         if (A.track === trk && !A.playing) $("#player").classList.remove("open", "expanded");
       }, 3700);
     }
     P.audioOn = false;
     pUnlock();
     P.state = "done";
+    $("#ses").dataset.dim = "";
     if (!early && !quiet) {
       pBell(0.5);
       if (A.ctx) pBell(0.4, A.ctx.currentTime + 1.4, 523.25);
@@ -8748,7 +8986,7 @@
     if (d.sensor === "best") n.push(["pulse", "Heart sensor", d.sensorWhy || "recommended: live heart rate and coherence"]);
     else if (d.sensor === "optional" || pHasBreath(d)) n.push(["pulse", "Heart sensor", "optional: adds heart rate and coherence"]);
     if (d.lie) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
-    if (d.room) n.push(["move", "Room to move", "about two metres clear around you, on a floor that isn't slippery"]);
+    if (d.room) n.push(["move", "Room to move", "about two metres clear around you, on a floor with good grip"]);
     else if (d.stand) n.push(["move", "Space to stand", "an arm's length all around"]);
     if (d.voice) n.push(["voice", "Voice on", "the steps are spoken; eyes can stay closed"]);
     if (d.reflect) n.push(["nvc", "A quiet place to write", "nothing you type leaves this device"]);
@@ -8771,41 +9009,44 @@
       var last = rows[rows.length - 1];
       if (last && last.title === s.title) last.secs += s.secs; else rows.push({ title: s.title, secs: s.secs, k: s.k });
     });
-    var opts = [];
-    opts.push(pToggle("sOptVoice", "Spoken guidance", P.opt.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
-    if (window.speechSynthesis) opts.push('<div class="so-row so-voice" id="sVoiceRow"' + (P.opt.voice ? "" : " hidden") + '><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
-    opts.push(pToggle("sOptBells", "Bells between steps", P.opt.bells, ""));
-    if (d.audio) opts.push(pToggle("sOptAudio", "Binaural layer", P.opt.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
-    if (pPlanHasRhy(plan.steps)) opts.push(pToggle("sOptRhy", "Berimbau", P.opt.rhythm, "A synthesized berimbau keeps time for the capoeira moves."));
-    if (d.reflect) opts.push(pToggle("sOptKeep", "Keep a copy on this device", P.opt.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
+    var O = pIntroOpts(d), own = Object.keys(pOptOwn(d.id)).length > 0, hasRhy = pPlanHasRhy(plan.steps);
+    var opts = [], every = [];
+    opts.push(pToggle("sOptVoice", "Spoken guidance", O.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
+    opts.push(pToggle("sOptBells", "Bells between steps", O.bells, ""));
+    if (d.audio) opts.push(pToggle("sOptAudio", "Binaural layer", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
+    if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesized berimbau keeps time for the capoeira moves."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
     if (hasTap) {
       opts.push('<div class="so-row so-phrase" id="sPhraseRow"' + (d.tapping || tapOn(d) ? "" : " hidden") + '><label class="so-l" for="sTapPhrase">Your phrase<small>A few words for what\'s bothering you, like “this stress” or “this tight chest”.</small></label>' +
         '<input id="sTapPhrase" maxlength="48" autocomplete="off" placeholder="this stress" value="' + esc(store.get("tapPhrase") || "") + '"></div>');
-      opts.push('<div id="sTickRow"' + (d.tapping || tapOn(d) ? "" : " hidden") + ">" + pToggle("sOptTick", "Tapping tick", P.opt.tapTick, "A soft tick to tap along with.") + "</div>");
+      opts.push('<div id="sTickRow"' + (d.tapping || tapOn(d) ? "" : " hidden") + ">" + pToggle("sOptTick", "Tapping tick", O.tapTick, "A soft tick to tap along with.") + "</div>");
     }
-    opts.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, made on your device.</small></span>' + ambCtl() + "</div>");
-    if (d.variant) opts.push('<div class="so-row"><span class="so-l">' + d.variant.label + '</span><div class="mini-seg" id="sOptVar">' +
+    if (d.variant) opts.push('<div class="so-row so-seg"><span class="so-l">' + d.variant.label + '</span><div class="mini-seg" id="sOptVar">' +
       d.variant.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (pVar(d) === o[0]) + '">' + o[1] + "</button>"; }).join("") + "</div></div>");
-    if (d.group === "program") opts.push('<div class="so-row so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
+    if (d.method === "program") opts.push('<div class="so-row so-seg so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
       [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]].map(function (o) {
-        return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.ana === o[0]) + '">' + o[1] + "</button>";
+        return '<button data-v="' + o[0] + '" aria-pressed="' + (O.ana === o[0]) + '">' + o[1] + "</button>";
       }).join("") + "</div></div>");
     if (hasB) {
-      opts.push('<div class="so-row"><span class="so-l">Breath cues</span><div class="mini-seg" id="sOptCues">' +
+      opts.push('<div class="so-row so-seg"><span class="so-l">Breath cues</span><div class="mini-seg" id="sOptCues">' +
         [["tones", "Tone"], ["chimes", "Chimes"], ["off", "Silent"]].map(function (o) {
-          return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.cues === o[0]) + '">' + o[1] + "</button>";
+          return '<button data-v="' + o[0] + '" aria-pressed="' + (O.cues === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
-      opts.push('<div class="so-row"><span class="so-l">Breath visual</span><div class="mini-seg" id="sOptVis">' +
+      opts.push('<div class="so-row so-seg"><span class="so-l">Breath visual</span><div class="mini-seg" id="sOptVis">' +
         [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]].map(function (o) {
-          return '<button data-v="' + o[0] + '" aria-pressed="' + (P.opt.visual === o[0]) + '">' + o[1] + "</button>";
+          return '<button data-v="' + o[0] + '" aria-pressed="' + (O.visual === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
     }
+    // the same in every session: which voice, the sound underneath, and what's kept of a reflection
+    if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
+    every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, made on your device.</small></span>' + ambCtl() + "</div>");
+    if (d.reflect) every.push(pToggle("sOptKeep", "Keep a copy on this device", O.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
+    var openOpts = store.get("optsOpen") === "1";
     var other = pBusy() && P.def !== d;
     var h = '<a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Practices</a>' +
       '<div class="si-head">' +
-        '<span class="si-kind">' + (d.custom ? "Your routine" : esc(GROUPS.filter(function (g) { return g.id === d.group; })[0].name)) + (d.exp ? " · Experimental" : "") + " · " + minsTxt + "</span>" +
+        '<span class="si-kind">' + [d.custom ? "Your routine" : goalOf(d.goal) ? goalOf(d.goal).name : "", methodName(d.method)].filter(Boolean).join(" · ") + (d.exp ? " · Experimental" : "") + " · " + minsTxt + "</span>" +
         "<h2>" + esc(d.name) + "</h2>" +
         '<p class="si-blurb">' + esc(d.blurb) + "</p>" +
         (d.parts ? '<p class="si-parts">' + esc(d.parts) + "</p>" : "") +
@@ -8828,12 +9069,23 @@
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution ? '<div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>' + esc(d.caution) + "</span></div>" : "") +
       "</div>" +
-      '<aside class="si-opts">' + (d.reflect ? nvcDraftStrip(d) : "") +     // first thing on a phone, next to Start on a computer
-        "<h3>Options</h3>" + opts.join("") +
+      '<div class="si-side">' +                     // Start first: above the options on a computer, last on a phone (order)
+      '<div class="si-bar">' +
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
         '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Start' + (d.open || d.selfPaced ? "" : " " + mins + " min") + "</button>" +
-      "</aside></div>";
+      "</div>" +
+      '<aside class="si-opts">' + (d.reflect ? nvcDraftStrip(d) : "") +     // first thing on a phone, beside the steps on a computer
+        '<button class="so-sum" id="sOptsBtn" aria-expanded="' + openOpts + '" aria-controls="sOpts"><span class="so-sum-t"><b>Options</b>' +
+          '<span id="sOptsSum">' + esc(pOptSumTxt(d, O, hasRhy)) + "</span></span>" + '<svg class="i" aria-hidden="true"><use href="#i-up"/></svg></button>' +
+        '<div class="so-list" id="sOpts"' + (openOpts ? "" : " hidden") + ">" +
+          '<p class="so-scope" id="sOptsScope">' + pOptScope(d, own) + "</p>" +
+          opts.join("") +
+          '<div class="so-acts" id="sOptsActs"' + (own ? "" : " hidden") + '><button class="btn small" id="sOptsAll">Use these for every practice</button><button class="btn small" id="sOptsReset">Back to the defaults</button></div>' +
+          '<div class="so-every"><h4>In every session</h4>' + every.join("") + "</div>" +
+        "</div>" +
+      "</aside>" +
+      "</div></div>";
     var el = $("#sIntro");
     el.innerHTML = h;
     el.style.setProperty("--pcol", pColor(d));
@@ -8842,8 +9094,23 @@
     $("#ses").dataset.state = "intro";
     bSetT("#viewTitle", d.name);
     document.title = d.name + " | Entrain";
-    pIntroWire(d);
+    pIntroWire(d, O, hasRhy);
     pImmersive();
+    edgeFade(el.querySelector(".si-len"));
+  }
+  function pOptScope(d, own) {
+    return (own ? "You've changed these for " + esc(d.name) + ". " : "For " + esc(d.name) + " only. ") +
+      'The defaults for every practice are in <a href="#settings">Settings</a>.';
+  }
+  function pOptSumTxt(d, O, hasRhy) {
+    var s = [O.voice && window.speechSynthesis ? "Voice" : "No voice"];
+    if (O.bells) s.push("Bells");
+    if (d.audio) s.push(O.audio ? "Binaural" : "No beats");
+    if (hasRhy && O.rhythm) s.push("Berimbau");
+    if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
+    if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
+    if (AMB.kind !== "off") s.push(AMB.kind === "night" ? "Rain and crickets" : AMB.kind === "rain" ? "Rain" : "Crickets");
+    return s.join(" · ");
   }
   function pYogaHow(plan) {
     var poses = plan.steps.filter(function (s) { return s.k === "pose"; }), names = [], moving = 0, rhy = false;
@@ -8861,14 +9128,21 @@
     return '<label class="so-row so-tg"><span class="so-l">' + label + (note ? "<small>" + note + "</small>" : "") + '</span>' +
       '<input type="checkbox" class="sw" id="' + id + '"' + (on && !disabled ? " checked" : "") + (disabled ? " disabled" : "") + "></label>";
   }
-  function pIntroWire(d) {
+  function pIntroWire(d, O, hasRhy) {
     var on = function (id, fn) { var el = $(id); if (el) el.addEventListener("change", fn); };
-    on("#sOptVoice", function () { P.opt.voice = this.checked; var r = $("#sVoiceRow"); if (r) r.hidden = !this.checked; pSaveOpt(); });
-    on("#sOptBells", function () { P.opt.bells = this.checked; pSaveOpt(); if (this.checked) pBell(0.4); });
-    on("#sOptAudio", function () { P.opt.audio = this.checked; pSaveOpt(); });
-    on("#sOptRhy", function () { P.opt.rhythm = this.checked; pSaveOpt(); });
-    on("#sOptTick", function () { P.opt.tapTick = this.checked; pSaveOpt(); });
-    on("#sOptKeep", function () { P.opt.nvcSave = this.checked; pSaveOpt(); });
+    var sum = function () { var el = $("#sOptsSum"); if (el) el.textContent = pOptSumTxt(d, O, hasRhy); };
+    var save = function () {                          // kept for this practice; the scope line and its two buttons follow
+      pOptSave(d.id, O); sum();
+      var own = Object.keys(pOptOwn(d.id)).length > 0;
+      $("#sOptsScope").innerHTML = pOptScope(d, own);
+      $("#sOptsActs").hidden = !own;
+    };
+    on("#sOptVoice", function () { O.voice = this.checked; var r = $("#sVoiceRow"); if (r) r.hidden = !this.checked; save(); });
+    on("#sOptBells", function () { O.bells = this.checked; save(); if (this.checked) pBell(0.4, 0, 0, 0, true); });
+    on("#sOptAudio", function () { O.audio = this.checked; save(); });
+    on("#sOptRhy", function () { O.rhythm = this.checked; save(); });
+    on("#sOptTick", function () { O.tapTick = this.checked; save(); });
+    on("#sOptKeep", function () { O.nvcSave = this.checked; save(); });
     on("#sOptTap", function () {
       store.set("pTap." + d.id, this.checked ? "1" : "0");
       pIntro(d.id);
@@ -8887,10 +9161,31 @@
       }
       nvcDraftClear(d.id); pIntro(d.id);
     });
-    on("#sVoiceSel", function () { P.opt.voiceName = this.value; pSaveOpt(); });
+    on("#sVoiceSel", function () { O.voiceName = this.value; save(); });
     var t = $("#sVoiceTest");
-    if (t) t.addEventListener("click", function () { pHush(); var v = P.opt.voice; P.opt.voice = true; pSay("Breathe in slowly, and let it go."); P.opt.voice = v; });
-    pFillVoices();
+    if (t) t.addEventListener("click", function () {
+      pHush();
+      var v = P.opt.voice, n = P.opt.voiceName;
+      P.opt.voice = true; P.opt.voiceName = O.voiceName;
+      pSay("Breathe in slowly, and let it go.");
+      P.opt.voice = v; P.opt.voiceName = n;
+    });
+    pFillVoices(O.voiceName);
+    $("#sOptsBtn").addEventListener("click", function () {
+      var open = this.getAttribute("aria-expanded") !== "true";
+      this.setAttribute("aria-expanded", open ? "true" : "false");
+      $("#sOpts").hidden = !open;
+      store.set("optsOpen", open ? "1" : "0");
+      if (open) edgeFadeAll();
+    });
+    var all = $("#sOptsAll"), reset = $("#sOptsReset");
+    all.addEventListener("click", function () {
+      pOptMakeDefault(d.id, O);
+      pIntro(d.id);
+      toast("These are now the options for every practice that hasn't set its own.");
+    });
+    reset.addEventListener("click", function () { storeDel("pOpt." + d.id); pIntro(d.id); });
+    $("#sOpts").addEventListener("click", function (e) { if (e.target.closest("[data-amb]")) setTimeout(sum, 0); });
     [["#sOptCues", "cues"], ["#sOptVis", "visual"], ["#sOptAna", "ana"], ["#sOptVar", "var"]].forEach(function (p) {
       var g = $(p[0]);
       if (!g) return;
@@ -8898,7 +9193,7 @@
         var b = e.target.closest("button");
         if (!b) return;
         if (p[1] === "var") { store.set("pVar." + d.id, b.dataset.v); pIntro(d.id); return; }
-        P.opt[p[1]] = p[1] === "ana" ? parseInt(b.dataset.v, 10) : b.dataset.v; pSaveOpt();
+        O[p[1]] = p[1] === "ana" ? parseInt(b.dataset.v, 10) : b.dataset.v; save();
         var bs = g.querySelectorAll("button");
         for (var i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i] === b ? "true" : "false");
         if (p[1] === "cues" && b.dataset.v !== "off" && pBusOn() && ensureBus()) {
@@ -8915,10 +9210,10 @@
     });
     $("#sGo").addEventListener("click", pStart);
   }
-  function pFillVoices() {
-    var sel = $("#sVoiceSel");
+  function pFillVoices(name, id) {
+    var sel = $(id || "#sVoiceSel");
     if (!sel) return;
-    var vs = pVoices(), cur = pVoice();
+    var vs = pVoices(), pick = typeof name === "string" && name ? vs.filter(function (v) { return v.name === name; })[0] : null, cur = pick || pVoice();
     if (!vs.length) { sel.innerHTML = "<option>Default voice</option>"; sel.disabled = true; return; }
     sel.disabled = false;
     sel.innerHTML = vs.map(function (v) {
@@ -8975,57 +9270,7 @@
   }
   function pOpen() { if (P.def) location.hash = "practice/" + P.def.id; }
 
-  /* ----- the library ----- */
-  var prFilter = "all";
-  function pIcon(d) { return d.group === "program" ? "spark" : d.group === "mind" ? "practice" : d.group === "breath" ? "breathe" : d.group === "relax" ? "moon" : d.group === "reflect" ? "nvc" : "move"; }
-  function pCard(d) {
-    var mins = d.selfPaced ? "About " + d.est + " min" : d.lengths ? d.lengths.join("/") + " " + (d.lenUnit ? d.lenUnit + "s" : "min") : (d.open ? "up to " : "") + pMinutes(d) + " min", meta = ['<span>' + mins + "</span>"];
-    if (d.selfPaced) meta.push("<span>Self-paced</span>");
-    if (d.custom) meta.unshift('<span class="mine">Yours</span>');
-    if (d.exp) meta.unshift('<span class="exp">Experimental</span>');
-    if (d.audio) meta.push("<span>Binaural</span>");
-    if (pHasBreathFast(d)) meta.push("<span>Paced breath</span>");
-    if (d.sensor === "best") meta.push('<span class="hrm">Best with sensor</span>');
-    if (d.rhythm) meta.push("<span>Berimbau</span>");
-    else if (d.stand) meta.push("<span>Standing</span>");
-    if (d.caution) meta.push('<span class="cau">Cautions</span>');
-    var tl = "";
-    if (d.group === "program") {
-      var plan = pPlan(d, 0);
-      tl = '<span class="si-tl pc-tl" aria-hidden="true">' + plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + s.secs + ' 1 0"></i>'; }).join("") + "</span>";
-    }
-    return '<li class="pc' + (d.group === "program" ? " prog" : "") + '" style="--pcol:' + pColor(d) + '">' +
-      '<a href="#practice/' + d.id + '" class="pc-a">' +
-        '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + pIcon(d) + '"/></svg></span>' +
-        '<span class="pc-b"><b>' + esc(d.name) + "</b>" +
-          '<span class="pc-blurb">' + esc(d.blurb) + "</span>" + tl +
-          '<span class="pc-meta">' + meta.join("") + dots(d.strength) + "</span>" +
-        "</span></a></li>";
-  }
-  var pBreathCache = {};
-  function pHasBreathFast(d) {
-    if (!(d.id in pBreathCache)) pBreathCache[d.id] = pPlan(d, pLenOf(d, 0)).steps.some(function (s) { return s.k === "breath"; });
-    return pBreathCache[d.id];
-  }
-  function pRenderLib() {
-    $("#prFilt").innerHTML = FILTERS.map(function (f) {
-      return '<button class="chip-b" data-f="' + f[0] + '" aria-pressed="' + (f[0] === prFilter) + '">' + f[1] + "</button>";
-    }).join("");
-    var h = "";
-    GROUPS.forEach(function (g) {
-      var all = g.id === "move" ? yLoad().map(yDef).concat(PRACTICES) : PRACTICES;
-      var list = all.filter(function (d) { return d.group === g.id && (prFilter === "all" || d.tags.indexOf(prFilter) >= 0); });
-      var build = g.id === "move" && (prFilter === "all" || prFilter === "move");
-      if (!list.length && !build) return;
-      h += '<section class="pr-grp" data-g="' + g.id + '"><div class="pr-gh"><h2>' + g.name + "</h2><p>" + g.lede + "</p></div>" +
-        '<ul class="pr-list' + (g.id === "program" ? " progs" : "") + '">' +
-        (build ? '<li class="pc pc-build" style="--pcol:var(--accent)"><a href="#yoga" class="pc-a"><span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span>' +
-          '<span class="pc-b"><b>Build your own routine</b><span class="pc-blurb">Pick from ' + ASANAS.length + ' yoga poses, stretches, mobility drills and capoeira moves, set each one\'s time, and save the routine. Each comes with its own drawing and spoken cues, offline.</span></span></a></li>' : "") +
-        list.map(pCard).join("") + "</ul></section>";
-    });
-    $("#prLib").innerHTML = h;
-    pRenderWeek();
-  }
+  /* ----- the library is in library.js; this is the week strip above it ----- */
   function pRenderWeek() {
     var log = pLog(), wk = Date.now() - 7 * 864e5, recent = log.filter(function (e) { return e.at >= wk; });
     var mins = Math.round(recent.reduce(function (a, e) { return a + e.secs; }, 0) / 60);
@@ -9057,11 +9302,10 @@
     $("#homeSuggest").style.setProperty("--pcol", pColor(d));
   }
 
+  function pSleepyStep(s) { return !!s.sleepy || s.k === "drift" || s.k === "nap" || s.k === "shuffle"; }
   function pInit() {
-    try {
-      var o = JSON.parse(store.get("pOpt") || "null");
-      if (o && typeof o === "object") for (var k in P.opt) if (typeof o[k] === typeof P.opt[k]) P.opt[k] = o[k];
-    } catch (e) {}
+    stLoad();
+    P.opt = pOptDefaults();
     var cs = getComputedStyle(document.documentElement);
     ["relax", "stim", "ther", "accent"].forEach(function (k) { P.col[k] = cs.getPropertyValue("--" + k).trim() || "#5eead4"; });
     P.col.warm = "#f5b97a";
@@ -9070,12 +9314,7 @@
     if (window.ResizeObserver && P.cv) new ResizeObserver(function () { pSizeCanvas(); }).observe($("#sStage"));
     window.addEventListener("resize", pSizeCanvas);
 
-    $("#prFilt").addEventListener("click", function (e) {
-      var b = e.target.closest("button");
-      if (!b) return;
-      prFilter = b.dataset.f;
-      pRenderLib();
-    });
+    libInit();
     $("#sPlay").addEventListener("click", function () { if (P.state === "running") pPause(); else pResume(); });
     $("#sPrev").addEventListener("click", function () { pJump(-1); });
     $("#sNext").addEventListener("click", function () { pJump(1); });
@@ -9150,11 +9389,314 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf };   // for automated tests only
     yInit();
     nvcInit();
     fdInit();
     pRenderLib();
+  }
+  /* ------------------------------- the library -------------------------------
+     Goal sections (Sleep, Calm, Focus, Energy, Recover, Reflect) holding practices, breathing
+     patterns and tracks, each listed once, under its goal. A goal chip narrows it to one goal and
+     adds the items that are also good for it; the filter panel narrows by method, length, posture
+     and needs. On "All", each section shows its first few rows until you ask for the rest.
+  ------------------------------------------------------------------------------ */
+
+  var LIB = { goal: "all", f: { method: "", len: "", posture: "", needs: "" }, open: {}, panel: false, mins: {} };
+  var LIB_LENS = [["5", "Up to 5 min"], ["10", "Up to 10 min"], ["20", "Up to 20 min"], ["long", "Longer"]];
+  var LIB_TRACK_COL = { relax: "var(--relax)", stim: "var(--stim)", ther: "var(--ther)" };
+
+  function pIcon(d) { return methodIcon(d.method || "move"); }
+  // shortest and longest session, in minutes
+  function libMins(d) {
+    if (d.selfPaced) return [d.est, d.est];
+    if (!d.custom && LIB.mins[d.id]) return LIB.mins[d.id];           // your routines can change; the rest can't
+    var m = (d.lengths || [0]).map(function (L) {
+      try { return Math.max(1, Math.round(pPlan(d, pLenOf(d, L)).total / 60)); } catch (e) { return 0; }
+    });
+    m = [Math.min.apply(null, m), Math.max.apply(null, m)];
+    if (!d.custom) LIB.mins[d.id] = m;
+    return m;
+  }
+  function libMinsTxt(d, m) {
+    if (d.selfPaced) return "About " + d.est + " min";
+    if (d.lengths && d.lenUnit) return d.lengths[0] + "–" + d.lengths[d.lengths.length - 1] + " " + d.lenUnit + "s";
+    if (d.lengths && d.nap) return d.lengths[0] + "–" + d.lengths[d.lengths.length - 1] + " min nap";
+    if (m[0] !== m[1]) return m[0] + "–" + m[1] + " min";
+    return (d.open ? "up to " : "") + m[0] + " min";
+  }
+  function libNeeds(o) {
+    var n = [];
+    if (o.audio || o.method === "sound") n.push("phones");
+    if (o.sensor === "best") n.push("sensor");
+    if (o.method === "move" || (o.posture || []).indexOf("walk") >= 0) n.push("space");
+    return n;
+  }
+
+  /* one shape for everything the library lists */
+  function libPractice(d) {
+    var m = libMins(d), badges = [];
+    if (d.custom) badges.push(["mine", "Yours"]);
+    if (d.exp) badges.push(["exp", "Experimental"]);
+    if (d.selfPaced) badges.push(["", "Self-paced"]);
+    if (d.sensor === "best") badges.push(["hrm", "Best with sensor"]);
+    if (d.rhythm) badges.push(["", "Berimbau"]);
+    if (d.caution) badges.push(["cau", "Cautions"]);
+    return { key: d.id, type: "practice", def: d, name: d.name, blurb: d.blurb, goal: d.goal || "", also: d.also || [],
+      method: d.method || "move", posture: d.posture || ["stand"], needs: libNeeds(d), mins: m, minsTxt: libMinsTxt(d, m),
+      href: "#practice/" + d.id, icon: pIcon(d), col: pColor(d), strength: d.strength, badges: badges, prog: d.method === "program" };
+  }
+  function libPattern(b) {
+    var t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
+    return { key: "b:" + b.id, type: "pattern", name: PATTERN_NAMES[b.id] || b.id, blurb: b.desc, goal: b.goal, also: b.also || [],
+      method: "breath", posture: b.posture, needs: [], mins: [1, 60], minsTxt: (Math.round(600 / per) / 10) + " breaths a minute",
+      label: "Breathing guide", href: "#breathe/" + b.id, icon: "breathe", col: "var(--b-in)", strength: b.strength, badges: [] };
+  }
+  function libTrack(t) {
+    return { key: "t:" + t.id, type: "track", name: t.name, blurb: t.desc, goal: t.goal, also: t.also || [],
+      method: "sound", posture: t.posture, needs: ["phones"], mins: [t.minutes, t.minutes], minsTxt: t.minutes + " min",
+      label: t.band + " track", href: "#track/" + t.id, icon: "sounds", col: LIB_TRACK_COL[t.cat] || "var(--relax)", strength: t.strength, badges: [] };
+  }
+  function libTool(id) {
+    var x = TOOLS[id], c = CAT["x:" + id] || {};
+    return { key: "x:" + id, type: "tool", name: x.name, blurb: x.blurb || "", goal: c.goal || "", also: [], method: id === "routine" ? "move" : "sound",
+      posture: c.posture || ["sit"], needs: id === "routine" ? ["space"] : ["phones"], mins: id === "prime" ? [5, 20] : [1, 60],
+      minsTxt: id === "prime" ? "5–20 min" : "your choice", label: id === "prime" ? "Beats before work" : "Tool", nopos: id !== "prime",
+      href: x.href, icon: x.icon, col: id === "routine" ? "var(--accent)" : "var(--stim)", strength: id === "prime" ? x.strength : 0, badges: [] };
+  }
+  function libAll() {
+    var out = PRACTICES.map(libPractice);
+    BREATHS.forEach(function (b) { if (b.goal) out.push(libPattern(b)); });
+    TRACKS.forEach(function (t) { if (t.goal && t.goal !== "tinnitus") out.push(libTrack(t)); });
+    out.push(libTool("prime"));
+    out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
+    return out;
+  }
+  function libMine() { return yLoad().map(function (q) { return libPractice(yDef(q)); }); }
+
+  /* ----- filters ----- */
+  function libPass(it) {
+    var f = LIB.f;
+    if (f.method && it.method !== f.method) return false;
+    if (f.posture && it.posture.indexOf(f.posture) < 0) return false;
+    if (f.needs === "none" ? it.needs.length : f.needs && it.needs.indexOf(f.needs) < 0) return false;
+    if (f.len === "long") { if (it.mins[1] <= 20.5) return false; }
+    else if (f.len && it.mins[0] > parseInt(f.len, 10) + 0.5) return false;
+    return true;
+  }
+  function libFiltered() { var f = LIB.f; return !!(f.method || f.len || f.posture || f.needs); }
+
+  /* ----- rendering ----- */
+  function libRow(it, hide) {
+    var tl = "";
+    if (it.prog) {
+      var plan = pPlan(it.def, 0);
+      tl = '<span class="si-tl pc-tl" aria-hidden="true">' + plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + s.secs + ' 1 0"></i>'; }).join("") + "</span>";
+    }
+    var pos = it.nopos ? "" : it.posture.map(function (p, i) { var n = postureName(p); return i ? n.toLowerCase() : n; }).join(" or ");
+    var sub = [it.label || methodName(it.method), it.minsTxt, pos].filter(Boolean).join(" · ");
+    return '<li class="pc' + (it.prog ? " prog" : "") + (it.type !== "practice" ? " pc-" + it.type : "") + '" style="--pcol:' + it.col + '"' + (hide ? " hidden" : "") + ">" +
+      '<a href="' + esc(it.href) + '" class="pc-a">' +
+        '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + it.icon + '"/></svg></span>' +
+        '<span class="pc-b"><span class="pc-top"><b>' + esc(it.name) + "</b>" + (it.strength ? dots(it.strength) : "") + "</span>" +
+          '<span class="pc-meta"><span class="pc-sub">' + esc(sub) + "</span>" +
+            it.badges.map(function (b) { return '<span class="' + b[0] + '">' + esc(b[1]) + "</span>"; }).join("") + "</span>" +
+          (it.blurb ? '<span class="pc-blurb">' + esc(it.blurb) + "</span>" : "") + tl +
+        "</span></a></li>";
+  }
+  function libSection(g, title, lede, icon, items, cap, extra) {
+    var more = cap && items.length > cap && !LIB.open[g];
+    return '<section class="pr-grp" data-g="' + g + '"><div class="pr-gh"><h2>' + (icon ? '<svg class="i" aria-hidden="true"><use href="#i-' + icon + '"/></svg>' : "") + esc(title) + "</h2>" +
+      (lede ? "<p>" + esc(lede) + "</p>" : "") + "</div>" +
+      '<ul class="pr-list">' + (extra || "") + items.map(function (it, i) { return libRow(it, more && i >= cap); }).join("") + "</ul>" +
+      (more ? '<button class="pr-more" data-more="' + g + '" aria-expanded="false">Show all ' + items.length + "</button>" : "") + "</section>";
+  }
+  function libBuildRow() {
+    return '<li class="pc pc-build" style="--pcol:var(--accent)"><a href="#yoga" class="pc-a"><span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span>' +
+      '<span class="pc-b"><span class="pc-top"><b>Routine builder</b></span><span class="pc-meta"><span class="pc-sub">Tool · your choice</span></span>' +
+      '<span class="pc-blurb">Pick from ' + ASANAS.length + " yoga poses, stretches, mobility drills and capoeira moves, set each one's time, and save the routine. Each comes with its own drawing and spoken cues, offline.</span></span></a></li>";
+  }
+  function pRenderLib() {
+    $("#prFilt").innerHTML = [["all", "All"]].concat(GOALS.map(function (g) { return [g.id, g.name]; })).map(function (f) {
+      return '<button class="chip-b" data-f="' + f[0] + '" aria-pressed="' + (f[0] === LIB.goal) + '">' + f[1] + "</button>";
+    }).join("");
+    libPanel();
+    var all = libAll().filter(libPass), mine = libMine().filter(libPass), filtered = libFiltered();
+    var cap = filtered ? 0 : (MOBILE.matches ? 4 : 6), h = "";
+    if (LIB.goal === "all") {
+      if (mine.length) h += libSection("mine", "Your routines", "Saved on this device.", "move", mine, cap);
+      GOALS.forEach(function (g) {
+        var items = all.filter(function (it) { return it.goal === g.id; });
+        if (items.length) h += libSection(g.id, g.name, g.lede, g.icon, items, cap);
+      });
+      var make = [libTool("beats")].filter(libPass), build = libPass(libTool("routine"));
+      if (make.length || build) h += libSection("make", "Make your own", "Your own routine or binaural beat.", "plus", make, 0, build ? libBuildRow() : "");
+    } else {
+      var g = goalOf(LIB.goal);
+      var main = mine.filter(function (it) { return it.goal === g.id; }).concat(all.filter(function (it) { return it.goal === g.id; }));
+      var also = all.filter(function (it) { return it.goal !== g.id && it.also.indexOf(g.id) >= 0; });
+      if (main.length) h += libSection(g.id, g.name, g.lede, g.icon, main, 0);
+      if (also.length) h += libSection("also", "Also good for " + g.name.toLowerCase(), "Their main goal is another one, but they suit this too.", "", also, 0);
+    }
+    if (!h) h = '<div class="pr-empty"><p>Nothing matches these filters.</p><button class="btn small" data-clear="1">Clear filters</button></div>';
+    $("#prLib").innerHTML = h;
+    pRenderWeek();
+    edgeFade($("#prFilt"));
+  }
+  function libPanel() {
+    var f = LIB.f, n = (f.method ? 1 : 0) + (f.len ? 1 : 0) + (f.posture ? 1 : 0) + (f.needs ? 1 : 0);
+    var btn = $("#prFbtn");
+    bSetT("#prFbtnTxt", n ? "Filters · " + n : "Filters");
+    btn.classList.toggle("on", n > 0);
+    btn.setAttribute("aria-expanded", LIB.panel ? "true" : "false");
+    var row = function (key, label, opts) {
+      return '<div class="pf-row" role="group" aria-label="' + label + '"><span class="pf-l">' + label + "</span><div class=\"pf-chips\">" + opts.map(function (o) {
+        return '<button class="chip-b small" data-k="' + key + '" data-v="' + o[0] + '" aria-pressed="' + (f[key] === o[0]) + '">' + o[1] + "</button>";
+      }).join("") + "</div></div>";
+    };
+    var p = $("#prPanel");
+    p.hidden = !LIB.panel;
+    if (!LIB.panel) return;
+    p.innerHTML = row("method", "Method", METHODS.map(function (m) { return [m[0], m[1]]; })) + row("len", "Length", LIB_LENS) +
+      row("posture", "Posture", POSTURES) + row("needs", "Needs", NEEDS) +
+      '<div class="pf-foot"><span>Tap a chosen filter again to remove it.</span>' + (n ? '<button class="btn small" data-clear="1">Clear filters</button>' : "") + "</div>";
+  }
+  function libInit() {
+    $("#prFilt").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-f]");
+      if (!b) return;
+      LIB.goal = b.dataset.f;
+      pRenderLib();
+    });
+    $("#prFbtn").addEventListener("click", function () { LIB.panel = !LIB.panel; libPanel(); });
+    var clear = function () { LIB.f = { method: "", len: "", posture: "", needs: "" }; pRenderLib(); };
+    $("#prPanel").addEventListener("click", function (e) {
+      if (e.target.closest("[data-clear]")) { clear(); return; }
+      var b = e.target.closest("button[data-k]");
+      if (!b) return;
+      LIB.f[b.dataset.k] = LIB.f[b.dataset.k] === b.dataset.v ? "" : b.dataset.v;
+      pRenderLib();
+    });
+    $("#prLib").addEventListener("click", function (e) {
+      if (e.target.closest("[data-clear]")) { clear(); return; }
+      var m = e.target.closest("[data-more]");
+      if (!m) return;
+      LIB.open[m.dataset.more] = true;
+      var sec = m.closest(".pr-grp"), first = sec.querySelector("li[hidden]");
+      sec.querySelectorAll("li[hidden]").forEach(function (li) { li.hidden = false; });
+      m.remove();
+      if (first) { var a = first.querySelector("a"); if (a) a.focus(); }
+    });
+  }
+  /* -------------------------------- settings --------------------------------
+     What every practice starts with (a practice can change its own under Options on its page),
+     the background sound, what's kept of reflections, and how the screen behaves.
+  ------------------------------------------------------------------------------ */
+
+  var ST = { screenSessions: true, screenTracks: true, sleepDim: false };
+
+  function stLoad() {
+    try {
+      var o = JSON.parse(store.get("settings") || "null");
+      if (o && typeof o === "object") for (var k in ST) if (typeof o[k] === typeof ST[k]) ST[k] = o[k];
+    } catch (e) {}
+  }
+  function stSave() { store.set("settings", JSON.stringify(ST)); }
+  // the practices that have options of their own
+  function stOwn() {
+    return PRACTICES.concat(yLoad().map(yDef)).filter(function (d) { return Object.keys(pOptOwn(d.id)).length > 0; });
+  }
+  // a default for every practice; an open practice page that has no options of its own follows it
+  function stDefault(k, v) {
+    var g = pOptDefaults();
+    g[k] = v;
+    store.set("pOpt", JSON.stringify(g));
+    if (P_OWN.indexOf(k) < 0) P.opt[k] = v;                   // voice choice and keeping reflections: everywhere, now
+    else if (!pBusy() && P.optFor) P.opt = pOptsOf(P.optFor);
+  }
+  function stSeg(id, opts, cur) {
+    return '<div class="mini-seg" id="' + id + '">' + opts.map(function (o) {
+      return '<button data-v="' + o[0] + '" aria-pressed="' + (String(o[0]) === String(cur)) + '">' + o[1] + "</button>";
+    }).join("") + "</div>";
+  }
+  function stRender() {
+    var g = pOptDefaults(), own = stOwn(), speech = !!window.speechSynthesis;
+    var names = own.map(function (d) { return d.name; });
+    var list = names.length > 1 ? names.slice(0, -1).join(", ") + " and " + names[names.length - 1] : names[0];
+    $("#stBody").innerHTML =
+      '<section class="st-card" aria-labelledby="stP"><h2 id="stP">Practices</h2>' +
+        '<p class="st-note">What every practice starts with. A practice can change these for itself under Options on its own page.</p>' +
+        pToggle("stVoice", "Spoken guidance", g.voice, speech ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !speech) +
+        (speech ? '<div class="so-row so-voice"><span class="so-l">Voice</span><select id="stVoiceSel" aria-label="Voice"></select><button class="btn small" id="stVoiceTest">Test</button></div>' : "") +
+        pToggle("stBells", "Bells between steps", g.bells, "") +
+        pToggle("stAudio", "Binaural layer in programs", g.audio, "Headphones needed.") +
+        pToggle("stRhy", "Berimbau for the capoeira moves", g.rhythm, "") +
+        pToggle("stTick", "Tapping tick", g.tapTick, "A soft tick to tap along with.") +
+        '<div class="so-row so-seg"><span class="so-l">Breath cues</span>' + stSeg("stCues", [["tones", "Tone"], ["chimes", "Chimes"], ["off", "Silent"]], g.cues) + "</div>" +
+        '<div class="so-row so-seg"><span class="so-l">Breath visual</span>' + stSeg("stVis", [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]], g.visual) + "</div>" +
+        '<div class="so-row so-seg"><span class="so-l">Anapana reminders in programs<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span>' +
+          stSeg("stAna", [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]], g.ana) + "</div>" +
+        (own.length ? '<div class="st-own"><span>' + esc(list) + (own.length === 1 ? " has" : " have") + " options of " + (own.length === 1 ? "its" : "their") + ' own.</span>' +
+          '<button class="btn small" id="stOwnReset">Use the defaults for ' + (own.length === 1 ? "it" : "all of them") + "</button></div>" : "") +
+      "</section>" +
+      '<section class="st-card" aria-labelledby="stA"><h2 id="stA">Background sound</h2>' +
+        '<p class="st-note">Rain or crickets under practices, breathing sessions and tracks, made on your device.</p>' + ambCtl() +
+      "</section>" +
+      '<section class="st-card" aria-labelledby="stR"><h2 id="stR">Reflections</h2>' +
+        pToggle("stKeep", "Keep a copy on this device", g.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing.") +
+      "</section>" +
+      '<section class="st-card" id="st-screen" aria-labelledby="stS"><h2 id="stS">Screen</h2>' +
+        pToggle("stScrSes", "Keep the screen on during practices and breathing", ST.screenSessions, "Also for ten minutes into a pause.") +
+        pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
+        pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap and Cognitive Shuffle go almost dark. The screen still stays on.") +
+      "</section>";
+    stWire();
+    pFillVoices(g.voiceName, "#stVoiceSel");
+  }
+  function stWire() {
+    var on = function (id, fn) { var el = $(id); if (el) el.addEventListener("change", fn); };
+    on("#stVoice", function () { stDefault("voice", this.checked); });
+    on("#stBells", function () { stDefault("bells", this.checked); if (this.checked) pBell(0.4, 0, 0, 0, true); });
+    on("#stAudio", function () { stDefault("audio", this.checked); });
+    on("#stRhy", function () { stDefault("rhythm", this.checked); });
+    on("#stTick", function () { stDefault("tapTick", this.checked); });
+    on("#stKeep", function () { stDefault("nvcSave", this.checked); });
+    on("#stVoiceSel", function () { stDefault("voiceName", this.value); });
+    var t = $("#stVoiceTest");
+    if (t) t.addEventListener("click", function () {
+      pHush();
+      var v = P.opt.voice, n = P.opt.voiceName;
+      P.opt.voice = true; P.opt.voiceName = pOptDefaults().voiceName;
+      pSay("Breathe in slowly, and let it go.");
+      P.opt.voice = v; P.opt.voiceName = n;
+    });
+    [["#stCues", "cues"], ["#stVis", "visual"], ["#stAna", "ana"]].forEach(function (p) {
+      var g = $(p[0]);
+      g.addEventListener("click", function (e) {
+        var b = e.target.closest("button");
+        if (!b) return;
+        stDefault(p[1], p[1] === "ana" ? parseInt(b.dataset.v, 10) : b.dataset.v);
+        g.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        if (p[1] === "cues" && b.dataset.v !== "off" && pBusOn() && ensureBus()) {
+          var tt = A.ctx.currentTime + 0.03;
+          if (b.dataset.v === "chimes") chime(B_CHIME["in"], tt, 0.2); else { var sv = BC.sound; BC.sound = "tones"; preview(); BC.sound = sv; }
+        }
+      });
+    });
+    var r = $("#stOwnReset");
+    if (r) r.addEventListener("click", function () {
+      stOwn().forEach(function (d) { storeDel("pOpt." + d.id); });
+      if (!pBusy() && P.optFor) P.opt = pOptsOf(P.optFor);
+      stRender();
+      toast("Every practice now uses the defaults.");
+    });
+    on("#stScrSes", function () { ST.screenSessions = this.checked; stSave(); wlSync(); });
+    on("#stScrTrk", function () { ST.screenTracks = this.checked; stSave(); wlSync(); });
+    on("#stDim", function () {
+      ST.sleepDim = this.checked; stSave();
+      var s = pBusy() && P.steps[P.idx];
+      if (s) { $("#ses").dataset.dim = ST.sleepDim && s.sleepy ? "1" : ""; pStage(s); }
+    });
   }
 
   /* ------------------------ heart-led beats and the power nap ------------------------
@@ -9272,7 +9814,7 @@
     return [
       G(45, "Lie down", ["Lie down somewhere you can rest, with headphones on, and the phone where you'll hear it.",
         "Close your eyes and let the breath slow down. Resting counts as much as sleeping.",
-        "You'll be woken gently. With a heart sensor, the nap is timed from when your heart rate says you've dozed off."], { vis: "glow" }),
+        "You'll be woken gently. With a heart sensor, the nap is timed from when your heart rate says you've dozed off."], { vis: "glow", sleepy: true }),
       { k: "nap", nap: len, secs: (len + 25) * 60, title: "Nap", open: true, quiet: true, lines: [[0, "Rest now."]] },
       { k: "wake", secs: 120, title: "Waking up", nobell: true, lines: [[0, "Time to wake up. Take a slow, deep breath."], [25, "Wiggle your fingers and toes."],
         [50, "Let some light in. Open your eyes when you're ready."], [80, "Stretch, and take your time."]] },
@@ -9905,7 +10447,7 @@
      it gets the same drawings, spoken cues, transitions and summary.
   ------------------------------------------------------------------------ */
 
-  var Y = { uid: null, name: "", items: [], cat: "all", from: null, delArm: 0 };
+  var Y = { uid: null, name: "", goal: "", items: [], type: "all", pos: "all", from: null, delArm: 0 };
 
   function yLoad() {
     try { var a = JSON.parse(store.get("yogaSeqs") || "[]"); return Array.isArray(a) ? a.filter(function (q) { return q && q.uid && Array.isArray(q.items); }) : []; }
@@ -9918,8 +10460,9 @@
     items.forEach(function (i) { var n = ASANA[i.id].en; if (names.indexOf(n) < 0) names.push(n); });
     var pos = items.map(function (i) { return ASANA[i.id].pos; });
     return {
-      id: "my-" + q.uid, custom: q.uid, group: "move", tags: ["move"], name: q.name || "My routine", strength: 2, tone: "relax", voice: true,
+      id: "my-" + q.uid, custom: q.uid, method: "move", goal: goalOf(q.goal) ? q.goal : "", also: [], name: q.name || "My routine", strength: 2, tone: "relax", voice: true,
       stand: pos.indexOf("stand") >= 0, lie: pos.indexOf("supine") >= 0 || pos.indexOf("prone") >= 0,
+      posture: (pos.indexOf("stand") >= 0 ? ["stand"] : []).concat(pos.indexOf("supine") >= 0 || pos.indexOf("prone") >= 0 ? ["lie"] : [], pos.indexOf("seat") >= 0 ? ["sit"] : []),
       blurb: names.length ? names.slice(0, 6).join(", ") + (names.length > 6 ? " and " + (names.length - 6) + " more." : ".") : "No poses yet.",
       build: function () { return yogaSteps(items); }, ev: YOGA_EV, cite: "Pascoe et al. 2017"
     };
@@ -9930,22 +10473,23 @@
     var q, find = arg && arg.indexOf("find/") === 0 ? ASANA[arg.slice(5)] : null;
     if (arg && arg.indexOf("find/") === 0) {
       // from search: the routine you're building stays as it is, and the library shows the pose
-      if (find) Y.cat = ACATS.some(function (c) { return c[0] === find.cat; }) ? find.cat : "all";
+      if (find) { Y.type = aType(find); Y.pos = "all"; }
     } else if (arg && arg.indexOf("copy/") === 0) {
       var set = yogaSet(arg.slice(5));
       Y.uid = null; Y.from = set ? set.name : null;
-      Y.name = set ? set.name + " (mine)" : "";
+      Y.name = set ? set.name + " (mine)" : ""; Y.goal = set && CAT[set.id] ? CAT[set.id].goal : "";
       Y.items = set ? set.items.map(function (i) { return { id: i.id, hold: i.hold, side: i.side }; }) : [];
     } else if (arg && (q = yGet(arg))) {
-      Y.uid = q.uid; Y.name = q.name; Y.items = q.items.map(function (i) { return { id: i.id, hold: i.hold, side: i.side }; }); Y.from = null;
+      Y.uid = q.uid; Y.name = q.name; Y.goal = q.goal || ""; Y.items = q.items.map(function (i) { return { id: i.id, hold: i.hold, side: i.side }; }); Y.from = null;
     } else if (!arg && Y.uid) {
-      Y.uid = null; Y.name = ""; Y.items = []; Y.from = null;           // a fresh sequence
+      Y.uid = null; Y.name = ""; Y.goal = ""; Y.items = []; Y.from = null;           // a fresh sequence
     }
     Y.delArm = 0;
     $("#ybName").value = Y.name;
+    $("#ybGoal").value = Y.goal || "";
     $("#ybDel").hidden = !Y.uid;
-    bSetT("#viewTitle", Y.uid ? "Edit routine" : "Build your own");
-    document.title = (Y.uid ? "Edit routine" : "Build your own routine") + " | Entrain";
+    bSetT("#viewTitle", Y.uid ? "Edit routine" : "Routine builder");
+    document.title = (Y.uid ? "Edit routine" : "Routine builder") + " | Entrain";
     yRenderTpl(); yRenderSeq(); yRenderLib();
     if (find) setTimeout(function () {
       var b = document.querySelector('#ybLib [data-add="' + find.id + '"]');
@@ -9993,11 +10537,17 @@
     $("#ybGo").disabled = !n; $("#ybSave").disabled = !n;
   }
   function yRenderLib() {
-    $("#ybCats").innerHTML = ACATS.map(function (c) {
-      return '<button class="chip-b" data-cat="' + c[0] + '" aria-pressed="' + (Y.cat === c[0]) + '">' + c[1] + "</button>";
+    $("#ybCats").innerHTML = A_TYPES.map(function (c) {
+      return '<button class="chip-b" data-cat="' + c[0] + '" aria-pressed="' + (Y.type === c[0]) + '">' + c[1] + "</button>";
     }).join("");
-    var list = ASANAS.filter(function (a) { return Y.cat === "all" || a.cat === Y.cat; });
-    bSetT("#ybLibN", list.length + " " + (Y.cat === "capoeira" ? "moves" : Y.cat === "mobility" ? "moves and stretches" : Y.cat === "all" ? "in all" : "poses"));
+    $("#ybPos").innerHTML = A_POSES.map(function (c) {
+      return '<button class="chip-b small" data-pos="' + c[0] + '" aria-pressed="' + (Y.pos === c[0]) + '">' + c[1] + "</button>";
+    }).join("");
+    var list = ASANAS.filter(function (a) { return (Y.type === "all" || aType(a) === Y.type) && (Y.pos === "all" || aPos(a) === Y.pos); }), n = list.length;
+    var noun = Y.type === "yoga" ? (n === 1 ? "pose" : "poses") : Y.type === "stretch" ? (n === 1 ? "stretch" : "stretches")
+      : Y.type === "all" ? (Y.pos === "all" ? "in all" : n === 1 ? "pose or move" : "poses and moves") : (n === 1 ? "move" : "moves");
+    bSetT("#ybLibN", n + " " + noun);
+    edgeFade($("#ybCats")); edgeFade($("#ybPos"));
     $("#ybLib").innerHTML = list.map(function (a) {
       return '<li><button class="yb-tile" data-add="' + a.id + '" aria-label="Add ' + esc(a.en) + '">' +
         '<span class="yb-tfig">' + yFig(a.id) + "</span>" +
@@ -10013,7 +10563,7 @@
     var list = yLoad(), name = ($("#ybName").value || "").trim() || "My routine " + (list.length + 1);
     Y.name = name;
     if (!Y.uid) Y.uid = Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
-    var q = { uid: Y.uid, name: name, items: Y.items.map(function (i) { var o = { id: i.id, hold: i.hold }; if (i.side) o.side = i.side; return o; }), at: Date.now() };
+    var q = { uid: Y.uid, name: name, goal: Y.goal || "", items: Y.items.map(function (i) { var o = { id: i.id, hold: i.hold }; if (i.side) o.side = i.side; return o; }), at: Date.now() };
     var k = -1;
     list.forEach(function (x, i) { if (x.uid === q.uid) k = i; });
     if (k >= 0) list[k] = q; else list.push(q);
@@ -10027,8 +10577,13 @@
   function yInit() {
     $("#ybCats").addEventListener("click", function (e) {
       var b = e.target.closest("button"); if (!b) return;
-      Y.cat = b.dataset.cat; yRenderLib();
+      Y.type = b.dataset.cat; yRenderLib();
     });
+    $("#ybPos").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      Y.pos = b.dataset.pos; yRenderLib();
+    });
+    $("#ybGoal").addEventListener("change", function () { Y.goal = this.value; });
     $("#ybLib").addEventListener("click", function (e) {
       var b = e.target.closest("[data-add]"); if (!b) return;
       var a = ASANA[b.dataset.add];
@@ -10085,7 +10640,7 @@
 
   var FD = { open: false, base: null, items: [], q: "", more: {}, pushed: false, back: null, t: 0 };
   var FD_KINDS = [["practice", "Practices"], ["pose", "Poses and moves"], ["breath", "Breathing"],
-    ["sound", "Sounds"], ["heart", "Heart"], ["learn", "Learn"]];
+    ["sound", "Sounds"], ["heart", "Heart"], ["learn", "Learn"], ["app", "Settings"]];
   var FD_CAP = 6;                        // results shown per group until you ask for the rest
   var FD_TRY = ["Sleep", "Anapana", "Tree", "4-7-8", "Coherence", "Tinnitus", "Capoeira", "Needs"];
 
@@ -10170,45 +10725,45 @@
     return (d.open ? "up to " : "") + pMinutes(d) + " min";
   }
   function fdPractice(d) {
-    var g = GROUPS.filter(function (x) { return x.id === d.group; })[0], steps = [];
+    var g = goalOf(d.goal), steps = [];
     (d.lengths || [0]).forEach(function (L) {   // step names at every length: longer sittings have more of them
       try { pPlan(d, L).steps.forEach(function (s) { if (s.title && steps.indexOf(s.title) < 0) steps.push(s.title); }); } catch (e) {}
     });
-    return fdEntry("practice", d.name, (d.custom ? "Your routine" : g ? g.name : "Practice") + " · " + fdMins(d),
+    return fdEntry("practice", d.name, [d.custom ? "Your routine" : "", g ? g.name : "", methodName(d.method), fdMins(d)].filter(Boolean).join(" · "),
       [d.blurb, d.parts, steps.join(" · "), d.how], "#practice/" + d.id,
-      { ic: pIcon(d), col: pColor(d), w: 1.25, tags: (d.tags || []).join(" ") + " " + d.id.replace(/-/g, " ") });
+      { ic: pIcon(d), col: pColor(d), w: 1.25, tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") });
   }
   function fdBuildBase() {
     var out = [];
     PRACTICES.forEach(function (d) { out.push(fdPractice(d)); });
-    var cats = {};
-    ACATS.forEach(function (c) { cats[c[0]] = c[1]; });
+    var types = { yoga: "Yoga pose", stretch: "Stretch", mobility: "Mobility drill", capoeira: "Capoeira move" }, poses = {};
+    A_POSES.forEach(function (c) { poses[c[0]] = c[1]; });
     ASANAS.forEach(function (a) {
-      out.push(fdEntry("pose", a.en, a.sa + " · " + (cats[a.cat] || "Pose") + (a.sides ? " · both sides" : "") + (a.move ? " · moving" : ""),
+      out.push(fdEntry("pose", a.en, a.sa + " · " + (types[aType(a)] || "Pose") + " · " + (poses[aPos(a)] || "") + (a.sides ? " · both sides" : ""),
         a.cues.map(function (c) { return aCue(c, a.sides ? "right" : null); }).concat([a.caution]), "#yoga/find/" + a.id,
         { ic: a.cat === "capoeira" ? "drum" : "move", col: "var(--accent)", w: 1, alias: a.sa }));
     });
-    out.push(fdEntry("pose", "Build your own routine", "Movement · " + ASANAS.length + " poses and moves",
+    out.push(fdEntry("pose", "Routine builder", "Movement · " + ASANAS.length + " poses and moves",
       ["Pick yoga poses, stretches, mobility drills and capoeira moves, set each one's time, and save the routine."], "#yoga",
       { ic: "plus", col: "var(--accent)", w: 1.1, tags: "yoga builder custom sequence" }));
     BREATHS.forEach(function (b) {
       var lab = document.querySelector('#bPats input[value="' + b.id + '"]'), t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
       var name = lab ? fdTxt(lab.parentNode) : b.id;
-      out.push(fdEntry("breath", name, "Breathing pattern · " + (Math.round(600 / per) / 10) + " breaths a minute",
+      out.push(fdEntry("breath", name, (goalOf(b.goal) ? goalOf(b.goal).name + " · " : "") + "Breathing pattern · " + (Math.round(600 / per) / 10) + " breaths a minute",
         [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id }));
     });
     out.push(fdEntry("breath", "Breathing guide", "Breathe · paced breathing",
       ["Paced breathing with five visuals, timed sessions, sound cues and live heart data."], "#breathe",
       { ic: "breathe", col: "var(--b-in)", w: 1, tags: "breathe pace" }));
-    var tcat = { relax: "Relaxation and sleep", stim: "Stimulation and focus", ther: "Tinnitus" };
     TRACKS.forEach(function (t) {
-      out.push(fdEntry("sound", t.name, t.band + " · " + t.minutes + " min · " + (tcat[t.cat] || "Track"), [t.desc, t.ev], "#track/" + t.id,
-        { ic: "sounds", col: "var(--relax)", w: 1, alias: t.cat === "ther" ? "tinnitus" : "", tags: "binaural beat track " + tcat[t.cat] }));
+      var g = goalOf(t.goal), gn = g ? g.name : "Tinnitus";
+      out.push(fdEntry("sound", t.name, gn + " · " + t.band + " track · " + t.minutes + " min", [t.desc, t.ev], "#track/" + t.id,
+        { ic: "sounds", col: "var(--relax)", w: 1, alias: t.goal === "tinnitus" ? "tinnitus" : "", tags: "binaural beat track " + (t.also || []).join(" ") }));
     });
-    out.push(fdEntry("sound", "Prime, then work", "Sounds · 5 to 20 min before a task",
+    out.push(fdEntry("sound", "Custom primer", "Focus · Sounds · 5 to 20 min before a task",
       ["Listen to a beat before you start a task, get a cue when the block ends, then begin working."], "#prime",
       { ic: "bolt", col: "var(--relax)", w: 1, tags: "binaural focus primer alpha beta gamma" }));
-    out.push(fdEntry("sound", "Build your own beat", "Sounds · any beat and carrier",
+    out.push(fdEntry("sound", "Beat builder", "Sounds · any beat and carrier",
       ["Pick the beat frequency, the carrier tone and the session length, then play it."], "#builder",
       { ic: "sliders", col: "var(--relax)", w: 1, tags: "binaural custom builder carrier frequency" }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
@@ -10223,6 +10778,9 @@
     out.push(fdEntry("heart", "Live heart data and coherence", "Heart · rate, swing, RMSSD, coherence",
       ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
       { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));
+    out.push(fdEntry("app", "Settings", "Defaults for every practice, sound and screen",
+      ["Spoken guidance, voice, bells, breath cues and visual, binaural layer, Anapana reminders, background sound, keeping reflections, and keeping the screen on or dimming it for sleep."], "#settings",
+      { ic: "gear", col: "var(--accent)", w: 1, tags: "options preferences defaults voice bells screen dim brightness wake lock background rain" }));
     fdLearn(out);
     return out;
   }
@@ -10400,7 +10958,7 @@
   function fdTrack(id) {
     var t = TRACKS.filter(function (x) { return x.id === id; })[0];
     if (!t) return;
-    if (curFilter !== "all" && curFilter !== t.cat) { var all = document.querySelector('.tab[data-filter="all"]'); if (all) all.click(); }
+    if (curFilter !== "all" && curFilter !== t.goal) { var all = document.querySelector('.tab[data-filter="all"]'); if (all) all.click(); }
     setTimeout(function () {
       var card = document.querySelector('#grid .card[data-id="' + id + '"]');
       if (!card) return;

@@ -9,7 +9,7 @@
 
   var FD = { open: false, base: null, items: [], q: "", more: {}, pushed: false, back: null, t: 0 };
   var FD_KINDS = [["practice", "Practices"], ["pose", "Poses and moves"], ["breath", "Breathing"],
-    ["sound", "Sounds"], ["heart", "Heart"], ["learn", "Learn"]];
+    ["sound", "Sounds"], ["heart", "Heart"], ["learn", "Learn"], ["app", "Settings"]];
   var FD_CAP = 6;                        // results shown per group until you ask for the rest
   var FD_TRY = ["Sleep", "Anapana", "Tree", "4-7-8", "Coherence", "Tinnitus", "Capoeira", "Needs"];
 
@@ -94,45 +94,45 @@
     return (d.open ? "up to " : "") + pMinutes(d) + " min";
   }
   function fdPractice(d) {
-    var g = GROUPS.filter(function (x) { return x.id === d.group; })[0], steps = [];
+    var g = goalOf(d.goal), steps = [];
     (d.lengths || [0]).forEach(function (L) {   // step names at every length: longer sittings have more of them
       try { pPlan(d, L).steps.forEach(function (s) { if (s.title && steps.indexOf(s.title) < 0) steps.push(s.title); }); } catch (e) {}
     });
-    return fdEntry("practice", d.name, (d.custom ? "Your routine" : g ? g.name : "Practice") + " · " + fdMins(d),
+    return fdEntry("practice", d.name, [d.custom ? "Your routine" : "", g ? g.name : "", methodName(d.method), fdMins(d)].filter(Boolean).join(" · "),
       [d.blurb, d.parts, steps.join(" · "), d.how], "#practice/" + d.id,
-      { ic: pIcon(d), col: pColor(d), w: 1.25, tags: (d.tags || []).join(" ") + " " + d.id.replace(/-/g, " ") });
+      { ic: pIcon(d), col: pColor(d), w: 1.25, tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") });
   }
   function fdBuildBase() {
     var out = [];
     PRACTICES.forEach(function (d) { out.push(fdPractice(d)); });
-    var cats = {};
-    ACATS.forEach(function (c) { cats[c[0]] = c[1]; });
+    var types = { yoga: "Yoga pose", stretch: "Stretch", mobility: "Mobility drill", capoeira: "Capoeira move" }, poses = {};
+    A_POSES.forEach(function (c) { poses[c[0]] = c[1]; });
     ASANAS.forEach(function (a) {
-      out.push(fdEntry("pose", a.en, a.sa + " · " + (cats[a.cat] || "Pose") + (a.sides ? " · both sides" : "") + (a.move ? " · moving" : ""),
+      out.push(fdEntry("pose", a.en, a.sa + " · " + (types[aType(a)] || "Pose") + " · " + (poses[aPos(a)] || "") + (a.sides ? " · both sides" : ""),
         a.cues.map(function (c) { return aCue(c, a.sides ? "right" : null); }).concat([a.caution]), "#yoga/find/" + a.id,
         { ic: a.cat === "capoeira" ? "drum" : "move", col: "var(--accent)", w: 1, alias: a.sa }));
     });
-    out.push(fdEntry("pose", "Build your own routine", "Movement · " + ASANAS.length + " poses and moves",
+    out.push(fdEntry("pose", "Routine builder", "Movement · " + ASANAS.length + " poses and moves",
       ["Pick yoga poses, stretches, mobility drills and capoeira moves, set each one's time, and save the routine."], "#yoga",
       { ic: "plus", col: "var(--accent)", w: 1.1, tags: "yoga builder custom sequence" }));
     BREATHS.forEach(function (b) {
       var lab = document.querySelector('#bPats input[value="' + b.id + '"]'), t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
       var name = lab ? fdTxt(lab.parentNode) : b.id;
-      out.push(fdEntry("breath", name, "Breathing pattern · " + (Math.round(600 / per) / 10) + " breaths a minute",
+      out.push(fdEntry("breath", name, (goalOf(b.goal) ? goalOf(b.goal).name + " · " : "") + "Breathing pattern · " + (Math.round(600 / per) / 10) + " breaths a minute",
         [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id }));
     });
     out.push(fdEntry("breath", "Breathing guide", "Breathe · paced breathing",
       ["Paced breathing with five visuals, timed sessions, sound cues and live heart data."], "#breathe",
       { ic: "breathe", col: "var(--b-in)", w: 1, tags: "breathe pace" }));
-    var tcat = { relax: "Relaxation and sleep", stim: "Stimulation and focus", ther: "Tinnitus" };
     TRACKS.forEach(function (t) {
-      out.push(fdEntry("sound", t.name, t.band + " · " + t.minutes + " min · " + (tcat[t.cat] || "Track"), [t.desc, t.ev], "#track/" + t.id,
-        { ic: "sounds", col: "var(--relax)", w: 1, alias: t.cat === "ther" ? "tinnitus" : "", tags: "binaural beat track " + tcat[t.cat] }));
+      var g = goalOf(t.goal), gn = g ? g.name : "Tinnitus";
+      out.push(fdEntry("sound", t.name, gn + " · " + t.band + " track · " + t.minutes + " min", [t.desc, t.ev], "#track/" + t.id,
+        { ic: "sounds", col: "var(--relax)", w: 1, alias: t.goal === "tinnitus" ? "tinnitus" : "", tags: "binaural beat track " + (t.also || []).join(" ") }));
     });
-    out.push(fdEntry("sound", "Prime, then work", "Sounds · 5 to 20 min before a task",
+    out.push(fdEntry("sound", "Custom primer", "Focus · Sounds · 5 to 20 min before a task",
       ["Listen to a beat before you start a task, get a cue when the block ends, then begin working."], "#prime",
       { ic: "bolt", col: "var(--relax)", w: 1, tags: "binaural focus primer alpha beta gamma" }));
-    out.push(fdEntry("sound", "Build your own beat", "Sounds · any beat and carrier",
+    out.push(fdEntry("sound", "Beat builder", "Sounds · any beat and carrier",
       ["Pick the beat frequency, the carrier tone and the session length, then play it."], "#builder",
       { ic: "sliders", col: "var(--relax)", w: 1, tags: "binaural custom builder carrier frequency" }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
@@ -147,6 +147,9 @@
     out.push(fdEntry("heart", "Live heart data and coherence", "Heart · rate, swing, RMSSD, coherence",
       ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
       { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));
+    out.push(fdEntry("app", "Settings", "Defaults for every practice, sound and screen",
+      ["Spoken guidance, voice, bells, breath cues and visual, binaural layer, Anapana reminders, background sound, keeping reflections, and keeping the screen on or dimming it for sleep."], "#settings",
+      { ic: "gear", col: "var(--accent)", w: 1, tags: "options preferences defaults voice bells screen dim brightness wake lock background rain" }));
     fdLearn(out);
     return out;
   }
@@ -324,7 +327,7 @@
   function fdTrack(id) {
     var t = TRACKS.filter(function (x) { return x.id === id; })[0];
     if (!t) return;
-    if (curFilter !== "all" && curFilter !== t.cat) { var all = document.querySelector('.tab[data-filter="all"]'); if (all) all.click(); }
+    if (curFilter !== "all" && curFilter !== t.goal) { var all = document.querySelector('.tab[data-filter="all"]'); if (all) all.click(); }
     setTimeout(function () {
       var card = document.querySelector('#grid .card[data-id="' + id + '"]');
       if (!card) return;

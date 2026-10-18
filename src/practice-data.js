@@ -190,7 +190,7 @@
     return [
       G(45, "How it works", ["Get comfortable in bed and close your eyes.",
         "You'll hear or see a simple word every few seconds. Picture that thing in detail: its colour, its size, where it is.",
-        "When the next word comes, let the last one go, and picture each word on its own."], { vis: "glow" }),
+        "When the next word comes, let the last one go, and picture each word on its own."], { vis: "glow", sleepy: true }),
       Sh(min * 60 - 45, "Picture each word")
     ];
   }
@@ -242,7 +242,7 @@
   function yogaSet(id) { for (var i = 0; i < YOGA_SETS.length; i++) if (YOGA_SETS[i].id === id) return YOGA_SETS[i]; return null; }
   function yogaPractice(id, o) {
     var set = yogaSet(id);
-    return ext({ id: id, yoga: id, group: "move", strength: 2, tone: "relax", voice: true, name: set.name,
+    return ext({ id: id, yoga: id, strength: 2, tone: "relax", voice: true, name: set.name,
       build: function () { return yogaSteps(set.items, set); }, ev: YOGA_EV, cite: "Pascoe et al. 2017" }, o);
   }
 
@@ -250,11 +250,11 @@
   var PRACTICES = [
     /* ===== combined programs ===== */
     {
-      id: "sleep-descent", group: "program", tags: ["program", "sleep"], name: "Sleep Descent", min: 30, strength: 2,
+      id: "sleep-descent", name: "Sleep Descent", min: 30, strength: 2,
       tone: "ther", lie: true, sensor: "optional",
-      blurb: "The Deep Sleep Descent beat with a slowing, long-exhale breath that fades out, then a short body release while the beat settles into delta.",
+      blurb: "The Delta Sleep beat with a slowing, long-exhale breath that fades out, then a short body release while the beat settles into delta.",
       parts: "Slow breathing 6 → 4.6 a minute · body release · drift · 6 → 3 Hz binaural",
-      audio: { name: "Deep Sleep Descent", band: "Theta → Delta", carrier: 200, pts: [[0, 6], [1200, 3], [1800, 3]], fade: 120, cat: "relax" },
+      audio: { name: "Delta Sleep", band: "Theta → Delta", carrier: 200, pts: [[0, 6], [1200, 3], [1800, 3]], fade: 120, cat: "relax" },
       build: function () {
         return [
           G(60, "Settle in", ["Lie down with the lights off and your headphones comfortable. Set the volume low, just above hearing.",
@@ -265,11 +265,11 @@
               lines: [[2, "Breathe in through the nose as the tone rises, and out slowly as it falls."],
                 [180, "The breaths are getting longer. If it ever feels like effort, breathe a little faster. Ease matters more than the count."]] }),
           Br(180, "The guide fades", { inh: 5, sip: 0, hold: 0, exh: 8, rest: 0 },
-            { cueFade: [1, 0], lines: [[0, "The guide will slowly fade. Keep this slow rhythm on your own."]] }),
+            { cueFade: [1, 0], sleepy: true, lines: [[0, "The guide will slowly fade. Keep this slow rhythm on your own."]] }),
           G(300, "Body release", [[0, "Let your feet and legs grow heavy."], [40, "Your hips and lower back sink into the bed."],
             [80, "Your belly is soft, rising and falling by itself."], [120, "Your hands and arms are heavy and warm."],
             [160, "Shoulders drop. The neck is long."], [200, "Your jaw loosens, your eyes rest, your forehead is smooth."],
-            [250, "The whole body heavy, warm and still."]], { body: ["all"], quiet: true }),
+            [250, "The whole body heavy, warm and still."]], { body: ["all"], quiet: true, sleepy: true }),
           Dr(780, "Drift", [[0, "Rest now, and let the sound carry you. It fades out by itself."]])
         ];
       },
@@ -278,7 +278,7 @@
       cite: "Tsai et al. 2015 · Van Diest et al. 2014 · Edinger et al. 2021 (AASM) · Jirakittayakorn & Wongsawat 2018"
     },
     {
-      id: "calm-reset", group: "program", tags: ["program", "calm"], name: "Calm Reset", min: 10, strength: 2,
+      id: "calm-reset", name: "Calm Reset", min: 10, strength: 2,
       tone: "relax", sensor: "optional",
       blurb: "For a stressful moment: cyclic sighs to bring arousal down fast, then even breathing at your resonance pace, under an alpha-to-theta beat.",
       parts: "Cyclic sighs · resonance breathing · 10 → 6 Hz binaural",
@@ -300,7 +300,7 @@
       cite: "Balban et al. 2023 · Laborde et al. 2022 · Garcia-Argibay et al. 2019 · Fincham et al. 2023 (RCT)"
     },
     {
-      id: "coherence", group: "program", tags: ["program", "calm"], name: "Heart Coherence", min: 15, strength: 2,
+      id: "coherence", name: "Heart Coherence", min: 15, strength: 2,
       tone: "relax", sensor: "best", anaStyle: "heart",
       blurb: "Heart-focused breathing at your resonance pace with live coherence, over a steady 6 Hz theta beat, the frequency tied to parasympathetic recovery.",
       parts: "Heart-focused resonance breathing · coherence feedback · 6 Hz binaural",
@@ -323,7 +323,7 @@
       cite: "Lehrer & Gevirtz 2014 · McCraty et al. 2009 · McConnell et al. 2014"
     },
     {
-      id: "focus-primer", group: "program", tags: ["program", "focus"], name: "Focus Primer", min: 13, strength: 2,
+      id: "focus-primer", name: "Focus Primer", min: 13, strength: 2,
       tone: "stim", sensor: "optional",
       blurb: "Three minutes of resonance breathing to steady you, then ten of 16 Hz beta while you set your intention. Start work when the bell rings.",
       parts: "Resonance breathing · intention · 10 → 16 Hz binaural · start cue",
@@ -345,7 +345,7 @@
       cite: "Garcia-Argibay et al. 2019 · Lane et al. 1998 · Prinsloo et al. 2011"
     },
     {
-      id: "nsdr", group: "program", tags: ["program", "calm", "sleep", "mind"], name: "Body Scan + Theta", min: 20, strength: 2,
+      id: "nsdr", name: "Body Scan + Theta", min: 20, strength: 2,
       tone: "relax", lie: true, sensor: "optional",
       blurb: "A 20-minute guided body scan over a 6 Hz theta beat: a deep rest in the daytime (sometimes called NSDR), or a way into sleep.",
       parts: "Guided body scan · 6 Hz binaural",
@@ -356,7 +356,7 @@
       cite: "Gan et al. 2022 · Moszeik et al. 2025 · Jirakittayakorn & Wongsawat 2017"
     },
     {
-      id: "recovery", group: "program", tags: ["program", "calm"], name: "Exercise Recovery", min: 10, strength: 2,
+      id: "recovery", name: "Exercise Recovery", min: 10, strength: 2,
       tone: "relax", sensor: "best",
       blurb: "After training: slow breathing at six a minute with a long exhale, under the theta beat from the post-exercise HRV study. Watch your heart rate come down.",
       parts: "Slow long-exhale breathing · 6 Hz binaural · heart-rate drop",
@@ -376,7 +376,7 @@
     },
 
     {
-      id: "heart-led", group: "program", tags: ["program", "calm"], name: "Heart-Led Beats", exp: true, lengths: [15, 20, 30], min: 20, strength: 1,
+      id: "heart-led", name: "Heart-Led Beats", exp: true, lengths: [15, 20, 30], min: 20, strength: 1,
       sensor: "best", sensorWhy: "the beat follows it; without one, it runs a scripted descent",
       audio: { dyn: true, start: 10, cat: "relax", band: "Alpha to theta, led by your heart", name: "Heart-led beat", carrier: 200, fade: 20 },
       blurb: "An experiment in biofeedback through sound: the binaural beat follows your heart, gliding from alpha toward theta as your heart rate settles and its rhythm loosens.",
@@ -388,7 +388,7 @@
 
     /* ===== meditation and mindfulness ===== */
     {
-      id: "body-scan", group: "mind", tags: ["mind", "calm", "sleep"], name: "Body Scan", lengths: [10, 20, 30], min: 10, strength: 1,
+      id: "body-scan", name: "Body Scan", lengths: [10, 20, 30], min: 10, strength: 1,
       tone: "relax", lie: true, voice: true,
       blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation exactly as it is.",
       build: function (min) { return bodyScan(min, "wake"); },
@@ -397,7 +397,7 @@
       cite: "Gan et al. 2022 · Goyal et al. 2014"
     },
     {
-      id: "anapana", group: "mind", tags: ["mind", "calm"], name: "Anapana", lengths: [5, 10, 20, 30, 60], min: 10, strength: 2,
+      id: "anapana", name: "Anapana", lengths: [5, 10, 20, 30, 60], min: 10, strength: 2,
       tone: "relax",
       blurb: "Breath observation in the Vipassana tradition: the area of attention narrows step by step, from the triangle around the nose and upper lip to one small point beneath the nostrils.",
       build: function (min) { return anapana(min); },
@@ -406,7 +406,7 @@
       cite: "Szekeres & Wertheim 2015 · Telles et al. 2014 · Goyal et al. 2014"
     },
     {
-      id: "metta", group: "mind", tags: ["mind", "calm"], name: "Loving-Kindness", lengths: [10, 15], min: 10, strength: 2,
+      id: "metta", name: "Loving-Kindness", lengths: [10, 15], min: 10, strength: 2,
       tone: "stim",
       blurb: "Silently offer simple wishes of safety, health and ease to yourself, then to others, widening the circle step by step.",
       build: function (min) { return lovingKindness(min); },
@@ -415,7 +415,7 @@
       cite: "Zeng et al. 2015"
     },
     {
-      id: "self-compassion", group: "mind", tags: ["mind", "calm"], name: "Self-Compassion Break", min: 5, strength: 2,
+      id: "self-compassion", name: "Self-Compassion Break", min: 5, strength: 2,
       tone: "stim",
       blurb: "Three short steps for a hard moment: name it, remember that others feel it too, and offer yourself some kindness.",
       build: function () {
@@ -436,7 +436,7 @@
       cite: "Ferrari et al. 2019"
     },
     {
-      id: "grounding", group: "mind", tags: ["mind", "calm"], name: "5-4-3-2-1 Grounding", min: 5, strength: 1,
+      id: "grounding", name: "5-4-3-2-1 Grounding", min: 5, strength: 1,
       tone: "relax",
       blurb: "When anxiety spirals: find 5 things you can see, 4 you can hear, 3 you can feel, 2 you can smell and 1 you can taste. Tap each one.",
       build: function () {
@@ -455,7 +455,7 @@
       cite: "Clinical practice; no direct trials"
     },
     {
-      id: "walking", group: "move", tags: ["move", "mind", "calm"], name: "Walking Meditation", min: 10, strength: 1,
+      id: "walking", name: "Walking Meditation", min: 10, strength: 1,
       tone: "relax", voice: true,
       blurb: "Walk slowly and attend to each step: lifting, moving, placing. Phone in your pocket, voice guidance on.",
       build: function () {
@@ -477,7 +477,7 @@
 
     /* ===== reflection ===== */
     {
-      id: "nvc-self", group: "reflect", tags: ["reflect", "calm"], name: "Self-Empathy (NVC)", reflect: true, selfPaced: true, est: 15, strength: 1, tone: "ther",
+      id: "nvc-self", name: "Self-Empathy (NVC)", reflect: true, selfPaced: true, est: 15, strength: 1, tone: "ther",
       blurb: "Nonviolent communication turned inward: write what happened, hear out your judgments and question the rules behind them, then find the feelings and needs underneath, and a request you can act on.",
       build: function () { return nvcSelfSteps(); },
       how: "Self-paced, with short pauses between the parts: what happened, written the way a camera would record it; your judgments, uncensored; one of the rules behind them, questioned; where you feel it in your body; your feelings, picked from a feelings wheel of 88 words in 11 families (or a plain list, or your own words), and your needs; a guess at the other person's; and a request. Gentle checks point out words that carry a judgment, and feelings that are really interpretations of what someone did. You end with your own NVC sentence.",
@@ -485,7 +485,7 @@
       cite: "Epinat-Duclos et al. 2021 · Torre & Lieberman 2018 · Kashdan et al. 2015 · Frattaroli 2006"
     },
     {
-      id: "nvc-choose", group: "reflect", tags: ["reflect"], name: "From Should to Choose", reflect: true, selfPaced: true, est: 10, strength: 1, tone: "ther",
+      id: "nvc-choose", name: "From Should to Choose", reflect: true, selfPaced: true, est: 10, strength: 1, tone: "ther",
       blurb: "List what you do because you feel you have to, then check each one: would you still choose it, and for what? An exercise from nonviolent communication for looking at the rules you live by.",
       build: function () { return nvcChooseSteps(); },
       how: "List the things you feel you have to, should or must do. Then for each, decide whether you'd still choose it, and why, picking from common reasons or writing your own. Reasons that are really pressure, like money, approval, or avoiding guilt, shame or punishment, are marked. You end with your list rewritten as \u201CI choose to\u2026 because I want\u2026\u201D, and the ones you'd like to change.",
@@ -495,7 +495,7 @@
 
     /* ===== relaxation and sleep ===== */
     {
-      id: "pmr", group: "relax", tags: ["calm", "sleep"], name: "Progressive Muscle Relaxation", min: 12, strength: 2,
+      id: "pmr", name: "Progressive Muscle Relaxation", min: 12, strength: 2,
       tone: "relax", lie: true, voice: true,
       blurb: "Tense each muscle group for a few seconds, then let go and feel the difference. Fourteen groups, hands to feet.",
       build: function () {
@@ -512,7 +512,7 @@
       cite: "Toussaint et al. 2021 · Edinger et al. 2021 (AASM)"
     },
     {
-      id: "shuffle", group: "relax", tags: ["sleep"], name: "Cognitive Shuffle", lengths: [10, 20], min: 10, strength: 1,
+      id: "shuffle", name: "Cognitive Shuffle", lengths: [10, 20], min: 10, strength: 1,
       tone: "ther", lie: true,
       blurb: "For a racing mind at bedtime: picture a series of random, unrelated things, one every few seconds, until sleep takes over.",
       build: function (min) { return shuffle(min); },
@@ -523,7 +523,7 @@
 
     /* ===== breathwork (pranayama) ===== */
     {
-      id: "nadi", group: "breath", tags: ["breath", "calm"], name: "Nadi Shodhana", lengths: [5, 10], min: 5, strength: 2,
+      id: "nadi", name: "Nadi Shodhana", lengths: [5, 10], min: 5, strength: 2,
       tone: "relax", sensor: "optional",
       blurb: "Alternate nostril breathing: in through one side, out through the other, switching each breath. The guide shows which nostril.",
       build: function (min) { return nadi(min); },
@@ -532,7 +532,7 @@
       cite: "Telles et al. 2014 · Raghuraj et al. 1998"
     },
     {
-      id: "bhramari", group: "breath", tags: ["breath", "calm", "sleep"], name: "Bhramari", min: 5, strength: 2,
+      id: "bhramari", name: "Bhramari", min: 5, strength: 2,
       tone: "relax", sensor: "optional",
       blurb: "Humming bee breath: a quiet breath in, then a long, low hum on the way out. Simple, soothing, and easy to do with eyes closed.",
       build: function () {
@@ -551,7 +551,7 @@
       cite: "Weitzberg & Lundberg 2002 · Woo & Kim 2025"
     },
     {
-      id: "ujjayi", group: "breath", tags: ["breath", "calm"], name: "Ujjayi", min: 6, strength: 2,
+      id: "ujjayi", name: "Ujjayi", min: 6, strength: 2,
       tone: "relax", sensor: "optional",
       blurb: "Ocean breath at six a minute, with the soft throat sound on the out-breath only, the version that worked best for beginners.",
       build: function () {
@@ -570,7 +570,7 @@
       cite: "Mason et al. 2013"
     },
     {
-      id: "dirga", group: "breath", tags: ["breath", "calm"], name: "Three-Part Breath", min: 5, strength: 1,
+      id: "dirga", name: "Three-Part Breath", min: 5, strength: 1,
       tone: "relax", sensor: "optional",
       blurb: "Dirga pranayama: fill the belly, then the ribs, then the chest, and empty in reverse. A slow, full breath that teaches diaphragmatic breathing.",
       build: function () {
@@ -586,7 +586,7 @@
       cite: "Laborde et al. 2022 · Van Diest et al. 2014"
     },
     {
-      id: "kapalabhati", group: "breath", tags: ["breath", "focus"], name: "Kapalabhati", min: 6, strength: 1,
+      id: "kapalabhati", name: "Kapalabhati", min: 6, strength: 1,
       tone: "stim", confirm: true,
       blurb: "Skull-shining breath: short, sharp exhales from the belly with passive inhales, in three rounds. An energising breath, for a lift in alertness.",
       caution: "Skip this one if you are pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks. Do it seated, on an empty stomach, and stop if you feel dizzy or tingly.",
@@ -610,7 +610,7 @@
       cite: "Raghuraj et al. 1998 · Fincham et al. 2023"
     },
     {
-      id: "wim-hof", group: "breath", tags: ["breath", "focus"], name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1,
+      id: "wim-hof", name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1,
       tone: "stim", confirm: true, sensor: "optional", open: true,
       variant: { key: "breaths", label: "Breaths per round", opts: [[30, "30"], [40, "40"]], def: 30 },
       blurb: "Rounds of deep, full breaths, then a relaxed hold on empty lungs for as long as is comfortable, then one recovery breath held for 15 seconds.",
@@ -622,7 +622,7 @@
     },
 
     {
-      id: "tapping", group: "relax", tags: ["calm"], name: "Tapping", tapping: true, open: true, min: 7, strength: 1, tone: "ther",
+      id: "tapping", name: "Tapping", tapping: true, open: true, min: 7, strength: 1, tone: "ther",
       variant: { key: "rounds", label: "Rounds", opts: [[2, "2"], [3, "3"]], def: 2 },
       blurb: "Rate what's bothering you, then tap nine acupressure points with your fingertips while saying a short phrase. Two or three rounds, then rate it again.",
       caution: "Tapping isn't a treatment for trauma or a mental-health condition. If strong feelings or memories come up, stop, breathe slowly and look around the room, and talk to a professional if it keeps happening. Tap gently.",
@@ -633,7 +633,7 @@
     },
 
     {
-      id: "power-nap", group: "relax", tags: ["calm"], name: "Power Nap", nap: true, open: true, lengths: [10, 20, 30], min: 20, strength: 2,
+      id: "power-nap", name: "Power Nap", nap: true, open: true, lengths: [10, 20, 30], min: 20, strength: 2,
       lenFmt: function (m) { return m + " min nap"; },
       sensor: "best", sensorWhy: "times the nap from when your heart rate says you've dozed off", lie: true, voice: true,
       audio: { dyn: true, start: 6, cat: "relax", band: "Theta to delta, then up to alpha to wake", name: "Nap beat", carrier: 180, fade: 6 },
@@ -646,25 +646,25 @@
     },
 
     /* ===== movement ===== */
-    yogaPractice("standing-flow", { tags: ["move", "calm", "focus"], stand: true,
+    yogaPractice("standing-flow", { stand: true,
       blurb: "Nine standing poses, held for a few breaths each: mountain, reach, side bends, forward fold, chair, the warriors, triangle and tree." }),
-    yogaPractice("standing-reset", { tags: ["move", "focus"], stand: true,
+    yogaPractice("standing-reset", { stand: true,
       blurb: "A five-minute break from the desk: mountain, reach, side bends, a forward fold and chair." }),
-    yogaPractice("morning-yoga", { tags: ["move", "focus"], stand: true,
+    yogaPractice("morning-yoga", { stand: true,
       blurb: "A brisk sequence to wake the body: reach and fold, plank, downward dog, low lunges, warrior II and goddess." }),
-    yogaPractice("back-hips", { tags: ["move", "calm"], lie: true,
+    yogaPractice("back-hips", { lie: true,
       blurb: "Gentle floor work for a stiff back and tight hips: cat and cow, child's pose, lunges, sphinx, bridge and a twist, ending in rest." }),
-    yogaPractice("evening-floor", { tags: ["move", "calm", "sleep"], lie: true,
+    yogaPractice("evening-floor", { lie: true,
       blurb: "A slow seated and lying sequence for the evening, ending with legs up the wall and a long rest." }),
-    yogaPractice("balance-yoga", { tags: ["move", "focus"], stand: true,
+    yogaPractice("balance-yoga", { stand: true,
       blurb: "Tree, warrior III and dancer, with mountain and chair to steady you. Keep a wall within reach." }),
-    yogaPractice("morning-stretch", { tags: ["move", "focus"], stand: true, strength: 1,
+    yogaPractice("morning-stretch", { stand: true, strength: 1,
       blurb: "Ten minutes to loosen up after sleep: neck rolls, arm circles, twists, hip circles, squats, then calf, quad and chest stretches.",
       ev: STRETCH_EV, cite: "Montero-Marín et al. 2013" }),
-    yogaPractice("evening-stretch", { tags: ["move", "calm", "sleep"], lie: true, strength: 1,
+    yogaPractice("evening-stretch", { lie: true, strength: 1,
       blurb: "Slow floor stretches to let the day go: neck and side stretches, cat-cow, hips and hamstrings, a twist and a long rest.",
       ev: STRETCH_EV, cite: "Montero-Marín et al. 2013" }),
-    yogaPractice("solo-capoeira", { tags: ["move", "focus"], stand: true, room: true, rhythm: true, strength: 1, tone: "stim",
+    yogaPractice("solo-capoeira", { stand: true, room: true, rhythm: true, strength: 1, tone: "stim",
       blurb: "A warm-up, then the ginga, dodges, the negativa and two kicks to a berimbau, a free ginga to play with, and a cool-down stretch.",
       caution: "Capoeira asks a lot of the knees, hips and ankles. Squat and kick only as deep and as high as is comfortable, keep clear space around you, and skip the moves that hurt.",
       ev: CAPO_EV, cite: "Köhler et al. 2025" })
@@ -681,13 +681,3 @@
     "sock,spoon,squirrel,star,strawberry,stream,sunflower,swan,swing,table,teapot,tent,tomato,towel,tractor,train,tree,tulip,turtle," +
     "umbrella,valley,vase,violin,wagon,waterfall,whale,wheat,window,windmill,wool,yacht,zebra").split(",");
 
-  var GROUPS = [
-    { id: "program", name: "Programs", lede: "Binaural beats, paced breathing and your heart data in one session." },
-    { id: "mind", name: "Meditation", lede: "Attention training: the body, the breath, kindness and the senses." },
-    { id: "reflect", name: "Reflection", lede: "Writing and self-inquiry: question your judgments, and find the feelings and needs beneath them." },
-    { id: "breath", name: "Breathwork", lede: "Pranayama, guided phase by phase." },
-    { id: "relax", name: "Relaxation and sleep", lede: "For stress, winding down and falling asleep." },
-    { id: "move", name: "Movement", lede: "Yoga, stretching and capoeira from the movement library, your own routines, and walking." }
-  ];
-  var FILTERS = [["all", "All"], ["program", "Programs"], ["sleep", "Sleep"], ["calm", "Calm"], ["focus", "Focus"],
-    ["mind", "Meditation"], ["reflect", "Reflection"], ["breath", "Breathwork"], ["move", "Movement"]];

@@ -4,6 +4,7 @@ const URL0 = APP;
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
 const mock = require('./sensor-mock');
 const only = process.argv[2] || '';
+const opts = async p => { if (await p.$eval('#sOpts', e => e.hidden).catch(() => false)) { await p.click('#sOptsBtn'); await p.waitForTimeout(60); } };   // options are folded by default
 const t = (p, s) => p.$eval(s, e => e.textContent.trim()).catch(() => '(missing)');
 const vis = (p, s) => p.$eval(s, e => !e.hidden && !!(e.offsetParent || e.getClientRects().length) && getComputedStyle(e).visibility !== 'hidden').catch(() => false);
 const T = p => p.evaluate(() => { const P = window.__entrain.P; return P.state === 'running' ? performance.now() / 1000 - P.t0 : P.st; });
@@ -200,6 +201,7 @@ async function until(p, secs, max = 240000) {
   if (!only || only === 'J') {
     const p = await page(null, {});
     await p.evaluate(() => location.hash = 'practice/calm-reset'); await p.waitForTimeout(200);
+    await opts(p);
     ok(await p.$eval('#sOptAudio', c => c.checked), 'binaural layer on by default for programs');
     await p.click('#sGo'); await p.waitForTimeout(600);
     const a1 = await p.evaluate(() => { const A = window.__entrain.A; return { name: A.track && A.track.name, playing: A.playing, pts: A.track && A.track.pts.length, min: A.track && A.track.minutes }; });

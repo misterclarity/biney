@@ -1,11 +1,13 @@
 // Regression checks for the October 2026 code review: each group reproduces a bug that was fixed.
 // O to R cover the requests that followed: Anapana's narrowing focus, wording, the screen lock and search.
+// S to V cover the second review: goals for everything, the library, the small fixes, the practice page and Settings.
 // Run: node tests/regress.js [group letter]
 const { chromium, APP, ROOT } = require('./pw');
 const fs = require('fs'), path = require('path'), os = require('os'), { spawnSync } = require('child_process');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
 const mock = require('./sensor-mock');
 const only = process.argv[2] || '';
+const opts = async p => { if (await p.$eval('#sOpts', e => e.hidden).catch(() => false)) { await p.click('#sOptsBtn'); await p.waitForTimeout(60); } };   // options are folded by default
 const t = (p, s) => p.$eval(s, e => e.textContent.trim()).catch(() => '(missing)');
 const T = p => p.evaluate(() => { const P = window.__entrain.P; return P.state === 'running' ? performance.now() / 1000 - P.t0 : P.st; });
 const step = p => p.evaluate(() => { const P = window.__entrain.P; const s = P.steps[P.idx]; return s ? s.title : ''; });
@@ -174,7 +176,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       ok(asleep, 'the drop is confirmed as dozing off');
       await untilStep(p, /^Waking up$/, 120000);
       const w = await E(p, () => { const N = window.__entrain.NP(), P = window.__entrain.P; return Math.round(P.steps[2].at - N.onset); });
-      ok(Math.abs(w - 600) <= 3, 'woken a 10-minute nap after the estimated onset (' + w + ' s)');
+      ok(Math.abs(w - 600) <= 7, 'woken a 10-minute nap after the estimated onset (' + w + ' s)');   // one 200 ms tick is 6 s at this speed
       await p.close();
     }
 
@@ -504,7 +506,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       ok(pose.f === 'tree' && pose.hit && pose.n === 1, 'a pose result shows it in the builder, and your routine stays as it was (' + JSON.stringify(pose) + ')');
       // a track lands on its card even when the list is filtered
       await p.evaluate(() => location.hash = 'sounds'); await p.waitForTimeout(200);
-      await p.click('.tab[data-filter="stim"]'); await p.waitForTimeout(150);
+      await p.click('.tab[data-filter="focus"]'); await p.waitForTimeout(150);
       r = await find('tinnitus');
       ok(r[0] && r[0].k === 'Sounds' && r[0].items[0].h === '#track/tinnitus-notch', 'the tinnitus track leads its group: ' + JSON.stringify(r.map(g => g.k)));
       await p.click('.fd-it[href="#track/tinnitus-notch"]'); await p.waitForTimeout(500);
@@ -550,6 +552,208 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       ok(fit.over === 0 && fit.w === 412, 'phone: full screen, nothing wider than the screen');
       await m.screenshot({ path: path.join(ROOT, 'tests', 'out', 'search-phone.png') });
       await m.close();
+    }
+
+    /* S. one goal for every item, and a library built on them */
+    if (!only || only === 'S') {
+      const p = await page(null, OPT());
+      const tax = await E(p, () => {
+        const X = window.__entrain, G = ['sleep', 'calm', 'focus', 'energy', 'recover', 'reflect'];
+        const M = ['breath', 'meditate', 'move', 'relax', 'sound', 'write', 'program'], Po = ['sit', 'lie', 'stand', 'walk'], bad = [];
+        X.PRACTICES.forEach(d => {
+          if (!G.includes(d.goal) || !M.includes(d.method) || !d.posture.length || !d.posture.every(x => Po.includes(x)) || !(d.also || []).every(a => G.includes(a) && a !== d.goal)) bad.push(d.id);
+        });
+        X.BREATHS.forEach(b => { if (!G.includes(b.goal)) bad.push('b:' + b.id); });
+        X.TRACKS.forEach(t => { if (!G.includes(t.goal) && t.goal !== 'tinnitus') bad.push('t:' + t.id); });
+        return { n: X.PRACTICES.length + X.BREATHS.length + X.TRACKS.length, bad, tagsLeft: X.PRACTICES.filter(d => d.tags || d.group).map(d => d.id) };
+      });
+      ok(tax.n === 51 && !tax.bad.length && !tax.tagsLeft.length, tax.n + ' items, each with one known goal, a method and a posture; the old groups and tags are gone' + (tax.bad.length ? ': ' + tax.bad.join(', ') : ''));
+      await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(300);
+      const lib = await E(p, () => {
+        const secs = [...document.querySelectorAll('#prLib .pr-grp')].map(g => ({ g: g.dataset.g, hrefs: [...g.querySelectorAll('.pc-a')].map(a => a.getAttribute('href')), shown: g.querySelectorAll('li:not([hidden])').length }));
+        const all = [].concat(...secs.filter(s => s.g !== 'make').map(s => s.hrefs));
+        return { order: secs.map(s => s.g).join(','), dup: all.filter((h, i) => all.indexOf(h) !== i), flow: secs.filter(s => s.hrefs.includes('#practice/standing-flow')).map(s => s.g), calm: secs.find(s => s.g === 'calm') };
+      });
+      ok(lib.order === 'sleep,calm,focus,energy,recover,reflect,make' && !lib.dup.length, 'goal sections in order, each item listed once: ' + lib.order);
+      ok(lib.flow.join() === 'energy', 'Standing Yoga Flow is under Energy only');
+      ok(lib.calm.hrefs.length === 18 && lib.calm.shown === 4 && lib.calm.hrefs.includes('#breathe/sigh') && lib.calm.hrefs.includes('#track/alpha-stress'),
+        'Calm holds practices, breathing patterns and tracks: 18, the first 4 shown');
+      await p.click('.pr-grp[data-g=calm] .pr-more'); await p.waitForTimeout(150);
+      ok(await p.$$eval('.pr-grp[data-g=calm] li:not([hidden])', l => l.length) === 18 && !(await p.$('.pr-grp[data-g=calm] .pr-more')), 'Show all opens the rest');
+      await p.click('#prFilt [data-f=sleep]'); await p.waitForTimeout(200);
+      const sleep = await E(p, () => [...document.querySelectorAll('#prLib .pr-grp')].map(g => g.dataset.g + ': ' + [...g.querySelectorAll('.pc-top b')].map(b => b.textContent).join('|')));
+      ok(sleep[0] === 'sleep: Sleep Descent|4-7-8|Cognitive Shuffle|Evening Stretch|Evening Floor Flow|Delta Sleep' && /^also: .*Body Scan\|.*Progressive Muscle Relaxation\|Bhramari\|Long exhale/.test(sleep[1]),
+        'the Sleep chip: its own six, then "also good for sleep": ' + sleep[1]);
+      await p.click('#prFilt [data-f=focus]'); await p.waitForTimeout(200);
+      ok(!(await p.$('#prLib a[href="#practice/standing-flow"]')) && await p.$('#prLib .pr-grp[data-g=also] a[href="#practice/standing-reset"]'), 'Focus: Standing Yoga Flow is not there; Standing Reset is, as also good for focus');
+      await p.click('#prFilt [data-f=all]'); await p.click('#prFbtn'); await p.waitForTimeout(150);
+      await p.click('#prPanel [data-k=len][data-v="5"]'); await p.waitForTimeout(150);
+      const five = await E(p, () => ({ hrefs: [...document.querySelectorAll('#prLib .pc-a')].map(a => a.getAttribute('href')), btn: document.querySelector('#prFbtnTxt').textContent }));
+      ok(five.hrefs.includes('#breathe/478') && five.hrefs.includes('#practice/grounding') && !five.hrefs.includes('#practice/kapalabhati') && !five.hrefs.includes('#practice/sleep-descent') && five.btn === 'Filters · 1',
+        'up to 5 minutes: ' + five.hrefs.length + ' items, the button counts the filter');
+      await p.click('#prPanel [data-clear]'); await p.waitForTimeout(100);
+      await p.click('#prPanel [data-k=posture][data-v=lie]'); await p.waitForTimeout(150);
+      const lying = await p.$$eval('#prLib .pr-grp:not([data-g=make]) .pc-sub', x => x.map(e => e.textContent));
+      ok(lying.length > 8 && lying.every(x => /Lying|lying/.test(x)), 'lying down: ' + lying.length + ' items, all lying');
+      await p.click('#prPanel [data-k=posture][data-v=lie]'); await p.click('#prPanel [data-k=needs][data-v=none]'); await p.waitForTimeout(150);
+      const plain = await p.$$eval('#prLib .pc-a', a => a.map(x => x.getAttribute('href')));
+      ok(plain.length > 15 && !plain.some(h => /track|sleep-descent|calm-reset|coherence|morning-yoga|walking/.test(h)), 'just the phone: no headphones, sensor or room needed (' + plain.length + ')');
+      await p.click('#prPanel [data-k=needs][data-v=none]'); await p.click('#prPanel [data-k=method][data-v=write]'); await p.click('#prPanel [data-k=posture][data-v=walk]'); await p.waitForTimeout(150);
+      ok(/Nothing matches/.test(await t(p, '#prLib')), 'no matches: says so');
+      await p.click('#prLib [data-clear]'); await p.waitForTimeout(150);
+      ok(await t(p, '#prFbtnTxt') === 'Filters' && (await p.$$('#prLib .pr-grp')).length === 7, 'Clear filters brings everything back');
+      // Sounds and the renames
+      await p.evaluate(() => location.hash = 'sounds'); await p.waitForTimeout(250);
+      const tr = {};
+      for (const g of ['sleep', 'calm', 'focus', 'recover', 'tinnitus']) { await p.click('.tab[data-filter="' + g + '"]'); await p.waitForTimeout(80); tr[g] = await p.$$eval('#grid .card h3', x => x.map(e => e.textContent)); }
+      ok(tr.sleep.join() === 'Delta Sleep' && tr.calm.length === 3 && tr.focus.length === 6 && tr.recover.join() === 'Parasympathetic Recovery' && tr.tinnitus.join() === 'Notched Relief' &&
+        await p.$eval('.tab[data-filter="tinnitus"]', b => b.getAttribute('aria-pressed')) === 'true', 'Sounds filters tracks by the same goals: ' + Object.keys(tr).map(k => k + ' ' + tr[k].length).join(', '));
+      await p.click('.tab[data-filter="all"]');
+      ok(await t(p, '#sg-prime') === 'Custom primer' && await t(p, '#sg-build') === 'Beat builder' && /Custom primer/.test(await t(p, '#v-home')) && !/Deep Sleep Descent/.test(await t(p, '#grid')),
+        'renamed: Custom primer, Beat builder, Delta Sleep');
+      // the movement library by position and type, and a routine with a goal
+      await p.evaluate(() => location.hash = 'yoga'); await p.waitForTimeout(250);
+      ok(await t(p, '#viewTitle') === 'Routine builder', 'the builder is the Routine builder');
+      const counts = {};
+      for (const [k, v] of [['cat', 'yoga'], ['cat', 'stretch'], ['cat', 'mobility'], ['cat', 'capoeira']]) { await p.click('#ybCats [data-cat=' + v + ']'); await p.waitForTimeout(60); counts[v] = await p.$$eval('#ybLib li', l => l.length); }
+      await p.click('#ybCats [data-cat=all]'); await p.click('#ybPos [data-pos=lie]'); await p.waitForTimeout(60); counts.lying = await p.$$eval('#ybLib li', l => l.length);
+      await p.click('#ybPos [data-pos=all]');
+      ok(counts.yoga === 36 && counts.stretch === 7 && counts.mobility === 6 && counts.capoeira === 7 && counts.lying === 10, 'pose library by type and position: ' + JSON.stringify(counts));
+      await p.click('#ybLib [data-add="corpse"]'); await p.selectOption('#ybGoal', 'sleep'); await p.fill('#ybName', 'Night floor');
+      await p.click('#ybSave'); await p.waitForTimeout(200);
+      await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(250);
+      const mine = await p.$$eval('.pr-grp[data-g=mine] .pc-top b', x => x.map(e => e.textContent));
+      await p.click('#prFilt [data-f=sleep]'); await p.waitForTimeout(150);
+      ok(mine.join() === 'Night floor' && /Night floor/.test(await t(p, '.pr-grp[data-g=sleep]')), 'your routine is under Your routines, and under Sleep when you pick it');
+      await p.close();
+    }
+
+    /* T. the small fixes: the closed player, the player after End, faint text, the legend, edge fades */
+    if (!only || only === 'T') {
+      const p = await page(null, OPT({ audio: true }));
+      const closed = await p.$eval('#player', e => [getComputedStyle(e).visibility, e.classList.contains('open')]);
+      ok(closed[0] === 'hidden' && !closed[1], 'the closed player is hidden, out of the tab order too');
+      await p.evaluate(() => location.hash = 'practice/calm-reset'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(800);
+      await endNow(p); await p.waitForTimeout(150);
+      ok(!(await p.$eval('#player', e => e.classList.contains('open'))), 'after ending a program early, the player stays away');
+      const cr = await E(p, () => {
+        const v = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+        const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4)); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+        const a = lum(v('--text-faint')), b = lum(v('--panel-2'));
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+      });
+      ok(cr >= 4.5, 'faint text has 4.5:1 contrast even on the lightest panel: ' + cr.toFixed(2));
+      await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(300);
+      ok((await p.$$('.pr-legend .strength')).length === 3 && /strong[\s\S]*moderate[\s\S]*limited/.test(await t(p, '.pr-legend')), 'the evidence dots have a legend');
+      const f0 = await p.$eval('#prFilt', e => [e.classList.contains('fade-r'), e.classList.contains('fade-l')]);
+      await p.$eval('#prFilt', e => { e.scrollLeft = 9999; }); await p.waitForTimeout(100);
+      const f1 = await p.$eval('#prFilt', e => [e.classList.contains('fade-r'), e.classList.contains('fade-l')]);
+      ok(f0[0] && !f0[1] && !f1[0] && f1[1], 'a chip row that scrolls fades at the edge with more beyond it');
+      await p.close();
+      // nothing wider than a small phone, on any view or practice page (a long title once pushed the top bar out)
+      const q = await page(null, OPT());
+      await q.setViewportSize({ width: 360, height: 740 });
+      const wide = await E(q, async () => {
+        const out = [], hs = window.__entrain.PRACTICES.map(d => 'practice/' + d.id).concat(['home', 'practice', 'breathe', 'sounds', 'heart', 'learn', 'yoga', 'settings']);
+        for (const h of hs) {
+          location.hash = h; await new Promise(r => setTimeout(r, 120));
+          if (document.documentElement.scrollWidth > document.documentElement.clientWidth) out.push(h);
+        }
+        return out;
+      });
+      ok(!wide.length, 'nothing is wider than a 360 px screen on any view or practice page' + (wide.length ? ': ' + wide.join(', ') : ''));
+      await q.close();
+    }
+
+    /* U. the practice page: Start in reach, options folded, and remembered per practice */
+    if (!only || only === 'U') {
+      for (const vp of [{ width: 412, height: 915 }, { width: 360, height: 740 }]) {
+        const p = await page(null, OPT(), false);
+        await p.setViewportSize(vp);
+        const out = [];
+        for (const id of ['calm-reset', 'sleep-descent', 'wim-hof', 'nvc-self']) {
+          await p.evaluate(x => location.hash = 'practice/' + x, id); await p.waitForTimeout(250);
+          out.push(await p.$eval('#sGo', b => { const r = b.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight - 62; }));
+        }
+        ok(out.every(Boolean), vp.width + '×' + vp.height + ': Start is on screen above the tab bar on arrival: ' + out.join(','));
+        await p.close();
+      }
+      const p = await page(null, OPT());
+      await p.evaluate(() => location.hash = 'practice/anapana'); await p.waitForTimeout(250);
+      ok(await p.$eval('#sOpts', e => e.hidden) && await t(p, '#sOptsSum') === 'No voice · Bells' && await p.$eval('#sOptsBtn', b => b.getAttribute('aria-expanded')) === 'false', 'options folded into one line: ' + await t(p, '#sOptsSum'));
+      await p.click('#sOptsBtn'); await p.waitForTimeout(100);
+      await p.click('label:has(#sOptVoice)'); await p.waitForTimeout(100);
+      ok(await t(p, '#sOptsSum') === 'Voice · Bells' && await E(p, () => localStorage.getItem('entrain.pOpt.anapana')) === '{"voice":true}' &&
+        !(await p.$eval('#sOptsActs', e => e.hidden)) && /You've changed these/.test(await t(p, '#sOptsScope')), 'a change is kept for this practice, and says so at once: ' + await E(p, () => localStorage.getItem('entrain.pOpt.anapana')));
+      await p.evaluate(() => location.hash = 'practice/body-scan'); await p.waitForTimeout(250);
+      ok(!(await p.$eval('#sOptVoice', e => e.checked)) && !(await p.$eval('#sOpts', e => e.hidden)), 'another practice keeps the defaults; the panel stays open once opened');
+      await p.evaluate(() => location.hash = 'practice/anapana'); await p.waitForTimeout(250);
+      ok(await p.$eval('#sOptVoice', e => e.checked) && /You've changed these for Anapana/.test(await t(p, '.so-scope')) && !(await p.$eval('#sOptsActs', e => e.hidden)), 'back on Anapana: its own options, and a way to share or drop them');
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      ok(await E(p, () => window.__entrain.P.opt.voice) === true, 'the session runs with them');
+      await p.click('#sqVoice'); await p.waitForTimeout(100);
+      ok(await E(p, () => localStorage.getItem('entrain.pOpt.anapana')) === null, 'the quick Voice toggle in a session saves for that practice too (back to the default)');
+      await endNow(p); await p.waitForTimeout(200);
+      await p.click('#sdAgain'); await p.waitForTimeout(250);                 // the same address: back to its page
+      await p.click('label:has(#sOptVoice)'); await p.click('#sOptCues button[data-v="chimes"]').catch(() => {}); await p.waitForTimeout(100);
+      await p.click('#sOptsAll'); await p.waitForTimeout(150);
+      const g = await E(p, () => JSON.parse(localStorage.getItem('entrain.pOpt')));
+      ok(g.voice === true && await E(p, () => localStorage.getItem('entrain.pOpt.anapana')) === null, 'Use these for every practice: they become the defaults');
+      await p.evaluate(() => location.hash = 'practice/body-scan'); await p.waitForTimeout(250);
+      ok(await p.$eval('#sOptVoice', e => e.checked), 'and Body Scan now starts with them');
+      await p.click('label:has(#sOptVoice)'); await p.waitForTimeout(100);
+      await p.evaluate(() => location.hash = 'practice/anapana'); await p.waitForTimeout(150);
+      await p.evaluate(() => location.hash = 'practice/body-scan'); await p.waitForTimeout(250);
+      await p.click('#sOptsReset'); await p.waitForTimeout(150);
+      ok(await p.$eval('#sOptVoice', e => e.checked) && await E(p, () => localStorage.getItem('entrain.pOpt.body-scan')) === null, 'Back to the defaults drops what a practice set for itself');
+      await p.close();
+    }
+
+    /* V. Settings: defaults for every practice, and the screen */
+    if (!only || only === 'V') {
+      const p = await page(null, OPT({ audio: true }));
+      await p.click('#tbSet'); await p.waitForTimeout(250);
+      ok(await t(p, '#viewTitle') === 'Settings' && await E(p, () => location.hash) === '#settings', 'the gear in the top bar opens Settings');
+      await E(p, () => localStorage.setItem('entrain.pOpt.anapana', JSON.stringify({ bells: true })));
+      await p.evaluate(() => location.hash = 'home'); await p.evaluate(() => location.hash = 'settings'); await p.waitForTimeout(250);
+      await p.click('label:has(#stBells)'); await p.waitForTimeout(100);
+      await p.evaluate(() => location.hash = 'practice/body-scan'); await p.waitForTimeout(250);
+      const bs = await p.$eval('#sOptBells', e => e.checked);
+      await p.evaluate(() => location.hash = 'practice/anapana'); await p.waitForTimeout(250);
+      const an = await p.$eval('#sOptBells', e => e.checked);
+      ok(!bs && an, 'a default reaches practices without their own options, and only them');
+      await p.evaluate(() => location.hash = 'settings'); await p.waitForTimeout(250);
+      ok(/Anapana has options of its own/.test(await t(p, '.st-own')), 'Settings lists the practices with options of their own');
+      await p.click('#stOwnReset'); await p.waitForTimeout(150);
+      ok(!(await p.$('.st-own')) && await E(p, () => localStorage.getItem('entrain.pOpt.anapana')) === null, 'and can hand them all back to the defaults');
+      await p.click('#stAna button[data-v="300"]'); await p.waitForTimeout(80);
+      ok(await E(p, () => JSON.parse(localStorage.getItem('entrain.pOpt')).ana) === 300, 'Anapana reminders default: 5 min');
+      // the screen
+      await p.click('label:has(#stScrTrk)'); await p.waitForTimeout(80);
+      await playTrack(p, 'theta-meditation');
+      const trk = await E(p, () => window.__wl.held);
+      await p.click('#stop'); await p.waitForTimeout(300);
+      await p.evaluate(() => location.hash = 'settings'); await p.waitForTimeout(200);
+      await p.click('label:has(#stScrSes)'); await p.waitForTimeout(80);
+      await p.evaluate(() => location.hash = 'practice/body-scan'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      const ses = await E(p, () => window.__wl.held);
+      await endNow(p); await p.waitForTimeout(200);
+      ok(trk === 0 && ses === 0, 'with the screen options off, a track and a practice let the screen turn off');
+      await p.evaluate(() => location.hash = 'settings'); await p.waitForTimeout(200);
+      await p.click('label:has(#stScrSes)'); await p.click('label:has(#stScrTrk)'); await p.click('label:has(#stDim)'); await p.waitForTimeout(80);
+      ok(await E(p, () => JSON.stringify(window.__entrain.ST)) === '{"screenSessions":true,"screenTracks":true,"sleepDim":true}', 'the screen settings are kept');
+      await p.evaluate(() => location.hash = 'practice/sleep-descent'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(250);
+      await jumpTo(p, /^Drift$/); await p.waitForTimeout(150);
+      const dim = await E(p, () => [document.querySelector('#ses').dataset.dim, document.querySelector('#sStage').dataset.vis, window.__wl.held]);
+      ok(dim[0] === '1' && dim[1] === 'dark' && dim[2] === 1, 'Dim the screen in sleep steps: the drift goes almost dark, the screen stays on');
+      await endNow(p); await p.waitForTimeout(200);
+      ok(!(await E(p, () => document.querySelector('#ses').dataset.dim)), 'and the summary is lit again');
+      const found = await E(p, () => { document.querySelector('#tbFind').click(); const i = document.querySelector('#fdIn'); i.value = 'screen'; i.dispatchEvent(new Event('input', { bubbles: true })); return new Promise(r => setTimeout(() => r([...document.querySelectorAll('.fd-it')].map(a => a.getAttribute('href'))), 200)); });
+      ok(found.includes('#settings'), 'search finds Settings');
+      await p.close();
     }
   } catch (e) { log.push('ERROR ' + e.message); }
   console.log(log.join('\n'));

@@ -114,6 +114,6 @@
   }
   /* Practices that end in sleep or are tapping already don't offer it. */
   function tapOffered(d) {
-    return !d.tapping && !d.nap && !d.selfPaced && d.tags.indexOf("sleep") < 0;
+    return !d.tapping && !d.nap && !d.selfPaced && !pSleepy(d);
   }
   function tapOn(d) { return tapOffered(d) && store.get("pTap." + d.id) === "1"; }

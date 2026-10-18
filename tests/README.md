@@ -10,7 +10,7 @@ Each suite opens the built `index.html` in headless Chromium, mostly as a Samsun
 | `prrun.js` | Sleep Descent and Calm Reset end to end, the guided practices (grounding, kapalabhati, PMR, shuffle, anapana, nadi), every standing pose, the binaural layer |
 | `prrun2.js` | Wim Hof, anapana reminders in programs, the routine builder, a built-in floor sequence |
 | `prrun3.js` | Capoeira and the berimbau, background sound, quotes, tapping, heart-led beats, the power nap, the NVC practices and the feelings wheel |
-| `regress.js` | The bugs fixed after the October 2026 code review, then Anapana's narrowing focus and hour-long sitting, the wording of all guidance, the screen lock and search |
+| `regress.js` | The bugs fixed after the October 2026 code review, then Anapana's narrowing focus and hour-long sitting, the wording of all guidance, the screen lock and search, then the goals, the library and its filters, the practice page's options and Settings |
 | `findtest.js` | The resonance test end to end with a beat-to-beat sensor |
 
 ## Helpers

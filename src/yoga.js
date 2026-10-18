@@ -5,7 +5,7 @@
      it gets the same drawings, spoken cues, transitions and summary.
   ------------------------------------------------------------------------ */
 
-  var Y = { uid: null, name: "", items: [], cat: "all", from: null, delArm: 0 };
+  var Y = { uid: null, name: "", goal: "", items: [], type: "all", pos: "all", from: null, delArm: 0 };
 
   function yLoad() {
     try { var a = JSON.parse(store.get("yogaSeqs") || "[]"); return Array.isArray(a) ? a.filter(function (q) { return q && q.uid && Array.isArray(q.items); }) : []; }
@@ -18,8 +18,9 @@
     items.forEach(function (i) { var n = ASANA[i.id].en; if (names.indexOf(n) < 0) names.push(n); });
     var pos = items.map(function (i) { return ASANA[i.id].pos; });
     return {
-      id: "my-" + q.uid, custom: q.uid, group: "move", tags: ["move"], name: q.name || "My routine", strength: 2, tone: "relax", voice: true,
+      id: "my-" + q.uid, custom: q.uid, method: "move", goal: goalOf(q.goal) ? q.goal : "", also: [], name: q.name || "My routine", strength: 2, tone: "relax", voice: true,
       stand: pos.indexOf("stand") >= 0, lie: pos.indexOf("supine") >= 0 || pos.indexOf("prone") >= 0,
+      posture: (pos.indexOf("stand") >= 0 ? ["stand"] : []).concat(pos.indexOf("supine") >= 0 || pos.indexOf("prone") >= 0 ? ["lie"] : [], pos.indexOf("seat") >= 0 ? ["sit"] : []),
       blurb: names.length ? names.slice(0, 6).join(", ") + (names.length > 6 ? " and " + (names.length - 6) + " more." : ".") : "No poses yet.",
       build: function () { return yogaSteps(items); }, ev: YOGA_EV, cite: "Pascoe et al. 2017"
     };
@@ -30,22 +31,23 @@
     var q, find = arg && arg.indexOf("find/") === 0 ? ASANA[arg.slice(5)] : null;
     if (arg && arg.indexOf("find/") === 0) {
       // from search: the routine you're building stays as it is, and the library shows the pose
-      if (find) Y.cat = ACATS.some(function (c) { return c[0] === find.cat; }) ? find.cat : "all";
+      if (find) { Y.type = aType(find); Y.pos = "all"; }
     } else if (arg && arg.indexOf("copy/") === 0) {
       var set = yogaSet(arg.slice(5));
       Y.uid = null; Y.from = set ? set.name : null;
-      Y.name = set ? set.name + " (mine)" : "";
+      Y.name = set ? set.name + " (mine)" : ""; Y.goal = set && CAT[set.id] ? CAT[set.id].goal : "";
       Y.items = set ? set.items.map(function (i) { return { id: i.id, hold: i.hold, side: i.side }; }) : [];
     } else if (arg && (q = yGet(arg))) {
-      Y.uid = q.uid; Y.name = q.name; Y.items = q.items.map(function (i) { return { id: i.id, hold: i.hold, side: i.side }; }); Y.from = null;
+      Y.uid = q.uid; Y.name = q.name; Y.goal = q.goal || ""; Y.items = q.items.map(function (i) { return { id: i.id, hold: i.hold, side: i.side }; }); Y.from = null;
     } else if (!arg && Y.uid) {
-      Y.uid = null; Y.name = ""; Y.items = []; Y.from = null;           // a fresh sequence
+      Y.uid = null; Y.name = ""; Y.goal = ""; Y.items = []; Y.from = null;           // a fresh sequence
     }
     Y.delArm = 0;
     $("#ybName").value = Y.name;
+    $("#ybGoal").value = Y.goal || "";
     $("#ybDel").hidden = !Y.uid;
-    bSetT("#viewTitle", Y.uid ? "Edit routine" : "Build your own");
-    document.title = (Y.uid ? "Edit routine" : "Build your own routine") + " | Entrain";
+    bSetT("#viewTitle", Y.uid ? "Edit routine" : "Routine builder");
+    document.title = (Y.uid ? "Edit routine" : "Routine builder") + " | Entrain";
     yRenderTpl(); yRenderSeq(); yRenderLib();
     if (find) setTimeout(function () {
       var b = document.querySelector('#ybLib [data-add="' + find.id + '"]');
@@ -93,11 +95,17 @@
     $("#ybGo").disabled = !n; $("#ybSave").disabled = !n;
   }
   function yRenderLib() {
-    $("#ybCats").innerHTML = ACATS.map(function (c) {
-      return '<button class="chip-b" data-cat="' + c[0] + '" aria-pressed="' + (Y.cat === c[0]) + '">' + c[1] + "</button>";
+    $("#ybCats").innerHTML = A_TYPES.map(function (c) {
+      return '<button class="chip-b" data-cat="' + c[0] + '" aria-pressed="' + (Y.type === c[0]) + '">' + c[1] + "</button>";
     }).join("");
-    var list = ASANAS.filter(function (a) { return Y.cat === "all" || a.cat === Y.cat; });
-    bSetT("#ybLibN", list.length + " " + (Y.cat === "capoeira" ? "moves" : Y.cat === "mobility" ? "moves and stretches" : Y.cat === "all" ? "in all" : "poses"));
+    $("#ybPos").innerHTML = A_POSES.map(function (c) {
+      return '<button class="chip-b small" data-pos="' + c[0] + '" aria-pressed="' + (Y.pos === c[0]) + '">' + c[1] + "</button>";
+    }).join("");
+    var list = ASANAS.filter(function (a) { return (Y.type === "all" || aType(a) === Y.type) && (Y.pos === "all" || aPos(a) === Y.pos); }), n = list.length;
+    var noun = Y.type === "yoga" ? (n === 1 ? "pose" : "poses") : Y.type === "stretch" ? (n === 1 ? "stretch" : "stretches")
+      : Y.type === "all" ? (Y.pos === "all" ? "in all" : n === 1 ? "pose or move" : "poses and moves") : (n === 1 ? "move" : "moves");
+    bSetT("#ybLibN", n + " " + noun);
+    edgeFade($("#ybCats")); edgeFade($("#ybPos"));
     $("#ybLib").innerHTML = list.map(function (a) {
       return '<li><button class="yb-tile" data-add="' + a.id + '" aria-label="Add ' + esc(a.en) + '">' +
         '<span class="yb-tfig">' + yFig(a.id) + "</span>" +
@@ -113,7 +121,7 @@
     var list = yLoad(), name = ($("#ybName").value || "").trim() || "My routine " + (list.length + 1);
     Y.name = name;
     if (!Y.uid) Y.uid = Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
-    var q = { uid: Y.uid, name: name, items: Y.items.map(function (i) { var o = { id: i.id, hold: i.hold }; if (i.side) o.side = i.side; return o; }), at: Date.now() };
+    var q = { uid: Y.uid, name: name, goal: Y.goal || "", items: Y.items.map(function (i) { var o = { id: i.id, hold: i.hold }; if (i.side) o.side = i.side; return o; }), at: Date.now() };
     var k = -1;
     list.forEach(function (x, i) { if (x.uid === q.uid) k = i; });
     if (k >= 0) list[k] = q; else list.push(q);
@@ -127,8 +135,13 @@
   function yInit() {
     $("#ybCats").addEventListener("click", function (e) {
       var b = e.target.closest("button"); if (!b) return;
-      Y.cat = b.dataset.cat; yRenderLib();
+      Y.type = b.dataset.cat; yRenderLib();
     });
+    $("#ybPos").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      Y.pos = b.dataset.pos; yRenderLib();
+    });
+    $("#ybGoal").addEventListener("change", function () { Y.goal = this.value; });
     $("#ybLib").addEventListener("click", function (e) {
       var b = e.target.closest("[data-add]"); if (!b) return;
       var a = ASANA[b.dataset.add];

@@ -6,8 +6,8 @@
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
 
-  var VIEWS = ["home", "practice", "breathe", "sounds", "heart", "learn", "session", "yoga"];
-  var V_TITLE = { home: "Home", practice: "Practice", breathe: "Breathe", sounds: "Sounds", heart: "Heart", learn: "Learn", session: "Practice", yoga: "Build your own" };
+  var VIEWS = ["home", "practice", "breathe", "sounds", "heart", "learn", "session", "yoga", "settings"];
+  var V_TITLE = { home: "Home", practice: "Practice", breathe: "Breathe", sounds: "Sounds", heart: "Heart", learn: "Learn", session: "Practice", yoga: "Routine builder", settings: "Settings" };
   var ALIAS = { prime: ["sounds", "prime"], tracks: ["sounds", "tracks"], builder: ["sounds", "build"] };
   var BASE_TITLE = document.title;
   var curView = "";
@@ -32,11 +32,15 @@
     if (v !== curView) window.scrollTo(0, 0);
     curView = v;
     if (v === "home") homeRefresh();
-    if (v === "practice") pRenderWeek();
+    if (v === "practice") pRenderLib();               // your routines may have changed
+    if (v === "settings") stRender();
+    var gear = $("#tbSet");
+    if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
     if (v === "breathe") setTimeout(sizeCanvas, 0);
     if (v !== "session" && P.state === "done") P.state = "idle";
     pImmersive();
     pPill();
+    setTimeout(edgeFadeAll, 0);                         // widths are known once the view shows
   }
 
   function goView(v, seg) {
@@ -77,6 +81,21 @@
     if (t.closest("#sPrev, #sPlay, #sNext")) return e.code === "Space";
     return !!t.closest('input, select, textarea, button, a[href], summary, [role="button"], [role="radio"], [role="tab"], [contenteditable]');
   }
+
+  /* ----- rows of chips that scroll sideways fade out at an edge with more beyond it ----- */
+  function edgeFade(el) {
+    if (!el) return;
+    el.classList.add("efade");
+    var upd = function () {
+      var max = el.scrollWidth - el.clientWidth;
+      el.classList.toggle("fade-l", el.scrollLeft > 2);
+      el.classList.toggle("fade-r", max - el.scrollLeft > 2);
+    };
+    if (!el.efade) { el.efade = upd; el.addEventListener("scroll", upd, { passive: true }); }
+    upd();
+  }
+  var EDGE_ROWS = ["#prFilt", "#bPats", ".toc", "#tracks .tabs", "#ybCats", "#ybPos", ".si-len"];
+  function edgeFadeAll() { EDGE_ROWS.forEach(function (q) { document.querySelectorAll(q).forEach(edgeFade); }); }
 
   /* ----- Sounds: Tracks / Prime / Build ----- */
   function segPick(seg, focus) {
@@ -165,7 +184,7 @@
     } else bSetT("#qkFind", "A 10-minute test with a heart sensor");
     var c = primeCfg();
     bSetT("#qkPrime", c.minutes + " min of " + c.beat + " Hz " + bandFor(c.beat).name.toLowerCase() + ", then start work");
-    bSetT("#qkTracks", TRACKS.length + " tracks for sleep, calm, focus and tinnitus");
+    bSetT("#qkTracks", TRACKS.length + " tracks for sleep, calm, focus, recovery and tinnitus");
 
     var last = null;
     try { last = JSON.parse(store.get("lastSummary") || "null"); } catch (e) {}
@@ -426,6 +445,8 @@
       }).catch(function () {});
     }
 
+    var fadeT = 0;
+    window.addEventListener("resize", function () { clearTimeout(fadeT); fadeT = setTimeout(edgeFadeAll, 150); });
     appInit();
     ambInit();
     qInit();

@@ -4,6 +4,7 @@ const URL0 = APP;
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
 const mock = require('./sensor-mock');
 const only = process.argv[2] || '';
+const opts = async p => { if (await p.$eval('#sOpts', e => e.hidden).catch(() => false)) { await p.click('#sOptsBtn'); await p.waitForTimeout(60); } };   // options are folded by default
 const t = (p, s) => p.$eval(s, e => e.textContent.trim()).catch(() => '(missing)');
 const vis = (p, s) => p.$eval(s, e => !e.hidden && !!(e.offsetParent || e.getClientRects().length) && getComputedStyle(e).visibility !== 'hidden').catch(() => false);
 const T = p => p.evaluate(() => { const P = window.__entrain.P; return P.state === 'running' ? performance.now() / 1000 - P.t0 : P.st; });
@@ -37,9 +38,10 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
   if (!only || only === 'O') {
     const p = await page({ speed: 1, rr: false }, OPT());
     await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(250);
-    const cards = await p.$$eval('.pr-grp[data-g="move"] .pc-a', a => a.map(x => x.getAttribute('href')));
-    ok(['#practice/morning-stretch', '#practice/evening-stretch', '#practice/solo-capoeira', '#yoga'].every(h => cards.includes(h)), 'Movement lists the three new routines and the builder: ' + cards.length + ' cards');
-    ok(/Build your own routine/.test(await t(p, '.pc-build')) && /capoeira moves/.test(await t(p, '.pc-build')), 'builder card renamed: ' + (await t(p, '.pc-build .pc-blurb')).slice(0, 70));
+    const cards = await p.$$eval('#prLib .pc-a', a => a.map(x => x.getAttribute('href')));
+    const sec = await p.evaluate(() => ['morning-stretch', 'evening-stretch', 'solo-capoeira'].map(id => document.querySelector('a[href="#practice/' + id + '"]').closest('.pr-grp').dataset.g).join(','));
+    ok(['#practice/morning-stretch', '#practice/evening-stretch', '#practice/solo-capoeira', '#yoga'].every(h => cards.includes(h)) && sec === 'energy,sleep,energy', 'the library lists the three routines under their goals, and the builder: ' + sec);
+    ok(/Routine builder/.test(await t(p, '.pc-build')) && /capoeira moves/.test(await t(p, '.pc-build')), 'builder card: ' + (await t(p, '.pc-build .pc-blurb')).slice(0, 70));
     const meta = await t(p, 'a[href="#practice/solo-capoeira"] .pc-meta');
     ok(/Berimbau/.test(meta) && /18 min/.test(meta) && /Cautions/.test(meta), 'capoeira card meta: ' + meta);
     await p.evaluate(() => location.hash = 'practice/solo-capoeira'); await p.waitForTimeout(250);
@@ -89,7 +91,9 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     ok(await t(p, '#ybLibN') === '7 moves' && /moving/.test(await t(p, '#ybLib li')), 'capoeira filter: ' + await t(p, '#ybLibN') + ', ' + await t(p, '#ybLib li .yb-tm'));
     await p.screenshot({ path: OUT + 'yb-capoeira.png', fullPage: true });
     await p.click('#ybCats button[data-cat="mobility"]'); await p.waitForTimeout(150);
-    ok(await t(p, '#ybLibN') === '13 moves and stretches', 'mobility filter: ' + await t(p, '#ybLibN'));
+    ok(await t(p, '#ybLibN') === '6 moves', 'mobility filter: ' + await t(p, '#ybLibN'));
+    await p.click('#ybCats button[data-cat="stretch"]'); await p.waitForTimeout(150);
+    ok(await t(p, '#ybLibN') === '7 stretches', 'stretches filter: ' + await t(p, '#ybLibN'));
     await p.close();
     // reduced motion steps from key to key
     const q = await page({ speed: 1, rr: false }, OPT(), null, { reducedMotion: 'reduce' });
@@ -166,8 +170,9 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
   if (!only || only === 'R') {
     const p = await page({ speed: 6, rr: false }, OPT());
     await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(250);
-    ok(await p.$('.pr-grp[data-g="relax"] a[href="#practice/tapping"]') !== null, 'Tapping is listed under Relaxation and sleep');
+    ok(await p.$('.pr-grp[data-g="calm"] a[href="#practice/tapping"]') !== null, 'Tapping is listed under Calm');
     await p.evaluate(() => location.hash = 'practice/tapping'); await p.waitForTimeout(250);
+    await opts(p);
     ok((await p.$$eval('#sOptVar button', b => b.map(x => x.textContent))).join('/') === '2/3' && await vis(p, '#sTapPhrase') && await vis(p, '#sOptTick'), 'intro: rounds, phrase and tick');
     await p.fill('#sTapPhrase', 'this tight chest'); await p.waitForTimeout(100);
     ok(await p.evaluate(() => localStorage.getItem('entrain.tapPhrase')) === 'this tight chest', 'phrase stored');
@@ -208,6 +213,7 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     await p.evaluate(() => location.hash = 'practice/calm-reset'); await p.waitForTimeout(250);
     ok(await p.$('#sOptTap') !== null && !(await p.$eval('#sOptTap', e => e.checked)) && !(await vis(p, '#sTapPhrase')), 'Calm Reset offers Finish with tapping, off');
     const n0 = (await p.$$('.si-steps li')).length;
+    await opts(p);
     await p.click('label:has(#sOptTap)'); await p.waitForTimeout(300);
     const rows = await p.$$eval('.si-steps li span', x => x.map(e => e.textContent));
     ok(await p.$eval('#sOptTap', e => e.checked) && await vis(p, '#sTapPhrase') && rows.includes('Tapping round') && rows.length === n0 + 6, 'on: phrase shows, six tapping steps appended (' + n0 + ' → ' + rows.length + ')');
@@ -222,7 +228,7 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(250);
     ok(/Experimental/.test(await t(p, 'a[href="#practice/heart-led"] .pc-meta')), 'card is marked Experimental');
     await p.evaluate(() => location.hash = 'practice/heart-led'); await p.waitForTimeout(250);
-    ok(/Programs · Experimental · 20 min/.test(await t(p, '.si-kind')) && (await p.$$eval('.si-len button', b => b.map(x => x.textContent))).join('/') === '15 min/20 min/30 min', 'intro: ' + await t(p, '.si-kind'));
+    ok(/Calm · Program · Experimental · 20 min/.test(await t(p, '.si-kind')) && (await p.$$eval('.si-len button', b => b.map(x => x.textContent))).join('/') === '15 min/20 min/30 min', 'intro: ' + await t(p, '.si-kind'));
     ok(/the beat follows it/.test(await t(p, '.si-need')) && await p.$('#sOptAudio') !== null, 'needs: sensor drives the beat; binaural toggle');
     await p.click('.si-len button[data-len="15"]'); await p.waitForTimeout(200);
     await p.click('#sGo'); await p.waitForTimeout(800);
@@ -311,9 +317,9 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(250);
     await p.click('#prFilt button[data-f="reflect"]'); await p.waitForTimeout(200);
     const cards = await p.$$eval('.pc-a', a => a.map(x => x.getAttribute('href')));
-    ok(cards.join(',') === '#practice/nvc-self,#practice/nvc-choose' && /Self-paced/.test(await t(p, 'a[href="#practice/nvc-self"] .pc-meta')), 'Reflection filter shows the two NVC practices: ' + cards.join(','));
+    ok(cards.join(',') === '#practice/nvc-self,#practice/nvc-choose,#practice/self-compassion,#practice/metta' && /Self-paced/.test(await t(p, 'a[href="#practice/nvc-self"] .pc-meta')), 'Reflect shows the two NVC practices, then self-compassion and loving-kindness: ' + cards.join(','));
     await p.evaluate(() => location.hash = 'practice/nvc-self'); await p.waitForTimeout(250);
-    ok(await t(p, '.si-kind') === 'Reflection · self-paced, about 15 min' && /A quiet place to write/.test(await t(p, '.si-need')) && await p.$eval('#sOptKeep', e => e.checked) && !(await p.$('#sOptTap')), 'intro: ' + await t(p, '.si-kind'));
+    ok(await t(p, '.si-kind') === 'Reflect · Writing · self-paced, about 15 min' && /A quiet place to write/.test(await t(p, '.si-need')) && await p.$eval('#sOptKeep', e => e.checked) && !(await p.$('#sOptTap')), 'intro: ' + await t(p, '.si-kind'));
     ok((await p.$$eval('.si-steps li time', x => x.map(e => e.textContent))).filter(x => x === 'your pace').length === 7 && await t(p, '#sGo') === 'Start', 'writing steps run at your pace');
     await p.screenshot({ path: OUT + 'nvc-intro.png', fullPage: true });
     await p.click('#sGo'); await p.waitForTimeout(300);
@@ -401,6 +407,7 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     await p.click('.si-journal .nv-del'); await p.waitForTimeout(250);
     ok(!(await p.$('.si-journal')) && (await p.evaluate(() => JSON.parse(localStorage.getItem('entrain.nvcLog') || '[]'))).length === 0, 'and deletes them');
     // keeping nothing
+    await opts(p);
     await p.click('label:has(#sOptKeep)'); await p.waitForTimeout(100);
     await p.click('#sGo'); await p.waitForTimeout(300);
     await untilStep(p, /^What happened\?$/); await p.waitForTimeout(200);
