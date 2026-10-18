@@ -27,7 +27,6 @@
   function ext(a, b) { if (b) for (var k in b) a[k] = b[k]; return a; }
   function G(secs, title, lines, o) { return ext({ k: "guide", secs: secs, title: title, lines: pLines(lines, secs) }, o); }
   function Br(secs, title, t, o) { return ext({ k: "breath", secs: secs, title: title, t: t, lines: pLines(o && o.lines, secs) }, o && (delete o.lines, o)); }
-  function Po(secs, pose, side, title, lines) { return { k: "pose", secs: secs, pose: pose, side: side || null, title: title, lines: pLines(lines, secs) }; }
   function Pu(n, rate, title, lines) { return { k: "pump", secs: 3 + n / rate + 1, n: n, rate: rate, title: title, lines: pLines(lines, 3) }; }
   function Ob(secs, title, lines, o) { return ext({ k: "observe", secs: secs, title: title, lines: pLines(lines, secs) }, o); }
   function Ct(secs, n, title, lines, o) { return ext({ k: "count", secs: secs, n: n, title: title, lines: pLines(lines, secs) }, o); }

@@ -17,9 +17,10 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
 (async () => {
   const browser = await chromium.launch();
   const log = []; const ok = (c, m) => log.push((c ? 'PASS ' : 'FAIL ') + m);
-  const page = async (opts, st, desk) => {
-    const ctx = await browser.newContext(desk ? { viewport: { width: 1280, height: 900 } } : { userAgent: S20, viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  const page = async (opts, st, desk, from) => {
+    const ctx = from ? from.ctx : await browser.newContext(desk ? { viewport: { width: 1280, height: 900 } } : { userAgent: S20, viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
     const p = await ctx.newPage();
+    if (from) await p.addInitScript(o => { for (const k in o) localStorage.setItem(k, o[k]); }, from.snap);
     p.on('pageerror', e => log.push('PAGEERROR ' + e.message));
     p.on('console', m => { if (m.type() === 'error') log.push('CONSOLE ' + m.text()); });
     await p.addInitScript(s => {
@@ -32,6 +33,15 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
     return p;
   };
   const OPT = (o) => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: true, cues: 'tones', visual: 'circle', audio: false, voiceName: '', ana: 180, rhythm: true }, o || {})) });
+  /* Close the app and open it again with what it had stored. Headless Chromium sometimes loses a
+     file:// page's storage across a reload (everything, not only the latest writes), so this copies
+     the stored values over instead of trusting the reload. */
+  const reopen = async (p, st) => {
+    const snap = await p.evaluate(() => { const o = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); o[k] = localStorage.getItem(k); } return o; });
+    const ctx = p.context();
+    await p.close();
+    return page(null, st, false, { ctx, snap });
+  };
   const playTrack = async (p, id) => {
     await p.evaluate(() => location.hash = 'sounds'); await p.waitForTimeout(200);
     await p.click('.card[data-id="' + id + '"] .play-btn'); await p.waitForTimeout(600);
@@ -177,6 +187,179 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       const r = spawnSync('python3', [path.join(tmp, 'src', 'build.py')], { encoding: 'utf8' });
       ok(r.status !== 0 && /CIRC: legacy\.html; yoga\.js/.test(r.stderr), 'build stops on a name declared twice: ' + r.stderr.trim().split('\n').join(' / '));
       fs.rmSync(tmp, { recursive: true, force: true });
+    }
+
+    /* H. an unfinished reflection survives the page going away, and only when you've written something */
+    if (!only || only === 'H') {
+      const KEY = 'entrain.nvcDraft.nvc-self', draft = p => p.evaluate(k => JSON.parse(localStorage.getItem(k) || 'null'), KEY);
+      let p = await page(null, OPT());
+      await p.evaluate(() => location.hash = 'practice/nvc-self'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      await jumpTo(p, /^What happened\?$/); await p.waitForTimeout(600);
+      ok(await draft(p) === null, 'nothing is kept before you write');
+      await p.fill('.sw-ta', 'At dinner she looked at her phone while I talked.'); await p.waitForTimeout(100);
+      await p.click('[data-sw="next"]'); await p.waitForTimeout(300);
+      await p.fill('.sw-ta', 'She never listens.'); await p.waitForTimeout(700);
+      const d1 = await draft(p);
+      ok(d1 && d1.idx === 2 && /phone/.test(d1.nvc.obs) && d1.nvc.judg === 'She never listens.', 'the draft follows your writing and your step: ' + (d1 && d1.titles[d1.idx]));
+      const t1 = await T(p);
+      p = await reopen(p, OPT()); await p.waitForTimeout(1700);
+      ok(/unfinished reflection/.test(await t(p, '#toastTxt')) && await t(p, '#toastAct') === 'Open', 'opening the app again, it says so: "' + await t(p, '#toastTxt') + '"');
+      await p.click('#toastAct'); await p.waitForTimeout(400);
+      ok(/unfinished reflection/.test(await t(p, '.si-draft')) && /The judgments/.test(await t(p, '.si-draft')), 'the practice page offers it: ' + await t(p, '.si-draft p'));
+      await p.click('#sDraftGo'); await p.waitForTimeout(500);
+      const ta = await p.$eval('.sw-ta', e => e.value).catch(() => '');
+      const t2 = await T(p);
+      ok(await step(p) === 'The judgments' && ta === 'She never listens.' && Math.abs(t2 - t1) < 5, 'Continue it opens "' + await step(p) + '" with your words, at ' + t2.toFixed(0) + ' s (left at ' + t1.toFixed(0) + ' s)');
+      await p.evaluate(() => { const P = window.__entrain.P; P.t0 -= P.total; }); await p.waitForTimeout(800);
+      const sent = await t(p, '.sd-nvc .nv-s');
+      ok(/When at dinner she looked at her phone while I talked/.test(sent) && await draft(p) === null, 'the finished reflection keeps the earlier writing and the draft is gone: ' + sent.slice(0, 70));
+      // Discard: two taps
+      await p.click('#sdAgain'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      await jumpTo(p, /^What happened\?$/); await p.fill('.sw-ta', 'Something else.'); await p.waitForTimeout(700);
+      p = await reopen(p, OPT()); await p.waitForTimeout(400);
+      await p.evaluate(() => location.hash = 'practice/nvc-self'); await p.waitForTimeout(300);
+      await p.click('#sDraftDel'); await p.waitForTimeout(200);
+      const armed = await t(p, '#sDraftDel');
+      await p.click('#sDraftDel'); await p.waitForTimeout(300);
+      ok(armed === 'Tap again to discard' && await draft(p) === null && !(await p.$('.si-draft')), 'Discard takes a second tap, then the draft is gone');
+      // From Should to Choose: the cards' answers come back too
+      await p.evaluate(() => location.hash = 'practice/nvc-choose'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      await jumpTo(p, /^I have to/); await p.fill('.sw-ta', 'Answer every email the same day\nGo to the gym'); await p.waitForTimeout(100);
+      await p.click('[data-sw="next"]'); await p.waitForTimeout(300);
+      await p.click('.sw-card[data-i="1"] button[data-ch="0"]'); await p.fill('.sw-card[data-i="0"] .sw-in', 'calm mornings'); await p.waitForTimeout(700);
+      p = await reopen(p, OPT()); await p.waitForTimeout(400);
+      await p.evaluate(() => location.hash = 'practice/nvc-choose'); await p.waitForTimeout(300);
+      await p.click('#sDraftGo'); await p.waitForTimeout(500);
+      const no = await p.$eval('.sw-card[data-i="1"] button[data-ch="0"]', e => e.getAttribute('aria-pressed')).catch(() => '?'), why = await p.$eval('.sw-card[data-i="0"] .sw-in', e => e.value).catch(() => '?');
+      ok(await step(p) === 'I choose to…' && no === 'true' && why === 'calm mornings', 'a From Should to Choose draft keeps each card\'s answer');
+      await p.close();
+      // keeping nothing means no draft either
+      const q = await page(null, OPT({ nvcSave: false }));
+      await q.evaluate(() => location.hash = 'practice/nvc-self'); await q.waitForTimeout(250);
+      await q.click('#sGo'); await q.waitForTimeout(300);
+      await jumpTo(q, /^What happened\?$/); await q.fill('.sw-ta', 'Not kept.'); await q.waitForTimeout(700);
+      ok(await draft(q) === null, 'with Keep a copy off, no draft is kept');
+      await q.close();
+    }
+
+    /* I. a step's own buttons carry on from a pause */
+    if (!only || only === 'I') {
+      const p = await page(null, OPT());
+      await p.evaluate(() => location.hash = 'practice/nvc-self'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      await jumpTo(p, /^What happened\?$/);
+      await p.click('#sPlay'); await p.waitForTimeout(200);
+      const paused = await E(p, () => window.__entrain.P.state);
+      await p.click('[data-sw="next"]'); await p.waitForTimeout(300);
+      ok(paused === 'paused' && await E(p, () => window.__entrain.P.state) === 'running' && await step(p) === 'The judgments', 'Continue while paused carries on: ' + await step(p));
+      await p.evaluate(() => location.hash = 'practice/tapping'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      await jumpTo(p, /^How strong is it\?$/);
+      await p.click('#sPlay'); await p.waitForTimeout(200);
+      await p.click('#sRateG button[data-v="5"]'); await p.waitForTimeout(800);
+      ok(await step(p) === 'Set-up' && JSON.stringify(await E(p, () => window.__entrain.P.suds)) === '[5]', 'a rating while paused counts and carries on');
+      await p.close();
+    }
+
+    /* J. while a practice uses the breathing guide, its controls are out of reach of the keyboard too */
+    if (!only || only === 'J') {
+      const p = await page(null, OPT(), true);
+      await p.evaluate(() => location.hash = 'practice/calm-reset'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      await jumpTo(p, /^Cyclic sighs$/); await p.waitForTimeout(400);
+      await p.evaluate(() => location.hash = 'breathe'); await p.waitForTimeout(400);
+      const inh = await E(p, () => window.__entrain.BC.inh);
+      await p.focus('#bInh').catch(() => {});
+      const foc = await p.evaluate(() => document.activeElement && document.activeElement.id);
+      await p.keyboard.press('ArrowRight'); await p.keyboard.press('ArrowRight'); await p.waitForTimeout(200);
+      ok(foc !== 'bInh' && await E(p, () => window.__entrain.BC.inh) === inh, 'the inhale slider takes no focus or keys while locked (inhale stays ' + inh + ' s)');
+      await p.click('#bLockBtn'); await p.waitForTimeout(300);
+      await endNow(p); await p.waitForTimeout(400);
+      await p.evaluate(() => location.hash = 'breathe'); await p.waitForTimeout(300);
+      await p.focus('#bInh');
+      ok(await p.evaluate(() => document.activeElement.id) === 'bInh', 'after the practice the guide is yours again');
+      await p.close();
+    }
+
+    /* K. waking up: the chimes are on the audio clock from the start, the vibration comes once per cue */
+    if (!only || only === 'K') {
+      const p = await page(null, OPT());
+      await p.addInitScript(() => {
+        window.__vib = []; navigator.vibrate = () => { window.__vib.push(1); return true; };
+        window.__starts = []; const st = OscillatorNode.prototype.start;
+        OscillatorNode.prototype.start = function (w) { window.__starts.push(w || 0); return st.apply(this, arguments); };
+      });
+      await p.reload(); await p.waitForTimeout(300);
+      await p.evaluate(() => location.hash = 'practice/power-nap'); await p.waitForTimeout(250);
+      await p.click('.si-len button[data-len="10"]'); await p.waitForTimeout(200);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      await jumpTo(p, /^Nap$/); await p.waitForTimeout(300);
+      await p.evaluate(() => { window.__starts = []; window.__vib = []; });
+      await p.click('#sNext'); await p.waitForTimeout(600);
+      const sched = await p.evaluate(() => { const ctx = window.__entrain.A.ctx, w = [...new Set(window.__starts.map(x => Math.round(x * 10) / 10))].sort((a, b) => a - b); return { w, now: ctx.currentTime }; });
+      const gaps = sched.w.slice(1).map((x, i) => Math.round(x - sched.w[i]));
+      ok(await step(p) === 'Waking up' && sched.w.length === 6 && gaps.every(g => g === 8), 'all six chimes scheduled as the step starts, 8 s apart: ' + gaps.join(', '));
+      const n0 = await E(p, () => window.__vib.length);
+      const seg = async (st) => {
+        await p.evaluate((st) => { const P = window.__entrain.P, s = P.steps[P.idx]; window.__vib = []; P.t0 = performance.now() / 1000 - (s.at + st); }, st);
+        await p.waitForTimeout(900);
+        return E(p, () => window.__vib.length);
+      };
+      const n30 = await seg(29.6), n60 = await seg(59.6);
+      ok(n0 === 1 && n30 === 1 && n60 === 1, 'one vibration at the start, 30 s and 60 s: ' + n0 + ', ' + n30 + ', ' + n60);
+      await p.evaluate(() => { const P = window.__entrain.P, s = P.steps[P.idx]; P.t0 = performance.now() / 1000 - (s.at + 10); });
+      await p.click('#sPlay'); await p.waitForTimeout(200);
+      const rung = await E(p, () => window.__entrain.NP().rung);
+      ok(await E(p, () => window.__entrain.NP().wg === null) && rung >= 1 && rung < 6, 'pausing silences the chimes still to come (' + rung + ' had rung)');
+      await p.evaluate(() => { window.__starts = []; });
+      await p.click('#sPlay'); await p.waitForTimeout(400);
+      const again = await p.evaluate(() => new Set(window.__starts.map(x => Math.round(x * 10) / 10)).size);
+      ok(again === 6 - rung, 'resuming brings back only the ones that hadn\'t rung: ' + again);
+      await p.close();
+    }
+
+    /* L. tapping after a program: no "Sound paused" once the program's sound has ended as planned */
+    if (!only || only === 'L') {
+      const p = await page(null, Object.assign(OPT({ audio: true }), { 'pTap.calm-reset': '1' }));
+      await p.evaluate(() => location.hash = 'practice/calm-reset'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(500);
+      await jumpTo(p, /^Tapping$/); await p.waitForTimeout(9000);
+      const chip = await t(p, '#sLive');
+      ok(!/Sound paused/.test(chip), 'during the tapping round the live chips read: "' + chip + '"');
+      await p.close();
+    }
+
+    /* M. Copy says what happened when the clipboard is refused */
+    if (!only || only === 'M') {
+      const p = await page(null, OPT());
+      await p.evaluate(() => location.hash = 'practice/nvc-self'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      await jumpTo(p, /^What happened\?$/); await p.fill('.sw-ta', 'She looked at her phone while I talked.'); await p.waitForTimeout(100);
+      await p.evaluate(() => { const P = window.__entrain.P; P.t0 -= P.total; }); await p.waitForTimeout(800);
+      await p.click('#nvCopy'); await p.waitForTimeout(500);
+      const lab = await t(p, '#nvCopy');
+      ok(lab === 'Copied' || (lab === "Couldn't copy" && /didn't allow copying/.test(await t(p, '#toastTxt'))), 'without clipboard permission the button reads "' + lab + '"');
+      await p.close();
+    }
+
+    /* N. no work for nothing: the canvas rests on still steps, the play button isn't rebuilt every tick */
+    if (!only || only === 'N') {
+      const p = await page(null, OPT());
+      await p.evaluate(() => location.hash = 'practice/nvc-self'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      await jumpTo(p, /^What happened\?$/); await p.waitForTimeout(500);
+      const writing = await E(p, () => window.__entrain.P.raf);
+      const muts = await p.evaluate(() => new Promise(r => { let n = 0; const o = new MutationObserver(m => { n += m.length; }); o.observe(document.querySelector('#sPlay'), { childList: true, subtree: true, attributes: true }); setTimeout(() => { o.disconnect(); r(n); }, 1500); }));
+      await p.evaluate(() => location.hash = 'practice/calm-reset'); await p.waitForTimeout(250);
+      await p.click('#sGo'); await p.waitForTimeout(300);
+      await jumpTo(p, /^Cyclic sighs$/); await p.waitForTimeout(500);
+      const breathing = await E(p, () => window.__entrain.P.raf);
+      ok(writing === 0 && breathing !== 0, 'canvas loop off while writing, on while breathing (' + writing + ', ' + breathing + ')');
+      ok(muts === 0, 'the play button is left alone while nothing changes (' + muts + ' changes in 1.5 s)');
+      await p.close();
     }
   } catch (e) { log.push('ERROR ' + e.message); }
   console.log(log.join('\n'));

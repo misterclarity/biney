@@ -107,7 +107,7 @@
      after that; with no sign of sleep after 20 minutes you're woken anyway; with no
      sensor, after the nap length plus five minutes to drift off. */
   var NP = {};
-  function napReset() { NP = { base: 0, chk: -99, since: 0, onset: 0, low: 0, wake: 0, at: 0, hasHR: false, beatAt: -99 }; }
+  function napReset() { napWakeStop(); NP = { base: 0, chk: -99, since: 0, onset: 0, low: 0, wake: 0, hasHR: false, beatAt: -99, wg: null, wt: [], rung: 0, vibs: 0 }; }
   napReset();
   function powerNap(len) {
     len = len || 20;
@@ -122,7 +122,6 @@
     ];
   }
   function pNapTick(s, st, T) {
-    if (!NP.at) NP.at = s.at;
     if (T - NP.beatAt >= 5) { NP.beatAt = T; aBeat(6 - 3 * Math.min(1, st / 600), 2); }     // 6 Hz theta to 3 Hz delta over ten minutes
     if (!NP.base && st >= 170) {
       var hs = P.hr.filter(function (x) { return x.t >= s.at + 20 && x.t <= s.at + 170; }).map(function (x) { return x.hr; });
@@ -146,16 +145,38 @@
     NP.wake = NP.onset ? NP.onset + len : (NP.base > 0 && !lost) ? giveUp : s.at + len + 300;
     if (T >= NP.wake) pAdvance();
   }
+  /* Waking up: six chimes 8 s apart, louder each time, and a vibration at the start, 30 s and 60 s.
+     The chimes are put on the audio clock as soon as the step starts, so they ring on time even when
+     the browser slows its timers (screen off); they go through a gain of their own, which pausing or
+     leaving the step silences. They play even with bells off. */
+  function napChimes(st) {
+    if (!pBusOn()) return;
+    var ctx = A.ctx, g = ctx.createGain(), t0 = ctx.currentTime - st;
+    g.connect(P.bus);
+    NP.wg = g; NP.wt = [];
+    for (var k = NP.rung; k < 6; k++) {                            // the ones that haven't rung yet
+      var t = Math.max(ctx.currentTime + 0.03, t0 + 8 * k);
+      pBell(0.14 + 0.07 * k, t, 523.25 * (k % 2 ? 1.25 : 1), g, true);
+      NP.wt.push(t);
+    }
+  }
+  function napWakeStop() {
+    var g = NP.wg;
+    NP.wg = null;
+    if (!g || !A.ctx) return;
+    var now = A.ctx.currentTime;
+    NP.rung += NP.wt.filter(function (t) { return t <= now; }).length;   // those have rung; the rest go quiet
+    g.gain.setTargetAtTime(0, now, 0.05);
+    setTimeout(function () { try { g.disconnect(); } catch (e) {} }, 400);
+  }
   function pWakeTick(s, st) {
     aBeat(3 + 7 * Math.min(1, st / 60), 1.2);                     // back up to 10 Hz over a minute
-    var k = Math.floor(st / 8);
-    if (st < 48 && k !== NP.chime) {
-      NP.chime = k;
-      var was = P.opt.bells; P.opt.bells = true;                  // the wake-up chimes play even with bells off
-      pBell(0.14 + 0.07 * k, 0, 523.25 * (k % 2 ? 1.25 : 1));
-      P.opt.bells = was;
+    if (!NP.wg && NP.rung < 6) napChimes(st);                      // on entering, and what's left after a pause
+    var due = [0, 30, 60].filter(function (c) { return st >= c; }).length;
+    if (due > NP.vibs) {                                           // once per cue, even if a slowed timer skipped one
+      NP.vibs = due;
+      if (navigator.vibrate) { try { navigator.vibrate([300, 150, 300]); } catch (e) {} }
     }
-    if ((st < 0.4 || Math.abs(st - 30) < 0.2 || Math.abs(st - 60) < 0.2) && navigator.vibrate) { try { navigator.vibrate([300, 150, 300]); } catch (e) {} }
   }
   /* T is when the session ended: sleep runs from the estimated onset to the wake-up, or to
      the moment you ended the session, if that came first. */

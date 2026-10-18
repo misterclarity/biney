@@ -315,7 +315,7 @@
   }
 
   /* ----- what you made of it ----- */
-  function nvcSummary(d, kind) {
+  function nvcSummary(kind) {
     if (kind === "choose") {
       var lines = P.nvc.choose.filter(function (c) { return c.choose !== null || c.why || c.tags.length; }).map(function (c) {
         var why = nvcClean(c.why) || (c.tags.length ? c.tags.join(", ") : "");
@@ -368,6 +368,56 @@
       }).join("") + '</ol><button class="btn small" data-nvdel="all">Delete all</button></details>';
   }
 
+  /* ----- an unfinished reflection survives a reload, an update or the browser closing the tab -----
+     With "Keep a copy" on, what you've written so far is kept on this device as you go, one draft
+     per practice, and removed when the practice ends. Opening the practice again offers to carry on
+     at the step you were on, with the time you'd already spent. Nothing is kept until you write. */
+  function nvcDraftKey(id) { return "nvcDraft." + id; }
+  function nvcDraftGet(id) {
+    try { var d = JSON.parse(store.get(nvcDraftKey(id)) || "null"); return d && d.id === id && d.nvc ? d : null; } catch (e) { return null; }
+  }
+  function nvcDraftClear(id) { clearTimeout(P.draftT); try { localStorage.removeItem("entrain." + nvcDraftKey(id)); } catch (e) {} }
+  function nvcHasWords(n) {
+    return !!(n.obs || n.judg || n.rule || n.req || n.have || n.feel.length || n.need.length || n.oFeel.length || n.oNeed.length);
+  }
+  function nvcDraftSave(now) {
+    clearTimeout(P.draftT);
+    if (!now) { P.draftT = setTimeout(function () { nvcDraftSave(true); }, 400); return; }
+    if (!pBusy() || !P.def || !P.def.reflect || !P.opt.nvcSave || !(P.draftLive || nvcHasWords(P.nvc))) return;
+    P.draftLive = true;
+    store.set(nvcDraftKey(P.def.id), JSON.stringify({ id: P.def.id, at: Date.now(), idx: P.idx, T: Math.round(pT()),
+      titles: P.steps.map(function (s) { return s.title; }), secs: P.steps.map(function (s) { return s.secs; }), nvc: P.nvc }));
+  }
+  /* Called by pStart once the plan is built, before the first tick. */
+  function nvcDraftResume(d) {
+    var n = nvcNew(), k;
+    for (k in n) if (d.nvc[k] !== undefined && Array.isArray(d.nvc[k]) === Array.isArray(n[k]) && typeof d.nvc[k] === typeof n[k]) n[k] = d.nvc[k];
+    P.nvc = n; P.draftLive = true;
+    var same = Array.isArray(d.titles) && d.titles.length === P.steps.length && d.titles.every(function (t, i) { return t === P.steps[i].title; });
+    if (!same) return;                                 // the practice has changed since: keep the words, start at the top
+    var at = 0;
+    P.steps.forEach(function (s, i) {
+      var v = +d.secs[i];
+      if (s.open && v >= 0 && v < s.secs) { s.secs0 = s.secs; s.secs = v; }   // the steps you'd finished keep the time they took
+      s.at = at; at += s.secs;
+    });
+    P.total = at;
+    var i = Math.max(0, Math.min(P.steps.length - 1, d.idx | 0)), s = P.steps[i];
+    P.t0 = bNow() - Math.max(s.at, Math.min(+d.T || 0, s.at + s.secs - 1));
+    P.idx = -1;
+    pEnter(i);
+  }
+  function nvcWhen(at) {
+    return new Date(at).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  }
+  function nvcDraftStrip(d) {
+    var dr = nvcDraftGet(d.id);
+    if (!dr) return "";
+    var where = Array.isArray(dr.titles) && dr.titles[dr.idx] ? ", at “" + esc(dr.titles[dr.idx]) + "”" : "";
+    return '<div class="si-draft"><p><b>You have an unfinished reflection</b> from ' + esc(nvcWhen(dr.at)) + where + ".</p>" +
+      '<div class="si-draft-act"><button class="btn primary small" id="sDraftGo">Continue it</button><button class="btn small" id="sDraftDel">Discard</button></div></div>';
+  }
+
   function nvcInit() {
     var host = $("#sWrite"), cur = function () { var s = P.steps[P.idx]; return s && s.k === "write" ? s : null; };
     host.addEventListener("input", function (e) {
@@ -375,6 +425,7 @@
       if (!s) return;
       if (t.classList.contains("sw-ta")) { P.nvc[t.dataset.f] = t.value; nvcCheck(s); }
       else if (t.classList.contains("sw-in")) { P.nvc.choose[+t.dataset.i].why = t.value; }
+      nvcDraftSave();
     });
     host.addEventListener("keydown", function (e) {
       var t = e.target, s = cur();
@@ -386,6 +437,7 @@
       if (t.dataset.f === "feel" || t.dataset.f === "oFeel") nvcFeelRedraw(t.dataset.f);
       else host.querySelector('.sw-sets[data-f="' + t.dataset.f + '"]').innerHTML = nvcChips(t.dataset.f, s.sets);
       nvcCheck(s);
+      nvcDraftSave();
     });
     host.addEventListener("keydown", function (e) {           // the wheel's parts work from the keyboard too
       var g = e.target.closest && e.target.closest('[role="button"][data-fam], [role="button"][data-wword], [role="button"][data-wback]');
@@ -405,11 +457,16 @@
           nvcFeelRedraw(fld, kb ? '[data-wword="' + v0 + '"]' : null);
         }
         nvcCheck(s);
+        nvcDraftSave();
         return;
       }
       var b = e.target.closest("button");
       if (!s || !b) return;
-      if (b.dataset.sw) { if (P.state === "running") pAdvance(); return; }
+      if (b.dataset.sw) {                          // Continue or Skip: carry on, even if you'd paused
+        if (P.state === "paused") pResume();
+        if (P.state === "running") pAdvance();
+        return;
+      }
       if (b.dataset.view) {
         store.set("nvcView", b.dataset.view);
         nvcFeelRedraw("feel"); nvcFeelRedraw("oFeel");
@@ -420,6 +477,7 @@
         if (k1 >= 0) arr1.splice(k1, 1);
         nvcFeelRedraw(b.dataset.uf);
         nvcCheck(s);
+        nvcDraftSave();
         return;
       }
       if (b.dataset.f && b.dataset.v !== undefined) {
@@ -450,15 +508,12 @@
         }
       }
       nvcCheck(s);
+      nvcDraftSave();
     });
     document.addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("[data-nvdel], #nvCopy");
       if (!b) return;
-      if (b.id === "nvCopy") {
-        var txt = b.dataset.text, done = function () { bSetT("#nvCopy", "Copied"); };
-        try { navigator.clipboard.writeText(txt).then(done, function () {}); } catch (x) {}
-        return;
-      }
+      if (b.id === "nvCopy") { nvcCopy(b.dataset.text); return; }
       var l = nvcLog();
       if (b.dataset.nvdel === "all") {
         var kind = P.view && P.view.id === "nvc-choose" ? "choose" : "self";
@@ -467,4 +522,31 @@
       store.set("nvcLog", JSON.stringify(l));
       if (P.view) pIntro(P.view.id);
     });
+    // leaving the app or reloading it saves the draft at once, rather than after the usual short wait
+    document.addEventListener("visibilitychange", function () { if (document.hidden) nvcDraftSave(true); });
+    window.addEventListener("pagehide", function () { nvcDraftSave(true); });
+    // a reflection left unfinished last time: say so once the app has opened
+    var left = PRACTICES.filter(function (d) { return d.reflect; }).map(function (d) { return nvcDraftGet(d.id); })
+      .filter(function (x) { return x; }).sort(function (a, b) { return b.at - a.at; })[0];
+    if (left) setTimeout(function () {
+      if (pBusy() || location.hash === "#practice/" + left.id) return;
+      toast("You have an unfinished reflection from " + nvcWhen(left.at) + ".", { action: "Open", onAct: function () { location.hash = "practice/" + left.id; } });
+    }, 1200);
+  }
+  /* The clipboard API can be refused (a preview frame, an insecure page); the older copy command
+     often still works, and if neither does, say so rather than fail silently. */
+  function nvcCopy(txt) {
+    var said = function (ok) {
+      bSetT("#nvCopy", ok ? "Copied" : "Couldn't copy");
+      if (!ok) toast("This browser didn't allow copying. Select the text above and copy it instead.");
+    };
+    var old = function () {
+      var ta = document.createElement("textarea"), ok = false;
+      ta.value = txt; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+      document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+      said(ok);
+    };
+    try { navigator.clipboard.writeText(txt).then(function () { said(true); }, old); } catch (e) { old(); }
   }

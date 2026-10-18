@@ -1143,6 +1143,11 @@
   .si-journal p{margin:0;overflow-wrap:anywhere}
   .nv-del{border:0;background:transparent;color:var(--text-faint);cursor:pointer;padding:2px;display:grid}
   .nv-del svg{width:16px;height:16px}
+  .si-draft{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 14px;margin:0 0 4px;padding:12px 14px;
+    border-radius:14px;border:1px solid color-mix(in srgb,var(--pcol) 45%,transparent);background:color-mix(in srgb,var(--pcol) 12%,var(--panel))}
+  .si-draft p{margin:0;font-size:14px;line-height:1.45;color:var(--text-dim);flex:1 1 220px}
+  .si-draft b{color:var(--text)}
+  .si-draft-act{display:flex;gap:8px;flex-wrap:wrap}
   /* quotes */
   .quote{margin:0;padding:18px 20px 14px;border-radius:18px;background:var(--panel);quotes:"\201C" "\201D"}
   .quote blockquote{margin:0;font-size:16.5px;line-height:1.5;font-weight:560;color:var(--text);text-wrap:pretty}

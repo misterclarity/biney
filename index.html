@@ -1155,6 +1155,11 @@
   .si-journal p{margin:0;overflow-wrap:anywhere}
   .nv-del{border:0;background:transparent;color:var(--text-faint);cursor:pointer;padding:2px;display:grid}
   .nv-del svg{width:16px;height:16px}
+  .si-draft{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 14px;margin:0 0 4px;padding:12px 14px;
+    border-radius:14px;border:1px solid color-mix(in srgb,var(--pcol) 45%,transparent);background:color-mix(in srgb,var(--pcol) 12%,var(--panel))}
+  .si-draft p{margin:0;font-size:14px;line-height:1.45;color:var(--text-dim);flex:1 1 220px}
+  .si-draft b{color:var(--text)}
+  .si-draft-act{display:flex;gap:8px;flex-wrap:wrap}
   /* quotes */
   .quote{margin:0;padding:18px 20px 14px;border-radius:18px;background:var(--panel);quotes:"\201C" "\201D"}
   .quote blockquote{margin:0;font-size:16.5px;line-height:1.5;font-weight:560;color:var(--text);text-wrap:pretty}
@@ -6994,7 +6999,6 @@
   function ext(a, b) { if (b) for (var k in b) a[k] = b[k]; return a; }
   function G(secs, title, lines, o) { return ext({ k: "guide", secs: secs, title: title, lines: pLines(lines, secs) }, o); }
   function Br(secs, title, t, o) { return ext({ k: "breath", secs: secs, title: title, t: t, lines: pLines(o && o.lines, secs) }, o && (delete o.lines, o)); }
-  function Po(secs, pose, side, title, lines) { return { k: "pose", secs: secs, pose: pose, side: side || null, title: title, lines: pLines(lines, secs) }; }
   function Pu(n, rate, title, lines) { return { k: "pump", secs: 3 + n / rate + 1, n: n, rate: rate, title: title, lines: pLines(lines, 3) }; }
   function Ob(secs, title, lines, o) { return ext({ k: "observe", secs: secs, title: title, lines: pLines(lines, secs) }, o); }
   function Ct(secs, n, title, lines, o) { return ext({ k: "count", secs: secs, n: n, title: title, lines: pLines(lines, secs) }, o); }
@@ -7650,7 +7654,7 @@
     hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null, lock: null,
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
-    mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null,
+    mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     opt: { voice: true, bells: true, cues: "tones", visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true }
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
@@ -7731,8 +7735,8 @@
     if (!P.bus) { P.bus = A.ctx.createGain(); P.bus.gain.value = 0.55; P.bus.connect(A.ctx.destination); }
     return true;
   }
-  function pBell(peak, when, hz) {
-    if (!P.opt.bells || !pBusOn()) return;
+  function pBell(peak, when, hz, out, always) {        // out: a node of its own instead of the bell bus; always: even with bells off
+    if ((!P.opt.bells && !always) || !pBusOn()) return;
     var ctx = A.ctx, t = when || ctx.currentTime + 0.04, f = hz || 392;
     [[1, 1, 6.5], [2.76, 0.32, 2.4], [5.4, 0.1, 1.1], [0.5, 0.22, 5]].forEach(function (p) {
       var o = ctx.createOscillator(), g = ctx.createGain();
@@ -7740,7 +7744,7 @@
       g.gain.setValueAtTime(0, t);
       g.gain.linearRampToValueAtTime(peak * p[1] * 0.3, t + 0.015);
       g.gain.exponentialRampToValueAtTime(0.0001, t + p[2]);
-      o.connect(g); g.connect(P.bus);
+      o.connect(g); g.connect(out || P.bus);
       o.start(t); o.stop(t + p[2] + 0.1);
       o.onended = function () { try { o.disconnect(); g.disconnect(); } catch (e) {} };
     });
@@ -7938,6 +7942,8 @@
   function pEnter(i) {
     var prev = P.steps[P.idx], s = P.steps[i];
     P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1;
+    napWakeStop();                                   // wake-up chimes belong to their own step
+    if (s.k === "wake") { NP.rung = 0; NP.vibs = 0; }
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
       var add = s.secs0 - s.secs;
@@ -7953,6 +7959,8 @@
     pStage(s);
     pRenderSegs();
     pUI();
+    if (P.def && P.def.reflect) nvcDraftSave(true);   // the step you're on is part of the draft
+    pLoop();                                         // the canvas loop rests on static steps; wake it for this one
   }
   function pStage(s) {
     var vis = pVis(s), fig = $("#sFig");
@@ -8070,6 +8078,7 @@
   }
   function pRate(v) {
     var s = P.steps[P.idx];
+    if (s && s.k === "rate" && P.state === "paused") pResume();   // answering carries on
     if (!s || s.k !== "rate" || P.state !== "running" || P.rated === P.idx) return;
     P.rated = P.idx;
     P.sudsBy[P.idx] = v;                             // one rating per step: a later tap replaces it, Skip clears it
@@ -8184,8 +8193,8 @@
     bSetT("#sSub", sub);
     var nose = $("#sNose");
     if (!nose.hidden) {
-      var sp = nose.children;
-      for (var i = 0; i < sp.length; i++) sp[i].classList.toggle("on", sp[i].dataset.s === P.nose);
+      var ns = nose.children;
+      for (var i = 0; i < ns.length; i++) ns[i].classList.toggle("on", ns[i].dataset.s === P.nose);
     }
     var sp = P.def.selfPaced;
     bSetT("#sLeft", sp ? "Your pace" : fmt(P.total - T) + " left");
@@ -8196,12 +8205,15 @@
     if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
     if (live && H.coh) chips.push('<span class="lc coh">Coherence <b>' + H.coh.cs.toFixed(1) + "</b></span>");
     if (tr && A.playing) chips.push('<span class="lc beat">' + esc(tr.band) + " <b>" + beatAt(tr, A.elapsed).toFixed(1) + "</b> Hz</span>");
-    else if (tr && !A.playing && P.state === "running") chips.push('<span class="lc off">Sound paused</span>');
+    else if (tr && !A.playing && P.state === "running" && T < tr.minutes * 60 - (tr.fade || FADE_OUT)) chips.push('<span class="lc off">Sound paused</span>');   // not once the sound has ended as planned
     var h = chips.join("");
     if (P.chipsHtml !== h) { P.chipsHtml = h; $("#sLive").innerHTML = h; }
-    var play = $("#sPlay");
-    play.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-' + (P.state === "running" ? "pause" : "play") + '"/></svg>';
-    play.setAttribute("aria-label", P.state === "running" ? "Pause" : "Resume");
+    var play = $("#sPlay"), icon = P.state === "running" ? "pause" : "play";
+    if (play.dataset.icon !== icon) {               // only when it changes, not on every tick
+      play.dataset.icon = icon;
+      play.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-' + icon + '"/></svg>';
+      play.setAttribute("aria-label", icon === "pause" ? "Pause" : "Resume");
+    }
     $("#sPrev").disabled = P.idx <= 0 && T < 3;
     $("#sNext").disabled = P.idx >= P.steps.length - 1;
     pPill();
@@ -8225,21 +8237,27 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1 };   // the visuals drawn on the canvas
   function pDraw() {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
     if (!P.cw) pSizeCanvas();
     var c = P.ctx, W = P.cw, Hh = P.ch, s = P.steps[P.idx];
     if (W && s) {
-      c.clearRect(0, 0, W, Hh);
-      var vis = pVis(s), T = pT(), st = T - s.at, col = P.col[P.def.tone || "relax"] || BCOL["b-in"];
-      if (vis === "breath") pDrawBreath();
-      else if (vis === "orb" || vis === "glow") pOrb(c, W, Hh, T, vis === "glow" ? P.col.warm : col, 1);
-      else if (vis === "still") pStill(c, W, Hh, T, col);
-      else if (vis === "pose") { pPoseRing(c, W, Hh, T, col, s); if (P.mv) pMoveFig(s, T); }
-      else if (vis === "pump") pPump(c, W, Hh, s, st, col);
-      else if (vis === "hold") pHold(c, W, Hh, s, st, col);
-      else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
+      var vis = pVis(s), now = bNow();
+      if (!P_ANIM[vis]) { c.clearRect(0, 0, W, Hh); return; }   // nothing moves on the canvas (writing, a rating, the nap): rest until the next step
+      if (vis !== "adapt" || now - P.drawAt >= 0.25) {          // the heart-led chart changes every few seconds: four frames a second will do
+        P.drawAt = now;
+        c.clearRect(0, 0, W, Hh);
+        var T = pT(), st = T - s.at, col = P.col[P.def.tone || "relax"] || BCOL["b-in"];
+        if (vis === "breath") pDrawBreath();
+        else if (vis === "orb" || vis === "glow") pOrb(c, W, Hh, T, vis === "glow" ? P.col.warm : col, 1);
+        else if (vis === "still") pStill(c, W, Hh, T, col);
+        else if (vis === "pose") { pPoseRing(c, W, Hh, T, col, s); if (P.mv) pMoveFig(s, T); }
+        else if (vis === "pump") pPump(c, W, Hh, s, st, col);
+        else if (vis === "hold") pHold(c, W, Hh, s, st, col);
+        else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
+      }
     }
     P.raf = requestAnimationFrame(pDraw);
   }
@@ -8343,7 +8361,8 @@
 
   /* ----- transport ----- */
   function pStart() {
-    var d = P.view;
+    var d = P.view, resume = P.resume;                 // resume: a reflection's draft to carry on from (nvcDraftResume)
+    P.resume = null;
     if (!d) return;
     if (d.confirm && !$("#sOk").checked) { $("#sOk").focus(); return; }
     var go = function () {
@@ -8356,7 +8375,7 @@
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
-      pAdaptReset(); napReset(); P.nvc = nvcNew();
+      pAdaptReset(); napReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
       if (d.audio && P.opt.audio) {
@@ -8377,6 +8396,7 @@
       pLockBreathe();
       pBell(0.5);
       pLock();
+      if (resume && d.reflect && resume.id === d.id) nvcDraftResume(resume);
       clearInterval(P.tick);
       P.tick = setInterval(pTick, 200);
       pTick();
@@ -8394,6 +8414,7 @@
     if (B.state === "running" && P.usesB) bPause();
     if (pTrack() && A.playing) { pause(); P.audioHeld = true; }
     rhyStop(0.3);
+    napWakeStop();
     pHush();
     pUnlock();
     pUI();
@@ -8442,6 +8463,7 @@
     pRestore();
     pHush();
     rhyStop();
+    napWakeStop();
     P.mv = null;
     if (pTrack()) {
       var trk = A.track;
@@ -8461,6 +8483,7 @@
       if (d.end) pSay(d.end);
     }
     var sum = pSummary(T, early);
+    if (d.reflect && P.draftLive) nvcDraftClear(d.id);   // finished, or ended: the draft has done its job
     if (!quiet) pDone(sum, early);
     pImmersive();
     pPill();
@@ -8488,7 +8511,7 @@
     if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatLog = AD.log.slice(); }
     napSummary(r, T);
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
-      r.nvc = nvcSummary(null, d.id === "nvc-choose" ? "choose" : "self");
+      r.nvc = nvcSummary(d.id === "nvc-choose" ? "choose" : "self");
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
     }
     r.hrPts = hr;
@@ -8618,7 +8641,7 @@
     opts.push(pToggle("sOptBells", "Bells between steps", P.opt.bells, ""));
     if (d.audio) opts.push(pToggle("sOptAudio", "Binaural layer", P.opt.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
     if (pPlanHasRhy(plan.steps)) opts.push(pToggle("sOptRhy", "Berimbau", P.opt.rhythm, "A synthesized berimbau keeps time for the capoeira moves."));
-    if (d.reflect) opts.push(pToggle("sOptKeep", "Keep a copy on this device", P.opt.nvcSave, "Your writing is never sent anywhere. Turn this off to keep nothing once you finish."));
+    if (d.reflect) opts.push(pToggle("sOptKeep", "Keep a copy on this device", P.opt.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
     if (hasTap) {
@@ -8669,7 +8692,8 @@
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution ? '<div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>' + esc(d.caution) + "</span></div>" : "") +
       "</div>" +
-      '<aside class="si-opts"><h3>Options</h3>' + opts.join("") +
+      '<aside class="si-opts">' + (d.reflect ? nvcDraftStrip(d) : "") +     // first thing on a phone, next to Start on a computer
+        "<h3>Options</h3>" + opts.join("") +
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
         '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Start' + (d.open || d.selfPaced ? "" : " " + mins + " min") + "</button>" +
@@ -8717,6 +8741,16 @@
     var ph = $("#sTapPhrase");
     if (ph) ph.addEventListener("input", function () { store.set("tapPhrase", this.value.trim()); });
     on("#sOk", function () { $("#sGo").disabled = !this.checked; });
+    var dg = $("#sDraftGo"), dd = $("#sDraftDel");
+    if (dg) dg.addEventListener("click", function () { P.resume = nvcDraftGet(d.id); pStart(); });
+    if (dd) dd.addEventListener("click", function () {     // two taps, like End: a discarded draft is gone
+      if (!(dd.armed && bNow() - dd.armed < 3)) {
+        dd.armed = bNow(); dd.textContent = "Tap again to discard";
+        setTimeout(function () { dd.armed = 0; dd.textContent = "Discard"; }, 3000);
+        return;
+      }
+      nvcDraftClear(d.id); pIntro(d.id);
+    });
     on("#sVoiceSel", function () { P.opt.voiceName = this.value; pSaveOpt(); });
     var t = $("#sVoiceTest");
     if (t) t.addEventListener("click", function () { pHush(); var v = P.opt.voice; P.opt.voice = true; pSay("Breathe in slowly, and let it go."); P.opt.voice = v; });
@@ -8796,6 +8830,10 @@
     var on = pBusy() && P.usesB;
     var br = document.querySelector(".breath");
     if (br) br.classList.toggle("locked", on);
+    ["#bPats", ".b-transport", "#bSensorRow", "#bPanel"].forEach(function (q) {   // out of reach of the keyboard too, not just the pointer
+      var el = document.querySelector(q);
+      if (el) el.inert = on;
+    });
     $("#bLockNote").hidden = !on;
     if (on) bSetT("#bLockTxt", P.def.name + " is using the breathing guide.");
   }
@@ -8916,7 +8954,8 @@
     });
     $("#sTap").addEventListener("click", function () {
       var s = P.steps[P.idx];
-      if (!s || P.state !== "running") return;
+      if (!s || !pBusy()) return;
+      if (P.state === "paused") pResume();            // tapping the step's own button carries on
       if (s.k === "count") {
         if (P.taps >= s.n) return;
         P.taps++;
@@ -9087,7 +9126,7 @@
      after that; with no sign of sleep after 20 minutes you're woken anyway; with no
      sensor, after the nap length plus five minutes to drift off. */
   var NP = {};
-  function napReset() { NP = { base: 0, chk: -99, since: 0, onset: 0, low: 0, wake: 0, at: 0, hasHR: false, beatAt: -99 }; }
+  function napReset() { napWakeStop(); NP = { base: 0, chk: -99, since: 0, onset: 0, low: 0, wake: 0, hasHR: false, beatAt: -99, wg: null, wt: [], rung: 0, vibs: 0 }; }
   napReset();
   function powerNap(len) {
     len = len || 20;
@@ -9102,7 +9141,6 @@
     ];
   }
   function pNapTick(s, st, T) {
-    if (!NP.at) NP.at = s.at;
     if (T - NP.beatAt >= 5) { NP.beatAt = T; aBeat(6 - 3 * Math.min(1, st / 600), 2); }     // 6 Hz theta to 3 Hz delta over ten minutes
     if (!NP.base && st >= 170) {
       var hs = P.hr.filter(function (x) { return x.t >= s.at + 20 && x.t <= s.at + 170; }).map(function (x) { return x.hr; });
@@ -9126,16 +9164,38 @@
     NP.wake = NP.onset ? NP.onset + len : (NP.base > 0 && !lost) ? giveUp : s.at + len + 300;
     if (T >= NP.wake) pAdvance();
   }
+  /* Waking up: six chimes 8 s apart, louder each time, and a vibration at the start, 30 s and 60 s.
+     The chimes are put on the audio clock as soon as the step starts, so they ring on time even when
+     the browser slows its timers (screen off); they go through a gain of their own, which pausing or
+     leaving the step silences. They play even with bells off. */
+  function napChimes(st) {
+    if (!pBusOn()) return;
+    var ctx = A.ctx, g = ctx.createGain(), t0 = ctx.currentTime - st;
+    g.connect(P.bus);
+    NP.wg = g; NP.wt = [];
+    for (var k = NP.rung; k < 6; k++) {                            // the ones that haven't rung yet
+      var t = Math.max(ctx.currentTime + 0.03, t0 + 8 * k);
+      pBell(0.14 + 0.07 * k, t, 523.25 * (k % 2 ? 1.25 : 1), g, true);
+      NP.wt.push(t);
+    }
+  }
+  function napWakeStop() {
+    var g = NP.wg;
+    NP.wg = null;
+    if (!g || !A.ctx) return;
+    var now = A.ctx.currentTime;
+    NP.rung += NP.wt.filter(function (t) { return t <= now; }).length;   // those have rung; the rest go quiet
+    g.gain.setTargetAtTime(0, now, 0.05);
+    setTimeout(function () { try { g.disconnect(); } catch (e) {} }, 400);
+  }
   function pWakeTick(s, st) {
     aBeat(3 + 7 * Math.min(1, st / 60), 1.2);                     // back up to 10 Hz over a minute
-    var k = Math.floor(st / 8);
-    if (st < 48 && k !== NP.chime) {
-      NP.chime = k;
-      var was = P.opt.bells; P.opt.bells = true;                  // the wake-up chimes play even with bells off
-      pBell(0.14 + 0.07 * k, 0, 523.25 * (k % 2 ? 1.25 : 1));
-      P.opt.bells = was;
+    if (!NP.wg && NP.rung < 6) napChimes(st);                      // on entering, and what's left after a pause
+    var due = [0, 30, 60].filter(function (c) { return st >= c; }).length;
+    if (due > NP.vibs) {                                           // once per cue, even if a slowed timer skipped one
+      NP.vibs = due;
+      if (navigator.vibrate) { try { navigator.vibrate([300, 150, 300]); } catch (e) {} }
     }
-    if ((st < 0.4 || Math.abs(st - 30) < 0.2 || Math.abs(st - 60) < 0.2) && navigator.vibrate) { try { navigator.vibrate([300, 150, 300]); } catch (e) {} }
   }
   /* T is when the session ended: sleep runs from the estimated onset to the wake-up, or to
      the moment you ended the session, if that came first. */
@@ -9464,7 +9524,7 @@
   }
 
   /* ----- what you made of it ----- */
-  function nvcSummary(d, kind) {
+  function nvcSummary(kind) {
     if (kind === "choose") {
       var lines = P.nvc.choose.filter(function (c) { return c.choose !== null || c.why || c.tags.length; }).map(function (c) {
         var why = nvcClean(c.why) || (c.tags.length ? c.tags.join(", ") : "");
@@ -9517,6 +9577,56 @@
       }).join("") + '</ol><button class="btn small" data-nvdel="all">Delete all</button></details>';
   }
 
+  /* ----- an unfinished reflection survives a reload, an update or the browser closing the tab -----
+     With "Keep a copy" on, what you've written so far is kept on this device as you go, one draft
+     per practice, and removed when the practice ends. Opening the practice again offers to carry on
+     at the step you were on, with the time you'd already spent. Nothing is kept until you write. */
+  function nvcDraftKey(id) { return "nvcDraft." + id; }
+  function nvcDraftGet(id) {
+    try { var d = JSON.parse(store.get(nvcDraftKey(id)) || "null"); return d && d.id === id && d.nvc ? d : null; } catch (e) { return null; }
+  }
+  function nvcDraftClear(id) { clearTimeout(P.draftT); try { localStorage.removeItem("entrain." + nvcDraftKey(id)); } catch (e) {} }
+  function nvcHasWords(n) {
+    return !!(n.obs || n.judg || n.rule || n.req || n.have || n.feel.length || n.need.length || n.oFeel.length || n.oNeed.length);
+  }
+  function nvcDraftSave(now) {
+    clearTimeout(P.draftT);
+    if (!now) { P.draftT = setTimeout(function () { nvcDraftSave(true); }, 400); return; }
+    if (!pBusy() || !P.def || !P.def.reflect || !P.opt.nvcSave || !(P.draftLive || nvcHasWords(P.nvc))) return;
+    P.draftLive = true;
+    store.set(nvcDraftKey(P.def.id), JSON.stringify({ id: P.def.id, at: Date.now(), idx: P.idx, T: Math.round(pT()),
+      titles: P.steps.map(function (s) { return s.title; }), secs: P.steps.map(function (s) { return s.secs; }), nvc: P.nvc }));
+  }
+  /* Called by pStart once the plan is built, before the first tick. */
+  function nvcDraftResume(d) {
+    var n = nvcNew(), k;
+    for (k in n) if (d.nvc[k] !== undefined && Array.isArray(d.nvc[k]) === Array.isArray(n[k]) && typeof d.nvc[k] === typeof n[k]) n[k] = d.nvc[k];
+    P.nvc = n; P.draftLive = true;
+    var same = Array.isArray(d.titles) && d.titles.length === P.steps.length && d.titles.every(function (t, i) { return t === P.steps[i].title; });
+    if (!same) return;                                 // the practice has changed since: keep the words, start at the top
+    var at = 0;
+    P.steps.forEach(function (s, i) {
+      var v = +d.secs[i];
+      if (s.open && v >= 0 && v < s.secs) { s.secs0 = s.secs; s.secs = v; }   // the steps you'd finished keep the time they took
+      s.at = at; at += s.secs;
+    });
+    P.total = at;
+    var i = Math.max(0, Math.min(P.steps.length - 1, d.idx | 0)), s = P.steps[i];
+    P.t0 = bNow() - Math.max(s.at, Math.min(+d.T || 0, s.at + s.secs - 1));
+    P.idx = -1;
+    pEnter(i);
+  }
+  function nvcWhen(at) {
+    return new Date(at).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  }
+  function nvcDraftStrip(d) {
+    var dr = nvcDraftGet(d.id);
+    if (!dr) return "";
+    var where = Array.isArray(dr.titles) && dr.titles[dr.idx] ? ", at “" + esc(dr.titles[dr.idx]) + "”" : "";
+    return '<div class="si-draft"><p><b>You have an unfinished reflection</b> from ' + esc(nvcWhen(dr.at)) + where + ".</p>" +
+      '<div class="si-draft-act"><button class="btn primary small" id="sDraftGo">Continue it</button><button class="btn small" id="sDraftDel">Discard</button></div></div>';
+  }
+
   function nvcInit() {
     var host = $("#sWrite"), cur = function () { var s = P.steps[P.idx]; return s && s.k === "write" ? s : null; };
     host.addEventListener("input", function (e) {
@@ -9524,6 +9634,7 @@
       if (!s) return;
       if (t.classList.contains("sw-ta")) { P.nvc[t.dataset.f] = t.value; nvcCheck(s); }
       else if (t.classList.contains("sw-in")) { P.nvc.choose[+t.dataset.i].why = t.value; }
+      nvcDraftSave();
     });
     host.addEventListener("keydown", function (e) {
       var t = e.target, s = cur();
@@ -9535,6 +9646,7 @@
       if (t.dataset.f === "feel" || t.dataset.f === "oFeel") nvcFeelRedraw(t.dataset.f);
       else host.querySelector('.sw-sets[data-f="' + t.dataset.f + '"]').innerHTML = nvcChips(t.dataset.f, s.sets);
       nvcCheck(s);
+      nvcDraftSave();
     });
     host.addEventListener("keydown", function (e) {           // the wheel's parts work from the keyboard too
       var g = e.target.closest && e.target.closest('[role="button"][data-fam], [role="button"][data-wword], [role="button"][data-wback]');
@@ -9554,11 +9666,16 @@
           nvcFeelRedraw(fld, kb ? '[data-wword="' + v0 + '"]' : null);
         }
         nvcCheck(s);
+        nvcDraftSave();
         return;
       }
       var b = e.target.closest("button");
       if (!s || !b) return;
-      if (b.dataset.sw) { if (P.state === "running") pAdvance(); return; }
+      if (b.dataset.sw) {                          // Continue or Skip: carry on, even if you'd paused
+        if (P.state === "paused") pResume();
+        if (P.state === "running") pAdvance();
+        return;
+      }
       if (b.dataset.view) {
         store.set("nvcView", b.dataset.view);
         nvcFeelRedraw("feel"); nvcFeelRedraw("oFeel");
@@ -9569,6 +9686,7 @@
         if (k1 >= 0) arr1.splice(k1, 1);
         nvcFeelRedraw(b.dataset.uf);
         nvcCheck(s);
+        nvcDraftSave();
         return;
       }
       if (b.dataset.f && b.dataset.v !== undefined) {
@@ -9599,15 +9717,12 @@
         }
       }
       nvcCheck(s);
+      nvcDraftSave();
     });
     document.addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("[data-nvdel], #nvCopy");
       if (!b) return;
-      if (b.id === "nvCopy") {
-        var txt = b.dataset.text, done = function () { bSetT("#nvCopy", "Copied"); };
-        try { navigator.clipboard.writeText(txt).then(done, function () {}); } catch (x) {}
-        return;
-      }
+      if (b.id === "nvCopy") { nvcCopy(b.dataset.text); return; }
       var l = nvcLog();
       if (b.dataset.nvdel === "all") {
         var kind = P.view && P.view.id === "nvc-choose" ? "choose" : "self";
@@ -9616,6 +9731,33 @@
       store.set("nvcLog", JSON.stringify(l));
       if (P.view) pIntro(P.view.id);
     });
+    // leaving the app or reloading it saves the draft at once, rather than after the usual short wait
+    document.addEventListener("visibilitychange", function () { if (document.hidden) nvcDraftSave(true); });
+    window.addEventListener("pagehide", function () { nvcDraftSave(true); });
+    // a reflection left unfinished last time: say so once the app has opened
+    var left = PRACTICES.filter(function (d) { return d.reflect; }).map(function (d) { return nvcDraftGet(d.id); })
+      .filter(function (x) { return x; }).sort(function (a, b) { return b.at - a.at; })[0];
+    if (left) setTimeout(function () {
+      if (pBusy() || location.hash === "#practice/" + left.id) return;
+      toast("You have an unfinished reflection from " + nvcWhen(left.at) + ".", { action: "Open", onAct: function () { location.hash = "practice/" + left.id; } });
+    }, 1200);
+  }
+  /* The clipboard API can be refused (a preview frame, an insecure page); the older copy command
+     often still works, and if neither does, say so rather than fail silently. */
+  function nvcCopy(txt) {
+    var said = function (ok) {
+      bSetT("#nvCopy", ok ? "Copied" : "Couldn't copy");
+      if (!ok) toast("This browser didn't allow copying. Select the text above and copy it instead.");
+    };
+    var old = function () {
+      var ta = document.createElement("textarea"), ok = false;
+      ta.value = txt; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+      document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+      said(ok);
+    };
+    try { navigator.clipboard.writeText(txt).then(function () { said(true); }, old); } catch (e) { old(); }
   }
 
   /* ---------------------------- your own yoga ----------------------------

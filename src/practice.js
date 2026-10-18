@@ -15,7 +15,7 @@
     hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null, lock: null,
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
-    mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null,
+    mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     opt: { voice: true, bells: true, cues: "tones", visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true }
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
@@ -96,8 +96,8 @@
     if (!P.bus) { P.bus = A.ctx.createGain(); P.bus.gain.value = 0.55; P.bus.connect(A.ctx.destination); }
     return true;
   }
-  function pBell(peak, when, hz) {
-    if (!P.opt.bells || !pBusOn()) return;
+  function pBell(peak, when, hz, out, always) {        // out: a node of its own instead of the bell bus; always: even with bells off
+    if ((!P.opt.bells && !always) || !pBusOn()) return;
     var ctx = A.ctx, t = when || ctx.currentTime + 0.04, f = hz || 392;
     [[1, 1, 6.5], [2.76, 0.32, 2.4], [5.4, 0.1, 1.1], [0.5, 0.22, 5]].forEach(function (p) {
       var o = ctx.createOscillator(), g = ctx.createGain();
@@ -105,7 +105,7 @@
       g.gain.setValueAtTime(0, t);
       g.gain.linearRampToValueAtTime(peak * p[1] * 0.3, t + 0.015);
       g.gain.exponentialRampToValueAtTime(0.0001, t + p[2]);
-      o.connect(g); g.connect(P.bus);
+      o.connect(g); g.connect(out || P.bus);
       o.start(t); o.stop(t + p[2] + 0.1);
       o.onended = function () { try { o.disconnect(); g.disconnect(); } catch (e) {} };
     });
@@ -303,6 +303,8 @@
   function pEnter(i) {
     var prev = P.steps[P.idx], s = P.steps[i];
     P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1;
+    napWakeStop();                                   // wake-up chimes belong to their own step
+    if (s.k === "wake") { NP.rung = 0; NP.vibs = 0; }
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
       var add = s.secs0 - s.secs;
@@ -318,6 +320,8 @@
     pStage(s);
     pRenderSegs();
     pUI();
+    if (P.def && P.def.reflect) nvcDraftSave(true);   // the step you're on is part of the draft
+    pLoop();                                         // the canvas loop rests on static steps; wake it for this one
   }
   function pStage(s) {
     var vis = pVis(s), fig = $("#sFig");
@@ -435,6 +439,7 @@
   }
   function pRate(v) {
     var s = P.steps[P.idx];
+    if (s && s.k === "rate" && P.state === "paused") pResume();   // answering carries on
     if (!s || s.k !== "rate" || P.state !== "running" || P.rated === P.idx) return;
     P.rated = P.idx;
     P.sudsBy[P.idx] = v;                             // one rating per step: a later tap replaces it, Skip clears it
@@ -549,8 +554,8 @@
     bSetT("#sSub", sub);
     var nose = $("#sNose");
     if (!nose.hidden) {
-      var sp = nose.children;
-      for (var i = 0; i < sp.length; i++) sp[i].classList.toggle("on", sp[i].dataset.s === P.nose);
+      var ns = nose.children;
+      for (var i = 0; i < ns.length; i++) ns[i].classList.toggle("on", ns[i].dataset.s === P.nose);
     }
     var sp = P.def.selfPaced;
     bSetT("#sLeft", sp ? "Your pace" : fmt(P.total - T) + " left");
@@ -561,12 +566,15 @@
     if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
     if (live && H.coh) chips.push('<span class="lc coh">Coherence <b>' + H.coh.cs.toFixed(1) + "</b></span>");
     if (tr && A.playing) chips.push('<span class="lc beat">' + esc(tr.band) + " <b>" + beatAt(tr, A.elapsed).toFixed(1) + "</b> Hz</span>");
-    else if (tr && !A.playing && P.state === "running") chips.push('<span class="lc off">Sound paused</span>');
+    else if (tr && !A.playing && P.state === "running" && T < tr.minutes * 60 - (tr.fade || FADE_OUT)) chips.push('<span class="lc off">Sound paused</span>');   // not once the sound has ended as planned
     var h = chips.join("");
     if (P.chipsHtml !== h) { P.chipsHtml = h; $("#sLive").innerHTML = h; }
-    var play = $("#sPlay");
-    play.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-' + (P.state === "running" ? "pause" : "play") + '"/></svg>';
-    play.setAttribute("aria-label", P.state === "running" ? "Pause" : "Resume");
+    var play = $("#sPlay"), icon = P.state === "running" ? "pause" : "play";
+    if (play.dataset.icon !== icon) {               // only when it changes, not on every tick
+      play.dataset.icon = icon;
+      play.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-' + icon + '"/></svg>';
+      play.setAttribute("aria-label", icon === "pause" ? "Pause" : "Resume");
+    }
     $("#sPrev").disabled = P.idx <= 0 && T < 3;
     $("#sNext").disabled = P.idx >= P.steps.length - 1;
     pPill();
@@ -590,21 +598,27 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1 };   // the visuals drawn on the canvas
   function pDraw() {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
     if (!P.cw) pSizeCanvas();
     var c = P.ctx, W = P.cw, Hh = P.ch, s = P.steps[P.idx];
     if (W && s) {
-      c.clearRect(0, 0, W, Hh);
-      var vis = pVis(s), T = pT(), st = T - s.at, col = P.col[P.def.tone || "relax"] || BCOL["b-in"];
-      if (vis === "breath") pDrawBreath();
-      else if (vis === "orb" || vis === "glow") pOrb(c, W, Hh, T, vis === "glow" ? P.col.warm : col, 1);
-      else if (vis === "still") pStill(c, W, Hh, T, col);
-      else if (vis === "pose") { pPoseRing(c, W, Hh, T, col, s); if (P.mv) pMoveFig(s, T); }
-      else if (vis === "pump") pPump(c, W, Hh, s, st, col);
-      else if (vis === "hold") pHold(c, W, Hh, s, st, col);
-      else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
+      var vis = pVis(s), now = bNow();
+      if (!P_ANIM[vis]) { c.clearRect(0, 0, W, Hh); return; }   // nothing moves on the canvas (writing, a rating, the nap): rest until the next step
+      if (vis !== "adapt" || now - P.drawAt >= 0.25) {          // the heart-led chart changes every few seconds: four frames a second will do
+        P.drawAt = now;
+        c.clearRect(0, 0, W, Hh);
+        var T = pT(), st = T - s.at, col = P.col[P.def.tone || "relax"] || BCOL["b-in"];
+        if (vis === "breath") pDrawBreath();
+        else if (vis === "orb" || vis === "glow") pOrb(c, W, Hh, T, vis === "glow" ? P.col.warm : col, 1);
+        else if (vis === "still") pStill(c, W, Hh, T, col);
+        else if (vis === "pose") { pPoseRing(c, W, Hh, T, col, s); if (P.mv) pMoveFig(s, T); }
+        else if (vis === "pump") pPump(c, W, Hh, s, st, col);
+        else if (vis === "hold") pHold(c, W, Hh, s, st, col);
+        else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
+      }
     }
     P.raf = requestAnimationFrame(pDraw);
   }
@@ -708,7 +722,8 @@
 
   /* ----- transport ----- */
   function pStart() {
-    var d = P.view;
+    var d = P.view, resume = P.resume;                 // resume: a reflection's draft to carry on from (nvcDraftResume)
+    P.resume = null;
     if (!d) return;
     if (d.confirm && !$("#sOk").checked) { $("#sOk").focus(); return; }
     var go = function () {
@@ -721,7 +736,7 @@
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
-      pAdaptReset(); napReset(); P.nvc = nvcNew();
+      pAdaptReset(); napReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
       if (d.audio && P.opt.audio) {
@@ -742,6 +757,7 @@
       pLockBreathe();
       pBell(0.5);
       pLock();
+      if (resume && d.reflect && resume.id === d.id) nvcDraftResume(resume);
       clearInterval(P.tick);
       P.tick = setInterval(pTick, 200);
       pTick();
@@ -759,6 +775,7 @@
     if (B.state === "running" && P.usesB) bPause();
     if (pTrack() && A.playing) { pause(); P.audioHeld = true; }
     rhyStop(0.3);
+    napWakeStop();
     pHush();
     pUnlock();
     pUI();
@@ -807,6 +824,7 @@
     pRestore();
     pHush();
     rhyStop();
+    napWakeStop();
     P.mv = null;
     if (pTrack()) {
       var trk = A.track;
@@ -826,6 +844,7 @@
       if (d.end) pSay(d.end);
     }
     var sum = pSummary(T, early);
+    if (d.reflect && P.draftLive) nvcDraftClear(d.id);   // finished, or ended: the draft has done its job
     if (!quiet) pDone(sum, early);
     pImmersive();
     pPill();
@@ -853,7 +872,7 @@
     if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatLog = AD.log.slice(); }
     napSummary(r, T);
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
-      r.nvc = nvcSummary(null, d.id === "nvc-choose" ? "choose" : "self");
+      r.nvc = nvcSummary(d.id === "nvc-choose" ? "choose" : "self");
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
     }
     r.hrPts = hr;
@@ -983,7 +1002,7 @@
     opts.push(pToggle("sOptBells", "Bells between steps", P.opt.bells, ""));
     if (d.audio) opts.push(pToggle("sOptAudio", "Binaural layer", P.opt.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
     if (pPlanHasRhy(plan.steps)) opts.push(pToggle("sOptRhy", "Berimbau", P.opt.rhythm, "A synthesized berimbau keeps time for the capoeira moves."));
-    if (d.reflect) opts.push(pToggle("sOptKeep", "Keep a copy on this device", P.opt.nvcSave, "Your writing is never sent anywhere. Turn this off to keep nothing once you finish."));
+    if (d.reflect) opts.push(pToggle("sOptKeep", "Keep a copy on this device", P.opt.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
     if (hasTap) {
@@ -1034,7 +1053,8 @@
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution ? '<div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>' + esc(d.caution) + "</span></div>" : "") +
       "</div>" +
-      '<aside class="si-opts"><h3>Options</h3>' + opts.join("") +
+      '<aside class="si-opts">' + (d.reflect ? nvcDraftStrip(d) : "") +     // first thing on a phone, next to Start on a computer
+        "<h3>Options</h3>" + opts.join("") +
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
         '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Start' + (d.open || d.selfPaced ? "" : " " + mins + " min") + "</button>" +
@@ -1082,6 +1102,16 @@
     var ph = $("#sTapPhrase");
     if (ph) ph.addEventListener("input", function () { store.set("tapPhrase", this.value.trim()); });
     on("#sOk", function () { $("#sGo").disabled = !this.checked; });
+    var dg = $("#sDraftGo"), dd = $("#sDraftDel");
+    if (dg) dg.addEventListener("click", function () { P.resume = nvcDraftGet(d.id); pStart(); });
+    if (dd) dd.addEventListener("click", function () {     // two taps, like End: a discarded draft is gone
+      if (!(dd.armed && bNow() - dd.armed < 3)) {
+        dd.armed = bNow(); dd.textContent = "Tap again to discard";
+        setTimeout(function () { dd.armed = 0; dd.textContent = "Discard"; }, 3000);
+        return;
+      }
+      nvcDraftClear(d.id); pIntro(d.id);
+    });
     on("#sVoiceSel", function () { P.opt.voiceName = this.value; pSaveOpt(); });
     var t = $("#sVoiceTest");
     if (t) t.addEventListener("click", function () { pHush(); var v = P.opt.voice; P.opt.voice = true; pSay("Breathe in slowly, and let it go."); P.opt.voice = v; });
@@ -1161,6 +1191,10 @@
     var on = pBusy() && P.usesB;
     var br = document.querySelector(".breath");
     if (br) br.classList.toggle("locked", on);
+    ["#bPats", ".b-transport", "#bSensorRow", "#bPanel"].forEach(function (q) {   // out of reach of the keyboard too, not just the pointer
+      var el = document.querySelector(q);
+      if (el) el.inert = on;
+    });
     $("#bLockNote").hidden = !on;
     if (on) bSetT("#bLockTxt", P.def.name + " is using the breathing guide.");
   }
@@ -1281,7 +1315,8 @@
     });
     $("#sTap").addEventListener("click", function () {
       var s = P.steps[P.idx];
-      if (!s || P.state !== "running") return;
+      if (!s || !pBusy()) return;
+      if (P.state === "paused") pResume();            // tapping the step's own button carries on
       if (s.k === "count") {
         if (P.taps >= s.n) return;
         P.taps++;
