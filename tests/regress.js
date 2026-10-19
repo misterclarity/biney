@@ -183,12 +183,11 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
     /* G. the build refuses a name declared twice in the shared scope */
     if (!only || only === 'G') {
       const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'entrain-build-'));
-      fs.mkdirSync(path.join(tmp, 'src')); fs.mkdirSync(path.join(tmp, 'icons'));
-      for (const f of fs.readdirSync(path.join(ROOT, 'src'))) fs.copyFileSync(path.join(ROOT, 'src', f), path.join(tmp, 'src', f));
-      for (const f of fs.readdirSync(path.join(ROOT, 'icons'))) fs.copyFileSync(path.join(ROOT, 'icons', f), path.join(tmp, 'icons', f));
-      fs.appendFileSync(path.join(tmp, 'src', 'yoga.js'), '\n  var CIRC = 1;\n');
+      fs.cpSync(path.join(ROOT, 'src'), path.join(tmp, 'src'), { recursive: true });
+      fs.cpSync(path.join(ROOT, 'icons'), path.join(tmp, 'icons'), { recursive: true });
+      fs.appendFileSync(path.join(tmp, 'src', 'js', 'yoga.js'), '\n  var CIRC = 1;\n');
       const r = spawnSync('python3', [path.join(tmp, 'src', 'build.py')], { encoding: 'utf8' });
-      ok(r.status !== 0 && /CIRC: legacy\.html; yoga\.js/.test(r.stderr), 'build stops on a name declared twice: ' + r.stderr.trim().split('\n').join(' / '));
+      ok(r.status !== 0 && /CIRC: audio\.js; yoga\.js/.test(r.stderr), 'build stops on a name declared twice: ' + r.stderr.trim().split('\n').join(' / '));
       fs.rmSync(tmp, { recursive: true, force: true });
     }
 

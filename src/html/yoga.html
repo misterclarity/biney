@@ -1,0 +1,32 @@
+      <!-- ============ YOGA BUILDER ============ -->
+      <section class="view" id="v-yoga" aria-labelledby="viewTitle" hidden>
+        <a class="si-back" href="#practice">{i:back}Practices</a>
+        <div class="yb-head">
+          <label class="yb-name"><span>Routine name</span><input id="ybName" maxlength="40" placeholder="My routine" autocomplete="off"></label>
+          <label class="yb-goal"><span>What it's for</span><select id="ybGoal">
+            <option value="">Any time</option><option value="sleep">Sleep</option><option value="calm">Calm</option><option value="focus">Focus</option>
+            <option value="energy">Energy</option><option value="recover">Recover</option><option value="reflect">Reflect</option></select></label>
+          <div class="yb-sum"><b id="ybTime">00:00</b><span id="ybCount">No poses yet</span></div>
+        </div>
+        <div class="yb-grid">
+          <section class="yb-seq" aria-label="Your routine">
+            <div class="yb-sh"><h2>Your routine</h2></div>
+            <div class="yb-tpl" id="ybTpl"></div>
+            <ol class="yb-list" id="ybList"></ol>
+            <p class="yb-empty" id="ybEmpty">Tap poses and moves in the library to add them, or start from one of the routines above. Two-sided poses run right then left unless you pick one side, and transitions between standing, kneeling, seated and lying are added for you.</p>
+          </section>
+          <section class="yb-lib" aria-label="Asana library">
+            <div class="yb-sh"><h2>Movement library</h2><span id="ybLibN"></span></div>
+            <div class="pr-filt" id="ybCats" role="group" aria-label="Kind of movement"></div>
+            <div class="pr-filt yb-pos" id="ybPos" role="group" aria-label="Starting position"></div>
+            <ul class="yb-tiles" id="ybLib"></ul>
+          </section>
+        </div>
+        <div class="yb-bar">
+          <button class="btn small" id="ybDel" hidden>Delete</button>
+          <span class="yb-bt" id="ybBarTime"></span>
+          <button class="btn" id="ybSave">Save</button>
+          <button class="btn primary" id="ybGo">{i:play}Save and start</button>
+        </div>
+      </section>
+

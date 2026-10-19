@@ -1,0 +1,48 @@
+<!-- ============ MINI PLAYER ============ -->
+<div class="player" id="player">
+  <div class="cue" id="cue" role="alert" hidden></div>
+  <div class="player-inner">
+    <div class="orb" aria-hidden="true">
+      <svg viewBox="0 0 62 62" width="62" height="62">
+        <circle class="ring-bg" cx="31" cy="31" r="28"></circle>
+        <circle class="ring-fg" id="ring" cx="31" cy="31" r="28" stroke-dasharray="175.9" stroke-dashoffset="175.9"></circle>
+      </svg>
+      <div class="orb-core"></div>
+    </div>
+
+    <div class="p-meta">
+      <div class="p-name" id="pName">—</div>
+      <div class="p-sub" id="pSub">—</div>
+      
+    </div>
+
+    <div class="p-controls">
+      <button class="icon-btn" id="toggle" aria-label="Play or pause">▶</button>
+      <div class="time" id="time" role="timer" aria-label="Session time">00:00</div>
+      <button class="icon-btn ghost" id="stop" aria-label="Stop session" title="Stop">■</button>
+      <button class="icon-btn ghost p-more" id="pMore" aria-label="More player options" aria-expanded="false">{i:up}</button>
+      
+    </div>
+
+    <div class="vol">
+        <span>Volume</span>
+        <input type="range" id="vol" min="0" max="100" step="1" value="35" aria-label="Volume">
+      </div>
+
+    <div class="ears">
+        <span class="ear">L <b id="pL">—</b></span>
+        <span class="ear">R <b id="pR">—</b></span>
+        <span class="ear beat">beat <b id="pBeat">—</b></span>
+        <span class="ear ear-hr" id="pHrChip" title="Heart rate now, and the change since the first minute of this session" hidden>HR <b id="pHr">—</b></span>
+      </div>
+
+    <div class="toggles">
+      <label id="noiseLab"><input type="checkbox" id="noise"> <span id="noiseTxt">Pink-noise bed</span></label>
+      <label class="amb-pl"><span>Background</span><select class="amb-sel" aria-label="Background sound"><option value="off">None</option><option value="rain">Summer rain</option><option value="crickets">Crickets</option><option value="night">Rain and crickets</option></select></label>
+      <label><input type="checkbox" id="openEnded"> Open-ended (ignore timer)</label>
+      <button class="btn link" id="scOpen" style="padding:0;font-size:12.5px">Re-check headphones</button>
+      <div class="status" id="status" role="status" aria-live="polite">Ready</div>
+    </div>
+  </div>
+</div>
+

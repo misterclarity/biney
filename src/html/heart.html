@@ -1,0 +1,196 @@
+      <!-- ============ HEART ============ -->
+      <section class="view" id="v-heart" aria-labelledby="viewTitle" hidden>
+        <div class="hr" id="hr" data-state="off">
+      <div class="hr-top">
+        <div class="hr-intro">
+          <div class="prime-label">Live heart data</div>
+          <h3 id="hrTitle">Pair a heart-rate sensor</h3>
+          <p>
+            Watch your heart rate rise as you breathe in and fall as you breathe out. Any Bluetooth heart-rate
+            sensor works: a Garmin watch set to broadcast, an ear-clip sensor or a chest strap.
+          </p>
+          <p class="hr-msg" id="hrMsg" role="status"></p>
+        </div>
+        <div class="hr-conn">
+          <span class="hr-pill" id="hrPill"><i></i><span id="hrPillTxt">Not connected</span></span>
+          <button class="btn" id="hrConnect">Connect sensor</button>
+          <button class="btn link" id="hrAny">My sensor isn't listed</button>
+        </div>
+      </div>
+
+      <details class="hr-guide" id="connect">
+        <summary>
+          <span class="hr-guide-sum">
+            <b>Connection guide</b>
+            <span>Step by step for a Garmin Venu 4, a HeartMath sensor or a chest strap, with a live check of each step</span>
+          </span>
+        </summary>
+
+        <div class="hr-guide-body">
+          <div class="g-main">
+            <div class="g-tabs" role="tablist" aria-label="Choose your sensor">
+              <button class="g-tab" role="tab" id="gt-garmin" data-dev="garmin" aria-controls="gp-garmin" aria-selected="true">Garmin Venu 4</button>
+              <button class="g-tab" role="tab" id="gt-heartmath" data-dev="heartmath" aria-controls="gp-heartmath" aria-selected="false" tabindex="-1">HeartMath sensor</button>
+              <button class="g-tab" role="tab" id="gt-strap" data-dev="strap" aria-controls="gp-strap" aria-selected="false" tabindex="-1">Chest strap</button>
+              <button class="g-tab" role="tab" id="gt-other" data-dev="other" aria-controls="gp-other" aria-selected="false" tabindex="-1">Other sensors</button>
+            </div>
+
+            <div class="g-panel" role="tabpanel" id="gp-garmin" aria-labelledby="gt-garmin">
+              <ol class="g-steps">
+                <li><b>Start broadcasting on the watch.</b>Hold the upper-right button to open the controls menu and choose the heart-rate broadcast control. You can also go to Settings &gt; Health &amp; Wellness &gt; Wrist Heart Rate &gt; Broadcast Heart Rate. If the control isn't in the menu, you can add it when you customise the controls menu.</li>
+                <li><b>Wear it snug and keep your arm still.</b>Put it a finger's width above the wrist bone, tight enough not to slide. The optical sensor reads most steadily with your forearm resting on something.</li>
+                <li><b>Connect here.</b>Press Connect sensor. The watch appears in the list under its name within a few seconds; choose it and press Pair.</li>
+                <li><b>Stop when you're done.</b>Press the upper-right button on the watch to stop broadcasting, because it uses extra battery.</li>
+              </ol>
+              <p class="g-expect"><b>What you'll get:</b> heart rate about once a second, the swing in each breath and the resonance test. Garmin watches don't broadcast beat-to-beat intervals, so RMSSD stays empty and coherence is marked as an estimate.</p>
+            </div>
+
+            <div class="g-panel" role="tabpanel" id="gp-heartmath" aria-labelledby="gt-heartmath" hidden>
+              <ol class="g-steps">
+                <li><b>Free it from the HeartMath app.</b>The sensor connects to one device at a time. Close the HeartMath or Inner Balance app on your phone or tablet (swipe it away from the recent-apps screen), or switch that device's Bluetooth off for a moment.</li>
+                <li><b>Turn it on.</b>Press the button on the sensor once. A rapidly flashing blue light means it's ready to connect. A Coherence Plus sensor blinking white is still looking for the device it last used, so step 1 isn't done yet. If the battery light blinks red, charge it first.</li>
+                <li><b>Clip it on.</b>Clip the sensor to your earlobe and the cord's clip to your collar so it doesn't tug. If readings are patchy, rub the earlobe for a few seconds to warm it.</li>
+                <li><b>Connect here.</b>Press Connect sensor and choose it from the list; look for a name with HeartMath in it or the ID number printed on the back of the sensor. If it doesn't appear, press My sensor isn't listed, which shows every nearby device.</li>
+              </ol>
+              <p class="g-expect"><b>What you'll get:</b> if your sensor sends beat-to-beat intervals, as Elite HRV's compatibility list suggests, everything works: RMSSD after about 30 seconds and the full coherence score after 64. HeartMath doesn't document use with other apps, so if RMSSD still says it needs beat-to-beat data after a minute, your model sends heart rate only.</p>
+            </div>
+
+            <div class="g-panel" role="tabpanel" id="gp-strap" aria-labelledby="gt-strap" hidden>
+              <ol class="g-steps">
+                <li><b>Wet the electrodes.</b>Moisten the two textured areas on the inside of the strap with water.</li>
+                <li><b>Put it on.</b>Clip the sensor to the strap and fasten it just below your chest muscles, sensor centred. Most straps switch on when they touch skin.</li>
+                <li><b>Close other apps.</b>Quit apps that might already be connected to it, such as Polar, Garmin Connect, Strava or Zwift.</li>
+                <li><b>Connect here.</b>Press Connect sensor and choose it from the list, for example "Polar H10" followed by a serial number.</li>
+              </ol>
+              <p class="g-expect"><b>What you'll get:</b> everything, beat to beat. A chest strap gives the most accurate HRV. Afterwards, unclip the sensor or dry the strap so it stops broadcasting.</p>
+            </div>
+
+            <div class="g-panel" role="tabpanel" id="gp-other" aria-labelledby="gt-other" hidden>
+              <ol class="g-steps">
+                <li><b>Check it uses the standard heart-rate service.</b>Anything that pairs with gym equipment, Zwift or a bike computer as a Bluetooth heart-rate monitor almost certainly does. Some watches can't broadcast at all; look for a setting called something like "broadcast heart rate".</li>
+                <li><b>Turn broadcasting on and free it from other apps.</b>Most sensors connect to only one app or device at a time.</li>
+                <li><b>Connect here.</b>Press Connect sensor. If the sensor doesn't advertise the service up front, use My sensor isn't listed. The page tells you if the device you pick has no heart-rate service.</li>
+              </ol>
+              <p class="g-expect"><b>What you'll get:</b> watches usually send heart rate only, like the Garmin. Ear-clip and chest sensors usually send beat-to-beat intervals too, which RMSSD and the full coherence score need.</p>
+            </div>
+          </div>
+
+          <aside class="g-side">
+            <div class="g-card" id="gEnv">
+              <div class="prime-label">Your browser</div>
+              <h4 id="gEnvTitle">Checking…</h4>
+              <ul id="gEnvTips"></ul>
+            </div>
+            <div class="g-card">
+              <div class="prime-label">Connection check</div>
+              <ul class="g-check" id="gCheck" aria-live="polite">
+                <li data-k="bt"><i aria-hidden="true"></i><div><b>Bluetooth in this browser</b><span class="s"></span></div></li>
+                <li data-k="conn"><i aria-hidden="true"></i><div><b>Sensor connected</b><span class="s"></span></div></li>
+                <li data-k="hr"><i aria-hidden="true"></i><div><b>Heart rate arriving</b><span class="s"></span></div></li>
+                <li data-k="rr"><i aria-hidden="true"></i><div><b>Beat-to-beat data</b><span class="s"></span></div></li>
+              </ul>
+              <button class="btn" id="gConnect">Connect sensor</button>
+            </div>
+          </aside>
+        </div>
+
+        <div class="g-trouble">
+          <div class="prime-label">If something doesn't work</div>
+          <details>
+            <summary>The sensor isn't in the list</summary>
+            <p>Check that it's switched on and free. On a Garmin, broadcasting has to be running. A HeartMath sensor needs the fast blue flash and the HeartMath app closed. A chest strap needs wet electrodes and skin contact. Keep it within a metre or two of the phone or computer, and if it still doesn't show, press My sensor isn't listed.</p>
+          </details>
+          <details>
+            <summary>Chrome on Android finds nothing at all</summary>
+            <p>Bluetooth has to be on: swipe down from the top of the screen and tap Bluetooth. Chrome also needs permission to find nearby devices. On a Samsung Galaxy, open Settings &gt; Apps &gt; Chrome &gt; Permissions &gt; Nearby devices and choose Allow. On older Android versions the permission is called Location, and location services must be on.</p>
+          </details>
+          <details>
+            <summary>I paired the sensor in my phone's Bluetooth settings</summary>
+            <p>Unpair it. The page connects to the sensor directly, and a system pairing can keep it busy. On a Samsung Galaxy, go to Settings &gt; Connections &gt; Bluetooth, tap the gear next to the sensor and choose Unpair.</p>
+          </details>
+          <details>
+            <summary>The Connect button is greyed out</summary>
+            <p>This browser can't use Bluetooth. Open the page in Chrome or Edge on an Android phone or a computer. On a phone, Samsung Internet may not offer it, so use Chrome. On an iPhone, Safari and Chrome can't reach sensors; Bluefy, a browser built for Web Bluetooth, can.</p>
+          </details>
+          <details>
+            <summary>It connects, then drops</summary>
+            <p>Move the phone closer, charge the sensor, and keep Chrome in front with the screen on, because Android pauses pages in the background. The page tries to reconnect five times on its own before giving up.</p>
+          </details>
+          <details>
+            <summary>Heart rate works, but RMSSD stays empty</summary>
+            <p>The sensor sends heart rate only, which is true of every Garmin watch. The swing and the resonance test still work, and coherence is shown as an estimate. For RMSSD and full coherence, use the HeartMath sensor or a chest strap.</p>
+          </details>
+          <details>
+            <summary>The numbers jump around</summary>
+            <p>Optical sensors on the wrist or ear lose the pulse when you move or your skin is cold. Sit still, rest your arm, tighten the watch a notch, or warm your earlobe. For a chest strap, wet the electrodes again.</p>
+          </details>
+          <details>
+            <summary>The page says Bluetooth is blocked</summary>
+            <p>You're looking at a copy embedded inside another page, such as a preview, and those block Bluetooth. Open the page at its own web address and connect from there.</p>
+          </details>
+        </div>
+      </details>
+
+      <div class="hr-tiles">
+        <div class="hr-tile now">
+          <div class="k">Heart rate</div>
+          <div class="v"><span id="hrNow">—</span><small>bpm</small><i class="hr-dot" aria-hidden="true"></i></div>
+          <div class="s" id="hrNowS">Waiting for a sensor</div>
+        </div>
+        <div class="hr-tile">
+          <div class="k">Swing, last breath</div>
+          <div class="v"><span id="hrSwLast">—</span><small>bpm</small></div>
+          <div class="s">Highest minus lowest heart rate in one breath</div>
+        </div>
+        <div class="hr-tile">
+          <div class="k">Swing, this session</div>
+          <div class="v"><span id="hrSwAvg">—</span><small>bpm</small></div>
+          <div class="s" id="hrSwAvgS">Average across breaths</div>
+        </div>
+        <div class="hr-tile">
+          <div class="k">RMSSD, last 60 s</div>
+          <div class="v"><span id="hrRmssd">—</span><small>ms</small></div>
+          <div class="s" id="hrRmssdS">Needs beat-to-beat data</div>
+        </div>
+        <div class="hr-tile coh">
+          <div class="k">Coherence, last 64 s</div>
+          <div class="v"><span id="hrCoh">—</span><small>score</small></div>
+          <div class="hr-meter" aria-hidden="true"><i id="hrCohBar"></i><span>0</span><span>8</span></div>
+          <div class="s" id="hrCohS">Needs a heart-rate sensor</div>
+        </div>
+      </div>
+
+      <div class="hr-body">
+        <div class="hr-col">
+          <div class="hr-box">
+            <div class="hr-box-head"><b>Breath by breath</b><span class="hint">Each bar is one breath's heart-rate swing, in bpm</span></div>
+            <div class="hr-chart">
+              <canvas id="hrBars" aria-hidden="true"></canvas>
+              <p class="hr-empty" id="hrBarsEmpty">Connect a sensor and start a breathing session. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
+            </div>
+            <p class="hr-summary" id="hrSummary" hidden></p>
+          </div>
+          <div class="hr-box">
+            <div class="hr-box-head"><b>Heart rhythm spectrum</b><span class="hint">Pink: your heart rhythm · dashed: your breathing pace</span></div>
+            <div class="hr-chart sm">
+              <canvas id="hrSpec" aria-hidden="true"></canvas>
+              <p class="hr-empty" id="hrSpecEmpty">After 64 seconds of heart data, this shows which rhythms your heart rate is moving in. Coherence is high when one smooth peak stands out, usually right on your breathing pace.</p>
+            </div>
+          </div>
+        </div>
+        <div class="hr-box">
+          <div class="hr-box-head"><b>Resonance test</b><span class="hint" id="hrFindWhen">Connect a sensor first</span></div>
+          <p class="hr-find-txt" id="hrFindTxt">
+            Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the
+            biggest heart-rate swing. About 10 minutes, sitting still.
+          </p>
+          <div class="hr-chart sm grow"><canvas id="hrFind" aria-hidden="true"></canvas></div>
+          <div class="hr-find-foot">
+            <button class="btn" id="hrFindStart" disabled>Start resonance test</button>
+            <button class="btn primary" id="hrFindUse" hidden>Breathe at this pace</button>
+          </div>
+        </div>
+      </div>
+    </div>
+      </section>
+

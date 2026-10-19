@@ -1,0 +1,51 @@
+      <!-- ============ SESSION ============ -->
+      <section class="view" id="v-session" aria-labelledby="viewTitle" hidden>
+        <div class="ses" id="ses" data-state="intro">
+          <div class="ses-intro" id="sIntro"></div>
+
+          <div class="ses-run" id="sRun" hidden>
+            <div class="ses-top">
+              <button class="ses-x" id="sEnd">{i:x}<span id="sEndTxt">End</span></button>
+              <div class="ses-ttl"><b id="sTitle"></b><span id="sStepTxt"></span></div>
+              <span class="ses-left" id="sLeft"></span>
+            </div>
+            <div class="ses-bar" aria-hidden="true"><div class="ses-segs" id="sSegs"></div><div class="ses-fill" id="sFill"></div></div>
+            <div class="ses-stage" id="sStage">
+              <canvas id="sCanvas"></canvas>
+              <div class="ses-fig" id="sFig" hidden></div>
+              <div class="ses-word" id="sWord" hidden></div>
+              <div class="ses-nose" id="sNose" hidden aria-hidden="true"><span data-s="left">Left</span><span data-s="right">Right</span></div>
+              <div class="ses-dots" id="sDots" hidden aria-hidden="true"></div>
+              <div class="ses-write" id="sWrite" hidden></div>
+              <div class="ses-rate" id="sRate" hidden>
+                <div class="rate-g" id="sRateG" role="group" aria-label="Rate it from 0 to 10"></div>
+                <div class="rate-ends" aria-hidden="true"><span>Not at all</span><span>As strong as it gets</span></div>
+                <button class="btn small rate-skip" id="sRateSkip">Skip</button>
+              </div>
+            </div>
+            <div class="ses-cap">
+              <h2 id="sCap"></h2>
+              <p class="ses-sub" id="sSub"></p>
+              <p class="ses-line" id="sLine" aria-live="polite"></p>
+            </div>
+            <div class="ses-live" id="sLive"></div>
+            <button class="btn ses-tap" id="sTap" hidden></button>
+            <div class="ses-ctl">
+              <button class="ses-b" id="sPrev" aria-label="Previous step">{i:prev}</button>
+              <button class="ses-b main" id="sPlay" aria-label="Pause">{i:pause}</button>
+              <button class="ses-b" id="sNext" aria-label="Next step">{i:next}</button>
+            </div>
+            <div class="ses-quick">
+              <button class="qt" id="sqVoice" aria-pressed="true">{i:voice}Voice</button>
+              <button class="qt" id="sqBells" aria-pressed="true">{i:bell}Bells</button>
+              <button class="qt" id="sqRhy" aria-pressed="true" hidden>{i:drum}Berimbau</button>
+              <button class="qt" id="sqAmb" aria-pressed="false">{i:rain}<span id="sqAmbTxt">Background</span></button>
+              <label class="qt-vol" id="sqVolRow">{i:volume}<input type="range" id="sqVol" min="0" max="100" aria-label="Binaural volume"></label>
+              <label class="qt-vol amb-volrow" id="sqAmbVolRow" hidden>{i:rain}<input type="range" class="amb-vol" min="0" max="100" aria-label="Background volume"></label>
+            </div>
+          </div>
+
+          <div class="ses-done" id="sDone" hidden></div>
+        </div>
+      </section>
+

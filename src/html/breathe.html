@@ -1,0 +1,140 @@
+      <!-- ============ BREATHE ============ -->
+      <section class="view" id="v-breathe" aria-labelledby="viewTitle" hidden>
+        <div class="breath">
+          <div class="b-stage" id="bStage" data-phase="ready">
+            <div class="b-locknote" id="bLockNote" hidden><span id="bLockTxt"></span><button class="btn small primary" id="bLockBtn">Return to practice</button></div>
+            <div class="chips b-patrow" id="bPats" role="radiogroup" aria-label="Breathing pattern">
+            <label class="chip on"><input type="radio" name="bpat" value="resonance" checked> Resonance 5.5</label>
+            <label class="chip"><input type="radio" name="bpat" value="sigh"> Cyclic sigh</label>
+            <label class="chip"><input type="radio" name="bpat" value="exhale"> Long exhale</label>
+            <label class="chip"><input type="radio" name="bpat" value="box"> Box 4-4-4-4</label>
+            <label class="chip"><input type="radio" name="bpat" value="478"> 4-7-8</label>
+            <label class="chip"><input type="radio" name="bpat" value="custom"> Custom</label>
+          </div>
+            <div class="b-head">
+          <div class="b-phase">
+            <div class="b-phase-name" id="bPhase">Ready</div>
+            <div class="b-phase-hint" id="bHint">Press start, then follow the shape.</div>
+          </div>
+          <div class="b-stats mono">
+            <span class="b-stat">Breath <b id="bCount">0</b><span id="bOf"> / 27</span></span>
+            <span class="b-stat"><b id="bClock">04:57</b> <span id="bClockL">left</span></span>
+            <span class="b-stat b-hr" id="bHrStat" title="Heart rate from your sensor" hidden><i class="hr-dot" aria-hidden="true"></i><b id="bHr">—</b> bpm</span>
+            <span class="b-stat b-hr" id="bCohStat" title="Coherence score over the last 64 seconds, usually 0 to 8" hidden>coherence <b id="bCoh">—</b></span>
+          </div>
+        </div>
+            <div class="b-view" id="bView">
+          <canvas id="bCanvas" aria-hidden="true"></canvas>
+        </div>
+            <div class="b-line" aria-hidden="true">
+          <div class="b-segs" id="bSegs">
+            <div class="b-seg" data-k="in" style="flex:5.5 1 0">In 5.5s</div>
+            <div class="b-seg" data-k="out" style="flex:5.5 1 0">Out 5.5s</div>
+          </div>
+          <div class="b-mark" id="bMark"></div>
+        </div>
+            <div class="b-transport">
+              <button class="btn primary b-go" id="bStart">Start breathing</button>
+              <button class="btn b-adjust" id="bAdjust" aria-controls="bPanel" aria-expanded="false">{i:sliders}Adjust</button>
+              <button class="btn" id="bReset" disabled>Reset</button>
+              <button class="btn" id="bFocus">Focus view</button>
+              <span class="b-msg" id="bMsg" role="status"></span>
+            </div>
+            <div class="b-sensor" id="bSensorRow">
+              {i:pulse}
+              <span id="bSensorTxt">Connect a heart sensor to watch your heart rate follow your breath.</span>
+              <button class="btn small" id="bSensorBtn" data-act="connect">Connect sensor</button>
+            </div>
+            <div class="visually-hidden" id="bLive" aria-live="polite"></div>
+          </div>
+
+          <div class="b-controls" id="bPanel" aria-label="Breathing settings">
+            <div class="sheet-head"><h2>Breathing settings</h2><button class="btn small" id="bPanelDone">Done</button></div>
+            <div class="b-note">
+          <p id="bDesc">Equal, unhurried breaths in and out at about 5.5 a minute, with no holds. This is the pace used in heart-rate-variability biofeedback.</p>
+          <details class="ev" id="bEv">
+            <summary id="bEvSum">Evidence <span class="strength" title="Strength of supporting evidence: 3 of 3" aria-label="Evidence strength 3 of 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></summary>
+            <div class="ev-body"><span id="bEvTxt"></span><cite id="bCite"></cite></div>
+          </details>
+        </div>
+
+        <div class="b-fields">
+          <div class="field">
+            <label for="bInh">Inhale <b id="bInhV">5.5 s</b></label>
+            <input type="range" id="bInh" min="1" max="10" step="0.5" value="5.5">
+          </div>
+          <div class="field">
+            <label for="bSip">Second inhale <b id="bSipV">Off</b></label>
+            <input type="range" id="bSip" min="0" max="2" step="0.5" value="0">
+          </div>
+          <div class="field">
+            <label for="bHold">Hold, lungs full <b id="bHoldV">Off</b></label>
+            <input type="range" id="bHold" min="0" max="10" step="0.5" value="0">
+          </div>
+          <div class="field">
+            <label for="bExh">Exhale <b id="bExhV">5.5 s</b></label>
+            <input type="range" id="bExh" min="1" max="12" step="0.5" value="5.5">
+          </div>
+          <div class="field">
+            <label for="bRest">Hold, lungs empty <b id="bRestV">Off</b></label>
+            <input type="range" id="bRest" min="0" max="10" step="0.5" value="0">
+          </div>
+          <div class="b-rate">
+            <b id="bRateV">5.5 breaths/min</b>
+            <span id="bRateS">0.091 Hz · 11.0 s a breath</span>
+          </div>
+        </div>
+
+        <div class="prime-row">
+          <div class="prime-label" id="bvLab">Visual</div>
+          <div class="chips" id="bVis" role="radiogroup" aria-labelledby="bvLab">
+            <label class="chip on"><input type="radio" name="bvis" value="circle" checked><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="2.8"/></svg>Circle</label>
+            <label class="chip"><input type="radio" name="bvis" value="wave"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M1.2 8c1.7-4.6 3.4-4.6 5.1 0s3.4 4.6 5.1 0c1-2.6 2.2-3.6 3.4-3.4"/></svg>Wave</label>
+            <label class="chip"><input type="radio" name="bvis" value="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/><circle cx="2.5" cy="8" r="1.5" fill="currentColor" stroke="none"/></svg>Box</label>
+            <label class="chip"><input type="radio" name="bvis" value="dial"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 1.8A6.2 6.2 0 1 1 1.8 8"/><circle cx="8" cy="8" r="2.2"/></svg>Dial</label>
+            <label class="chip"><input type="radio" name="bvis" value="column"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="1.5" width="6" height="13" rx="3"/><path d="M5 9.5h6"/></svg>Column</label>
+          </div>
+          <p class="hint" id="bVisHint">The circle grows as you breathe in and shrinks as you breathe out. The outer arc fills as each phase runs.</p>
+        </div>
+
+        <div class="prime-row">
+          <div class="prime-label" id="blLab">Length</div>
+          <div class="chips" id="bLen" role="radiogroup" aria-labelledby="blLab">
+            <label class="chip"><input type="radio" name="blen" value="2"> 2 min</label>
+            <label class="chip on"><input type="radio" name="blen" value="5" checked> 5 min</label>
+            <label class="chip"><input type="radio" name="blen" value="10"> 10 min</label>
+            <label class="chip"><input type="radio" name="blen" value="15"> 15 min</label>
+            <label class="chip"><input type="radio" name="blen" value="0"> Open-ended</label>
+          </div>
+        </div>
+
+        <div class="prime-row">
+          <div class="prime-label" id="bsLab">Sound cues</div>
+          <div class="chips" id="bSnd" role="radiogroup" aria-labelledby="bsLab">
+            <label class="chip on"><input type="radio" name="bsnd" value="off" checked> Off</label>
+            <label class="chip"><input type="radio" name="bsnd" value="tones"> Rising tone</label>
+            <label class="chip"><input type="radio" name="bsnd" value="chimes"> Chimes</label>
+          </div>
+          <div class="b-vol" id="bVolRow" hidden>
+            <span>Cue volume</span>
+            <input type="range" id="bCue" min="0" max="100" step="1" value="40" aria-label="Cue volume">
+          </div>
+          <p class="hint">Cues play equally in both ears and sit above the carrier range, so they leave a running binaural beat alone.</p>
+        </div>
+
+        <div class="prime-row">
+          <div class="prime-label">Background sound</div>
+          <div class="amb-ctl" data-amb-ctl></div>
+          <p class="hint">Summer rain or crickets on a warm night, made on your device. Whatever you pick plays under any session, track or practice.</p>
+        </div>
+
+        <p class="b-safety">
+          <b>Go gently.</b> Stop and breathe normally if you feel light-headed or tingly. Leave out the holds if
+          you are pregnant or have a heart, lung or blood-pressure condition.
+        </p>
+
+          </div>
+        </div>
+        <div class="sheet-back" id="sheetBack" hidden></div>
+      </section>
+

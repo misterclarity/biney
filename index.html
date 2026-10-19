@@ -2563,11 +2563,51 @@
 (function () {
   "use strict";
 
+  /* --------------------------------- core ---------------------------------
+     Small helpers every other file uses. Everything is one script in one scope, so a name
+     declared here is visible everywhere; the build stops if any file declares it again.
+  -------------------------------------------------------------------------- */
+
+  var $ = function (sel) { return document.querySelector(sel); };
+
+  // settings and history live in localStorage, under "entrain."; a browser that refuses storage just forgets
+  var store = {
+    get: function (k) { try { return localStorage.getItem("entrain." + k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem("entrain." + k, v); } catch (e) {} }
+  };
+  function storeDel(k) { try { localStorage.removeItem("entrain." + k); } catch (e) {} }
+
+  var RM = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  // the session clock, in seconds
+  function bNow() { return (window.performance && performance.now ? performance.now() : Date.now()) / 1000; }
+  // seconds as mm:ss
+  function fmt(sec) {
+    sec = Math.max(0, Math.round(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+  }
+  function avg(a) { var s = 0; for (var i = 0; i < a.length; i++) s += a[i]; return a.length ? s / a.length : 0; }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+  // set an element's text only when it changes
+  function bSetT(sel, v) { var el = $(sel); if (el && el.textContent !== v) el.textContent = v; }
+  // evidence strength, one to three dots
+  function dots(n) {
+    var h = '<span class="strength" title="Strength of supporting evidence: ' + n + ' of 3" aria-label="Evidence strength ' + n + ' of 3">';
+    for (var i = 1; i <= 3; i++) h += '<i class="' + (i <= n ? "on" : "") + '"></i>';
+    return h + "</span>";
+  }
+
   /* ------------------------------------------------------------------
-     Track library. Every entry is traceable to a reference in the list
-     at the bottom of the page. `ramp` tracks slide from one beat
-     frequency to another across the session, the way the audio used in
-     Padmanabhan 2005 progressively slowed into delta.
+     Track library. Every entry is traceable to a reference on the Learn
+     page. `ramp` tracks slide from one beat frequency to another across
+     the session, the way the audio used in Padmanabhan 2005 progressively
+     slowed into delta.
   ------------------------------------------------------------------ */
   var TRACKS = [
     /* ---------- RELAXATION ---------- */
@@ -2674,8 +2714,6 @@
     return BANDS[BANDS.length - 1];
   }
 
-  var $ = function (sel) { return document.querySelector(sel); };
-
   /* ------------------------------------------------------------------
      Audio engine. Two oscillators are merged into discrete left and
      right channels so there is genuinely no crossfeed between them.
@@ -2688,11 +2726,6 @@
     gainMul: 1,        // phase-level attenuation, independent of the volume slider
     voicesOff: false,  // task phase where the carriers were deliberately faded out
     gen: 0             // bumped on every transport change; stale timers check it
-  };
-
-  var store = {
-    get: function (k) { try { return localStorage.getItem("entrain." + k); } catch (e) { return null; } },
-    set: function (k, v) { try { localStorage.setItem("entrain." + k, v); } catch (e) {} }
   };
 
   var FADE_IN = 2.0, FADE_OUT = 4.0;
@@ -3067,12 +3100,6 @@
 
   /* ----------------------------- display ----------------------------- */
 
-  function fmt(sec) {
-    sec = Math.max(0, Math.round(sec));
-    var m = Math.floor(sec / 60), s = sec % 60;
-    return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
-  }
-
   var CIRC = 2 * Math.PI * 28;
 
   var paintCache = {};
@@ -3116,19 +3143,53 @@
     }
   }
 
-  /* ------------------------------ render ----------------------------- */
+  /* ----- the mini player's own controls ----- */
+  function playerInit() {
+    var v = store.get("vol");
+    if (v !== null) $("#vol").value = v;
+    $("#toggle").addEventListener("click", function () {
+      if (!A.track) return;
+      if (A.playing) pause(); else play();
+    });
+    $("#stop").addEventListener("click", function () { hardStop(false); });
 
-  function dots(n) {
-    var h = '<span class="strength" title="Strength of supporting evidence: ' + n + ' of 3" aria-label="Evidence strength ' + n + ' of 3">';
-    for (var i = 1; i <= 3; i++) h += '<i class="' + (i <= n ? "on" : "") + '"></i>';
-    return h + "</span>";
-  }
+    $("#vol").addEventListener("input", function () {
+      if (A.ctx && A.playing) {
+        var t = A.ctx.currentTime;
+        A.master.gain.cancelScheduledValues(t);
+        A.master.gain.setValueAtTime(A.master.gain.value, t);
+        A.master.gain.linearRampToValueAtTime(volGain(), t + 0.12);
+      }
+      store.set("vol", $("#vol").value);
+    });
 
-  function esc(s) {
-    return String(s).replace(/[&<>"]/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    $("#noise").addEventListener("change", function () {
+      if (A.track && A.track.notch) return;   // that noise is the therapy, not a bed
+      if (!A.playing) return;
+      if (this.checked) startNoise(); else stopNoise();
+    });
+
+    $("#openEnded").addEventListener("change", function () {
+      if (A.playing) scheduleEnd();
+      paint();
+      setStatus(this.checked
+        ? "Open-ended: the session will keep running until you stop it."
+        : "Timer active: " + (A.track ? A.track.minutes + " min." : ""));
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.code !== "Space" || !A.track) return;
+      if (!$("#scModal").hidden || !$("#pmModal").hidden) return;
+      if ($("#bStage").classList.contains("focus")) return;   // focus view: Space drives the breathing guide
+      if (kbSkip(e)) return;
+      if (pBusy() && (curView === "session" || pTrack())) return;
+      e.preventDefault();
+      if (A.playing) pause(); else play();
     });
   }
+  /* ------------------------------ the track list ------------------------------
+     The Sounds view's cards, filtered by goal, each with its own play button.
+  ------------------------------------------------------------------------------ */
 
   var curFilter = "all";
   function render(filter) {
@@ -3166,76 +3227,35 @@
     markCard();
   }
 
-  /* ------------------------------ events ----------------------------- */
-
-  $("#grid").addEventListener("click", function (e) {
-    if (e.target.closest("[data-rematch]")) { pendingPitch = null; openMatcher(); return; }
-    var btn = e.target.closest(".play-btn");
-    if (!btn) return;
-    var id = btn.closest(".card").dataset.id;
-    if (A.track && A.track.id === id && A.playing) { pause(); return; }
-    if (A.track && A.track.id === id && !A.playing && A.elapsed > 0) { play(); return; }
-    var track = TRACKS.filter(function (t) { return t.id === id; })[0];
-    if (!track) return;
-    gate(function () {
-      if (track.notch && !tinnitusHz()) {      // the notch is useless until it is aimed
-        pendingPitch = function () { load(track); };
-        openMatcher();
-        return;
-      }
-      load(track);
+  function trackListInit() {
+    $("#grid").addEventListener("click", function (e) {
+      if (e.target.closest("[data-rematch]")) { pendingPitch = null; openMatcher(); return; }
+      var btn = e.target.closest(".play-btn");
+      if (!btn) return;
+      var id = btn.closest(".card").dataset.id;
+      if (A.track && A.track.id === id && A.playing) { pause(); return; }
+      if (A.track && A.track.id === id && !A.playing && A.elapsed > 0) { play(); return; }
+      var track = TRACKS.filter(function (t) { return t.id === id; })[0];
+      if (!track) return;
+      gate(function () {
+        if (track.notch && !tinnitusHz()) {      // the notch is useless until it is aimed
+          pendingPitch = function () { load(track); };
+          openMatcher();
+          return;
+        }
+        load(track);
+      });
     });
-  });
 
-  var tabs = document.querySelectorAll(".tab");
-  for (var i = 0; i < tabs.length; i++) {
-    tabs[i].addEventListener("click", function (e) {
-      for (var j = 0; j < tabs.length; j++) tabs[j].setAttribute("aria-pressed", "false");
-      e.currentTarget.setAttribute("aria-pressed", "true");
-      render(e.currentTarget.dataset.filter);
-    });
-  }
-
-  $("#toggle").addEventListener("click", function () {
-    if (!A.track) return;
-    if (A.playing) pause(); else play();
-  });
-  $("#stop").addEventListener("click", function () { hardStop(false); });
-
-  $("#vol").addEventListener("input", function () {
-    if (A.ctx && A.playing) {
-      var t = A.ctx.currentTime;
-      A.master.gain.cancelScheduledValues(t);
-      A.master.gain.setValueAtTime(A.master.gain.value, t);
-      A.master.gain.linearRampToValueAtTime(volGain(), t + 0.12);
+    var tabs = document.querySelectorAll(".tab");
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].addEventListener("click", function (e) {
+        for (var j = 0; j < tabs.length; j++) tabs[j].setAttribute("aria-pressed", "false");
+        e.currentTarget.setAttribute("aria-pressed", "true");
+        render(e.currentTarget.dataset.filter);
+      });
     }
-    try { localStorage.setItem("entrain.vol", $("#vol").value); } catch (e) {}
-  });
-
-  $("#noise").addEventListener("change", function () {
-    if (A.track && A.track.notch) return;   // that noise is the therapy, not a bed
-    if (!A.playing) return;
-    if (this.checked) startNoise(); else stopNoise();
-  });
-
-  $("#openEnded").addEventListener("change", function () {
-    if (A.playing) scheduleEnd();
-    paint();
-    setStatus(this.checked
-      ? "Open-ended: the session will keep running until you stop it."
-      : "Timer active: " + (A.track ? A.track.minutes + " min." : ""));
-  });
-
-  document.addEventListener("keydown", function (e) {
-    if (e.code !== "Space" || !A.track) return;
-    if (!$("#scModal").hidden || !$("#pmModal").hidden) return;
-    if ($("#bStage").classList.contains("focus")) return;   // focus view: Space drives the breathing guide
-    if (kbSkip(e)) return;
-    if (pBusy() && (curView === "session" || pTrack())) return;
-    e.preventDefault();
-    if (A.playing) pause(); else play();
-  });
-
+  }
   /* ------------------------------ builder ---------------------------- */
 
   function syncBuilder() {
@@ -3251,25 +3271,98 @@
     $("#cR").textContent = (car + beat).toFixed(1) + " Hz";
   }
 
-  ["#cBeat", "#cCar", "#cMin"].forEach(function (sel) {
-    $(sel).addEventListener("input", syncBuilder);
-  });
+  function builderInit() {
+    ["#cBeat", "#cCar", "#cMin"].forEach(function (sel) {
+      $(sel).addEventListener("input", syncBuilder);
+    });
 
-  $("#cPlay").addEventListener("click", function () {
-    var beat = parseFloat($("#cBeat").value);
-    var car = parseInt($("#cCar").value, 10);
-    var min = parseInt($("#cMin").value, 10);
-    var b = bandFor(beat);
-    gate(function () {
-      load({
-        id: "custom", cat: beat <= 12 ? "relax" : "stim", band: b.name,
-        name: "Custom " + beat.toFixed(1) + " Hz " + b.name,
-        carrier: car, beat: beat, minutes: min, strength: 0,
-        desc: "", ev: "", cite: ""
+    $("#cPlay").addEventListener("click", function () {
+      var beat = parseFloat($("#cBeat").value);
+      var car = parseInt($("#cCar").value, 10);
+      var min = parseInt($("#cMin").value, 10);
+      var b = bandFor(beat);
+      gate(function () {
+        load({
+          id: "custom", cat: beat <= 12 ? "relax" : "stim", band: b.name,
+          name: "Custom " + beat.toFixed(1) + " Hz " + b.name,
+          carrier: car, beat: beat, minutes: min, strength: 0,
+          desc: "", ev: "", cite: ""
+        });
       });
     });
-  });
+    syncBuilder();
+  }
+  /* --------------------------- prime mode ---------------------------
+     Exposure before a task beat exposure during it, so this makes that
+     protocol the featured path rather than a track you have to know to pick.
+  -------------------------------------------------------------------- */
 
+  var THEN_COPY = {
+    "continue": "then a cue to begin and the beats carry on at about half volume while you work.",
+    "noise": "then a cue to begin, the beats fade out and the pink noise bed carries on alone.",
+    "silence": "then a cue to begin and the audio stops \u2014 priming alone was enough in the trials."
+  };
+
+  function primeCfg() {
+    var bv = document.querySelector('input[name="pbeat"]:checked').value.split("|");
+    return {
+      beat: parseFloat(bv[0]),
+      carrier: parseInt(bv[1], 10),
+      minutes: parseInt(document.querySelector('input[name="pmin"]:checked').value, 10),
+      then: document.querySelector('input[name="pthen"]:checked').value
+    };
+  }
+
+  function syncPrime() {
+    var c = primeCfg();
+    $("#primeStart").textContent = "Start " + c.minutes + "-minute prime";
+    $("#primeHint").textContent = c.minutes + " min of " + c.beat + " Hz " +
+      bandFor(c.beat).name.toLowerCase() + " on a " + c.carrier + " Hz carrier, " + THEN_COPY[c.then];
+  }
+
+  function primeInit() {
+    ["#pfChips", "#plChips", "#ptChips"].forEach(function (sel) {
+      var box = $(sel);
+      box.addEventListener("change", function () {
+        var chips = box.querySelectorAll(".chip");
+        for (var i = 0; i < chips.length; i++) {
+          chips[i].classList.toggle("on", chips[i].querySelector("input").checked);
+        }
+        syncPrime();
+      });
+    });
+
+    $("#primeStart").addEventListener("click", function () {
+      var c = primeCfg();
+      var b = bandFor(c.beat);
+      gate(function () {
+        load({
+          id: "prime", cat: c.beat <= 12 ? "relax" : "stim", band: b.name,
+          name: "Prime \u2014 " + c.beat + " Hz " + b.name,
+          carrier: c.carrier, beat: c.beat, minutes: c.minutes, strength: 0,
+          desc: "", ev: "", cite: "",
+          then: { mode: c.then }
+        });
+      });
+    });
+    syncPrime();
+  }
+  /* -------------------------------- dialogs --------------------------------
+     Two blocking dialogs: the headphone check before the first beat, and the tinnitus pitch
+     match before the notched track. Focus goes back where it was when one closes, and Tab
+     stays inside while one is open.
+  ---------------------------------------------------------------------------- */
+
+  var lastFocus = null;
+  function openDialog(sel) {
+    lastFocus = document.activeElement;
+    $(sel).hidden = false;
+  }
+  function closeDialog(sel) {
+    $(sel).hidden = true;
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
+    lastFocus = null;
+  }
 
   /* ------------------------ headphone check -------------------------
      The commonest way this page fails is silently: on speakers, one earbud
@@ -3368,88 +3461,6 @@
       "then test again.", "Continue anyway");
   }
 
-  $("#scPlay").addEventListener("click", function () {
-    playTestTone("left");
-    $("#scStep1").hidden = true;
-    $("#scStep2").hidden = false;
-    $("#scStep2").querySelector("[data-ans]").focus();
-  });
-  $("#scReplay").addEventListener("click", function () { playTestTone("left"); });
-  $("#scStep2").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-ans]");
-    if (b) answerCheck(b.dataset.ans);
-  });
-  $("#scRetry").addEventListener("click", openCheck);
-  $("#scAnyway").addEventListener("click", function () {
-    if (!store.get("stereo")) store.set("stereo", "override");
-    closeCheck(true);
-  });
-  $("#scSkip").addEventListener("click", function () {
-    A.checkSkipped = true;          // this visit only; ask again next time
-    closeCheck(true);
-  });
-  $("#scOpen").addEventListener("click", function () { pendingPlay = null; openCheck(); });
-  $("#scModal").addEventListener("click", function (e) {
-    if (e.target === this) closeCheck(false);
-  });
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && !$("#scModal").hidden) closeCheck(false);
-  });
-
-  /* --------------------------- prime mode ---------------------------
-     Exposure before a task beat exposure during it, so this makes that
-     protocol the featured path rather than a track you have to know to pick.
-  -------------------------------------------------------------------- */
-
-  var THEN_COPY = {
-    "continue": "then a cue to begin and the beats carry on at about half volume while you work.",
-    "noise": "then a cue to begin, the beats fade out and the pink noise bed carries on alone.",
-    "silence": "then a cue to begin and the audio stops \u2014 priming alone was enough in the trials."
-  };
-
-  function primeCfg() {
-    var bv = document.querySelector('input[name="pbeat"]:checked').value.split("|");
-    return {
-      beat: parseFloat(bv[0]),
-      carrier: parseInt(bv[1], 10),
-      minutes: parseInt(document.querySelector('input[name="pmin"]:checked').value, 10),
-      then: document.querySelector('input[name="pthen"]:checked').value
-    };
-  }
-
-  function syncPrime() {
-    var c = primeCfg();
-    $("#primeStart").textContent = "Start " + c.minutes + "-minute prime";
-    $("#primeHint").textContent = c.minutes + " min of " + c.beat + " Hz " +
-      bandFor(c.beat).name.toLowerCase() + " on a " + c.carrier + " Hz carrier, " + THEN_COPY[c.then];
-  }
-
-  ["#pfChips", "#plChips", "#ptChips"].forEach(function (sel) {
-    var box = $(sel);
-    box.addEventListener("change", function () {
-      var chips = box.querySelectorAll(".chip");
-      for (var i = 0; i < chips.length; i++) {
-        chips[i].classList.toggle("on", chips[i].querySelector("input").checked);
-      }
-      syncPrime();
-    });
-  });
-
-  $("#primeStart").addEventListener("click", function () {
-    var c = primeCfg();
-    var b = bandFor(c.beat);
-    gate(function () {
-      load({
-        id: "prime", cat: c.beat <= 12 ? "relax" : "stim", band: b.name,
-        name: "Prime \u2014 " + c.beat + " Hz " + b.name,
-        carrier: c.carrier, beat: c.beat, minutes: c.minutes, strength: 0,
-        desc: "", ev: "", cite: "",
-        then: { mode: c.then }
-      });
-    });
-  });
-
-
   /* ------------------------ tinnitus pitch match ---------------------
      Notched sound therapy works by removing a one-octave band centred on the
      listener's own tinnitus frequency, so the pitch has to be matched before
@@ -3524,44 +3535,65 @@
     }
   }
 
-  $("#pmSlider").addEventListener("input", pmSync);
-  $("#pmTone").addEventListener("click", function () { pm.on ? pmStop() : pmStart(); });
-  $("#pmUp").addEventListener("click", function () { pmSetHz(pmHz() * 2); });
-  $("#pmDown").addEventListener("click", function () { pmSetHz(pmHz() / 2); });
-  $("#pmUse").addEventListener("click", function () { closeMatcher(true); });
-  $("#pmCancel").addEventListener("click", function () { closeMatcher(false); });
-  $("#pmModal").addEventListener("click", function (e) { if (e.target === this) closeMatcher(false); });
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && !$("#pmModal").hidden) closeMatcher(false);
-  });
+  function dialogsInit() {
+    // the headphone check
+    $("#scPlay").addEventListener("click", function () {
+      playTestTone("left");
+      $("#scStep1").hidden = true;
+      $("#scStep2").hidden = false;
+      $("#scStep2").querySelector("[data-ans]").focus();
+    });
+    $("#scReplay").addEventListener("click", function () { playTestTone("left"); });
+    $("#scStep2").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-ans]");
+      if (b) answerCheck(b.dataset.ans);
+    });
+    $("#scRetry").addEventListener("click", openCheck);
+    $("#scAnyway").addEventListener("click", function () {
+      if (!store.get("stereo")) store.set("stereo", "override");
+      closeCheck(true);
+    });
+    $("#scSkip").addEventListener("click", function () {
+      A.checkSkipped = true;          // this visit only; ask again next time
+      closeCheck(true);
+    });
+    $("#scOpen").addEventListener("click", function () { pendingPlay = null; openCheck(); });
+    $("#scModal").addEventListener("click", function (e) {
+      if (e.target === this) closeCheck(false);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !$("#scModal").hidden) closeCheck(false);
+    });
 
-  /* Both dialogs are blocking, so Tab has to stay inside them. */
-  var lastFocus = null;
-  function openDialog(sel) {
-    lastFocus = document.activeElement;
-    $(sel).hidden = false;
-  }
-  function closeDialog(sel) {
-    $(sel).hidden = true;
-    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
-    lastFocus = null;
-  }
-  document.addEventListener("keydown", function (e) {
-    if (e.key !== "Tab") return;
-    var box = !$("#scModal").hidden ? $("#scModal") : (!$("#pmModal").hidden ? $("#pmModal") : null);
-    if (!box) return;
-    var all = box.querySelectorAll("button, input, a[href], select, textarea");
-    var list = [], i;
-    for (i = 0; i < all.length; i++) {
-      if (!all[i].disabled && all[i].offsetParent !== null) list.push(all[i]);
-    }
-    if (!list.length) return;
-    var first = list[0], last = list[list.length - 1];
-    if (!box.contains(document.activeElement)) { e.preventDefault(); first.focus(); return; }
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-  });
+    // the pitch match
+    $("#pmSlider").addEventListener("input", pmSync);
+    $("#pmTone").addEventListener("click", function () { pm.on ? pmStop() : pmStart(); });
+    $("#pmUp").addEventListener("click", function () { pmSetHz(pmHz() * 2); });
+    $("#pmDown").addEventListener("click", function () { pmSetHz(pmHz() / 2); });
+    $("#pmUse").addEventListener("click", function () { closeMatcher(true); });
+    $("#pmCancel").addEventListener("click", function () { closeMatcher(false); });
+    $("#pmModal").addEventListener("click", function (e) { if (e.target === this) closeMatcher(false); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !$("#pmModal").hidden) closeMatcher(false);
+    });
 
+    // both are blocking, so Tab has to stay inside them
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab") return;
+      var box = !$("#scModal").hidden ? $("#scModal") : (!$("#pmModal").hidden ? $("#pmModal") : null);
+      if (!box) return;
+      var all = box.querySelectorAll("button, input, a[href], select, textarea");
+      var list = [], i;
+      for (i = 0; i < all.length; i++) {
+        if (!all[i].disabled && all[i].offsetParent !== null) list.push(all[i]);
+      }
+      if (!list.length) return;
+      var first = list[0], last = list[list.length - 1];
+      if (!box.contains(document.activeElement)) { e.preventDefault(); first.focus(); return; }
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  }
   /* ------------------------- breathing guide -------------------------
      A breath is modelled as a lung "level" from 0 (empty) to 1 (full)
      moving through up to five phases: in, an optional second sip (the
@@ -3664,11 +3696,9 @@
     finder: null              // the resonance test, while it runs
   };
 
-  function bNow() { return (window.performance && performance.now ? performance.now() : Date.now()) / 1000; }
   function sessTime() { return B.state === "running" ? bNow() - B.t0 : B.st; }
   function breathTime() { return sessTime() - B_LEAD; }
   function fmtS(s) { return (s % 1 ? s.toFixed(1) : String(s)) + "s"; }
-  function bSetT(sel, v) { var el = $(sel); if (el && el.textContent !== v) el.textContent = v; }
   function preset(id) {
     for (var i = 0; i < BREATHS.length; i++) if (BREATHS[i].id === id) return BREATHS[i];
     return null;
@@ -4098,11 +4128,115 @@
     sizeCanvas();
   }
 
+  function initBreath() {
+    try {
+      var saved = JSON.parse(store.get("breath") || "null");
+      if (saved && typeof saved === "object") {
+        B_FIELDS.forEach(function (f) {
+          var v = parseFloat(saved[f.k]);
+          if (isFinite(v) && v >= f.min && v <= f.max) BC[f.k] = Math.round(v * 2) / 2;
+        });
+        if (BVIS[saved.visual]) BC.visual = saved.visual;
+        if (["off", "tones", "chimes"].indexOf(saved.sound) >= 0) BC.sound = saved.sound;
+        if ([0, 2, 5, 10, 15].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;
+        var cue = parseInt(saved.cue, 10);
+        if (cue >= 0 && cue <= 100) BC.cue = cue;
+        BC.pattern = (saved.pattern === "custom") ? "custom" : matchPreset();
+      }
+    } catch (e) {}
+
+    readColors();
+    checkRadio("bpat", BC.pattern);
+    checkRadio("bvis", BC.visual);
+    checkRadio("blen", String(BC.minutes));
+    checkRadio("bsnd", BC.sound);
+    ["#bPats", "#bVis", "#bLen", "#bSnd"].forEach(syncChips);
+    $("#bCue").value = BC.cue;
+    $("#bVolRow").hidden = BC.sound === "off";
+
+    B.ph = buildPhases(BC);
+    planTotal();
+    syncFields(); syncRate(); renderNote(); syncVisHint(); renderLine(); syncTransport(); updateHead();
+
+    $("#bPats").addEventListener("change", function (e) {
+      if (B.finder) finderCancel();
+      checkRadio("bpat", e.target.value);
+      syncChips("#bPats");
+      BC.pattern = e.target.value;
+      var p = preset(BC.pattern);
+      if (p) {
+        BC.inh = p.t.inh; BC.sip = p.t.sip; BC.hold = p.t.hold; BC.exh = p.t.exh; BC.rest = p.t.rest;
+        syncFields();
+      }
+      renderNote(); syncVisHint(); applyTimings(); saveBreath();
+    });
+    B_FIELDS.forEach(function (f) {
+      $(f.id).addEventListener("input", function () {
+        var v = parseFloat(this.value);
+        if (B.finder) finderCancel();
+        BC[f.k] = v;
+        var id = matchPreset();
+        if (id !== BC.pattern) { BC.pattern = id; checkRadio("bpat", id); syncChips("#bPats"); }
+        syncFields(); renderNote(); syncVisHint(); applyTimings(); saveBreath();
+      });
+    });
+    $("#bVis").addEventListener("change", function (e) {
+      BC.visual = e.target.value;
+      syncChips("#bVis"); syncVisHint(); draw(); saveBreath();
+    });
+    $("#bLen").addEventListener("change", function (e) {
+      if (B.finder) finderCancel();
+      checkRadio("blen", e.target.value);
+      BC.minutes = parseInt(e.target.value, 10);
+      syncChips("#bLen");
+      if (B.state === "running" || B.state === "paused") normalize(breathTime());
+      if (B.state === "done") { B.state = "idle"; bFresh(); syncTransport(); }
+      planTotal(); updateHead(); saveBreath();
+    });
+    $("#bSnd").addEventListener("change", function (e) {
+      BC.sound = e.target.value;
+      syncChips("#bSnd");
+      $("#bVolRow").hidden = BC.sound === "off";
+      if (B.state === "running") { cueOff(); if (BC.sound !== "off") cueOn(); }
+      else preview();
+      saveBreath();
+    });
+    $("#bCue").addEventListener("input", function () {
+      BC.cue = parseInt(this.value, 10);
+      if (B.bus && A.ctx) B.bus.gain.setTargetAtTime(cueGain(), A.ctx.currentTime, 0.05);
+      saveBreath();
+    });
+    $("#bCue").addEventListener("change", preview);
+
+    $("#bStart").addEventListener("click", bToggle);
+    $("#bReset").addEventListener("click", bStop);
+    $("#bFocus").addEventListener("click", function () { setFocus(!$("#bStage").classList.contains("focus")); });
+
+    document.addEventListener("fullscreenchange", function () {
+      if (!document.fullscreenElement && $("#bStage").classList.contains("focus")) setFocus(false);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (!$("#bStage").classList.contains("focus")) return;
+      if (e.key === "Escape") { setFocus(false); return; }
+      if (e.code !== "Space") return;
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "button" || tag === "input") return;   // the focused control handles its own Space
+      e.preventDefault();
+      bToggle();
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden && B.state === "running") { acquireLock(); bTick(); }
+    });
+
+    if (window.ResizeObserver) new ResizeObserver(function () { sizeCanvas(); }).observe($("#bView"));
+    else window.addEventListener("resize", sizeCanvas);
+    sizeCanvas();
+  }
+
   /* ----- drawing ----- */
 
   var bcv = $("#bCanvas"), d2 = bcv.getContext ? bcv.getContext("2d") : null, CW = 0, CH = 0;
   var BCOL = {}, BVIS = {};
-  var RM = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   function readColors() {
     var cs = getComputedStyle(document.documentElement);
@@ -4588,7 +4722,6 @@
   };
   var FIND_RATES = [6.5, 6, 5.5, 5, 4.5], FIND_STEP = 120;
 
-  function avg(a) { var s = 0; for (var i = 0; i < a.length; i++) s += a[i]; return a.length ? s / a.length : 0; }
   function hrSupported() { return !!(navigator.bluetooth && navigator.bluetooth.requestDevice); }
   function hrLive() { return H.state === "on" && H.hr > 0 && bNow() - H.lastAt < 5; }
 
@@ -4989,6 +5122,38 @@
     store.set("lastSummary", JSON.stringify({ at: Date.now(), text: el.textContent }));
   }
 
+  function hrInit() {
+    guideInit();
+    try {
+      var f = JSON.parse(store.get("resonance") || "null");
+      if (f && f.res && f.res.length === FIND_RATES.length && f.at) H.find = f;
+    } catch (e) {}
+    if (!hrSupported()) {
+      hrSetState("off", "Bluetooth unavailable");
+      hrMsg("This browser can't reach Bluetooth sensors. Use Chrome or Edge on a computer or an Android phone; Safari, iPhone browsers and Firefox don't support it.");
+    } else {
+      hrSetState("off", "Not connected");
+      try {
+        if (navigator.bluetooth.getAvailability) {
+          navigator.bluetooth.getAvailability().then(function (ok) {
+            if (!ok) hrMsg("Bluetooth looks switched off or missing on this device.");
+          }).catch(function () {});
+        }
+      } catch (e) {}
+    }
+    $("#hrConnect").addEventListener("click", function () { hrConnect(false); });
+    $("#hrAny").addEventListener("click", function () { hrConnect(true); });
+    $("#hrFindStart").addEventListener("click", function () { if (B.finder) bStop(); else finderStart(); });
+    $("#hrFindUse").addEventListener("click", useBest);
+    var redraw = function () { drawSwings(); drawFind(); drawSpectrum(); };
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(redraw);
+      ro.observe($("#hrBars")); ro.observe($("#hrFind")); ro.observe($("#hrSpec"));
+    } else window.addEventListener("resize", redraw);
+    finderUI(); redraw(); hrTiles();
+    window.addEventListener("pagehide", function () { if (H.state === "on") hrDisconnect(); });
+  }
+
   /* ----- charts ----- */
 
   function fitCanvas(cv) {
@@ -5358,143 +5523,6 @@
     var lx = X(co.f);
     c.textAlign = lx < 40 ? "left" : lx > W - 40 ? "right" : "center";
     c.fillText(co.f.toFixed(3) + " Hz", lx, padT - 8);
-  }
-
-  function hrInit() {
-    guideInit();
-    try {
-      var f = JSON.parse(store.get("resonance") || "null");
-      if (f && f.res && f.res.length === FIND_RATES.length && f.at) H.find = f;
-    } catch (e) {}
-    if (!hrSupported()) {
-      hrSetState("off", "Bluetooth unavailable");
-      hrMsg("This browser can't reach Bluetooth sensors. Use Chrome or Edge on a computer or an Android phone; Safari, iPhone browsers and Firefox don't support it.");
-    } else {
-      hrSetState("off", "Not connected");
-      try {
-        if (navigator.bluetooth.getAvailability) {
-          navigator.bluetooth.getAvailability().then(function (ok) {
-            if (!ok) hrMsg("Bluetooth looks switched off or missing on this device.");
-          }).catch(function () {});
-        }
-      } catch (e) {}
-    }
-    $("#hrConnect").addEventListener("click", function () { hrConnect(false); });
-    $("#hrAny").addEventListener("click", function () { hrConnect(true); });
-    $("#hrFindStart").addEventListener("click", function () { if (B.finder) bStop(); else finderStart(); });
-    $("#hrFindUse").addEventListener("click", useBest);
-    var redraw = function () { drawSwings(); drawFind(); drawSpectrum(); };
-    if (window.ResizeObserver) {
-      var ro = new ResizeObserver(redraw);
-      ro.observe($("#hrBars")); ro.observe($("#hrFind")); ro.observe($("#hrSpec"));
-    } else window.addEventListener("resize", redraw);
-    finderUI(); redraw(); hrTiles();
-    window.addEventListener("pagehide", function () { if (H.state === "on") hrDisconnect(); });
-  }
-
-  function initBreath() {
-    try {
-      var saved = JSON.parse(store.get("breath") || "null");
-      if (saved && typeof saved === "object") {
-        B_FIELDS.forEach(function (f) {
-          var v = parseFloat(saved[f.k]);
-          if (isFinite(v) && v >= f.min && v <= f.max) BC[f.k] = Math.round(v * 2) / 2;
-        });
-        if (BVIS[saved.visual]) BC.visual = saved.visual;
-        if (["off", "tones", "chimes"].indexOf(saved.sound) >= 0) BC.sound = saved.sound;
-        if ([0, 2, 5, 10, 15].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;
-        var cue = parseInt(saved.cue, 10);
-        if (cue >= 0 && cue <= 100) BC.cue = cue;
-        BC.pattern = (saved.pattern === "custom") ? "custom" : matchPreset();
-      }
-    } catch (e) {}
-
-    readColors();
-    checkRadio("bpat", BC.pattern);
-    checkRadio("bvis", BC.visual);
-    checkRadio("blen", String(BC.minutes));
-    checkRadio("bsnd", BC.sound);
-    ["#bPats", "#bVis", "#bLen", "#bSnd"].forEach(syncChips);
-    $("#bCue").value = BC.cue;
-    $("#bVolRow").hidden = BC.sound === "off";
-
-    B.ph = buildPhases(BC);
-    planTotal();
-    syncFields(); syncRate(); renderNote(); syncVisHint(); renderLine(); syncTransport(); updateHead();
-
-    $("#bPats").addEventListener("change", function (e) {
-      if (B.finder) finderCancel();
-      checkRadio("bpat", e.target.value);
-      syncChips("#bPats");
-      BC.pattern = e.target.value;
-      var p = preset(BC.pattern);
-      if (p) {
-        BC.inh = p.t.inh; BC.sip = p.t.sip; BC.hold = p.t.hold; BC.exh = p.t.exh; BC.rest = p.t.rest;
-        syncFields();
-      }
-      renderNote(); syncVisHint(); applyTimings(); saveBreath();
-    });
-    B_FIELDS.forEach(function (f) {
-      $(f.id).addEventListener("input", function () {
-        var v = parseFloat(this.value);
-        if (B.finder) finderCancel();
-        BC[f.k] = v;
-        var id = matchPreset();
-        if (id !== BC.pattern) { BC.pattern = id; checkRadio("bpat", id); syncChips("#bPats"); }
-        syncFields(); renderNote(); syncVisHint(); applyTimings(); saveBreath();
-      });
-    });
-    $("#bVis").addEventListener("change", function (e) {
-      BC.visual = e.target.value;
-      syncChips("#bVis"); syncVisHint(); draw(); saveBreath();
-    });
-    $("#bLen").addEventListener("change", function (e) {
-      if (B.finder) finderCancel();
-      checkRadio("blen", e.target.value);
-      BC.minutes = parseInt(e.target.value, 10);
-      syncChips("#bLen");
-      if (B.state === "running" || B.state === "paused") normalize(breathTime());
-      if (B.state === "done") { B.state = "idle"; bFresh(); syncTransport(); }
-      planTotal(); updateHead(); saveBreath();
-    });
-    $("#bSnd").addEventListener("change", function (e) {
-      BC.sound = e.target.value;
-      syncChips("#bSnd");
-      $("#bVolRow").hidden = BC.sound === "off";
-      if (B.state === "running") { cueOff(); if (BC.sound !== "off") cueOn(); }
-      else preview();
-      saveBreath();
-    });
-    $("#bCue").addEventListener("input", function () {
-      BC.cue = parseInt(this.value, 10);
-      if (B.bus && A.ctx) B.bus.gain.setTargetAtTime(cueGain(), A.ctx.currentTime, 0.05);
-      saveBreath();
-    });
-    $("#bCue").addEventListener("change", preview);
-
-    $("#bStart").addEventListener("click", bToggle);
-    $("#bReset").addEventListener("click", bStop);
-    $("#bFocus").addEventListener("click", function () { setFocus(!$("#bStage").classList.contains("focus")); });
-
-    document.addEventListener("fullscreenchange", function () {
-      if (!document.fullscreenElement && $("#bStage").classList.contains("focus")) setFocus(false);
-    });
-    document.addEventListener("keydown", function (e) {
-      if (!$("#bStage").classList.contains("focus")) return;
-      if (e.key === "Escape") { setFocus(false); return; }
-      if (e.code !== "Space") return;
-      var tag = (e.target.tagName || "").toLowerCase();
-      if (tag === "button" || tag === "input") return;   // the focused control handles its own Space
-      e.preventDefault();
-      bToggle();
-    });
-    document.addEventListener("visibilitychange", function () {
-      if (!document.hidden && B.state === "running") { acquireLock(); bTick(); }
-    });
-
-    if (window.ResizeObserver) new ResizeObserver(function () { sizeCanvas(); }).observe($("#bView"));
-    else window.addEventListener("resize", sizeCanvas);
-    sizeCanvas();
   }
 
   /* ---------------------------- app shell ----------------------------
@@ -8008,7 +8036,6 @@
      Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself. ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
   var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "visual"];
-  function storeDel(k) { try { localStorage.removeItem("entrain." + k); } catch (e) {} }
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -11030,19 +11057,17 @@
       if (!el.closest(".toc") && !el.id) el.id = "lx-" + (n++);
     });
   }
+  /* --------------------------------- start ---------------------------------
+     Every other file only declares. This wires the page up, in order: where two handlers listen
+     for the same key on the whole document, the one wired first runs first.
+  ---------------------------------------------------------------------------- */
 
-  /* ------------------------------- init ------------------------------ */
-
-
-
-  try {
-    var saved = localStorage.getItem("entrain.vol");
-    if (saved !== null) $("#vol").value = saved;
-  } catch (e) {}
-
+  playerInit();
+  trackListInit();
+  builderInit();
+  primeInit();
+  dialogsInit();
   render("all");
-  syncBuilder();
-  syncPrime();
   initBreath();
   hrInit();
   shellInit();

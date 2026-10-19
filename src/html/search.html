@@ -1,0 +1,18 @@
+<!-- ============ SEARCH ============ -->
+<div class="fd-back" id="fdBack" hidden></div>
+<div class="fd" id="fd" role="dialog" aria-modal="true" aria-label="Search" hidden>
+  <div class="fd-head">
+    <span class="fd-gl">{i:search}</span>
+    <input id="fdIn" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"
+      placeholder="Practices, poses, sounds, Learn…" aria-label="Search Entrain" aria-describedby="fdCount" aria-controls="fdRes">
+    <button class="fd-x" id="fdX" aria-label="Close search">{i:x}</button>
+  </div>
+  <p class="fd-count" id="fdCount" aria-live="polite"></p>
+  <div class="fd-res" id="fdRes"></div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+  <span id="toastTxt"></span>
+  <button class="btn small primary" id="toastAct" hidden></button>
+  <button class="toast-x" id="toastX" aria-label="Dismiss">{i:x}</button>
+</div>

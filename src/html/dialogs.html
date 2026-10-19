@@ -1,0 +1,83 @@
+<!-- ============ HEADPHONE CHECK ============ -->
+<div class="modal" id="scModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="scTitle">
+    <h2 id="scTitle">Quick headphone check</h2>
+    <p>
+      A binaural beat only exists if each ear receives its own tone. On speakers, a single earbud, or a
+      mono Bluetooth device the two tones mix before they reach you and nothing on this page does anything.
+      This takes five seconds.
+    </p>
+
+    <div id="scStep1">
+      <button class="btn primary" id="scPlay"><span class="tone-dot"></span>Play test tone</button>
+      <p class="hint" style="margin-top:10px">A soft 440&nbsp;Hz tone, sent to one ear only.</p>
+    </div>
+
+    <div id="scStep2" hidden>
+      <p class="sc-q">Where did you hear it?</p>
+      <div class="sc-answers">
+        <button class="btn" data-ans="left">Left ear only</button>
+        <button class="btn" data-ans="right">Right ear only</button>
+        <button class="btn" data-ans="both">Both ears / centre</button>
+        <button class="btn" data-ans="none">Nothing at all</button>
+      </div>
+      <button class="btn link" id="scReplay">Play it again</button>
+    </div>
+
+    <div class="sc-result" id="scResult" hidden></div>
+    <div class="sc-again" id="scAgain" hidden>
+      <button class="btn" id="scRetry">Test again</button>
+      <button class="btn" id="scAnyway">Continue anyway</button>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn link" id="scSkip">Skip the check</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============ TINNITUS PITCH MATCH ============ -->
+<div class="modal" id="pmModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+    <h2 id="pmTitle">Match your tinnitus pitch</h2>
+    <p>
+      The notch has to sit on <em>your</em> tinnitus to do anything. Move the slider until the tone
+      sounds closest to the pitch you hear, then save it. Keep the volume low — this is a pure tone.
+    </p>
+
+    <div class="pm-readout">
+      <span class="pm-hz mono" id="pmHz">4000</span><span class="pm-unit">Hz</span>
+    </div>
+    <input type="range" id="pmSlider" min="0" max="1000" step="1" value="700" aria-label="Tinnitus pitch">
+
+    <div class="pm-oct">
+      <button class="btn" id="pmDown">÷2 — octave down</button>
+      <button class="btn" id="pmTone">Play tone</button>
+      <button class="btn" id="pmUp">×2 — octave up</button>
+    </div>
+    <p class="hint" style="margin-top:12px">
+      Matches are commonly out by a whole octave, and which way depends on where you started from —
+      so check the octave above and below before you settle.
+    </p>
+
+    <div class="pm-warn" id="pmWarn" hidden>
+      Above 8&nbsp;kHz the notched-training trials found no significant effect. You can save this pitch,
+      but expect the notch to do less than the trials reported.
+    </div>
+
+    <div class="pm-med">
+      <b>See a clinician first.</b>
+      Tinnitus that is new, one-sided, pulsing in time with your heartbeat, or paired with hearing loss
+      or dizziness needs medical assessment. Sound therapy is an adjunct to care, not a substitute for it,
+      and not a cure.
+    </div>
+
+    <div class="pm-actions">
+      <button class="btn primary" id="pmUse">Save pitch and play</button>
+      <button class="btn" id="pmCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+

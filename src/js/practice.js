@@ -91,7 +91,6 @@
      Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself. ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
   var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "visual"];
-  function storeDel(k) { try { localStorage.removeItem("entrain." + k); } catch (e) {} }
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {

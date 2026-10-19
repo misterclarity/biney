@@ -1,0 +1,55 @@
+      <!-- ============ HOME ============ -->
+      <section class="view" id="v-home" aria-labelledby="viewTitle">
+        <div class="home-hero">
+          <div>
+            <h2 id="homePat">Resonance 5.5</h2>
+            <p id="homePatTxt">5.5 breaths a minute: in for 5.5 s, out for 5.5 s. A 5-minute session.</p>
+            <div class="home-actions">
+              <button class="btn primary b-go" id="homeStart">Start breathing</button>
+              <button class="btn" data-go="breathe">Change pattern</button>
+            </div>
+          </div>
+          <div class="home-wave" aria-hidden="true"><canvas id="homeWave"></canvas></div>
+        </div>
+
+        <div class="suggest" id="homeSuggest">
+          <span class="sg-ic">{i:practice}</span>
+          <div class="sg-t"><span class="sg-when" id="sgWhen">Suggested</span><b id="sgName">Practice</b><span id="sgTxt"></span></div>
+          <div class="sg-act"><a class="btn primary small" id="sgGo" href="#practice">Open</a><a class="btn small" href="#practice">All practices</a></div>
+        </div>
+
+        <figure class="quote home-quote" id="homeQuote">
+          <blockquote id="qTxt"></blockquote>
+          <figcaption><span id="qBy"></span><button class="btn small q-next" id="qNext">Another</button></figcaption>
+        </figure>
+
+        <div class="install" id="installCard" hidden>
+          <span class="inst-ic">{i:install}</span>
+          <div class="inst-txt"><b>Install Entrain as an app</b><span id="installTxt">It opens from your home screen in its own window and works without a connection.</span></div>
+          <div class="inst-act"><button class="btn primary small" id="installBtn">Install</button><button class="btn small" id="installLater">Not now</button></div>
+        </div>
+
+        <div class="quick">
+          <button class="qk" data-go="heart" style="--qc:var(--hr)"><span class="qi">{i:target}</span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
+          <button class="qk" data-go="sounds" data-seg="prime" style="--qc:var(--stim)"><span class="qi">{i:bolt}</span><b>Custom primer</b><span id="qkPrime">10 min of 14 Hz beta, then start work</span></button>
+          <button class="qk" data-go="sounds" data-seg="tracks" style="--qc:var(--relax)"><span class="qi">{i:sounds}</span><b>Listen to a track</b><span id="qkTracks">12 tracks for sleep, calm, focus and tinnitus</span></button>
+          <button class="qk" data-go="heart" style="--qc:var(--accent)"><span class="qi">{i:pulse}</span><b id="qkSensorT">Heart sensor</b><span id="qkSensor">Not connected</span></button>
+        </div>
+
+        <div class="home-cols">
+          <div class="note-card">
+            <h3>Last session</h3>
+            <p id="homeLast">After you breathe with a heart sensor connected, a summary of the session appears here.</p>
+            <div class="when" id="homeLastWhen"></div>
+          </div>
+          <div class="note-card">
+            <h3>Before you start</h3>
+            <ul class="safety">
+              <li>{i:sounds}<span><b>Use headphones for the beats.</b> On speakers the two tones mix in the air and the binaural beat disappears.</span></li>
+              <li>{i:volume}<span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></li>
+              <li class="warn">{i:warn}<span><b>Not for everyone.</b> Avoid the beats if you have epilepsy or a seizure disorder, wear a pacemaker, or are driving or operating machinery. This is not a medical device.</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
