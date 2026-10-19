@@ -164,6 +164,7 @@
     res.forEach(function (r) { if (r.amp !== null && (!best || r.amp > best.amp)) best = r; });
     H.find = { at: Date.now(), res: res, best: best ? best.rate : null, rr: H.hasRR };
     store.set("resonance", JSON.stringify(H.find));
+    hTest(Math.max(0, bt), H.find.best);
     B.finder = null;
     finderRestore(F);
     B.ph = buildPhases(BC); B.pending = null; B.epoch = 0; B.done = 0; planTotal();

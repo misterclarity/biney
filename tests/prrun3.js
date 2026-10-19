@@ -399,8 +399,8 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     ok(await t(p, '.sd-quote figcaption span') === 'Carl Rogers, paraphrased' && /change starts when you accept yourself as you are/.test(await t(p, '.sd-quote blockquote')), 'closes with the Rogers line');
     await p.screenshot({ path: OUT + 'nvc-done.png', fullPage: true });
     const logd = await p.evaluate(() => JSON.parse(localStorage.getItem('entrain.nvcLog') || '[]'));
-    const last = await p.evaluate(() => localStorage.getItem('entrain.lastSummary') || '');
-    ok(logd.length === 1 && /phone-free/.test(logd[0].text) && !/phone|hurt/.test(last), 'kept on the device; the Home summary leaves it out: ' + last.slice(0, 80));
+    const last = await p.evaluate(() => localStorage.getItem('entrain.history') || '');
+    ok(logd.length === 1 && /phone-free/.test(logd[0].text) && /"id":"nvc-/.test(last) && !/phone|hurt|dinner/.test(last), 'kept on the device; the history leaves it out: ' + last.slice(0, 120));
     await p.click('#sdAgain'); await p.waitForTimeout(250);
     ok(/Your past reflections \(1\)/.test(await t(p, '.si-journal summary')), 'Do it again: the intro lists past reflections');
     await p.click('.si-journal summary'); await p.waitForTimeout(100);
@@ -430,7 +430,8 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     await q.click('.sw-card[data-i="2"] button[data-ch="0"]'); await q.waitForTimeout(100);
     await q.screenshot({ path: OUT + 'nvc-choose.png' });
     await q.click('#sWrite [data-sw="next"]'); await q.waitForTimeout(1500);
-    const said2 = (await q.evaluate(() => window.__said.map(x => x.t))).join(' | ');
+    let said2 = '';                                   // speech is queued behind the step's own lines: give it a little longer when the machine is busy
+    for (let i = 0; i < 30 && !/You chose/.test(said2); i++) { said2 = (await q.evaluate(() => window.__said.map(x => x.t))).join(' | '); if (!/You chose/.test(said2)) await q.waitForTimeout(100); }
     ok(/You chose 2 things, and you'd like to change 1 other\./.test(said2), 'the count is read back');
     await q.evaluate(() => { const P = window.__entrain.P; P.t0 -= P.total; }); await q.waitForTimeout(800);
     const items = await q.$$eval('.sd-nvc li', l => l.map(x => x.textContent));

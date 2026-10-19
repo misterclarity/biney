@@ -180,7 +180,7 @@
     pendingPitch = null;
     if (save) {
       store.set("tinnitusHz", String(Math.round(hz)));
-      render(curFilter);
+      trSync();
       setStatus("Notch centred on " + Math.round(hz) + " Hz.");
       if (fn) fn();
     }

@@ -1,8 +1,9 @@
   /* ------------------------------- the library -------------------------------
      Goal sections (Sleep, Calm, Focus, Energy, Recover, Reflect) holding practices, breathing
-     patterns and tracks, each listed once, under its goal. A goal chip narrows it to one goal and
-     adds the items that are also good for it; the filter panel narrows by method, length, posture
-     and needs. On "All", each section shows its first few rows until you ask for the rest.
+     patterns, tracks and the custom primer, each listed once, under its goal. A goal chip narrows
+     it to one goal and adds the items that are also good for it; the filter panel narrows by
+     method, length, posture and needs. On "All", each section shows its first few rows until you
+     ask for the rest, and the tinnitus track and the two builders have sections of their own.
   ------------------------------------------------------------------------------ */
 
   var LIB = { goal: "all", f: { method: "", len: "", posture: "", needs: "" }, open: {}, panel: false, mins: {} };
@@ -76,6 +77,24 @@
     return out;
   }
   function libMine() { return yLoad().map(function (q) { return libPractice(yDef(q)); }); }
+  function libTinnitus() { return TRACKS.filter(function (t) { return t.goal === "tinnitus"; }).map(libTrack); }
+  // any one item by its key, as favourites and the history keep it; null once it's gone
+  function libItem(key) {
+    if (!key) return null;
+    if (key.indexOf("b:") === 0) { var b = preset(key.slice(2)); return b && b.goal ? libPattern(b) : null; }
+    if (key.indexOf("t:") === 0) { var t = trackById(key.slice(2)); return t ? libTrack(t) : null; }
+    if (key.indexOf("x:") === 0) return TOOLS[key.slice(2)] ? libTool(key.slice(2)) : null;
+    var d = pDef(key);
+    return d ? libPractice(d) : null;
+  }
+  // the library at one goal, or at one method: from Today's goal tiles, and old links to Sounds
+  function libShow(goal, method) {
+    LIB.goal = goalOf(goal) ? goal : "all";
+    LIB.f = { method: method || "", len: "", posture: "", needs: "" };
+    LIB.panel = !!method;
+    try { history.replaceState(null, "", "#practice"); } catch (e) {}
+    showView("practice");
+  }
 
   /* ----- filters ----- */
   function libPass(it) {
@@ -90,21 +109,23 @@
   function libFiltered() { var f = LIB.f; return !!(f.method || f.len || f.posture || f.needs); }
 
   /* ----- rendering ----- */
-  function libRow(it, hide) {
+  // one row; compact rows (on Today) leave out the blurb and the timeline, and can say something else under the name
+  function libRow(it, hide, o) {
+    o = o || {};
     var tl = "";
-    if (it.prog) {
+    if (it.prog && !o.compact) {
       var plan = pPlan(it.def, 0);
       tl = '<span class="si-tl pc-tl" aria-hidden="true">' + plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + s.secs + ' 1 0"></i>'; }).join("") + "</span>";
     }
     var pos = it.nopos ? "" : it.posture.map(function (p, i) { var n = postureName(p); return i ? n.toLowerCase() : n; }).join(" or ");
-    var sub = [it.label || methodName(it.method), it.minsTxt, pos].filter(Boolean).join(" · ");
-    return '<li class="pc' + (it.prog ? " prog" : "") + (it.type !== "practice" ? " pc-" + it.type : "") + '" style="--pcol:' + it.col + '"' + (hide ? " hidden" : "") + ">" +
+    var sub = o.sub || [it.label || methodName(it.method), it.minsTxt, pos].filter(Boolean).join(" · ");
+    return '<li class="pc' + (it.prog ? " prog" : "") + (o.compact ? " cmp" : "") + (it.type !== "practice" ? " pc-" + it.type : "") + '" style="--pcol:' + it.col + '"' + (hide ? " hidden" : "") + ">" +
       '<a href="' + esc(it.href) + '" class="pc-a">' +
         '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + it.icon + '"/></svg></span>' +
         '<span class="pc-b"><span class="pc-top"><b>' + esc(it.name) + "</b>" + (it.strength ? dots(it.strength) : "") + "</span>" +
           '<span class="pc-meta"><span class="pc-sub">' + esc(sub) + "</span>" +
-            it.badges.map(function (b) { return '<span class="' + b[0] + '">' + esc(b[1]) + "</span>"; }).join("") + "</span>" +
-          (it.blurb ? '<span class="pc-blurb">' + esc(it.blurb) + "</span>" : "") + tl +
+            (o.compact ? "" : it.badges.map(function (b) { return '<span class="' + b[0] + '">' + esc(b[1]) + "</span>"; }).join("")) + "</span>" +
+          (it.blurb && !o.compact ? '<span class="pc-blurb">' + esc(it.blurb) + "</span>" : "") + tl +
         "</span></a></li>";
   }
   function libSection(g, title, lede, icon, items, cap, extra) {
@@ -132,6 +153,8 @@
         var items = all.filter(function (it) { return it.goal === g.id; });
         if (items.length) h += libSection(g.id, g.name, g.lede, g.icon, items, cap);
       });
+      var tin = libTinnitus().filter(libPass);
+      if (tin.length) h += libSection("tinnitus", "For tinnitus", "Sound therapy for weeks of daily use, alongside your own care.", "sounds", tin, 0);
       var make = [libTool("beats")].filter(libPass), build = libPass(libTool("routine"));
       if (make.length || build) h += libSection("make", "Make your own", "Your own routine or binaural beat.", "plus", make, 0, build ? libBuildRow() : "");
     } else {
@@ -143,7 +166,6 @@
     }
     if (!h) h = '<div class="pr-empty"><p>Nothing matches these filters.</p><button class="btn small" data-clear="1">Clear filters</button></div>';
     $("#prLib").innerHTML = h;
-    pRenderWeek();
     edgeFade($("#prFilt"));
   }
   function libPanel() {

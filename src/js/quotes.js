@@ -1,6 +1,6 @@
 
   /* ------------------------------- quotes -------------------------------
-     A line for the day on Home, and one to close each practice. The attributed lines
+     A line for the day on Today, and one to close each practice. The attributed lines
      come from public-domain translations: George Long's Marcus Aurelius and Epictetus,
      Richard Gummere's Seneca, Max Müller's Dhammapada and James Legge's Tao Te Ching,
      plus Thoreau's Walden. Carl Rogers's line on self-acceptance and change is paraphrased,
@@ -54,7 +54,7 @@
     bSetT("#qBy", q[1] || "");
     $("#qBy").hidden = !q[1];
   }
-  /* One for the end of a practice: never the one already on Home. */
+  /* One for the end of a practice: never the one already on Today. */
   function qPick() {
     var i = Math.floor(Math.random() * (QUOTES.length - 1));
     return QUOTES[i >= Q.i ? i + 1 : i];

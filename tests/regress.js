@@ -46,8 +46,8 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
     return page(null, st, false, { ctx, snap });
   };
   const playTrack = async (p, id) => {
-    await p.evaluate(() => location.hash = 'sounds'); await p.waitForTimeout(200);
-    await p.click('.card[data-id="' + id + '"] .play-btn'); await p.waitForTimeout(600);
+    await p.evaluate(x => location.hash = 'track/' + x, id); await p.waitForTimeout(250);
+    await p.click('#trGo'); await p.waitForTimeout(600);
   };
   try {
     /* A. the mini player's progress ring fills (a second CIRC used to replace its length) */
@@ -154,8 +154,8 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       const tiles = await p.$$eval('.sd-t', x => x.map(e => e.textContent));
       const nap = tiles.filter(x => /^Nap\d+ min/.test(x))[0] || '', mins = parseInt(nap.slice(3), 10), real = (tEnd - on) / 60;
       ok(asleep && Math.abs(mins - real) <= 1, 'ended ' + real.toFixed(1) + ' min after dozing off; summary: ' + nap);
-      const home = await E(p, () => JSON.parse(localStorage.getItem('entrain.lastSummary')).text);
-      ok(new RegExp('about ' + mins + ' min of sleep').test(home), 'the Home summary agrees: ' + home.slice(0, 120));
+      const home = await E(p, () => JSON.parse(localStorage.getItem('entrain.history')).filter(e => e.id === 'power-nap').pop().note || '');
+      ok(new RegExp('about ' + mins + ' min of sleep').test(home), 'the history agrees: ' + home.slice(0, 120));
       await p.close();
     }
 
@@ -451,7 +451,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       await E(p, () => window.__wl.last.release()); await p.waitForTimeout(1400);   // the system takes it back, as when the page is hidden
       const again = await E(p, () => [window.__wl.held, window.__wl.req]);
       await p.click('#stop'); await p.waitForTimeout(400);
-      ok(tr === 1 && again[0] === 1 && again[1] === req0 + 1 && await W() === 0, 'Sounds track: on while playing, asked for again after the system drops it, off when stopped');
+      ok(tr === 1 && again[0] === 1 && again[1] === req0 + 1 && await W() === 0, 'a track: on while playing, asked for again after the system drops it, off when stopped');
       // no dimming in the sleep steps
       await p.evaluate(() => location.hash = 'practice/sleep-descent'); await p.waitForTimeout(250);
       await p.click('#sGo'); await p.waitForTimeout(250);
@@ -503,13 +503,11 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       await p.click('.fd-it[href="#yoga/find/tree"]'); await p.waitForTimeout(500);
       const pose = await E(p, () => ({ f: document.activeElement && document.activeElement.dataset.add, hit: document.activeElement && document.activeElement.classList.contains('fd-hit'), n: document.querySelectorAll('#ybList .yb-row').length }));
       ok(pose.f === 'tree' && pose.hit && pose.n === 1, 'a pose result shows it in the builder, and your routine stays as it was (' + JSON.stringify(pose) + ')');
-      // a track lands on its card even when the list is filtered
-      await p.evaluate(() => location.hash = 'sounds'); await p.waitForTimeout(200);
-      await p.click('.tab[data-filter="focus"]'); await p.waitForTimeout(150);
+      // a track opens its page
       r = await find('tinnitus');
       ok(r[0] && r[0].k === 'Sounds' && r[0].items[0].h === '#track/tinnitus-notch', 'the tinnitus track leads its group: ' + JSON.stringify(r.map(g => g.k)));
       await p.click('.fd-it[href="#track/tinnitus-notch"]'); await p.waitForTimeout(500);
-      ok(await E(p, () => !!document.querySelector('#grid .card[data-id="tinnitus-notch"].fd-hit')), 'a track result shows its card, highlighted');
+      ok(await t(p, '#viewTitle') === 'Notched Relief' && await E(p, () => location.hash) === '#track/tinnitus-notch', 'a track result opens its page');
       // Learn paragraphs and references
       r = await find('baroreflex');
       const lh = (r.find(g => g.k === 'Learn') || { items: [] }).items.map(i => i.h);
@@ -573,7 +571,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
         const all = [].concat(...secs.filter(s => s.g !== 'make').map(s => s.hrefs));
         return { order: secs.map(s => s.g).join(','), dup: all.filter((h, i) => all.indexOf(h) !== i), flow: secs.filter(s => s.hrefs.includes('#practice/standing-flow')).map(s => s.g), calm: secs.find(s => s.g === 'calm') };
       });
-      ok(lib.order === 'sleep,calm,focus,energy,recover,reflect,make' && !lib.dup.length, 'goal sections in order, each item listed once: ' + lib.order);
+      ok(lib.order === 'sleep,calm,focus,energy,recover,reflect,tinnitus,make' && !lib.dup.length, 'goal sections in order, each item listed once: ' + lib.order);
       ok(lib.flow.join() === 'energy', 'Standing Yoga Flow is under Energy only');
       ok(lib.calm.hrefs.length === 18 && lib.calm.shown === 4 && lib.calm.hrefs.includes('#breathe/sigh') && lib.calm.hrefs.includes('#track/alpha-stress'),
         'Calm holds practices, breathing patterns and tracks: 18, the first 4 shown');
@@ -600,15 +598,12 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       await p.click('#prPanel [data-k=needs][data-v=none]'); await p.click('#prPanel [data-k=method][data-v=write]'); await p.click('#prPanel [data-k=posture][data-v=walk]'); await p.waitForTimeout(150);
       ok(/Nothing matches/.test(await t(p, '#prLib')), 'no matches: says so');
       await p.click('#prLib [data-clear]'); await p.waitForTimeout(150);
-      ok(await t(p, '#prFbtnTxt') === 'Filters' && (await p.$$('#prLib .pr-grp')).length === 7, 'Clear filters brings everything back');
-      // Sounds and the renames
-      await p.evaluate(() => location.hash = 'sounds'); await p.waitForTimeout(250);
-      const tr = {};
-      for (const g of ['sleep', 'calm', 'focus', 'recover', 'tinnitus']) { await p.click('.tab[data-filter="' + g + '"]'); await p.waitForTimeout(80); tr[g] = await p.$$eval('#grid .card h3', x => x.map(e => e.textContent)); }
-      ok(tr.sleep.join() === 'Delta Sleep' && tr.calm.length === 3 && tr.focus.length === 6 && tr.recover.join() === 'Parasympathetic Recovery' && tr.tinnitus.join() === 'Notched Relief' &&
-        await p.$eval('.tab[data-filter="tinnitus"]', b => b.getAttribute('aria-pressed')) === 'true', 'Sounds filters tracks by the same goals: ' + Object.keys(tr).map(k => k + ' ' + tr[k].length).join(', '));
-      await p.click('.tab[data-filter="all"]');
-      ok(await t(p, '#sg-prime') === 'Custom primer' && await t(p, '#sg-build') === 'Beat builder' && /Custom primer/.test(await t(p, '#v-home')) && !/Deep Sleep Descent/.test(await t(p, '#grid')),
+      ok(await t(p, '#prFbtnTxt') === 'Filters' && (await p.$$('#prLib .pr-grp')).length === 8, 'Clear filters brings everything back');
+      // the tracks sit under the same goals, and the renames
+      const tr = await E(p, () => { const o = {}; document.querySelectorAll('#prLib .pr-grp').forEach(g => { o[g.dataset.g] = [...g.querySelectorAll('.pc-track .pc-top b')].map(b => b.textContent); }); return o; });
+      ok(tr.sleep.join() === 'Delta Sleep' && tr.calm.length === 3 && tr.focus.length === 6 && tr.recover.join() === 'Parasympathetic Recovery' && tr.tinnitus.join() === 'Notched Relief',
+        'tracks under the goals: ' + Object.keys(tr).map(k => k + ' ' + tr[k].length).join(', '));
+      ok(/Custom primer/.test(await t(p, '.pr-grp[data-g=focus]')) && /Beat builder/.test(await t(p, '.pr-grp[data-g=make]')) && !/Deep Sleep Descent/.test(await t(p, '#prLib')),
         'renamed: Custom primer, Beat builder, Delta Sleep');
       // the movement library by position and type, and a routine with a goal
       await p.evaluate(() => location.hash = 'yoga'); await p.waitForTimeout(250);
@@ -654,7 +649,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       const q = await page(null, OPT());
       await q.setViewportSize({ width: 360, height: 740 });
       const wide = await E(q, async () => {
-        const out = [], hs = window.__entrain.PRACTICES.map(d => 'practice/' + d.id).concat(['home', 'practice', 'breathe', 'sounds', 'heart', 'learn', 'yoga', 'settings']);
+        const out = [], hs = window.__entrain.PRACTICES.map(d => 'practice/' + d.id).concat(['home', 'practice', 'breathe', 'heart', 'learn', 'history', 'track/sleep-descent', 'track/tinnitus-notch', 'prime', 'builder', 'yoga', 'settings']);
         for (const h of hs) {
           location.hash = h; await new Promise(r => setTimeout(r, 120));
           if (document.documentElement.scrollWidth > document.documentElement.clientWidth) out.push(h);

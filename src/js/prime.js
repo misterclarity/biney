@@ -21,7 +21,7 @@
 
   function syncPrime() {
     var c = primeCfg();
-    $("#primeStart").textContent = "Start " + c.minutes + "-minute prime";
+    $("#primeStart").innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Start ' + c.minutes + "-minute prime";
     $("#primeHint").textContent = c.minutes + " min of " + c.beat + " Hz " +
       bandFor(c.beat).name.toLowerCase() + " on a " + c.carrier + " Hz carrier, " + THEN_COPY[c.then];
   }
@@ -52,4 +52,5 @@
       });
     });
     syncPrime();
+    $("#primeFav").innerHTML = favBtn("x:prime", "Custom primer");
   }

@@ -204,6 +204,8 @@
 
   function load(track) {
     if (A.playing || A.oscL) hardStop(true);
+    else hTrack();                       // a paused track that's being replaced still counts
+    A.hAt = 0;
     A.gen++;
     A.voicesOff = false;
     A.track = track;
@@ -251,7 +253,7 @@
     $("#toggle").textContent = "❚❚";
     $("#toggle").setAttribute("aria-label", "Pause");
     $("#player").classList.add("playing");
-    markCard();
+    playSync();
     scheduleEnd();
     setStatus("Playing — keep the volume low and comfortable.");
     loop();
@@ -269,11 +271,13 @@
     $("#toggle").textContent = "▶";
     $("#toggle").setAttribute("aria-label", "Play");
     $("#player").classList.remove("playing");
-    markCard();
+    playSync();
     setStatus("Paused at " + fmt(A.elapsed) + ".");
   }
 
   function hardStop(silent) {
+    hTrack();                            // what was listened to goes into the history
+    A.hAt = 0;
     A.gen++;
     teardownVoices(0.3);
     stopNoise();
@@ -289,7 +293,7 @@
     cancelAnimationFrame(A.raf);
     $("#toggle").textContent = "▶";
     $("#player").classList.remove("playing");
-    markCard();
+    playSync();
     paint();
     if (!silent) setStatus("Stopped.");
   }
@@ -416,15 +420,10 @@
 
   function setStatus(msg) { $("#status").textContent = msg; }
 
-  function markCard() {
-    wlKick();                            // a track started, paused or stopped: the screen lock follows
-    var cards = document.querySelectorAll(".card");
-    for (var i = 0; i < cards.length; i++) {
-      var on = A.playing && A.track && cards[i].dataset.id === A.track.id;
-      cards[i].classList.toggle("is-playing", on);
-      var btn = cards[i].querySelector(".play-btn");
-      if (btn) btn.textContent = on ? "❚❚  Playing" : "▶  Play " + cards[i].dataset.min + " min";
-    }
+  // a track started, paused or stopped: the screen lock and its page follow
+  function playSync() {
+    wlKick();
+    trSync();
   }
 
   /* ----- the mini player's own controls ----- */

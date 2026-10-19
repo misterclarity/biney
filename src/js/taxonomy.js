@@ -13,6 +13,8 @@
     { id: "recover", name: "Recover", lede: "Resting in the day, or recovering after training.", icon: "recover" },
     { id: "reflect", name: "Reflect", lede: "Feelings, needs and kindness, toward yourself and others.", icon: "nvc" }
   ];
+  // each goal's colour, on Today's tiles and in History
+  var GOAL_COL = { sleep: "#a78bfa", calm: "#5eead4", focus: "#fbbf24", energy: "#fb923c", recover: "#7dd3fc", reflect: "#f9a8d4" };
   var METHODS = [["breath", "Breathing", "breathe"], ["meditate", "Meditation", "practice"], ["move", "Movement", "move"],
     ["relax", "Relaxation", "moon"], ["sound", "Sound", "sounds"], ["write", "Writing", "nvc"], ["program", "Program", "spark"]];
   var POSTURES = [["sit", "Sitting"], ["lie", "Lying"], ["stand", "Standing"], ["walk", "Walking"]];
@@ -39,7 +41,7 @@
       ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"]],
     reflect: [["nvc-self", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
       ["metta", "meditate", "sit"]],
-    tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: Sounds only
+    tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: a section of its own
   };
   var ALSO = {
     "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],

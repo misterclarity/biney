@@ -185,7 +185,7 @@
   function pHush() { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {} }
 
   /* ----- the screen stays on, at full brightness, through every session ----- */
-  // One lock for practices, the breathing guide and Sounds tracks. It's held while any of them runs, and
+  // One lock for practices, the breathing guide and tracks. It's held while any of them runs, and
   // for ten minutes after a pause, so the screen is still lit when you come back to it. The browser drops
   // the lock whenever the page is hidden, so it's asked for again on return; a check every 15 seconds
   // also catches a lock the system took back, and the end of a pause's ten minutes.
@@ -971,28 +971,17 @@
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
     }
     r.hrPts = hr;
-    var parts = [d.name + ", " + Math.max(1, Math.round(T / 60)) + " min" + (early ? " (ended early)" : "")];
-    if (r.hr0) parts.push("heart rate " + r.hr0 + " → " + r.hr1 + " bpm");
-    else if (r.hrAvg) parts.push("heart rate averaged " + r.hrAvg + " bpm");
-    if (r.coh) parts.push("average coherence " + r.coh.toFixed(1) + (r.cohEst ? " (estimated)" : ""));
-    if (r.swing) parts.push("average swing " + r.swing.toFixed(1) + " bpm");
-    if (r.wander !== undefined) parts.push("mind wandered " + r.wander + (r.wander === 1 ? " time" : " times") + " and you came back");
-    if (r.holds) parts.push("holds " + r.holds.map(fmt).join(", "));
-    if (r.suds) parts.push("intensity " + r.suds.join(" → ") + " out of 10");
-    if (r.beat0) parts.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
-    if (r.nap) parts.push(r.nap.onset !== null ? "fell asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (estimated)" : r.nap.sensor ? "no sleep detected" : "no heart data");
-    r.text = parts.join(", ") + ".";
-    if (T >= 60) {
-      store.set("lastSummary", JSON.stringify({ at: Date.now(), text: "Last session: " + r.text }));
-      var log = pLog();
-      log.push({ id: d.id, at: Date.now(), secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, coh: r.coh ? +r.coh.toFixed(2) : undefined });
-      while (log.length > 200) log.shift();
-      store.set("practiceLog", JSON.stringify(log));
-    }
+    // into the history: the time, the heart and what else this one measured, never what you wrote
+    var notes = [];
+    if (r.wander !== undefined) notes.push("came back " + r.wander + (r.wander === 1 ? " time" : " times"));
+    if (r.holds) notes.push("holds " + r.holds.map(fmt).join(", "));
+    if (r.suds) notes.push("intensity " + r.suds.join(" → ") + " of 10");
+    if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
+    if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
+    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
+      coh: r.coh ? +r.coh.toFixed(2) : undefined, est: r.coh && r.cohEst ? true : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,
+      note: notes.join(", ") || undefined });
     return r;
-  }
-  function pLog() {
-    try { var l = JSON.parse(store.get("practiceLog") || "[]"); return Array.isArray(l) ? l : []; } catch (e) { return []; }
   }
   function pDone(r, early) {
     var d = P.def, tiles = [];
@@ -1019,7 +1008,7 @@
       (r.hrPts.length >= 20 ? '<div class="sd-chart"><canvas id="sdChart"></canvas><span>Heart rate across the session' + (r.beatLog ? ", with the beat in violet" : "") + "</span></div>" : "") +
       (r.nvc ? nvcCard(r.nvc) : "") +
       qCard(d.reflect ? ROGERS : qPick()) +
-      '<div class="sd-act"><a class="btn primary" href="#practice">Done</a><button class="btn" id="sdAgain">Do it again</button></div>';
+      '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>';
     var el = $("#sDone");
     el.innerHTML = h;
     $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
@@ -1126,9 +1115,10 @@
     if (d.reflect) every.push(pToggle("sOptKeep", "Keep a copy on this device", O.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
     var openOpts = store.get("optsOpen") === "1";
     var other = pBusy() && P.def !== d;
-    var h = '<a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Practices</a>' +
+    var h = backLink() +
       '<div class="si-head">' +
-        '<span class="si-kind">' + [d.custom ? "Your routine" : goalOf(d.goal) ? goalOf(d.goal).name : "", methodName(d.method)].filter(Boolean).join(" · ") + (d.exp ? " · Experimental" : "") + " · " + minsTxt + "</span>" +
+        '<div class="si-top"><span class="si-kind">' + [d.custom ? "Your routine" : goalOf(d.goal) ? goalOf(d.goal).name : "", methodName(d.method)].filter(Boolean).join(" · ") + (d.exp ? " · Experimental" : "") + " · " + minsTxt + "</span>" +
+          favBtn(d.id, d.name) + "</div>" +
         "<h2>" + esc(d.name) + "</h2>" +
         '<p class="si-blurb">' + esc(d.blurb) + "</p>" +
         (d.parts ? '<p class="si-parts">' + esc(d.parts) + "</p>" : "") +
@@ -1352,23 +1342,7 @@
   }
   function pOpen() { if (P.def) location.hash = "practice/" + P.def.id; }
 
-  /* ----- the library is in library.js; this is the week strip above it ----- */
-  function pRenderWeek() {
-    var log = pLog(), wk = Date.now() - 7 * 864e5, recent = log.filter(function (e) { return e.at >= wk; });
-    var mins = Math.round(recent.reduce(function (a, e) { return a + e.secs; }, 0) / 60);
-    var last = log[log.length - 1], ld = last && pDef(last.id);
-    var el = $("#prWeek");
-    if (!log.length) {
-      el.innerHTML = '<p>Start with <a href="#practice/calm-reset">Calm Reset</a> for a stressful moment, <a href="#practice/sleep-descent">Sleep Descent</a> at bedtime, or <a href="#practice/anapana">Anapana</a> to train attention. With a heart sensor connected, each session ends with your heart-rate change.</p>';
-      return;
-    }
-    el.innerHTML = '<div class="pw-stat"><b>' + recent.length + "</b><span>" + (recent.length === 1 ? "session" : "sessions") + " this week</span></div>" +
-      '<div class="pw-stat"><b>' + mins + "</b><span>minutes this week</span></div>" +
-      (ld ? '<a class="pw-last" href="#practice/' + ld.id + '"><span>Last: <b>' + esc(ld.name) + "</b>" +
-        (last.hr0 ? ", heart rate " + last.hr0 + " → " + last.hr1 : "") + "</span><span class=\"pw-go\">Again</span></a>" : "");
-  }
-
-  /* ----- Home: a suggestion for the time of day ----- */
+  /* ----- Today: a suggestion for the time of day ----- */
   function pSuggest() {
     var hr = new Date().getHours(), pick;
     if (hr >= 5 && hr < 9) pick = ["standing-flow", "This morning", "Wake the body up with a few minutes of standing yoga."];
@@ -1396,7 +1370,6 @@
     if (window.ResizeObserver && P.cv) new ResizeObserver(function () { pSizeCanvas(); }).observe($("#sStage"));
     window.addEventListener("resize", pSizeCanvas);
 
-    libInit();
     $("#sPlay").addEventListener("click", function () { if (P.state === "running") pPause(); else pResume(); });
     $("#sPrev").addEventListener("click", function () { pJump(-1); });
     $("#sNext").addEventListener("click", function () { pJump(1); });
@@ -1472,8 +1445,4 @@
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
     if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf };   // for automated tests only
-    yInit();
-    nvcInit();
-    fdInit();
-    pRenderLib();
   }

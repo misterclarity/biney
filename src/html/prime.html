@@ -1,0 +1,58 @@
+      <!-- ============ CUSTOM PRIMER ============ -->
+      <section class="view" id="v-prime" aria-labelledby="viewTitle" hidden>
+        <div class="tool-page" style="--pcol:var(--stim)">
+        <a class="si-back" href="#practice">{i:back}Library</a>
+        <div class="si-head">
+          <div class="si-top"><span class="si-kind">Focus · Sound · 5–20 min</span><span id="primeFav"></span></div>
+          <h2>Custom primer</h2>
+          <p class="si-blurb">Beats before you work: pick one and 5 to 20 minutes of priming. When the bell rings, start, with the beat quieter, pink noise, or silence.</p>
+        </div>
+        <div class="si-grid">
+          <div class="si-main">
+            <div class="prime">
+              <div class="prime-row">
+                <div class="prime-label" id="pfLab">Prime with</div>
+                <div class="chips" id="pfChips" role="radiogroup" aria-labelledby="pfLab">
+                  <label class="chip"><input type="radio" name="pbeat" value="10|300"> Alpha 10 Hz</label>
+                  <label class="chip on"><input type="radio" name="pbeat" value="14|320" checked> Beta 14 Hz</label>
+                  <label class="chip"><input type="radio" name="pbeat" value="16|400"> Beta 16 Hz</label>
+                  <label class="chip"><input type="radio" name="pbeat" value="24|400"> Beta 24 Hz</label>
+                  <label class="chip"><input type="radio" name="pbeat" value="40|400"> Gamma 40 Hz</label>
+                </div>
+              </div>
+              <div class="prime-row">
+                <div class="prime-label" id="plLab">Prime for</div>
+                <div class="chips" id="plChips" role="radiogroup" aria-labelledby="plLab">
+                  <label class="chip"><input type="radio" name="pmin" value="5"> 5 min</label>
+                  <label class="chip on"><input type="radio" name="pmin" value="10" checked> 10 min</label>
+                  <label class="chip"><input type="radio" name="pmin" value="15"> 15 min</label>
+                  <label class="chip"><input type="radio" name="pmin" value="20"> 20 min</label>
+                </div>
+              </div>
+              <div class="prime-row">
+                <div class="prime-label" id="ptLab">Then, once you start working</div>
+                <div class="chips" id="ptChips" role="radiogroup" aria-labelledby="ptLab">
+                  <label class="chip on"><input type="radio" name="pthen" value="continue" checked> Keep going, quieter</label>
+                  <label class="chip"><input type="radio" name="pthen" value="noise"> Pink noise only</label>
+                  <label class="chip"><input type="radio" name="pthen" value="silence"> Silence</label>
+                </div>
+              </div>
+            </div>
+            <ul class="si-need">
+              <li>{i:sounds}<span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
+              <li>{i:volume}<span><b>Low volume</b> a quiet, comfortable level is enough</span></li>
+            </ul>
+            <h3>Why before, not during</h3>
+            <p>The clearest finding in the meta-analysis is about timing: listening before a task, or before and during it, worked better than listening only while you work. So prime first, get a cue when the block ends, then start.</p>
+            <div class="si-caution">{i:warn}<span>Not for everyone. Avoid the beats if you have epilepsy or a seizure disorder or wear a pacemaker, and never listen while driving or operating machinery. This is not a medical device.</span></div>
+          </div>
+          <div class="si-side">
+            <div class="si-bar">
+              <button class="btn primary si-go" id="primeStart">Start 10-minute prime</button>
+              <p class="si-bar-note" id="primeHint"></p>
+            </div>
+          </div>
+        </div>
+        </div>
+      </section>
+

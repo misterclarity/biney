@@ -1,6 +1,14 @@
 # Entrain
 
-Paced breathing, binaural beats and live heart-rate biofeedback in one offline web app. It covers guided practices and programs, yoga and capoeira routines, tapping, a monitored power nap and nonviolent-communication reflection, with one search box across all of it and Learn. Everything has one goal (Sleep, Calm, Focus, Energy, Recover or Reflect), and the Practice library is organised by it, with filters for method, length, posture and needs. Options are kept per practice over defaults in Settings, which also decides how the screen behaves; by default it stays on and at full brightness through every session. Everything runs on the device; nothing is recorded or sent anywhere.
+Paced breathing, binaural beats and live heart-rate biofeedback in one offline web app. It covers guided practices and programs, yoga and capoeira routines, tapping, a monitored power nap and nonviolent-communication reflection, with one search box across all of it and Learn.
+
+There are five tabs: Today, Library, Breathe, Heart and Learn.
+
+- **Today** has your favourites, what you did lately and the last seven days, from one history of everything you do, with the heart-rate change and coherence whenever a sensor was connected. It also has a suggestion for the time of day and the six goals.
+- **Library** holds every practice, breathing pattern and track, each under one goal (Sleep, Calm, Focus, Energy, Recover or Reflect), with filters for method, length, posture and needs. Each track has a page of its own, like a practice, and so do the custom primer and the beat builder.
+- **Settings** holds the defaults; options can also be kept for each practice. It also decides how the screen behaves: by default it stays on and at full brightness through every session.
+
+Everything runs on the device and stays there: the history, favourites and reflections are kept in the browser's storage, and nothing is sent anywhere.
 
 ## Layout
 
@@ -32,17 +40,18 @@ The build only assembles, nothing is rewritten on the way:
 | `core.js` | Helpers every file uses: `$`, `store`, `fmt`, `esc` and the evidence dots |
 | `tracks.js` | The binaural tracks and the frequency bands |
 | `audio.js` | The binaural engine, pink noise, the transport and the mini player |
-| `tracklist.js` | The Sounds view's track cards |
-| `builder.js`, `prime.js` | The beat builder and the custom primer |
+| `trackpage.js` | A page for each track, with Play in reach |
+| `builder.js`, `prime.js` | The beat builder and the custom primer pages |
 | `dialogs.js` | The headphone check and the tinnitus pitch match |
 | `breathe.js`, `breathe-draw.js` | The breathing guide: patterns, timing, controls and cues; its five visuals |
 | `heart.js`, `heart-charts.js` | Bluetooth heart sensors and the connection guide; swing and spectrum charts, the resonance test, coherence |
-| `shell.js` | Views and routes, Home, notices, install and offline |
+| `shell.js` | Views and routes, notices, install and offline |
 | `asanas.js`, `moves.js` | The movement library: poses, stretches, mobility drills and capoeira, each with its drawing |
 | `ambience.js`, `quotes.js`, `tapping.js` | Background rain and crickets, and the berimbau; the quotes; the nine tapping points |
 | `practice-data.js`, `taxonomy.js` | The guided practices and programs; goals, methods and postures |
 | `practice.js`, `adapt.js` | The practice engine and session screen; heart-led beats and the power nap |
-| `library.js`, `settings.js`, `yoga.js`, `nvc.js`, `search.js` | The Practice library, Settings, the routine builder, the reflection practices, search |
+| `library.js`, `settings.js`, `yoga.js`, `nvc.js`, `search.js` | The library, Settings, the routine builder, the reflection practices, search |
+| `history.js`, `favs.js`, `today.js` | The one history, favourites, and Today |
 | `boot.js` | Starts everything, in order |
 
 ## Test
@@ -50,7 +59,7 @@ The build only assembles, nothing is rewritten on the way:
 You need Node 18 or later, Playwright with Chromium (`npm install playwright`, then `npx playwright install chromium`) and Python 3.
 
 ```
-node tests/run.js              # every suite, about ten minutes
+node tests/run.js              # every suite, about fifteen minutes
 node tests/run.js apptest      # one or more suites by name
 ```
 

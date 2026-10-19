@@ -1,4 +1,4 @@
-      <!-- ============ HOME ============ -->
+      <!-- ============ TODAY ============ -->
       <section class="view" id="v-home" aria-labelledby="viewTitle">
         <div class="home-hero">
           <div>
@@ -12,11 +12,27 @@
           <div class="home-wave" aria-hidden="true"><canvas id="homeWave"></canvas></div>
         </div>
 
+        <section class="td-sec" id="tdFav" aria-labelledby="tdFavH">
+          <div class="td-h"><h2 id="tdFavH">{i:star}Favourites</h2></div>
+          <ul class="pr-list td-list" id="tdFavList" hidden></ul>
+          <p class="td-empty" id="tdFavEmpty">Tap the star on a practice, a track or a breathing pattern to keep it here.</p>
+        </section>
+
+        <section class="td-sec" id="tdRecent" aria-labelledby="tdRecentH" hidden>
+          <div class="td-h"><h2 id="tdRecentH">Recently</h2><a class="td-more" href="#history">History</a></div>
+          <div id="tdRecentBody"></div>
+        </section>
+
         <div class="suggest" id="homeSuggest">
           <span class="sg-ic">{i:practice}</span>
           <div class="sg-t"><span class="sg-when" id="sgWhen">Suggested</span><b id="sgName">Practice</b><span id="sgTxt"></span></div>
-          <div class="sg-act"><a class="btn primary small" id="sgGo" href="#practice">Open</a><a class="btn small" href="#practice">All practices</a></div>
+          <div class="sg-act"><a class="btn primary small" id="sgGo" href="#practice">Open</a></div>
         </div>
+
+        <section class="td-sec" aria-labelledby="tdGoalsH">
+          <div class="td-h"><h2 id="tdGoalsH">What do you need?</h2><a class="td-more" href="#practice">Library</a></div>
+          <div class="td-goals" id="tdGoals"></div>
+        </section>
 
         <figure class="quote home-quote" id="homeQuote">
           <blockquote id="qTxt"></blockquote>
@@ -31,25 +47,16 @@
 
         <div class="quick">
           <button class="qk" data-go="heart" style="--qc:var(--hr)"><span class="qi">{i:target}</span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
-          <button class="qk" data-go="sounds" data-seg="prime" style="--qc:var(--stim)"><span class="qi">{i:bolt}</span><b>Custom primer</b><span id="qkPrime">10 min of 14 Hz beta, then start work</span></button>
-          <button class="qk" data-go="sounds" data-seg="tracks" style="--qc:var(--relax)"><span class="qi">{i:sounds}</span><b>Listen to a track</b><span id="qkTracks">12 tracks for sleep, calm, focus and tinnitus</span></button>
           <button class="qk" data-go="heart" style="--qc:var(--accent)"><span class="qi">{i:pulse}</span><b id="qkSensorT">Heart sensor</b><span id="qkSensor">Not connected</span></button>
         </div>
 
-        <div class="home-cols">
-          <div class="note-card">
-            <h3>Last session</h3>
-            <p id="homeLast">After you breathe with a heart sensor connected, a summary of the session appears here.</p>
-            <div class="when" id="homeLastWhen"></div>
-          </div>
-          <div class="note-card">
-            <h3>Before you start</h3>
-            <ul class="safety">
-              <li>{i:sounds}<span><b>Use headphones for the beats.</b> On speakers the two tones mix in the air and the binaural beat disappears.</span></li>
-              <li>{i:volume}<span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></li>
-              <li class="warn">{i:warn}<span><b>Not for everyone.</b> Avoid the beats if you have epilepsy or a seizure disorder, wear a pacemaker, or are driving or operating machinery. This is not a medical device.</span></li>
-            </ul>
-          </div>
+        <div class="note-card td-safety">
+          <h3>Before you start</h3>
+          <ul class="safety">
+            <li>{i:sounds}<span><b>Use headphones for the beats.</b> On speakers the two tones mix in the air and the binaural beat disappears.</span></li>
+            <li>{i:volume}<span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></li>
+            <li class="warn">{i:warn}<span><b>Not for everyone.</b> Avoid the beats if you have epilepsy or a seizure disorder, wear a pacemaker, or are driving or operating machinery. This is not a medical device.</span></li>
+          </ul>
         </div>
       </section>
 

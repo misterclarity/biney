@@ -59,7 +59,7 @@
   [hidden]{display:none!important}
   html{-webkit-text-size-adjust:100%}
   .topbar h1,.brand-name,.home-hero h2,.b-phase-name,.hr-intro h3,.prose h2,.prose h3,.refs-sec h3,
-  .modal-card h2,.sheet-head h2,.note-card h3,.qk b,.card h3,.hr-guide-sum b{
+  .modal-card h2,.sheet-head h2,.note-card h3,.qk b,.hr-guide-sum b{
     font-family:var(--display);font-weight:700;font-synthesis:none;
   }
   body{
@@ -189,26 +189,13 @@
   .chip:focus-within{outline:2px solid var(--accent);outline-offset:2px}
   .chip svg{width:15px;height:15px;margin-right:7px;flex:none}
 
-  .tabs{display:flex;gap:7px;flex-wrap:wrap}
-  .tab,.g-tab{
+  .g-tab{
     background:var(--panel-2);color:var(--text-dim);border:1px solid transparent;
     padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:650;cursor:pointer;
     transition:background .15s,color .15s;
   }
-  .tab:hover,.g-tab:hover{color:var(--text);background:var(--panel-3)}
-  .tab[aria-pressed="true"],.g-tab[aria-selected="true"]{background:var(--text);color:var(--bg)}
-
-  .seg{
-    display:inline-flex;gap:4px;padding:4px;border-radius:14px;background:var(--panel);
-    margin:0 0 18px;max-width:100%;overflow-x:auto;scrollbar-width:none;
-  }
-  .seg::-webkit-scrollbar{display:none}
-  .seg-b{
-    border:0;background:transparent;color:var(--text-dim);font-size:14px;font-weight:700;
-    padding:9px 16px;border-radius:10px;cursor:pointer;white-space:nowrap;
-  }
-  .seg-b:hover{color:var(--text)}
-  .seg-b[aria-selected="true"]{background:var(--panel-3);color:var(--text)}
+  .g-tab:hover{color:var(--text);background:var(--panel-3)}
+  .g-tab[aria-selected="true"]{background:var(--text);color:var(--bg)}
 
   input[type=range]{
     -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;
@@ -228,22 +215,6 @@
   .prime-label{font-size:13px;font-weight:700;color:var(--text-dim)}
   .prime-row{display:grid;gap:10px}
 
-  /* the three things to know before playing a beat, as one strip */
-  .notice-strip{
-    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin:0 0 22px;
-    background:var(--line-soft);border-radius:16px;overflow:hidden;
-  }
-  .ns{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;background:var(--panel);padding:12px 14px;font-size:13px;color:var(--text-dim)}
-  .ns svg.i{width:18px;height:18px;margin-top:1px;color:var(--text-faint)}
-  .ns > span{flex:1 1 180px;min-width:0}
-  .ns b{color:var(--text);font-weight:700}
-  .ns.warn svg.i{color:var(--danger)}
-  .ns .btn{margin-left:28px}
-  @media (max-width:860px){
-    .notice-strip{grid-template-columns:minmax(0,1fr)}
-    .ns{padding:10px 14px}
-  }
-
   /* ---------- home ---------- */
   .home-hero{
     position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:8px 28px;align-items:center;
@@ -254,7 +225,7 @@
   .home-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
   .home-wave{position:relative;height:190px;min-width:0}
   .home-wave canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-  .quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px}
+  .quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
   .qk{
     --qc:var(--accent);display:flex;flex-direction:column;align-items:flex-start;gap:4px;
     padding:16px;border-radius:18px;background:var(--panel);color:var(--text);border:0;
@@ -267,11 +238,9 @@
   }
   .qk b{font-size:15px;font-weight:750;letter-spacing:-.01em}
   .qk span{font-size:13px;color:var(--text-dim);line-height:1.45}
-  .home-cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:12px;margin-top:12px;align-items:start}
   .note-card{padding:18px 20px;border-radius:18px;background:var(--panel)}
   .note-card h3{font-size:15.5px;font-weight:750}
   .note-card p{margin:8px 0 0;font-size:14px;color:var(--text-dim)}
-  .note-card .when{font-size:12.5px;color:var(--text-faint);margin-top:10px}
   .safety{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:11px}
   .safety li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:11px;font-size:13.5px;color:var(--text-dim)}
   .safety li svg.i{width:18px;height:18px;margin-top:2px;color:var(--text-faint)}
@@ -299,7 +268,6 @@
     .home-hero{grid-template-columns:minmax(0,1fr);padding:22px}
     .home-wave{height:96px}
     .quick{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .home-cols{grid-template-columns:minmax(0,1fr)}
   }
 
   /* ---------- breathing guide ---------- */
@@ -429,52 +397,7 @@
     .b-fields{gap:6px 14px}
   }
 
-  /* ---------- tracks ---------- */
-  .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:0 0 16px}
-  .count{font-size:13px;color:var(--text-faint);font-weight:600}
-  @media (max-width:560px){
-    .toolbar .tabs{
-      flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
-      margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(16px,env(safe-area-inset-left,0px)) 2px;
-    }
-    .toolbar .tabs::-webkit-scrollbar{display:none}
-    .tab{white-space:nowrap}
-    .count{display:none}
-  }
-  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));margin:0;padding:0;list-style:none}
-  .card{
-    background:var(--panel);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;
-    position:relative;border:1px solid transparent;transition:border-color .18s,background .18s;
-  }
-  .card:hover{background:var(--panel-2)}
-  .card.is-playing{border-color:var(--c1);background:color-mix(in srgb,var(--c1) 6%,var(--panel))}
-  .card[data-cat="relax"]{--c1:var(--relax)}
-  .card[data-cat="stim"]{--c1:var(--stim)}
-  .card[data-cat="ther"]{--c1:var(--ther)}
-  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-  .card h3{font-size:17px;font-weight:750;letter-spacing:-.015em}
-  .band{
-    display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:750;color:var(--c1);
-    white-space:nowrap;padding-top:2px;
-  }
-  .band::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c1)}
-  .card .desc{font-size:14px;color:var(--text-dim);margin:0;flex:1}
-  .specs{display:flex;gap:6px;flex-wrap:wrap}
-  .spec{
-    background:var(--panel-2);border:1px solid transparent;border-radius:8px;
-    padding:4px 9px;font-size:12px;color:var(--text-dim);font-weight:600;font-variant-numeric:tabular-nums;
-  }
-  .card:hover .spec{background:var(--panel-3)}
-  .spec b{color:var(--text);font-weight:750}
-  button.spec{cursor:pointer}
-  .notch-chip{border-color:color-mix(in srgb,var(--c1) 40%,transparent)!important;color:var(--c1)!important}
-  .notch-chip b{color:var(--c1)!important}
-  .play-btn{
-    font-size:14px;font-weight:750;cursor:pointer;min-height:44px;
-    background:var(--c1);color:#0b1120;border:0;border-radius:12px;
-    padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:filter .15s;
-  }
-  .play-btn:hover{filter:brightness(1.08)}
+  /* ---------- evidence, under a practice or a track ---------- */
   details.ev{border-top:1px solid var(--line-soft);padding-top:11px}
   details.ev summary{
     cursor:pointer;font-size:12.5px;font-weight:650;color:var(--text-faint);list-style:none;
@@ -492,12 +415,10 @@
 
   /* ---------- prime + builder ---------- */
   .prime,.builder{background:var(--panel);border-radius:22px;padding:22px 24px;display:grid;gap:20px}
-  .prime-foot,.builder-foot{display:flex;flex-wrap:wrap;gap:14px;align-items:center;border-top:1px solid var(--line-soft);padding-top:18px}
-  .prime-foot .hint{margin:0;max-width:54ch;flex:1;min-width:220px;font-size:13px}
   .fields{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
   .band-readout{font-size:13px;color:var(--text-dim);margin-left:auto;font-variant-numeric:tabular-nums}
   .band-readout b{color:var(--text)}
-  @media (max-width:560px){ .prime,.builder{padding:18px} .prime-foot .btn,.builder-foot .btn{flex:1 1 100%} .band-readout{margin-left:0} }
+  @media (max-width:560px){ .prime,.builder{padding:18px} .band-readout{margin-left:0} }
 
   /* ---------- live heart data ---------- */
   .hr{display:grid;gap:14px}
@@ -816,18 +737,6 @@
   .b-locknote span{flex:1;min-width:12ch}
   .breath.locked .b-patrow,.breath.locked .b-transport,.breath.locked .b-sensor,.breath.locked .b-controls{pointer-events:none;opacity:.42}
 
-  .pr-week{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;align-items:stretch}
-  .pr-week p{margin:0;color:var(--text-dim);font-size:14.5px;max-width:70ch}
-  .pr-week a{color:var(--text)}
-  .pw-stat{background:var(--panel);border-radius:14px;padding:10px 16px;display:flex;flex-direction:column}
-  .pw-stat b{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
-  .pw-stat span{font-size:12px;color:var(--text-faint);font-weight:600}
-  .pw-last{flex:1;min-width:220px;background:var(--panel);border-radius:14px;padding:10px 16px;display:flex;align-items:center;gap:12px;
-    color:var(--text-dim);text-decoration:none;font-size:13.5px}
-  .pw-last:hover{background:var(--panel-2)}
-  .pw-last b{color:var(--text)}
-  .pw-last span:first-child{flex:1}
-  .pw-go{font-weight:750;color:var(--accent)}
   .pr-bar{display:flex;gap:8px;align-items:center;margin:0 0 8px}
   .pr-filt{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;flex:1;min-width:0}
   .pr-filt::-webkit-scrollbar{display:none}
@@ -917,6 +826,7 @@
   .si-main{background:var(--panel);border-radius:20px;padding:20px 22px;--c1:var(--pcol)}
   .si-main h3,.si-opts h3{font-size:15px;font-weight:750;margin-top:4px}
   .si-main > p{color:var(--text-dim);font-size:14.5px;margin:6px 0 0}
+  .si-main > p a{color:var(--text);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
   .si-need{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:9px}
   .si-need li{display:flex;gap:10px;font-size:13.5px;color:var(--text-dim);align-items:flex-start}
   .si-need svg.i{width:18px;height:18px;color:var(--pcol);margin-top:1px}
@@ -1392,6 +1302,100 @@
   @media (prefers-reduced-motion:reduce){
     *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   }
+
+  /* ---------- Today ---------- */
+  .td-sec{margin-top:22px}
+  .td-sec + .suggest,.td-sec + .home-quote{margin-top:22px}
+  .td-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+  .td-h h2{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:780;letter-spacing:-.015em}
+  .td-h h2 svg.i{width:19px;height:19px;color:var(--stim);fill:currentColor}
+  .td-more{font-size:13.5px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap}
+  .td-more:hover{text-decoration:underline}
+  .td-empty{margin:0;padding:14px 16px;border-radius:14px;background:var(--panel);color:var(--text-dim);font-size:14px;line-height:1.5}
+  .td-goals{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+  .td-goal{display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:16px;background:var(--panel);color:var(--text);text-decoration:none;min-width:0;
+    border:1px solid transparent;transition:background .15s,border-color .15s}
+  .td-goal:hover{background:var(--panel-2);border-color:color-mix(in srgb,var(--gcol) 30%,transparent)}
+  .td-gi{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:color-mix(in srgb,var(--gcol) 16%,transparent);color:var(--gcol);margin-bottom:2px}
+  .td-gi svg.i{width:19px;height:19px}
+  .td-goal b{font-size:15px;font-weight:750;letter-spacing:-.01em}
+  .td-gn{font-size:12.5px;color:var(--text-faint);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .td-wk{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;padding:14px 16px;border-radius:16px;background:var(--panel)}
+  .td-wt{display:flex;flex-direction:column;gap:2px}
+  .td-wt > span{font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint)}
+  .td-wk .hi-tot{margin:0}
+  #tdRecent .hi-list{margin-top:6px}
+  .td-safety{margin-top:12px}
+  .pc.cmp .pc-a{padding:11px 14px;align-items:center}
+  .pc.cmp .pc-ic{width:34px;height:34px}
+  @media (max-width:1023px){
+    .td-goals{grid-template-columns:repeat(3,minmax(0,1fr))}
+  }
+  @media (max-width:560px){
+    .td-goals{gap:8px}
+    .td-goal{padding:12px}
+    .td-gn{display:none}
+    .td-goal{align-items:center;text-align:center}
+  }
+
+  /* ---------- history ---------- */
+  .hi{max-width:820px}
+  .hi-sum{padding:18px 20px;border-radius:20px;background:var(--panel)}
+  .hi-sum h2{font-size:18px;font-weight:780;letter-spacing:-.015em}
+  .hi-tot{margin:6px 0 0;font-size:14px;color:var(--text-dim)}
+  .hi-tot b{color:var(--text);font-weight:800;font-variant-numeric:tabular-nums}
+  .hi-days{display:grid;grid-template-columns:repeat(7,26px);gap:8px;align-items:end}
+  .hi-sum .hi-days{margin-top:14px;grid-template-columns:repeat(7,minmax(0,1fr));max-width:440px}
+  .hi-day{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .hi-day i{display:block;width:12px;height:36px;border-radius:6px;background:var(--panel-3);position:relative;overflow:hidden}
+  .hi-day i::after{content:"";position:absolute;left:0;right:0;bottom:0;height:var(--h);background:var(--accent);border-radius:6px}
+  .hi-day small{font-size:11px;font-weight:700;color:var(--text-faint)}
+  .hi-day.now small{color:var(--text)}
+  .hi-goals{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
+  .hi-goals li{display:grid;grid-template-columns:72px minmax(0,1fr) 60px;gap:10px;align-items:center;font-size:13px;color:var(--text-dim)}
+  .hi-goals i{display:block;height:8px;border-radius:4px;background:var(--gcol);width:var(--w)}
+  .hi-goals b{font-weight:700;color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
+  .hi-dsec{margin-top:22px}
+  .hi-dsec h3{font-size:13px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px}
+  .hi-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+  .hi-e a{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px;border-radius:14px;background:var(--panel);
+    color:var(--text);text-decoration:none}
+  .hi-e a:hover{background:var(--panel-2)}
+  .hi-e .pc-ic{width:34px;height:34px}
+  .hi-b{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .hi-b b{font-size:14.5px;font-weight:720}
+  .hi-b span{font-size:12.5px;color:var(--text-dim);line-height:1.4}
+  .hi-e time{font-size:12.5px;color:var(--text-faint);font-variant-numeric:tabular-nums}
+  .hi-empty{padding:18px 20px;border-radius:18px;background:var(--panel);color:var(--text-dim);display:grid;gap:12px;justify-items:start}
+  .hi-empty p{margin:0;max-width:62ch}
+  .hi-foot{margin-top:26px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .hi-foot p{margin:0;font-size:12.5px;color:var(--text-faint);max-width:62ch}
+  .hi-foot .armed{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 50%,transparent)}
+
+  /* ---------- favourites ---------- */
+  .si-top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:34px}
+  .fav{display:inline-flex;align-items:center;gap:6px;flex:none;min-height:34px;padding:6px 11px;border-radius:99px;border:1px solid var(--line);
+    background:color-mix(in srgb,var(--panel) 70%,transparent);color:var(--text-dim);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+  .fav:hover{color:var(--text);border-color:var(--text-faint)}
+  .fav svg.i{width:17px;height:17px}
+  .fav[aria-pressed="true"]{color:var(--stim);border-color:color-mix(in srgb,var(--stim) 45%,transparent)}
+  .fav[aria-pressed="true"] svg.i{fill:currentColor}
+  .b-favs{display:inline-flex;margin-left:auto}
+  .b-favs:empty{display:none}
+  .b-fav{min-height:26px;padding:3px 9px;border-radius:8px;gap:5px;font-size:12.5px;font-weight:600}
+  .b-fav svg.i{width:15px;height:15px}
+
+  /* ---------- track, primer and beat builder pages ---------- */
+  .tr-page,.tool-page{--pcol:var(--relax)}
+  .si-bar-note{margin:0;font-size:12.5px;color:var(--text-faint);line-height:1.45}
+  .si-go svg.i.ic-stroke{fill:none;stroke:currentColor}
+  .si-check{padding:0;font-size:inherit;font-weight:700;color:var(--accent);background:none;border:0;cursor:pointer}
+  .si-check:hover{text-decoration:underline}
+  .tr-notch{display:flex;align-items:center;justify-content:space-between;gap:10px 14px;flex-wrap:wrap;margin:0 0 18px;padding:12px 14px;border-radius:12px;
+    background:color-mix(in srgb,var(--ther) 10%,transparent);font-size:13.5px;color:var(--text-dim)}
+  .tr-notch b{color:var(--ther)}
+  .si-main .prime,.si-main .builder{background:none;padding:0;margin-bottom:20px}
+  .si-main .band-readout{margin-left:0}
 </style>
 </head>
 <body>
@@ -1429,27 +1433,28 @@
   <symbol id="i-rain" viewBox="0 0 24 24"><path d="M7.2 14.8a3.9 3.9 0 0 1 .4-7.8 5.2 5.2 0 0 1 10 1.6 3.1 3.1 0 0 1-.4 6.2z"/><path d="M8.5 18l-.9 2.4M12.4 18l-.9 2.4M16.3 18l-.9 2.4"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.6" cy="10.6" r="6.4"/><path d="M15.4 15.4 20.5 20.5"/></symbol>
   <symbol id="i-recover" viewBox="0 0 24 24"><rect x="3" y="7.5" width="15.5" height="9" rx="2.2"/><path d="M21 10.5v3"/><path d="M11.6 9.2 9.4 12h3.2l-2.2 2.8"/></symbol>
+  <symbol id="i-today" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.3"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.4 5.4 7 7M17 17l1.6 1.6M5.4 18.6 7 17M17 7l1.6-1.6"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.6l2.55 5.3 5.8.75-4.25 4.03 1.07 5.77L12 16.68l-5.17 2.77 1.07-5.77L3.65 9.65l5.8-.75z" stroke-linejoin="round"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24"><path d="M9.8 5.5 10.2 3h3.6l.4 2.5.9.3 2-1.4 2.5 2.5-1.4 2 .3.9 2.5.4v3.6l-2.5.4-.3.9 1.4 2-2.5 2.5-2-1.4-.9.3-.4 2.5h-3.6l-.4-2.5-.9-.3-2 1.4-2.5-2.5 1.4-2-.3-.9L3 13.8v-3.6l2.5-.4.3-.9-1.4-2 2.5-2.5 2 1.4z"/><circle cx="12" cy="12" r="3"/></symbol>
 </svg>
 
 <div class="app">
   <aside class="rail">
-    <a class="brand" href="#home" aria-label="Entrain home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Entrain</span></a>
+    <a class="brand" href="#home" aria-label="Entrain, Today"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Entrain</span></a>
     <nav class="nav" aria-label="Sections">
-      <a href="#home" data-view="home"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg></span><span>Home</span></a>
-      <a href="#practice" data-view="practice"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-practice"/></svg></span><span>Practice</span></a>
+      <a href="#home" data-view="home"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-today"/></svg></span><span>Today</span></a>
+      <a href="#practice" data-view="practice"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-practice"/></svg></span><span>Library</span></a>
       <a href="#breathe" data-view="breathe"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-breathe"/></svg></span><span>Breathe</span></a>
-      <a href="#sounds" data-view="sounds"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg></span><span>Sounds</span></a>
       <a href="#heart" data-view="heart"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg></span><span>Heart</span></a>
       <a href="#learn" data-view="learn"><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-learn"/></svg></span><span>Learn</span></a>
     </nav>
-    <p class="rail-foot">Everything runs on your device. Nothing is recorded or sent anywhere, and it keeps working offline.</p>
+    <p class="rail-foot">Everything runs on your device and stays there. Nothing is sent anywhere, and it keeps working offline.</p>
   </aside>
 
   <div class="main">
     <header class="topbar">
       <span class="brand-mark top-mark" aria-hidden="true"></span>
-      <h1 id="viewTitle">Home</h1>
+      <h1 id="viewTitle">Today</h1>
       <div class="top-actions">
         <a class="pill pill-prac" id="tbPrac" href="#practice" hidden><svg class="i" aria-hidden="true"><use href="#i-practice"/></svg><span id="tbPracTxt"></span></a>
         <button class="pill pill-ic" id="tbFind" aria-label="Search" title="Search (/)" aria-haspopup="dialog" aria-expanded="false" aria-keyshortcuts="/ Control+K"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></button>
@@ -1460,7 +1465,7 @@
 
     <main id="views">
 
-      <!-- ============ HOME ============ -->
+      <!-- ============ TODAY ============ -->
       <section class="view" id="v-home" aria-labelledby="viewTitle">
         <div class="home-hero">
           <div>
@@ -1474,11 +1479,27 @@
           <div class="home-wave" aria-hidden="true"><canvas id="homeWave"></canvas></div>
         </div>
 
+        <section class="td-sec" id="tdFav" aria-labelledby="tdFavH">
+          <div class="td-h"><h2 id="tdFavH"><svg class="i" aria-hidden="true"><use href="#i-star"/></svg>Favourites</h2></div>
+          <ul class="pr-list td-list" id="tdFavList" hidden></ul>
+          <p class="td-empty" id="tdFavEmpty">Tap the star on a practice, a track or a breathing pattern to keep it here.</p>
+        </section>
+
+        <section class="td-sec" id="tdRecent" aria-labelledby="tdRecentH" hidden>
+          <div class="td-h"><h2 id="tdRecentH">Recently</h2><a class="td-more" href="#history">History</a></div>
+          <div id="tdRecentBody"></div>
+        </section>
+
         <div class="suggest" id="homeSuggest">
           <span class="sg-ic"><svg class="i" aria-hidden="true"><use href="#i-practice"/></svg></span>
           <div class="sg-t"><span class="sg-when" id="sgWhen">Suggested</span><b id="sgName">Practice</b><span id="sgTxt"></span></div>
-          <div class="sg-act"><a class="btn primary small" id="sgGo" href="#practice">Open</a><a class="btn small" href="#practice">All practices</a></div>
+          <div class="sg-act"><a class="btn primary small" id="sgGo" href="#practice">Open</a></div>
         </div>
+
+        <section class="td-sec" aria-labelledby="tdGoalsH">
+          <div class="td-h"><h2 id="tdGoalsH">What do you need?</h2><a class="td-more" href="#practice">Library</a></div>
+          <div class="td-goals" id="tdGoals"></div>
+        </section>
 
         <figure class="quote home-quote" id="homeQuote">
           <blockquote id="qTxt"></blockquote>
@@ -1493,31 +1514,26 @@
 
         <div class="quick">
           <button class="qk" data-go="heart" style="--qc:var(--hr)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
-          <button class="qk" data-go="sounds" data-seg="prime" style="--qc:var(--stim)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-bolt"/></svg></span><b>Custom primer</b><span id="qkPrime">10 min of 14 Hz beta, then start work</span></button>
-          <button class="qk" data-go="sounds" data-seg="tracks" style="--qc:var(--relax)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg></span><b>Listen to a track</b><span id="qkTracks">12 tracks for sleep, calm, focus and tinnitus</span></button>
           <button class="qk" data-go="heart" style="--qc:var(--accent)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg></span><b id="qkSensorT">Heart sensor</b><span id="qkSensor">Not connected</span></button>
         </div>
 
-        <div class="home-cols">
-          <div class="note-card">
-            <h3>Last session</h3>
-            <p id="homeLast">After you breathe with a heart sensor connected, a summary of the session appears here.</p>
-            <div class="when" id="homeLastWhen"></div>
-          </div>
-          <div class="note-card">
-            <h3>Before you start</h3>
-            <ul class="safety">
-              <li><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Use headphones for the beats.</b> On speakers the two tones mix in the air and the binaural beat disappears.</span></li>
-              <li><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></li>
-              <li class="warn"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Not for everyone.</b> Avoid the beats if you have epilepsy or a seizure disorder, wear a pacemaker, or are driving or operating machinery. This is not a medical device.</span></li>
-            </ul>
-          </div>
+        <div class="note-card td-safety">
+          <h3>Before you start</h3>
+          <ul class="safety">
+            <li><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Use headphones for the beats.</b> On speakers the two tones mix in the air and the binaural beat disappears.</span></li>
+            <li><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></li>
+            <li class="warn"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Not for everyone.</b> Avoid the beats if you have epilepsy or a seizure disorder, wear a pacemaker, or are driving or operating machinery. This is not a medical device.</span></li>
+          </ul>
         </div>
+      </section>
+
+      <!-- ============ HISTORY ============ -->
+      <section class="view" id="v-history" aria-labelledby="viewTitle" hidden>
+        <div class="hi" id="hiBody"></div>
       </section>
 
       <!-- ============ PRACTICE ============ -->
       <section class="view" id="v-practice" aria-labelledby="viewTitle" hidden>
-        <div class="pr-week" id="prWeek"></div>
         <div class="pr-bar">
           <div class="pr-filt" id="prFilt" role="group" aria-label="Goals"></div>
           <button class="chip-b pr-fbtn" id="prFbtn" aria-expanded="false" aria-controls="prPanel"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg><span id="prFbtnTxt">Filters</span></button>
@@ -1538,7 +1554,7 @@
 
       <!-- ============ YOGA BUILDER ============ -->
       <section class="view" id="v-yoga" aria-labelledby="viewTitle" hidden>
-        <a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Practices</a>
+        <a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Library</a>
         <div class="yb-head">
           <label class="yb-name"><span>Routine name</span><input id="ybName" maxlength="40" placeholder="My routine" autocomplete="off"></label>
           <label class="yb-goal"><span>What it's for</span><select id="ybGoal">
@@ -1619,6 +1635,118 @@
         </div>
       </section>
 
+      <!-- ============ TRACK ============ -->
+      <section class="view" id="v-track" aria-labelledby="viewTitle" hidden>
+        <div class="tr-page" id="trBody"></div>
+      </section>
+
+      <!-- ============ CUSTOM PRIMER ============ -->
+      <section class="view" id="v-prime" aria-labelledby="viewTitle" hidden>
+        <div class="tool-page" style="--pcol:var(--stim)">
+        <a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Library</a>
+        <div class="si-head">
+          <div class="si-top"><span class="si-kind">Focus · Sound · 5–20 min</span><span id="primeFav"></span></div>
+          <h2>Custom primer</h2>
+          <p class="si-blurb">Beats before you work: pick one and 5 to 20 minutes of priming. When the bell rings, start, with the beat quieter, pink noise, or silence.</p>
+        </div>
+        <div class="si-grid">
+          <div class="si-main">
+            <div class="prime">
+              <div class="prime-row">
+                <div class="prime-label" id="pfLab">Prime with</div>
+                <div class="chips" id="pfChips" role="radiogroup" aria-labelledby="pfLab">
+                  <label class="chip"><input type="radio" name="pbeat" value="10|300"> Alpha 10 Hz</label>
+                  <label class="chip on"><input type="radio" name="pbeat" value="14|320" checked> Beta 14 Hz</label>
+                  <label class="chip"><input type="radio" name="pbeat" value="16|400"> Beta 16 Hz</label>
+                  <label class="chip"><input type="radio" name="pbeat" value="24|400"> Beta 24 Hz</label>
+                  <label class="chip"><input type="radio" name="pbeat" value="40|400"> Gamma 40 Hz</label>
+                </div>
+              </div>
+              <div class="prime-row">
+                <div class="prime-label" id="plLab">Prime for</div>
+                <div class="chips" id="plChips" role="radiogroup" aria-labelledby="plLab">
+                  <label class="chip"><input type="radio" name="pmin" value="5"> 5 min</label>
+                  <label class="chip on"><input type="radio" name="pmin" value="10" checked> 10 min</label>
+                  <label class="chip"><input type="radio" name="pmin" value="15"> 15 min</label>
+                  <label class="chip"><input type="radio" name="pmin" value="20"> 20 min</label>
+                </div>
+              </div>
+              <div class="prime-row">
+                <div class="prime-label" id="ptLab">Then, once you start working</div>
+                <div class="chips" id="ptChips" role="radiogroup" aria-labelledby="ptLab">
+                  <label class="chip on"><input type="radio" name="pthen" value="continue" checked> Keep going, quieter</label>
+                  <label class="chip"><input type="radio" name="pthen" value="noise"> Pink noise only</label>
+                  <label class="chip"><input type="radio" name="pthen" value="silence"> Silence</label>
+                </div>
+              </div>
+            </div>
+            <ul class="si-need">
+              <li><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
+              <li><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Low volume</b> a quiet, comfortable level is enough</span></li>
+            </ul>
+            <h3>Why before, not during</h3>
+            <p>The clearest finding in the meta-analysis is about timing: listening before a task, or before and during it, worked better than listening only while you work. So prime first, get a cue when the block ends, then start.</p>
+            <div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>Not for everyone. Avoid the beats if you have epilepsy or a seizure disorder or wear a pacemaker, and never listen while driving or operating machinery. This is not a medical device.</span></div>
+          </div>
+          <div class="si-side">
+            <div class="si-bar">
+              <button class="btn primary si-go" id="primeStart">Start 10-minute prime</button>
+              <p class="si-bar-note" id="primeHint"></p>
+            </div>
+          </div>
+        </div>
+        </div>
+      </section>
+
+      <!-- ============ BEAT BUILDER ============ -->
+      <section class="view" id="v-builder" aria-labelledby="viewTitle" hidden>
+        <div class="tool-page" style="--pcol:var(--stim)">
+        <a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Library</a>
+        <div class="si-head">
+          <div class="si-top"><span class="si-kind">Make your own · 5–60 min</span><span id="beatsFav"></span></div>
+          <h2>Beat builder</h2>
+          <p class="si-blurb">Any beat, any carrier tone, any length from 5 minutes to an hour.</p>
+        </div>
+        <div class="si-grid">
+          <div class="si-main">
+            <div class="builder">
+              <div class="fields">
+                <div class="field">
+                  <label for="cBeat">Beat frequency <b id="cBeatV">10.0 Hz</b></label>
+                  <input type="range" id="cBeat" min="0.5" max="40" step="0.5" value="10">
+                  <p class="hint" id="cBand">Alpha — relaxed alertness</p>
+                </div>
+                <div class="field">
+                  <label for="cCar">Carrier tone <b id="cCarV">250 Hz</b></label>
+                  <input type="range" id="cCar" min="100" max="600" step="10" value="250">
+                  <p class="hint">Lower carriers give a stronger, more stable beat percept.</p>
+                </div>
+                <div class="field">
+                  <label for="cMin">Session length <b id="cMinV">20 min</b></label>
+                  <input type="range" id="cMin" min="5" max="60" step="5" value="20">
+                  <p class="hint">Longer exposures performed better in meta-analysis.</p>
+                </div>
+              </div>
+              <div class="band-readout">Left ear <b id="cL">250 Hz</b> · Right ear <b id="cR">260 Hz</b></div>
+            </div>
+            <ul class="si-need">
+              <li><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
+              <li><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Low volume</b> a quiet, comfortable level is enough</span></li>
+            </ul>
+            <h3>Choosing the numbers</h3>
+            <p>Beats come through most clearly on carriers between about 200 and 500&nbsp;Hz, and the effect breaks down once the two tones are more than 30 to 35&nbsp;Hz apart. <a href="#l-bands">The frequency bands</a> on the Learn page say what each range of beats has been studied for.</p>
+            <div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>Not for everyone. Avoid the beats if you have epilepsy or a seizure disorder or wear a pacemaker, and never listen while driving or operating machinery. This is not a medical device.</span></div>
+          </div>
+          <div class="si-side">
+            <div class="si-bar">
+              <button class="btn primary si-go" id="cPlay">Play custom session</button>
+              <p class="si-bar-note">Plays in the player at the bottom, so you can keep using the app while you listen.</p>
+            </div>
+          </div>
+        </div>
+        </div>
+      </section>
+
       <!-- ============ BREATHE ============ -->
       <section class="view" id="v-breathe" aria-labelledby="viewTitle" hidden>
         <div class="breath">
@@ -1642,6 +1770,7 @@
             <span class="b-stat"><b id="bClock">04:57</b> <span id="bClockL">left</span></span>
             <span class="b-stat b-hr" id="bHrStat" title="Heart rate from your sensor" hidden><i class="hr-dot" aria-hidden="true"></i><b id="bHr">—</b> bpm</span>
             <span class="b-stat b-hr" id="bCohStat" title="Coherence score over the last 64 seconds, usually 0 to 8" hidden>coherence <b id="bCoh">—</b></span>
+            <span class="b-favs" id="bFav"></span>
           </div>
         </div>
             <div class="b-view" id="bView">
@@ -1757,106 +1886,6 @@
           </div>
         </div>
         <div class="sheet-back" id="sheetBack" hidden></div>
-      </section>
-
-      <!-- ============ SOUNDS ============ -->
-      <section class="view" id="v-sounds" aria-labelledby="viewTitle" hidden>
-        <div class="seg" role="tablist" aria-label="Sound sessions">
-          <button class="seg-b" role="tab" id="sg-tracks" data-seg="tracks" aria-controls="sp-tracks" aria-selected="true">Tracks</button>
-          <button class="seg-b" role="tab" id="sg-prime" data-seg="prime" aria-controls="sp-prime" aria-selected="false" tabindex="-1">Custom primer</button>
-          <button class="seg-b" role="tab" id="sg-build" data-seg="build" aria-controls="sp-build" aria-selected="false" tabindex="-1">Beat builder</button>
-        </div>
-
-        <div class="notice-strip">
-          <div class="ns"><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Headphones on.</b> Each ear gets its own tone; on speakers they mix and the beat disappears.</span><button class="btn small" id="scOpen2">Check headphones</button></div>
-          <div class="ns"><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></div>
-          <div class="ns warn"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Not for everyone.</b> Avoid with epilepsy or a seizure disorder, a pacemaker, or while driving or operating machinery. Not a medical device.</span></div>
-        </div>
-
-        <div class="seg-panel" id="sp-tracks" role="tabpanel" aria-labelledby="sg-tracks">
-          <div class="toolbar" id="tracks">
-            <div class="tabs" role="group" aria-label="Filter tracks by goal">
-              <button class="tab" aria-pressed="true" data-filter="all">All</button>
-              <button class="tab" aria-pressed="false" data-filter="sleep">Sleep</button>
-              <button class="tab" aria-pressed="false" data-filter="calm">Calm</button>
-              <button class="tab" aria-pressed="false" data-filter="focus">Focus</button>
-              <button class="tab" aria-pressed="false" data-filter="recover">Recover</button>
-              <button class="tab" aria-pressed="false" data-filter="tinnitus">Tinnitus</button>
-            </div>
-            <div class="count" id="count"></div>
-          </div>
-          <ul class="grid" id="grid"></ul>
-        </div>
-
-        <div class="seg-panel" id="sp-prime" role="tabpanel" aria-labelledby="sg-prime" hidden>
-          <p class="v-lede">
-            The clearest finding in the meta-analysis is about timing: listening before a task, or before and during it,
-            beat listening only while you work. Prime first, get a cue when the block ends, then start.
-          </p>
-          <div class="prime">
-      <div class="prime-row">
-        <div class="prime-label" id="pfLab">Prime with</div>
-        <div class="chips" id="pfChips" role="radiogroup" aria-labelledby="pfLab">
-          <label class="chip"><input type="radio" name="pbeat" value="10|300"> Alpha 10 Hz</label>
-          <label class="chip on"><input type="radio" name="pbeat" value="14|320" checked> Beta 14 Hz</label>
-          <label class="chip"><input type="radio" name="pbeat" value="16|400"> Beta 16 Hz</label>
-          <label class="chip"><input type="radio" name="pbeat" value="24|400"> Beta 24 Hz</label>
-          <label class="chip"><input type="radio" name="pbeat" value="40|400"> Gamma 40 Hz</label>
-        </div>
-      </div>
-      <div class="prime-row">
-        <div class="prime-label" id="plLab">Prime for</div>
-        <div class="chips" id="plChips" role="radiogroup" aria-labelledby="plLab">
-          <label class="chip"><input type="radio" name="pmin" value="5"> 5 min</label>
-          <label class="chip on"><input type="radio" name="pmin" value="10" checked> 10 min</label>
-          <label class="chip"><input type="radio" name="pmin" value="15"> 15 min</label>
-          <label class="chip"><input type="radio" name="pmin" value="20"> 20 min</label>
-        </div>
-      </div>
-      <div class="prime-row">
-        <div class="prime-label" id="ptLab">Then, once you start working</div>
-        <div class="chips" id="ptChips" role="radiogroup" aria-labelledby="ptLab">
-          <label class="chip on"><input type="radio" name="pthen" value="continue" checked> Keep going, quieter</label>
-          <label class="chip"><input type="radio" name="pthen" value="noise"> Pink noise only</label>
-          <label class="chip"><input type="radio" name="pthen" value="silence"> Silence</label>
-        </div>
-      </div>
-      <div class="prime-foot">
-        <button class="btn primary" id="primeStart">Start 10-minute prime</button>
-        <p class="hint" id="primeHint"></p>
-      </div>
-    </div>
-        </div>
-
-        <div class="seg-panel" id="sp-build" role="tabpanel" aria-labelledby="sg-build" hidden>
-          <p class="v-lede">
-            Pick any beat and carrier. Beats come through most clearly on carriers between about 200 and 500&nbsp;Hz,
-            and the effect breaks down once the two tones are more than 30 to 35&nbsp;Hz apart.
-          </p>
-          <div class="builder">
-      <div class="fields">
-        <div class="field">
-          <label for="cBeat">Beat frequency <b id="cBeatV">10.0 Hz</b></label>
-          <input type="range" id="cBeat" min="0.5" max="40" step="0.5" value="10">
-          <p class="hint" id="cBand">Alpha — relaxed alertness</p>
-        </div>
-        <div class="field">
-          <label for="cCar">Carrier tone <b id="cCarV">250 Hz</b></label>
-          <input type="range" id="cCar" min="100" max="600" step="10" value="250">
-          <p class="hint">Lower carriers give a stronger, more stable beat percept.</p>
-        </div>
-        <div class="field">
-          <label for="cMin">Session length <b id="cMinV">20 min</b></label>
-          <input type="range" id="cMin" min="5" max="60" step="5" value="20">
-          <p class="hint">Longer exposures performed better in meta-analysis.</p>
-        </div>
-      </div>
-      <div class="builder-foot">
-        <button class="btn primary" id="cPlay">Play custom session</button>
-        <div class="band-readout">Left ear <b id="cL">250 Hz</b> · Right ear <b id="cR">260 Hz</b></div>
-      </div>
-    </div>
-        </div>
       </section>
 
       <!-- ============ HEART ============ -->
@@ -2187,7 +2216,7 @@
 
             <h3 id="l-practices">Guided practices and programs</h3>
             <p>
-              The Practice tab adds guided sessions beyond paced breathing. They differ a lot in how well they're
+              The library adds guided sessions beyond paced breathing. They differ a lot in how well they're
               supported, so here is the evidence as it stands.
             </p>
             <p>
@@ -2920,6 +2949,8 @@
 
   function load(track) {
     if (A.playing || A.oscL) hardStop(true);
+    else hTrack();                       // a paused track that's being replaced still counts
+    A.hAt = 0;
     A.gen++;
     A.voicesOff = false;
     A.track = track;
@@ -2967,7 +2998,7 @@
     $("#toggle").textContent = "❚❚";
     $("#toggle").setAttribute("aria-label", "Pause");
     $("#player").classList.add("playing");
-    markCard();
+    playSync();
     scheduleEnd();
     setStatus("Playing — keep the volume low and comfortable.");
     loop();
@@ -2985,11 +3016,13 @@
     $("#toggle").textContent = "▶";
     $("#toggle").setAttribute("aria-label", "Play");
     $("#player").classList.remove("playing");
-    markCard();
+    playSync();
     setStatus("Paused at " + fmt(A.elapsed) + ".");
   }
 
   function hardStop(silent) {
+    hTrack();                            // what was listened to goes into the history
+    A.hAt = 0;
     A.gen++;
     teardownVoices(0.3);
     stopNoise();
@@ -3005,7 +3038,7 @@
     cancelAnimationFrame(A.raf);
     $("#toggle").textContent = "▶";
     $("#player").classList.remove("playing");
-    markCard();
+    playSync();
     paint();
     if (!silent) setStatus("Stopped.");
   }
@@ -3132,15 +3165,10 @@
 
   function setStatus(msg) { $("#status").textContent = msg; }
 
-  function markCard() {
-    wlKick();                            // a track started, paused or stopped: the screen lock follows
-    var cards = document.querySelectorAll(".card");
-    for (var i = 0; i < cards.length; i++) {
-      var on = A.playing && A.track && cards[i].dataset.id === A.track.id;
-      cards[i].classList.toggle("is-playing", on);
-      var btn = cards[i].querySelector(".play-btn");
-      if (btn) btn.textContent = on ? "❚❚  Playing" : "▶  Play " + cards[i].dataset.min + " min";
-    }
+  // a track started, paused or stopped: the screen lock and its page follow
+  function playSync() {
+    wlKick();
+    trSync();
   }
 
   /* ----- the mini player's own controls ----- */
@@ -3187,74 +3215,111 @@
       if (A.playing) pause(); else play();
     });
   }
-  /* ------------------------------ the track list ------------------------------
-     The Sounds view's cards, filtered by goal, each with its own play button.
-  ------------------------------------------------------------------------------ */
+  /* ------------------------------- track pages -------------------------------
+     Each track has a page of its own, like a practice: what it's for, how it runs, the
+     evidence and the cautions, with Play in reach. It plays in the mini player, so the rest
+     of the app stays open while you listen.
+  ---------------------------------------------------------------------------- */
 
-  var curFilter = "all";
-  function render(filter) {
-    curFilter = filter;
-    var list = TRACKS.filter(function (t) { return filter === "all" || t.goal === filter; });
-    var html = list.map(function (t) {
-      var beatTxt = typeof t.rampFrom === "number"
-        ? t.rampFrom + "→" + t.beat + " Hz"
-        : t.beat + " Hz";
-      return '' +
-        '<li class="card" data-cat="' + t.cat + '" data-id="' + t.id + '" data-min="' + t.minutes + '">' +
-          '<div class="card-top">' +
-            '<h3>' + esc(t.name) + '</h3>' +
-            '<span class="band">' + esc(t.band) + '</span>' +
-          '</div>' +
-          '<p class="desc">' + esc(t.desc) + '</p>' +
-          '<div class="specs">' +
-            '<span class="spec">Beat <b>' + beatTxt + '</b></span>' +
-            '<span class="spec">Carrier <b>' + t.carrier + ' Hz</b></span>' +
-            '<span class="spec">Length <b>' + t.minutes + ' min</b></span>' +
-            (t.notch
-              ? '<button class="spec notch-chip" data-rematch="1">Notch <b>' +
-                  (tinnitusHz() ? Math.round(tinnitusHz()) + ' Hz' : 'set your pitch') + '</b></button>'
-              : '') +
-          '</div>' +
-          '<button class="play-btn">▶&nbsp; Play ' + t.minutes + ' min</button>' +
-          '<details class="ev"><summary>Evidence ' + dots(t.strength) + '</summary>' +
-            '<div class="ev-body">' + esc(t.ev) + '<cite>' + esc(t.cite) + '</cite></div>' +
-          '</details>' +
-        '</li>';
-    }).join("");
+  var TR = { id: "" };              // the track on the page
 
-    $("#grid").innerHTML = html;
-    $("#count").textContent = list.length + " track" + (list.length === 1 ? "" : "s");
-    markCard();
+  function trackById(id) { for (var i = 0; i < TRACKS.length; i++) if (TRACKS[i].id === id) return TRACKS[i]; return null; }
+  function trCol(t) { return "var(--" + (t.cat === "relax" ? "relax" : t.cat === "ther" ? "ther" : "stim") + ")"; }
+  function trBeatTxt(t) {
+    var a = t.pts ? t.pts[0][1] : typeof t.rampFrom === "number" ? t.rampFrom : t.beat;
+    return a === t.beat ? t.beat + " Hz" : a + " → " + t.beat + " Hz";
+  }
+  // how it runs, from the track's own numbers
+  function trHow(t) {
+    var a = t.pts ? t.pts[0][1] : typeof t.rampFrom === "number" ? t.rampFrom : t.beat;
+    var s = Math.round(t.minutes) + " minutes" + (a === t.beat
+      ? " of a steady " + t.beat + " Hz " + bandFor(t.beat).name.toLowerCase() + " beat"
+      : ", the beat sliding from " + a + " Hz " + bandFor(a).name.toLowerCase() + " down to " + t.beat + " Hz " + bandFor(t.beat).name.toLowerCase()) +
+      ", one tone of " + t.carrier + " Hz in your left ear and one a little higher in your right. It fades out at the end.";
+    if (t.notch) s += " Underneath, pink noise with a one-octave gap centred on your own tinnitus pitch.";
+    else s += " The player can add a pink-noise bed, rain or crickets underneath.";
+    return s;
+  }
+  function trNeeds(t) {
+    var n = [["sounds", "Headphones", "each ear gets its own tone; on speakers they mix and the beat disappears", true],
+             ["volume", "Low volume", "a quiet, comfortable level is enough"]];
+    if ((t.posture || []).indexOf("lie") >= 0) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
+    return n;
   }
 
-  function trackListInit() {
-    $("#grid").addEventListener("click", function (e) {
-      if (e.target.closest("[data-rematch]")) { pendingPitch = null; openMatcher(); return; }
-      var btn = e.target.closest(".play-btn");
-      if (!btn) return;
-      var id = btn.closest(".card").dataset.id;
-      if (A.track && A.track.id === id && A.playing) { pause(); return; }
-      if (A.track && A.track.id === id && !A.playing && A.elapsed > 0) { play(); return; }
-      var track = TRACKS.filter(function (t) { return t.id === id; })[0];
-      if (!track) return;
-      gate(function () {
-        if (track.notch && !tinnitusHz()) {      // the notch is useless until it is aimed
-          pendingPitch = function () { load(track); };
-          openMatcher();
-          return;
-        }
-        load(track);
-      });
+  function trOpen(id) {
+    var t = trackById(id);
+    if (!t) { location.replace("#practice"); return; }
+    TR.id = id;
+    var g = goalOf(t.goal), key = "t:" + t.id;
+    var kind = [g ? g.name : t.goal === "tinnitus" ? "Tinnitus" : "", "Sound", Math.round(t.minutes) + " min"].filter(Boolean).join(" · ");
+    var h = '<a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Library</a>' +
+      '<div class="si-head">' +
+        '<div class="si-top"><span class="si-kind">' + esc(kind) + "</span>" + favBtn(key, t.name) + "</div>" +
+        "<h2>" + esc(t.name) + "</h2>" +
+        '<p class="si-blurb">' + esc(t.desc) + "</p>" +
+        '<p class="si-parts">' + esc(t.band + " · beat " + trBeatTxt(t) + " · carrier " + t.carrier + " Hz") + "</p>" +
+      "</div>" +
+      '<div class="si-grid"><div class="si-main">' +
+        '<ul class="si-need">' + trNeeds(t).map(function (n) {
+          return '<li><svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] +
+            (n[3] ? ' <button class="btn link si-check" data-check="1">Check yours</button>' : "") + "</span></li>";
+        }).join("") + "</ul>" +
+        (t.notch ? '<div class="tr-notch" id="trNotch"></div>' : "") +
+        "<h3>How it runs</h3><p>" + esc(trHow(t)) + "</p>" +
+        '<details class="ev si-ev"><summary>Evidence ' + dots(t.strength) + '</summary><div class="ev-body">' + esc(t.ev) + "<cite>" + esc(t.cite) + "</cite></div></details>" +
+        '<div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>Not for everyone. Avoid the beats if you have epilepsy or a seizure disorder or wear a pacemaker, and never listen while driving or operating machinery. This is not a medical device.</span></div>' +
+      "</div>" +
+      '<div class="si-side"><div class="si-bar">' +
+        '<button class="btn primary si-go" id="trGo"></button>' +
+        '<p class="si-bar-note">Plays in the player at the bottom, so you can keep using the app while you listen.</p>' +
+      "</div></div></div>";
+    var el = $("#trBody");
+    el.innerHTML = h;
+    el.style.setProperty("--pcol", trCol(t));
+    bSetT("#viewTitle", t.name);
+    document.title = t.name + " | Entrain";
+    trSync();
+  }
+  // the page follows the player: Play, Pause or Resume, and the notch
+  function trSync() {
+    var t = trackById(TR.id), b = $("#trGo");
+    if (!t || !b) return;
+    var mine = A.track && A.track.id === t.id, ic, txt;
+    if (mine && A.playing) { ic = "pause"; txt = "Pause"; }
+    else if (mine && A.elapsed > 0) { ic = "play"; txt = "Resume at " + fmt(A.elapsed); }
+    else { ic = "play"; txt = "Play " + Math.round(t.minutes) + " min"; }
+    b.innerHTML = '<svg class="i' + (ic === "pause" ? " ic-stroke" : "") + '" aria-hidden="true"><use href="#i-' + ic + '"/></svg>' + esc(txt);
+    var n = $("#trNotch");
+    if (n) n.innerHTML = tinnitusHz()
+      ? "<span>Notch centred on <b>" + Math.round(tinnitusHz()) + " Hz</b>, your tinnitus pitch.</span>" + '<button class="btn small" data-rematch="1">Match again</button>'
+      : "<span>The notch needs your tinnitus pitch first: a minute with a tone you tune to match it.</span>" + '<button class="btn small" data-rematch="1">Match your pitch</button>';
+  }
+  function trPlay() {
+    var t = trackById(TR.id);
+    if (!t) return;
+    if (A.track && A.track.id === t.id && A.playing) { pause(); return; }
+    if (A.track && A.track.id === t.id && !A.playing && A.elapsed > 0) { play(); return; }
+    gate(function () {
+      if (t.notch && !tinnitusHz()) {          // the notch is useless until it is aimed
+        pendingPitch = function () { load(t); };
+        openMatcher();
+        return;
+      }
+      load(t);
     });
-
-    var tabs = document.querySelectorAll(".tab");
-    for (var i = 0; i < tabs.length; i++) {
-      tabs[i].addEventListener("click", function (e) {
-        for (var j = 0; j < tabs.length; j++) tabs[j].setAttribute("aria-pressed", "false");
-        e.currentTarget.setAttribute("aria-pressed", "true");
-        render(e.currentTarget.dataset.filter);
-      });
-    }
+  }
+  function trInit() {
+    $("#trBody").addEventListener("click", function (e) {
+      if (e.target.closest("#trGo")) { trPlay(); return; }
+      if (e.target.closest("[data-rematch]")) { pendingPitch = null; openMatcher(); }
+    });
+    // any page's "Check yours": the headphone check on its own
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest("[data-check]")) return;
+      pendingPlay = null;
+      openCheck();
+    });
   }
   /* ------------------------------ builder ---------------------------- */
 
@@ -3269,6 +3334,7 @@
     $("#cBand").textContent = b.name + " — " + b.note;
     $("#cL").textContent = car + " Hz";
     $("#cR").textContent = (car + beat).toFixed(1) + " Hz";
+    $("#cPlay").innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Play ' + min + " min";
   }
 
   function builderInit() {
@@ -3291,6 +3357,7 @@
       });
     });
     syncBuilder();
+    $("#beatsFav").innerHTML = favBtn("x:beats", "Beat builder");
   }
   /* --------------------------- prime mode ---------------------------
      Exposure before a task beat exposure during it, so this makes that
@@ -3315,7 +3382,7 @@
 
   function syncPrime() {
     var c = primeCfg();
-    $("#primeStart").textContent = "Start " + c.minutes + "-minute prime";
+    $("#primeStart").innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Start ' + c.minutes + "-minute prime";
     $("#primeHint").textContent = c.minutes + " min of " + c.beat + " Hz " +
       bandFor(c.beat).name.toLowerCase() + " on a " + c.carrier + " Hz carrier, " + THEN_COPY[c.then];
   }
@@ -3346,6 +3413,7 @@
       });
     });
     syncPrime();
+    $("#primeFav").innerHTML = favBtn("x:prime", "Custom primer");
   }
   /* -------------------------------- dialogs --------------------------------
      Two blocking dialogs: the headphone check before the first beat, and the tinnitus pitch
@@ -3529,7 +3597,7 @@
     pendingPitch = null;
     if (save) {
       store.set("tinnitusHz", String(Math.round(hz)));
-      render(curFilter);
+      trSync();
       setStatus("Notch centred on " + Math.round(hz) + " Hz.");
       if (fn) fn();
     }
@@ -3830,6 +3898,7 @@
     return "custom";
   }
   function renderNote() {
+    bFavSync();
     var p = preset(BC.pattern);
     if (p) {
       bSetT("#bDesc", p.desc);
@@ -3953,6 +4022,7 @@
       var bt = breathTime();
       if (bt >= 0) hrFinalize(locate(bt).count);
       if (!P.usesB) hrSummary();
+      hBreath(Math.max(0, bt), false);
     }
     if (B.finder) finderCancel();
     B.state = "idle";
@@ -3980,6 +4050,7 @@
   function bFinish() {
     var secs = endBt(), n = B.total;
     bEnd(n, secs, n + " breaths in " + fmt(secs) + ". Breathe normally for a minute before you get up.");
+    hBreath(secs, true);
     syncTransport(); updateHead(); draw();
     bSetT("#bLive", "Session complete.");
   }
@@ -5119,7 +5190,6 @@
     var el = $("#hrSummary");
     el.textContent = "Last session: " + parts.join(", ") + ".";
     el.hidden = false;
-    store.set("lastSummary", JSON.stringify({ at: Date.now(), text: el.textContent }));
   }
 
   function hrInit() {
@@ -5320,6 +5390,7 @@
     res.forEach(function (r) { if (r.amp !== null && (!best || r.amp > best.amp)) best = r; });
     H.find = { at: Date.now(), res: res, best: best ? best.rate : null, rr: H.hasRR };
     store.set("resonance", JSON.stringify(H.find));
+    hTest(Math.max(0, bt), H.find.best);
     B.finder = null;
     finderRestore(F);
     B.ph = buildPhases(BC); B.pending = null; B.epoch = 0; B.done = 0; planTotal();
@@ -5526,16 +5597,22 @@
   }
 
   /* ---------------------------- app shell ----------------------------
-     Views behind a hash router: #home, #practice, #breathe, #sounds, #heart
-     and #learn, plus #practice/<id> for a guided session, and from search #track/<id>,
-     #breathe/<pattern> and #yoga/find/<pose>. Older in-page anchors (#prime, #tracks, #builder, #connect,
-     #science, #references) still work: they open the view that holds them.
+     Views behind a hash router. The five tabs are #home (Today), #practice (the library),
+     #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
+     practice, #track/<id> for a track, #prime and #builder for the custom primer and the beat
+     builder, #yoga for the routine builder; and #settings from the gear. Links and search also
+     use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>. Older
+     addresses still work: #sounds and #tracks open the library at its sounds, and in-page anchors
+     (#connect, #science, #references and the rest) open the view that holds them.
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
 
-  var VIEWS = ["home", "practice", "breathe", "sounds", "heart", "learn", "session", "yoga", "settings"];
-  var V_TITLE = { home: "Home", practice: "Practice", breathe: "Breathe", sounds: "Sounds", heart: "Heart", learn: "Learn", session: "Practice", yoga: "Routine builder", settings: "Settings" };
-  var ALIAS = { prime: ["sounds", "prime"], tracks: ["sounds", "tracks"], builder: ["sounds", "build"] };
+  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings"];
+  var V_TITLE = { home: "Today", practice: "Library", breathe: "Breathe", heart: "Heart", learn: "Learn", history: "History", session: "Practice",
+    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings" };
+  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice" };   // the tab each page belongs to
+  var ALIAS = { today: "home", library: "practice" };
+  var BACK = "practice";                 // the list a page was opened from: Today, the library or History
   var BASE_TITLE = document.title;
   var curView = "";
   var MOBILE = window.matchMedia ? window.matchMedia("(max-width: 1023px)") : { matches: false };
@@ -5549,18 +5626,22 @@
     if (VIEWS.indexOf(v) < 0) v = "home";
     if (v !== "breathe") sheet(false);
     VIEWS.forEach(function (n) { $("#v-" + n).hidden = n !== v; });
-    var links = document.querySelectorAll(".nav a"), navV = (v === "session" || v === "yoga") ? "practice" : v;
+    var links = document.querySelectorAll(".nav a"), navV = V_TAB[v] || v;
     for (var i = 0; i < links.length; i++) {
       if (links[i].dataset.view === navV) links[i].setAttribute("aria-current", "page");
       else links[i].removeAttribute("aria-current");
     }
+    if (v === "home" || v === "practice" || v === "history") BACK = v;
+    else if (!V_TAB[v]) BACK = "practice";           // from Breathe, Heart, Learn or Settings, a page leads back to the library
     bSetT("#viewTitle", V_TITLE[v]);
     document.title = v === "home" ? BASE_TITLE : V_TITLE[v] + " | Entrain";
     if (v !== curView) window.scrollTo(0, 0);
     curView = v;
     if (v === "home") homeRefresh();
     if (v === "practice") pRenderLib();               // your routines may have changed
+    if (v === "history") hRender();
     if (v === "settings") stRender();
+    backSync();
     var gear = $("#tbSet");
     if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
     if (v === "breathe") setTimeout(sizeCanvas, 0);
@@ -5570,26 +5651,40 @@
     setTimeout(edgeFadeAll, 0);                         // widths are known once the view shows
   }
 
-  function goView(v, seg) {
-    if (seg) segPick(seg);
+  function goView(v) {
     if (location.hash.slice(1) !== v) location.hash = v;
     else showView(v);
+  }
+
+  // the way back from a page: to the list it was opened from
+  function backTo() { return { href: "#" + BACK, label: BACK === "home" ? "Today" : BACK === "history" ? "History" : "Library" }; }
+  function backLink() {
+    var b = backTo();
+    return '<a class="si-back" href="' + b.href + '"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>' + b.label + "</a>";
+  }
+  function backSync() {                              // the pages written in the markup rather than drawn
+    var b = backTo();
+    document.querySelectorAll("#v-prime .si-back, #v-builder .si-back, #v-yoga .si-back").forEach(function (a) {
+      a.setAttribute("href", b.href);
+      a.lastChild.textContent = b.label;
+    });
   }
 
   function route() {
     var h = "";
     try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
     if (!h) { showView("home"); return; }
+    if (ALIAS[h]) h = ALIAS[h];
     if (h === "session") { location.replace("#practice"); return; }
     if (h.indexOf("practice/") === 0) { showView("session"); pIntro(h.slice(9)); return; }
+    if (h.indexOf("track/") === 0) { showView("track"); trOpen(h.slice(6)); return; }
+    if (h.indexOf("goal/") === 0) { libShow(h.slice(5), ""); return; }
+    if (h === "sounds" || h === "tracks") { libShow("", "sound"); return; }   // Sounds was a tab of its own
     if (h === "yoga" || h.indexOf("yoga/") === 0) { showView("yoga"); yOpen(h.slice(5)); return; }
-    if (h.indexOf("track/") === 0) { segPick("tracks"); showView("sounds"); fdTrack(h.slice(6)); return; }      // from search
     if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
-    if (ALIAS[h]) { segPick(ALIAS[h][1]); showView(ALIAS[h][0]); return; }
     var el = document.getElementById(h), v = el && viewOf(el);
     if (!v) { showView("home"); return; }
-    if (el.classList.contains("seg-panel")) segPick(el.id.slice(3));
     showView(v);
     if (el.tagName === "DETAILS") el.open = true;
     setTimeout(function () {
@@ -5621,21 +5716,8 @@
     if (!el.efade) { el.efade = upd; el.addEventListener("scroll", upd, { passive: true }); }
     upd();
   }
-  var EDGE_ROWS = ["#prFilt", "#bPats", ".toc", "#tracks .tabs", "#ybCats", "#ybPos", ".si-len"];
+  var EDGE_ROWS = ["#prFilt", "#bPats", ".toc", "#ybCats", "#ybPos", ".si-len"];
   function edgeFadeAll() { EDGE_ROWS.forEach(function (q) { document.querySelectorAll(q).forEach(edgeFade); }); }
-
-  /* ----- Sounds: Tracks / Prime / Build ----- */
-  function segPick(seg, focus) {
-    var bs = document.querySelectorAll(".seg-b");
-    for (var i = 0; i < bs.length; i++) {
-      var on = bs[i].dataset.seg === seg;
-      bs[i].setAttribute("aria-selected", on ? "true" : "false");
-      bs[i].tabIndex = on ? 0 : -1;
-      $("#sp-" + bs[i].dataset.seg).hidden = !on;
-      if (on && focus) bs[i].focus();
-    }
-    store.set("soundsSeg", seg);
-  }
 
   /* ----- breathing settings: a side panel on desktop, a sheet on a phone ----- */
   function sheet(open) {
@@ -5649,7 +5731,7 @@
     if (!open && was) b.focus();
   }
 
-  /* ----- heart sensor status, mirrored in the top bar, Home and Breathe ----- */
+  /* ----- heart sensor status, mirrored in the top bar, Today and Breathe ----- */
   function shellSensor() {
     var pill = $("#tbSensor");
     if (!pill) return;
@@ -5685,76 +5767,6 @@
       bSetT("#bSensorTxt", "Live heart data needs Chrome or Edge on an Android phone or a computer.");
       bSetT("#bSensorBtn", "How to connect"); btn.dataset.act = "guide";
     }
-  }
-
-  /* ----- Home ----- */
-  function fmtSec(s) { return (s % 1 ? s.toFixed(1) : String(s)) + " s"; }
-  function patLabel() {
-    var r = document.querySelector('input[name="bpat"]:checked');
-    return r ? r.parentNode.textContent.trim() : "Custom";
-  }
-
-  function homeRefresh() {
-    var rate = 60 / cycleOf(BC), parts = ["in for " + fmtSec(BC.inh)];
-    if (BC.sip) parts.push("a " + fmtSec(BC.sip) + " top-up");
-    if (BC.hold) parts.push("hold " + fmtSec(BC.hold));
-    parts.push("out for " + fmtSec(BC.exh));
-    if (BC.rest) parts.push("hold " + fmtSec(BC.rest));
-    bSetT("#homePat", patLabel());
-    bSetT("#homePatTxt", rate.toFixed(1) + " breaths a minute: " + parts.join(", ") + ". " +
-      (BC.minutes ? "A " + BC.minutes + "-minute session." : "Open-ended, until you stop."));
-    bSetT("#homeStart", pBusy() ? "Back to " + P.def.name : B.state === "running" ? "Back to your session" : B.state === "paused" ? "Resume session" : "Start breathing");
-
-    if (H.find && H.find.best) {
-      var d = new Date(H.find.at).toLocaleDateString(undefined, { day: "numeric", month: "short" });
-      bSetT("#qkFind", "Last result: " + H.find.best + " breaths a minute, " + d);
-    } else bSetT("#qkFind", "A 10-minute test with a heart sensor");
-    var c = primeCfg();
-    bSetT("#qkPrime", c.minutes + " min of " + c.beat + " Hz " + bandFor(c.beat).name.toLowerCase() + ", then start work");
-    bSetT("#qkTracks", TRACKS.length + " tracks for sleep, calm, focus, recovery and tinnitus");
-
-    var last = null;
-    try { last = JSON.parse(store.get("lastSummary") || "null"); } catch (e) {}
-    if (last && last.text) {
-      var t = last.text.replace(/^Last session: /, "");
-      bSetT("#homeLast", t.charAt(0).toUpperCase() + t.slice(1));
-      bSetT("#homeLastWhen", new Date(last.at).toLocaleString(undefined,
-        { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }));
-    }
-    shellSensor();
-    pSuggest();
-    drawHomeWave();
-  }
-
-  /* The current pattern drawn as two and a half breaths, coloured by phase. */
-  function drawHomeWave() {
-    var cv = $("#homeWave");
-    if (!cv || $("#v-home").hidden || !BCOL.text) return;
-    var f = fitCanvas(cv);
-    if (!f) return;
-    var c = f.c, W = f.w, Hh = f.h, ph = buildPhases(BC), T = ph.cycle * 2.5, top = 12, bot = Hh - 12;
-    var at = function (t) {
-      var ct = t % ph.cycle, p = ph.list[ph.list.length - 1];
-      for (var i = 0; i < ph.list.length; i++) if (ct < ph.list[i].start + ph.list[i].secs) { p = ph.list[i]; break; }
-      var prog = Math.min(1, Math.max(0, (ct - p.start) / p.secs));
-      return { k: p.k, y: bot - (p.from + (p.to - p.from) * bEase(prog)) * (bot - top) };
-    };
-    var x, pt, g = c.createLinearGradient(0, top, 0, bot);
-    g.addColorStop(0, rgba(BCOL["b-in"], 0.18));
-    g.addColorStop(1, rgba(BCOL["b-in"], 0));
-    c.beginPath(); c.moveTo(0, bot);
-    for (x = 0; x <= W; x += 2) c.lineTo(x, at(x / W * T).y);
-    c.lineTo(W, bot); c.closePath(); c.fillStyle = g; c.fill();
-    c.lineWidth = 3; c.lineCap = "round"; c.lineJoin = "round";
-    var runK = null;
-    for (x = 0; x <= W + 1; x += 2) {
-      pt = at(Math.min(W, x) / W * T);
-      if (pt.k !== runK) {
-        if (runK !== null) { c.lineTo(x, pt.y); c.stroke(); }
-        c.beginPath(); c.strokeStyle = kc(pt.k); c.moveTo(x, pt.y); runK = pt.k;
-      } else c.lineTo(x, pt.y);
-    }
-    c.stroke();
   }
 
   /* --------------------------- app: install and offline --------------------------- */
@@ -5858,7 +5870,7 @@
     if (!site) return;
 
     window.addEventListener("beforeinstallprompt", function (e) {
-      e.preventDefault();                                   // offer it on Home instead of a browser bar
+      e.preventDefault();                                   // offer it on Today instead of a browser bar
       APP.prompt = e;
       installShow(false);
     });
@@ -5912,28 +5924,8 @@
       var go = e.target.closest("[data-go]");
       if (!go) return;
       e.preventDefault();
-      goView(go.dataset.go, go.dataset.seg);
+      goView(go.dataset.go);
     });
-    $("#homeStart").addEventListener("click", function () {
-      if (pBusy()) { pOpen(); return; }
-      goView("breathe");
-      if (B.state !== "running") bToggle();
-    });
-
-    // Sounds segments
-    var segs = Array.prototype.slice.call(document.querySelectorAll(".seg-b"));
-    segs.forEach(function (b, i) {
-      b.addEventListener("click", function () { segPick(b.dataset.seg); });
-      b.addEventListener("keydown", function (e) {
-        var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-        if (!d) return;
-        e.preventDefault();
-        segPick(segs[(i + d + segs.length) % segs.length].dataset.seg, true);
-      });
-    });
-    var seg = store.get("soundsSeg");
-    segPick(seg && $("#sp-" + seg) ? seg : "tracks");
-    $("#scOpen2").addEventListener("click", function () { pendingPlay = null; openCheck(); });
 
     // breathing settings sheet
     $("#bAdjust").addEventListener("click", function () { sheet(!$("#bPanel").classList.contains("open")); });
@@ -5965,7 +5957,6 @@
     syncDock();
 
     // canvases drawn before the display font arrived get redrawn once it has
-    if (window.ResizeObserver) new ResizeObserver(drawHomeWave).observe($("#homeWave"));
     if (document.fonts && document.fonts.load) {
       document.fonts.load('700 24px "Entrain Display"').then(function () {
         draw(); drawSwings(); drawFind(); drawSpectrum(); drawHomeWave();
@@ -5974,11 +5965,6 @@
 
     var fadeT = 0;
     window.addEventListener("resize", function () { clearTimeout(fadeT); fadeT = setTimeout(edgeFadeAll, 150); });
-    appInit();
-    ambInit();
-    qInit();
-    pInit();
-    route();
   }
 
   /* ------------------------------- asana library -------------------------------
@@ -6986,7 +6972,7 @@
   }
 
   /* ------------------------------- quotes -------------------------------
-     A line for the day on Home, and one to close each practice. The attributed lines
+     A line for the day on Today, and one to close each practice. The attributed lines
      come from public-domain translations: George Long's Marcus Aurelius and Epictetus,
      Richard Gummere's Seneca, Max Müller's Dhammapada and James Legge's Tao Te Ching,
      plus Thoreau's Walden. Carl Rogers's line on self-acceptance and change is paraphrased,
@@ -7040,7 +7026,7 @@
     bSetT("#qBy", q[1] || "");
     $("#qBy").hidden = !q[1];
   }
-  /* One for the end of a practice: never the one already on Home. */
+  /* One for the end of a practice: never the one already on Today. */
   function qPick() {
     var i = Math.floor(Math.random() * (QUOTES.length - 1));
     return QUOTES[i >= Q.i ? i + 1 : i];
@@ -7884,6 +7870,8 @@
     { id: "recover", name: "Recover", lede: "Resting in the day, or recovering after training.", icon: "recover" },
     { id: "reflect", name: "Reflect", lede: "Feelings, needs and kindness, toward yourself and others.", icon: "nvc" }
   ];
+  // each goal's colour, on Today's tiles and in History
+  var GOAL_COL = { sleep: "#a78bfa", calm: "#5eead4", focus: "#fbbf24", energy: "#fb923c", recover: "#7dd3fc", reflect: "#f9a8d4" };
   var METHODS = [["breath", "Breathing", "breathe"], ["meditate", "Meditation", "practice"], ["move", "Movement", "move"],
     ["relax", "Relaxation", "moon"], ["sound", "Sound", "sounds"], ["write", "Writing", "nvc"], ["program", "Program", "spark"]];
   var POSTURES = [["sit", "Sitting"], ["lie", "Lying"], ["stand", "Standing"], ["walk", "Walking"]];
@@ -7910,7 +7898,7 @@
       ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"]],
     reflect: [["nvc-self", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
       ["metta", "meditate", "sit"]],
-    tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: Sounds only
+    tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: a section of its own
   };
   var ALSO = {
     "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],
@@ -8130,7 +8118,7 @@
   function pHush() { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {} }
 
   /* ----- the screen stays on, at full brightness, through every session ----- */
-  // One lock for practices, the breathing guide and Sounds tracks. It's held while any of them runs, and
+  // One lock for practices, the breathing guide and tracks. It's held while any of them runs, and
   // for ten minutes after a pause, so the screen is still lit when you come back to it. The browser drops
   // the lock whenever the page is hidden, so it's asked for again on return; a check every 15 seconds
   // also catches a lock the system took back, and the end of a pause's ten minutes.
@@ -8916,28 +8904,17 @@
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
     }
     r.hrPts = hr;
-    var parts = [d.name + ", " + Math.max(1, Math.round(T / 60)) + " min" + (early ? " (ended early)" : "")];
-    if (r.hr0) parts.push("heart rate " + r.hr0 + " → " + r.hr1 + " bpm");
-    else if (r.hrAvg) parts.push("heart rate averaged " + r.hrAvg + " bpm");
-    if (r.coh) parts.push("average coherence " + r.coh.toFixed(1) + (r.cohEst ? " (estimated)" : ""));
-    if (r.swing) parts.push("average swing " + r.swing.toFixed(1) + " bpm");
-    if (r.wander !== undefined) parts.push("mind wandered " + r.wander + (r.wander === 1 ? " time" : " times") + " and you came back");
-    if (r.holds) parts.push("holds " + r.holds.map(fmt).join(", "));
-    if (r.suds) parts.push("intensity " + r.suds.join(" → ") + " out of 10");
-    if (r.beat0) parts.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
-    if (r.nap) parts.push(r.nap.onset !== null ? "fell asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (estimated)" : r.nap.sensor ? "no sleep detected" : "no heart data");
-    r.text = parts.join(", ") + ".";
-    if (T >= 60) {
-      store.set("lastSummary", JSON.stringify({ at: Date.now(), text: "Last session: " + r.text }));
-      var log = pLog();
-      log.push({ id: d.id, at: Date.now(), secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, coh: r.coh ? +r.coh.toFixed(2) : undefined });
-      while (log.length > 200) log.shift();
-      store.set("practiceLog", JSON.stringify(log));
-    }
+    // into the history: the time, the heart and what else this one measured, never what you wrote
+    var notes = [];
+    if (r.wander !== undefined) notes.push("came back " + r.wander + (r.wander === 1 ? " time" : " times"));
+    if (r.holds) notes.push("holds " + r.holds.map(fmt).join(", "));
+    if (r.suds) notes.push("intensity " + r.suds.join(" → ") + " of 10");
+    if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
+    if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
+    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
+      coh: r.coh ? +r.coh.toFixed(2) : undefined, est: r.coh && r.cohEst ? true : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,
+      note: notes.join(", ") || undefined });
     return r;
-  }
-  function pLog() {
-    try { var l = JSON.parse(store.get("practiceLog") || "[]"); return Array.isArray(l) ? l : []; } catch (e) { return []; }
   }
   function pDone(r, early) {
     var d = P.def, tiles = [];
@@ -8964,7 +8941,7 @@
       (r.hrPts.length >= 20 ? '<div class="sd-chart"><canvas id="sdChart"></canvas><span>Heart rate across the session' + (r.beatLog ? ", with the beat in violet" : "") + "</span></div>" : "") +
       (r.nvc ? nvcCard(r.nvc) : "") +
       qCard(d.reflect ? ROGERS : qPick()) +
-      '<div class="sd-act"><a class="btn primary" href="#practice">Done</a><button class="btn" id="sdAgain">Do it again</button></div>';
+      '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>';
     var el = $("#sDone");
     el.innerHTML = h;
     $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
@@ -9071,9 +9048,10 @@
     if (d.reflect) every.push(pToggle("sOptKeep", "Keep a copy on this device", O.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
     var openOpts = store.get("optsOpen") === "1";
     var other = pBusy() && P.def !== d;
-    var h = '<a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Practices</a>' +
+    var h = backLink() +
       '<div class="si-head">' +
-        '<span class="si-kind">' + [d.custom ? "Your routine" : goalOf(d.goal) ? goalOf(d.goal).name : "", methodName(d.method)].filter(Boolean).join(" · ") + (d.exp ? " · Experimental" : "") + " · " + minsTxt + "</span>" +
+        '<div class="si-top"><span class="si-kind">' + [d.custom ? "Your routine" : goalOf(d.goal) ? goalOf(d.goal).name : "", methodName(d.method)].filter(Boolean).join(" · ") + (d.exp ? " · Experimental" : "") + " · " + minsTxt + "</span>" +
+          favBtn(d.id, d.name) + "</div>" +
         "<h2>" + esc(d.name) + "</h2>" +
         '<p class="si-blurb">' + esc(d.blurb) + "</p>" +
         (d.parts ? '<p class="si-parts">' + esc(d.parts) + "</p>" : "") +
@@ -9297,23 +9275,7 @@
   }
   function pOpen() { if (P.def) location.hash = "practice/" + P.def.id; }
 
-  /* ----- the library is in library.js; this is the week strip above it ----- */
-  function pRenderWeek() {
-    var log = pLog(), wk = Date.now() - 7 * 864e5, recent = log.filter(function (e) { return e.at >= wk; });
-    var mins = Math.round(recent.reduce(function (a, e) { return a + e.secs; }, 0) / 60);
-    var last = log[log.length - 1], ld = last && pDef(last.id);
-    var el = $("#prWeek");
-    if (!log.length) {
-      el.innerHTML = '<p>Start with <a href="#practice/calm-reset">Calm Reset</a> for a stressful moment, <a href="#practice/sleep-descent">Sleep Descent</a> at bedtime, or <a href="#practice/anapana">Anapana</a> to train attention. With a heart sensor connected, each session ends with your heart-rate change.</p>';
-      return;
-    }
-    el.innerHTML = '<div class="pw-stat"><b>' + recent.length + "</b><span>" + (recent.length === 1 ? "session" : "sessions") + " this week</span></div>" +
-      '<div class="pw-stat"><b>' + mins + "</b><span>minutes this week</span></div>" +
-      (ld ? '<a class="pw-last" href="#practice/' + ld.id + '"><span>Last: <b>' + esc(ld.name) + "</b>" +
-        (last.hr0 ? ", heart rate " + last.hr0 + " → " + last.hr1 : "") + "</span><span class=\"pw-go\">Again</span></a>" : "");
-  }
-
-  /* ----- Home: a suggestion for the time of day ----- */
+  /* ----- Today: a suggestion for the time of day ----- */
   function pSuggest() {
     var hr = new Date().getHours(), pick;
     if (hr >= 5 && hr < 9) pick = ["standing-flow", "This morning", "Wake the body up with a few minutes of standing yoga."];
@@ -9341,7 +9303,6 @@
     if (window.ResizeObserver && P.cv) new ResizeObserver(function () { pSizeCanvas(); }).observe($("#sStage"));
     window.addEventListener("resize", pSizeCanvas);
 
-    libInit();
     $("#sPlay").addEventListener("click", function () { if (P.state === "running") pPause(); else pResume(); });
     $("#sPrev").addEventListener("click", function () { pJump(-1); });
     $("#sNext").addEventListener("click", function () { pJump(1); });
@@ -9417,16 +9378,13 @@
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
     if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf };   // for automated tests only
-    yInit();
-    nvcInit();
-    fdInit();
-    pRenderLib();
   }
   /* ------------------------------- the library -------------------------------
      Goal sections (Sleep, Calm, Focus, Energy, Recover, Reflect) holding practices, breathing
-     patterns and tracks, each listed once, under its goal. A goal chip narrows it to one goal and
-     adds the items that are also good for it; the filter panel narrows by method, length, posture
-     and needs. On "All", each section shows its first few rows until you ask for the rest.
+     patterns, tracks and the custom primer, each listed once, under its goal. A goal chip narrows
+     it to one goal and adds the items that are also good for it; the filter panel narrows by
+     method, length, posture and needs. On "All", each section shows its first few rows until you
+     ask for the rest, and the tinnitus track and the two builders have sections of their own.
   ------------------------------------------------------------------------------ */
 
   var LIB = { goal: "all", f: { method: "", len: "", posture: "", needs: "" }, open: {}, panel: false, mins: {} };
@@ -9500,6 +9458,24 @@
     return out;
   }
   function libMine() { return yLoad().map(function (q) { return libPractice(yDef(q)); }); }
+  function libTinnitus() { return TRACKS.filter(function (t) { return t.goal === "tinnitus"; }).map(libTrack); }
+  // any one item by its key, as favourites and the history keep it; null once it's gone
+  function libItem(key) {
+    if (!key) return null;
+    if (key.indexOf("b:") === 0) { var b = preset(key.slice(2)); return b && b.goal ? libPattern(b) : null; }
+    if (key.indexOf("t:") === 0) { var t = trackById(key.slice(2)); return t ? libTrack(t) : null; }
+    if (key.indexOf("x:") === 0) return TOOLS[key.slice(2)] ? libTool(key.slice(2)) : null;
+    var d = pDef(key);
+    return d ? libPractice(d) : null;
+  }
+  // the library at one goal, or at one method: from Today's goal tiles, and old links to Sounds
+  function libShow(goal, method) {
+    LIB.goal = goalOf(goal) ? goal : "all";
+    LIB.f = { method: method || "", len: "", posture: "", needs: "" };
+    LIB.panel = !!method;
+    try { history.replaceState(null, "", "#practice"); } catch (e) {}
+    showView("practice");
+  }
 
   /* ----- filters ----- */
   function libPass(it) {
@@ -9514,21 +9490,23 @@
   function libFiltered() { var f = LIB.f; return !!(f.method || f.len || f.posture || f.needs); }
 
   /* ----- rendering ----- */
-  function libRow(it, hide) {
+  // one row; compact rows (on Today) leave out the blurb and the timeline, and can say something else under the name
+  function libRow(it, hide, o) {
+    o = o || {};
     var tl = "";
-    if (it.prog) {
+    if (it.prog && !o.compact) {
       var plan = pPlan(it.def, 0);
       tl = '<span class="si-tl pc-tl" aria-hidden="true">' + plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + s.secs + ' 1 0"></i>'; }).join("") + "</span>";
     }
     var pos = it.nopos ? "" : it.posture.map(function (p, i) { var n = postureName(p); return i ? n.toLowerCase() : n; }).join(" or ");
-    var sub = [it.label || methodName(it.method), it.minsTxt, pos].filter(Boolean).join(" · ");
-    return '<li class="pc' + (it.prog ? " prog" : "") + (it.type !== "practice" ? " pc-" + it.type : "") + '" style="--pcol:' + it.col + '"' + (hide ? " hidden" : "") + ">" +
+    var sub = o.sub || [it.label || methodName(it.method), it.minsTxt, pos].filter(Boolean).join(" · ");
+    return '<li class="pc' + (it.prog ? " prog" : "") + (o.compact ? " cmp" : "") + (it.type !== "practice" ? " pc-" + it.type : "") + '" style="--pcol:' + it.col + '"' + (hide ? " hidden" : "") + ">" +
       '<a href="' + esc(it.href) + '" class="pc-a">' +
         '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + it.icon + '"/></svg></span>' +
         '<span class="pc-b"><span class="pc-top"><b>' + esc(it.name) + "</b>" + (it.strength ? dots(it.strength) : "") + "</span>" +
           '<span class="pc-meta"><span class="pc-sub">' + esc(sub) + "</span>" +
-            it.badges.map(function (b) { return '<span class="' + b[0] + '">' + esc(b[1]) + "</span>"; }).join("") + "</span>" +
-          (it.blurb ? '<span class="pc-blurb">' + esc(it.blurb) + "</span>" : "") + tl +
+            (o.compact ? "" : it.badges.map(function (b) { return '<span class="' + b[0] + '">' + esc(b[1]) + "</span>"; }).join("")) + "</span>" +
+          (it.blurb && !o.compact ? '<span class="pc-blurb">' + esc(it.blurb) + "</span>" : "") + tl +
         "</span></a></li>";
   }
   function libSection(g, title, lede, icon, items, cap, extra) {
@@ -9556,6 +9534,8 @@
         var items = all.filter(function (it) { return it.goal === g.id; });
         if (items.length) h += libSection(g.id, g.name, g.lede, g.icon, items, cap);
       });
+      var tin = libTinnitus().filter(libPass);
+      if (tin.length) h += libSection("tinnitus", "For tinnitus", "Sound therapy for weeks of daily use, alongside your own care.", "sounds", tin, 0);
       var make = [libTool("beats")].filter(libPass), build = libPass(libTool("routine"));
       if (make.length || build) h += libSection("make", "Make your own", "Your own routine or binaural beat.", "plus", make, 0, build ? libBuildRow() : "");
     } else {
@@ -9567,7 +9547,6 @@
     }
     if (!h) h = '<div class="pr-empty"><p>Nothing matches these filters.</p><button class="btn small" data-clear="1">Clear filters</button></div>';
     $("#prLib").innerHTML = h;
-    pRenderWeek();
     edgeFade($("#prFilt"));
   }
   function libPanel() {
@@ -10651,6 +10630,7 @@
         return;
       }
       yStore(yLoad().filter(function (q) { return q.uid !== Y.uid; }));
+      if (favHas("my-" + Y.uid)) favSet("my-" + Y.uid, false);
       toast("Deleted “" + (Y.name || "routine") + "”.");
       Y.uid = null; Y.items = []; Y.name = "";
       location.hash = "practice";
@@ -10658,7 +10638,7 @@
   }
   /* ------------------------------- search -------------------------------
      One box for everything: practices and your own routines, the movement library, breathing
-     patterns, Sounds tracks, the Heart tools and every paragraph and reference in Learn.
+     patterns, tracks, the Heart tools, History and Settings, and every paragraph and reference in Learn.
      Matching ignores case and accents, and each word you type has to match the start of a word
      somewhere in the entry, so "anap" finds Anapana and "bencao" finds Bênção. Results come in
      groups, the group with the best match first. Enter opens the top result; "/" or Ctrl+K opens
@@ -10667,7 +10647,7 @@
 
   var FD = { open: false, base: null, items: [], q: "", more: {}, pushed: false, back: null, t: 0 };
   var FD_KINDS = [["practice", "Practices"], ["pose", "Poses and moves"], ["breath", "Breathing"],
-    ["sound", "Sounds"], ["heart", "Heart"], ["learn", "Learn"], ["app", "Settings"]];
+    ["sound", "Sounds"], ["heart", "Heart"], ["learn", "Learn"], ["app", "History and Settings"]];
   var FD_CAP = 6;                        // results shown per group until you ask for the rest
   var FD_TRY = ["Sleep", "Anapana", "Tree", "4-7-8", "Coherence", "Tinnitus", "Capoeira", "Needs"];
 
@@ -10787,10 +10767,10 @@
       out.push(fdEntry("sound", t.name, gn + " · " + t.band + " track · " + t.minutes + " min", [t.desc, t.ev], "#track/" + t.id,
         { ic: "sounds", col: "var(--relax)", w: 1, alias: t.goal === "tinnitus" ? "tinnitus" : "", tags: "binaural beat track " + (t.also || []).join(" ") }));
     });
-    out.push(fdEntry("sound", "Custom primer", "Focus · Sounds · 5 to 20 min before a task",
+    out.push(fdEntry("sound", "Custom primer", "Focus · Sound · 5 to 20 min before a task",
       ["Listen to a beat before you start a task, get a cue when the block ends, then begin working."], "#prime",
       { ic: "bolt", col: "var(--relax)", w: 1, tags: "binaural focus primer alpha beta gamma" }));
-    out.push(fdEntry("sound", "Beat builder", "Sounds · any beat and carrier",
+    out.push(fdEntry("sound", "Beat builder", "Make your own · any beat and carrier",
       ["Pick the beat frequency, the carrier tone and the session length, then play it."], "#builder",
       { ic: "sliders", col: "var(--relax)", w: 1, tags: "binaural custom builder carrier frequency" }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
@@ -10808,6 +10788,9 @@
     out.push(fdEntry("app", "Settings", "Defaults for every practice, sound and screen",
       ["Spoken guidance, voice, bells, breath cues and visual, binaural layer, Anapana reminders, background sound, keeping reflections, and keeping the screen on or dimming it for sleep."], "#settings",
       { ic: "gear", col: "var(--accent)", w: 1, tags: "options preferences defaults voice bells screen dim brightness wake lock background rain" }));
+    out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
+      ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
+      { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));
     fdLearn(out);
     return out;
   }
@@ -10981,18 +10964,7 @@
     }
   }
 
-  /* ----- landing on a track or a breathing pattern ----- */
-  function fdTrack(id) {
-    var t = TRACKS.filter(function (x) { return x.id === id; })[0];
-    if (!t) return;
-    if (curFilter !== "all" && curFilter !== t.goal) { var all = document.querySelector('.tab[data-filter="all"]'); if (all) all.click(); }
-    setTimeout(function () {
-      var card = document.querySelector('#grid .card[data-id="' + id + '"]');
-      if (!card) return;
-      try { card.scrollIntoView({ block: "center", behavior: RM ? "auto" : "smooth" }); } catch (e) { card.scrollIntoView(); }
-      fdHit(card);
-    }, 40);
-  }
+  /* ----- landing on a breathing pattern ----- */
   function fdPattern(id) {
     var inp = document.querySelector('#bPats input[value="' + id + '"]');
     if (!inp) return;
@@ -11057,22 +11029,429 @@
       if (!el.closest(".toc") && !el.id) el.id = "lx-" + (n++);
     });
   }
+  /* -------------------------------- history --------------------------------
+     One log on the device for everything you do: practices, breathing sessions, tracks, the
+     custom primer and the beat builder, and resonance tests. Sessions under a minute aren't
+     kept, and nothing you write in a reflection goes in. Today shows the last week of it;
+     History shows all of it, a day at a time.
+  ---------------------------------------------------------------------------- */
+
+  var HIST = null;                  // oldest first; read once, then kept in step with storage
+  var HIST_MAX = 500;
+  var H_ARM = 0;                    // Clear history waits for a second tap
+  var DAY = 864e5;
+
+  function hLoad() {
+    if (HIST) return HIST;
+    var l = null;
+    try { l = JSON.parse(store.get("history") || "null"); } catch (e) {}
+    if (!Array.isArray(l)) {
+      // the first run with one history: until now only practices were logged, on their own
+      l = [];
+      try {
+        var old = JSON.parse(store.get("practiceLog") || "[]");
+        if (Array.isArray(old)) old.forEach(function (e) {
+          if (e && e.id && e.at) l.push(hClean({ k: "practice", id: e.id, at: e.at, secs: e.secs, full: e.full, hr0: e.hr0, hr1: e.hr1, coh: e.coh }));
+        });
+      } catch (e) {}
+      HIST = l;
+      if (hSave() && l.length) storeDel("practiceLog");
+      storeDel("lastSummary"); storeDel("soundsSeg");   // Home's last-session card and the Sounds tab are gone too
+      return HIST;
+    }
+    HIST = l.filter(function (e) { return e && e.k && e.at && typeof e.secs === "number"; });
+    return HIST;
+  }
+  // true when it was written: a full or refused storage keeps the old log instead
+  function hSave() {
+    var s = JSON.stringify(HIST);
+    store.set("history", s);
+    return store.get("history") === s;
+  }
+  function hClean(e) {
+    for (var k in e) if (e[k] === undefined || e[k] === null || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
+    return e;
+  }
+  function hAdd(e) {
+    if (!e || !(e.secs >= 60)) return;
+    hLoad();
+    e.at = e.at || Date.now();
+    e.secs = Math.round(e.secs);
+    HIST.push(hClean(e));
+    while (HIST.length > HIST_MAX) HIST.shift();
+    hSave();
+    setTimeout(function () {                     // once the caller has finished ending the session
+      if (curView === "home") todayRender();
+      if (curView === "history") hRender();
+    }, 0);
+  }
+  function hClear() { HIST = []; storeDel("history"); storeDel("practiceLog"); }
+
+  /* ----- what each kind of session logs ----- */
+  // a breathing session on the guide (not one a practice is running, and not the resonance test)
+  function hBreath(secs, full) {
+    if (P.usesB || B.finder || secs < 60) return;
+    var e = { k: "breath", id: BC.pattern, secs: secs, full: full, rate: +(60 / cycleOf(BC)).toFixed(1) };
+    var s = B.hr;
+    if (s.length >= 10) {
+      var end = s[s.length - 1].bt;
+      if (end >= 150) {
+        e.hr0 = Math.round(avg(s.filter(function (x) { return x.bt < 60; }).map(function (x) { return x.hr; })));
+        e.hr1 = Math.round(avg(s.filter(function (x) { return x.bt > end - 60; }).map(function (x) { return x.hr; })));
+      } else e.hrAvg = Math.round(avg(s.map(function (x) { return x.hr; })));
+    }
+    if (B.swings.length) e.swing = +avg(B.swings.map(function (x) { return x.amp; })).toFixed(1);
+    if (B.coh.length) { e.coh = +avg(B.coh).toFixed(2); if (!H.hasRR) e.est = true; }
+    hAdd(e);
+  }
+  // a track, the primer or a built beat: the time actually listened, once it stops for good
+  function hTrack() {
+    var t = A.track;
+    if (!t || t.practice) return;
+    var el = A.playing && A.ctx ? A.ctx.currentTime - A.startedAt : A.elapsed;
+    var secs = el - (A.hAt || 0);
+    if (secs < 60) return;
+    A.hAt = el;                                  // a paused track logged as the page goes away isn't logged twice
+    var e = { k: "track", id: t.id, secs: secs, full: !t.then && el >= t.minutes * 60 - 10 };
+    if (t.id === "prime" || t.id === "custom") { e.beat = +t.beat.toFixed(1); e.band = t.band; }
+    hAdd(e);
+  }
+  function hTest(secs, best) { hAdd({ k: "test", id: "resonance", secs: secs, full: true, best: best }); }
+
+  /* ----- reading it back ----- */
+  // the library key of what a session was: the same keys favourites use
+  function hKey(e) {
+    if (e.k === "practice") return e.id;
+    if (e.k === "breath") return "b:" + e.id;
+    if (e.k === "track") return e.id === "prime" ? "x:prime" : e.id === "custom" ? "x:beats" : "t:" + e.id;
+    return "";
+  }
+  // what to show for a session: its name, where it leads, its icon and colour
+  function hItem(e) {
+    var it = hKey(e) ? libItem(hKey(e)) : null;
+    if (e.k === "test") return { name: "Resonance test", href: "#resonance-test", icon: "target", col: "var(--hr)", goal: "" };
+    if (e.k === "breath" && e.id === "custom") return { name: "Your own breathing pattern", href: "#breathe", icon: "breathe", col: "var(--b-in)", goal: "" };
+    if (it) return { name: it.name, href: it.href, icon: it.icon, col: it.col, goal: it.goal };
+    // a routine you've since deleted, or something renamed
+    return { name: e.n || "A session", href: e.k === "practice" ? "#practice" : "#home", icon: e.k === "breath" ? "breathe" : e.k === "track" ? "sounds" : "practice", col: "var(--accent)", goal: "" };
+  }
+  function hMins(secs) { return secs < 3600 ? Math.max(1, Math.round(secs / 60)) + " min" : Math.floor(secs / 3600) + " h " + Math.round(secs % 3600 / 60) + " min"; }
+  function hDetail(e) {
+    var p = [];
+    if (e.k === "test") p.push(e.best ? "most swing at " + e.best + " breaths a minute" : "not enough heart data to compare");
+    else p.push(hMins(e.secs) + (e.full === false && e.k !== "track" ? ", ended early" : ""));
+    if (e.k === "breath" && e.rate) p.push(e.rate + " a minute");
+    if (e.beat) p.push(e.beat + " Hz " + (e.band || "").toLowerCase());
+    if (e.hr0 && e.hr1) p.push("heart rate " + e.hr0 + " → " + e.hr1);
+    else if (e.hrAvg) p.push("heart rate " + e.hrAvg);
+    if (e.coh) p.push("coherence " + e.coh.toFixed(1) + (e.est ? " (est.)" : ""));
+    if (e.swing) p.push("swing " + e.swing.toFixed(1));
+    if (e.note) p.push(e.note);
+    return p.join(" · ");
+  }
+
+  // local midnight, so a day is a calendar day where you are
+  function hDayStart(t) { var d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); }
+  function hDayName(t) {
+    var d0 = hDayStart(Date.now()), d = hDayStart(t);
+    if (d === d0) return "Today";
+    if (d0 - d < DAY * 1.5) return "Yesterday";
+    var o = { weekday: "long", day: "numeric", month: "long" };
+    if (new Date(t).getFullYear() !== new Date().getFullYear()) o.year = "numeric";
+    return new Date(t).toLocaleDateString(undefined, o);
+  }
+  function hTime(t) { return new Date(t).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }); }
+  // the last seven days, today last: sessions and minutes each day, and in all
+  function hWeek() {
+    var today = hDayStart(Date.now()), days = [], i;
+    for (i = 6; i >= 0; i--) {
+      var s = new Date(today); s.setDate(s.getDate() - i);
+      days.push({ at: s.getTime(), n: 0, secs: 0 });
+    }
+    var from = days[0].at, goals = {};
+    hLoad().forEach(function (e) {
+      if (e.at < from) return;
+      var d = days[days.length - 1];
+      for (i = 0; i < days.length; i++) if (e.at >= days[i].at) d = days[i];
+      d.n++; d.secs += e.secs;
+      var g = hItem(e).goal;
+      if (g) goals[g] = (goals[g] || 0) + e.secs;
+    });
+    return {
+      days: days, goals: goals,
+      n: days.reduce(function (a, d) { return a + d.n; }, 0),
+      secs: days.reduce(function (a, d) { return a + d.secs; }, 0),
+      active: days.filter(function (d) { return d.n; }).length
+    };
+  }
+  // the newest session of each of the last few different things you did
+  function hLatest(n) {
+    var out = [], seen = {}, l = hLoad();
+    for (var i = l.length - 1; i >= 0 && out.length < n; i--) {
+      var k = hKey(l[i]) || l[i].k + ":" + l[i].id;
+      if (seen[k]) continue;
+      seen[k] = true;
+      out.push(l[i]);
+    }
+    return out;
+  }
+  // when it was, short: "14:05" today, then "Yesterday", "Sat", "3 Oct"
+  function hWhen(t) {
+    var d0 = hDayStart(Date.now()), d = hDayStart(t);
+    if (d === d0) return hTime(t);
+    if (d0 - d < DAY * 1.5) return "Yesterday";
+    if (d0 - d < DAY * 6.5) return new Date(t).toLocaleDateString(undefined, { weekday: "short" });
+    return new Date(t).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+  }
+
+  /* ----- drawing it ----- */
+  // one session; "when" gives the day as well as the time, for a list that isn't grouped by day
+  function hRow(e, when) {
+    var it = hItem(e);
+    return '<li class="hi-e" style="--pcol:' + it.col + '"><a href="' + esc(it.href) + '">' +
+      '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + it.icon + '"/></svg></span>' +
+      '<span class="hi-b"><b>' + esc(it.name) + '</b><span>' + esc(hDetail(e)) + "</span></span>" +
+      '<time datetime="' + new Date(e.at).toISOString() + '">' + (when ? hWhen(e.at) : hTime(e.at)) + "</time></a></li>";
+  }
+  function hDays(w) {
+    var L = ["S", "M", "T", "W", "T", "F", "S"], max = Math.max.apply(null, w.days.map(function (d) { return d.secs; }).concat([1]));
+    return '<div class="hi-days" role="img" aria-label="' + w.active + (w.active === 1 ? " day" : " days") + ' with a session in the last 7 days">' +
+      w.days.map(function (d, i) {
+        var h = d.secs ? Math.max(18, Math.round(d.secs / max * 100)) : 0;
+        return '<span class="hi-day' + (i === 6 ? " now" : "") + '" title="' + esc(new Date(d.at).toLocaleDateString(undefined, { weekday: "long" }) + ": " + (d.n ? d.n + (d.n === 1 ? " session, " : " sessions, ") + hMins(d.secs) : "nothing")) + '">' +
+          '<i style="--h:' + h + '%"></i><small>' + L[new Date(d.at).getDay()] + "</small></span>";
+      }).join("") + "</div>";
+  }
+  function hTotals(w) {
+    return '<p class="hi-tot"><b>' + w.n + "</b> " + (w.n === 1 ? "session" : "sessions") + " · <b>" + Math.round(w.secs / 60) + "</b> min · <b>" + w.active + "</b> of 7 days</p>";
+  }
+
+  function hRender() {
+    var l = hLoad(), w = hWeek(), h = '<a class="si-back" href="#home"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Today</a>';
+    if (!l.length) {
+      h += '<div class="hi-empty"><p>Nothing here yet. Practices, breathing sessions and tracks of a minute or more show up here once they end, with your heart-rate change and coherence when a sensor is connected.</p>' +
+        '<a class="btn small" href="#practice">Open the library</a></div>';
+      $("#hiBody").innerHTML = h;
+      return;
+    }
+    var goals = GOALS.filter(function (g) { return w.goals[g.id]; }), gmax = Math.max.apply(null, goals.map(function (g) { return w.goals[g.id]; }).concat([1]));
+    h += '<section class="hi-sum" aria-labelledby="hiWk"><h2 id="hiWk">Last 7 days</h2>' + hTotals(w) + hDays(w) +
+      (goals.length ? '<ul class="hi-goals" aria-label="Minutes by goal">' + goals.map(function (g) {
+        return '<li style="--gcol:' + GOAL_COL[g.id] + '"><span>' + esc(g.name) + "</span><i style=\"--w:" + Math.max(4, Math.round(w.goals[g.id] / gmax * 100)) + '%"></i><b>' + Math.round(w.goals[g.id] / 60) + " min</b></li>";
+      }).join("") + "</ul>" : "") + "</section>";
+    var day = -1, open = false;
+    for (var i = l.length - 1; i >= 0; i--) {
+      var d = hDayStart(l[i].at);
+      if (d !== day) {
+        if (open) h += "</ul></section>";
+        h += '<section class="hi-dsec"><h3>' + esc(hDayName(l[i].at)) + '</h3><ul class="hi-list">';
+        day = d; open = true;
+      }
+      h += hRow(l[i], false);
+    }
+    if (open) h += "</ul></section>";
+    h += '<div class="hi-foot"><p>Your history stays on this device, the last ' + HIST_MAX + ' sessions. Anything under a minute isn\'t kept, and nothing you write in a reflection is.</p>' +
+      '<button class="btn small" id="hiClear">Clear history</button></div>';
+    $("#hiBody").innerHTML = h;
+  }
+
+  function hInit() {
+    hLoad();
+    $("#hiBody").addEventListener("click", function (e) {
+      var b = e.target.closest("#hiClear");
+      if (!b) return;
+      if (H_ARM && Date.now() - H_ARM < 3000) {
+        H_ARM = 0; hClear(); hRender(); toast("History cleared.");
+        return;
+      }
+      H_ARM = Date.now();
+      b.textContent = "Tap again to clear everything";
+      b.classList.add("armed");
+      setTimeout(function () { if (b.isConnected) { b.textContent = "Clear history"; b.classList.remove("armed"); } }, 3000);
+    });
+  }
+  /* ------------------------------- favourites -------------------------------
+     A star on a practice, a track, the primer, the beat builder or a breathing pattern keeps it
+     on Today. Stored on the device as library keys: a practice's id, b: a breathing pattern,
+     t: a track, x: a tool, in the order you starred them.
+  ---------------------------------------------------------------------------- */
+
+  var FAV = null;
+  function favList() {
+    if (FAV) return FAV;
+    try { FAV = JSON.parse(store.get("favs") || "[]"); } catch (e) {}
+    if (!Array.isArray(FAV)) FAV = [];
+    FAV = FAV.filter(function (k) { return typeof k === "string" && k; });
+    return FAV;
+  }
+  function favHas(key) { return favList().indexOf(key) >= 0; }
+  function favSet(key, on) {
+    var l = favList(), i = l.indexOf(key);
+    if (on && i < 0) l.push(key);
+    if (!on && i >= 0) l.splice(i, 1);
+    store.set("favs", JSON.stringify(l));
+    favSync();
+  }
+  // a star button for one item; the same key can show on several screens at once
+  function favBtn(key, name, cls) {
+    var on = favHas(key);
+    return '<button class="fav' + (cls ? " " + cls : "") + '" data-fav="' + esc(key) + '" data-name="' + esc(name) + '" aria-pressed="' + on + '"' +
+      ' aria-label="Favourite: ' + esc(name) + '" title="' + (on ? "In your favourites on Today" : "Add to your favourites on Today") + '">' +
+      '<svg class="i" aria-hidden="true"><use href="#i-star"/></svg><span class="fav-t">Favourite</span></button>';
+  }
+  // the star on Breathe follows the pattern on screen; your own timings have no page to come back to
+  function bFavSync() {
+    var el = $("#bFav");
+    if (!el) return;
+    var p = preset(BC.pattern);
+    el.innerHTML = p && p.goal ? favBtn("b:" + p.id, PATTERN_NAMES[p.id] || p.id, "b-fav") : "";
+  }
+  function favSync() {
+    document.querySelectorAll("[data-fav]").forEach(function (b) {
+      var on = favHas(b.dataset.fav);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.title = on ? "In your favourites on Today" : "Add to your favourites on Today";
+    });
+  }
+  function favInit() {
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-fav]");
+      if (!b || !b.dataset.fav) return;
+      e.preventDefault();
+      var on = !favHas(b.dataset.fav);
+      favSet(b.dataset.fav, on);
+      toast(on ? (b.dataset.name || "It") + " is in your favourites on Today." : "Taken out of your favourites.", { ms: 3500 });
+    });
+  }
+  /* ---------------------------------- today ----------------------------------
+     The first screen: your breathing pattern ready to start, your favourites, what you did
+     lately and the last seven days from the history, a suggestion for the time of day, and
+     the six goals into the library.
+  ---------------------------------------------------------------------------- */
+
+  var GOAL_NAMES = 3;                   // how many of its own each goal tile names
+
+  function fmtSec(s) { return (s % 1 ? s.toFixed(1) : String(s)) + " s"; }
+  function patLabel() {
+    var r = document.querySelector('input[name="bpat"]:checked');
+    return r ? r.parentNode.textContent.trim() : "Custom";
+  }
+
+  function homeRefresh() {
+    var rate = 60 / cycleOf(BC), parts = ["in for " + fmtSec(BC.inh)];
+    if (BC.sip) parts.push("a " + fmtSec(BC.sip) + " top-up");
+    if (BC.hold) parts.push("hold " + fmtSec(BC.hold));
+    parts.push("out for " + fmtSec(BC.exh));
+    if (BC.rest) parts.push("hold " + fmtSec(BC.rest));
+    bSetT("#homePat", patLabel());
+    bSetT("#homePatTxt", rate.toFixed(1) + " breaths a minute: " + parts.join(", ") + ". " +
+      (BC.minutes ? "A " + BC.minutes + "-minute session." : "Open-ended, until you stop."));
+    bSetT("#homeStart", pBusy() ? "Back to " + P.def.name : B.state === "running" ? "Back to your session" : B.state === "paused" ? "Resume session" : "Start breathing");
+
+    if (H.find && H.find.best) {
+      var d = new Date(H.find.at).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+      bSetT("#qkFind", "Last result: " + H.find.best + " breaths a minute, " + d);
+    } else bSetT("#qkFind", "A 10-minute test with a heart sensor");
+    shellSensor();
+    pSuggest();
+    todayRender();
+    drawHomeWave();
+  }
+
+  function todayRender() {
+    // favourites, in the order you starred them; one you've since deleted just drops out
+    var favs = favList().map(libItem).filter(Boolean);
+    $("#tdFavList").innerHTML = favs.map(function (it) { return libRow(it, false, { compact: true }); }).join("");
+    $("#tdFavList").hidden = !favs.length;
+    $("#tdFavEmpty").hidden = !!favs.length;
+
+    // recently: the week at a glance, then the newest session of each of the last few things you did
+    var l = hLoad();
+    $("#tdRecent").hidden = !l.length;
+    if (l.length) {
+      var w = hWeek();
+      $("#tdRecentBody").innerHTML = '<div class="td-wk"><div class="td-wt"><span>Last 7 days</span>' + hTotals(w) + "</div>" + hDays(w) + "</div>" +
+        '<ul class="hi-list">' + hLatest(3).map(function (e) { return hRow(e, true); }).join("") + "</ul>";
+    }
+
+    // the six goals, each with the first few of its own
+    var all = libAll();
+    $("#tdGoals").innerHTML = GOALS.map(function (g) {
+      var names = all.filter(function (it) { return it.goal === g.id; }).slice(0, GOAL_NAMES).map(function (it) { return it.name; });
+      return '<a class="td-goal" href="#goal/' + g.id + '" style="--gcol:' + GOAL_COL[g.id] + '">' +
+        '<span class="td-gi"><svg class="i" aria-hidden="true"><use href="#i-' + g.icon + '"/></svg></span>' +
+        '<b>' + esc(g.name) + '</b><span class="td-gn">' + esc(names.join(", ")) + "</span></a>";
+    }).join("");
+  }
+
+  /* The current pattern drawn as two and a half breaths, coloured by phase. */
+  function drawHomeWave() {
+    var cv = $("#homeWave");
+    if (!cv || $("#v-home").hidden || !BCOL.text) return;
+    var f = fitCanvas(cv);
+    if (!f) return;
+    var c = f.c, W = f.w, Hh = f.h, ph = buildPhases(BC), T = ph.cycle * 2.5, top = 12, bot = Hh - 12;
+    var at = function (t) {
+      var ct = t % ph.cycle, p = ph.list[ph.list.length - 1];
+      for (var i = 0; i < ph.list.length; i++) if (ct < ph.list[i].start + ph.list[i].secs) { p = ph.list[i]; break; }
+      var prog = Math.min(1, Math.max(0, (ct - p.start) / p.secs));
+      return { k: p.k, y: bot - (p.from + (p.to - p.from) * bEase(prog)) * (bot - top) };
+    };
+    var x, pt, g = c.createLinearGradient(0, top, 0, bot);
+    g.addColorStop(0, rgba(BCOL["b-in"], 0.18));
+    g.addColorStop(1, rgba(BCOL["b-in"], 0));
+    c.beginPath(); c.moveTo(0, bot);
+    for (x = 0; x <= W; x += 2) c.lineTo(x, at(x / W * T).y);
+    c.lineTo(W, bot); c.closePath(); c.fillStyle = g; c.fill();
+    c.lineWidth = 3; c.lineCap = "round"; c.lineJoin = "round";
+    var runK = null;
+    for (x = 0; x <= W + 1; x += 2) {
+      pt = at(Math.min(W, x) / W * T);
+      if (pt.k !== runK) {
+        if (runK !== null) { c.lineTo(x, pt.y); c.stroke(); }
+        c.beginPath(); c.strokeStyle = kc(pt.k); c.moveTo(x, pt.y); runK = pt.k;
+      } else c.lineTo(x, pt.y);
+    }
+    c.stroke();
+  }
+
+  function todayInit() {
+    $("#homeStart").addEventListener("click", function () {
+      if (pBusy()) { pOpen(); return; }
+      goView("breathe");
+      if (B.state !== "running") bToggle();
+    });
+    if (window.ResizeObserver) new ResizeObserver(drawHomeWave).observe($("#homeWave"));
+  }
   /* --------------------------------- start ---------------------------------
      Every other file only declares. This wires the page up, in order: where two handlers listen
      for the same key on the whole document, the one wired first runs first.
   ---------------------------------------------------------------------------- */
 
   playerInit();
-  trackListInit();
   builderInit();
   primeInit();
   dialogsInit();
-  render("all");
   initBreath();
   hrInit();
   shellInit();
+  appInit();
+  ambInit();
+  qInit();
+  todayInit();
+  hInit();
+  favInit();
+  trInit();
+  pInit();
+  libInit();
+  yInit();
+  nvcInit();
+  fdInit();
+  pRenderLib();
+  route();
   window.addEventListener("pagehide", function () {
     if (A.playing) hardStop(true);
+    else hTrack();                       // a paused track counts too
     if (B.state === "running") bPause();
   });
 })();

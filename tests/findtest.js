@@ -21,8 +21,10 @@ const t = (p, s) => p.$eval(s, e => e.textContent.trim());
   const coh = await t(p, '#hrCoh'), rm = await t(p, '#hrRmssd');
   ok(/^\d+\.\d$/.test(coh) && /^\d+$/.test(rm), 'coherence ' + coh + ' (' + await t(p, '#hrCohS') + '), RMSSD ' + rm);
   await p.click('.nav a[data-view=home]'); await p.waitForTimeout(300);
-  const q = await t(p, '#qkFind'), last = await t(p, '#homeLast');
-  ok(/^Last result: [\d.]+ breaths a minute/.test(q) && /^Heart rate \d+ bpm in the first minute/.test(last), 'Home: ' + q + ' | ' + last.slice(0, 60));
+  const q = await t(p, '#qkFind'), last = await t(p, '#tdRecentBody .hi-e');
+  const kept = await p.evaluate(() => JSON.parse(localStorage.getItem('entrain.history') || '[]').filter(e => e.k === 'test'));
+  ok(/^Last result: [\d.]+ breaths a minute/.test(q) && /^Resonance test.*most swing at [\d.]+ breaths a minute/.test(last) && kept.length === 1 && kept[0].best > 0,
+    'Today: ' + q + ' | ' + last.slice(0, 70));
   await p.click('.nav a[data-view=heart]'); await p.waitForTimeout(300);
   await p.screenshot({ path: OUT + 'desk-heart-results.png' });
   await b.close();

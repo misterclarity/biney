@@ -55,13 +55,13 @@ const vis = (p, s) => p.$eval(s, e => !e.hidden && !!(e.offsetParent || e.getCli
   // 3. offline
   await ctx.setOffline(true);
   await p.reload(); await p.waitForTimeout(500);
-  ok(await t(p, '#viewTitle') === 'Home' && await p.title() === 'Entrain — Evidence-Based Binaural Beats', 'offline reload opens the app');
+  ok(await t(p, '#viewTitle') === 'Today' && await p.title() === 'Entrain — Evidence-Based Binaural Beats', 'offline reload opens the app');
   await p.goto(URL0 + '#heart'); await p.waitForTimeout(400);
   ok(await t(p, '#viewTitle') === 'Heart', 'offline: shortcut URL #heart opens Heart');
   await p.goto(URL0 + 'index.html#breathe'); await p.waitForTimeout(400);
   ok(await t(p, '#viewTitle') === 'Breathe', 'offline: index.html#breathe opens Breathe');
   await p.goto(URL0 + '?source=homescreen'); await p.waitForTimeout(400);
-  ok(await t(p, '#viewTitle') === 'Home', 'offline: start URL with a query string still opens');
+  ok(await t(p, '#viewTitle') === 'Today', 'offline: start URL with a query string still opens');
   const offFetch = await p.evaluate(async () => {
     const r = await Promise.all(['manifest.webmanifest', 'icons/maskable-512.png', 'icons/heart-96.png'].map(u => fetch(u).then(x => x.status).catch(() => 'err')));
     return r.join(',');
@@ -114,8 +114,8 @@ const vis = (p, s) => p.$eval(s, e => !e.hidden && !!(e.offsetParent || e.getCli
   ok(/installed/.test(await t(p, '#toastTxt')), 'installed notice: "' + await t(p, '#toastTxt') + '"');
 
   // 6. notice sits above the mini player when it is open
-  await p.click('.nav a[data-view=sounds]'); await p.click('#sg-tracks');
-  await p.click('#grid .card:first-child .play-btn'); await p.waitForTimeout(300);
+  await p.evaluate(() => location.hash = 'track/sleep-descent'); await p.waitForTimeout(300);
+  await p.click('#trGo'); await p.waitForTimeout(300);
   if (await vis(p, '#scModal')) await p.click('#scSkip');
   await p.waitForTimeout(700);
   await p.evaluate(() => window.dispatchEvent(new Event('appinstalled')));

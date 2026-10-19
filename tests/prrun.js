@@ -75,13 +75,12 @@ async function until(p, secs, max = 240000) {
     ok(rest === '5.5,5.5,wave,off,5', 'your own breathing settings are restored: ' + rest);
     const saved = await p.evaluate(() => JSON.parse(localStorage.getItem('entrain.breath')).inh);
     ok(saved === 5.5, 'practice timings never saved as yours');
-    const logd = await p.evaluate(() => JSON.parse(localStorage.getItem('entrain.practiceLog') || '[]'));
-    ok(logd.length === 1 && logd[0].id === 'sleep-descent' && logd[0].full, 'history entry: ' + JSON.stringify(logd[0]));
+    const logd = await p.evaluate(() => JSON.parse(localStorage.getItem('entrain.history') || '[]'));
+    ok(logd.length === 1 && logd[0].k === 'practice' && logd[0].id === 'sleep-descent' && logd[0].full && logd[0].hr0 > 0 && logd[0].coh > 0, 'history entry: ' + JSON.stringify(logd[0]));
     await p.screenshot({ path: OUT + 'run-done.png', fullPage: true });
     await p.evaluate(() => location.hash = 'home'); await p.waitForTimeout(300);
-    ok(/Sleep Descent, 30 min, heart rate \d+ → \d+ bpm, average coherence/.test(await t(p, '#homeLast')), 'Home last session: ' + await t(p, '#homeLast'));
-    await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(200);
-    ok(/1sessionthisweek30minutesthisweek/.test((await t(p, '#prWeek')).replace(/\s/g, '')), 'week strip: ' + await t(p, '#prWeek'));
+    ok(/Sleep Descent30 min · heart rate \d+ → \d+ · coherence \d\.\d · swing/.test(await t(p, '#tdRecentBody .hi-e')), 'on Today: ' + await t(p, '#tdRecentBody .hi-e'));
+    ok(/^1 session · 30 min · 1 of 7 days$/.test(await t(p, '#tdRecentBody .hi-tot')), 'the last 7 days: ' + await t(p, '#tdRecentBody .hi-tot'));
     await p.context().close();
   }
 

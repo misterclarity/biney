@@ -13,9 +13,9 @@ const vis = (p, s) => p.$eval(s, e => !!(e.offsetParent || e.getClientRects().le
   p.on('console', m => { if (m.type() === 'error') log.push('CONSOLE ' + m.text()); });
   await p.addInitScript(mock, { speed: 1, rr: true });
   await p.goto(APP);
-  ok(await t(p, '#viewTitle') === 'Home' && await vis(p, '#v-home'), 'opens on Home');
+  ok(await t(p, '#viewTitle') === 'Today' && await vis(p, '#v-home'), 'opens on Today');
   await p.click('#homeStart'); await p.waitForTimeout(300);
-  ok(await p.evaluate(() => location.hash) === '#breathe' && await t(p, '#bStart') === 'Pause', 'Home Start goes to Breathe and starts: ' + await t(p, '#bStart'));
+  ok(await p.evaluate(() => location.hash) === '#breathe' && await t(p, '#bStart') === 'Pause', 'Start on Today goes to Breathe and starts: ' + await t(p, '#bStart'));
   ok(!(await vis(p, '#bPanel')), 'settings sheet hidden by default on phone');
   await p.click('#bAdjust'); await p.waitForTimeout(400);
   ok(await vis(p, '#bPanel') && await p.$eval('#bAdjust', e => e.getAttribute('aria-expanded')) === 'true', 'Adjust opens the sheet');
@@ -28,12 +28,12 @@ const vis = (p, s) => p.$eval(s, e => !!(e.offsetParent || e.getClientRects().le
   ok(/bpm/.test(await t(p, '#tbSensorTxt')) && /Connected to/.test(await t(p, '#bSensorTxt')), 'sensor via Breathe row: pill="' + await t(p, '#tbSensorTxt') + '"');
   await p.waitForTimeout(4000);
   await p.screenshot({ path: OUT + 'phone-breathe-live.png' });
-  // sounds
-  await p.click('.nav a[data-view=sounds]'); await p.waitForTimeout(200);
-  await p.click('#sg-prime');
-  ok(await vis(p, '#primeStart') && !(await vis(p, '#grid')), 'Sounds segment switches to Prime');
-  await p.click('#sg-tracks');
-  await p.click('#grid .card:first-child .play-btn'); await p.waitForTimeout(300);
+  // a track, from the library
+  await p.click('.nav a[data-view=practice]'); await p.waitForTimeout(200);
+  await p.click('#prFilt [data-f=sleep]'); await p.waitForTimeout(200);
+  await p.click('#prLib a[href="#track/sleep-descent"]'); await p.waitForTimeout(300);
+  ok(await t(p, '#viewTitle') === 'Delta Sleep' && await vis(p, '#trGo'), 'a track in the library opens its page');
+  await p.click('#trGo'); await p.waitForTimeout(300);
   ok(await vis(p, '#scModal'), 'first play opens the headphone check');
   await p.click('#scSkip'); await p.waitForTimeout(700);
   ok(await p.$eval('body', b => b.classList.contains('has-player')) && await vis(p, '#toggle'), 'mini player docks after play');
@@ -58,7 +58,7 @@ const vis = (p, s) => p.$eval(s, e => !!(e.offsetParent || e.getClientRects().le
   await p.evaluate(() => { location.hash = 'connect'; }); await p.waitForTimeout(400);
   ok(await vis(p, '#v-heart') && await p.$eval('#connect', d => d.open), '#connect opens Heart with the guide open');
   await p.evaluate(() => { location.hash = 'prime'; }); await p.waitForTimeout(300);
-  ok(await vis(p, '#v-sounds') && await vis(p, '#primeStart'), '#prime opens Sounds on Prime');
+  ok(await vis(p, '#v-prime') && await vis(p, '#primeStart'), '#prime opens the Custom primer');
   await p.goBack(); await p.waitForTimeout(300);
   ok(await vis(p, '#v-heart'), 'Back returns to the previous view');
   ok(await p.evaluate(() => document.documentElement.scrollWidth - innerWidth) === 0, 'no horizontal overflow on phone');
@@ -75,13 +75,13 @@ const vis = (p, s) => p.$eval(s, e => !!(e.offsetParent || e.getClientRects().le
   await d.click('#bStart'); await d.waitForTimeout(9000);
   ok(await t(d, '#bPhase') === 'Done', 'sped-up 2-min session finishes: ' + await t(d, '#bPhase'));
   await d.click('.nav a[data-view=home]'); await d.waitForTimeout(300);
-  ok(/average swing/.test(await t(d, '#homeLast')), 'Home shows last session: ' + (await t(d, '#homeLast')).slice(0, 90));
-  ok(/bpm/.test(await t(d, '#qkSensor')), 'Home sensor tile: ' + await t(d, '#qkSensor'));
+  ok(/Resonance 5\.5.*2 min.*swing/.test(await t(d, '#tdRecentBody')), 'Today shows the session: ' + (await t(d, '#tdRecentBody .hi-e')).slice(0, 90));
+  ok(/bpm/.test(await t(d, '#qkSensor')), 'Today sensor tile: ' + await t(d, '#qkSensor'));
   await d.screenshot({ path: OUT + 'desk-home-after.png' });
   await d.click('.nav a[data-view=breathe]'); await d.waitForTimeout(300);
   await d.screenshot({ path: OUT + 'desk-breathe2.png' });
-  await d.click('.nav a[data-view=sounds]'); await d.waitForTimeout(300);
-  await d.screenshot({ path: OUT + 'desk-sounds2.png' });
+  await d.click('.nav a[data-view=practice]'); await d.waitForTimeout(300);
+  await d.screenshot({ path: OUT + 'desk-library.png' });
   await browser.close();
   console.log(log.join('\n'));
 })();

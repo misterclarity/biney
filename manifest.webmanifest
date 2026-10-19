@@ -18,7 +18,7 @@
   "shortcuts": [
     { "name": "Sleep Descent", "short_name": "Sleep", "description": "Slow breathing into a delta beat for falling asleep", "url": "./#practice/sleep-descent",
       "icons": [{ "src": "icons/sleep-96.png", "sizes": "96x96", "type": "image/png" }] },
-    { "name": "Practices", "short_name": "Practice", "description": "Guided meditation, breathwork, yoga and programs", "url": "./#practice",
+    { "name": "Library", "short_name": "Library", "description": "Practices, breathing patterns and tracks, by what they're for", "url": "./#practice",
       "icons": [{ "src": "icons/practice-96.png", "sizes": "96x96", "type": "image/png" }] },
     { "name": "Breathe", "short_name": "Breathe", "description": "Open the breathing guide", "url": "./#breathe",
       "icons": [{ "src": "icons/breathe-96.png", "sizes": "96x96", "type": "image/png" }] },

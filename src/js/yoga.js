@@ -182,6 +182,7 @@
         return;
       }
       yStore(yLoad().filter(function (q) { return q.uid !== Y.uid; }));
+      if (favHas("my-" + Y.uid)) favSet("my-" + Y.uid, false);
       toast("Deleted “" + (Y.name || "routine") + "”.");
       Y.uid = null; Y.items = []; Y.name = "";
       location.hash = "practice";

@@ -1,6 +1,6 @@
   /* ------------------------------- search -------------------------------
      One box for everything: practices and your own routines, the movement library, breathing
-     patterns, Sounds tracks, the Heart tools and every paragraph and reference in Learn.
+     patterns, tracks, the Heart tools, History and Settings, and every paragraph and reference in Learn.
      Matching ignores case and accents, and each word you type has to match the start of a word
      somewhere in the entry, so "anap" finds Anapana and "bencao" finds Bênção. Results come in
      groups, the group with the best match first. Enter opens the top result; "/" or Ctrl+K opens
@@ -9,7 +9,7 @@
 
   var FD = { open: false, base: null, items: [], q: "", more: {}, pushed: false, back: null, t: 0 };
   var FD_KINDS = [["practice", "Practices"], ["pose", "Poses and moves"], ["breath", "Breathing"],
-    ["sound", "Sounds"], ["heart", "Heart"], ["learn", "Learn"], ["app", "Settings"]];
+    ["sound", "Sounds"], ["heart", "Heart"], ["learn", "Learn"], ["app", "History and Settings"]];
   var FD_CAP = 6;                        // results shown per group until you ask for the rest
   var FD_TRY = ["Sleep", "Anapana", "Tree", "4-7-8", "Coherence", "Tinnitus", "Capoeira", "Needs"];
 
@@ -129,10 +129,10 @@
       out.push(fdEntry("sound", t.name, gn + " · " + t.band + " track · " + t.minutes + " min", [t.desc, t.ev], "#track/" + t.id,
         { ic: "sounds", col: "var(--relax)", w: 1, alias: t.goal === "tinnitus" ? "tinnitus" : "", tags: "binaural beat track " + (t.also || []).join(" ") }));
     });
-    out.push(fdEntry("sound", "Custom primer", "Focus · Sounds · 5 to 20 min before a task",
+    out.push(fdEntry("sound", "Custom primer", "Focus · Sound · 5 to 20 min before a task",
       ["Listen to a beat before you start a task, get a cue when the block ends, then begin working."], "#prime",
       { ic: "bolt", col: "var(--relax)", w: 1, tags: "binaural focus primer alpha beta gamma" }));
-    out.push(fdEntry("sound", "Beat builder", "Sounds · any beat and carrier",
+    out.push(fdEntry("sound", "Beat builder", "Make your own · any beat and carrier",
       ["Pick the beat frequency, the carrier tone and the session length, then play it."], "#builder",
       { ic: "sliders", col: "var(--relax)", w: 1, tags: "binaural custom builder carrier frequency" }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
@@ -150,6 +150,9 @@
     out.push(fdEntry("app", "Settings", "Defaults for every practice, sound and screen",
       ["Spoken guidance, voice, bells, breath cues and visual, binaural layer, Anapana reminders, background sound, keeping reflections, and keeping the screen on or dimming it for sleep."], "#settings",
       { ic: "gear", col: "var(--accent)", w: 1, tags: "options preferences defaults voice bells screen dim brightness wake lock background rain" }));
+    out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
+      ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
+      { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));
     fdLearn(out);
     return out;
   }
@@ -323,18 +326,7 @@
     }
   }
 
-  /* ----- landing on a track or a breathing pattern ----- */
-  function fdTrack(id) {
-    var t = TRACKS.filter(function (x) { return x.id === id; })[0];
-    if (!t) return;
-    if (curFilter !== "all" && curFilter !== t.goal) { var all = document.querySelector('.tab[data-filter="all"]'); if (all) all.click(); }
-    setTimeout(function () {
-      var card = document.querySelector('#grid .card[data-id="' + id + '"]');
-      if (!card) return;
-      try { card.scrollIntoView({ block: "center", behavior: RM ? "auto" : "smooth" }); } catch (e) { card.scrollIntoView(); }
-      fdHit(card);
-    }, 40);
-  }
+  /* ----- landing on a breathing pattern ----- */
   function fdPattern(id) {
     var inp = document.querySelector('#bPats input[value="' + id + '"]');
     if (!inp) return;

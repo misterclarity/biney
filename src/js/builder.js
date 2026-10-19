@@ -11,6 +11,7 @@
     $("#cBand").textContent = b.name + " — " + b.note;
     $("#cL").textContent = car + " Hz";
     $("#cR").textContent = (car + beat).toFixed(1) + " Hz";
+    $("#cPlay").innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Play ' + min + " min";
   }
 
   function builderInit() {
@@ -33,4 +34,5 @@
       });
     });
     syncBuilder();
+    $("#beatsFav").innerHTML = favBtn("x:beats", "Beat builder");
   }

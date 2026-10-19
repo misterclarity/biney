@@ -1,5 +1,5 @@
 // Runs every suite in turn against the built index.html and adds up the results.
-//   node tests/run.js            all suites (about ten minutes)
+//   node tests/run.js            all suites (about fifteen minutes)
 //   node tests/run.js regress    only the suites named
 // Exits with 1 if anything failed, so it can gate a commit or a CI job.
 const { spawnSync } = require('child_process'), path = require('path');
@@ -11,6 +11,7 @@ const SUITES = [
   ['prrun2', 'Practices: programs, Wim Hof, builder'],
   ['prrun3', 'Capoeira, tapping, heart-led beats, nap, reflection'],
   ['regress', 'Fixes from the October 2026 code review'],
+  ['todaytest', 'Today, one history, favourites, the library with sounds'],
   ['findtest', 'Resonance test with a sensor (about two minutes)']
 ];
 const pick = process.argv.slice(2);

@@ -234,6 +234,7 @@
     return "custom";
   }
   function renderNote() {
+    bFavSync();
     var p = preset(BC.pattern);
     if (p) {
       bSetT("#bDesc", p.desc);
@@ -357,6 +358,7 @@
       var bt = breathTime();
       if (bt >= 0) hrFinalize(locate(bt).count);
       if (!P.usesB) hrSummary();
+      hBreath(Math.max(0, bt), false);
     }
     if (B.finder) finderCancel();
     B.state = "idle";
@@ -384,6 +386,7 @@
   function bFinish() {
     var secs = endBt(), n = B.total;
     bEnd(n, secs, n + " breaths in " + fmt(secs) + ". Breathe normally for a minute before you get up.");
+    hBreath(secs, true);
     syncTransport(); updateHead(); draw();
     bSetT("#bLive", "Session complete.");
   }

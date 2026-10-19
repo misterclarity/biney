@@ -1,22 +1,21 @@
 {include:icons.svg}
 <div class="app">
   <aside class="rail">
-    <a class="brand" href="#home" aria-label="Entrain home"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Entrain</span></a>
+    <a class="brand" href="#home" aria-label="Entrain, Today"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Entrain</span></a>
     <nav class="nav" aria-label="Sections">
-      <a href="#home" data-view="home"><span class="ni">{i:home}</span><span>Home</span></a>
-      <a href="#practice" data-view="practice"><span class="ni">{i:practice}</span><span>Practice</span></a>
+      <a href="#home" data-view="home"><span class="ni">{i:today}</span><span>Today</span></a>
+      <a href="#practice" data-view="practice"><span class="ni">{i:practice}</span><span>Library</span></a>
       <a href="#breathe" data-view="breathe"><span class="ni">{i:breathe}</span><span>Breathe</span></a>
-      <a href="#sounds" data-view="sounds"><span class="ni">{i:sounds}</span><span>Sounds</span></a>
       <a href="#heart" data-view="heart"><span class="ni">{i:heart}</span><span>Heart</span></a>
       <a href="#learn" data-view="learn"><span class="ni">{i:learn}</span><span>Learn</span></a>
     </nav>
-    <p class="rail-foot">Everything runs on your device. Nothing is recorded or sent anywhere, and it keeps working offline.</p>
+    <p class="rail-foot">Everything runs on your device and stays there. Nothing is sent anywhere, and it keeps working offline.</p>
   </aside>
 
   <div class="main">
     <header class="topbar">
       <span class="brand-mark top-mark" aria-hidden="true"></span>
-      <h1 id="viewTitle">Home</h1>
+      <h1 id="viewTitle">Today</h1>
       <div class="top-actions">
         <a class="pill pill-prac" id="tbPrac" href="#practice" hidden>{i:practice}<span id="tbPracTxt"></span></a>
         <button class="pill pill-ic" id="tbFind" aria-label="Search" title="Search (/)" aria-haspopup="dialog" aria-expanded="false" aria-keyshortcuts="/ Control+K">{i:search}</button>
@@ -27,13 +26,16 @@
 
     <main id="views">
 
-{include:home.html}
+{include:today.html}
+{include:history.html}
 {include:practice.html}
 {include:settings.html}
 {include:yoga.html}
 {include:session.html}
+{include:track.html}
+{include:prime.html}
+{include:builder.html}
 {include:breathe.html}
-{include:sounds.html}
 {include:heart.html}
 {include:learn.html}
     </main>

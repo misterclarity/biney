@@ -1,0 +1,49 @@
+      <!-- ============ BEAT BUILDER ============ -->
+      <section class="view" id="v-builder" aria-labelledby="viewTitle" hidden>
+        <div class="tool-page" style="--pcol:var(--stim)">
+        <a class="si-back" href="#practice">{i:back}Library</a>
+        <div class="si-head">
+          <div class="si-top"><span class="si-kind">Make your own · 5–60 min</span><span id="beatsFav"></span></div>
+          <h2>Beat builder</h2>
+          <p class="si-blurb">Any beat, any carrier tone, any length from 5 minutes to an hour.</p>
+        </div>
+        <div class="si-grid">
+          <div class="si-main">
+            <div class="builder">
+              <div class="fields">
+                <div class="field">
+                  <label for="cBeat">Beat frequency <b id="cBeatV">10.0 Hz</b></label>
+                  <input type="range" id="cBeat" min="0.5" max="40" step="0.5" value="10">
+                  <p class="hint" id="cBand">Alpha — relaxed alertness</p>
+                </div>
+                <div class="field">
+                  <label for="cCar">Carrier tone <b id="cCarV">250 Hz</b></label>
+                  <input type="range" id="cCar" min="100" max="600" step="10" value="250">
+                  <p class="hint">Lower carriers give a stronger, more stable beat percept.</p>
+                </div>
+                <div class="field">
+                  <label for="cMin">Session length <b id="cMinV">20 min</b></label>
+                  <input type="range" id="cMin" min="5" max="60" step="5" value="20">
+                  <p class="hint">Longer exposures performed better in meta-analysis.</p>
+                </div>
+              </div>
+              <div class="band-readout">Left ear <b id="cL">250 Hz</b> · Right ear <b id="cR">260 Hz</b></div>
+            </div>
+            <ul class="si-need">
+              <li>{i:sounds}<span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
+              <li>{i:volume}<span><b>Low volume</b> a quiet, comfortable level is enough</span></li>
+            </ul>
+            <h3>Choosing the numbers</h3>
+            <p>Beats come through most clearly on carriers between about 200 and 500&nbsp;Hz, and the effect breaks down once the two tones are more than 30 to 35&nbsp;Hz apart. <a href="#l-bands">The frequency bands</a> on the Learn page say what each range of beats has been studied for.</p>
+            <div class="si-caution">{i:warn}<span>Not for everyone. Avoid the beats if you have epilepsy or a seizure disorder or wear a pacemaker, and never listen while driving or operating machinery. This is not a medical device.</span></div>
+          </div>
+          <div class="si-side">
+            <div class="si-bar">
+              <button class="btn primary si-go" id="cPlay">Play custom session</button>
+              <p class="si-bar-note">Plays in the player at the bottom, so you can keep using the app while you listen.</p>
+            </div>
+          </div>
+        </div>
+        </div>
+      </section>
+

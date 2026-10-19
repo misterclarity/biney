@@ -1,14 +1,20 @@
   /* ---------------------------- app shell ----------------------------
-     Views behind a hash router: #home, #practice, #breathe, #sounds, #heart
-     and #learn, plus #practice/<id> for a guided session, and from search #track/<id>,
-     #breathe/<pattern> and #yoga/find/<pose>. Older in-page anchors (#prime, #tracks, #builder, #connect,
-     #science, #references) still work: they open the view that holds them.
+     Views behind a hash router. The five tabs are #home (Today), #practice (the library),
+     #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
+     practice, #track/<id> for a track, #prime and #builder for the custom primer and the beat
+     builder, #yoga for the routine builder; and #settings from the gear. Links and search also
+     use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>. Older
+     addresses still work: #sounds and #tracks open the library at its sounds, and in-page anchors
+     (#connect, #science, #references and the rest) open the view that holds them.
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
 
-  var VIEWS = ["home", "practice", "breathe", "sounds", "heart", "learn", "session", "yoga", "settings"];
-  var V_TITLE = { home: "Home", practice: "Practice", breathe: "Breathe", sounds: "Sounds", heart: "Heart", learn: "Learn", session: "Practice", yoga: "Routine builder", settings: "Settings" };
-  var ALIAS = { prime: ["sounds", "prime"], tracks: ["sounds", "tracks"], builder: ["sounds", "build"] };
+  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings"];
+  var V_TITLE = { home: "Today", practice: "Library", breathe: "Breathe", heart: "Heart", learn: "Learn", history: "History", session: "Practice",
+    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings" };
+  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice" };   // the tab each page belongs to
+  var ALIAS = { today: "home", library: "practice" };
+  var BACK = "practice";                 // the list a page was opened from: Today, the library or History
   var BASE_TITLE = document.title;
   var curView = "";
   var MOBILE = window.matchMedia ? window.matchMedia("(max-width: 1023px)") : { matches: false };
@@ -22,18 +28,22 @@
     if (VIEWS.indexOf(v) < 0) v = "home";
     if (v !== "breathe") sheet(false);
     VIEWS.forEach(function (n) { $("#v-" + n).hidden = n !== v; });
-    var links = document.querySelectorAll(".nav a"), navV = (v === "session" || v === "yoga") ? "practice" : v;
+    var links = document.querySelectorAll(".nav a"), navV = V_TAB[v] || v;
     for (var i = 0; i < links.length; i++) {
       if (links[i].dataset.view === navV) links[i].setAttribute("aria-current", "page");
       else links[i].removeAttribute("aria-current");
     }
+    if (v === "home" || v === "practice" || v === "history") BACK = v;
+    else if (!V_TAB[v]) BACK = "practice";           // from Breathe, Heart, Learn or Settings, a page leads back to the library
     bSetT("#viewTitle", V_TITLE[v]);
     document.title = v === "home" ? BASE_TITLE : V_TITLE[v] + " | Entrain";
     if (v !== curView) window.scrollTo(0, 0);
     curView = v;
     if (v === "home") homeRefresh();
     if (v === "practice") pRenderLib();               // your routines may have changed
+    if (v === "history") hRender();
     if (v === "settings") stRender();
+    backSync();
     var gear = $("#tbSet");
     if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
     if (v === "breathe") setTimeout(sizeCanvas, 0);
@@ -43,26 +53,40 @@
     setTimeout(edgeFadeAll, 0);                         // widths are known once the view shows
   }
 
-  function goView(v, seg) {
-    if (seg) segPick(seg);
+  function goView(v) {
     if (location.hash.slice(1) !== v) location.hash = v;
     else showView(v);
+  }
+
+  // the way back from a page: to the list it was opened from
+  function backTo() { return { href: "#" + BACK, label: BACK === "home" ? "Today" : BACK === "history" ? "History" : "Library" }; }
+  function backLink() {
+    var b = backTo();
+    return '<a class="si-back" href="' + b.href + '"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>' + b.label + "</a>";
+  }
+  function backSync() {                              // the pages written in the markup rather than drawn
+    var b = backTo();
+    document.querySelectorAll("#v-prime .si-back, #v-builder .si-back, #v-yoga .si-back").forEach(function (a) {
+      a.setAttribute("href", b.href);
+      a.lastChild.textContent = b.label;
+    });
   }
 
   function route() {
     var h = "";
     try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
     if (!h) { showView("home"); return; }
+    if (ALIAS[h]) h = ALIAS[h];
     if (h === "session") { location.replace("#practice"); return; }
     if (h.indexOf("practice/") === 0) { showView("session"); pIntro(h.slice(9)); return; }
+    if (h.indexOf("track/") === 0) { showView("track"); trOpen(h.slice(6)); return; }
+    if (h.indexOf("goal/") === 0) { libShow(h.slice(5), ""); return; }
+    if (h === "sounds" || h === "tracks") { libShow("", "sound"); return; }   // Sounds was a tab of its own
     if (h === "yoga" || h.indexOf("yoga/") === 0) { showView("yoga"); yOpen(h.slice(5)); return; }
-    if (h.indexOf("track/") === 0) { segPick("tracks"); showView("sounds"); fdTrack(h.slice(6)); return; }      // from search
     if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
-    if (ALIAS[h]) { segPick(ALIAS[h][1]); showView(ALIAS[h][0]); return; }
     var el = document.getElementById(h), v = el && viewOf(el);
     if (!v) { showView("home"); return; }
-    if (el.classList.contains("seg-panel")) segPick(el.id.slice(3));
     showView(v);
     if (el.tagName === "DETAILS") el.open = true;
     setTimeout(function () {
@@ -94,21 +118,8 @@
     if (!el.efade) { el.efade = upd; el.addEventListener("scroll", upd, { passive: true }); }
     upd();
   }
-  var EDGE_ROWS = ["#prFilt", "#bPats", ".toc", "#tracks .tabs", "#ybCats", "#ybPos", ".si-len"];
+  var EDGE_ROWS = ["#prFilt", "#bPats", ".toc", "#ybCats", "#ybPos", ".si-len"];
   function edgeFadeAll() { EDGE_ROWS.forEach(function (q) { document.querySelectorAll(q).forEach(edgeFade); }); }
-
-  /* ----- Sounds: Tracks / Prime / Build ----- */
-  function segPick(seg, focus) {
-    var bs = document.querySelectorAll(".seg-b");
-    for (var i = 0; i < bs.length; i++) {
-      var on = bs[i].dataset.seg === seg;
-      bs[i].setAttribute("aria-selected", on ? "true" : "false");
-      bs[i].tabIndex = on ? 0 : -1;
-      $("#sp-" + bs[i].dataset.seg).hidden = !on;
-      if (on && focus) bs[i].focus();
-    }
-    store.set("soundsSeg", seg);
-  }
 
   /* ----- breathing settings: a side panel on desktop, a sheet on a phone ----- */
   function sheet(open) {
@@ -122,7 +133,7 @@
     if (!open && was) b.focus();
   }
 
-  /* ----- heart sensor status, mirrored in the top bar, Home and Breathe ----- */
+  /* ----- heart sensor status, mirrored in the top bar, Today and Breathe ----- */
   function shellSensor() {
     var pill = $("#tbSensor");
     if (!pill) return;
@@ -158,76 +169,6 @@
       bSetT("#bSensorTxt", "Live heart data needs Chrome or Edge on an Android phone or a computer.");
       bSetT("#bSensorBtn", "How to connect"); btn.dataset.act = "guide";
     }
-  }
-
-  /* ----- Home ----- */
-  function fmtSec(s) { return (s % 1 ? s.toFixed(1) : String(s)) + " s"; }
-  function patLabel() {
-    var r = document.querySelector('input[name="bpat"]:checked');
-    return r ? r.parentNode.textContent.trim() : "Custom";
-  }
-
-  function homeRefresh() {
-    var rate = 60 / cycleOf(BC), parts = ["in for " + fmtSec(BC.inh)];
-    if (BC.sip) parts.push("a " + fmtSec(BC.sip) + " top-up");
-    if (BC.hold) parts.push("hold " + fmtSec(BC.hold));
-    parts.push("out for " + fmtSec(BC.exh));
-    if (BC.rest) parts.push("hold " + fmtSec(BC.rest));
-    bSetT("#homePat", patLabel());
-    bSetT("#homePatTxt", rate.toFixed(1) + " breaths a minute: " + parts.join(", ") + ". " +
-      (BC.minutes ? "A " + BC.minutes + "-minute session." : "Open-ended, until you stop."));
-    bSetT("#homeStart", pBusy() ? "Back to " + P.def.name : B.state === "running" ? "Back to your session" : B.state === "paused" ? "Resume session" : "Start breathing");
-
-    if (H.find && H.find.best) {
-      var d = new Date(H.find.at).toLocaleDateString(undefined, { day: "numeric", month: "short" });
-      bSetT("#qkFind", "Last result: " + H.find.best + " breaths a minute, " + d);
-    } else bSetT("#qkFind", "A 10-minute test with a heart sensor");
-    var c = primeCfg();
-    bSetT("#qkPrime", c.minutes + " min of " + c.beat + " Hz " + bandFor(c.beat).name.toLowerCase() + ", then start work");
-    bSetT("#qkTracks", TRACKS.length + " tracks for sleep, calm, focus, recovery and tinnitus");
-
-    var last = null;
-    try { last = JSON.parse(store.get("lastSummary") || "null"); } catch (e) {}
-    if (last && last.text) {
-      var t = last.text.replace(/^Last session: /, "");
-      bSetT("#homeLast", t.charAt(0).toUpperCase() + t.slice(1));
-      bSetT("#homeLastWhen", new Date(last.at).toLocaleString(undefined,
-        { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }));
-    }
-    shellSensor();
-    pSuggest();
-    drawHomeWave();
-  }
-
-  /* The current pattern drawn as two and a half breaths, coloured by phase. */
-  function drawHomeWave() {
-    var cv = $("#homeWave");
-    if (!cv || $("#v-home").hidden || !BCOL.text) return;
-    var f = fitCanvas(cv);
-    if (!f) return;
-    var c = f.c, W = f.w, Hh = f.h, ph = buildPhases(BC), T = ph.cycle * 2.5, top = 12, bot = Hh - 12;
-    var at = function (t) {
-      var ct = t % ph.cycle, p = ph.list[ph.list.length - 1];
-      for (var i = 0; i < ph.list.length; i++) if (ct < ph.list[i].start + ph.list[i].secs) { p = ph.list[i]; break; }
-      var prog = Math.min(1, Math.max(0, (ct - p.start) / p.secs));
-      return { k: p.k, y: bot - (p.from + (p.to - p.from) * bEase(prog)) * (bot - top) };
-    };
-    var x, pt, g = c.createLinearGradient(0, top, 0, bot);
-    g.addColorStop(0, rgba(BCOL["b-in"], 0.18));
-    g.addColorStop(1, rgba(BCOL["b-in"], 0));
-    c.beginPath(); c.moveTo(0, bot);
-    for (x = 0; x <= W; x += 2) c.lineTo(x, at(x / W * T).y);
-    c.lineTo(W, bot); c.closePath(); c.fillStyle = g; c.fill();
-    c.lineWidth = 3; c.lineCap = "round"; c.lineJoin = "round";
-    var runK = null;
-    for (x = 0; x <= W + 1; x += 2) {
-      pt = at(Math.min(W, x) / W * T);
-      if (pt.k !== runK) {
-        if (runK !== null) { c.lineTo(x, pt.y); c.stroke(); }
-        c.beginPath(); c.strokeStyle = kc(pt.k); c.moveTo(x, pt.y); runK = pt.k;
-      } else c.lineTo(x, pt.y);
-    }
-    c.stroke();
   }
 
   /* --------------------------- app: install and offline --------------------------- */
@@ -331,7 +272,7 @@
     if (!site) return;
 
     window.addEventListener("beforeinstallprompt", function (e) {
-      e.preventDefault();                                   // offer it on Home instead of a browser bar
+      e.preventDefault();                                   // offer it on Today instead of a browser bar
       APP.prompt = e;
       installShow(false);
     });
@@ -385,28 +326,8 @@
       var go = e.target.closest("[data-go]");
       if (!go) return;
       e.preventDefault();
-      goView(go.dataset.go, go.dataset.seg);
+      goView(go.dataset.go);
     });
-    $("#homeStart").addEventListener("click", function () {
-      if (pBusy()) { pOpen(); return; }
-      goView("breathe");
-      if (B.state !== "running") bToggle();
-    });
-
-    // Sounds segments
-    var segs = Array.prototype.slice.call(document.querySelectorAll(".seg-b"));
-    segs.forEach(function (b, i) {
-      b.addEventListener("click", function () { segPick(b.dataset.seg); });
-      b.addEventListener("keydown", function (e) {
-        var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-        if (!d) return;
-        e.preventDefault();
-        segPick(segs[(i + d + segs.length) % segs.length].dataset.seg, true);
-      });
-    });
-    var seg = store.get("soundsSeg");
-    segPick(seg && $("#sp-" + seg) ? seg : "tracks");
-    $("#scOpen2").addEventListener("click", function () { pendingPlay = null; openCheck(); });
 
     // breathing settings sheet
     $("#bAdjust").addEventListener("click", function () { sheet(!$("#bPanel").classList.contains("open")); });
@@ -438,7 +359,6 @@
     syncDock();
 
     // canvases drawn before the display font arrived get redrawn once it has
-    if (window.ResizeObserver) new ResizeObserver(drawHomeWave).observe($("#homeWave"));
     if (document.fonts && document.fonts.load) {
       document.fonts.load('700 24px "Entrain Display"').then(function () {
         draw(); drawSwings(); drawFind(); drawSpectrum(); drawHomeWave();
@@ -447,9 +367,4 @@
 
     var fadeT = 0;
     window.addEventListener("resize", function () { clearTimeout(fadeT); fadeT = setTimeout(edgeFadeAll, 150); });
-    appInit();
-    ambInit();
-    qInit();
-    pInit();
-    route();
   }

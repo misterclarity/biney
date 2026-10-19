@@ -419,7 +419,6 @@
     var el = $("#hrSummary");
     el.textContent = "Last session: " + parts.join(", ") + ".";
     el.hidden = false;
-    store.set("lastSummary", JSON.stringify({ at: Date.now(), text: el.textContent }));
   }
 
   function hrInit() {
