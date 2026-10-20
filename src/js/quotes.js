@@ -4,7 +4,7 @@
      come from public-domain translations: George Long's Marcus Aurelius and Epictetus,
      Richard Gummere's Seneca, Max Müller's Dhammapada and James Legge's Tao Te Ching,
      plus Thoreau's Walden. Carl Rogers's line on self-acceptance and change is paraphrased,
-     as his book is still in copyright. Lines without a name are Entrain's own.
+     as his book is still in copyright. Lines without a name are Entrain's own, and say so.
   ---------------------------------------------------------------------- */
   var QUOTES = [
     ["A balanced mind perceives the most subtle sensations.", "Vipassana teaching"],
@@ -48,11 +48,11 @@
   var ROGERS = QUOTES[14];
   var Q = { i: 0 };
   function qDay() { var d = new Date(); return Math.floor((d.getTime() - d.getTimezoneOffset() * 6e4) / 864e5); }
+  function qBy(q) { return q[1] || "Entrain"; }
   function qShow() {
     var q = QUOTES[Q.i];
     bSetT("#qTxt", q[0]);
-    bSetT("#qBy", q[1] || "");
-    $("#qBy").hidden = !q[1];
+    bSetT("#qBy", qBy(q));
   }
   /* One for the end of a practice: never the one already on Today. */
   function qPick() {
@@ -61,7 +61,7 @@
   }
   function qCard(q) {
     return '<figure class="quote sd-quote"><blockquote>' + esc(q[0]) + "</blockquote>" +
-      "<figcaption>" + (q[1] ? "<span>" + esc(q[1]) + "</span>" : "<span></span>") +
+      "<figcaption><span>" + esc(qBy(q)) + "</span>" +
       '<button class="btn small q-say" data-say="' + esc(q[0] + (q[1] ? " " + q[1] + "." : "")) + '"><svg class="i" aria-hidden="true"><use href="#i-voice"/></svg>Read aloud</button>' +
       "</figcaption></figure>";
   }

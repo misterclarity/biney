@@ -24,7 +24,7 @@ JS = [
     "core.js", "tracks.js", "audio.js", "trackpage.js", "builder.js", "prime.js", "dialogs.js",
     "breathe.js", "breathe-draw.js", "heart.js", "heart-charts.js",
     "shell.js",
-    "asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "taxonomy.js", "practice.js",
+    "asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "taxonomy.js", "practice.js", "done.js",
     "library.js", "settings.js", "adapt.js", "nvc.js", "yoga.js", "search.js",
     "history.js", "favs.js", "today.js",
     "boot.js",

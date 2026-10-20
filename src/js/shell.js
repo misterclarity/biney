@@ -103,7 +103,7 @@
     var t = e.target;
     if (!t || !t.closest) return false;
     if (t.closest("#sPrev, #sPlay, #sNext")) return e.code === "Space";
-    return !!t.closest('input, select, textarea, button, a[href], summary, [role="button"], [role="radio"], [role="tab"], [contenteditable]');
+    return !!t.closest('input, select, textarea, button, a[href], summary, [role="button"], [role="radio"], [role="tab"], [role="slider"], [contenteditable]');
   }
 
   /* ----- rows of chips that scroll sideways fade out at an edge with more beyond it ----- */

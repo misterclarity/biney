@@ -1,6 +1,7 @@
 // Regression checks for the October 2026 code review: each group reproduces a bug that was fixed.
 // O to R cover the requests that followed: Anapana's narrowing focus, wording, the screen lock and search.
 // S to V cover the second review: goals for everything, the library, the small fixes, the practice page and Settings.
+// W and X: the end screen explains its numbers and its chart; the app's own quotes are signed Entrain.
 // Run: node tests/regress.js [group letter]
 const { chromium, APP, ROOT } = require('./pw');
 const fs = require('fs'), path = require('path'), os = require('os'), { spawnSync } = require('child_process');
@@ -747,6 +748,99 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       ok(!(await E(p, () => document.querySelector('#ses').dataset.dim)), 'and the summary is lit again');
       const found = await E(p, () => { document.querySelector('#tbFind').click(); const i = document.querySelector('#fdIn'); i.value = 'screen'; i.dispatchEvent(new Event('input', { bubbles: true })); return new Promise(r => setTimeout(() => r([...document.querySelectorAll('.fd-it')].map(a => a.getAttribute('href'))), 200)); });
       ok(found.includes('#settings'), 'search finds Settings');
+      await p.close();
+    }
+
+    /* W. the end screen explains itself: tap a number for what it means, tap or drag the chart to read it */
+    if (!only || only === 'W') {
+      const p = await page(null, OPT());
+      // a heart-rate line that settles from 72 to 64, with a ripple for each breath
+      const pts = (T, n) => Array.from({ length: n }, (_, i) => { const t = i * T / n; return { t, hr: 72 - 8 * t / T + 3 * Math.sin(t / 11 * 2 * Math.PI) }; });
+      const end = async (id, len, r) => {
+        await p.evaluate(x => location.hash = 'practice/' + x, id); await p.waitForTimeout(250);
+        await E(p, ([id, len, r]) => { const X = window.__entrain; X.P.def = X.pDef(id); X.P.steps = X.pPlan(X.P.def, len).steps; X.pDone(r, r.early); }, [id, len, r]);
+        await p.waitForTimeout(150);
+      };
+      const ex = async key => { await p.click('#sDone .sd-t[data-ex="' + key + '"]'); await p.waitForTimeout(80); return E(p, () => ({ hidden: document.querySelector('#sdEx').hidden, t: document.querySelector('#sdEx').textContent })); };
+      await end('calm-reset', 0, { secs: 600, early: false, hr0: 72, hr1: 64, coh: 3.2, cohMax: 5.1, cohEst: true, swing: 6.2, hrPts: pts(600, 600) });
+      const tl = await p.$$eval('#sDone .sd-t', b => b.map(x => x.tagName + ':' + x.dataset.ex).join(' '));
+      ok(tl === 'BUTTON:time BUTTON:hr BUTTON:coh BUTTON:swing' && /Tap a number to see what it means, or the chart to read it/.test(await t(p, '.sd-tap')), 'every number on the end screen is a button: ' + tl);
+      let e = await ex('hr');
+      ok(!e.hidden && /^Heart rate, start to end/.test(e.t) && /first two minutes, then in the last two.*72, then 64/.test(e.t) && /came down 8 beats/.test(e.t) &&
+        await p.$eval('.sd-t[data-ex=hr]', b => b.getAttribute('aria-expanded')) === 'true', 'heart rate: what it is, and yours read back: ' + e.t.slice(0, 120));
+      e = await ex('coh');
+      ok(/^Coherence/.test(e.t) && /averaged 3\.2.*best moment reached 5\.1/.test(e.t) && /marked \(est\.\) because your sensor sends heart rate only/.test(e.t) &&
+        await p.$eval('.sd-t[data-ex=hr]', b => b.getAttribute('aria-expanded')) === 'false', 'coherence, with what (est.) means; one explanation open at a time');
+      e = await ex('coh');
+      ok(e.hidden && await p.$eval('.sd-t[data-ex=coh]', b => b.getAttribute('aria-expanded')) === 'false', 'tapping it again closes it');
+      e = await ex('swing');
+      ok(/^Swing per breath/.test(e.t) && /6\.2 beats a minute/.test(e.t) && /resonance test/.test(e.t), 'swing: ' + e.t.slice(0, 80));
+      await p.click('#sdEx .sd-ex-x'); await p.waitForTimeout(80);
+      ok(await p.$eval('#sdEx', x => x.hidden), 'the close button closes it');
+      e = await ex('time');
+      ok(/The session ran its full length: 10:00/.test(e.t) && /Time on pause isn't counted/.test(e.t), 'time');
+      // the chart: tap to read a moment; it says how to read it; the arrow keys move along it
+      await p.evaluate(() => document.querySelector('#sdChart').scrollIntoView({ block: 'center' })); await p.waitForTimeout(150);
+      const bx = await p.$eval('#sdChart', c => { const r = c.getBoundingClientRect(); return { x: r.left + 30 + (r.width - 38) / 2, y: r.top + r.height / 2 }; });
+      await p.mouse.click(bx.x, bx.y); await p.waitForTimeout(150);
+      const rd = await t(p, '#sdRead');
+      ok(/^At (4:5\d|5:0\d) · (6[6-9]|7\d) bpm · \S/.test(rd) && !(await p.$eval('#sdHowT', x => x.hidden)) && /ripples are your breaths/.test(await t(p, '#sdHowT')),
+        'tapping the chart reads that moment (' + rd + ') and says how to read the chart');
+      const v0 = +(await p.$eval('#sdChart', c => c.getAttribute('aria-valuenow')));
+      await p.focus('#sdChart'); await p.keyboard.press('ArrowRight'); await p.waitForTimeout(80);
+      const v1 = +(await p.$eval('#sdChart', c => c.getAttribute('aria-valuenow')));
+      ok(v1 === v0 + 20 && /^At /.test(await p.$eval('#sdChart', c => c.getAttribute('aria-valuetext'))), 'the arrow keys move along it (' + v0 + ' → ' + v1 + ' s)');
+      await p.click('#sdHow'); await p.waitForTimeout(60);
+      ok(await p.$eval('#sdHowT', x => x.hidden), '"How to read this chart" folds away again');
+      // ended early, and the other kinds of number
+      await end('wim-hof', 3, { secs: 300, early: true, holds: [62, 95, 110], hrPts: [] });
+      e = await ex('time');
+      ok(/You ended the session after 05:00, before its planned end/.test(e.t) && !(await p.$('#sdChart')), 'ended early says so; no chart without heart data');
+      e = await ex('holds');
+      ok(/round by round: 01:02, 01:35, 01:50\. The longest was 01:50/.test(e.t) && /sitting or lying down/.test(e.t), 'breath holds');
+      await end('tapping', 0, { secs: 300, early: false, suds: [7, 4, 2], hrPts: [] });
+      e = await ex('suds');
+      ok(/7, then 4, then 2/.test(e.t) && /came down 5 points/.test(e.t), 'tapping ratings');
+      await end('anapana', 10, { secs: 600, early: false, wander: 1, hrPts: [] });
+      e = await ex('wander');
+      ok(/back to the breath 1 time\./.test(e.t) && /training itself/.test(e.t), 'came back');
+      await end('heart-led', 20, { secs: 1200, early: false, hrAvg: 66, beat0: 10, beat1: 6.2, beatHeart: true, hrPts: pts(1200, 600), beatLog: Array.from({ length: 200 }, (_, i) => ({ t: i * 6, hz: 10 - 3.8 * i / 199 })) });
+      e = await ex('beat');
+      ok(/10\.0 Hz, then 6\.2 Hz/.test(e.t) && /0\.15 Hz every five seconds/.test(e.t) && /Entrain's own/.test(e.t), 'heart-led beat');
+      e = await ex('hravg');
+      ok(/across the session: 66 beats a minute/.test(e.t), 'average heart rate');
+      await p.evaluate(() => document.querySelector('#sdChart').scrollIntoView({ block: 'center' })); await p.waitForTimeout(100);
+      const b2 = await p.$eval('#sdChart', c => { const r = c.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+      await p.mouse.click(b2.x, b2.y); await p.waitForTimeout(120);
+      ok(/ · beat \d\.\d Hz$/.test(await t(p, '#sdRead')) && /11 Hz at the top to 3 Hz at the bottom/.test(await t(p, '#sdHowT')), 'with the beat: ' + await t(p, '#sdRead'));
+      await end('power-nap', 20, { secs: 1500, early: false, nap: { sensor: true, base: 62, low: 55, onset: 9, slept: 13, onsetT: 700, len: 20 }, hrPts: pts(1500, 500) });
+      const nt = await p.$$eval('#sDone .sd-t', b => b.map(x => x.dataset.ex).join(' '));
+      e = await ex('onset');
+      ok(nt === 'time onset nap naphr' && /About 9 minutes/.test(e.t) && /62 beats a minute/.test(e.t) && /3 beats \(or 4%\)/.test(e.t) && /can't see sleep stages/.test(e.t), 'falling asleep: ' + nt);
+      e = await ex('nap');
+      ok(/about 13 minutes of sleep/.test(e.t) && /Brooks & Lack, 2006/.test(e.t), 'the nap length');
+      e = await ex('naphr');
+      ok(/^Heart rate, resting to lowest/.test(e.t) && /55 is the lowest/.test(e.t), 'resting to lowest');
+      await end('power-nap', 20, { secs: 1500, early: false, nap: { sensor: true, base: 60, low: 58, onset: null, slept: null, onsetT: 0, len: 20 }, hrPts: [] });
+      e = await ex('onset');
+      ok(/didn't stay far enough below your resting rate \(60 beats a minute\)/.test(e.t), 'no sleep detected');
+      await end('power-nap', 20, { secs: 1500, early: false, nap: { sensor: false, base: 0, low: 0, onset: null, slept: null, onsetT: 0, len: 20 }, hrPts: [] });
+      e = await ex('onset');
+      ok(/Without heart data the nap can't estimate sleep/.test(e.t), 'no heart data');
+      await p.close();
+    }
+
+    /* X. the app's own quotes are signed Entrain, and the button says what it does */
+    if (!only || only === 'X') {
+      const p = await page(null, OPT());
+      ok(await t(p, '#qNext') === 'Another quote', 'the button reads "Another quote"');
+      let by = '';
+      for (let i = 0; i < 40 && by !== 'Entrain'; i++) { await p.click('#qNext'); await p.waitForTimeout(30); by = await t(p, '#qBy'); }
+      ok(by === 'Entrain' && await p.$eval('#qBy', x => !x.hidden), 'a line of the app\'s own is signed Entrain: ' + await t(p, '#qTxt'));
+      const ends = await E(p, () => { const X = window.__entrain, out = []; X.P.def = X.pDef('grounding'); X.P.steps = X.pPlan(X.P.def, 0).steps;
+        for (let i = 0; i < 25; i++) { X.pDone({ secs: 120, early: false, hrPts: [] }, false); const f = document.querySelector('.sd-quote'); out.push([f.querySelector('figcaption span').textContent, f.querySelector('[data-say]').dataset.say]); }
+        return out; });
+      ok(ends.every(q => q[0]) && ends.some(q => q[0] === 'Entrain') && !ends.some(q => /Entrain\.$/.test(q[1])), 'every closing quote names its author or Entrain, and Read aloud leaves "Entrain" out');
       await p.close();
     }
   } catch (e) { log.push('ERROR ' + e.message); }

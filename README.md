@@ -49,7 +49,7 @@ The build only assembles, nothing is rewritten on the way:
 | `asanas.js`, `moves.js` | The movement library: poses, stretches, mobility drills and capoeira, each with its drawing |
 | `ambience.js`, `quotes.js`, `tapping.js` | Background rain and crickets, and the berimbau; the quotes; the nine tapping points |
 | `practice-data.js`, `taxonomy.js` | The guided practices and programs; goals, methods and postures |
-| `practice.js`, `adapt.js` | The practice engine and session screen; heart-led beats and the power nap |
+| `practice.js`, `done.js`, `adapt.js` | The practice engine and session screen; the end screen, whose numbers and chart explain themselves when tapped; heart-led beats and the power nap |
 | `library.js`, `settings.js`, `yoga.js`, `nvc.js`, `search.js` | The library, Settings, the routine builder, the reflection practices, search |
 | `history.js`, `favs.js`, `today.js` | The one history, favourites, and Today |
 | `boot.js` | Starts everything, in order |

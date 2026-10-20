@@ -983,73 +983,6 @@
       note: notes.join(", ") || undefined });
     return r;
   }
-  function pDone(r, early) {
-    var d = P.def, tiles = [];
-    tiles.push(["Time", fmt(r.secs), early ? "Ended early" : "Complete"]);
-    var napHR = r.nap && r.nap.base && r.nap.low;        // a nap has its own baseline-to-lowest tile
-    if (r.hr0 && !napHR) tiles.push(["Heart rate", r.hr0 + " → " + r.hr1, "bpm, start to end"]);
-    else if (r.hrAvg && !napHR) tiles.push(["Heart rate", String(r.hrAvg), "bpm average"]);
-    if (r.coh && !r.nap) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1) + (r.cohEst ? " (est.)" : "")]);
-    if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath"]);
-    if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath"]);
-    if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · ")]);
-    if (r.suds) tiles.push(["Intensity", r.suds.join(" → "), r.suds.length > 1 ? "out of 10, first to last" : "out of 10"]);
-    if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatHeart ? "Hz, led by your heart" : "Hz, scripted (no heart data)"]);
-    if (r.nap) {
-      if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated"]); }
-      else tiles.push(["Fell asleep", r.nap.sensor ? "Not detected" : "—", r.nap.sensor ? "resting still helps" : "no heart data"]);
-      if (r.nap.base && r.nap.low) tiles.push(["Heart rate", r.nap.base + " → " + r.nap.low, "bpm, baseline to lowest"]);
-    }
-    var h = '<div class="sd-head"><span class="sd-ic">' + (early ? "" : '<svg class="i" aria-hidden="true"><use href="#i-check"/></svg>') + "</span>" +
-      "<div><h2>" + (early ? "Session ended" : d.end ? esc(d.end) : "Nicely done") + "</h2><p>" + esc(d.name) + "</p></div></div>" +
-      '<div class="sd-tiles">' + tiles.map(function (t) {
-        return '<div class="sd-t"><span>' + t[0] + "</span><b>" + t[1] + "</b><small>" + t[2] + "</small></div>";
-      }).join("") + "</div>" +
-      (r.hrPts.length >= 20 ? '<div class="sd-chart"><canvas id="sdChart"></canvas><span>Heart rate across the session' + (r.beatLog ? ", with the beat in violet" : "") + "</span></div>" : "") +
-      (r.nvc ? nvcCard(r.nvc) : "") +
-      qCard(d.reflect ? ROGERS : qPick()) +
-      '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>';
-    var el = $("#sDone");
-    el.innerHTML = h;
-    $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
-    $("#ses").dataset.state = "done";
-    $("#sdAgain").addEventListener("click", function () { pIntro(d.id); });
-    if (r.hrPts.length >= 20) setTimeout(function () { pChart(r.hrPts, r.secs, r); }, 30);
-  }
-  function pChart(pts, T, r) {
-    var f = fitCanvas($("#sdChart"));
-    if (!f) return;
-    var c = f.c, W = f.w, Hh = f.h, pad = 8, lo = Infinity, hi = -Infinity;
-    // a 10-second running mean keeps the line readable
-    var sm = pts.map(function (p, i) {
-      var a = 0, n = 0;
-      for (var k = i; k >= 0 && pts[k].t > p.t - 10; k--) { a += pts[k].hr; n++; }
-      return { t: p.t, hr: a / n };
-    });
-    sm.forEach(function (p) { lo = Math.min(lo, p.hr); hi = Math.max(hi, p.hr); });
-    lo = Math.floor(lo - 2); hi = Math.ceil(hi + 2);
-    var X = function (t) { return pad + t / T * (W - pad * 2); }, Y = function (v) { return pad + (hi - v) / (hi - lo) * (Hh - pad * 2 - 14); };
-    c.strokeStyle = BCOL.line; c.lineWidth = 1;
-    P.steps.forEach(function (s) { if (s.at > 0 && s.at < T) { c.beginPath(); c.moveTo(X(s.at) + 0.5, pad); c.lineTo(X(s.at) + 0.5, Hh - 14); c.stroke(); } });
-    c.beginPath();
-    sm.forEach(function (p, i) { if (i) c.lineTo(X(p.t), Y(p.hr)); else c.moveTo(X(p.t), Y(p.hr)); });
-    c.strokeStyle = BCOL.hr; c.lineWidth = 2; c.stroke();
-    if (r && r.beatLog) {                       // the beat, on its own scale (3 to 11 Hz)
-      c.beginPath();
-      r.beatLog.forEach(function (p, i) { var y = pad + (11 - p.hz) / 8 * (Hh - pad * 2 - 14); if (i) c.lineTo(X(p.t), y); else c.moveTo(X(p.t), y); });
-      c.strokeStyle = BCOL["b-out"]; c.lineWidth = 2; c.stroke();
-    }
-    if (r && r.nap && r.nap.onsetT) {           // where sleep began (estimated)
-      c.strokeStyle = BCOL["b-hold"]; c.lineWidth = 1.5; c.setLineDash([4, 4]);
-      c.beginPath(); c.moveTo(X(r.nap.onsetT) + 0.5, pad); c.lineTo(X(r.nap.onsetT) + 0.5, Hh - 14); c.stroke(); c.setLineDash([]);
-      c.font = "600 10.5px " + B_SANS; c.fillStyle = BCOL["b-hold"]; c.textAlign = "left"; c.textBaseline = "top";
-      c.fillText("asleep (est.)", X(r.nap.onsetT) + 4, pad);
-    }
-    c.font = "500 10.5px " + B_SANS; c.fillStyle = BCOL["text-faint"]; c.textBaseline = "bottom";
-    c.textAlign = "left"; c.fillText(hi + " bpm", pad, Hh);
-    c.textAlign = "right"; c.fillText(lo + " bpm low", W - pad, Hh);
-  }
-
   /* ----- the session screen: intro ----- */
   function pNeeds(d) {
     var n = [];
@@ -1444,5 +1377,5 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone };   // for automated tests only
   }
