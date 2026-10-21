@@ -43,7 +43,27 @@
     var data = {}, now = new Date();
     bkKeys().forEach(function (k) { var v = store.get(k); if (v !== null) data[k] = v; });
     var text = JSON.stringify({ app: "Entrain", kind: "backup", version: 1, savedAt: now.toISOString(), data: data }, null, 1);
-    var a = document.createElement("a"), name = bkFileName(now);
+    var name = bkFileName(now), viewer = window.claude && typeof window.claude.use === "function" ? window.claude : null;
+    var saved = function () {
+      store.set("lastBackup", String(now.getTime()));
+      toast("Backup saved: " + name);
+      if (curView === "settings") bkStatus();
+    };
+    var cant = function () { toast("This preview can't save files. Open Entrain itself to save a backup."); };
+    if (viewer) {
+      // in Claude's preview of the app, a page can't download a file itself: the viewer offers it, and asks you first
+      viewer.use("downloads").then(function (dl) {
+        if (!dl) { cant(); return; }
+        dl.save({ filename: name, data: text }).then(saved, function (e) {
+          var code = e && e.code;
+          if (code === "declined") return;                 // you said no
+          if (code === "rate_limited") toast("A save is already waiting for your answer.");
+          else cant();
+        });
+      }, cant);
+      return;
+    }
+    var a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
     a.download = name;
     a.hidden = true;
@@ -51,9 +71,7 @@
     a.click();
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 60000);
-    store.set("lastBackup", String(now.getTime()));
-    toast("Backup saved: " + name);
-    if (curView === "settings") bkStatus();
+    saved();
   }
 
   /* ----- restoring ----- */

@@ -29,7 +29,7 @@ The breathing guide and the practices' visuals draw 30 frames a second, even on 
 python3 src/build.py
 ```
 
-This writes `index.html`, `sw.js` and `manifest.webmanifest` at the top level. It also writes `entrain-page.html`, a preview page without the offline helper, which is not committed.
+This writes `index.html`, `sw.js` and `manifest.webmanifest` at the top level. It also writes `entrain-page.html`, a preview page without the offline helper, which is not committed. A framed page can't download files itself, so in that preview Save a backup goes through the viewer's `downloads` capability, which the artifact has to declare.
 
 The build only assembles, nothing is rewritten on the way:
 

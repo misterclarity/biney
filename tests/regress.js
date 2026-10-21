@@ -913,9 +913,13 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       const now = Date.now();
       const H2 = [{ k: 'breath', id: 'resonance', at: now - 864e5, secs: 300, full: true, rate: 5.5 }, { k: 'practice', id: 'anapana', n: 'Anapana', at: now - 36e5, secs: 600, full: true }];
       const SEED = { history: JSON.stringify(H2), favs: '["anapana","b:resonance"]', nvcLog: JSON.stringify([{ at: now, kind: 'self', text: 'kept one' }]), tapPhrase: 'my words', 'pOpt.anapana': '{"bells":false}' };
-      const zpage = async (seed, storage, sped) => {
+      const zpage = async (seed, storage, sped, view) => {
         const ctx = await browser.newContext({ userAgent: S20, viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, serviceWorkers: 'block', acceptDownloads: true });
         if (sped) await ctx.addInitScript(mock, { speed: 30 });
+        if (view) await ctx.addInitScript(m => {               // a stand-in for Claude's artifact viewer and its downloads capability
+          window.__saves = [];
+          window.claude = { use: n => Promise.resolve(n !== 'downloads' || m === 'none' ? null : { save: r => { window.__saves.push(r); return m === 'declined' ? Promise.reject({ code: 'declined', message: 'no' }) : Promise.resolve({ status: 'saved' }); } }) };
+        }, view);
         await ctx.addInitScript(([seed, storage]) => {
           if (!sessionStorage.getItem('z.seeded')) {         // once a tab: a reload keeps what the page stored
             sessionStorage.setItem('z.seeded', '1');
@@ -1022,6 +1026,22 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       const u = await zpage(SEED, { now: true, grant: true });
       ok(await E(u, () => window.__pz.calls) === 0 && /agreed to keep it/.test(await t(u, '#stKeepTxt')), 'data already kept isn\'t asked about again');
       await u.context().close();
+
+      // in Claude's preview of the app, the backup is offered through the viewer, which asks first
+      for (const m of ['saved', 'declined', 'none']) {
+        const v = await zpage(SEED, null, false, m);
+        let fell = false; v.on('download', () => { fell = true; });
+        await v.click('#stSave'); await v.waitForTimeout(400);
+        const r = await E(v, () => ({ n: window.__saves.length, f: window.__saves[0] && window.__saves[0].filename, d: window.__saves[0] && window.__saves[0].data, last: localStorage.getItem('entrain.lastBackup'),
+          toast: document.querySelector('#toast').hidden ? '' : document.querySelector('#toast').textContent.trim() }));
+        if (m === 'saved') {
+          const o = JSON.parse(r.d || '{}');
+          ok(r.n === 1 && /^entrain-backup-\d{4}-\d\d-\d\d\.json$/.test(r.f) && o.app === 'Entrain' && o.data && o.data.history === SEED.history && !!r.last && /^Backup saved/.test(r.toast) && !fell,
+            'in the preview, the backup goes through the viewer\'s save, not a download link: ' + r.f);
+        } else if (m === 'declined') ok(r.n === 1 && !r.last && !/Backup saved/.test(r.toast) && !fell, 'saying no there saves nothing and claims nothing');
+        else ok(r.n === 0 && !r.last && /can't save files/.test(r.toast) && !fell, 'a preview that can\'t save files says so: ' + r.toast);
+        await v.context().close();
+      }
       srv.close();
     }
   } catch (e) { log.push('ERROR ' + e.message); }
