@@ -5,7 +5,7 @@
   var A = {
     ctx: null, oscL: null, oscR: null, gL: null, gR: null,
     master: null, merger: null, noiseSrc: null, noiseGain: null,
-    track: null, startedAt: 0, elapsed: 0, playing: false, raf: 0, endTimer: 0,
+    track: null, startedAt: 0, elapsed: 0, playing: false, clock: 0, endTimer: 0,
     phase: "single",   // "single" | "prime" | "task"
     gainMul: 1,        // phase-level attenuation, independent of the volume slider
     voicesOff: false,  // task phase where the carriers were deliberately faded out
@@ -267,7 +267,7 @@
     stopNoise();
     A.playing = false;
     clearTimeout(A.endTimer);
-    cancelAnimationFrame(A.raf);
+    clearTimeout(A.clock);
     $("#toggle").textContent = "▶";
     $("#toggle").setAttribute("aria-label", "Play");
     $("#player").classList.remove("playing");
@@ -290,7 +290,7 @@
     A.gainMul = 1;
     A.voicesOff = false;
     clearTimeout(A.endTimer);
-    cancelAnimationFrame(A.raf);
+    clearTimeout(A.clock);
     $("#toggle").textContent = "▶";
     $("#player").classList.remove("playing");
     playSync();
@@ -375,15 +375,15 @@
   }
   function hideCue() { clearTimeout(A.cueTimer); $("#cue").hidden = true; }
 
-  /* The clock ticks at 1 Hz and the ramp display moves slower still, so there is
-     no reason to touch the DOM 60 times a second. Throttle, then diff. */
-  var lastPaint = 0;
+  /* The clock ticks once a second and the ramp display moves slower still, so the player
+     updates once a second, just after the second turns, and skips the drawing while the page
+     is hidden. A track can run for an hour with the screen on; this keeps it nearly free. */
   function loop() {
+    clearTimeout(A.clock);
     if (!A.playing) return;
     A.elapsed = A.ctx.currentTime - A.startedAt;
-    var now = (window.performance && performance.now) ? performance.now() : Date.now();
-    if (now - lastPaint >= 120) { lastPaint = now; paint(); }
-    A.raf = requestAnimationFrame(loop);
+    if (!document.hidden) paint();
+    A.clock = setTimeout(loop, 1020 - (A.elapsed * 1000) % 1000);
   }
 
   /* ----------------------------- display ----------------------------- */

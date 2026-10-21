@@ -26,7 +26,7 @@ JS = [
     "shell.js",
     "asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "taxonomy.js", "practice.js", "done.js",
     "library.js", "settings.js", "adapt.js", "nvc.js", "yoga.js", "search.js",
-    "history.js", "favs.js", "today.js",
+    "history.js", "favs.js", "today.js", "backup.js",
     "boot.js",
 ]
 SOURCES = [(f, rd("js/" + f)) for f in JS]

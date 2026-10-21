@@ -22,6 +22,7 @@
   yInit();
   nvcInit();
   fdInit();
+  bkInit();
   pRenderLib();
   route();
   window.addEventListener("pagehide", function () {

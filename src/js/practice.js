@@ -608,6 +608,7 @@
       cap = ""; sub = "";
     } else if (s.k === "tap") {
       var ti = pTapIdx(s, st), tp = TAP_PT[s.pts[ti]];
+      pTapPoint(s, st);                       // the figure follows the same moment as the words under it
       cap = tp.name;
       sub = s.pts.length === 1 ? "Tap gently while you say the set-up" : (st < (s.lead || 0) ? "Get ready: " + Math.ceil(s.lead - st) + "…" : "Point " + (ti + 1) + " of " + s.pts.length + " · " + tp.where);
     } else if (s.k === "rate") {
@@ -632,7 +633,8 @@
     var sp = P.def.selfPaced;
     bSetT("#sLeft", sp ? "Your pace" : fmt(P.total - T) + " left");
     bSetT("#sStepTxt", "Step " + (P.idx + 1) + " of " + P.steps.length + " · " + s.title);
-    $("#sFill").style.width = (sp ? (P.idx + Math.min(1, st / s.secs)) / P.steps.length * 100 : T / P.total * 100).toFixed(2) + "%";
+    var fw = (sp ? (P.idx + Math.min(1, st / s.secs)) / P.steps.length * 100 : T / P.total * 100).toFixed(1) + "%";
+    if (fw !== P.fillW) { P.fillW = fw; $("#sFill").style.width = fw; }     // in steps of a thousandth: no redraw for changes too small to see
     // live chips
     var live = hrLive(), tr = pTrack(), chips = [];
     if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
@@ -671,9 +673,10 @@
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1 };   // the visuals drawn on the canvas
-  function pDraw() {
+  function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
+    if (!frameDue(P, ts)) { P.raf = requestAnimationFrame(pDraw); return; }
     if (!P.cw) pSizeCanvas();
     var c = P.ctx, W = P.cw, Hh = P.ch, s = P.steps[P.idx];
     if (W && s) {

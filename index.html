@@ -628,7 +628,7 @@
   .orb{position:relative;width:48px;height:48px;flex:none}
   .orb svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
   .orb .ring-bg{fill:none;stroke:var(--line);stroke-width:4}
-  .orb .ring-fg{fill:none;stroke:var(--pc,var(--relax));stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .4s linear}
+  .orb .ring-fg{fill:none;stroke:var(--pc,var(--relax));stroke-width:4;stroke-linecap:round}   /* moves once a second, with no transition to animate between */
   .orb-core{position:absolute;inset:11px;border-radius:50%;background:radial-gradient(circle at 34% 30%,var(--pc,var(--relax)),transparent 72%);opacity:.5}
   .player.playing .orb-core{animation:breathe 6s ease-in-out infinite}
   @keyframes breathe{0%,100%{transform:scale(.82);opacity:.35}50%{transform:scale(1.06);opacity:.75}}
@@ -924,7 +924,7 @@
   .ses-segs{display:flex;gap:2px;height:100%;border-radius:4px;overflow:hidden;opacity:.45}
   .ses-segs i{background:color-mix(in srgb,var(--kc) 55%,var(--panel-3))}
   .ses-segs i.now{opacity:1}
-  .ses-fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--pcol);opacity:.9;mix-blend-mode:screen;transition:width .25s linear}
+  .ses-fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--pcol);opacity:.9;mix-blend-mode:screen}   /* no transition: an animated width redraws the page every frame for the whole session */
   .ses-stage{position:relative;flex:1;min-height:260px;margin:10px 0 0}
   .ses-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   .ses-fig{position:absolute;inset:5% 0;pointer-events:none}
@@ -1051,6 +1051,12 @@
   .st-note{margin:-6px 0 0;font-size:13px;color:var(--text-faint);line-height:1.45}
   .st-own{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:12px;background:var(--panel-2);font-size:13.5px;color:var(--text-dim)}
   .st-card .amb-seg{align-self:flex-start}
+  .st-data-act{display:flex;gap:10px;flex-wrap:wrap}
+  .st-restore{padding:14px 16px;border-radius:12px;background:var(--panel-2);display:flex;flex-direction:column;gap:8px;font-size:13.5px;color:var(--text-dim);line-height:1.45}
+  .st-restore b{color:var(--text);font-size:14.5px}
+  .st-restore p{margin:0}
+  .st-restore .st-data-act{margin-top:4px}
+  .st-restore.bad{background:color-mix(in srgb,var(--danger) 12%,var(--panel-2));color:var(--text)}
 
   /* body map */
   .bm{overflow:visible}
@@ -1388,6 +1394,7 @@
   .hi-empty p{margin:0;max-width:62ch}
   .hi-foot{margin-top:26px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .hi-foot p{margin:0;font-size:12.5px;color:var(--text-faint);max-width:62ch}
+  .hi-foot-act{display:flex;gap:10px;flex-wrap:wrap}
   .hi-foot .armed{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 50%,transparent)}
 
   /* ---------- favourites ---------- */
@@ -2617,14 +2624,27 @@
 
   var $ = function (sel) { return document.querySelector(sel); };
 
-  // settings and history live in localStorage, under "entrain."; a browser that refuses storage just forgets
+  // settings and history live in localStorage, under "entrain."; a browser that refuses storage just forgets.
+  // Once a backup is restored the store is frozen, so nothing still in memory writes over it before the reload.
   var store = {
+    frozen: false,
     get: function (k) { try { return localStorage.getItem("entrain." + k); } catch (e) { return null; } },
-    set: function (k, v) { try { localStorage.setItem("entrain." + k, v); } catch (e) {} }
+    set: function (k, v) { if (store.frozen) return; try { localStorage.setItem("entrain." + k, v); } catch (e) {} }
   };
-  function storeDel(k) { try { localStorage.removeItem("entrain." + k); } catch (e) {} }
+  function storeDel(k) { if (store.frozen) return; try { localStorage.removeItem("entrain." + k); } catch (e) {} }
 
   var RM = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  // Breathing and session visuals move slowly, so they draw at most 30 frames a second, even on a
+  // 90 or 120 Hz screen: plenty for a breath, and a fraction of the battery. Pass the frame's timestamp.
+  var FRAME_MS = 1000 / 30;
+  function frameDue(o, ts) {
+    if (typeof ts !== "number") { o.frameAt = 0; return true; }     // drawn now, outside the frame loop
+    var d = ts - (o.frameAt || 0);
+    if (o.frameAt && d >= 0 && d < FRAME_MS - 4) return false;      // 4 ms of slack: a 60 Hz screen draws every other frame
+    o.frameAt = ts;
+    return true;
+  }
 
   // the session clock, in seconds
   function bNow() { return (window.performance && performance.now ? performance.now() : Date.now()) / 1000; }
@@ -2768,7 +2788,7 @@
   var A = {
     ctx: null, oscL: null, oscR: null, gL: null, gR: null,
     master: null, merger: null, noiseSrc: null, noiseGain: null,
-    track: null, startedAt: 0, elapsed: 0, playing: false, raf: 0, endTimer: 0,
+    track: null, startedAt: 0, elapsed: 0, playing: false, clock: 0, endTimer: 0,
     phase: "single",   // "single" | "prime" | "task"
     gainMul: 1,        // phase-level attenuation, independent of the volume slider
     voicesOff: false,  // task phase where the carriers were deliberately faded out
@@ -3030,7 +3050,7 @@
     stopNoise();
     A.playing = false;
     clearTimeout(A.endTimer);
-    cancelAnimationFrame(A.raf);
+    clearTimeout(A.clock);
     $("#toggle").textContent = "▶";
     $("#toggle").setAttribute("aria-label", "Play");
     $("#player").classList.remove("playing");
@@ -3053,7 +3073,7 @@
     A.gainMul = 1;
     A.voicesOff = false;
     clearTimeout(A.endTimer);
-    cancelAnimationFrame(A.raf);
+    clearTimeout(A.clock);
     $("#toggle").textContent = "▶";
     $("#player").classList.remove("playing");
     playSync();
@@ -3138,15 +3158,15 @@
   }
   function hideCue() { clearTimeout(A.cueTimer); $("#cue").hidden = true; }
 
-  /* The clock ticks at 1 Hz and the ramp display moves slower still, so there is
-     no reason to touch the DOM 60 times a second. Throttle, then diff. */
-  var lastPaint = 0;
+  /* The clock ticks once a second and the ramp display moves slower still, so the player
+     updates once a second, just after the second turns, and skips the drawing while the page
+     is hidden. A track can run for an hour with the screen on; this keeps it nearly free. */
   function loop() {
+    clearTimeout(A.clock);
     if (!A.playing) return;
     A.elapsed = A.ctx.currentTime - A.startedAt;
-    var now = (window.performance && performance.now) ? performance.now() : Date.now();
-    if (now - lastPaint >= 120) { lastPaint = now; paint(); }
-    A.raf = requestAnimationFrame(loop);
+    if (!document.hidden) paint();
+    A.clock = setTimeout(loop, 1020 - (A.elapsed * 1000) % 1000);
   }
 
   /* ----------------------------- display ----------------------------- */
@@ -4084,9 +4104,9 @@
     updateHead();
     if (B.finder) finderTick(bt);
   }
-  function bLoop() {
+  function bLoop(ts) {
     if (B.state !== "running") return;
-    draw();
+    if (frameDue(B, ts)) draw();
     B.raf = requestAnimationFrame(bLoop);
   }
 
@@ -4416,6 +4436,16 @@
   function bFont(w, px, mono) { d2.font = w + " " + px + "px " + (mono ? B_MONO : B_SANS); }
   function ring(x, y, r) { d2.beginPath(); d2.arc(x, y, r, 0, Math.PI * 2); d2.stroke(); }
   function disc(x, y, r) { d2.beginPath(); d2.arc(x, y, r, 0, Math.PI * 2); d2.fill(); }
+  function band(x, y, r1, r2) {               // the ring between two circles, filled
+    d2.beginPath(); d2.arc(x, y, r2, 0, Math.PI * 2);
+    d2.moveTo(x + r1, y); d2.arc(x, y, r1, 0, Math.PI * 2, true); d2.fill();
+  }
+  /* The glows used to be blurred shadows, which are slow to redraw every frame. These copy their
+     look with gradients: a shadow blurred by b fades out over about 1.25 b beyond the edge,
+     steeply at first and then in a long faint tail. */
+  function fade(g, col, a, stops) { stops.forEach(function (s) { g.addColorStop(s[0], rgba(col, a * s[1])); }); return g; }
+  var FADE_EDGE = [[0, 1], [0.22, 0.51], [0.45, 0.38], [0.68, 0.24], [0.9, 0.11], [1, 0]];   // beside a faint fill
+  var FADE_DOT = [[0, 1], [0.21, 0.625], [0.42, 0.3], [0.63, 0.125], [0.84, 0.03], [1, 0]];     // beside a solid one
   function line(x1, y1, x2, y2) { d2.beginPath(); d2.moveTo(x1, y1); d2.lineTo(x2, y2); d2.stroke(); }
   function rrect(x, y, w, h, r) {
     d2.beginPath();
@@ -4434,12 +4464,10 @@
     d2.fillText(txt, x, y);
   }
   function glowDot(x, y, r, col) {
-    d2.save();
-    d2.shadowColor = rgba(col, 0.9);
-    d2.shadowBlur = 18;
+    d2.fillStyle = fade(d2.createRadialGradient(x, y, r, x, y, r + 9.5), col, 0.32, FADE_DOT);
+    disc(x, y, r + 9.5);
     d2.fillStyle = col;
     disc(x, y, r);
-    d2.restore();
     d2.fillStyle = BCOL.bg;
     disc(x, y, r * 0.38);
   }
@@ -4474,15 +4502,20 @@
     d2.setLineDash([]);
 
     var r = r0 + (R - r0) * lv;
+    // the fill fades from 0.6 to 0.1; with the glow it is a little denser, as the glow's blurred
+    // shadow (45% of the fill) once showed through it
     var gr = d2.createRadialGradient(cx - r * 0.28, cy - r * 0.32, r * 0.08, cx, cy, r);
-    gr.addColorStop(0, rgba(col, 0.6));
-    gr.addColorStop(1, rgba(col, 0.1));
-    d2.save();
-    d2.shadowColor = rgba(col, 0.45);
-    d2.shadowBlur = RM ? 0 : 20 + 34 * lv;
+    for (var o = 0; o <= 1; o += 0.25) {
+      var a = 0.6 - 0.5 * o;
+      gr.addColorStop(o, rgba(col, RM ? a : 1 - (1 - 0.45 * a) * (1 - a)));
+    }
+    if (!RM) {                                  // outside, the glow grows with the breath
+      var gw = 1.25 * (20 + 34 * lv);
+      d2.fillStyle = fade(d2.createRadialGradient(cx, cy, r, cx, cy, r + gw), col, 0.037, FADE_EDGE);
+      band(cx, cy, r, r + gw);
+    }
     d2.fillStyle = gr;
     disc(cx, cy, r);
-    d2.restore();
     d2.lineWidth = 2;
     d2.strokeStyle = rgba(col, 0.9);
     ring(cx, cy, r);
@@ -5895,6 +5928,7 @@
     window.addEventListener("appinstalled", function () {
       APP.prompt = null;
       installHide();
+      BK.asked = false; bkPersist();                 // an installed app is usually allowed to keep its data
       toast("Entrain is installed. Open it from your home screen or app list.");
     });
     var ua = navigator.userAgent;
@@ -8559,6 +8593,7 @@
       cap = ""; sub = "";
     } else if (s.k === "tap") {
       var ti = pTapIdx(s, st), tp = TAP_PT[s.pts[ti]];
+      pTapPoint(s, st);                       // the figure follows the same moment as the words under it
       cap = tp.name;
       sub = s.pts.length === 1 ? "Tap gently while you say the set-up" : (st < (s.lead || 0) ? "Get ready: " + Math.ceil(s.lead - st) + "…" : "Point " + (ti + 1) + " of " + s.pts.length + " · " + tp.where);
     } else if (s.k === "rate") {
@@ -8583,7 +8618,8 @@
     var sp = P.def.selfPaced;
     bSetT("#sLeft", sp ? "Your pace" : fmt(P.total - T) + " left");
     bSetT("#sStepTxt", "Step " + (P.idx + 1) + " of " + P.steps.length + " · " + s.title);
-    $("#sFill").style.width = (sp ? (P.idx + Math.min(1, st / s.secs)) / P.steps.length * 100 : T / P.total * 100).toFixed(2) + "%";
+    var fw = (sp ? (P.idx + Math.min(1, st / s.secs)) / P.steps.length * 100 : T / P.total * 100).toFixed(1) + "%";
+    if (fw !== P.fillW) { P.fillW = fw; $("#sFill").style.width = fw; }     // in steps of a thousandth: no redraw for changes too small to see
     // live chips
     var live = hrLive(), tr = pTrack(), chips = [];
     if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
@@ -8622,9 +8658,10 @@
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1 };   // the visuals drawn on the canvas
-  function pDraw() {
+  function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
+    if (!frameDue(P, ts)) { P.raf = requestAnimationFrame(pDraw); return; }
     if (!P.cw) pSizeCanvas();
     var c = P.ctx, W = P.cw, Hh = P.ch, s = P.steps[P.idx];
     if (W && s) {
@@ -9821,7 +9858,8 @@
   }
   /* -------------------------------- settings --------------------------------
      What every practice starts with (a practice can change its own under Options on its page),
-     the background sound, what's kept of reflections, and how the screen behaves.
+     the background sound, what's kept of reflections, how the screen behaves, and your data
+     (backup.js).
   ------------------------------------------------------------------------------ */
 
   var ST = { screenSessions: true, screenTracks: true, sleepDim: false };
@@ -9880,8 +9918,9 @@
         pToggle("stScrSes", "Keep the screen on during practices and breathing", ST.screenSessions, "Also for ten minutes into a pause.") +
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap and Cognitive Shuffle go almost dark. The screen still stays on.") +
-      "</section>";
+      "</section>" + bkCard();
     stWire();
+    bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }
   function stWire() {
@@ -10497,7 +10536,7 @@
   function nvcDraftGet(id) {
     try { var d = JSON.parse(store.get(nvcDraftKey(id)) || "null"); return d && d.id === id && d.nvc ? d : null; } catch (e) { return null; }
   }
-  function nvcDraftClear(id) { clearTimeout(P.draftT); try { localStorage.removeItem("entrain." + nvcDraftKey(id)); } catch (e) {} }
+  function nvcDraftClear(id) { clearTimeout(P.draftT); storeDel(nvcDraftKey(id)); }
   function nvcHasWords(n) {
     return !!(n.obs || n.judg || n.rule || n.req || n.have || n.feel.length || n.need.length || n.oFeel.length || n.oNeed.length);
   }
@@ -11284,7 +11323,9 @@
       storeDel("lastSummary"); storeDel("soundsSeg");   // Home's last-session card and the Sounds tab are gone too
       return HIST;
     }
-    HIST = l.filter(function (e) { return e && e.k && e.at && typeof e.secs === "number"; });
+    HIST = l.filter(function (e) {
+      return e && typeof e === "object" && H_KINDS.indexOf(hClean(e).k) >= 0 && e.at > 0 && e.at < 8.64e15 && e.secs >= 0;
+    });
     return HIST;
   }
   // true when it was written: a full or refused storage keeps the old log instead
@@ -11293,8 +11334,14 @@
     store.set("history", s);
     return store.get("history") === s;
   }
+  // What each field of a session may hold. Anything else, from a damaged store or a restored file,
+  // is dropped as it loads, and a session without its kind, time and length is dropped whole.
+  var H_FIELDS = { k: "string", id: "string", n: "string", band: "string", note: "string", at: "number", secs: "number",
+    rate: "number", beat: "number", hr0: "number", hr1: "number", hrAvg: "number", swing: "number", coh: "number", best: "number",
+    full: "boolean", est: "boolean" };
+  var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
-    for (var k in e) if (e[k] === undefined || e[k] === null || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
+    for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
     return e;
   }
   function hAdd(e) {
@@ -11305,6 +11352,7 @@
     HIST.push(hClean(e));
     while (HIST.length > HIST_MAX) HIST.shift();
     hSave();
+    if (BK.persisted !== true) bkPersist();      // the first session is worth asking the browser to keep
     setTimeout(function () {                     // once the caller has finished ending the session
       if (curView === "home") todayRender();
       if (curView === "history") hRender();
@@ -11475,14 +11523,15 @@
       h += hRow(l[i], false);
     }
     if (open) h += "</ul></section>";
-    h += '<div class="hi-foot"><p>Your history stays on this device, the last ' + HIST_MAX + ' sessions. Anything under a minute isn\'t kept, and nothing you write in a reflection is.</p>' +
-      '<button class="btn small" id="hiClear">Clear history</button></div>';
+    h += '<div class="hi-foot"><p>Your history stays on this device, the last ' + HIST_MAX + ' sessions. Anything under a minute isn\'t kept, and nothing you write in a reflection is. A backup keeps it safe, or moves it to another phone.</p>' +
+      '<div class="hi-foot-act"><button class="btn small" id="hiSave">Save a backup</button><button class="btn small" id="hiClear">Clear history</button></div></div>';
     $("#hiBody").innerHTML = h;
   }
 
   function hInit() {
     hLoad();
     $("#hiBody").addEventListener("click", function (e) {
+      if (e.target.closest("#hiSave")) { bkSave(); return; }
       var b = e.target.closest("#hiClear");
       if (!b) return;
       if (H_ARM && Date.now() - H_ARM < 3000) {
@@ -11648,6 +11697,212 @@
     });
     if (window.ResizeObserver) new ResizeObserver(drawHomeWave).observe($("#homeWave"));
   }
+  /* -------------------------------- your data --------------------------------
+     Everything Entrain keeps lives in this browser's storage, on this device. A backup is one
+     file of all of it, to keep somewhere safe or to move to another phone, and restoring one
+     replaces what's here. The browser is also asked to keep the data rather than clear it when
+     space runs low; Settings says what it answered.
+  ---------------------------------------------------------------------------- */
+
+  // about this device rather than about you: the headphone check, the install and offline notes,
+  // whether a heart sensor has ever connected here, and when this device last saved a backup
+  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "lastBackup"];
+  // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
+  var BK_LISTS = ["history", "favs", "yogaSeqs", "nvcLog"];
+  var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|resonance|nvcDraft\..+)$/;
+  var BK_MAX = 5e6;                       // bytes: more than a browser's whole storage for one site
+  var BK = { pending: null, persisted: null, asked: false };
+
+  // the names of everything worth keeping, without the "entrain." in front
+  function bkKeys() {
+    var out = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf("entrain.") === 0 && BK_SKIP.indexOf(k.slice(8)) < 0) out.push(k.slice(8));
+      }
+    } catch (e) {}
+    return out.sort();
+  }
+  function bkCount(data, k) {
+    try { var a = JSON.parse(data[k] || "[]"); return Array.isArray(a) ? a.length : 0; } catch (e) { return 0; }
+  }
+  function bkN(n, one, many) { return n + " " + (n === 1 ? one : many); }
+  function bkAnd(a) { return a.length > 1 ? a.slice(0, -1).join(", ") + " and " + a[a.length - 1] : a[0] || ""; }
+  function bkWhen(t) {
+    return new Date(t).toLocaleString(undefined, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  }
+
+  /* ----- saving ----- */
+  function bkFileName(d) {
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return "entrain-backup-" + d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + ".json";
+  }
+  function bkSave() {
+    var data = {}, now = new Date();
+    bkKeys().forEach(function (k) { var v = store.get(k); if (v !== null) data[k] = v; });
+    var text = JSON.stringify({ app: "Entrain", kind: "backup", version: 1, savedAt: now.toISOString(), data: data }, null, 1);
+    var a = document.createElement("a"), name = bkFileName(now);
+    a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+    a.download = name;
+    a.hidden = true;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 60000);
+    store.set("lastBackup", String(now.getTime()));
+    toast("Backup saved: " + name);
+    if (curView === "settings") bkStatus();
+  }
+
+  /* ----- restoring ----- */
+  // what a file holds: { data, n, at } for a backup, { newer: true } for one this version can't read, or null
+  function bkParse(text) {
+    var o;
+    try { o = JSON.parse(text); } catch (e) { return null; }
+    if (!o || typeof o !== "object" || o.app !== "Entrain" || o.kind !== "backup" || typeof o.version !== "number") return null;
+    if (o.version > 1) return { newer: true };
+    if (!o.data || typeof o.data !== "object" || Array.isArray(o.data)) return null;
+    var data = {}, n = 0;
+    for (var k in o.data) {
+      if (!Object.prototype.hasOwnProperty.call(o.data, k)) continue;
+      var v = o.data[k];
+      if (!/^[A-Za-z][\w.-]{0,79}$/.test(k)) continue;           // not a name Entrain uses
+      if (typeof v !== "string") return null;
+      if (BK_SKIP.indexOf(k) >= 0) continue;
+      if (BK_LISTS.indexOf(k) >= 0 || BK_RECORDS.test(k)) {
+        var j;
+        try { j = JSON.parse(v); } catch (e) { return null; }
+        if (BK_LISTS.indexOf(k) >= 0 ? !Array.isArray(j) : !j || typeof j !== "object") return null;
+      }
+      data[k] = v; n++;
+    }
+    return { data: data, n: n, at: Date.parse(o.savedAt) || 0 };
+  }
+  function bkPick() {
+    var f = $("#stLoad");
+    if (!f) return;
+    f.value = "";
+    f.click();
+  }
+  function bkRead(file) {
+    if (!file) return;
+    if (file.size > BK_MAX) { bkMsg("That file is too big to be an Entrain backup.", true); return; }
+    var r = new FileReader();
+    r.onload = function () {
+      var b = bkParse(String(r.result || ""));
+      if (!b) { bkMsg("That isn't an Entrain backup, or it's damaged, so nothing has changed.", true); return; }
+      if (b.newer) { bkMsg("That backup comes from a newer version of Entrain. Open the app online once so it can update, then try again.", true); return; }
+      if (!b.n) { bkMsg("That backup is empty, so there's nothing to restore.", true); return; }
+      BK.pending = b;
+      bkStatus();
+      bkShow();
+    };
+    r.onerror = function () { bkMsg("That file couldn't be read.", true); };
+    r.readAsText(file);
+  }
+  // what's in the backup, what it replaces, and the choice
+  function bkOffer() {
+    var b = BK.pending, d = b.data;
+    var has = [bkN(bkCount(d, "history"), "session", "sessions"), bkN(bkCount(d, "favs"), "favourite", "favourites"),
+               bkN(bkCount(d, "yogaSeqs"), "routine", "routines"), bkN(bkCount(d, "nvcLog"), "kept reflection", "kept reflections")]
+      .filter(function (s) { return s.charAt(0) !== "0"; });
+    var here = hLoad().length;
+    return "<b>" + (b.at ? "A backup from " + esc(bkWhen(b.at)) : "A backup") + "</b>" +
+      "<p>" + (has.length ? esc(bkAnd(has)) + ", with your settings." : "Your settings, with no sessions yet.") + "</p>" +
+      "<p>Restoring replaces everything Entrain has on this device" + (here ? ", including " + bkN(here, "session", "sessions") + " in its history" : "") +
+      ", then reloads the app.</p>" +
+      '<div class="st-data-act"><button class="btn primary small" id="stRestoreGo">Restore</button><button class="btn small" id="stRestoreNo">Cancel</button></div>';
+  }
+  function bkApply() {
+    var b = BK.pending;
+    if (!b) return;
+    var keep = {}, k;
+    bkKeys().forEach(function (x) { keep[x] = store.get(x); });
+    try {
+      for (k in keep) localStorage.removeItem("entrain." + k);
+      for (k in b.data) localStorage.setItem("entrain." + k, b.data[k]);
+    } catch (e) {
+      // out of room part of the way through: put back what was here
+      try {
+        for (k in b.data) localStorage.removeItem("entrain." + k);
+        for (k in keep) if (keep[k] !== null) localStorage.setItem("entrain." + k, keep[k]);
+      } catch (e2) {}
+      BK.pending = null;
+      bkMsg("There wasn't room to restore that backup, so nothing has changed.", true);
+      return;
+    }
+    store.frozen = true;                  // nothing still in memory may write over it before the reload
+    BK.pending = null;
+    try { sessionStorage.setItem("entrain.restored", "1"); } catch (e) {}
+    location.reload();
+  }
+
+  /* ----- keeping it ----- */
+  // Ask the browser to keep the data when space runs low, once there is some worth keeping, and at
+  // most once each time the app opens: Chrome and Edge decide quietly, but Firefox asks you.
+  function bkPersist() {
+    var s = navigator.storage;
+    if (!s || !s.persisted) return;
+    s.persisted().then(function (yes) {
+      if (yes || BK.asked || !s.persist || !hLoad().length) return yes;
+      BK.asked = true;
+      return s.persist();
+    }).then(function (yes) {
+      BK.persisted = !!yes;
+      if (curView === "settings") bkStatus();
+    }, function () {});
+  }
+
+  /* ----- the card in Settings ----- */
+  function bkCard() {
+    return '<section class="st-card" id="st-data" aria-labelledby="stD"><h2 id="stD">Your data</h2>' +
+      '<p class="st-note">Your history, favourites, routines, settings and any reflections you keep are stored in this browser, on this device, and never sent anywhere. A backup is one file of all of it, to keep safe or to move to another phone.</p>' +
+      '<p class="st-note" id="stKeepTxt" hidden></p>' +
+      '<div class="st-data-act"><button class="btn primary small" id="stSave">Save a backup</button><button class="btn small" id="stLoadBtn">Restore from a backup</button></div>' +
+      '<input type="file" id="stLoad" accept=".json,application/json" hidden>' +
+      '<p class="st-note" id="stLast"></p>' +
+      '<div class="st-restore" id="stRestore" aria-live="polite" hidden></div>' +
+      "</section>";
+  }
+  function bkMsg(text, bad) {
+    var el = $("#stRestore");
+    if (!el) { toast(text); return; }
+    el.innerHTML = "<p>" + esc(text) + "</p>";
+    el.classList.toggle("bad", !!bad);
+    el.hidden = false;
+    bkShow();
+  }
+  function bkShow() { var el = $("#stRestore"); if (el && el.scrollIntoView) el.scrollIntoView({ block: "nearest", behavior: RM ? "auto" : "smooth" }); }
+  function bkStatus() {
+    var keep = $("#stKeepTxt"), last = $("#stLast"), r = $("#stRestore");
+    if (!keep) return;
+    keep.hidden = BK.persisted === null;
+    keep.textContent = BK.persisted ? "Your browser has agreed to keep it until you clear it yourself."
+      : "Your browser may clear it if your phone runs short of space. Installing Entrain as an app makes that less likely, and a backup keeps it safe either way.";
+    var at = +store.get("lastBackup") || 0, kept = nvcLog().length;
+    last.textContent = (at ? "Last backup from this device: " + bkWhen(at) + "." : "No backup saved from this device yet.") +
+      (kept ? " A backup includes your " + bkN(kept, "kept reflection", "kept reflections") + ", so keep the file somewhere private." : "");
+    if (BK.pending) { r.innerHTML = bkOffer(); r.classList.remove("bad"); r.hidden = false; }
+    else if (!r.classList.contains("bad")) r.hidden = true;
+  }
+  function bkWire() {
+    $("#stSave").addEventListener("click", bkSave);
+    $("#stLoadBtn").addEventListener("click", bkPick);
+    $("#stLoad").addEventListener("change", function () { bkRead(this.files && this.files[0]); });
+    $("#stRestore").addEventListener("click", function (e) {
+      if (e.target.closest("#stRestoreGo")) bkApply();
+      else if (e.target.closest("#stRestoreNo")) { BK.pending = null; bkStatus(); }
+    });
+    bkStatus();
+    bkPersist();
+  }
+  function bkInit() {
+    var done = false;
+    try { done = sessionStorage.getItem("entrain.restored") === "1"; sessionStorage.removeItem("entrain.restored"); } catch (e) {}
+    if (done) toast("Backup restored.");
+    bkPersist();
+  }
   /* --------------------------------- start ---------------------------------
      Every other file only declares. This wires the page up, in order: where two handlers listen
      for the same key on the whole document, the one wired first runs first.
@@ -11672,6 +11927,7 @@
   yInit();
   nvcInit();
   fdInit();
+  bkInit();
   pRenderLib();
   route();
   window.addEventListener("pagehide", function () {

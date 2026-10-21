@@ -616,7 +616,7 @@
   .orb{position:relative;width:48px;height:48px;flex:none}
   .orb svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
   .orb .ring-bg{fill:none;stroke:var(--line);stroke-width:4}
-  .orb .ring-fg{fill:none;stroke:var(--pc,var(--relax));stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .4s linear}
+  .orb .ring-fg{fill:none;stroke:var(--pc,var(--relax));stroke-width:4;stroke-linecap:round}   /* moves once a second, with no transition to animate between */
   .orb-core{position:absolute;inset:11px;border-radius:50%;background:radial-gradient(circle at 34% 30%,var(--pc,var(--relax)),transparent 72%);opacity:.5}
   .player.playing .orb-core{animation:breathe 6s ease-in-out infinite}
   @keyframes breathe{0%,100%{transform:scale(.82);opacity:.35}50%{transform:scale(1.06);opacity:.75}}
@@ -912,7 +912,7 @@
   .ses-segs{display:flex;gap:2px;height:100%;border-radius:4px;overflow:hidden;opacity:.45}
   .ses-segs i{background:color-mix(in srgb,var(--kc) 55%,var(--panel-3))}
   .ses-segs i.now{opacity:1}
-  .ses-fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--pcol);opacity:.9;mix-blend-mode:screen;transition:width .25s linear}
+  .ses-fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--pcol);opacity:.9;mix-blend-mode:screen}   /* no transition: an animated width redraws the page every frame for the whole session */
   .ses-stage{position:relative;flex:1;min-height:260px;margin:10px 0 0}
   .ses-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   .ses-fig{position:absolute;inset:5% 0;pointer-events:none}
@@ -1039,6 +1039,12 @@
   .st-note{margin:-6px 0 0;font-size:13px;color:var(--text-faint);line-height:1.45}
   .st-own{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:12px;background:var(--panel-2);font-size:13.5px;color:var(--text-dim)}
   .st-card .amb-seg{align-self:flex-start}
+  .st-data-act{display:flex;gap:10px;flex-wrap:wrap}
+  .st-restore{padding:14px 16px;border-radius:12px;background:var(--panel-2);display:flex;flex-direction:column;gap:8px;font-size:13.5px;color:var(--text-dim);line-height:1.45}
+  .st-restore b{color:var(--text);font-size:14.5px}
+  .st-restore p{margin:0}
+  .st-restore .st-data-act{margin-top:4px}
+  .st-restore.bad{background:color-mix(in srgb,var(--danger) 12%,var(--panel-2));color:var(--text)}
 
   /* body map */
   .bm{overflow:visible}
@@ -1376,6 +1382,7 @@
   .hi-empty p{margin:0;max-width:62ch}
   .hi-foot{margin-top:26px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .hi-foot p{margin:0;font-size:12.5px;color:var(--text-faint);max-width:62ch}
+  .hi-foot-act{display:flex;gap:10px;flex-wrap:wrap}
   .hi-foot .armed{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 50%,transparent)}
 
   /* ---------- favourites ---------- */

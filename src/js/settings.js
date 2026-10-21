@@ -1,6 +1,7 @@
   /* -------------------------------- settings --------------------------------
      What every practice starts with (a practice can change its own under Options on its page),
-     the background sound, what's kept of reflections, and how the screen behaves.
+     the background sound, what's kept of reflections, how the screen behaves, and your data
+     (backup.js).
   ------------------------------------------------------------------------------ */
 
   var ST = { screenSessions: true, screenTracks: true, sleepDim: false };
@@ -59,8 +60,9 @@
         pToggle("stScrSes", "Keep the screen on during practices and breathing", ST.screenSessions, "Also for ten minutes into a pause.") +
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap and Cognitive Shuffle go almost dark. The screen still stays on.") +
-      "</section>";
+      "</section>" + bkCard();
     stWire();
+    bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }
   function stWire() {

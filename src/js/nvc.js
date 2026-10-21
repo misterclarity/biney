@@ -376,7 +376,7 @@
   function nvcDraftGet(id) {
     try { var d = JSON.parse(store.get(nvcDraftKey(id)) || "null"); return d && d.id === id && d.nvc ? d : null; } catch (e) { return null; }
   }
-  function nvcDraftClear(id) { clearTimeout(P.draftT); try { localStorage.removeItem("entrain." + nvcDraftKey(id)); } catch (e) {} }
+  function nvcDraftClear(id) { clearTimeout(P.draftT); storeDel(nvcDraftKey(id)); }
   function nvcHasWords(n) {
     return !!(n.obs || n.judg || n.rule || n.req || n.have || n.feel.length || n.need.length || n.oFeel.length || n.oNeed.length);
   }

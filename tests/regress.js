@@ -2,6 +2,8 @@
 // O to R cover the requests that followed: Anapana's narrowing focus, wording, the screen lock and search.
 // S to V cover the second review: goals for everything, the library, the small fixes, the practice page and Settings.
 // W and X: the end screen explains its numbers and its chart; the app's own quotes are signed Entrain.
+// Y and Z: lighter drawing (30 frames a second, no blurred shadows, a player clock that ticks once a second),
+// and your data (backup, restore, and asking the browser to keep it).
 // Run: node tests/regress.js [group letter]
 const { chromium, APP, ROOT } = require('./pw');
 const fs = require('fs'), path = require('path'), os = require('os'), { spawnSync } = require('child_process');
@@ -842,6 +844,185 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
         return out; });
       ok(ends.every(q => q[0]) && ends.some(q => q[0] === 'Entrain') && !ends.some(q => /Entrain\.$/.test(q[1])), 'every closing quote names its author or Entrain, and Read aloud leaves "Entrain" out');
       await p.close();
+    }
+
+    /* Y. lighter drawing: the breathing guide and the practices draw 30 frames a second, nothing draws a
+       blurred shadow, the progress bar and the player's ring have no transitions, and the player's clock
+       ticks once a second rather than every frame */
+    if (!only || only === 'Y') {
+      const hooks = () => {
+        window.__cl = {}; window.__blur = []; window.__raf = 0;
+        const cr = CanvasRenderingContext2D.prototype.clearRect;
+        CanvasRenderingContext2D.prototype.clearRect = function () { const k = this.canvas.id || '?'; window.__cl[k] = (window.__cl[k] || 0) + 1; return cr.apply(this, arguments); };
+        const d = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, 'shadowBlur');
+        Object.defineProperty(CanvasRenderingContext2D.prototype, 'shadowBlur', { configurable: true, get: d.get, set(v) { if (v) window.__blur.push(v); d.set.call(this, v); } });
+        const raf = window.requestAnimationFrame.bind(window);
+        window.requestAnimationFrame = f => { window.__raf++; return raf(f); };
+      };
+      const rate = async (p, id, ms) => { const a = await E(p, k => window.__cl[k] || 0, id); await p.waitForTimeout(ms); return ((await E(p, k => window.__cl[k] || 0, id)) - a) / ms * 1000; };
+      const p = await page(null, OPT());
+      await E(p, hooks);
+      await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
+      await p.click('#bStart'); await p.waitForTimeout(600);
+      const br = await rate(p, 'bCanvas', 2500);
+      ok(br >= 20 && br <= 32, 'the breathing guide draws about 30 frames a second: ' + br.toFixed(1));
+      for (const v of ['wave', 'box', 'dial', 'column', 'circle']) {
+        await E(p, x => { const r = document.querySelector('#bVis input[value="' + x + '"]'); r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); }, v);
+        await p.waitForTimeout(400);
+      }
+      ok(await E(p, () => window.__blur.length) === 0, 'none of the five breathing visuals draws a blurred shadow');
+      await p.click('#bReset'); await p.waitForTimeout(200);
+      await E(p, () => location.hash = 'practice/sleep-descent'); await p.waitForTimeout(300);
+      await p.click('#sGo'); await p.waitForTimeout(1200);
+      const sr = await rate(p, 'sCanvas', 2500);
+      ok(sr >= 20 && sr <= 32 && await E(p, () => window.__blur.length) === 0, 'a practice\'s visual draws about 30 frames a second, without blurred shadows: ' + sr.toFixed(1));
+      const fill = await p.$eval('#sFill', e => getComputedStyle(e).transitionDuration);
+      ok(fill.split(',').every(x => parseFloat(x) === 0), 'the progress bar moves without a transition, which made the browser redraw it every frame: ' + fill);
+      await endNow(p); await p.waitForTimeout(400);
+      await p.close();
+
+      const q = await page(null, OPT());
+      await E(q, hooks);
+      await playTrack(q, 'theta-meditation');
+      await E(q, () => location.hash = 'home'); await q.waitForTimeout(500);
+      const ring = await q.$eval('#ring', e => getComputedStyle(e).transitionDuration);
+      ok(ring.split(',').every(x => parseFloat(x) === 0), 'the player\'s ring moves without a transition: ' + ring);
+      const raf0 = await E(q, () => window.__raf), seen = new Set(), t0 = Date.now();
+      for (let i = 0; i < 31; i++) { seen.add(await t(q, '#time')); await q.waitForTimeout(100); }
+      const rafs = (await E(q, () => window.__raf)) - raf0, w = (Date.now() - t0) / 1000;
+      ok(seen.size >= Math.floor(w) && seen.size <= Math.ceil(w) + 1, 'the player\'s clock still ticks every second: ' + [...seen].join(' ') + ' in ' + w.toFixed(1) + ' s');
+      ok(rafs <= 3, 'and a playing track asks for no animation frames: ' + rafs + ' in ' + w.toFixed(1) + ' s');
+      await q.close();
+    }
+
+    /* Z. your data: a backup holds everything but this device's own notes; a restore checks the file,
+       says what it holds, replaces what's here and isn't undone by the page's own last writes; damaged
+       sessions are dropped as they load; the browser is asked to keep the data once there is some */
+    if (!only || only === 'Z') {
+      const http = require('http');
+      const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.svg': 'image/svg+xml' };
+      const srv = http.createServer((q, r) => {             // over http, as the app is used: a file:// page can lose its storage across a reload
+        const u = decodeURIComponent(q.url.split('?')[0]), f = path.join(ROOT, u === '/' ? 'index.html' : u);
+        if (!f.startsWith(ROOT + path.sep)) { r.writeHead(403); return r.end(); }
+        fs.readFile(f, (e, d) => { if (e) { r.writeHead(404); return r.end(); } r.writeHead(200, { 'Content-Type': TYPES[path.extname(f)] || 'application/octet-stream' }); r.end(d); });
+      });
+      await new Promise(r => srv.listen(0, '127.0.0.1', r));
+      const HOME = 'http://127.0.0.1:' + srv.address().port + '/';
+      const DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'entrain-backup-'));
+      const file = (name, o) => { const f = path.join(DIR, name); fs.writeFileSync(f, typeof o === 'string' ? o : JSON.stringify(o)); return f; };
+      const now = Date.now();
+      const H2 = [{ k: 'breath', id: 'resonance', at: now - 864e5, secs: 300, full: true, rate: 5.5 }, { k: 'practice', id: 'anapana', n: 'Anapana', at: now - 36e5, secs: 600, full: true }];
+      const SEED = { history: JSON.stringify(H2), favs: '["anapana","b:resonance"]', nvcLog: JSON.stringify([{ at: now, kind: 'self', text: 'kept one' }]), tapPhrase: 'my words', 'pOpt.anapana': '{"bells":false}' };
+      const zpage = async (seed, storage, sped) => {
+        const ctx = await browser.newContext({ userAgent: S20, viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, serviceWorkers: 'block', acceptDownloads: true });
+        if (sped) await ctx.addInitScript(mock, { speed: 30 });
+        await ctx.addInitScript(([seed, storage]) => {
+          if (!sessionStorage.getItem('z.seeded')) {         // once a tab: a reload keeps what the page stored
+            sessionStorage.setItem('z.seeded', '1');
+            localStorage.setItem('entrain.debug', '1'); localStorage.setItem('entrain.stereo', 'ok');
+            for (const k in seed) localStorage.setItem('entrain.' + k, seed[k]);
+          }
+          if (window.speechSynthesis) { speechSynthesis.speak = () => {}; speechSynthesis.cancel = () => {}; }
+          window.__pz = { calls: 0, on: !!(storage && storage.now) };     // a stand-in for the browser's answer, which a granted persist() changes
+          if (storage) Object.defineProperty(navigator, 'storage', { configurable: true, value: storage === 'none' ? undefined : {
+            persisted: () => Promise.resolve(window.__pz.on), persist: () => { window.__pz.calls++; window.__pz.on = storage.grant; return Promise.resolve(storage.grant); } } });
+        }, [seed || {}, storage || null]);
+        const p = await ctx.newPage();
+        p.on('pageerror', e => log.push('PAGEERROR ' + e.message));
+        await p.goto(HOME + '#settings'); await p.waitForTimeout(500);
+        return p;
+      };
+      const snap = p => E(p, () => { const o = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('entrain.')) o[k] = localStorage.getItem(k); } return JSON.stringify(Object.keys(o).sort().map(k => [k, o[k]])); });
+      const msg = p => p.$eval('#stRestore', e => (e.hidden ? 'hidden: ' : e.classList.contains('bad') ? 'refused: ' : 'offer: ') + e.textContent.trim());
+
+      const p = await zpage(SEED, { now: false, grant: true });
+      ok(await E(p, () => window.__pz.calls) === 1 && /agreed to keep it/.test(await t(p, '#stKeepTxt')), 'with sessions to keep, the browser is asked to keep them, and Settings says it agreed: ' + await t(p, '#stKeepTxt'));
+      const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#stSave')]);
+      const saved = path.join(DIR, dl.suggestedFilename()); await dl.saveAs(saved);
+      const bk = JSON.parse(fs.readFileSync(saved, 'utf8')), keys = Object.keys(bk.data).join(' ');
+      ok(/^entrain-backup-\d{4}-\d\d-\d\d\.json$/.test(dl.suggestedFilename()) && bk.app === 'Entrain' && bk.kind === 'backup' && bk.version === 1 && Date.parse(bk.savedAt) > now - 6e4,
+        'Save a backup downloads one dated file: ' + dl.suggestedFilename());
+      ok(bk.data.history === SEED.history && bk.data.favs === SEED.favs && bk.data.nvcLog === SEED.nvcLog && bk.data.tapPhrase === 'my words' && bk.data['pOpt.anapana'] === SEED['pOpt.anapana'] &&
+        !/\b(debug|stereo|lastBackup|installLater|hrEver)\b/.test(keys), 'it holds the history, favourites, reflections and settings as stored, and none of this device\'s own notes: ' + keys);
+      ok(/^Last backup from this device: /.test(await t(p, '#stLast')) && /1 kept reflection, so keep the file somewhere private/.test(await t(p, '#stLast')), 'Settings shows when, and warns that it holds a reflection: ' + await t(p, '#stLast'));
+      await E(p, () => location.hash = 'history'); await p.waitForTimeout(300);
+      const [dl2] = await Promise.all([p.waitForEvent('download', { timeout: 5000 }).catch(() => null), p.click('#hiSave')]);
+      ok(dl2 && /^entrain-backup-/.test(dl2.suggestedFilename()), 'History\'s footer saves one too');
+      await E(p, () => location.hash = 'settings'); await p.waitForTimeout(300);
+
+      const before = await snap(p);
+      const bad = [
+        ['not JSON at all', file('a.json', 'hello'), /isn't an Entrain backup/],
+        ['another app\'s file', file('b.json', { hello: 1 }), /isn't an Entrain backup/],
+        ['a damaged history', file('c.json', Object.assign({}, bk, { data: Object.assign({}, bk.data, { history: '{"a":1}' }) })), /damaged/],
+        ['a value that isn\'t text', file('d.json', Object.assign({}, bk, { data: { favs: ['anapana'] } })), /damaged/],
+        ['a newer version', file('e.json', Object.assign({}, bk, { version: 2 })), /newer version of Entrain/],
+        ['an empty backup', file('f.json', Object.assign({}, bk, { data: {} })), /empty/]
+      ];
+      for (const [what, f, re] of bad) {
+        await p.setInputFiles('#stLoad', f); await p.waitForTimeout(250);
+        const m = await msg(p);
+        ok(/^refused: /.test(m) && re.test(m), 'refuses ' + what + ': ' + m);
+      }
+      ok(await snap(p) === before, 'and none of them changed anything');
+
+      // change the device, then restore the backup over it while a track has been playing for two minutes
+      await E(p, () => { localStorage.setItem('entrain.favs', '["x:prime"]'); localStorage.setItem('entrain.tinnitusHz', '4000'); });
+      await p.setInputFiles('#stLoad', saved); await p.waitForTimeout(250);
+      const offer = await msg(p);
+      ok(/^offer: A backup from .+2 sessions, 2 favourites and 1 kept reflection, with your settings\..*Restoring replaces everything Entrain has on this device, including 2 sessions in its history, then reloads the app\./.test(offer), 'says what the backup holds and what it replaces: ' + offer);
+      await p.click('#stRestoreNo'); await p.waitForTimeout(150);
+      ok(/^hidden/.test(await msg(p)) && await E(p, () => localStorage.getItem('entrain.favs')) === '["x:prime"]', 'Cancel leaves everything as it was');
+      await playTrack(p, 'theta-meditation');
+      await E(p, () => { const A = window.__entrain.A; A.startedAt = A.ctx.currentTime - 120; });   // two minutes in: stopping it would log a session
+      await E(p, () => location.hash = 'settings'); await p.waitForTimeout(300);
+      await p.setInputFiles('#stLoad', saved); await p.waitForTimeout(250);
+      await Promise.all([p.waitForNavigation(), p.click('#stRestoreGo')]);
+      await p.waitForTimeout(700);
+      const after = await E(p, () => ({ favs: localStorage.getItem('entrain.favs'), tin: localStorage.getItem('entrain.tinnitusHz'), stereo: localStorage.getItem('entrain.stereo'),
+        last: localStorage.getItem('entrain.lastBackup'), hist: localStorage.getItem('entrain.history'), tap: localStorage.getItem('entrain.tapPhrase') }));
+      ok(after.favs === SEED.favs && after.tap === 'my words' && after.tin === null, 'the restore brings back the backup and drops what only this device had: favourites ' + after.favs + ', tinnitus pitch ' + after.tin);
+      ok(after.hist === SEED.history, 'the track that stopped as the page reloaded didn\'t write over it: ' + JSON.parse(after.hist).length + ' sessions');
+      ok(after.stereo === 'ok' && !!after.last, 'this device\'s own notes stay: the headphone check and the last backup');
+      ok(/Backup restored/.test(await t(p, '#toast')) && await E(p, () => location.hash) === '#settings', 'it reloads into Settings and says so');
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(300);
+      ok(await p.$$eval('#tdFavList > li', l => l.length) === 2, 'Today shows the restored favourites');
+
+      // out of room part of the way through: nothing changes
+      await E(p, () => location.hash = 'settings'); await p.waitForTimeout(300);
+      await E(p, () => localStorage.setItem('entrain.favs', '["x:beats"]'));
+      const full = await snap(p);
+      await E(p, () => { const si = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k === 'entrain.nvcLog' && !window.__full) { window.__full = 1; throw new DOMException('full', 'QuotaExceededError'); } return si.call(this, k, v); }; });
+      await p.setInputFiles('#stLoad', saved); await p.waitForTimeout(250);
+      await p.click('#stRestoreGo'); await p.waitForTimeout(400);
+      ok(/^refused: There wasn't room/.test(await msg(p)) && await snap(p) === full, 'a restore that runs out of room puts everything back: ' + await msg(p));
+      await p.context().close();
+
+      // damaged sessions in a restored file: the good ones show, the rest are dropped or trimmed, nothing breaks
+      const H4 = H2.concat([{ k: 'breath', id: 'resonance', at: 'yesterday', secs: 300 }, { k: 'practice', id: 'anapana', at: now - 6e5, secs: 300, coh: '<img src=x onerror="window.__xss=1">', rate: 'fast', note: 1 }, { k: 'unknown', at: now, secs: 300 }]);
+      const q = await zpage({ history: JSON.stringify(H4) });
+      await E(q, () => location.hash = 'history'); await q.waitForTimeout(400);
+      const rows = await q.$$eval('#hiBody .hi-e', l => l.map(x => x.textContent.replace(/\s+/g, ' ').trim()));
+      ok(rows.length === 3 && !(await E(q, () => window.__xss)) && !(await q.$('#hiBody img')), 'damaged sessions are dropped or trimmed as the history loads: ' + rows.length + ' rows, ' + rows.join(' | '));
+      await q.context().close();
+
+      // with nothing to keep yet, the browser isn't asked; the first session asks
+      const r = await zpage(null, { now: false, grant: true }, true);
+      ok(await E(r, () => window.__pz.calls) === 0 && /may clear it/.test(await t(r, '#stKeepTxt')), 'with no sessions yet the browser isn\'t asked, and Settings says it may clear the data');
+      await E(r, () => location.hash = 'breathe'); await r.waitForTimeout(300);
+      await r.click('#bStart');
+      await r.waitForFunction(() => window.__entrain.B.state === 'running' && performance.now() / 1000 - window.__entrain.B.t0 > 66, null, { timeout: 20000 });
+      await r.click('#bReset'); await r.waitForTimeout(300);
+      await E(r, () => location.hash = 'settings'); await r.waitForTimeout(300);
+      ok(await E(r, () => window.__pz.calls) === 1 && /agreed to keep it/.test(await t(r, '#stKeepTxt')), 'after the first session it is asked, once: ' + await E(r, () => window.__pz.calls) + ' ask');
+      await r.context().close();
+      const s = await zpage(SEED, 'none');
+      ok(await s.$eval('#stKeepTxt', e => e.hidden), 'a browser that can\'t say whether it keeps the data gets no promise either way');
+      await s.context().close();
+      const u = await zpage(SEED, { now: true, grant: true });
+      ok(await E(u, () => window.__pz.calls) === 0 && /agreed to keep it/.test(await t(u, '#stKeepTxt')), 'data already kept isn\'t asked about again');
+      await u.context().close();
+      srv.close();
     }
   } catch (e) { log.push('ERROR ' + e.message); }
   console.log(log.join('\n'));

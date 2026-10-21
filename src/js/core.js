@@ -5,14 +5,27 @@
 
   var $ = function (sel) { return document.querySelector(sel); };
 
-  // settings and history live in localStorage, under "entrain."; a browser that refuses storage just forgets
+  // settings and history live in localStorage, under "entrain."; a browser that refuses storage just forgets.
+  // Once a backup is restored the store is frozen, so nothing still in memory writes over it before the reload.
   var store = {
+    frozen: false,
     get: function (k) { try { return localStorage.getItem("entrain." + k); } catch (e) { return null; } },
-    set: function (k, v) { try { localStorage.setItem("entrain." + k, v); } catch (e) {} }
+    set: function (k, v) { if (store.frozen) return; try { localStorage.setItem("entrain." + k, v); } catch (e) {} }
   };
-  function storeDel(k) { try { localStorage.removeItem("entrain." + k); } catch (e) {} }
+  function storeDel(k) { if (store.frozen) return; try { localStorage.removeItem("entrain." + k); } catch (e) {} }
 
   var RM = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  // Breathing and session visuals move slowly, so they draw at most 30 frames a second, even on a
+  // 90 or 120 Hz screen: plenty for a breath, and a fraction of the battery. Pass the frame's timestamp.
+  var FRAME_MS = 1000 / 30;
+  function frameDue(o, ts) {
+    if (typeof ts !== "number") { o.frameAt = 0; return true; }     // drawn now, outside the frame loop
+    var d = ts - (o.frameAt || 0);
+    if (o.frameAt && d >= 0 && d < FRAME_MS - 4) return false;      // 4 ms of slack: a 60 Hz screen draws every other frame
+    o.frameAt = ts;
+    return true;
+  }
 
   // the session clock, in seconds
   function bNow() { return (window.performance && performance.now ? performance.now() : Date.now()) / 1000; }

@@ -6,9 +6,11 @@ There are five tabs: Today, Library, Breathe, Heart and Learn.
 
 - **Today** has your favourites, what you did lately and the last seven days, from one history of everything you do, with the heart-rate change and coherence whenever a sensor was connected. It also has a suggestion for the time of day and the six goals.
 - **Library** holds every practice, breathing pattern and track, each under one goal (Sleep, Calm, Focus, Energy, Recover or Reflect), with filters for method, length, posture and needs. Each track has a page of its own, like a practice, and so do the custom primer and the beat builder.
-- **Settings** holds the defaults; options can also be kept for each practice. It also decides how the screen behaves: by default it stays on and at full brightness through every session.
+- **Settings** holds the defaults; options can also be kept for each practice. It also decides how the screen behaves: by default it stays on and at full brightness through every session. Under Your data it saves a backup of everything as one file and restores one, for a new phone or for safekeeping.
 
-Everything runs on the device and stays there: the history, favourites and reflections are kept in the browser's storage, and nothing is sent anywhere.
+Everything runs on the device and stays there: the history, favourites and reflections are kept in the browser's storage, and nothing is sent anywhere. Once there is a session worth keeping, the app asks the browser to keep its storage when space runs low, and Settings says what the browser answered.
+
+The breathing guide and the practices' visuals draw 30 frames a second, even on a faster screen, and the glows are gradients rather than blurred shadows, which are slow to redraw. The player's clock ticks once a second.
 
 ## Layout
 
@@ -37,7 +39,7 @@ The build only assembles, nothing is rewritten on the way:
 
 | Script file | What it holds |
 |---|---|
-| `core.js` | Helpers every file uses: `$`, `store`, `fmt`, `esc` and the evidence dots |
+| `core.js` | Helpers every file uses: `$`, `store`, `fmt`, `esc`, the evidence dots and `frameDue`, which keeps animations to 30 frames a second |
 | `tracks.js` | The binaural tracks and the frequency bands |
 | `audio.js` | The binaural engine, pink noise, the transport and the mini player |
 | `trackpage.js` | A page for each track, with Play in reach |
@@ -52,6 +54,7 @@ The build only assembles, nothing is rewritten on the way:
 | `practice.js`, `done.js`, `adapt.js` | The practice engine and session screen; the end screen, whose numbers and chart explain themselves when tapped; heart-led beats and the power nap |
 | `library.js`, `settings.js`, `yoga.js`, `nvc.js`, `search.js` | The library, Settings, the routine builder, the reflection practices, search |
 | `history.js`, `favs.js`, `today.js` | The one history, favourites, and Today |
+| `backup.js` | Your data: saving a backup, restoring one, and asking the browser to keep the data |
 | `boot.js` | Starts everything, in order |
 
 ## Test

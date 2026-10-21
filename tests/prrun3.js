@@ -191,6 +191,7 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     ok(await p.$eval('#sFig g[data-p="hand"] .tp', c => c.classList.contains('on')), 'side of the hand lit');
     await untilStep(p, /^Round 1$/);
     await until(p, await p.evaluate(() => { const P = window.__entrain.P; return P.steps[P.idx].at + 3 + 7 + 1; }));
+    for (let i = 0; i < 30 && !/Point 2 of 8/.test(await t(p, '#sSub')); i++) await p.waitForTimeout(100);   // the words move on with the practice's tick, five times a second
     ok(await t(p, '#sCap') === 'Eyebrow' && /Point 2 of 8/.test(await t(p, '#sSub')) && await p.$eval('#sFig g[data-p="brow"] .tp', c => c.classList.contains('on')) && await p.$eval('#sFig g[data-p="head"] .tp', c => c.classList.contains('done')), 'round 1 moves to the eyebrow, head marked done: ' + await t(p, '#sSub'));
     await p.screenshot({ path: OUT + 'tap-round.png' });
     const said2 = (await p.evaluate(() => window.__said.map(x => x.t))).join(' | ');

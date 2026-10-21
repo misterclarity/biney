@@ -28,7 +28,9 @@
       storeDel("lastSummary"); storeDel("soundsSeg");   // Home's last-session card and the Sounds tab are gone too
       return HIST;
     }
-    HIST = l.filter(function (e) { return e && e.k && e.at && typeof e.secs === "number"; });
+    HIST = l.filter(function (e) {
+      return e && typeof e === "object" && H_KINDS.indexOf(hClean(e).k) >= 0 && e.at > 0 && e.at < 8.64e15 && e.secs >= 0;
+    });
     return HIST;
   }
   // true when it was written: a full or refused storage keeps the old log instead
@@ -37,8 +39,14 @@
     store.set("history", s);
     return store.get("history") === s;
   }
+  // What each field of a session may hold. Anything else, from a damaged store or a restored file,
+  // is dropped as it loads, and a session without its kind, time and length is dropped whole.
+  var H_FIELDS = { k: "string", id: "string", n: "string", band: "string", note: "string", at: "number", secs: "number",
+    rate: "number", beat: "number", hr0: "number", hr1: "number", hrAvg: "number", swing: "number", coh: "number", best: "number",
+    full: "boolean", est: "boolean" };
+  var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
-    for (var k in e) if (e[k] === undefined || e[k] === null || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
+    for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
     return e;
   }
   function hAdd(e) {
@@ -49,6 +57,7 @@
     HIST.push(hClean(e));
     while (HIST.length > HIST_MAX) HIST.shift();
     hSave();
+    if (BK.persisted !== true) bkPersist();      // the first session is worth asking the browser to keep
     setTimeout(function () {                     // once the caller has finished ending the session
       if (curView === "home") todayRender();
       if (curView === "history") hRender();
@@ -219,14 +228,15 @@
       h += hRow(l[i], false);
     }
     if (open) h += "</ul></section>";
-    h += '<div class="hi-foot"><p>Your history stays on this device, the last ' + HIST_MAX + ' sessions. Anything under a minute isn\'t kept, and nothing you write in a reflection is.</p>' +
-      '<button class="btn small" id="hiClear">Clear history</button></div>';
+    h += '<div class="hi-foot"><p>Your history stays on this device, the last ' + HIST_MAX + ' sessions. Anything under a minute isn\'t kept, and nothing you write in a reflection is. A backup keeps it safe, or moves it to another phone.</p>' +
+      '<div class="hi-foot-act"><button class="btn small" id="hiSave">Save a backup</button><button class="btn small" id="hiClear">Clear history</button></div></div>';
     $("#hiBody").innerHTML = h;
   }
 
   function hInit() {
     hLoad();
     $("#hiBody").addEventListener("click", function (e) {
+      if (e.target.closest("#hiSave")) { bkSave(); return; }
       var b = e.target.closest("#hiClear");
       if (!b) return;
       if (H_ARM && Date.now() - H_ARM < 3000) {

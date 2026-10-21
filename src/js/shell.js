@@ -279,6 +279,7 @@
     window.addEventListener("appinstalled", function () {
       APP.prompt = null;
       installHide();
+      BK.asked = false; bkPersist();                 // an installed app is usually allowed to keep its data
       toast("Entrain is installed. Open it from your home screen or app list.");
     });
     var ua = navigator.userAgent;

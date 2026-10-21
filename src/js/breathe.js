@@ -402,9 +402,9 @@
     updateHead();
     if (B.finder) finderTick(bt);
   }
-  function bLoop() {
+  function bLoop(ts) {
     if (B.state !== "running") return;
-    draw();
+    if (frameDue(B, ts)) draw();
     B.raf = requestAnimationFrame(bLoop);
   }
 

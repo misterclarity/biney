@@ -92,6 +92,16 @@
   function bFont(w, px, mono) { d2.font = w + " " + px + "px " + (mono ? B_MONO : B_SANS); }
   function ring(x, y, r) { d2.beginPath(); d2.arc(x, y, r, 0, Math.PI * 2); d2.stroke(); }
   function disc(x, y, r) { d2.beginPath(); d2.arc(x, y, r, 0, Math.PI * 2); d2.fill(); }
+  function band(x, y, r1, r2) {               // the ring between two circles, filled
+    d2.beginPath(); d2.arc(x, y, r2, 0, Math.PI * 2);
+    d2.moveTo(x + r1, y); d2.arc(x, y, r1, 0, Math.PI * 2, true); d2.fill();
+  }
+  /* The glows used to be blurred shadows, which are slow to redraw every frame. These copy their
+     look with gradients: a shadow blurred by b fades out over about 1.25 b beyond the edge,
+     steeply at first and then in a long faint tail. */
+  function fade(g, col, a, stops) { stops.forEach(function (s) { g.addColorStop(s[0], rgba(col, a * s[1])); }); return g; }
+  var FADE_EDGE = [[0, 1], [0.22, 0.51], [0.45, 0.38], [0.68, 0.24], [0.9, 0.11], [1, 0]];   // beside a faint fill
+  var FADE_DOT = [[0, 1], [0.21, 0.625], [0.42, 0.3], [0.63, 0.125], [0.84, 0.03], [1, 0]];     // beside a solid one
   function line(x1, y1, x2, y2) { d2.beginPath(); d2.moveTo(x1, y1); d2.lineTo(x2, y2); d2.stroke(); }
   function rrect(x, y, w, h, r) {
     d2.beginPath();
@@ -110,12 +120,10 @@
     d2.fillText(txt, x, y);
   }
   function glowDot(x, y, r, col) {
-    d2.save();
-    d2.shadowColor = rgba(col, 0.9);
-    d2.shadowBlur = 18;
+    d2.fillStyle = fade(d2.createRadialGradient(x, y, r, x, y, r + 9.5), col, 0.32, FADE_DOT);
+    disc(x, y, r + 9.5);
     d2.fillStyle = col;
     disc(x, y, r);
-    d2.restore();
     d2.fillStyle = BCOL.bg;
     disc(x, y, r * 0.38);
   }
@@ -150,15 +158,20 @@
     d2.setLineDash([]);
 
     var r = r0 + (R - r0) * lv;
+    // the fill fades from 0.6 to 0.1; with the glow it is a little denser, as the glow's blurred
+    // shadow (45% of the fill) once showed through it
     var gr = d2.createRadialGradient(cx - r * 0.28, cy - r * 0.32, r * 0.08, cx, cy, r);
-    gr.addColorStop(0, rgba(col, 0.6));
-    gr.addColorStop(1, rgba(col, 0.1));
-    d2.save();
-    d2.shadowColor = rgba(col, 0.45);
-    d2.shadowBlur = RM ? 0 : 20 + 34 * lv;
+    for (var o = 0; o <= 1; o += 0.25) {
+      var a = 0.6 - 0.5 * o;
+      gr.addColorStop(o, rgba(col, RM ? a : 1 - (1 - 0.45 * a) * (1 - a)));
+    }
+    if (!RM) {                                  // outside, the glow grows with the breath
+      var gw = 1.25 * (20 + 34 * lv);
+      d2.fillStyle = fade(d2.createRadialGradient(cx, cy, r, cx, cy, r + gw), col, 0.037, FADE_EDGE);
+      band(cx, cy, r, r + gw);
+    }
     d2.fillStyle = gr;
     disc(cx, cy, r);
-    d2.restore();
     d2.lineWidth = 2;
     d2.strokeStyle = rgba(col, 0.9);
     ring(cx, cy, r);
