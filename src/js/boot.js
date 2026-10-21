@@ -4,6 +4,7 @@
   ---------------------------------------------------------------------------- */
 
   playerInit();
+  msInit();
   builderInit();
   primeInit();
   dialogsInit();

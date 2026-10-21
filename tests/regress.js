@@ -740,7 +740,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       ok(trk === 0 && ses === 0, 'with the screen options off, a track and a practice let the screen turn off');
       await p.evaluate(() => location.hash = 'settings'); await p.waitForTimeout(200);
       await p.click('label:has(#stScrSes)'); await p.click('label:has(#stScrTrk)'); await p.click('label:has(#stDim)'); await p.waitForTimeout(80);
-      ok(await E(p, () => JSON.stringify(window.__entrain.ST)) === '{"screenSessions":true,"screenTracks":true,"sleepDim":true}', 'the screen settings are kept');
+      ok(await E(p, () => JSON.stringify(window.__entrain.ST)) === '{"screenSessions":true,"screenTracks":true,"sleepDim":true,"lockControls":true}', 'the screen settings are kept');
       await p.evaluate(() => location.hash = 'practice/sleep-descent'); await p.waitForTimeout(250);
       await p.click('#sGo'); await p.waitForTimeout(250);
       await jumpTo(p, /^Drift$/); await p.waitForTimeout(150);
@@ -950,6 +950,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
         !/\b(debug|stereo|lastBackup|installLater|hrEver)\b/.test(keys), 'it holds the history, favourites, reflections and settings as stored, and none of this device\'s own notes: ' + keys);
       ok(/^Last backup from this device: /.test(await t(p, '#stLast')) && /1 kept reflection, so keep the file somewhere private/.test(await t(p, '#stLast')), 'Settings shows when, and warns that it holds a reflection: ' + await t(p, '#stLast'));
       await E(p, () => location.hash = 'history'); await p.waitForTimeout(300);
+      if (await p.$eval('#toast', e => !e.hidden)) { await p.click('#toastX'); await p.waitForTimeout(350); }   // the first save's notice sits over the footer
       const [dl2] = await Promise.all([p.waitForEvent('download', { timeout: 5000 }).catch(() => null), p.click('#hiSave')]);
       ok(dl2 && /^entrain-backup-/.test(dl2.suggestedFilename()), 'History\'s footer saves one too');
       await E(p, () => location.hash = 'settings'); await p.waitForTimeout(300);

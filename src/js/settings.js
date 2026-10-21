@@ -4,7 +4,7 @@
      (backup.js).
   ------------------------------------------------------------------------------ */
 
-  var ST = { screenSessions: true, screenTracks: true, sleepDim: false };
+  var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true };
 
   function stLoad() {
     try {
@@ -44,6 +44,7 @@
         pToggle("stRhy", "Berimbau for the capoeira moves", g.rhythm, "") +
         pToggle("stTick", "Tapping tick", g.tapTick, "A soft tick to tap along with.") +
         '<div class="so-row so-seg"><span class="so-l">Breath cues</span>' + stSeg("stCues", [["tones", "Tone"], ["chimes", "Chimes"], ["off", "Silent"]], g.cues) + "</div>" +
+        (bzOk() ? pToggle("stBuzz", "Vibrate with the breath", g.buzz, "A short buzz to breathe in, a long one to breathe out, two taps for a hold.") : "") +
         '<div class="so-row so-seg"><span class="so-l">Breath visual</span>' + stSeg("stVis", [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]], g.visual) + "</div>" +
         '<div class="so-row so-seg"><span class="so-l">Anapana reminders in programs<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span>' +
           stSeg("stAna", [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]], g.ana) + "</div>" +
@@ -59,6 +60,7 @@
       '<section class="st-card" id="st-screen" aria-labelledby="stS"><h2 id="stS">Screen</h2>' +
         pToggle("stScrSes", "Keep the screen on during practices and breathing", ST.screenSessions, "Also for ten minutes into a pause.") +
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
+        (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap and Cognitive Shuffle go almost dark. The screen still stays on.") +
       "</section>" + bkCard();
     stWire();
@@ -72,6 +74,7 @@
     on("#stAudio", function () { stDefault("audio", this.checked); });
     on("#stRhy", function () { stDefault("rhythm", this.checked); });
     on("#stTick", function () { stDefault("tapTick", this.checked); });
+    on("#stBuzz", function () { stDefault("buzz", this.checked); if (this.checked) { try { navigator.vibrate(BUZZ["in"]); } catch (e) {} } });
     on("#stKeep", function () { stDefault("nvcSave", this.checked); });
     on("#stVoiceSel", function () { stDefault("voiceName", this.value); });
     var t = $("#stVoiceTest");
@@ -104,6 +107,7 @@
     });
     on("#stScrSes", function () { ST.screenSessions = this.checked; stSave(); wlSync(); });
     on("#stScrTrk", function () { ST.screenTracks = this.checked; stSave(); wlSync(); });
+    on("#stLock", function () { ST.lockControls = this.checked; stSave(); msSync(); });
     on("#stDim", function () {
       ST.sleepDim = this.checked; stSave();
       var s = pBusy() && P.steps[P.idx];

@@ -2,7 +2,7 @@
      One log on the device for everything you do: practices, breathing sessions, tracks, the
      custom primer and the beat builder, and resonance tests. Sessions under a minute aren't
      kept, and nothing you write in a reflection goes in. Today shows the last week of it;
-     History shows all of it, a day at a time.
+     History shows all of it, a day at a time, with trends over weeks and months (trends.js).
   ---------------------------------------------------------------------------- */
 
   var HIST = null;                  // oldest first; read once, then kept in step with storage
@@ -216,7 +216,7 @@
     h += '<section class="hi-sum" aria-labelledby="hiWk"><h2 id="hiWk">Last 7 days</h2>' + hTotals(w) + hDays(w) +
       (goals.length ? '<ul class="hi-goals" aria-label="Minutes by goal">' + goals.map(function (g) {
         return '<li style="--gcol:' + GOAL_COL[g.id] + '"><span>' + esc(g.name) + "</span><i style=\"--w:" + Math.max(4, Math.round(w.goals[g.id] / gmax * 100)) + '%"></i><b>' + Math.round(w.goals[g.id] / 60) + " min</b></li>";
-      }).join("") + "</ul>" : "") + "</section>";
+      }).join("") + "</ul>" : "") + "</section>" + tnSec();
     var day = -1, open = false;
     for (var i = l.length - 1; i >= 0; i--) {
       var d = hDayStart(l[i].at);
@@ -231,6 +231,7 @@
     h += '<div class="hi-foot"><p>Your history stays on this device, the last ' + HIST_MAX + ' sessions. Anything under a minute isn\'t kept, and nothing you write in a reflection is. A backup keeps it safe, or moves it to another phone.</p>' +
       '<div class="hi-foot-act"><button class="btn small" id="hiSave">Save a backup</button><button class="btn small" id="hiClear">Clear history</button></div></div>';
     $("#hiBody").innerHTML = h;
+    tnStart();
   }
 
   function hInit() {

@@ -1,18 +1,19 @@
   /* ------------------------------- the end screen -------------------------------
      What a practice measured, as tiles you can tap for what each number means, with your own
-     value read back, and the heart-rate chart, which you can tap or drag to read any moment.
-     The summary itself is worked out in practice.js (pSummary).
+     value read back and set against your usual for the same practice, and the heart-rate chart,
+     which you can tap or drag to read any moment. The summary itself is worked out in
+     practice.js (pSummary).
   -------------------------------------------------------------------------------- */
 
-  var SD = { r: null, d: null, open: "", sm: null, T: 0, cur: -1, drag: false, ro: null, L: 0, R: 0 };
+  var SD = { r: null, d: null, c: null, open: "", sm: null, T: 0, cur: -1, drag: false, ro: null, L: 0, R: 0 };
   function pDone(r, early) {
-    var d = P.def, tiles = [];
-    tiles.push(["Time", fmt(r.secs), early ? "Ended early" : "Complete", "time"]);
+    var d = P.def, tiles = [], c = SD.c = sdCompare(r, d);
+    tiles.push(["Time", fmt(r.secs), early ? "Ended early" : "Complete", "time", r.at ? (c.n === 1 ? "Your first time" : "Your " + sdNth(c.n) + " time") : ""]);
     var napHR = r.nap && r.nap.base && r.nap.low;        // a nap has its own baseline-to-lowest tile
-    if (r.hr0 && !napHR) tiles.push(["Heart rate", r.hr0 + " → " + r.hr1, "bpm, start to end", "hr"]);
+    if (r.hr0 && !napHR) tiles.push(["Heart rate", r.hr0 + " → " + r.hr1, "bpm, start to end", "hr", sdCmpTxt(c.hr, function (v) { v = Math.round(v); return v ? sdSigned(v) : "steady"; })]);
     else if (r.hrAvg && !napHR) tiles.push(["Heart rate", String(r.hrAvg), "bpm average", "hravg"]);
-    if (r.coh && !r.nap) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1) + (r.cohEst ? " (est.)" : ""), "coh"]);
-    if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath", "swing"]);
+    if (r.coh && !r.nap) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1) + (r.cohEst ? " (est.)" : ""), "coh", sdCmpTxt(c.coh, sdFix1, r.coh)]);
+    if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath", "swing", sdCmpTxt(c.swing, sdFix1, r.swing)]);
     if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath", "wander"]);
     if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · "), "holds"]);
     if (r.suds) tiles.push(["Intensity", r.suds.join(" → "), r.suds.length > 1 ? "out of 10, first to last" : "out of 10", "suds"]);
@@ -26,9 +27,10 @@
     SD.r = r; SD.d = d; SD.open = ""; SD.sm = null; SD.cur = -1;
     var h = '<div class="sd-head"><span class="sd-ic">' + (early ? "" : '<svg class="i" aria-hidden="true"><use href="#i-check"/></svg>') + "</span>" +
       "<div><h2>" + (early ? "Session ended" : d.end ? esc(d.end) : "Nicely done") + "</h2><p>" + esc(d.name) + "</p></div></div>" +
-      '<p class="sd-tap">Tap a number to see what it means' + (chart ? ", or the chart to read it." : ".") + "</p>" +
+      '<p class="sd-tap">Tap a number to see what it means' + (c.hr || c.coh || c.swing ? " and how it compares with your usual" : "") + (chart ? ", or the chart to read it." : ".") + "</p>" +
       '<div class="sd-tiles">' + tiles.map(function (t) {
-        return '<button class="sd-t" data-ex="' + t[3] + '" aria-expanded="false" aria-controls="sdEx"><span>' + t[0] + "</span><b>" + t[1] + "</b><small>" + t[2] + "</small></button>";
+        return '<button class="sd-t" data-ex="' + t[3] + '" aria-expanded="false" aria-controls="sdEx"><span>' + t[0] + "</span><b>" + t[1] + "</b><small>" + t[2] + "</small>" +
+          (t[4] ? '<em class="sd-cmp">' + esc(t[4]) + "</em>" : "") + "</button>";
       }).join("") + "</div>" +
       '<div class="sd-ex" id="sdEx" role="region" aria-labelledby="sdExT" hidden></div>' +
       (chart ? '<div class="sd-chart"><span>Heart rate across the session, in bpm' + (r.beatLog ? ", with the beat in violet" : "") + "</span>" +
@@ -63,6 +65,8 @@
       p.push(r.early ? "You ended the session after " + fmt(r.secs) + ", before its planned end. Everything here covers the part you did."
         : d.selfPaced ? "The time you took, at your own pace: " + fmt(r.secs) + "." : "The session ran its full length: " + fmt(r.secs) + ".");
       p.push("Time on pause isn't counted. Sessions of a minute or more go into your history, on Today.");
+      if (r.at) p.push(SD.c.n === 1 ? "This was your first session of " + d.name + "." : "This was your " + sdNth(SD.c.n) + " session of " + d.name +
+        (SD.c.week > 1 ? ", and your " + sdNth(SD.c.week) + " in the last seven days." : ", and the first in the last seven days."));
       return ["Time", p];
     }
     if (k === "hr") {
@@ -73,6 +77,7 @@
       if (dl <= -3) p.push("It came down " + plural(-dl, "beat", "beats") + " a minute. A fall like this is the usual sign of the body settling: slow breathing and rest shift the nervous system toward its calming side, which slows the heart.");
       else if (dl >= 3) p.push("It rose " + plural(dl, "beat", "beats") + " a minute. " + (lively ? "That's expected after movement or energising breathing." : "Sitting up, moving or a busy mind can raise it. One session is one reading: your history shows the trend."));
       else p.push("It stayed within a few beats. That's common in short or gentle sessions, or when you started out already rested.");
+      if (SD.c.hr) p.push(sdHrAgainst(dl, SD.c.hr, d));
       return ["Heart rate, start to end", p];
     }
     if (k === "hravg") {
@@ -84,11 +89,13 @@
       p.push("How much of your heart rhythm's rise and fall settled into one smooth, regular wave, usually the one your breathing sets. It's HeartMath's published measure, worked out every 5 seconds from the last 64 seconds of heartbeats, and it usually runs from 0 to 8.");
       p.push("Here it averaged " + r.coh.toFixed(1) + ", and your best moment reached " + r.cohMax.toFixed(1) + ". Everyday breathing usually scores low; slow, even breathing near your resonance pace raises it. HeartMath's own apps use a different scale, so compare it with your own sessions here.");
       if (r.cohEst) p.push("It's marked (est.) because your sensor sends heart rate only, not the time between beats. From that smoothed signal the score is an estimate and reads high. An ear clip or a chest strap gives the full measure.");
+      if (SD.c.coh) p.push(sdAgainst(r.coh, SD.c.coh, d, "coherence", 0.3, r.cohEst ? "with an estimated score, as estimates are only compared with estimates" : "with a beat-to-beat sensor"));
       return ["Coherence", p];
     }
     if (k === "swing") {
       p.push("Your heart speeds up a little as you breathe in and slows as you breathe out. The swing is how far it moves within one breath, the highest heart rate minus the lowest, averaged over the breaths here: " + r.swing.toFixed(1) + " beats a minute.");
       p.push("A bigger swing means more heart-rate variability, which is what slow breathing trains. It's usually biggest at your own resonance pace, which the resonance test on the Heart tab finds. Swing differs a lot between people and shrinks with age, so compare it with your own sessions.");
+      if (SD.c.swing) p.push(sdAgainst(r.swing, SD.c.swing, d, "swing", 0.5, "with a heart sensor"));
       return ["Swing per breath", p];
     }
     if (k === "wander") {
@@ -137,6 +144,57 @@
       return ["Heart rate, resting to lowest", p];
     }
     return ["", []];
+  }
+  /* ----- against your own sessions: the usual for this practice, from the history ----- */
+  function sdCompare(r, d) {
+    var prev = hLoad().filter(function (e) { return e.k === "practice" && e.id === d.id && e.at !== r.at; }), c = {}, wk = Date.now() - 7 * DAY;
+    if (r.hr0 && r.hr1) c.hr = sdUsual(prev.filter(function (e) { return e.hr0 && e.hr1; }).map(function (e) { return e.hr1 - e.hr0; }));
+    if (r.coh) c.coh = sdUsual(prev.filter(function (e) { return e.coh && !!e.est === !!r.cohEst; }).map(function (e) { return e.coh; }));
+    if (r.swing) c.swing = sdUsual(prev.filter(function (e) { return e.swing; }).map(function (e) { return e.swing; }));
+    c.n = prev.length + 1;                                   // counted only once this one is in the history (r.at)
+    c.week = prev.filter(function (e) { return e.at >= wk; }).length + 1;
+    return c;
+  }
+  // one earlier value is "last time"; with more, the usual is the middle of the last ten
+  function sdUsual(vals) {
+    if (!vals.length) return null;
+    vals = vals.slice(-10);
+    var s = vals.slice().sort(function (a, b) { return a - b; }), m = s.length >> 1;
+    return { n: vals.length, last: vals.length === 1, v: s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2, max: s[s.length - 1] };
+  }
+  function sdBest(now, u) { return u && u.n >= 2 && now > u.max; }
+  function sdCmpTxt(u, f, now) {
+    if (!u) return "";
+    if (sdBest(now, u)) return "Your best yet";
+    return (u.last ? "Last time " : "Usually ") + f(u.v);
+  }
+  function sdFix1(v) { return v.toFixed(1); }
+  function sdSigned(v) { return v > 0 ? "+" + v : "−" + -v; }
+  function sdNth(n) {
+    var t = n % 100, e = t > 10 && t < 14 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th";
+    return n + e;
+  }
+  function sdMoved(v) {
+    v = Math.round(v);
+    return v <= -1 ? "came down " + -v + (v === -1 ? " beat" : " beats") + " a minute" : v >= 1 ? "rose " + v + (v === 1 ? " beat" : " beats") + " a minute" : "held steady";
+  }
+  // the heart-rate change against your usual one, in words that hold whether it usually falls or rises
+  function sdHrAgainst(dl, u, d) {
+    var s = u.last ? "Last time you did " + d.name + " with a heart sensor, your heart rate " + sdMoved(u.v) + "."
+      : "In your last " + u.n + " sessions of " + d.name + " with a heart sensor, it usually " + sdMoved(u.v) + " (the middle value).";
+    var diff = dl - u.v;
+    if (Math.abs(diff) < 2.5) return s + " This time was " + (u.last ? "about the same." : "close to your usual.");
+    var falls = u.v <= 0, cmp = u.last ? " than last time." : " than usual.";
+    if (falls) return s + (diff < 0 ? " This time it fell further" + cmp : dl <= 0 ? " This time it fell less" + cmp : " This time it rose instead.");
+    return s + (diff > 0 ? " This time it rose more" + cmp : dl >= 0 ? " This time it rose less" + cmp : " This time it fell instead.");
+  }
+  // a score against your usual: the same, higher, lower, or your best yet
+  function sdAgainst(now, u, d, what, near, kind) {
+    var s = u.last ? "Last time you did " + d.name + " " + kind + ", your " + what + " was " + u.v.toFixed(1) + "."
+      : "Your usual " + what + " in " + d.name + " is " + u.v.toFixed(1) + ", the middle of your last " + u.n + " sessions " + kind + ".";
+    if (sdBest(now, u)) return s + " This was your best yet, above all " + u.n + " of them.";
+    var diff = now - u.v;
+    return s + (Math.abs(diff) < near ? " This one was about the same." : diff > 0 ? " This one was higher." : " This one was lower.");
   }
   function sdShow(k, refocus) {
     SD.open = k;

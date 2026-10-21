@@ -84,7 +84,7 @@
 
   var BC = {
     pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0,
-    visual: "circle", minutes: 5, sound: "off", cue: 40
+    visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false
   };
 
   var B = {
@@ -93,6 +93,7 @@
     ph: null, pending: null,  // phases in use, and an edit waiting for the next breath
     epoch: 0, done: 0, total: 0,
     raf: 0, tick: 0, key: "", segOn: -1, schedTo: 0,
+    buzzAt: -Infinity, buzzT: 0, buzzWas: -Infinity,   // the last change that buzzed, the buzz waiting for the next, and the one before it
     voice: null, bus: null, doneMsg: "", doneCount: 0, doneSecs: 0,
     hr: [],                   // heart samples this session: {bt, hr, n (breath index), cyc}
     swings: [], hrDone: 0,    // per-breath heart-rate swing, and the next breath to score
@@ -113,7 +114,7 @@
     var c = BC;
     if (B.finder) {
       c = B.finder.saved;
-      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue;
+      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue; c.buzz = BC.buzz;
     }
     store.set("breath", JSON.stringify(c));
   }
@@ -316,6 +317,7 @@
   function bFresh() {
     B.ph = buildPhases(BC); B.pending = null; B.epoch = 0; B.done = 0; planTotal();
     B.st = 0; B.key = ""; B.schedTo = -B_LEAD;
+    B.buzzAt = -Infinity; clearTimeout(B.buzzT);
     B.hr = []; B.swings = []; B.hrDone = 0; B.coh = [];
     renderLine();
     bSetT("#bMsg", "");
@@ -346,6 +348,7 @@
     clearInterval(B.tick);
     cancelAnimationFrame(B.raf);
     cueOff();
+    bBuzzOff();
     releaseLock();
     syncTransport(); updateHead(); draw();
   }
@@ -353,6 +356,7 @@
     clearInterval(B.tick);
     cancelAnimationFrame(B.raf);
     cueOff();
+    clearTimeout(B.buzzT);
     releaseLock();
     if (B.state !== "idle" && B.state !== "done") {
       var bt = breathTime();
@@ -370,6 +374,8 @@
     clearInterval(B.tick);
     cancelAnimationFrame(B.raf);
     cueOff();
+    clearTimeout(B.buzzT);
+    buzz("end");
     if (BC.sound !== "off" && B.bus && A.ctx) {
       var t = A.ctx.currentTime + 0.05;
       chime(B_CHIME.out, t, 0.2);
@@ -399,6 +405,7 @@
       hrFinalize(locate(bt).count);
     }
     bSchedule(bt);
+    bBuzz(bt);
     updateHead();
     if (B.finder) finderTick(bt);
   }
@@ -496,6 +503,37 @@
     }
     B.schedTo = cur;
   }
+  /* ----- vibration: a buzz at each change, to breathe along with your eyes closed or without
+     sound. In is one short buzz, out one long, a hold two light taps, and the end three. A phone
+     only vibrates for a page on screen, which the guide keeps on by default. ----- */
+  var BUZZ = { "in": [60], "sip": [30], "hold": [30, 90, 30], "out": [170], "rest": [30, 90, 30], end: [60, 110, 60, 110, 220] };
+  function bzOk() { return !!navigator.vibrate && !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches); }
+  function buzz(k) {
+    if (!BC.buzz || !bzOk() || document.hidden) return;
+    try { navigator.vibrate(BUZZ[k]); } catch (e) {}
+  }
+  // Vibration can't be queued on the audio clock like the sound cues, so each tick buzzes for a
+  // change due before the next tick, on time, or for one that slipped between two ticks, a little late.
+  function bBuzz(bt) {
+    if (!BC.buzz || !bzOk()) return;
+    var L = bt >= 0 ? locate(bt + 1e-6) : null, start = L ? L.pStart : 0, next = L ? L.pStart + L.p.secs : 0;
+    if (L && start > B.buzzAt + 1e-6 && bt - start < 0.4) { B.buzzAt = start; buzz(L.p.k); return; }
+    if (next > B.buzzAt + 1e-6 && next - bt <= 0.12 && !(B.total && next >= endBt() - 1e-6)) {
+      B.buzzWas = B.buzzAt; B.buzzAt = next;
+      var k = locate(next + 1e-6).p.k;
+      clearTimeout(B.buzzT);
+      B.buzzT = setTimeout(function () { B.buzzT = 0; if (B.state === "running") buzz(k); }, Math.max(0, (next - bt) * 1000));
+    }
+  }
+  // a pause just before a change: that change hasn't buzzed yet, so it still will after the pause
+  function bBuzzOff() {
+    if (B.buzzT) { clearTimeout(B.buzzT); B.buzzT = 0; B.buzzAt = B.buzzWas; }
+  }
+  function bBuzzSync() {
+    $("#bBuzzRow").hidden = !bzOk();
+    $("#bBuzz").checked = !!BC.buzz;
+  }
+
   /* Let people hear a cue when they pick it, before they start. */
   function preview() {
     if (BC.sound === "off" || B.state === "running" || !ensureBus()) return;
@@ -548,6 +586,7 @@
         if ([0, 2, 5, 10, 15].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;
         var cue = parseInt(saved.cue, 10);
         if (cue >= 0 && cue <= 100) BC.cue = cue;
+        if (typeof saved.buzz === "boolean") BC.buzz = saved.buzz;
         BC.pattern = (saved.pattern === "custom") ? "custom" : matchPreset();
       }
     } catch (e) {}
@@ -560,6 +599,7 @@
     ["#bPats", "#bVis", "#bLen", "#bSnd"].forEach(syncChips);
     $("#bCue").value = BC.cue;
     $("#bVolRow").hidden = BC.sound === "off";
+    bBuzzSync();
 
     B.ph = buildPhases(BC);
     planTotal();
@@ -607,6 +647,11 @@
       if (B.state === "running") { cueOff(); if (BC.sound !== "off") cueOn(); }
       else preview();
       saveBreath();
+    });
+    $("#bBuzz").addEventListener("change", function () {
+      BC.buzz = this.checked;
+      saveBreath();
+      if (this.checked) buzz("in");          // feel it once
     });
     $("#bCue").addEventListener("input", function () {
       BC.cue = parseInt(this.value, 10);

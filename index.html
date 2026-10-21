@@ -38,6 +38,12 @@
     --b-hold:#f5d38b;
     --b-out:#a78bfa;
     --hr:#fb7185;
+    /* chart marks: the accent, relax and stim hues stepped to one OKLCH lightness (0.66), inside
+       the band where marks sit evenly on the dark panel; checked for colour-blind separation and
+       contrast with the dataviz validator. The full tokens mark the selected period. */
+    --tn-a:#7e87e9;
+    --tn-down:#0da997;
+    --tn-up:#c98001;
     /* Interface text uses the device's own font (Roboto on Android), so nothing is downloaded and the
        page works offline. Headings use one embedded weight of Poppins (OFL), subset to Latin. */
     --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -877,7 +883,8 @@
   .so-voice[hidden]{display:none}
   input.sw{-webkit-appearance:none;appearance:none;width:42px;height:24px;border-radius:99px;background:var(--panel-3);position:relative;cursor:pointer;flex:none;transition:background .15s;margin:0}
   input.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--text-dim);transition:transform .15s,background .15s}
-  input.sw:checked{background:var(--pcol)}
+  input.sw:checked{background:var(--pcol,var(--accent))}
+  .b-buzz{--pcol:var(--b-in)}
   input.sw:checked::after{transform:translateX(18px);background:#0b1120}
   input.sw:disabled{opacity:.4}
   .mini-seg{display:inline-flex;gap:3px;padding:3px;border-radius:10px;background:var(--bg-2);flex-wrap:wrap}
@@ -1135,6 +1142,7 @@
   .sd-t span{font-size:12px;font-weight:650;color:var(--text-faint);padding-right:24px}
   .sd-t b{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
   .sd-t small{font-size:12px;color:var(--text-dim)}
+  .sd-cmp{font-style:normal;font-size:12px;font-weight:700;color:var(--pcol);margin-top:5px;padding-top:6px;border-top:1px solid var(--line)}   /* against your usual for this practice */
   .sd-ex{margin-top:10px;padding:14px 16px 16px;border-radius:16px;background:var(--panel);border:1px solid color-mix(in srgb,var(--pcol) 40%,transparent)}
   .sd-ex-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .sd-ex-h b{font-size:15.5px;font-weight:750}
@@ -1395,6 +1403,40 @@
   .hi-foot{margin-top:26px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .hi-foot p{margin:0;font-size:12.5px;color:var(--text-faint);max-width:62ch}
   .hi-foot-act{display:flex;gap:10px;flex-wrap:wrap}
+  /* trends */
+  .hi-tr{margin-top:14px;padding:18px 20px 16px;border-radius:20px;background:var(--panel)}
+  .hi-tr-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .hi-tr-h h2{font-size:18px;font-weight:780;letter-spacing:-.015em}
+  .hi-tr-note{margin:10px 0 0;font-size:13px;color:var(--text-faint);line-height:1.45}
+  .hi-tr-read{margin:12px 0 0;font-size:13.5px;line-height:1.45;color:var(--text-dim);min-height:2.9em}
+  .hi-tr-read b{color:var(--text);font-weight:750}
+  .hi-tr-plots{margin:2px -4px 0;padding:0 4px;touch-action:pan-y;cursor:pointer;border-radius:12px;-webkit-user-select:none;user-select:none}
+  .hi-tr-plots:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+  .hi-tr-plots h3{margin:14px 0 2px;font-size:12.5px;font-weight:700;color:var(--text-dim)}
+  .hi-tr-plots h3 small{font-weight:500;color:var(--text-faint);margin-left:6px;font-size:12px}
+  .hi-tr-svg{display:block;width:100%;overflow:visible}
+  .tn-band{fill:var(--panel-2)}
+  .tn-grid{stroke:var(--line-soft);stroke-width:1}
+  .tn-base{stroke:var(--line);stroke-width:1}
+  .tn-tick{fill:var(--text-faint);font-size:10.5px;font-variant-numeric:tabular-nums}
+  .tn-tick.on{fill:var(--text);font-weight:700}
+  .tn-min{fill:var(--tn-a)}
+  .tn-min.on,.tn-dot.on{fill:var(--accent)}
+  .tn-down{fill:var(--tn-down)}
+  .tn-down.on{fill:var(--relax)}
+  .tn-up{fill:var(--tn-up)}
+  .tn-up.on{fill:var(--stim)}
+  .tn-zero{fill:var(--text-faint)}
+  .tn-line{fill:none;stroke:var(--tn-a);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+  .tn-dot{fill:var(--tn-a);stroke:var(--panel);stroke-width:2}
+  .hi-tr-tab{margin-top:12px}
+  .hi-tr-tab summary{cursor:pointer;font-size:13px;font-weight:650;color:var(--text-dim);width:max-content}
+  .hi-tr-tw{overflow-x:auto;margin-top:8px}
+  .hi-tr-tw table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  .hi-tr-tw th,.hi-tr-tw td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+  .hi-tr-tw th:first-child{text-align:left}
+  .hi-tr-tw thead th{font-size:12px;font-weight:650;color:var(--text-faint)}
+  .hi-tr-tw tbody th{font-weight:600;color:var(--text-dim)}
   .hi-foot .armed{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 50%,transparent)}
 
   /* ---------- favourites ---------- */
@@ -1895,6 +1937,11 @@
             <input type="range" id="bCue" min="0" max="100" step="1" value="40" aria-label="Cue volume">
           </div>
           <p class="hint">Cues play equally in both ears and sit above the carrier range, so they leave a running binaural beat alone.</p>
+        </div>
+
+        <div class="prime-row" id="bBuzzRow" hidden>
+          <div class="prime-label">Vibration</div>
+          <label class="so-row so-tg b-buzz"><span class="so-l">Vibrate at each change<small>One short buzz to breathe in, one long to breathe out, two light taps for a hold. With or without sound.</small></span><input type="checkbox" class="sw" id="bBuzz"></label>
         </div>
 
         <div class="prime-row">
@@ -3134,6 +3181,7 @@
         " Hz \u00b7 " + A.track.carrier + " Hz carrier \u00b7 reduced volume";
       setStatus("Task phase: beats continue at reduced volume. Stop when you finish.");
     }
+    msSync();                                       // the working phase has no end to count down to
   }
 
   function scheduleEnd() {
@@ -3203,10 +3251,11 @@
 
   function setStatus(msg) { $("#status").textContent = msg; }
 
-  // a track started, paused or stopped: the screen lock and its page follow
+  // a track started, paused or stopped: the screen lock, its page and the lock screen follow
   function playSync() {
     wlKick();
     trSync();
+    msSync();
   }
 
   /* ----- the mini player's own controls ----- */
@@ -3238,6 +3287,7 @@
     $("#openEnded").addEventListener("change", function () {
       if (A.playing) scheduleEnd();
       paint();
+      msSync();
       setStatus(this.checked
         ? "Open-ended: the session will keep running until you stop it."
         : "Timer active: " + (A.track ? A.track.minutes + " min." : ""));
@@ -3358,6 +3408,100 @@
       pendingPlay = null;
       openCheck();
     });
+  }
+  /* ------------------------------- lock screen -------------------------------
+     A track shows on the lock screen and in the notifications while it plays or is paused,
+     with its name, how far it has got, and play, pause and stop. Android offers those controls
+     only for an audio element of five seconds or more, and the tracks are made live with Web
+     Audio, which gets none; so a silent, looping element plays alongside to carry them, and
+     the tones themselves are untouched. As with any media app, a playing track then pauses
+     music in other apps, and a call pauses the track. Settings can turn it off. Practices and
+     the breathing guide keep to their own screens.
+  ---------------------------------------------------------------------------- */
+
+  var MS = {
+    el: null, url: "",
+    want: "off",      // "play", "pause" or "off": what the app last asked of the element
+    sys: false,       // the phone paused the track (a call, another app), so it may resume it too
+    track: null       // the track the lock screen is showing
+  };
+  var MS_ART = [{ src: "icons/icon-192.png", sizes: "192x192", type: "image/png" }, { src: "icons/icon-512.png", sizes: "512x512", type: "image/png" }];
+
+  function msOk() { return !!(navigator.mediaSession && window.MediaMetadata); }
+  // six seconds of silence, 8-bit mono at 8 kHz (47 KB), made here so the app stays one file
+  function msSilence() {
+    var rate = 8000, n = rate * 6, b = new Uint8Array(44 + n), v = new DataView(b.buffer);
+    var tag = function (at, s) { for (var i = 0; i < 4; i++) b[at + i] = s.charCodeAt(i); };
+    tag(0, "RIFF"); v.setUint32(4, 36 + n, true); tag(8, "WAVE");
+    tag(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, rate, true); v.setUint32(28, rate, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true);
+    tag(36, "data"); v.setUint32(40, n, true);
+    for (var i = 44; i < b.length; i++) b[i] = 128;     // 8-bit sound is unsigned: 128 is silence
+    return URL.createObjectURL(new Blob([b], { type: "audio/wav" }));
+  }
+  function msEl() {
+    if (MS.el) return MS.el;
+    var el = MS.el = new Audio();
+    el.loop = true;
+    // something else took the sound: the track pauses with it, and comes back if the phone gives it back
+    el.addEventListener("pause", function () {
+      if (MS.want === "play" && A.playing) { MS.sys = true; pause(); }
+    });
+    el.addEventListener("play", function () {
+      if (MS.want === "pause" && MS.sys && A.track && !A.playing) play();
+    });
+    return el;
+  }
+  // what the lock screen should show: a track of its own, playing or paused part of the way through
+  function msWanted() {
+    if (!msOk() || !ST.lockControls || !A.track || A.track.practice) return "off";
+    return A.playing ? "play" : A.elapsed > 0 ? "pause" : "off";
+  }
+  function msSync() {
+    if (!msOk()) return;
+    var want = msWanted(), ms = navigator.mediaSession;
+    if (want === "off") { msOff(); return; }
+    var t = A.track, el = msEl();
+    if (MS.track !== t) {
+      MS.track = t;
+      ms.metadata = new MediaMetadata({ title: t.name, artist: "Entrain", album: t.band + " · " + trBeatTxt(t), artwork: MS_ART });
+    }
+    ms.playbackState = want === "play" ? "playing" : "paused";
+    msPosition();
+    MS.want = want;
+    if (want === "play") {
+      MS.sys = false;
+      if (!el.getAttribute("src")) { MS.url = MS.url || msSilence(); el.src = MS.url; }
+      if (el.paused) { var p = el.play(); if (p && p.catch) p.catch(function () {}); }
+    } else if (!el.paused) el.pause();
+  }
+  // the track has stopped or is no longer the lock screen's: end the session, so the controls go away
+  function msOff() {
+    var ms = navigator.mediaSession;
+    MS.want = "off"; MS.sys = false; MS.track = null;
+    if (MS.el && MS.el.getAttribute("src")) { MS.el.pause(); MS.el.removeAttribute("src"); MS.el.load(); }
+    if (ms.metadata) ms.metadata = null;
+    ms.playbackState = "none";
+    try { if (ms.setPositionState) ms.setPositionState(); } catch (e) {}
+  }
+  // how far it has got; open-ended listening has no end to count down to
+  function msPosition() {
+    var ms = navigator.mediaSession, t = A.track;
+    if (!ms.setPositionState || !t) return;
+    var total = t.minutes * 60, open = A.phase === "task" || $("#openEnded").checked;
+    var at = Math.max(0, A.playing && A.ctx ? A.ctx.currentTime - A.startedAt : A.elapsed);
+    try {
+      ms.setPositionState(open || !(total > 0) ? { duration: Infinity, playbackRate: 1, position: at }
+        : { duration: total, playbackRate: 1, position: Math.min(at, total) });
+    } catch (e) {}
+  }
+  function msInit() {
+    if (!msOk()) return;
+    var ms = navigator.mediaSession;
+    var on = function (action, fn) { try { ms.setActionHandler(action, fn); } catch (e) {} };
+    on("play", function () { if (A.track && !A.playing) play(); });
+    on("pause", function () { if (A.playing) pause(); });
+    on("stop", function () { if (A.track) hardStop(false); });
   }
   /* ------------------------------ builder ---------------------------- */
 
@@ -3786,7 +3930,7 @@
 
   var BC = {
     pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0,
-    visual: "circle", minutes: 5, sound: "off", cue: 40
+    visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false
   };
 
   var B = {
@@ -3795,6 +3939,7 @@
     ph: null, pending: null,  // phases in use, and an edit waiting for the next breath
     epoch: 0, done: 0, total: 0,
     raf: 0, tick: 0, key: "", segOn: -1, schedTo: 0,
+    buzzAt: -Infinity, buzzT: 0, buzzWas: -Infinity,   // the last change that buzzed, the buzz waiting for the next, and the one before it
     voice: null, bus: null, doneMsg: "", doneCount: 0, doneSecs: 0,
     hr: [],                   // heart samples this session: {bt, hr, n (breath index), cyc}
     swings: [], hrDone: 0,    // per-breath heart-rate swing, and the next breath to score
@@ -3815,7 +3960,7 @@
     var c = BC;
     if (B.finder) {
       c = B.finder.saved;
-      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue;
+      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue; c.buzz = BC.buzz;
     }
     store.set("breath", JSON.stringify(c));
   }
@@ -4018,6 +4163,7 @@
   function bFresh() {
     B.ph = buildPhases(BC); B.pending = null; B.epoch = 0; B.done = 0; planTotal();
     B.st = 0; B.key = ""; B.schedTo = -B_LEAD;
+    B.buzzAt = -Infinity; clearTimeout(B.buzzT);
     B.hr = []; B.swings = []; B.hrDone = 0; B.coh = [];
     renderLine();
     bSetT("#bMsg", "");
@@ -4048,6 +4194,7 @@
     clearInterval(B.tick);
     cancelAnimationFrame(B.raf);
     cueOff();
+    bBuzzOff();
     releaseLock();
     syncTransport(); updateHead(); draw();
   }
@@ -4055,6 +4202,7 @@
     clearInterval(B.tick);
     cancelAnimationFrame(B.raf);
     cueOff();
+    clearTimeout(B.buzzT);
     releaseLock();
     if (B.state !== "idle" && B.state !== "done") {
       var bt = breathTime();
@@ -4072,6 +4220,8 @@
     clearInterval(B.tick);
     cancelAnimationFrame(B.raf);
     cueOff();
+    clearTimeout(B.buzzT);
+    buzz("end");
     if (BC.sound !== "off" && B.bus && A.ctx) {
       var t = A.ctx.currentTime + 0.05;
       chime(B_CHIME.out, t, 0.2);
@@ -4101,6 +4251,7 @@
       hrFinalize(locate(bt).count);
     }
     bSchedule(bt);
+    bBuzz(bt);
     updateHead();
     if (B.finder) finderTick(bt);
   }
@@ -4198,6 +4349,37 @@
     }
     B.schedTo = cur;
   }
+  /* ----- vibration: a buzz at each change, to breathe along with your eyes closed or without
+     sound. In is one short buzz, out one long, a hold two light taps, and the end three. A phone
+     only vibrates for a page on screen, which the guide keeps on by default. ----- */
+  var BUZZ = { "in": [60], "sip": [30], "hold": [30, 90, 30], "out": [170], "rest": [30, 90, 30], end: [60, 110, 60, 110, 220] };
+  function bzOk() { return !!navigator.vibrate && !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches); }
+  function buzz(k) {
+    if (!BC.buzz || !bzOk() || document.hidden) return;
+    try { navigator.vibrate(BUZZ[k]); } catch (e) {}
+  }
+  // Vibration can't be queued on the audio clock like the sound cues, so each tick buzzes for a
+  // change due before the next tick, on time, or for one that slipped between two ticks, a little late.
+  function bBuzz(bt) {
+    if (!BC.buzz || !bzOk()) return;
+    var L = bt >= 0 ? locate(bt + 1e-6) : null, start = L ? L.pStart : 0, next = L ? L.pStart + L.p.secs : 0;
+    if (L && start > B.buzzAt + 1e-6 && bt - start < 0.4) { B.buzzAt = start; buzz(L.p.k); return; }
+    if (next > B.buzzAt + 1e-6 && next - bt <= 0.12 && !(B.total && next >= endBt() - 1e-6)) {
+      B.buzzWas = B.buzzAt; B.buzzAt = next;
+      var k = locate(next + 1e-6).p.k;
+      clearTimeout(B.buzzT);
+      B.buzzT = setTimeout(function () { B.buzzT = 0; if (B.state === "running") buzz(k); }, Math.max(0, (next - bt) * 1000));
+    }
+  }
+  // a pause just before a change: that change hasn't buzzed yet, so it still will after the pause
+  function bBuzzOff() {
+    if (B.buzzT) { clearTimeout(B.buzzT); B.buzzT = 0; B.buzzAt = B.buzzWas; }
+  }
+  function bBuzzSync() {
+    $("#bBuzzRow").hidden = !bzOk();
+    $("#bBuzz").checked = !!BC.buzz;
+  }
+
   /* Let people hear a cue when they pick it, before they start. */
   function preview() {
     if (BC.sound === "off" || B.state === "running" || !ensureBus()) return;
@@ -4250,6 +4432,7 @@
         if ([0, 2, 5, 10, 15].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;
         var cue = parseInt(saved.cue, 10);
         if (cue >= 0 && cue <= 100) BC.cue = cue;
+        if (typeof saved.buzz === "boolean") BC.buzz = saved.buzz;
         BC.pattern = (saved.pattern === "custom") ? "custom" : matchPreset();
       }
     } catch (e) {}
@@ -4262,6 +4445,7 @@
     ["#bPats", "#bVis", "#bLen", "#bSnd"].forEach(syncChips);
     $("#bCue").value = BC.cue;
     $("#bVolRow").hidden = BC.sound === "off";
+    bBuzzSync();
 
     B.ph = buildPhases(BC);
     planTotal();
@@ -4309,6 +4493,11 @@
       if (B.state === "running") { cueOff(); if (BC.sound !== "off") cueOn(); }
       else preview();
       saveBreath();
+    });
+    $("#bBuzz").addEventListener("change", function () {
+      BC.buzz = this.checked;
+      saveBreath();
+      if (this.checked) buzz("in");          // feel it once
     });
     $("#bCue").addEventListener("input", function () {
       BC.cue = parseInt(this.value, 10);
@@ -8001,7 +8190,7 @@
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
-    opt: { voice: true, bells: true, cues: "tones", visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true }
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true }
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
 
@@ -8075,7 +8264,7 @@
   /* ----- options: defaults for every practice (in Settings), and each practice's own changes on top.
      Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself. ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "visual"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -8227,7 +8416,7 @@
   function pBreathOn(s, st) {
     if (!P.saved) {
       P.saved = {};
-      ["inh", "sip", "hold", "exh", "rest", "minutes", "sound", "cue", "visual"].forEach(function (k) { P.saved[k] = BC[k]; });
+      ["inh", "sip", "hold", "exh", "rest", "minutes", "sound", "cue", "buzz", "visual"].forEach(function (k) { P.saved[k] = BC[k]; });
     }
     var c = pCfgAt(s, st || 0);
     B_KEYS.forEach(function (k) { BC[k] = c[k]; });
@@ -8237,6 +8426,7 @@
     if (BC.sound !== snd && B.state === "running") { BC.sound = snd; cueOff(); if (snd !== "off") cueOn(); }
     BC.sound = snd;
     BC.cue = s.cueFade ? Math.round(40 * s.cueFade[0]) : 40;
+    BC.buzz = !!P.opt.buzz;
     P.usesB = true;
     var ph = buildPhases(BC);
     if (B.state === "running" || B.state === "paused") {
@@ -8275,6 +8465,7 @@
     syncFields(); syncRate(); renderNote(); syncVisHint();
     checkRadio("bvis", BC.visual); syncChips("#bVis");
     $("#bCue").value = BC.cue;
+    bBuzzSync();
     pLockBreathe();
   }
   function pBreathTick(s, st) {
@@ -8966,7 +9157,8 @@
     if (r.suds) notes.push("intensity " + r.suds.join(" → ") + " of 10");
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
-    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
+    if (T >= 60) r.at = Date.now();                    // the end screen tells this one from the earlier ones by it
+    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
       coh: r.coh ? +r.coh.toFixed(2) : undefined, est: r.coh && r.cohEst ? true : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,
       note: notes.join(", ") || undefined });
     return r;
@@ -9025,6 +9217,7 @@
         [["tones", "Tone"], ["chimes", "Chimes"], ["off", "Silent"]].map(function (o) {
           return '<button data-v="' + o[0] + '" aria-pressed="' + (O.cues === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
+      if (bzOk()) opts.push(pToggle("sOptBuzz", "Vibrate with the breath", O.buzz, "A short buzz to breathe in, a long one to breathe out, two taps for a hold."));
       opts.push('<div class="so-row so-seg"><span class="so-l">Breath visual</span><div class="mini-seg" id="sOptVis">' +
         [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]].map(function (o) {
           return '<button data-v="' + o[0] + '" aria-pressed="' + (O.visual === o[0]) + '">' + o[1] + "</button>";
@@ -9102,6 +9295,7 @@
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
+    if (O.buzz && bzOk() && pPlan(d, pLenOf(d, P.len)).steps.some(function (x) { return x.k === "breath"; })) s.push("Vibration");
     if (AMB.kind !== "off") s.push(AMB.kind === "night" ? "Rain and crickets" : AMB.kind === "rain" ? "Rain" : "Crickets");
     return s.join(" · ");
   }
@@ -9135,6 +9329,11 @@
     on("#sOptAudio", function () { O.audio = this.checked; save(); });
     on("#sOptRhy", function () { O.rhythm = this.checked; save(); });
     on("#sOptTick", function () { O.tapTick = this.checked; save(); });
+    on("#sOptBuzz", function () {
+      O.buzz = this.checked; save();
+      if (pBusy() && P.def === d && P.usesB) BC.buzz = O.buzz;      // a breath step running now follows at once
+      if (this.checked && bzOk()) { try { navigator.vibrate(BUZZ["in"]); } catch (e) {} }
+    });
     on("#sOptKeep", function () { O.nvcSave = this.checked; save(); });
     on("#sOptTap", function () {
       store.set("pTap." + d.id, this.checked ? "1" : "0");
@@ -9365,23 +9564,24 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN };   // for automated tests only
   }
   /* ------------------------------- the end screen -------------------------------
      What a practice measured, as tiles you can tap for what each number means, with your own
-     value read back, and the heart-rate chart, which you can tap or drag to read any moment.
-     The summary itself is worked out in practice.js (pSummary).
+     value read back and set against your usual for the same practice, and the heart-rate chart,
+     which you can tap or drag to read any moment. The summary itself is worked out in
+     practice.js (pSummary).
   -------------------------------------------------------------------------------- */
 
-  var SD = { r: null, d: null, open: "", sm: null, T: 0, cur: -1, drag: false, ro: null, L: 0, R: 0 };
+  var SD = { r: null, d: null, c: null, open: "", sm: null, T: 0, cur: -1, drag: false, ro: null, L: 0, R: 0 };
   function pDone(r, early) {
-    var d = P.def, tiles = [];
-    tiles.push(["Time", fmt(r.secs), early ? "Ended early" : "Complete", "time"]);
+    var d = P.def, tiles = [], c = SD.c = sdCompare(r, d);
+    tiles.push(["Time", fmt(r.secs), early ? "Ended early" : "Complete", "time", r.at ? (c.n === 1 ? "Your first time" : "Your " + sdNth(c.n) + " time") : ""]);
     var napHR = r.nap && r.nap.base && r.nap.low;        // a nap has its own baseline-to-lowest tile
-    if (r.hr0 && !napHR) tiles.push(["Heart rate", r.hr0 + " → " + r.hr1, "bpm, start to end", "hr"]);
+    if (r.hr0 && !napHR) tiles.push(["Heart rate", r.hr0 + " → " + r.hr1, "bpm, start to end", "hr", sdCmpTxt(c.hr, function (v) { v = Math.round(v); return v ? sdSigned(v) : "steady"; })]);
     else if (r.hrAvg && !napHR) tiles.push(["Heart rate", String(r.hrAvg), "bpm average", "hravg"]);
-    if (r.coh && !r.nap) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1) + (r.cohEst ? " (est.)" : ""), "coh"]);
-    if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath", "swing"]);
+    if (r.coh && !r.nap) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1) + (r.cohEst ? " (est.)" : ""), "coh", sdCmpTxt(c.coh, sdFix1, r.coh)]);
+    if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath", "swing", sdCmpTxt(c.swing, sdFix1, r.swing)]);
     if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath", "wander"]);
     if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · "), "holds"]);
     if (r.suds) tiles.push(["Intensity", r.suds.join(" → "), r.suds.length > 1 ? "out of 10, first to last" : "out of 10", "suds"]);
@@ -9395,9 +9595,10 @@
     SD.r = r; SD.d = d; SD.open = ""; SD.sm = null; SD.cur = -1;
     var h = '<div class="sd-head"><span class="sd-ic">' + (early ? "" : '<svg class="i" aria-hidden="true"><use href="#i-check"/></svg>') + "</span>" +
       "<div><h2>" + (early ? "Session ended" : d.end ? esc(d.end) : "Nicely done") + "</h2><p>" + esc(d.name) + "</p></div></div>" +
-      '<p class="sd-tap">Tap a number to see what it means' + (chart ? ", or the chart to read it." : ".") + "</p>" +
+      '<p class="sd-tap">Tap a number to see what it means' + (c.hr || c.coh || c.swing ? " and how it compares with your usual" : "") + (chart ? ", or the chart to read it." : ".") + "</p>" +
       '<div class="sd-tiles">' + tiles.map(function (t) {
-        return '<button class="sd-t" data-ex="' + t[3] + '" aria-expanded="false" aria-controls="sdEx"><span>' + t[0] + "</span><b>" + t[1] + "</b><small>" + t[2] + "</small></button>";
+        return '<button class="sd-t" data-ex="' + t[3] + '" aria-expanded="false" aria-controls="sdEx"><span>' + t[0] + "</span><b>" + t[1] + "</b><small>" + t[2] + "</small>" +
+          (t[4] ? '<em class="sd-cmp">' + esc(t[4]) + "</em>" : "") + "</button>";
       }).join("") + "</div>" +
       '<div class="sd-ex" id="sdEx" role="region" aria-labelledby="sdExT" hidden></div>' +
       (chart ? '<div class="sd-chart"><span>Heart rate across the session, in bpm' + (r.beatLog ? ", with the beat in violet" : "") + "</span>" +
@@ -9432,6 +9633,8 @@
       p.push(r.early ? "You ended the session after " + fmt(r.secs) + ", before its planned end. Everything here covers the part you did."
         : d.selfPaced ? "The time you took, at your own pace: " + fmt(r.secs) + "." : "The session ran its full length: " + fmt(r.secs) + ".");
       p.push("Time on pause isn't counted. Sessions of a minute or more go into your history, on Today.");
+      if (r.at) p.push(SD.c.n === 1 ? "This was your first session of " + d.name + "." : "This was your " + sdNth(SD.c.n) + " session of " + d.name +
+        (SD.c.week > 1 ? ", and your " + sdNth(SD.c.week) + " in the last seven days." : ", and the first in the last seven days."));
       return ["Time", p];
     }
     if (k === "hr") {
@@ -9442,6 +9645,7 @@
       if (dl <= -3) p.push("It came down " + plural(-dl, "beat", "beats") + " a minute. A fall like this is the usual sign of the body settling: slow breathing and rest shift the nervous system toward its calming side, which slows the heart.");
       else if (dl >= 3) p.push("It rose " + plural(dl, "beat", "beats") + " a minute. " + (lively ? "That's expected after movement or energising breathing." : "Sitting up, moving or a busy mind can raise it. One session is one reading: your history shows the trend."));
       else p.push("It stayed within a few beats. That's common in short or gentle sessions, or when you started out already rested.");
+      if (SD.c.hr) p.push(sdHrAgainst(dl, SD.c.hr, d));
       return ["Heart rate, start to end", p];
     }
     if (k === "hravg") {
@@ -9453,11 +9657,13 @@
       p.push("How much of your heart rhythm's rise and fall settled into one smooth, regular wave, usually the one your breathing sets. It's HeartMath's published measure, worked out every 5 seconds from the last 64 seconds of heartbeats, and it usually runs from 0 to 8.");
       p.push("Here it averaged " + r.coh.toFixed(1) + ", and your best moment reached " + r.cohMax.toFixed(1) + ". Everyday breathing usually scores low; slow, even breathing near your resonance pace raises it. HeartMath's own apps use a different scale, so compare it with your own sessions here.");
       if (r.cohEst) p.push("It's marked (est.) because your sensor sends heart rate only, not the time between beats. From that smoothed signal the score is an estimate and reads high. An ear clip or a chest strap gives the full measure.");
+      if (SD.c.coh) p.push(sdAgainst(r.coh, SD.c.coh, d, "coherence", 0.3, r.cohEst ? "with an estimated score, as estimates are only compared with estimates" : "with a beat-to-beat sensor"));
       return ["Coherence", p];
     }
     if (k === "swing") {
       p.push("Your heart speeds up a little as you breathe in and slows as you breathe out. The swing is how far it moves within one breath, the highest heart rate minus the lowest, averaged over the breaths here: " + r.swing.toFixed(1) + " beats a minute.");
       p.push("A bigger swing means more heart-rate variability, which is what slow breathing trains. It's usually biggest at your own resonance pace, which the resonance test on the Heart tab finds. Swing differs a lot between people and shrinks with age, so compare it with your own sessions.");
+      if (SD.c.swing) p.push(sdAgainst(r.swing, SD.c.swing, d, "swing", 0.5, "with a heart sensor"));
       return ["Swing per breath", p];
     }
     if (k === "wander") {
@@ -9506,6 +9712,57 @@
       return ["Heart rate, resting to lowest", p];
     }
     return ["", []];
+  }
+  /* ----- against your own sessions: the usual for this practice, from the history ----- */
+  function sdCompare(r, d) {
+    var prev = hLoad().filter(function (e) { return e.k === "practice" && e.id === d.id && e.at !== r.at; }), c = {}, wk = Date.now() - 7 * DAY;
+    if (r.hr0 && r.hr1) c.hr = sdUsual(prev.filter(function (e) { return e.hr0 && e.hr1; }).map(function (e) { return e.hr1 - e.hr0; }));
+    if (r.coh) c.coh = sdUsual(prev.filter(function (e) { return e.coh && !!e.est === !!r.cohEst; }).map(function (e) { return e.coh; }));
+    if (r.swing) c.swing = sdUsual(prev.filter(function (e) { return e.swing; }).map(function (e) { return e.swing; }));
+    c.n = prev.length + 1;                                   // counted only once this one is in the history (r.at)
+    c.week = prev.filter(function (e) { return e.at >= wk; }).length + 1;
+    return c;
+  }
+  // one earlier value is "last time"; with more, the usual is the middle of the last ten
+  function sdUsual(vals) {
+    if (!vals.length) return null;
+    vals = vals.slice(-10);
+    var s = vals.slice().sort(function (a, b) { return a - b; }), m = s.length >> 1;
+    return { n: vals.length, last: vals.length === 1, v: s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2, max: s[s.length - 1] };
+  }
+  function sdBest(now, u) { return u && u.n >= 2 && now > u.max; }
+  function sdCmpTxt(u, f, now) {
+    if (!u) return "";
+    if (sdBest(now, u)) return "Your best yet";
+    return (u.last ? "Last time " : "Usually ") + f(u.v);
+  }
+  function sdFix1(v) { return v.toFixed(1); }
+  function sdSigned(v) { return v > 0 ? "+" + v : "−" + -v; }
+  function sdNth(n) {
+    var t = n % 100, e = t > 10 && t < 14 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th";
+    return n + e;
+  }
+  function sdMoved(v) {
+    v = Math.round(v);
+    return v <= -1 ? "came down " + -v + (v === -1 ? " beat" : " beats") + " a minute" : v >= 1 ? "rose " + v + (v === 1 ? " beat" : " beats") + " a minute" : "held steady";
+  }
+  // the heart-rate change against your usual one, in words that hold whether it usually falls or rises
+  function sdHrAgainst(dl, u, d) {
+    var s = u.last ? "Last time you did " + d.name + " with a heart sensor, your heart rate " + sdMoved(u.v) + "."
+      : "In your last " + u.n + " sessions of " + d.name + " with a heart sensor, it usually " + sdMoved(u.v) + " (the middle value).";
+    var diff = dl - u.v;
+    if (Math.abs(diff) < 2.5) return s + " This time was " + (u.last ? "about the same." : "close to your usual.");
+    var falls = u.v <= 0, cmp = u.last ? " than last time." : " than usual.";
+    if (falls) return s + (diff < 0 ? " This time it fell further" + cmp : dl <= 0 ? " This time it fell less" + cmp : " This time it rose instead.");
+    return s + (diff > 0 ? " This time it rose more" + cmp : dl >= 0 ? " This time it rose less" + cmp : " This time it fell instead.");
+  }
+  // a score against your usual: the same, higher, lower, or your best yet
+  function sdAgainst(now, u, d, what, near, kind) {
+    var s = u.last ? "Last time you did " + d.name + " " + kind + ", your " + what + " was " + u.v.toFixed(1) + "."
+      : "Your usual " + what + " in " + d.name + " is " + u.v.toFixed(1) + ", the middle of your last " + u.n + " sessions " + kind + ".";
+    if (sdBest(now, u)) return s + " This was your best yet, above all " + u.n + " of them.";
+    var diff = now - u.v;
+    return s + (Math.abs(diff) < near ? " This one was about the same." : diff > 0 ? " This one was higher." : " This one was lower.");
   }
   function sdShow(k, refocus) {
     SD.open = k;
@@ -9862,7 +10119,7 @@
      (backup.js).
   ------------------------------------------------------------------------------ */
 
-  var ST = { screenSessions: true, screenTracks: true, sleepDim: false };
+  var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true };
 
   function stLoad() {
     try {
@@ -9902,6 +10159,7 @@
         pToggle("stRhy", "Berimbau for the capoeira moves", g.rhythm, "") +
         pToggle("stTick", "Tapping tick", g.tapTick, "A soft tick to tap along with.") +
         '<div class="so-row so-seg"><span class="so-l">Breath cues</span>' + stSeg("stCues", [["tones", "Tone"], ["chimes", "Chimes"], ["off", "Silent"]], g.cues) + "</div>" +
+        (bzOk() ? pToggle("stBuzz", "Vibrate with the breath", g.buzz, "A short buzz to breathe in, a long one to breathe out, two taps for a hold.") : "") +
         '<div class="so-row so-seg"><span class="so-l">Breath visual</span>' + stSeg("stVis", [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]], g.visual) + "</div>" +
         '<div class="so-row so-seg"><span class="so-l">Anapana reminders in programs<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span>' +
           stSeg("stAna", [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]], g.ana) + "</div>" +
@@ -9917,6 +10175,7 @@
       '<section class="st-card" id="st-screen" aria-labelledby="stS"><h2 id="stS">Screen</h2>' +
         pToggle("stScrSes", "Keep the screen on during practices and breathing", ST.screenSessions, "Also for ten minutes into a pause.") +
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
+        (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap and Cognitive Shuffle go almost dark. The screen still stays on.") +
       "</section>" + bkCard();
     stWire();
@@ -9930,6 +10189,7 @@
     on("#stAudio", function () { stDefault("audio", this.checked); });
     on("#stRhy", function () { stDefault("rhythm", this.checked); });
     on("#stTick", function () { stDefault("tapTick", this.checked); });
+    on("#stBuzz", function () { stDefault("buzz", this.checked); if (this.checked) { try { navigator.vibrate(BUZZ["in"]); } catch (e) {} } });
     on("#stKeep", function () { stDefault("nvcSave", this.checked); });
     on("#stVoiceSel", function () { stDefault("voiceName", this.value); });
     var t = $("#stVoiceTest");
@@ -9962,6 +10222,7 @@
     });
     on("#stScrSes", function () { ST.screenSessions = this.checked; stSave(); wlSync(); });
     on("#stScrTrk", function () { ST.screenTracks = this.checked; stSave(); wlSync(); });
+    on("#stLock", function () { ST.lockControls = this.checked; stSave(); msSync(); });
     on("#stDim", function () {
       ST.sleepDim = this.checked; stSave();
       var s = pBusy() && P.steps[P.idx];
@@ -11297,7 +11558,7 @@
      One log on the device for everything you do: practices, breathing sessions, tracks, the
      custom primer and the beat builder, and resonance tests. Sessions under a minute aren't
      kept, and nothing you write in a reflection goes in. Today shows the last week of it;
-     History shows all of it, a day at a time.
+     History shows all of it, a day at a time, with trends over weeks and months (trends.js).
   ---------------------------------------------------------------------------- */
 
   var HIST = null;                  // oldest first; read once, then kept in step with storage
@@ -11511,7 +11772,7 @@
     h += '<section class="hi-sum" aria-labelledby="hiWk"><h2 id="hiWk">Last 7 days</h2>' + hTotals(w) + hDays(w) +
       (goals.length ? '<ul class="hi-goals" aria-label="Minutes by goal">' + goals.map(function (g) {
         return '<li style="--gcol:' + GOAL_COL[g.id] + '"><span>' + esc(g.name) + "</span><i style=\"--w:" + Math.max(4, Math.round(w.goals[g.id] / gmax * 100)) + '%"></i><b>' + Math.round(w.goals[g.id] / 60) + " min</b></li>";
-      }).join("") + "</ul>" : "") + "</section>";
+      }).join("") + "</ul>" : "") + "</section>" + tnSec();
     var day = -1, open = false;
     for (var i = l.length - 1; i >= 0; i--) {
       var d = hDayStart(l[i].at);
@@ -11526,6 +11787,7 @@
     h += '<div class="hi-foot"><p>Your history stays on this device, the last ' + HIST_MAX + ' sessions. Anything under a minute isn\'t kept, and nothing you write in a reflection is. A backup keeps it safe, or moves it to another phone.</p>' +
       '<div class="hi-foot-act"><button class="btn small" id="hiSave">Save a backup</button><button class="btn small" id="hiClear">Clear history</button></div></div>';
     $("#hiBody").innerHTML = h;
+    tnStart();
   }
 
   function hInit() {
@@ -11543,6 +11805,271 @@
       b.classList.add("armed");
       setTimeout(function () { if (b.isConnected) { b.textContent = "Clear history"; b.classList.remove("armed"); } }, 3000);
     });
+  }
+  /* ---------------------------------- trends ----------------------------------
+     History over the last twelve weeks or months: the minutes you practised, how your heart rate
+     moved from the start of a session to its end, and coherence. One small chart each, on a scale
+     of its own (two measures never share an axis). Tap or drag across them, or use the arrow
+     keys, to read any week; the table under them holds every number too. The colours are the
+     app's own hues, stepped to one lightness for charts on the dark panel (see styles.css).
+  ---------------------------------------------------------------------------- */
+
+  var TN = { unit: "week", per: null, est: false, sel: -1, geo: null, drag: false, ro: null };
+  var TN_N = 12;                     // weeks or months shown
+  var TN_LG = 36, TN_RG = 4;         // room on the left for the scale, and a little air on the right
+
+  // the first day of the week where you are: Monday unless your language's calendar says otherwise
+  function tnWeekStart() {
+    try {
+      var L = new Intl.Locale(navigator.language), w = L.getWeekInfo ? L.getWeekInfo() : L.weekInfo;
+      if (w && w.firstDay) return w.firstDay % 7;
+    } catch (e) {}
+    return 1;
+  }
+  // the last twelve weeks or calendar months, oldest first, this one last
+  function tnPeriods(unit) {
+    var out = [], d = new Date(hDayStart(Date.now())), i;
+    if (unit === "week") {
+      d.setDate(d.getDate() - (d.getDay() - tnWeekStart() + 7) % 7);
+      for (i = TN_N - 1; i >= 0; i--) {
+        var s = new Date(d), e = new Date(d);
+        s.setDate(s.getDate() - 7 * i); e.setDate(e.getDate() - 7 * i + 7);
+        out.push({ at: s.getTime(), end: e.getTime() });
+      }
+    } else {
+      for (i = TN_N - 1; i >= 0; i--) out.push({ at: new Date(d.getFullYear(), d.getMonth() - i, 1).getTime(), end: new Date(d.getFullYear(), d.getMonth() - i + 1, 1).getTime() });
+    }
+    return out;
+  }
+  function tnMid(a) { var s = a.slice().sort(function (x, y) { return x - y; }), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
+  // each period's minutes and sessions, its middle heart-rate change, and its average coherence:
+  // from a beat-to-beat sensor when you have any, as estimates read high, else the estimates
+  function tnData(unit) {
+    var per = tnPeriods(unit), soon = Date.now() + 6e4;
+    per.forEach(function (p) { p.n = 0; p.secs = 0; p.dl = []; p.cr = []; p.ce = []; });
+    hLoad().forEach(function (e) {
+      if (e.at > soon) return;                           // dated in the future: a clock that was wrong
+      for (var i = per.length - 1; i >= 0; i--) {
+        if (e.at < per[i].at) continue;
+        var p = per[i];
+        p.n++; p.secs += e.secs;
+        if (e.hr0 && e.hr1) p.dl.push(e.hr1 - e.hr0);
+        if (e.coh) (e.est ? p.ce : p.cr).push(e.coh);
+        break;
+      }
+    });
+    var real = per.some(function (p) { return p.cr.length; });
+    per.forEach(function (p) {
+      var c = real ? p.cr : p.ce;
+      p.hr = p.dl.length ? tnMid(p.dl) : null;
+      p.coh = c.length ? avg(c) : null;
+      p.cn = c.length;
+    });
+    return { per: per, est: !real };
+  }
+  function tnCount(k) { return TN.per.filter(function (p) { return k === "n" ? p.n > 0 : p[k] !== null; }).length; }
+  function tnSigned(v) { v = Math.round(v); return v > 0 ? "+" + v : v < 0 ? "−" + -v : "steady"; }
+  function tnName(i, short) {
+    var d = new Date(TN.per[i].at), last = TN.per.length - 1;
+    if (TN.unit === "week") {
+      var day = d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+      return short ? day : i === last ? "This week" : i === last - 1 ? "Last week" : "Week of " + day;
+    }
+    var other = d.getFullYear() !== new Date().getFullYear();
+    if (short) return d.toLocaleDateString(undefined, other ? { month: "short", year: "numeric" } : { month: "long" });
+    return i === last ? "This month" : d.toLocaleDateString(undefined, other ? { month: "long", year: "numeric" } : { month: "long" });
+  }
+  function tnRead(i) {
+    var p = TN.per[i], parts = [p.n ? hMins(p.secs) + " in " + p.n + (p.n === 1 ? " session" : " sessions") : "no sessions"];
+    if (p.hr !== null) parts.push("heart rate " + tnSigned(p.hr) + (p.dl.length > 1 ? " (the middle of " + p.dl.length + ")" : ""));
+    if (p.coh !== null) parts.push("coherence " + p.coh.toFixed(1) + (TN.est ? " (est.)" : ""));
+    return [tnName(i), parts.join(", ")];
+  }
+
+  /* ----- the section ----- */
+  function tnSec() {
+    TN.unit = store.get("trendUnit") === "month" ? "month" : "week";
+    var D = tnData(TN.unit), wk = TN.unit === "week";
+    TN.per = D.per; TN.est = D.est; TN.sel = TN.per.length - 1;
+    var h = '<section class="hi-tr" aria-labelledby="hiTrH"><div class="hi-tr-h"><h2 id="hiTrH">Trends</h2>' +
+      '<div class="mini-seg" id="tnUnit" aria-label="Show by">' + [["week", "Weeks"], ["month", "Months"]].map(function (o) {
+        return '<button data-v="' + o[0] + '" aria-pressed="' + (o[0] === TN.unit) + '">' + o[1] + "</button>";
+      }).join("") + "</div></div>";
+    if (tnCount("n") < 2) return h + '<p class="hi-tr-note">Trends show here once you have sessions in two different ' + (wk ? "weeks" : "months") + ".</p></section>";
+    var nHr = tnCount("hr"), nCoh = tnCount("coh");
+    h += '<p class="hi-tr-read" id="tnRead"></p>' +
+      '<div class="hi-tr-plots" id="tnPlots" tabindex="0" role="slider" aria-label="Trends by ' + TN.unit + '" aria-valuemin="0" aria-valuemax="' + (TN.per.length - 1) + '">' +
+        '<h3>Minutes</h3><svg class="hi-tr-svg" id="tnMin" aria-hidden="true"></svg>' +
+        (nHr >= 2 ? "<h3>Heart rate, start to end<small>middle value, bpm</small></h3>" + '<svg class="hi-tr-svg" id="tnHr" aria-hidden="true"></svg>' : "") +
+        (nCoh >= 2 ? "<h3>Coherence" + (TN.est ? " (estimated)" : "") + "<small>average</small></h3>" + '<svg class="hi-tr-svg" id="tnCoh" aria-hidden="true"></svg>' : "") +
+      "</div>" +
+      (nHr === 1 || nCoh === 1 ? '<p class="hi-tr-note">Heart rate and coherence chart here once two ' + (wk ? "weeks" : "months") + " have sessions with a heart sensor.</p>" : "") +
+      '<details class="hi-tr-tab"><summary>Show as a table</summary>' + tnTable() + "</details></section>";
+    return h;
+  }
+  function tnTable() {
+    var rows = TN.per.map(function (p, i) {
+      return "<tr><th scope=\"row\">" + esc(tnName(i, true)) + "</th><td>" + (p.n ? hMins(p.secs) : "—") + "</td><td>" + (p.n || "—") + "</td><td>" +
+        (p.hr !== null ? tnSigned(p.hr) : "—") + "</td><td>" + (p.coh !== null ? p.coh.toFixed(1) : "—") + "</td></tr>";
+    }).reverse().join("");
+    return '<div class="hi-tr-tw"><table><thead><tr><th scope="col">' + (TN.unit === "week" ? "Week of" : "Month") + '</th><th scope="col">Time</th><th scope="col">Sessions</th>' +
+      '<th scope="col">Heart rate</th><th scope="col">Coherence' + (TN.est ? " (est.)" : "") + "</th></tr></thead><tbody>" + rows + "</tbody></table></div>";
+  }
+
+  /* ----- drawing: SVG at the width it has, so text is never stretched ----- */
+  function tnNice(v, steps) {
+    for (var i = 0; i < steps.length; i++) if (v <= steps[i]) return steps[i];
+    var top = steps[steps.length - 1];
+    return Math.ceil(v / top) * top;
+  }
+  function tnF(v) { return Math.round(v * 10) / 10; }
+  // a column from the baseline, its data end rounded, its foot square
+  function tnBar(x, w, yb, yt, r) {
+    var d = yt < yb ? 1 : -1;
+    return "M" + tnF(x) + "," + tnF(yb) + "V" + tnF(yt + d * r) + "Q" + tnF(x) + "," + tnF(yt) + " " + tnF(x + r) + "," + tnF(yt) +
+      "H" + tnF(x + w - r) + "Q" + tnF(x + w) + "," + tnF(yt) + " " + tnF(x + w) + "," + tnF(yt + d * r) + "V" + tnF(yb) + "Z";
+  }
+  function tnFrame(lo, hi, top, ph, ticks, fmtTick) {
+    var g = TN.geo, Y = function (v) { return top + (hi - v) / (hi - lo) * ph; }, s = "";
+    s += '<rect class="tn-band" x="' + tnF(g.X(TN.sel) - g.slot / 2) + '" y="' + top + '" width="' + tnF(g.slot) + '" height="' + ph + '" rx="5"/>';
+    ticks.forEach(function (v) {
+      var y = tnF(Y(v));
+      s += '<line class="' + (v === 0 ? "tn-base" : "tn-grid") + '" x1="' + TN_LG + '" x2="' + (g.W - TN_RG) + '" y1="' + y + '" y2="' + y + '"/>' +
+        '<text class="tn-tick" x="' + (TN_LG - 6) + '" y="' + y + '" text-anchor="end" dominant-baseline="middle">' + esc(fmtTick(v)) + "</text>";
+    });
+    return { s: s, Y: Y };
+  }
+  function tnAxis(top) {
+    var g = TN.geo, n = TN.per.length, s = "", y = top + 13;
+    var at = TN.unit === "week" ? [n - 9, n - 5, n - 1] : TN.per.map(function (p, i) { return i; });
+    at.forEach(function (i) {
+      if (i < 0) return;
+      var txt = TN.unit === "week" ? tnName(i, true) : new Date(TN.per[i].at).toLocaleDateString(undefined, { month: "narrow" });
+      var x = g.X(i), anchor = "middle";
+      if (TN.unit === "week" && i === n - 1) { x = g.W - TN_RG; anchor = "end"; }          // the last label stays inside the edge
+      s += '<text class="tn-tick' + (i === TN.sel ? " on" : "") + '" x="' + tnF(x) + '" y="' + y + '" text-anchor="' + anchor + '">' + esc(txt) + "</text>";
+    });
+    return s;
+  }
+  function tnPut(id, s, H) {
+    var svg = $(id);
+    if (!svg) return;
+    svg.setAttribute("viewBox", "0 0 " + TN.geo.W + " " + H);
+    svg.setAttribute("width", TN.geo.W);
+    svg.setAttribute("height", H);
+    svg.innerHTML = s;
+  }
+  function tnDraw() {
+    var box = $("#tnPlots");
+    if (!box || !TN.per) return;
+    var W = Math.floor(box.clientWidth);
+    if (W < 120) return;                                 // hidden, or in the middle of a layout
+    var n = TN.per.length, slot = (W - TN_LG - TN_RG) / n, bw = Math.min(24, Math.max(4, slot * 0.56));
+    TN.geo = { W: W, slot: slot, X: function (i) { return TN_LG + slot * (i + 0.5); } };
+    var top = 8, sel = TN.sel, f, s;
+
+    // minutes: columns from zero
+    var mins = TN.per.map(function (p) { return p.secs / 60; });
+    var mMax = tnNice(Math.max.apply(null, mins.concat([1])), [10, 20, 30, 45, 60, 90, 120, 180, 240, 300, 360, 480, 600, 720, 900, 1200]);
+    f = tnFrame(0, mMax, top, 84, [0, mMax], function (v) { return v ? (v < 120 ? v + " min" : v / 60 + " h") : "0"; });
+    s = f.s;
+    mins.forEach(function (v, i) {
+      if (!v) return;
+      var yt = f.Y(v), yb = f.Y(0), r = Math.min(4, yb - yt, bw / 2);
+      s += '<path class="tn-min' + (i === sel ? " on" : "") + '" d="' + tnBar(TN.geo.X(i) - bw / 2, bw, yb, yt, r) + '"/>';
+    });
+    tnPut("#tnMin", s + tnAxis(top + 84), top + 84 + 18);
+
+    // heart rate: columns down from zero where it came down, up where it rose
+    if ($("#tnHr")) {
+      var hv = TN.per.map(function (p) { return p.hr; }), got = hv.filter(function (v) { return v !== null; });
+      var steps = [2, 4, 6, 8, 10, 12, 15, 20, 25, 30];
+      var lo = Math.min.apply(null, got.concat([0])), hi = Math.max.apply(null, got.concat([0]));
+      lo = lo < 0 ? -tnNice(-lo, steps) : 0; hi = hi > 0 ? tnNice(hi, steps) : 0;
+      if (lo === 0 && hi === 0) hi = 2;
+      var ticks = [lo, 0, hi].filter(function (v, k, a) { return a.indexOf(v) === k; });
+      f = tnFrame(lo, hi, top, 70, ticks, function (v) { return v > 0 ? "+" + v : v < 0 ? "−" + -v : "0"; });
+      s = f.s;
+      hv.forEach(function (v, i) {
+        if (v === null) return;
+        var x = TN.geo.X(i) - bw / 2, y0 = f.Y(0);
+        if (Math.round(v) === 0) { s += '<rect class="tn-zero" x="' + tnF(x) + '" y="' + tnF(y0 - 1.5) + '" width="' + tnF(bw) + '" height="3" rx="1.5"/>'; return; }
+        var yt = f.Y(v), r = Math.min(4, Math.abs(y0 - yt), bw / 2);
+        s += '<path class="' + (v < 0 ? "tn-down" : "tn-up") + (i === sel ? " on" : "") + '" d="' + tnBar(x, bw, y0, yt, r) + '"/>';
+      });
+      tnPut("#tnHr", s + tnAxis(top + 70), top + 70 + 18);
+    }
+
+    // coherence: a line through the periods that have it, a dot on each
+    if ($("#tnCoh")) {
+      var cv = TN.per.map(function (p) { return p.coh; });
+      var cMax = tnNice(Math.max.apply(null, cv.filter(function (v) { return v !== null; }).concat([1])), [1, 2, 3, 4, 5, 6, 8, 10, 12, 16]);
+      f = tnFrame(0, cMax, top, 64, [0, cMax], function (v) { return String(v); });
+      s = f.s;
+      var d = "", pen = false;
+      cv.forEach(function (v, i) {
+        if (v === null) { pen = false; return; }
+        d += (pen ? "L" : "M") + tnF(TN.geo.X(i)) + "," + tnF(f.Y(v));
+        pen = true;
+      });
+      if (d) s += '<path class="tn-line" d="' + d + '"/>';
+      cv.forEach(function (v, i) {
+        if (v !== null) s += '<circle class="tn-dot' + (i === sel ? " on" : "") + '" cx="' + tnF(TN.geo.X(i)) + '" cy="' + tnF(f.Y(v)) + '" r="' + (i === sel ? 5 : 4) + '"/>';
+      });
+      tnPut("#tnCoh", s + tnAxis(top + 64), top + 64 + 18);
+    }
+    var rd = tnRead(sel), el = $("#tnRead");
+    el.innerHTML = "<b>" + esc(rd[0]) + "</b> " + esc(rd[1]);
+    box.setAttribute("aria-valuenow", sel);
+    box.setAttribute("aria-valuetext", rd[0] + ": " + rd[1]);
+  }
+  function tnPick(i) {
+    i = Math.max(0, Math.min(TN.per.length - 1, i));
+    if (i === TN.sel) return;
+    TN.sel = i;
+    tnDraw();
+  }
+  function tnAtX(clientX) {
+    var box = $("#tnPlots"), r = box.getBoundingClientRect();
+    return Math.floor((clientX - r.left - TN_LG) / TN.geo.slot);
+  }
+  // after History has drawn: the switch, the charts, and reading them by pointer and keyboard
+  function tnStart() {
+    var seg = $("#tnUnit");
+    if (seg) seg.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b || b.dataset.v === TN.unit) return;
+      store.set("trendUnit", b.dataset.v);
+      var sec = document.querySelector(".hi-tr");
+      sec.outerHTML = tnSec();
+      tnStart();
+      var nb = document.querySelector('#tnUnit button[data-v="' + b.dataset.v + '"]');
+      if (nb) nb.focus();
+    });
+    if (TN.ro) { TN.ro.disconnect(); TN.ro = null; }
+    var box = $("#tnPlots");
+    if (!box) return;
+    box.addEventListener("pointerdown", function (e) {
+      TN.drag = true;
+      try { box.setPointerCapture(e.pointerId); } catch (x) {}
+      if (TN.geo) tnPick(tnAtX(e.clientX));
+    });
+    box.addEventListener("pointermove", function (e) { if (TN.drag && TN.geo) tnPick(tnAtX(e.clientX)); });
+    var stop = function () { TN.drag = false; };
+    box.addEventListener("pointerup", stop);
+    box.addEventListener("pointercancel", stop);
+    box.addEventListener("keydown", function (e) {
+      var k = e.key, i = TN.sel;
+      if (k === "ArrowLeft" || k === "ArrowDown") i--;
+      else if (k === "ArrowRight" || k === "ArrowUp") i++;
+      else if (k === "Home") i = 0;
+      else if (k === "End") i = TN.per.length - 1;
+      else return;
+      e.preventDefault();
+      tnPick(i);
+    });
+    if (window.ResizeObserver) { TN.ro = new ResizeObserver(function () { tnDraw(); }); TN.ro.observe(box); }
+    tnDraw();
   }
   /* ------------------------------- favourites -------------------------------
      A star on a practice, a track, the primer, the beat builder or a breathing pattern keeps it
@@ -11927,6 +12454,7 @@
   ---------------------------------------------------------------------------- */
 
   playerInit();
+  msInit();
   builderInit();
   primeInit();
   dialogsInit();

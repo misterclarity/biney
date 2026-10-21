@@ -26,6 +26,12 @@
     --b-hold:#f5d38b;
     --b-out:#a78bfa;
     --hr:#fb7185;
+    /* chart marks: the accent, relax and stim hues stepped to one OKLCH lightness (0.66), inside
+       the band where marks sit evenly on the dark panel; checked for colour-blind separation and
+       contrast with the dataviz validator. The full tokens mark the selected period. */
+    --tn-a:#7e87e9;
+    --tn-down:#0da997;
+    --tn-up:#c98001;
     /* Interface text uses the device's own font (Roboto on Android), so nothing is downloaded and the
        page works offline. Headings use one embedded weight of Poppins (OFL), subset to Latin. */
     --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -865,7 +871,8 @@
   .so-voice[hidden]{display:none}
   input.sw{-webkit-appearance:none;appearance:none;width:42px;height:24px;border-radius:99px;background:var(--panel-3);position:relative;cursor:pointer;flex:none;transition:background .15s;margin:0}
   input.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--text-dim);transition:transform .15s,background .15s}
-  input.sw:checked{background:var(--pcol)}
+  input.sw:checked{background:var(--pcol,var(--accent))}
+  .b-buzz{--pcol:var(--b-in)}
   input.sw:checked::after{transform:translateX(18px);background:#0b1120}
   input.sw:disabled{opacity:.4}
   .mini-seg{display:inline-flex;gap:3px;padding:3px;border-radius:10px;background:var(--bg-2);flex-wrap:wrap}
@@ -1123,6 +1130,7 @@
   .sd-t span{font-size:12px;font-weight:650;color:var(--text-faint);padding-right:24px}
   .sd-t b{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
   .sd-t small{font-size:12px;color:var(--text-dim)}
+  .sd-cmp{font-style:normal;font-size:12px;font-weight:700;color:var(--pcol);margin-top:5px;padding-top:6px;border-top:1px solid var(--line)}   /* against your usual for this practice */
   .sd-ex{margin-top:10px;padding:14px 16px 16px;border-radius:16px;background:var(--panel);border:1px solid color-mix(in srgb,var(--pcol) 40%,transparent)}
   .sd-ex-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .sd-ex-h b{font-size:15.5px;font-weight:750}
@@ -1383,6 +1391,40 @@
   .hi-foot{margin-top:26px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .hi-foot p{margin:0;font-size:12.5px;color:var(--text-faint);max-width:62ch}
   .hi-foot-act{display:flex;gap:10px;flex-wrap:wrap}
+  /* trends */
+  .hi-tr{margin-top:14px;padding:18px 20px 16px;border-radius:20px;background:var(--panel)}
+  .hi-tr-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .hi-tr-h h2{font-size:18px;font-weight:780;letter-spacing:-.015em}
+  .hi-tr-note{margin:10px 0 0;font-size:13px;color:var(--text-faint);line-height:1.45}
+  .hi-tr-read{margin:12px 0 0;font-size:13.5px;line-height:1.45;color:var(--text-dim);min-height:2.9em}
+  .hi-tr-read b{color:var(--text);font-weight:750}
+  .hi-tr-plots{margin:2px -4px 0;padding:0 4px;touch-action:pan-y;cursor:pointer;border-radius:12px;-webkit-user-select:none;user-select:none}
+  .hi-tr-plots:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+  .hi-tr-plots h3{margin:14px 0 2px;font-size:12.5px;font-weight:700;color:var(--text-dim)}
+  .hi-tr-plots h3 small{font-weight:500;color:var(--text-faint);margin-left:6px;font-size:12px}
+  .hi-tr-svg{display:block;width:100%;overflow:visible}
+  .tn-band{fill:var(--panel-2)}
+  .tn-grid{stroke:var(--line-soft);stroke-width:1}
+  .tn-base{stroke:var(--line);stroke-width:1}
+  .tn-tick{fill:var(--text-faint);font-size:10.5px;font-variant-numeric:tabular-nums}
+  .tn-tick.on{fill:var(--text);font-weight:700}
+  .tn-min{fill:var(--tn-a)}
+  .tn-min.on,.tn-dot.on{fill:var(--accent)}
+  .tn-down{fill:var(--tn-down)}
+  .tn-down.on{fill:var(--relax)}
+  .tn-up{fill:var(--tn-up)}
+  .tn-up.on{fill:var(--stim)}
+  .tn-zero{fill:var(--text-faint)}
+  .tn-line{fill:none;stroke:var(--tn-a);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+  .tn-dot{fill:var(--tn-a);stroke:var(--panel);stroke-width:2}
+  .hi-tr-tab{margin-top:12px}
+  .hi-tr-tab summary{cursor:pointer;font-size:13px;font-weight:650;color:var(--text-dim);width:max-content}
+  .hi-tr-tw{overflow-x:auto;margin-top:8px}
+  .hi-tr-tw table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  .hi-tr-tw th,.hi-tr-tw td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+  .hi-tr-tw th:first-child{text-align:left}
+  .hi-tr-tw thead th{font-size:12px;font-weight:650;color:var(--text-faint)}
+  .hi-tr-tw tbody th{font-weight:600;color:var(--text-dim)}
   .hi-foot .armed{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 50%,transparent)}
 
   /* ---------- favourites ---------- */

@@ -351,6 +351,7 @@
         " Hz \u00b7 " + A.track.carrier + " Hz carrier \u00b7 reduced volume";
       setStatus("Task phase: beats continue at reduced volume. Stop when you finish.");
     }
+    msSync();                                       // the working phase has no end to count down to
   }
 
   function scheduleEnd() {
@@ -420,10 +421,11 @@
 
   function setStatus(msg) { $("#status").textContent = msg; }
 
-  // a track started, paused or stopped: the screen lock and its page follow
+  // a track started, paused or stopped: the screen lock, its page and the lock screen follow
   function playSync() {
     wlKick();
     trSync();
+    msSync();
   }
 
   /* ----- the mini player's own controls ----- */
@@ -455,6 +457,7 @@
     $("#openEnded").addEventListener("change", function () {
       if (A.playing) scheduleEnd();
       paint();
+      msSync();
       setStatus(this.checked
         ? "Open-ended: the session will keep running until you stop it."
         : "Timer active: " + (A.track ? A.track.minutes + " min." : ""));

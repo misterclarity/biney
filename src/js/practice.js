@@ -16,7 +16,7 @@
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
-    opt: { voice: true, bells: true, cues: "tones", visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true }
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true }
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
 
@@ -90,7 +90,7 @@
   /* ----- options: defaults for every practice (in Settings), and each practice's own changes on top.
      Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself. ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "visual"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -242,7 +242,7 @@
   function pBreathOn(s, st) {
     if (!P.saved) {
       P.saved = {};
-      ["inh", "sip", "hold", "exh", "rest", "minutes", "sound", "cue", "visual"].forEach(function (k) { P.saved[k] = BC[k]; });
+      ["inh", "sip", "hold", "exh", "rest", "minutes", "sound", "cue", "buzz", "visual"].forEach(function (k) { P.saved[k] = BC[k]; });
     }
     var c = pCfgAt(s, st || 0);
     B_KEYS.forEach(function (k) { BC[k] = c[k]; });
@@ -252,6 +252,7 @@
     if (BC.sound !== snd && B.state === "running") { BC.sound = snd; cueOff(); if (snd !== "off") cueOn(); }
     BC.sound = snd;
     BC.cue = s.cueFade ? Math.round(40 * s.cueFade[0]) : 40;
+    BC.buzz = !!P.opt.buzz;
     P.usesB = true;
     var ph = buildPhases(BC);
     if (B.state === "running" || B.state === "paused") {
@@ -290,6 +291,7 @@
     syncFields(); syncRate(); renderNote(); syncVisHint();
     checkRadio("bvis", BC.visual); syncChips("#bVis");
     $("#bCue").value = BC.cue;
+    bBuzzSync();
     pLockBreathe();
   }
   function pBreathTick(s, st) {
@@ -981,7 +983,8 @@
     if (r.suds) notes.push("intensity " + r.suds.join(" → ") + " of 10");
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
-    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
+    if (T >= 60) r.at = Date.now();                    // the end screen tells this one from the earlier ones by it
+    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
       coh: r.coh ? +r.coh.toFixed(2) : undefined, est: r.coh && r.cohEst ? true : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,
       note: notes.join(", ") || undefined });
     return r;
@@ -1040,6 +1043,7 @@
         [["tones", "Tone"], ["chimes", "Chimes"], ["off", "Silent"]].map(function (o) {
           return '<button data-v="' + o[0] + '" aria-pressed="' + (O.cues === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
+      if (bzOk()) opts.push(pToggle("sOptBuzz", "Vibrate with the breath", O.buzz, "A short buzz to breathe in, a long one to breathe out, two taps for a hold."));
       opts.push('<div class="so-row so-seg"><span class="so-l">Breath visual</span><div class="mini-seg" id="sOptVis">' +
         [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]].map(function (o) {
           return '<button data-v="' + o[0] + '" aria-pressed="' + (O.visual === o[0]) + '">' + o[1] + "</button>";
@@ -1117,6 +1121,7 @@
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
+    if (O.buzz && bzOk() && pPlan(d, pLenOf(d, P.len)).steps.some(function (x) { return x.k === "breath"; })) s.push("Vibration");
     if (AMB.kind !== "off") s.push(AMB.kind === "night" ? "Rain and crickets" : AMB.kind === "rain" ? "Rain" : "Crickets");
     return s.join(" · ");
   }
@@ -1150,6 +1155,11 @@
     on("#sOptAudio", function () { O.audio = this.checked; save(); });
     on("#sOptRhy", function () { O.rhythm = this.checked; save(); });
     on("#sOptTick", function () { O.tapTick = this.checked; save(); });
+    on("#sOptBuzz", function () {
+      O.buzz = this.checked; save();
+      if (pBusy() && P.def === d && P.usesB) BC.buzz = O.buzz;      // a breath step running now follows at once
+      if (this.checked && bzOk()) { try { navigator.vibrate(BUZZ["in"]); } catch (e) {} }
+    });
     on("#sOptKeep", function () { O.nvcSave = this.checked; save(); });
     on("#sOptTap", function () {
       store.set("pTap." + d.id, this.checked ? "1" : "0");
@@ -1380,5 +1390,5 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN };   // for automated tests only
   }
