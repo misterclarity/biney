@@ -173,7 +173,7 @@
     transition:background .15s,border-color .15s,filter .15s;
   }
   .btn:hover{background:var(--panel-3);border-color:#3a4767}
-  .btn:disabled{opacity:.45;cursor:default}
+  .btn:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:default}
   .btn.primary{background:var(--accent);color:#0b1120;border-color:var(--accent)}
   .btn.primary:hover{filter:brightness(1.08);background:var(--accent)}
   .btn.quiet{background:transparent;border-color:transparent;color:var(--text-dim)}
@@ -461,8 +461,13 @@
   .hr-meter span{position:absolute;top:9px;font-size:10.5px;color:var(--text-faint);line-height:1}
   .hr-meter span:first-of-type{left:0}
   .hr-meter span:last-of-type{right:0}
-  .hr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:12px}
-  .hr-col{display:grid;gap:12px;min-width:0;align-content:start}
+  .hr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-rows:auto 1fr;gap:12px}
+  .hr-bars{grid-column:1;grid-row:1;align-self:start}
+  .hr-spec{grid-column:1;grid-row:2;align-self:start}
+  .hr-body > .hr-find{grid-column:2;grid-row:1 / span 2}
+  #resonance-test,#connect{scroll-margin-top:84px}
+  /* once a sensor is on, the page is about your numbers: the introduction steps aside */
+  .hr[data-state="on"] .hr-intro > p:not(.hr-msg),.hr[data-state="lost"] .hr-intro > p:not(.hr-msg){display:none}
   .hr-box{background:var(--panel);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
   .hr-box-head{display:flex;justify-content:space-between;align-items:baseline;gap:4px 12px;flex-wrap:wrap}
   .hr-box-head b{font-size:15px;font-weight:750}
@@ -479,7 +484,7 @@
     .hr-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
     .hr-tile.coh{grid-column:span 2}
   }
-  @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr)} }
+  @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr);grid-template-rows:none} .hr-bars,.hr-spec,.hr-body > .hr-find{grid-column:auto;grid-row:auto} }
   @media (max-width:640px){
     .hr-top{padding:18px}
     .hr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -1580,7 +1585,7 @@
         </div>
 
         <div class="quick">
-          <button class="qk" data-go="heart" style="--qc:var(--hr)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
+          <button class="qk" data-go="resonance-test" style="--qc:var(--hr)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
           <button class="qk" data-go="heart" style="--qc:var(--accent)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg></span><b id="qkSensorT">Heart sensor</b><span id="qkSensor">Not connected</span></button>
         </div>
 
@@ -2122,25 +2127,17 @@
         </div>
       </div>
 
+      <!-- the order of these, and of the guide, follows the sensor: see hrLayout() in heart.js -->
       <div class="hr-body">
-        <div class="hr-col">
-          <div class="hr-box">
-            <div class="hr-box-head"><b>Breath by breath</b><span class="hint">Each bar is one breath's heart-rate swing, in bpm</span></div>
-            <div class="hr-chart">
-              <canvas id="hrBars" aria-hidden="true"></canvas>
-              <p class="hr-empty" id="hrBarsEmpty">Connect a sensor and start a breathing session. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
-            </div>
-            <p class="hr-summary" id="hrSummary" hidden></p>
+        <div class="hr-box hr-bars">
+          <div class="hr-box-head"><b>Breath by breath</b><span class="hint">Each bar is one breath's heart-rate swing, in bpm</span></div>
+          <div class="hr-chart">
+            <canvas id="hrBars" aria-hidden="true"></canvas>
+            <p class="hr-empty" id="hrBarsEmpty">Connect a sensor and start a breathing session. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
           </div>
-          <div class="hr-box">
-            <div class="hr-box-head"><b>Heart rhythm spectrum</b><span class="hint">Pink: your heart rhythm · dashed: your breathing pace</span></div>
-            <div class="hr-chart sm">
-              <canvas id="hrSpec" aria-hidden="true"></canvas>
-              <p class="hr-empty" id="hrSpecEmpty">After 64 seconds of heart data, this shows which rhythms your heart rate is moving in. Coherence is high when one smooth peak stands out, usually right on your breathing pace.</p>
-            </div>
-          </div>
+          <p class="hr-summary" id="hrSummary" hidden></p>
         </div>
-        <div class="hr-box">
+        <div class="hr-box hr-find" id="resonance-test">
           <div class="hr-box-head"><b>Resonance test</b><span class="hint" id="hrFindWhen">Connect a sensor first</span></div>
           <p class="hr-find-txt" id="hrFindTxt">
             Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the
@@ -2150,6 +2147,13 @@
           <div class="hr-find-foot">
             <button class="btn" id="hrFindStart" disabled>Start resonance test</button>
             <button class="btn primary" id="hrFindUse" hidden>Breathe at this pace</button>
+          </div>
+        </div>
+        <div class="hr-box hr-spec">
+          <div class="hr-box-head"><b>Heart rhythm spectrum</b><span class="hint">Pink: your heart rhythm · dashed: your breathing pace</span></div>
+          <div class="hr-chart sm">
+            <canvas id="hrSpec" aria-hidden="true"></canvas>
+            <p class="hr-empty" id="hrSpecEmpty">After 64 seconds of heart data, this shows which rhythms your heart rate is moving in. Coherence is high when one smooth peak stands out, usually right on your breathing pace.</p>
           </div>
         </div>
       </div>
@@ -5042,17 +5046,43 @@
     bSetT("#hrPillTxt", pill);
     ["#hrConnect", "#gConnect"].forEach(function (sel) {
       bSetT(sel, (st === "on" || st === "lost") ? "Disconnect" : st === "busy" ? "Connecting…" : "Connect sensor");
-      $(sel).disabled = st === "busy" || !hrSupported();
+      $(sel).disabled = !hrSupported();
+      $(sel).setAttribute("aria-disabled", st === "busy" ? "true" : "false");   // busy, not disabled, so the button you pressed keeps the focus
     });
     $("#hrAny").hidden = st === "on" || st === "lost" || !hrSupported();
     finderUI();
     hrTiles();
+    hrLayout();
   }
   function hrMsg(s) { bSetT("#hrMsg", s || ""); }
+
+  /* What you need first. Before a sensor is on: connecting, the guide, and the resonance test,
+     which keeps your last result and its pace; on a phone the empty numbers and charts follow.
+     Once one is on: your live numbers, the breath-by-breath chart, the test and the spectrum,
+     with the guide at the bottom for when something goes wrong. A wide screen keeps the charts
+     and the test side by side. The boxes move in the page itself, so the keyboard follows the
+     same order as the eye. */
+  var HR_NARROW = window.matchMedia ? window.matchMedia("(max-width: 880px)") : { matches: true };
+  function hrPlace(el, parent, before) {
+    if (!el || (el.parentNode === parent && el.nextElementSibling === before)) return;
+    var had = document.activeElement && el.contains(document.activeElement) ? document.activeElement : null;
+    parent.insertBefore(el, before);
+    if (had) try { had.focus({ preventScroll: true }); } catch (e) { had.focus(); }
+  }
+  function hrLayout() {
+    var hr = $("#hr"), on = H.state === "on" || H.state === "lost", tiles = hr.querySelector(".hr-tiles"), body = hr.querySelector(".hr-body");
+    if (!tiles || !body) return;
+    var g = $("#connect"), fromGuide = on && g.nextElementSibling !== null && g.contains(document.activeElement);
+    hrPlace(g, hr, on ? null : tiles);
+    if (fromGuide) $("#hrConnect").focus();     // connected from the guide: it folds away at the bottom, and its twin at the top takes the focus
+    if (on || !HR_NARROW.matches) hrPlace($("#resonance-test"), body, body.querySelector(".hr-spec"));
+    else hrPlace($("#resonance-test"), hr, tiles);
+  }
 
   /* `any` opens the browser's chooser on every nearby device, for sensors
      that offer the heart-rate service but don't advertise it. */
   function hrConnect(any) {
+    if (H.state === "busy") return;                     // already connecting
     if (H.state === "on" || H.state === "lost") { hrDisconnect(); return; }
     if (!hrSupported()) return;
     hrMsg("");
@@ -5461,6 +5491,7 @@
       ro.observe($("#hrBars")); ro.observe($("#hrFind")); ro.observe($("#hrSpec"));
     } else window.addEventListener("resize", redraw);
     finderUI(); redraw(); hrTiles();
+    if (HR_NARROW.addEventListener) HR_NARROW.addEventListener("change", hrLayout);
     window.addEventListener("pagehide", function () { if (H.state === "on") hrDisconnect(); });
   }
 
@@ -5893,7 +5924,8 @@
 
   function goView(v) {
     if (location.hash.slice(1) !== v) location.hash = v;
-    else showView(v);
+    else if (VIEWS.indexOf(v) >= 0) showView(v);
+    else route();                                       // a place on a page, such as the resonance test
   }
 
   // the way back from a page: to the list it was opened from
@@ -9564,7 +9596,7 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB };   // for automated tests only
   }
   /* ------------------------------- the end screen -------------------------------
      What a practice measured, as tiles you can tap for what each number means, with your own
@@ -9904,6 +9936,8 @@
      it to one goal and adds the items that are also good for it; the filter panel narrows by
      method, length, posture and needs. On "All", each section shows its first few rows until you
      ask for the rest, and the tinnitus track and the two builders have sections of their own.
+     It is built each time it's shown (showView), never at start-up: working out every practice's
+     length is the slowest thing the app does as it opens, and Today needs none of it.
   ------------------------------------------------------------------------------ */
 
   var LIB = { goal: "all", f: { method: "", len: "", posture: "", needs: "" }, open: {}, panel: false, mins: {} };
@@ -9921,6 +9955,16 @@
     m = [Math.min.apply(null, m), Math.max.apply(null, m)];
     if (!d.custom) LIB.mins[d.id] = m;
     return m;
+  }
+  // the lengths, worked out a few at a time while the phone is idle after start-up, so the
+  // library's first visit is as quick as the others
+  function libWarm() {
+    var i = 0, idle = window.requestIdleCallback || function (f) { return setTimeout(function () { f({ timeRemaining: function () { return 6; } }); }, 300); };
+    var step = function (dl) {
+      while (i < PRACTICES.length && dl.timeRemaining() > 2) libMins(PRACTICES[i++]);
+      if (i < PRACTICES.length) idle(step);
+    };
+    idle(step);
   }
   function libMinsTxt(d, m) {
     if (d.selfPaced) return "About " + d.est + " min";
@@ -9975,6 +10019,17 @@
     out.push(libTool("prime"));
     out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
     return out;
+  }
+  // the first few names under a goal, in the library's own order, without working out every
+  // practice's length as libAll does: Today's goal tiles need only the names
+  function libNames(goal, n) {
+    var out = [], x = libTool("prime");
+    PRACTICES.forEach(function (d) { if (d.goal === goal) out.push({ key: d.id, name: d.name }); });
+    BREATHS.forEach(function (b) { if (b.goal === goal) out.push({ key: "b:" + b.id, name: PATTERN_NAMES[b.id] || b.id }); });
+    TRACKS.forEach(function (t) { if (t.goal === goal && goal !== "tinnitus") out.push({ key: "t:" + t.id, name: t.name }); });
+    if (x.goal === goal) out.push(x);
+    out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
+    return out.slice(0, n).map(function (it) { return it.name; });
   }
   function libMine() { return yLoad().map(function (q) { return libPractice(yDef(q)); }); }
   function libTinnitus() { return TRACKS.filter(function (t) { return t.goal === "tinnitus"; }).map(libTrack); }
@@ -11547,8 +11602,6 @@
       fdOpen();
     });
     // places a result can land on that have no id of their own
-    var rt = $("#hrFindTxt") && $("#hrFindTxt").closest(".hr-box");
-    if (rt && !rt.id) rt.id = "resonance-test";
     var n = 0;
     document.querySelectorAll(FD_LEARN).forEach(function (el) {
       if (!el.closest(".toc") && !el.id) el.id = "lx-" + (n++);
@@ -12176,9 +12229,8 @@
     }
 
     // the six goals, each with the first few of its own
-    var all = libAll();
     $("#tdGoals").innerHTML = GOALS.map(function (g) {
-      var names = all.filter(function (it) { return it.goal === g.id; }).slice(0, GOAL_NAMES).map(function (it) { return it.name; });
+      var names = libNames(g.id, GOAL_NAMES);
       return '<a class="td-goal" href="#goal/' + g.id + '" style="--gcol:' + GOAL_COL[g.id] + '">' +
         '<span class="td-gi"><svg class="i" aria-hidden="true"><use href="#i-' + g.icon + '"/></svg></span>' +
         '<b>' + esc(g.name) + '</b><span class="td-gn">' + esc(names.join(", ")) + "</span></a>";
@@ -12474,8 +12526,8 @@
   nvcInit();
   fdInit();
   bkInit();
-  pRenderLib();
-  route();
+  route();                               // the library is built when it's first shown, not here
+  libWarm();                             // its practices' lengths are worked out once the phone is idle
   window.addEventListener("pagehide", function () {
     if (A.playing) hardStop(true);
     else hTrack();                       // a paused track counts too

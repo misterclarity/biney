@@ -6,6 +6,7 @@ There are five tabs: Today, Library, Breathe, Heart and Learn.
 
 - **Today** has your favourites, what you did lately and the last seven days, from one history of everything you do, with the heart-rate change and coherence whenever a sensor was connected. It also has a suggestion for the time of day and the six goals. History, behind it, charts the last twelve weeks or months: minutes, the heart-rate change from start to end, and coherence.
 - **Library** holds every practice, breathing pattern and track, each under one goal (Sleep, Calm, Focus, Energy, Recover or Reflect), with filters for method, length, posture and needs. Each track has a page of its own, like a practice, and so do the custom primer and the beat builder.
+- **Heart** puts first what you need: connecting, the connection guide and the resonance test (with your last result and its pace) until a sensor is on; then your live numbers, the breath-by-breath chart, the test and the spectrum, with the guide at the bottom.
 - **Settings** holds the defaults; options can also be kept for each practice. It also decides how the screen behaves: by default it stays on and at full brightness through every session. Under Your data it saves a backup of everything as one file and restores one, for a new phone or for safekeeping.
 
 A practice's end screen sets each number against your usual for that practice: the middle of your last ten sessions with the same kind of reading, or last time if there was only one, and says when it's your best yet.
@@ -14,7 +15,7 @@ A playing track shows on the phone's lock screen and in its notifications, with 
 
 Everything runs on the device and stays there: the history, favourites and reflections are kept in the browser's storage, and nothing is sent anywhere. Once there is a session worth keeping, the app asks the browser to keep its storage when space runs low, and Settings says what the browser answered.
 
-The breathing guide and the practices' visuals draw 30 frames a second, even on a faster screen, and the glows are gradients rather than blurred shadows, which are slow to redraw. The player's clock ticks once a second.
+The breathing guide and the practices' visuals draw 30 frames a second, even on a faster screen, and the glows are gradients rather than blurred shadows, which are slow to redraw. The player's clock ticks once a second. The app opens without building the library, which is made each time you open it; its practices' lengths are worked out while the phone is idle after start-up.
 
 ## Layout
 

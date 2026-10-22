@@ -384,8 +384,6 @@
       fdOpen();
     });
     // places a result can land on that have no id of their own
-    var rt = $("#hrFindTxt") && $("#hrFindTxt").closest(".hr-box");
-    if (rt && !rt.id) rt.id = "resonance-test";
     var n = 0;
     document.querySelectorAll(FD_LEARN).forEach(function (el) {
       if (!el.closest(".toc") && !el.id) el.id = "lx-" + (n++);

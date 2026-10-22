@@ -160,25 +160,17 @@
         </div>
       </div>
 
+      <!-- the order of these, and of the guide, follows the sensor: see hrLayout() in heart.js -->
       <div class="hr-body">
-        <div class="hr-col">
-          <div class="hr-box">
-            <div class="hr-box-head"><b>Breath by breath</b><span class="hint">Each bar is one breath's heart-rate swing, in bpm</span></div>
-            <div class="hr-chart">
-              <canvas id="hrBars" aria-hidden="true"></canvas>
-              <p class="hr-empty" id="hrBarsEmpty">Connect a sensor and start a breathing session. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
-            </div>
-            <p class="hr-summary" id="hrSummary" hidden></p>
+        <div class="hr-box hr-bars">
+          <div class="hr-box-head"><b>Breath by breath</b><span class="hint">Each bar is one breath's heart-rate swing, in bpm</span></div>
+          <div class="hr-chart">
+            <canvas id="hrBars" aria-hidden="true"></canvas>
+            <p class="hr-empty" id="hrBarsEmpty">Connect a sensor and start a breathing session. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
           </div>
-          <div class="hr-box">
-            <div class="hr-box-head"><b>Heart rhythm spectrum</b><span class="hint">Pink: your heart rhythm · dashed: your breathing pace</span></div>
-            <div class="hr-chart sm">
-              <canvas id="hrSpec" aria-hidden="true"></canvas>
-              <p class="hr-empty" id="hrSpecEmpty">After 64 seconds of heart data, this shows which rhythms your heart rate is moving in. Coherence is high when one smooth peak stands out, usually right on your breathing pace.</p>
-            </div>
-          </div>
+          <p class="hr-summary" id="hrSummary" hidden></p>
         </div>
-        <div class="hr-box">
+        <div class="hr-box hr-find" id="resonance-test">
           <div class="hr-box-head"><b>Resonance test</b><span class="hint" id="hrFindWhen">Connect a sensor first</span></div>
           <p class="hr-find-txt" id="hrFindTxt">
             Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the
@@ -188,6 +180,13 @@
           <div class="hr-find-foot">
             <button class="btn" id="hrFindStart" disabled>Start resonance test</button>
             <button class="btn primary" id="hrFindUse" hidden>Breathe at this pace</button>
+          </div>
+        </div>
+        <div class="hr-box hr-spec">
+          <div class="hr-box-head"><b>Heart rhythm spectrum</b><span class="hint">Pink: your heart rhythm · dashed: your breathing pace</span></div>
+          <div class="hr-chart sm">
+            <canvas id="hrSpec" aria-hidden="true"></canvas>
+            <p class="hr-empty" id="hrSpecEmpty">After 64 seconds of heart data, this shows which rhythms your heart rate is moving in. Coherence is high when one smooth peak stands out, usually right on your breathing pace.</p>
           </div>
         </div>
       </div>

@@ -31,17 +31,43 @@
     bSetT("#hrPillTxt", pill);
     ["#hrConnect", "#gConnect"].forEach(function (sel) {
       bSetT(sel, (st === "on" || st === "lost") ? "Disconnect" : st === "busy" ? "Connecting…" : "Connect sensor");
-      $(sel).disabled = st === "busy" || !hrSupported();
+      $(sel).disabled = !hrSupported();
+      $(sel).setAttribute("aria-disabled", st === "busy" ? "true" : "false");   // busy, not disabled, so the button you pressed keeps the focus
     });
     $("#hrAny").hidden = st === "on" || st === "lost" || !hrSupported();
     finderUI();
     hrTiles();
+    hrLayout();
   }
   function hrMsg(s) { bSetT("#hrMsg", s || ""); }
+
+  /* What you need first. Before a sensor is on: connecting, the guide, and the resonance test,
+     which keeps your last result and its pace; on a phone the empty numbers and charts follow.
+     Once one is on: your live numbers, the breath-by-breath chart, the test and the spectrum,
+     with the guide at the bottom for when something goes wrong. A wide screen keeps the charts
+     and the test side by side. The boxes move in the page itself, so the keyboard follows the
+     same order as the eye. */
+  var HR_NARROW = window.matchMedia ? window.matchMedia("(max-width: 880px)") : { matches: true };
+  function hrPlace(el, parent, before) {
+    if (!el || (el.parentNode === parent && el.nextElementSibling === before)) return;
+    var had = document.activeElement && el.contains(document.activeElement) ? document.activeElement : null;
+    parent.insertBefore(el, before);
+    if (had) try { had.focus({ preventScroll: true }); } catch (e) { had.focus(); }
+  }
+  function hrLayout() {
+    var hr = $("#hr"), on = H.state === "on" || H.state === "lost", tiles = hr.querySelector(".hr-tiles"), body = hr.querySelector(".hr-body");
+    if (!tiles || !body) return;
+    var g = $("#connect"), fromGuide = on && g.nextElementSibling !== null && g.contains(document.activeElement);
+    hrPlace(g, hr, on ? null : tiles);
+    if (fromGuide) $("#hrConnect").focus();     // connected from the guide: it folds away at the bottom, and its twin at the top takes the focus
+    if (on || !HR_NARROW.matches) hrPlace($("#resonance-test"), body, body.querySelector(".hr-spec"));
+    else hrPlace($("#resonance-test"), hr, tiles);
+  }
 
   /* `any` opens the browser's chooser on every nearby device, for sensors
      that offer the heart-rate service but don't advertise it. */
   function hrConnect(any) {
+    if (H.state === "busy") return;                     // already connecting
     if (H.state === "on" || H.state === "lost") { hrDisconnect(); return; }
     if (!hrSupported()) return;
     hrMsg("");
@@ -450,6 +476,7 @@
       ro.observe($("#hrBars")); ro.observe($("#hrFind")); ro.observe($("#hrSpec"));
     } else window.addEventListener("resize", redraw);
     finderUI(); redraw(); hrTiles();
+    if (HR_NARROW.addEventListener) HR_NARROW.addEventListener("change", hrLayout);
     window.addEventListener("pagehide", function () { if (H.state === "on") hrDisconnect(); });
   }
 

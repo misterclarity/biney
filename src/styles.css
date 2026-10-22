@@ -161,7 +161,7 @@
     transition:background .15s,border-color .15s,filter .15s;
   }
   .btn:hover{background:var(--panel-3);border-color:#3a4767}
-  .btn:disabled{opacity:.45;cursor:default}
+  .btn:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:default}
   .btn.primary{background:var(--accent);color:#0b1120;border-color:var(--accent)}
   .btn.primary:hover{filter:brightness(1.08);background:var(--accent)}
   .btn.quiet{background:transparent;border-color:transparent;color:var(--text-dim)}
@@ -449,8 +449,13 @@
   .hr-meter span{position:absolute;top:9px;font-size:10.5px;color:var(--text-faint);line-height:1}
   .hr-meter span:first-of-type{left:0}
   .hr-meter span:last-of-type{right:0}
-  .hr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:12px}
-  .hr-col{display:grid;gap:12px;min-width:0;align-content:start}
+  .hr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-rows:auto 1fr;gap:12px}
+  .hr-bars{grid-column:1;grid-row:1;align-self:start}
+  .hr-spec{grid-column:1;grid-row:2;align-self:start}
+  .hr-body > .hr-find{grid-column:2;grid-row:1 / span 2}
+  #resonance-test,#connect{scroll-margin-top:84px}
+  /* once a sensor is on, the page is about your numbers: the introduction steps aside */
+  .hr[data-state="on"] .hr-intro > p:not(.hr-msg),.hr[data-state="lost"] .hr-intro > p:not(.hr-msg){display:none}
   .hr-box{background:var(--panel);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
   .hr-box-head{display:flex;justify-content:space-between;align-items:baseline;gap:4px 12px;flex-wrap:wrap}
   .hr-box-head b{font-size:15px;font-weight:750}
@@ -467,7 +472,7 @@
     .hr-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
     .hr-tile.coh{grid-column:span 2}
   }
-  @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr)} }
+  @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr);grid-template-rows:none} .hr-bars,.hr-spec,.hr-body > .hr-find{grid-column:auto;grid-row:auto} }
   @media (max-width:640px){
     .hr-top{padding:18px}
     .hr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}

@@ -24,8 +24,8 @@
   nvcInit();
   fdInit();
   bkInit();
-  pRenderLib();
-  route();
+  route();                               // the library is built when it's first shown, not here
+  libWarm();                             // its practices' lengths are worked out once the phone is idle
   window.addEventListener("pagehide", function () {
     if (A.playing) hardStop(true);
     else hTrack();                       // a paused track counts too

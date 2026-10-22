@@ -4,6 +4,8 @@
      it to one goal and adds the items that are also good for it; the filter panel narrows by
      method, length, posture and needs. On "All", each section shows its first few rows until you
      ask for the rest, and the tinnitus track and the two builders have sections of their own.
+     It is built each time it's shown (showView), never at start-up: working out every practice's
+     length is the slowest thing the app does as it opens, and Today needs none of it.
   ------------------------------------------------------------------------------ */
 
   var LIB = { goal: "all", f: { method: "", len: "", posture: "", needs: "" }, open: {}, panel: false, mins: {} };
@@ -21,6 +23,16 @@
     m = [Math.min.apply(null, m), Math.max.apply(null, m)];
     if (!d.custom) LIB.mins[d.id] = m;
     return m;
+  }
+  // the lengths, worked out a few at a time while the phone is idle after start-up, so the
+  // library's first visit is as quick as the others
+  function libWarm() {
+    var i = 0, idle = window.requestIdleCallback || function (f) { return setTimeout(function () { f({ timeRemaining: function () { return 6; } }); }, 300); };
+    var step = function (dl) {
+      while (i < PRACTICES.length && dl.timeRemaining() > 2) libMins(PRACTICES[i++]);
+      if (i < PRACTICES.length) idle(step);
+    };
+    idle(step);
   }
   function libMinsTxt(d, m) {
     if (d.selfPaced) return "About " + d.est + " min";
@@ -75,6 +87,17 @@
     out.push(libTool("prime"));
     out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
     return out;
+  }
+  // the first few names under a goal, in the library's own order, without working out every
+  // practice's length as libAll does: Today's goal tiles need only the names
+  function libNames(goal, n) {
+    var out = [], x = libTool("prime");
+    PRACTICES.forEach(function (d) { if (d.goal === goal) out.push({ key: d.id, name: d.name }); });
+    BREATHS.forEach(function (b) { if (b.goal === goal) out.push({ key: "b:" + b.id, name: PATTERN_NAMES[b.id] || b.id }); });
+    TRACKS.forEach(function (t) { if (t.goal === goal && goal !== "tinnitus") out.push({ key: "t:" + t.id, name: t.name }); });
+    if (x.goal === goal) out.push(x);
+    out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
+    return out.slice(0, n).map(function (it) { return it.name; });
   }
   function libMine() { return yLoad().map(function (q) { return libPractice(yDef(q)); }); }
   function libTinnitus() { return TRACKS.filter(function (t) { return t.goal === "tinnitus"; }).map(libTrack); }

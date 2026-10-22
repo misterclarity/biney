@@ -13,7 +13,7 @@ const SUITES = [
   ['regress', 'Fixes from the October 2026 code review'],
   ['todaytest', 'Today, one history, favourites, the library with sounds'],
   ['findtest', 'Resonance test with a sensor (about two minutes)'],
-  ['cuetrend', 'Lock screen, vibration, the end screen compared, trends']
+  ['cuetrend', 'Lock screen, vibration, comparisons, trends, start-up, Heart']
 ];
 const pick = process.argv.slice(2);
 let passed = 0, problems = 0;

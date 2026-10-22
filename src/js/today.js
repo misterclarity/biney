@@ -50,9 +50,8 @@
     }
 
     // the six goals, each with the first few of its own
-    var all = libAll();
     $("#tdGoals").innerHTML = GOALS.map(function (g) {
-      var names = all.filter(function (it) { return it.goal === g.id; }).slice(0, GOAL_NAMES).map(function (it) { return it.name; });
+      var names = libNames(g.id, GOAL_NAMES);
       return '<a class="td-goal" href="#goal/' + g.id + '" style="--gcol:' + GOAL_COL[g.id] + '">' +
         '<span class="td-gi"><svg class="i" aria-hidden="true"><use href="#i-' + g.icon + '"/></svg></span>' +
         '<b>' + esc(g.name) + '</b><span class="td-gn">' + esc(names.join(", ")) + "</span></a>";

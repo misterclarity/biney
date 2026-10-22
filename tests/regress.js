@@ -408,7 +408,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       const bad = await E(p, () => {
         const X = window.__entrain, seen = [], add = (src, x) => { if (typeof x === 'string' && x.trim()) seen.push([src, x]); };
         const RE = /n't\b|\b(do not|never|nothing|without|stop|avoid|none)\b|feel the breath/i;
-        const ids = [...document.querySelectorAll('.pc-a')].map(a => a.getAttribute('href').replace('#practice/', '')).filter(x => x && x[0] !== '#');
+        const ids = X.PRACTICES.map(d => d.id);           // every practice: the library itself is built only when it's opened
         ids.forEach(id => {
           const d = X.pDef(id); if (!d) return;
           (d.lengths || [0]).forEach(L => (d.variant ? d.variant.opts.map(o => o[0]) : [undefined]).forEach(v => {

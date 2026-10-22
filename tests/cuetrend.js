@@ -1,7 +1,9 @@
-// Lock-screen controls and vibration cues; the end screen against your own sessions, and trends in History.
+// Lock-screen controls and vibration cues; the end screen against your own sessions, and trends in History;
+// a faster start, and the Heart page in the order you need it.
 // Run: node tests/cuetrend.js [group letter]
 //   L  a track on the lock screen      V  vibration cues while breathing
 //   C  the end screen compared         T  trends in History
+//   S  start-up                        H  the Heart page's order
 const { chromium, APP, OUT } = require('./pw');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
 const mock = require('./sensor-mock');
@@ -308,6 +310,70 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await E(q, () => location.hash = 'history'); await q.waitForTimeout(400);
       ok(await q.$('#tnPlots') === null && /Trends show here once you have sessions in two different weeks\./.test(await t(q, '.hi-tr')), 'one week of sessions waits for a second before charting anything');
       await q.close();
+    }
+
+    /* S. start-up: the library isn't built until you open it, Today's goal tiles name the same first
+       three as the library does, and the practices' lengths are worked out once the phone is idle */
+    if (!only || only === 'S') {
+      const p = await page(OPT());
+      ok(await p.$eval('#prLib', e => e.children.length) === 0, 'opening on Today builds no library');
+      const tiles = await E(p, () => { const X = window.__entrain, all = X.libAll();
+        return [...document.querySelectorAll('#tdGoals .td-goal')].map(a => { const g = a.getAttribute('href').slice(6);
+          return [a.querySelector('.td-gn').textContent, all.filter(it => it.goal === g).slice(0, 3).map(it => it.name).join(', ')]; }); });
+      ok(tiles.length === 6 && tiles.every(x => x[0] === x[1] && x[0]), 'each goal tile names the first three the library lists under it: ' + tiles.map(x => x[0].split(', ')[0]).join(' · '));
+      await p.waitForFunction(() => { const X = window.__entrain; return Object.keys(X.LIB.mins).length === X.PRACTICES.filter(d => !d.selfPaced).length; }, null, { timeout: 5000 }).catch(() => {});
+      ok(await E(p, () => { const X = window.__entrain; return Object.keys(X.LIB.mins).length === X.PRACTICES.filter(d => !d.selfPaced).length; }), 'the practices\' lengths are worked out while the phone is idle, after it opens');
+      await E(p, () => location.hash = 'practice'); await p.waitForTimeout(300);
+      const n = await p.$$eval('#prLib .pr-list > li', l => l.length);
+      ok(n > 10 && /min/.test(await t(p, '#prLib')), 'the library is built the moment you open it: ' + n + ' rows');
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(200);
+      await p.click('#tdGoals .td-goal[href="#goal/sleep"]'); await p.waitForTimeout(300);
+      ok(await p.$$eval('#prLib .pr-list > li', l => l.length) > 2 && await p.$eval('#prFilt button[data-f="sleep"]', b => b.getAttribute('aria-pressed')) === 'true', 'a goal tile opens the library at its goal');
+      await p.close();
+      const q = await page(OPT(), () => { if (location.hash !== '#practice') location.hash = 'practice'; });
+      await q.waitForTimeout(300);
+      ok(await q.$$eval('#prLib .pr-list > li', l => l.length) > 10, 'opened straight at the library, it is built at once');
+      await q.close();
+    }
+
+    /* H. the Heart page in the order you need it: connecting, the guide and the resonance test before a
+       sensor is on; then the live numbers and charts, with the guide at the bottom; side by side on a
+       wide screen; keyboard focus stays put when a box moves; Today's link lands on the test */
+    if (!only || only === 'H') {
+      const order = p => E(p, () => [...document.querySelectorAll('#hr > *')].map(e => e.id || e.className.split(' ').pop()).join(' > ') +
+        ' | ' + [...document.querySelector('.hr-body').children].map(e => e.id || e.className.split(' ').pop()).join(' > '));
+      const intro = p => p.$eval('.hr-intro > p:not(.hr-msg)', e => getComputedStyle(e).display !== 'none');
+      const res = JSON.stringify({ at: Date.now() - 3 * 864e5, best: 5.5, res: [[6.5, 6.1], [6, 7.2], [5.5, 8.4], [5, 7.9], [4.5, 6.8]].map(x => ({ rate: x[0], amp: x[1], n: 12 })) });
+      let p = await page(OPT(), null, { speed: 6, rr: true });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      ok(await order(p) === 'hr-top > connect > resonance-test > hr-tiles > hr-body | hr-bars > hr-spec' && await p.$eval('#connect', d => d.open) && await intro(p),
+        'before any sensor: connecting, the guide (open the first time) and the resonance test come first: ' + await order(p));
+      await p.click('#gConnect'); await p.waitForTimeout(900);
+      ok(await order(p) === 'hr-top > hr-tiles > hr-body > connect | hr-bars > resonance-test > hr-spec' && !(await p.$eval('#connect', d => d.open)) && !(await intro(p)),
+        'once it\'s on: the live numbers first, then the charts and the test, and the guide, closed, at the bottom: ' + await order(p));
+      ok(await E(p, () => document.activeElement && document.activeElement.id) === 'hrConnect' && await t(p, '#hrConnect') === 'Disconnect', 'connecting from the guide hands the focus to the same button at the top, now Disconnect, as the guide folds away');
+      await p.click('#hrConnect'); await p.waitForTimeout(400);
+      ok(/^hr-top > connect > resonance-test > hr-tiles/.test(await order(p)) && await intro(p), 'disconnected, it goes back: ' + await order(p));
+      await p.close();
+
+      p = await page(Object.assign(OPT(), { hrEver: '1', resonance: res }));
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(400);
+      const pos = await E(p, () => ({ test: document.querySelector('#resonance-test').getBoundingClientRect().top, tiles: document.querySelector('.hr-tiles').getBoundingClientRect().top, use: document.querySelector('#hrFindUse').hidden ? '' : document.querySelector('#hrFindUse').textContent }));
+      ok(pos.test < pos.tiles && pos.use === 'Breathe at 5.5 /min' && !(await p.$eval('#connect', d => d.open)), 'coming back without a sensor, your result and its pace are near the top: ' + pos.use);
+      await p.setViewportSize({ width: 1280, height: 900 }); await p.waitForTimeout(300);
+      ok(await order(p) === 'hr-top > connect > hr-tiles > hr-body | hr-bars > resonance-test > hr-spec', 'on a wide screen the charts and the test stay side by side: ' + await order(p));
+      const cols = await E(p, () => { const r = s => document.querySelector(s).getBoundingClientRect(); return [r('.hr-bars').left < r('#resonance-test').left, Math.abs(r('.hr-bars').top - r('#resonance-test').top) < 2, r('.hr-spec').left === r('.hr-bars').left]; });
+      ok(cols.every(Boolean), 'the test in its own column, beside the two charts');
+      await p.setViewportSize({ width: 412, height: 915 }); await p.waitForTimeout(300);
+      ok(/^hr-top > connect > resonance-test > hr-tiles/.test(await order(p)), 'and narrowed to a phone again, the test comes back up');
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(300);
+      await p.click('.qk[data-go="resonance-test"]'); await p.waitForTimeout(700);
+      const land = await E(p, () => ({ hash: location.hash, view: !document.querySelector('#v-heart').hidden, top: document.querySelector('#resonance-test').getBoundingClientRect().top, h: innerHeight }));
+      ok(land.hash === '#resonance-test' && land.view && land.top >= 0 && land.top < land.h / 2, 'Today\'s "Find your resonance rate" lands on the test itself: ' + Math.round(land.top) + ' px from the top');
+      await p.click('.si-back, .nav a[data-view="home"]').catch(() => {}); await E(p, () => location.hash = 'home'); await p.waitForTimeout(300);
+      await p.click('.qk[data-go="resonance-test"]'); await p.waitForTimeout(700);
+      ok(await E(p, () => !document.querySelector('#v-heart').hidden && location.hash === '#resonance-test'), 'and does again from the same address');
+      await p.close();
     }
   } catch (e) { log.push('ERROR ' + e.message); }
   console.log(log.join('\n'));

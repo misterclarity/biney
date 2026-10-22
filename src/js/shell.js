@@ -55,7 +55,8 @@
 
   function goView(v) {
     if (location.hash.slice(1) !== v) location.hash = v;
-    else showView(v);
+    else if (VIEWS.indexOf(v) >= 0) showView(v);
+    else route();                                       // a place on a page, such as the resonance test
   }
 
   // the way back from a page: to the list it was opened from
