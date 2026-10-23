@@ -229,7 +229,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       const armed = await t(p, '#sDraftDel');
       await p.click('#sDraftDel'); await p.waitForTimeout(300);
       ok(armed === 'Tap again to discard' && await draft(p) === null && !(await p.$('.si-draft')), 'Discard takes a second tap, then the draft is gone');
-      // From Should to Choose: the cards' answers come back too
+      // Have-Tos into Choices: the cards' answers come back too
       await p.evaluate(() => location.hash = 'practice/nvc-choose'); await p.waitForTimeout(250);
       await p.click('#sGo'); await p.waitForTimeout(300);
       await jumpTo(p, /^I have to/); await p.fill('.sw-ta', 'Answer every email the same day\nGo to the gym'); await p.waitForTimeout(100);
@@ -239,7 +239,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       await p.evaluate(() => location.hash = 'practice/nvc-choose'); await p.waitForTimeout(300);
       await p.click('#sDraftGo'); await p.waitForTimeout(500);
       const no = await p.$eval('.sw-card[data-i="1"] button[data-ch="0"]', e => e.getAttribute('aria-pressed')).catch(() => '?'), why = await p.$eval('.sw-card[data-i="0"] .sw-in', e => e.value).catch(() => '?');
-      ok(await step(p) === 'I choose to…' && no === 'true' && why === 'calm mornings', 'a From Should to Choose draft keeps each card\'s answer');
+      ok(await step(p) === 'I choose to…' && no === 'true' && why === 'calm mornings', 'a Have-Tos into Choices draft keeps each card\'s answer');
       await p.close();
       // keeping nothing means no draft either
       const q = await page(null, OPT({ nvcSave: false }));
@@ -393,7 +393,8 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       await p.click('#sGo'); await p.waitForTimeout(250);
       await jumpTo(p, /^The whole triangle$/);
       const z0 = await E(p, () => ({ fig: !document.querySelector('#sFig').hidden, vis: document.querySelector('#sStage').dataset.vis, pt: !!document.querySelector('#sFig .zn.pt'), zn: !!document.querySelector('#sFig .zn') }));
-      await p.click('#sTap'); await p.waitForTimeout(120);
+      await p.click('#sTap');
+      await p.waitForFunction(() => /Back to/.test(document.querySelector('#sLine').textContent), null, { timeout: 2500 }).catch(() => {});   // slower when the suites run side by side
       const fb = await t(p, '#sLine');
       await jumpTo(p, /^The small dimple$/);
       const z4 = await E(p, () => ({ pt: !!document.querySelector('#sFig .zn.pt'), ring: !!document.querySelector('#sFig .zn-ring') }));

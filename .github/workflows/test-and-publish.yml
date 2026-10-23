@@ -1,0 +1,99 @@
+# Test, then publish: every push to the default branch runs all the test suites, and the site is
+# published only if they all pass.
+#
+# Until Settings > Pages > Build and deployment > Source is set to "GitHub Actions", GitHub keeps
+# publishing straight from the branch on every push, tests or not, and this workflow only tests
+# and says so. Once it is set, this workflow is the only way the site changes.
+name: Test, then publish
+
+on:
+  push:
+    branches: [claude/binaural-beats-website-phncpz]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:                      # one run at a time; a newer push waits for the one before it
+  group: test-and-publish
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: The committed app matches its source
+        run: |
+          python3 src/build.py
+          git diff --stat --exit-code -- index.html sw.js manifest.webmanifest || {
+            echo "::error::index.html, sw.js or the manifest is out of date: run python3 src/build.py and commit what it writes."
+            exit 1
+          }
+
+      - name: Playwright and its Chromium
+        run: |
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.0
+          npx playwright install --with-deps chromium
+
+      - name: Every suite
+        run: node tests/run.js
+
+      - name: Screenshots from a failed run
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots
+          path: tests/out/*.png
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # whether GitHub Pages publishes from this workflow or still straight from the branch
+  source:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      pages: read
+    outputs:
+      kind: ${{ steps.ask.outputs.kind }}
+    steps:
+      - id: ask
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          kind=$(gh api "repos/${{ github.repository }}/pages" --jq .build_type 2>/dev/null || echo unknown)
+          echo "kind=$kind" >> "$GITHUB_OUTPUT"
+          if [ "$kind" != "workflow" ]; then
+            echo "::notice::Every suite passed. GitHub Pages still publishes straight from the branch, so this run publishes nothing. Set Settings > Pages > Source to GitHub Actions to publish only tested versions."
+          fi
+
+  publish:
+    needs: source
+    if: needs.source.outputs.kind == 'workflow'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Just the app's files
+        run: |
+          mkdir _site
+          cp -r index.html sw.js manifest.webmanifest icons _site/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4
