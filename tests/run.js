@@ -53,6 +53,9 @@ function run([name, what]) {
       if (crashed) tail.push('    did not finish cleanly (' + (hung ? 'stopped after ' + MAX / 60000 + ' minutes' : 'exit ' + code + (err ? ', ' + err.message : '')) + '):\n' +
         lines.slice(-8).map(l => '      ' + l).join('\n'));
       console.log([head].concat(tail).join('\n'));
+      // on GitHub, each problem is an annotation too, shown on the run's page and the commit
+      if (process.env.GITHUB_ACTIONS === 'true') bad.concat(crashed ? ['did not finish cleanly: ' + lines.slice(-6).join(' / ')] : []).slice(0, 8)
+        .forEach(l => console.log('::error title=' + name + '::' + l.replace(/%/g, '%25').replace(/\r?\n/g, '%0A')));
       done();
     };
     ch.on('error', e => finish(null, e));

@@ -20,14 +20,14 @@ concurrency:                      # one run at a time; a newer push waits for th
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04          # the newest Ubuntu that Playwright 1.56 installs its browser's libraries on
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: "22"
 
@@ -41,15 +41,20 @@ jobs:
 
       - name: Playwright and its Chromium
         run: |
-          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.0
-          npx playwright install --with-deps chromium
+          # on failure, the end of the output goes into an annotation, readable without the full log
+          ( npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.0 &&
+            npx playwright install --with-deps chromium ) > pw-install.log 2>&1 || {
+            echo "::error title=Installing Playwright failed::$(tail -n 30 pw-install.log | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')"
+            exit 1
+          }
+          tail -n 3 pw-install.log
 
       - name: Every suite
         run: node tests/run.js
 
       - name: Screenshots from a failed run
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-screenshots
           path: tests/out/*.png
@@ -59,7 +64,7 @@ jobs:
   # whether GitHub Pages publishes from this workflow or still straight from the branch
   source:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       pages: read
     outputs:
@@ -78,7 +83,7 @@ jobs:
   publish:
     needs: source
     if: needs.source.outputs.kind == 'workflow'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       pages: write
@@ -87,7 +92,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Just the app's files
         run: |
           mkdir _site
