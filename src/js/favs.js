@@ -20,6 +20,14 @@
     store.set("favs", JSON.stringify(l));
     favSync();
   }
+  // back where it was in the list, as an undo puts it
+  function favPut(key, at) {
+    var l = favList();
+    if (l.indexOf(key) >= 0) return;
+    l.splice(Math.max(0, Math.min(at, l.length)), 0, key);
+    store.set("favs", JSON.stringify(l));
+    favSync();
+  }
   // a star button for one item; the same key can show on several screens at once
   function favBtn(key, name, cls) {
     var on = favHas(key);
@@ -27,12 +35,13 @@
       ' aria-label="Favourite: ' + esc(name) + '" title="' + (on ? "In your favourites on Today" : "Add to your favourites on Today") + '">' +
       '<svg class="i" aria-hidden="true"><use href="#i-star"/></svg><span class="fav-t">Favourite</span></button>';
   }
-  // the star on Breathe follows the pattern on screen; your own timings have no page to come back to
+  // the star on Breathe follows the pattern on screen: a preset or one you've saved, never timings
+  // you haven't saved, which have no page to come back to
   function bFavSync() {
     var el = $("#bFav");
     if (!el) return;
     var p = preset(BC.pattern);
-    el.innerHTML = p && p.goal ? favBtn("b:" + p.id, PATTERN_NAMES[p.id] || p.id, "b-fav") : "";
+    el.innerHTML = p && (p.goal || p.mine) ? favBtn("b:" + p.id, patName(p), "b-fav") : "";
   }
   function favSync() {
     document.querySelectorAll("[data-fav]").forEach(function (b) {

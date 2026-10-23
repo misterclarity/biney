@@ -46,7 +46,7 @@
     backSync();
     var gear = $("#tbSet");
     if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
-    if (v === "breathe") setTimeout(sizeCanvas, 0);
+    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); }, 0);
     if (v !== "session" && P.state === "done") P.state = "idle";
     pImmersive();
     pPill();
@@ -119,7 +119,7 @@
     if (!el.efade) { el.efade = upd; el.addEventListener("scroll", upd, { passive: true }); }
     upd();
   }
-  var EDGE_ROWS = ["#prFilt", "#bPats", ".toc", "#ybCats", "#ybPos", ".si-len"];
+  var EDGE_ROWS = ["#prFilt", "#prMeth", "#bPats", ".toc", "#ybCats", "#ybPos", ".si-len"];
   function edgeFadeAll() { EDGE_ROWS.forEach(function (q) { document.querySelectorAll(q).forEach(edgeFade); }); }
 
   /* ----- breathing settings: a side panel on desktop, a sheet on a phone ----- */
@@ -132,6 +132,7 @@
     document.body.classList.toggle("sheet-lock", !!open);
     if (open && !was) setTimeout(function () { $("#bPanelDone").focus(); }, 60);
     if (!open && was) b.focus();
+    toastPlace();
   }
 
   /* ----- heart sensor status, mirrored in the top bar, Today and Breathe ----- */
@@ -186,9 +187,13 @@
   function toastPlace() {
     var t = $("#toast");
     if (!t || t.hidden) return;
-    var top = window.innerHeight;
+    var top = window.innerHeight, sh = $("#bPanel"), onSheet = !!sh && sh.classList.contains("open");
     var bar = $("#v-yoga") && !$("#v-yoga").hidden ? document.querySelector(".yb-bar") : null;
-    [document.querySelector(".rail"), $("#player"), bar].forEach(function (el) {
+    // the breathing settings cover the bottom of a phone's screen: a notice from them (an undo, say)
+    // goes over the dimmed page, just above where the sheet ends up once it has slid in
+    t.classList.toggle("on-sheet", onSheet);
+    if (onSheet) top = Math.max(60, window.innerHeight - sh.offsetHeight);
+    else [document.querySelector(".rail"), $("#player"), bar].forEach(function (el) {
       if (!el || (el.id === "player" && !el.classList.contains("open"))) return;
       var r = el.getBoundingClientRect();
       if (r.height && r.top > window.innerHeight * 0.5 && r.top < top) top = r.top;

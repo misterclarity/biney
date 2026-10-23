@@ -352,6 +352,19 @@
   }
   .b-rate b{font-size:16px;color:var(--text);font-weight:780;letter-spacing:-.01em}
   .b-rate span{font-size:12px;color:var(--text-faint)}
+  .b-mine{display:grid;gap:9px;justify-items:start;background:var(--panel-2);border-radius:14px;padding:12px 14px}
+  .b-mine.quiet{background:none;padding:0 2px}
+  .b-mine-l{font-size:11.5px;font-weight:750;color:var(--text-faint);text-transform:uppercase;letter-spacing:.07em}
+  .b-mine-row{display:flex;gap:8px;flex-wrap:wrap;width:100%}
+  .b-mine-row input{
+    flex:1 1 150px;min-width:0;font:inherit;font-size:16px;font-weight:650;color:var(--text);
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 12px;min-height:38px;
+  }
+  .b-mine-row input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .b-mine-row input:disabled{opacity:.5}
+  .b-mine-row .btn{min-height:38px}
+  .b-mine .hint{margin:0}
+  .b-myn{display:block;max-width:12em;overflow:hidden;text-overflow:ellipsis}
   .b-vol{display:flex;align-items:center;gap:12px;font-size:12.5px;color:var(--text-faint);max-width:320px}
   .b-vol span{white-space:nowrap}
   .b-vol input[type=range]{margin:0}
@@ -607,6 +620,18 @@
   .sc-result b{display:block;color:var(--text);margin-bottom:4px}
   .sc-again{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
   .modal-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line-soft)}
+  /* the safety note: in Learn, and over any page */
+  .sf-link{
+    background:none;border:0;padding:0;margin:0;font:inherit;font-weight:650;color:inherit;cursor:pointer;
+    text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;
+  }
+  .sf-link:hover{text-decoration-thickness:2px}
+  .sf-note .sf-list{list-style:none;padding:0;margin:0 0 16px;display:grid;gap:12px}
+  .sf-note .sf-list li{position:relative;padding-left:16px;color:var(--text-dim);font-size:14.5px;line-height:1.55}
+  .sf-note .sf-list li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:#fcd34d}
+  .sf-note .sf-list b{color:var(--text);font-weight:720}
+  .sf-card .sf-note p:last-child{margin-bottom:0}
+  .modal-card .sf-note p{font-size:14px}
   .tone-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#0b1120;opacity:.6}
   .pm-readout{display:flex;align-items:baseline;gap:10px;justify-content:center;background:var(--panel-2);border-radius:14px;padding:14px;margin:4px 0 16px}
   .pm-hz{font-size:36px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
@@ -704,6 +729,7 @@
     opacity:0;transform:translate(-50%,10px);transition:opacity .2s,transform .2s;
   }
   .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast.on-sheet{z-index:86}
   .toast[hidden]{display:none}
   .toast span{flex:1;min-width:0;line-height:1.4}
   .toast .btn{flex:none}
@@ -771,6 +797,13 @@
   }
   .chip-b:hover{color:var(--text);background:var(--panel-3)}
   .chip-b[aria-pressed="true"]{background:var(--text);color:var(--bg)}
+  .chip-b .cnt{margin-left:7px;font-size:11.5px;font-weight:700;opacity:.62;font-variant-numeric:tabular-nums}
+  .chip-b.zero:not([aria-pressed="true"]){color:var(--text-faint);background:color-mix(in srgb,var(--panel-2) 55%,transparent)}
+  .pr-sum{display:flex;align-items:center;gap:4px 0;flex-wrap:wrap;margin:2px 0 10px;font-size:13px;color:var(--text-dim)}
+  .pr-sum[hidden]{display:none}
+  .pr-sum > span + span::before{content:"·";margin:0 7px;color:var(--text-faint)}
+  .pr-sum b{color:var(--text);font-weight:760}
+  .pr-sum .pr-clear{margin-left:14px;color:var(--text);min-height:32px}
   @media (max-width:560px){ .pr-bar{margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-right:0} .pr-filt{padding-left:max(16px,env(safe-area-inset-left,0px))} }
   .pr-grp{margin-top:22px}
   .pr-gh{display:flex;align-items:baseline;gap:4px 12px;flex-wrap:wrap;margin-bottom:10px}
@@ -895,6 +928,16 @@
   .mini-seg{display:inline-flex;gap:3px;padding:3px;border-radius:10px;background:var(--bg-2);flex-wrap:wrap}
   .mini-seg button{border:0;background:transparent;color:var(--text-dim);font-weight:700;font-size:12.5px;padding:6px 9px;border-radius:8px;cursor:pointer}
   .mini-seg button[aria-pressed="true"]{background:var(--panel-3);color:var(--text)}
+  .so-steps{display:flex;gap:8px 14px;flex-wrap:wrap}
+  .so-steps[hidden]{display:none}
+  .so-step{display:inline-flex;align-items:center;gap:4px;padding:3px;border-radius:10px;background:var(--bg-2);font-size:12.5px}
+  .so-step-l{padding:0 6px 0 7px;color:var(--text-faint);font-weight:700}
+  .so-step b{min-width:3.6em;text-align:center;font-variant-numeric:tabular-nums;color:var(--text);font-weight:750}
+  .so-step button{
+    width:34px;height:30px;border:0;border-radius:8px;background:var(--panel-3);color:var(--text);
+    font:inherit;font-size:16px;font-weight:700;line-height:1;cursor:pointer;
+  }
+  .so-step button[aria-disabled="true"]{opacity:.35;cursor:default}
   .so-ok{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:var(--text-dim);cursor:pointer;line-height:1.4}
   .so-ok input{accent-color:var(--pcol);width:17px;height:17px;margin-top:1px;flex:none}
   .si-other{font-size:12.5px;color:var(--stim);margin:0}
@@ -1594,7 +1637,7 @@
           <ul class="safety">
             <li><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Use headphones for the beats.</b> On speakers the two tones mix in the air and the binaural beat disappears.</span></li>
             <li><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></li>
-            <li class="warn"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Not for everyone.</b> Avoid the beats if you have epilepsy or a seizure disorder, wear a pacemaker, or are driving or operating machinery. This is not a medical device.</span></li>
+            <li class="warn"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Read the safety notes once.</b> Who should ask a doctor before using the beats or the breath holds, and how to wear headphones with a pacemaker. <button type="button" class="sf-link" data-safety="1">Safety notes</button></span></li>
           </ul>
         </div>
       </section>
@@ -1607,16 +1650,20 @@
       <!-- ============ PRACTICE ============ -->
       <section class="view" id="v-practice" aria-labelledby="viewTitle" hidden>
         <div class="pr-bar">
-          <div class="pr-filt" id="prFilt" role="group" aria-label="Goals"></div>
+          <div class="pr-filt" id="prFilt" role="group" aria-label="Goals: pick one or several"></div>
+        </div>
+        <div class="pr-bar">
+          <div class="pr-filt" id="prMeth" role="group" aria-label="Techniques: pick one or several"></div>
           <button class="chip-b pr-fbtn" id="prFbtn" aria-expanded="false" aria-controls="prPanel"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg><span id="prFbtnTxt">Filters</span></button>
         </div>
         <div class="pr-panel" id="prPanel" hidden></div>
+        <div class="pr-sum" id="prSum" role="status" hidden></div>
         <p class="pr-legend">Evidence
           <span><span class="strength" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>strong</span>
           <span><span class="strength" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i></span>moderate</span>
           <span><span class="strength" aria-hidden="true"><i class="on"></i><i></i><i></i></span>limited</span></p>
         <div id="prLib"></div>
-        <p class="pr-note">These practices are for everyday stress, sleep and focus, not a treatment for any condition. Stop anything that makes you dizzy, breathless or distressed, and check with a clinician first if you have a heart, lung or seizure condition, are pregnant, or are in treatment for anxiety, trauma or depression. The research behind each one is under its Evidence button and in <a href="#l-practices">Learn</a>.</p>
+        <p class="pr-note">These practices are for everyday stress, sleep and focus, not a treatment for any condition: read the <button type="button" class="sf-link" data-safety="1">safety notes</button> before you start, and stop anything that makes you dizzy, breathless or distressed. The research behind each one is under its Evidence button and in <a href="#l-practices">Learn</a>.</p>
       </section>
 
       <!-- ============ SETTINGS ============ -->
@@ -1758,7 +1805,7 @@
             </ul>
             <h3>Why before, not during</h3>
             <p>The clearest finding in the meta-analysis is about timing: listening before a task, or before and during it, worked better than listening only while you work. So prime first, get a cue when the block ends, then start.</p>
-            <div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>Not for everyone. Avoid the beats if you have epilepsy or a seizure disorder or wear a pacemaker, and never listen while driving or operating machinery. This is not a medical device.</span></div>
+            <div data-safe="beats"></div>
           </div>
           <div class="si-side">
             <div class="si-bar">
@@ -1807,7 +1854,7 @@
             </ul>
             <h3>Choosing the numbers</h3>
             <p>Beats come through most clearly on carriers between about 200 and 500&nbsp;Hz, and the effect breaks down once the two tones are more than 30 to 35&nbsp;Hz apart. <a href="#l-bands">The frequency bands</a> on the Learn page say what each range of beats has been studied for.</p>
-            <div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>Not for everyone. Avoid the beats if you have epilepsy or a seizure disorder or wear a pacemaker, and never listen while driving or operating machinery. This is not a medical device.</span></div>
+            <div data-safe="beats"></div>
           </div>
           <div class="si-side">
             <div class="si-bar">
@@ -1907,6 +1954,17 @@
           </div>
         </div>
 
+        <div class="b-mine quiet" id="bMine">
+          <label class="b-mine-l" for="bMyName" id="bMyLab" hidden>Save as your own pattern</label>
+          <div class="b-mine-row" id="bMyRow" hidden>
+            <input id="bMyName" maxlength="40" placeholder="A name, like Evening 4-6" autocomplete="off" enterkeyhint="done">
+            <button class="btn small primary" id="bMySave">Save</button>
+            <button class="btn small" id="bMyDel" hidden>Delete</button>
+          </div>
+          <button class="btn small b-mine-upd" id="bMyUpd" hidden></button>
+          <p class="hint" id="bMyHint" aria-live="polite">Change any timing to make a pattern of your own, then name it and save it here.</p>
+        </div>
+
         <div class="prime-row">
           <div class="prime-label" id="bvLab">Visual</div>
           <div class="chips" id="bVis" role="radiogroup" aria-labelledby="bvLab">
@@ -1957,7 +2015,7 @@
 
         <p class="b-safety">
           <b>Go gently.</b> Stop and breathe normally if you feel light-headed or tingly. Leave out the holds if
-          you are pregnant or have a heart, lung or blood-pressure condition.
+          you are pregnant or have a heart, lung or blood-pressure condition. <button type="button" class="sf-link" data-safety="1">Safety notes</button>
         </p>
 
           </div>
@@ -2171,6 +2229,7 @@
             <a href="#l-breathing">Breathing and heart</a>
             <a href="#l-bands">Frequency bands</a>
             <a href="#l-practices">Guided practices</a>
+            <a href="#l-safety">Safety</a>
             <a href="#references">References</a>
           </nav>
           <article class="prose" id="science">
@@ -2267,7 +2326,12 @@
         <span class="mono">ln(CR&nbsp;+&nbsp;1)</span>, usually between 0 and 8 (McCraty et al., 2009; Balaji et al., 2025).
         It measures how much your heart rhythm settles into one smooth wave, and slow, even breathing near your
         resonance rate is the most reliable way to raise it. In HeartMath's data from 1.8 million sessions, the most
-        common peak was about 0.1&nbsp;Hz, six breaths a minute. HeartMath's own apps rescale the score (0 to 16 in
+        common peak was about 0.1&nbsp;Hz, six breaths a minute, and sessions in which people reported positive emotions
+        scored higher than those with negative ones. Feeling matters as well as breathing: in a 1995 laboratory study,
+        holding a feeling of appreciation shifted heart-rate variability toward its mid- and high-frequency bands
+        (McCraty et al., 1995). Heart Coherence follows HeartMath's Quick Coherence technique in that order: three
+        minutes of slow, heart-focused breathing first, then gratitude, which is easiest to feel once the breathing has
+        calmed you and the rhythm has settled, as it is after a meditation. HeartMath's own apps rescale the score (0 to 16 in
         Inner Balance) and use thresholds they don't publish, so expect the numbers here to differ from the app's.
         The score needs beat-to-beat data; from a watch's smoothed heart rate it is an estimate that reads high.
       </p>
@@ -2431,6 +2495,33 @@
               Max M&uuml;ller's Dhammapada and James Legge's Tao Te Ching) and Thoreau's <em>Walden</em>. Carl Rogers's line is
               a paraphrase, since his book is still in copyright, and the lines signed Entrain are its own.
             </p>
+            <h3 id="l-safety">Safety</h3>
+            <div class="sf-note" id="sfNote">
+              <p>Entrain is for everyday stress, sleep and focus. It isn't a medical device or a treatment: nothing here
+                diagnoses, treats or prevents any condition, and its heart readings are for practice, not for checking your
+                health. Talk to a clinician about problems with sleep, anxiety or attention.</p>
+              <ul class="sf-list">
+                <li><b>The beats.</b> Ask your doctor first if you have epilepsy or another seizure disorder: the beats are
+                  meant to nudge the brain's rhythms, and their safety for people with epilepsy hasn't been established. Never
+                  listen while driving, cycling or operating machinery, since the slower beats are made to relax you or send you
+                  to sleep. Keep the volume low.</li>
+                <li><b>Headphones with a pacemaker.</b> The magnets in headphones and earbuds can interfere with a pacemaker or
+                  an implanted defibrillator. Keep them at least 15&nbsp;cm (6&nbsp;in) from it: not around your neck or in a
+                  breast pocket (American Heart Association).</li>
+                <li><b>Breathing.</b> Breathe gently, and stop to breathe normally if you feel light-headed, dizzy or tingly.
+                  Leave out the breath holds and the fast breathing (Wim Hof, Kapalabhati) if you are pregnant or have a heart,
+                  lung or blood-pressure condition or epilepsy, and never do the fast breathing in or near water, standing up or
+                  while driving.</li>
+                <li><b>Moving.</b> Go only as far as is comfortable, stop anything that hurts, and keep clear space around
+                  you.</li>
+                <li><b>Feelings.</b> A body scan, tapping or a reflection can bring up strong feelings. If one does, stop, look
+                  around the room and breathe slowly, and talk to someone you trust or a professional if it keeps
+                  happening.</li>
+              </ul>
+              <p>Check with a clinician before you start if you have a heart, lung or seizure condition, are pregnant, or are
+                in treatment for anxiety, trauma or depression. Practices with cautions of their own give them in their
+                introduction.</p>
+            </div>
             <section class="refs-sec" id="references">
               <h3>References</h3>
               <ol class="refs">
@@ -2459,6 +2550,7 @@
       <li>Fincham, G. W., Strauss, C., Montero-Marin, J., &amp; Cavanagh, K. (2023). Effect of breathwork on stress and mental health: a meta-analysis of randomised-controlled trials. <em>Scientific Reports</em>, 13, 432. <a href="https://www.nature.com/articles/s41598-022-27247-y" rel="noopener">Nature</a></li>
       <li>Van Diest, I., Verstappen, K., Aubert, A. E., et al. (2014). Inhalation/exhalation ratio modulates the effect of slow breathing on heart rate variability and relaxation. <em>Applied Psychophysiology and Biofeedback</em>, 39(3–4), 171–180. <a href="https://doi.org/10.1007/s10484-014-9253-x" rel="noopener">DOI</a></li>
       <li>McCraty, R., Atkinson, M., Tomasino, D., &amp; Bradley, R. T. (2009). The coherent heart: heart–brain interactions, psychophysiological coherence, and the emergence of system-wide order. <em>Integral Review</em>, 5(2), 10–115. <a href="https://www.integral-review.org/issues/vol_5_no_2_mccraty_et_al_the_coherent_heart.pdf" rel="noopener">PDF</a></li>
+      <li>McCraty, R., Atkinson, M., Tiller, W. A., Rein, G., &amp; Watkins, A. D. (1995). The effects of emotions on short-term power spectrum analysis of heart rate variability. <em>American Journal of Cardiology</em>, 76(14), 1089–1093. <a href="https://doi.org/10.1016/S0002-9149(99)80309-9" rel="noopener">DOI</a></li>
       <li>Balaji, S., Plonka, N., Atkinson, M., et al., &amp; McCraty, R. (2025). Heart rate variability biofeedback in a global study of the most common coherence frequencies and the impact of emotional states. <em>Scientific Reports</em>, 15, 3241. <a href="https://www.nature.com/articles/s41598-025-87729-7" rel="noopener">Nature</a></li>
       <li>Shaffer, F., &amp; Meehan, Z. M. (2020). A practical guide to resonance frequency assessment for heart rate variability biofeedback. <em>Frontiers in Neuroscience</em>, 14, 570400. <a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2020.570400/full" rel="noopener">Frontiers</a></li>
       <li>Vierra, J., Boonla, O., &amp; Prasertsri, P. (2022). Effects of sleep deprivation and 4-7-8 breathing control on heart rate variability, blood pressure, blood glucose, and endothelial function in healthy young adults. <em>Physiological Reports</em>, 10, e15389. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9277512/" rel="noopener">PMC</a></li>
@@ -2499,11 +2591,12 @@
       <li>Kashdan, T. B., Barrett, L. F., &amp; McKnight, P. E. (2015). Unpacking emotion differentiation. <em>Current Directions in Psychological Science</em>, 24(1). <a href="https://doi.org/10.1177/0963721414550708" rel="noopener">DOI</a></li>
       <li>Frattaroli, J. (2006). Experimental disclosure and its moderators: a meta-analysis. <em>Psychological Bulletin</em>, 132(6), 823–865. <a href="https://doi.org/10.1037/0033-2909.132.6.823" rel="noopener">DOI</a></li>
       <li>Ryan, R. M., &amp; Deci, E. L. (2000). Self-determination theory and the facilitation of intrinsic motivation, social development, and well-being. <em>American Psychologist</em>, 55(1), 68–78. <a href="https://doi.org/10.1037/0003-066X.55.1.68" rel="noopener">DOI</a></li>
+      <li>American Heart Association. Devices that may interfere with ICDs and pacemakers. <a href="https://www.heart.org/en/health-topics/arrhythmia/prevention--treatment-of-arrhythmia/devices-that-may-interfere-with-icds-and-pacemakers" rel="noopener">heart.org</a></li>
       <li>Fincham, G. W., Strauss, C., &amp; Cavanagh, K. (2023). Effect of coherent breathing on mental health and wellbeing: a randomised placebo-controlled trial. <em>Scientific Reports</em>, 13. <a href="https://doaj.org/article/21a326834cdb4a7fbd35bc10ec8509f0" rel="noopener">DOAJ</a></li>
     </ol>
             </section>
             <div class="fineprint">
-    <p><strong>Not medical advice.</strong> Binaural beats and paced breathing are self-help techniques, not treatments. Effects reported in the literature are modest and inconsistent across individuals. Nothing here diagnoses, treats or prevents any condition — talk to a clinician about sleep, anxiety or attention problems.</p>
+    <p><strong>Not medical advice.</strong> Binaural beats and paced breathing are self-help techniques, not treatments, and the effects reported in the literature are modest and vary from person to person. The <a href="#l-safety">safety notes</a> say who should check with a doctor first.</p>
     <p>All audio is synthesised in your browser with the Web Audio API. Nothing is downloaded, streamed, recorded or sent anywhere.</p>
   </div>
           </article>
@@ -2549,6 +2642,16 @@
     <div class="modal-foot">
       <button class="btn link" id="scSkip">Skip the check</button>
     </div>
+  </div>
+</div>
+
+
+<!-- ============ SAFETY NOTES: the note in Learn, over any page ============ -->
+<div class="modal" id="sfModal" hidden>
+  <div class="modal-card sf-card" role="dialog" aria-modal="true" aria-labelledby="sfTitle">
+    <h2 id="sfTitle">Safety notes</h2>
+    <div class="sf-note" id="sfBody"></div>
+    <div class="modal-foot"><button class="btn primary small" id="sfClose">Close</button></div>
   </div>
 </div>
 
@@ -2732,42 +2835,42 @@
     {
       id: "sleep-descent", cat: "relax", band: "Delta", name: "Delta Sleep",
       carrier: 200, beat: 3, rampFrom: 6, minutes: 30, strength: 3,
-      desc: "Starts in theta and slides down into a 3 Hz delta beat, the frequency used in the sleep-stage trial.",
+      desc: "Starts at 6 Hz theta and slides down to a 3 Hz delta beat, the beat that lengthened deep sleep in Jirakittayakorn and Wongsawat's 2018 sleep study.",
       ev: "A 3 Hz binaural beat significantly increased delta activity and lengthened stage-3 (deep) sleep versus control nights. The descent from 6 Hz mirrors the common protocol of easing through theta before settling into delta.",
       cite: "Jirakittayakorn & Wongsawat 2018, Front. Hum. Neurosci."
     },
     {
       id: "preop-calm", cat: "relax", band: "Delta", name: "Pre-Procedure Calm",
       carrier: 250, beat: 2, rampFrom: 10, minutes: 30, strength: 3,
-      desc: "A 30-minute progressive slowing from alpha to a closing stretch of deep delta — the anxiety protocol.",
-      ev: "The randomised pre-operative trial used a 30-minute track that progressively slowed the beat to give a closing 10-minute period of delta. Theta/delta beats carry the largest pooled anxiety effect in meta-analysis (g = 0.69).",
+      desc: "Thirty minutes that slow from 10 Hz alpha to a closing stretch of 2 Hz delta, modelled on the track that lowered anxiety before day surgery in Padmanabhan's 2005 trial.",
+      ev: "In Padmanabhan and colleagues' randomised trial before day-case surgery, a 30-minute track that progressively slowed the beat, ending with 10 minutes of delta, lowered anxiety scores by about 26%, against 11% for the same soundtrack without the beat and 4% with nothing. Theta and delta beats had the largest pooled effect on anxiety (g = 0.69) in Garcia-Argibay and colleagues' 2019 meta-analysis.",
       cite: "Padmanabhan et al. 2005, Anaesthesia · Garcia-Argibay et al. 2019"
     },
     {
       id: "theta-meditation", cat: "relax", band: "Theta", name: "Theta Meditation",
       carrier: 250, beat: 6, minutes: 20, strength: 3,
-      desc: "A steady 6 Hz beat — the frequency shown to raise theta power and frontal midline theta during listening.",
+      desc: "A steady 6 Hz theta beat, the frequency that raised theta and frontal-midline theta in listeners' EEG in Jirakittayakorn and Wongsawat's 2017 study.",
       ev: "EEG recorded during 6 Hz binaural beat exposure showed increased general theta rhythm and frontal midline theta activity, the signature associated with meditative and internally focused states.",
       cite: "Jirakittayakorn & Wongsawat 2017, Front. Neurosci."
     },
     {
       id: "parasympathetic", cat: "relax", band: "Theta", name: "Parasympathetic Recovery",
       carrier: 200, beat: 6, minutes: 20, strength: 2,
-      desc: "Theta-band beats for the wind-down after hard exercise, where autonomic effects were measured.",
-      ev: "Listening to theta-frequency binaural beats post-exercise increased parasympathetic activation and sympathetic withdrawal, measured through heart-rate variability — an autonomic effect rather than a purely subjective one.",
+      desc: "A steady 6 Hz theta beat for the 20 minutes after hard exercise: theta beats tilted heart-rate variability toward rest in a 2014 study of people recovering from a workout.",
+      ev: "In 21 young adults resting for 20 minutes after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz, in pink noise) shifted heart-rate variability toward parasympathetic activity over the first ten minutes, compared with the same sound without a beat: an autonomic effect rather than a purely subjective one. By the end of the 20 minutes the two no longer differed, and this track plays a steady 6 Hz rather than the sweep.",
       cite: "McConnell et al. 2014, Front. Psychol."
     },
     {
       id: "alpha-stress", cat: "relax", band: "Alpha", name: "Alpha Stress Relief",
       carrier: 300, beat: 10, minutes: 20, strength: 2,
-      desc: "10 Hz alpha at a mid carrier — relaxed but awake, the state most anxiety protocols target.",
-      ev: "Alpha-frequency beats around 10 Hz are the most common choice in anxiety and stress work, and post-hoc analyses have found stress reduction specifically in the alpha condition. Carriers in the 200–600 Hz range are standard for this use.",
-      cite: "Garcia-Argibay et al. 2019 · band reviews"
+      desc: "A steady 10 Hz alpha beat on a 300 Hz carrier, for calm that keeps you awake: the lighter choice beside the theta and delta tracks, which had the larger effects on anxiety.",
+      ev: "In Garcia-Argibay and colleagues' 2019 meta-analysis, binaural beats lowered anxiety, with the largest effects for theta and delta beats (g = 0.69). Alpha beats around 10 Hz are used for relaxed wakefulness, when a slower beat would make you drowsy. Carriers between 200 and 600 Hz are typical.",
+      cite: "Garcia-Argibay et al. 2019"
     },
     {
       id: "creative-reverie", cat: "relax", band: "Alpha", name: "Creative Reverie",
       carrier: 340, beat: 10, minutes: 20, strength: 1,
-      desc: "Alpha for divergent thinking — with the caveat that it worked for some people and not others.",
+      desc: "A 10 Hz alpha beat for open-ended idea generation. In Reedijk and colleagues' 2013 study it helped only people whose blink rate pointed to lower dopamine.",
       ev: "Alpha binaural beats improved divergent (but not convergent) thinking. The effect appeared only in participants with lower estimated baseline dopamine; those higher on that measure showed no benefit or slightly worse performance.",
       cite: "Reedijk, Bolders & Hommel 2013, Front. Hum. Neurosci."
     },
@@ -2785,35 +2888,35 @@
     {
       id: "vigilance-16", cat: "stim", band: "Beta", name: "Vigilance 16",
       carrier: 400, beat: 16, minutes: 30, strength: 3,
-      desc: "The 16 Hz beta condition from the vigilance study — a 30-minute watch-keeping session.",
-      ev: "Across a 30-minute visual vigilance task, beta-frequency beats (16 and 24 Hz) produced more correct target detections and fewer false alarms than theta/delta beats, and were associated with less negative mood.",
+      desc: "A steady 16 Hz beta beat for 30 minutes of watch-keeping work, the lower of the two beta frequencies in Lane and colleagues' 1998 vigilance trial.",
+      ev: "In a 30-minute visual vigilance task, 29 people listening to beta beats (16 and 24 Hz, in pink noise) made more correct detections and fewer false alarms than with theta and delta beats (1.5 and 4 Hz), and reported less negative mood. This track plays the 16 Hz beat on its own, which the trial didn't test separately.",
       cite: "Lane et al. 1998, Physiology & Behavior"
     },
     {
       id: "sustained-24", cat: "stim", band: "Beta", name: "Sustained Attention 24",
       carrier: 400, beat: 24, minutes: 30, strength: 3,
-      desc: "The faster beta arm of the same trial, for tasks that keep drifting away from you.",
-      ev: "The 24 Hz beta condition shared the vigilance advantage over slower beats in the original trial. Beta beats in the 12–30 Hz range are the band most consistently linked to active focus in the reviews.",
-      cite: "Lane et al. 1998 · band reviews"
+      desc: "A steady 24 Hz beta beat for 30 minutes, the higher of the two beta frequencies in Lane and colleagues' 1998 vigilance trial, for tasks your attention keeps drifting away from.",
+      ev: "In Lane and colleagues' 30-minute vigilance task, beta beats at 16 and 24 Hz gave more correct detections, fewer false alarms and less negative mood than theta and delta beats. This track plays the 24 Hz beat on its own, which the trial didn't test separately. Beta (about 13 to 30 Hz) is the band studied for alert, active attention, with mixed results since.",
+      cite: "Lane et al. 1998, Physiology & Behavior"
     },
     {
       id: "deep-work", cat: "stim", band: "Beta", name: "Deep Work Block",
       carrier: 300, beat: 15, minutes: 50, strength: 2,
-      desc: "A long beta block sized to a full study or work session rather than a short burst.",
+      desc: "Fifty minutes of a 15 Hz beta beat, sized to a full work or study block: in the 2019 meta-analysis of binaural beats, longer listening went with larger effects.",
       ev: "Time under exposure contributed significantly to the meta-analytic model, with longer periods advisable for maximum effect. Study-focused guidance converges on 25–50 minute blocks followed by a short break.",
       cite: "Garcia-Argibay et al. 2019"
     },
     {
       id: "gamma-40", cat: "stim", band: "Gamma", name: "Gamma Focus 40",
       carrier: 400, beat: 40, minutes: 25, strength: 2,
-      desc: "40 Hz on a 400 Hz carrier — the exact pairing that reliably evokes a steady-state response.",
+      desc: "A 40 Hz gamma beat on a 400 Hz carrier, a pairing that evokes a measurable 40 Hz response in the brain; on carriers above about 3,000 Hz the response disappears.",
       ev: "A 40 Hz binaural-beat auditory steady-state response was evoked with a 400 Hz carrier and was undetectable above ~3000 Hz, which is why the carrier is fixed low here. In attentional-blink training, 40 Hz produced greater improvement than 16 Hz.",
       cite: "Hommel et al. 2020, Sci. Rep. · Orozco Perez et al. 2020, eNeuro"
     },
     {
       id: "gamma-memory", cat: "stim", band: "Gamma", name: "Working Memory Gamma",
       carrier: 240, beat: 40, minutes: 15, strength: 1,
-      desc: "A short gamma block for memory work — the most contested claim on this page, flagged as such.",
+      desc: "Fifteen minutes of a 40 Hz gamma beat for working-memory tasks. Some trials found better scores under 40 Hz beats and others found no change at all, so treat it as an experiment.",
       ev: "Some trials found better working-memory performance under 40 Hz stimulation, correlating with frequency-following responses. Others found no change in either memory scores or EEG and concluded entrainment never occurred. Treat as experimental.",
       cite: "Jausovec et al. 2022 · Basu & Banerjee 2023"
     }
@@ -3360,7 +3463,7 @@
         (t.notch ? '<div class="tr-notch" id="trNotch"></div>' : "") +
         "<h3>How it runs</h3><p>" + esc(trHow(t)) + "</p>" +
         '<details class="ev si-ev"><summary>Evidence ' + dots(t.strength) + '</summary><div class="ev-body">' + esc(t.ev) + "<cite>" + esc(t.cite) + "</cite></div></details>" +
-        '<div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>Not for everyone. Avoid the beats if you have epilepsy or a seizure disorder or wear a pacemaker, and never listen while driving or operating machinery. This is not a medical device.</span></div>' +
+        safeBox([SAFE_BEATS]) +
       "</div>" +
       '<div class="si-side"><div class="si-bar">' +
         '<button class="btn primary si-go" id="trGo"></button>' +
@@ -3831,10 +3934,10 @@
       if (e.key === "Escape" && !$("#pmModal").hidden) closeMatcher(false);
     });
 
-    // both are blocking, so Tab has to stay inside them
+    // they're all blocking, so Tab has to stay inside them
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return;
-      var box = !$("#scModal").hidden ? $("#scModal") : (!$("#pmModal").hidden ? $("#pmModal") : null);
+      var box = ["#sfModal", "#scModal", "#pmModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
       if (!box) return;
       var all = box.querySelectorAll("button, input, a[href], select, textarea");
       var list = [], i;
@@ -3847,6 +3950,42 @@
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });
+  }
+  /* ------------------------------ one safety note ------------------------------
+     The whole note lives in Learn, under Safety, and opens over any page from a "safety notes"
+     link, so it's never more than a tap away and never written out twice. Each page shows only
+     the line that matters there: the beats on a track, the primer, the builder and any practice
+     that plays one; the breath on Breathe; a practice's own cautions in its introduction.
+  -------------------------------------------------------------------------------- */
+
+  var SAFE_BEATS = "Ask your doctor first if you have epilepsy or another seizure disorder, keep headphones at least 15 cm (6 in) from a pacemaker or implanted defibrillator, and never listen while driving.";
+
+  function safeLink(txt) { return '<button type="button" class="sf-link" data-safety="1">' + esc(txt || "Safety notes") + "</button>"; }
+  // a caution box: its lines in order, then the link to the whole note
+  function safeBox(lines) {
+    return '<div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>' +
+      lines.filter(Boolean).map(esc).join(" ") + " " + safeLink() + "</span></div>";
+  }
+  function safeOpen() {
+    var body = $("#sfBody");
+    body.innerHTML = $("#sfNote").innerHTML;
+    body.querySelectorAll("[id]").forEach(function (el) { el.removeAttribute("id"); });   // search gives Learn's paragraphs ids to land on
+    openDialog("#sfModal");
+    $("#sfModal .modal-card").scrollTop = 0;
+    setTimeout(function () { try { $("#sfClose").focus({ preventScroll: true }); } catch (e) { $("#sfClose").focus(); } }, 30);   // the note reads from the top
+  }
+  function safeClose() { if (!$("#sfModal").hidden) closeDialog("#sfModal"); }
+  function safeInit() {
+    document.querySelectorAll("[data-safe=beats]").forEach(function (el) { el.outerHTML = safeBox([SAFE_BEATS]); });
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-safety]");
+      if (!b) return;
+      e.preventDefault();
+      safeOpen();
+    });
+    $("#sfClose").addEventListener("click", safeClose);
+    $("#sfModal").addEventListener("click", function (e) { if (e.target === this) safeClose(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") safeClose(); });
   }
   /* ------------------------- breathing guide -------------------------
      A breath is modelled as a lung "level" from 0 (empty) to 1 (full)
@@ -3880,7 +4019,7 @@
     {
       id: "exhale", strength: 2,
       t: { inh: 3, sip: 0, hold: 0, exh: 7, rest: 0 },
-      desc: "Six breaths a minute with the out-breath more than twice as long as the in-breath, close to the ratio used in the trial.",
+      desc: "Six breaths a minute with the out-breath more than twice as long as the in-breath, close to the 0.42 in-to-out ratio that was rated the more relaxing one in Van Diest and colleagues' study.",
       ev: "At six breaths a minute, a short inhale with a long exhale (an inhale-to-exhale ratio of 0.42) was rated more relaxing than the reverse ratio and produced more high-frequency heart-rate variability, the component linked to vagal activity.",
       cite: "Van Diest et al. 2014, Appl. Psychophysiol. Biofeedback"
     },
@@ -3954,9 +4093,10 @@
   function sessTime() { return B.state === "running" ? bNow() - B.t0 : B.st; }
   function breathTime() { return sessTime() - B_LEAD; }
   function fmtS(s) { return (s % 1 ? s.toFixed(1) : String(s)) + "s"; }
+  // a preset, or one of your own saved patterns (mypatterns.js)
   function preset(id) {
     for (var i = 0; i < BREATHS.length; i++) if (BREATHS[i].id === id) return BREATHS[i];
-    return null;
+    return mpGet(id);
   }
   /* During the resonance test BC holds the test's timings; save the viewer's own. */
   function saveBreath() {
@@ -4075,19 +4215,19 @@
       bSetT(f.id + "V", (f.opt && !BC[f.k]) ? "Off" : BC[f.k].toFixed(1) + " s");
     });
   }
+  function sameT(a, b) { return a.inh === b.inh && a.sip === b.sip && a.hold === b.hold && a.exh === b.exh && a.rest === b.rest; }
+  // the preset with these timings, else your own saved pattern with them, else "custom"
   function matchPreset() {
-    for (var i = 0; i < BREATHS.length; i++) {
-      var t = BREATHS[i].t;
-      if (t.inh === BC.inh && t.sip === BC.sip && t.hold === BC.hold && t.exh === BC.exh && t.rest === BC.rest) {
-        return BREATHS[i].id;
-      }
-    }
+    for (var i = 0; i < BREATHS.length; i++) if (sameT(BREATHS[i].t, BC)) return BREATHS[i].id;
+    var l = mpLoad();
+    for (var j = 0; j < l.length; j++) if (sameT(l[j].t, BC)) return "my-" + l[j].uid;
     return "custom";
   }
   function renderNote() {
     bFavSync();
+    mpRow();
     var p = preset(BC.pattern);
-    if (p) {
+    if (p && !p.mine) {
       bSetT("#bDesc", p.desc);
       $("#bEvSum").innerHTML = "Evidence " + dots(p.strength);
       bSetT("#bEvTxt", p.ev);
@@ -4096,7 +4236,7 @@
       return;
     }
     var rate = 60 / cycleOf(BC);
-    var s = "Your own timings: " + rate.toFixed(1) + " breaths a minute. " + (rate <= 10
+    var s = (p ? "Your own pattern, saved on this device: " : "Your own timings: ") + rate.toFixed(1) + " breaths a minute. " + (rate <= 10
       ? "That is inside the under-10-a-minute range most slow-breathing studies used."
       : "That is faster than the under-10-a-minute range most slow-breathing studies used.");
     if (BC.exh > BC.inh + BC.sip) s += " The exhale is longer than the inhale, the ratio rated more relaxing at slow rates.";
@@ -4106,6 +4246,13 @@
   function syncChips(sel) {
     var chips = $(sel).querySelectorAll(".chip");
     for (var i = 0; i < chips.length; i++) chips[i].classList.toggle("on", chips[i].querySelector("input").checked);
+  }
+  // the chosen pattern in sight, in a row of chips wider than the screen
+  function bChipShow() {
+    var row = $("#bPats"), on = row && row.querySelector(".chip.on");
+    if (!on || !row.clientWidth) return;
+    var r = on.getBoundingClientRect(), rr = row.getBoundingClientRect();
+    if (r.left < rr.left || r.right > rr.right) row.scrollLeft += r.left - rr.left - 56;   // past the faded edge
   }
   function checkRadio(name, val) {
     var el = document.querySelector('input[name="' + name + '"][value="' + val + '"]');
@@ -4442,6 +4589,7 @@
     } catch (e) {}
 
     readColors();
+    mpInit();
     checkRadio("bpat", BC.pattern);
     checkRadio("bvis", BC.visual);
     checkRadio("blen", String(BC.minutes));
@@ -4459,6 +4607,7 @@
       if (B.finder) finderCancel();
       checkRadio("bpat", e.target.value);
       syncChips("#bPats");
+      MP.from = e.target.value === "custom" && mpQ(BC.pattern) ? BC.pattern : "";   // Custom from a saved pattern can update it
       BC.pattern = e.target.value;
       var p = preset(BC.pattern);
       if (p) {
@@ -4473,7 +4622,10 @@
         if (B.finder) finderCancel();
         BC[f.k] = v;
         var id = matchPreset();
-        if (id !== BC.pattern) { BC.pattern = id; checkRadio("bpat", id); syncChips("#bPats"); }
+        if (id !== BC.pattern) {
+          if (id === "custom" && mpQ(BC.pattern)) MP.from = BC.pattern;   // changed from a saved pattern: it can be updated
+          BC.pattern = id; checkRadio("bpat", id); syncChips("#bPats");
+        }
         syncFields(); renderNote(); syncVisHint(); applyTimings(); saveBreath();
       });
     });
@@ -5013,6 +5165,202 @@
     }
   };
 
+  /* ---------------------- your own breathing patterns ----------------------
+     Timings made on the sliders and saved under a name, on this device: up to twelve. Each one
+     is a chip beside the presets (its value "my-<uid>"), a row under Yours in the library, a
+     result in search, a star for Today and a name in the history. The save row under the
+     sliders follows what's on screen: a preset invites a change; timings of your own can be
+     saved, or update the saved pattern they came from; a saved pattern can be renamed, or
+     deleted with an undo.
+  -------------------------------------------------------------------------- */
+
+  var MP_MAX = 12;
+  var MP = { list: null, from: "", shown: null };   // from: the saved pattern your timings were changed from
+
+  function mpName(s) { return typeof s === "string" ? s.replace(/\s+/g, " ").trim().slice(0, 40) : ""; }
+  // the five timings, only if every one is inside its slider's range and on its half-second steps
+  function mpTimes(t) {
+    if (!t || typeof t !== "object") return null;
+    var o = {};
+    for (var i = 0; i < B_FIELDS.length; i++) {
+      var f = B_FIELDS[i], v = +t[f.k];
+      if (!isFinite(v) || v < f.min || v > f.max || v * 2 !== Math.round(v * 2)) return null;
+      o[f.k] = v;
+    }
+    return o;
+  }
+  function mpLoad() {
+    if (MP.list) return MP.list;
+    var a = null, seen = {};
+    try { a = JSON.parse(store.get("myBreaths") || "[]"); } catch (e) {}
+    MP.list = (Array.isArray(a) ? a : []).map(function (q) {
+      var t = q && mpTimes(q.t), name = q && mpName(q.name);
+      if (!t || !name || typeof q.uid !== "string" || !/^[a-z0-9]{1,16}$/.test(q.uid) || seen[q.uid]) return null;
+      seen[q.uid] = true;
+      return { uid: q.uid, name: name, t: t, at: +q.at || 0 };
+    }).filter(Boolean).slice(0, MP_MAX);
+    return MP.list;
+  }
+  function mpStore() { store.set("myBreaths", JSON.stringify(mpLoad())); }
+  function mpIdx(id) {
+    var l = mpLoad();
+    for (var i = 0; i < l.length; i++) if ("my-" + l[i].uid === id) return i;
+    return -1;
+  }
+  function mpQ(id) { var i = mpIdx(id); return i < 0 ? null : MP.list[i]; }
+  function mpUid() {
+    var u;
+    do u = Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36); while (mpIdx("my-" + u) >= 0);
+    return u;
+  }
+  function mpCopy(c) { return { inh: c.inh, sip: c.sip, hold: c.hold, exh: c.exh, rest: c.rest }; }
+  // "In 4 s, hold 7 s, out 8 s"
+  function mpSteps(t) {
+    var s = function (v) { return (v % 1 ? v.toFixed(1) : String(v)) + " s"; };
+    return [["In", t.inh], ["top up", t.sip], ["hold", t.hold], ["out", t.exh], ["hold", t.rest]]
+      .filter(function (x) { return x[1] > 0; }).map(function (x) { return x[0] + " " + s(x[1]); }).join(", ");
+  }
+  // a saved pattern in the shape of a preset, for the guide, the library, search and favourites
+  function mpPattern(q) {
+    return { id: "my-" + q.uid, mine: true, name: q.name, t: q.t, desc: mpSteps(q.t) + ".", goal: "", also: [], posture: ["sit", "lie"], strength: 0 };
+  }
+  function mpGet(id) { var q = typeof id === "string" ? mpQ(id) : null; return q ? mpPattern(q) : null; }
+  function mpAll() { return mpLoad().map(mpPattern); }
+  function patName(p) { return p.name || PATTERN_NAMES[p.id] || p.id; }
+  // the pattern that already has a name, saved or preset, whatever its case; "" if none
+  function mpTaken(name, uid) {
+    var n = name.toLowerCase(), l = mpLoad();
+    for (var k in PATTERN_NAMES) if (PATTERN_NAMES[k].toLowerCase() === n) return PATTERN_NAMES[k];
+    if (n === "custom") return "Custom";
+    for (var i = 0; i < l.length; i++) if (l[i].uid !== uid && l[i].name.toLowerCase() === n) return l[i].name;
+    return "";
+  }
+  function mpFreeName() {
+    var n = mpLoad().length;
+    for (var i = n + 1; i <= n + MP_MAX + 1; i++) if (!mpTaken("My pattern " + i)) return "My pattern " + i;
+    return "My pattern " + Date.now().toString(36);
+  }
+
+  /* ----- the chips beside the presets ----- */
+  function mpChips() {
+    var row = $("#bPats"), cust = row.querySelector('input[value="custom"]').parentNode;
+    row.querySelectorAll("label[data-my]").forEach(function (l) { l.remove(); });
+    mpLoad().forEach(function (q) {
+      var lab = document.createElement("label");
+      lab.className = "chip b-mychip";
+      lab.dataset.my = q.uid;
+      lab.title = q.name;
+      lab.innerHTML = '<input type="radio" name="bpat" value="my-' + q.uid + '"><span class="b-myn">' + esc(q.name) + "</span>";
+      row.insertBefore(lab, cust);
+    });
+    checkRadio("bpat", BC.pattern);
+    syncChips("#bPats");
+    edgeFade(row);
+  }
+
+  /* ----- the save row, under the sliders ----- */
+  function mpRow() {
+    var row = $("#bMine");
+    if (!row) return;
+    var id = BC.pattern, q = mpQ(id), mode = q ? "mine" : id === "custom" ? "custom" : "preset";
+    var dup = mode === "custom" ? matchPreset() : "custom";        // a pattern that already has these timings
+    var from = mode === "custom" && dup === "custom" ? mpQ(MP.from) : null;
+    var full = mode === "custom" && mpLoad().length >= MP_MAX, open = mode === "mine" || (mode === "custom" && dup === "custom");
+    var inp = $("#bMyName"), hint;
+    row.hidden = !!B.finder;                                         // the resonance test's timings aren't yours to keep
+    if (MP.shown !== id) { MP.shown = id; inp.value = q ? q.name : ""; }
+    row.classList.toggle("quiet", !open);
+    $("#bMyLab").hidden = $("#bMyRow").hidden = !open;
+    bSetT("#bMyLab", q ? "Your pattern" : "Save as your own pattern");
+    bSetT("#bMySave", q ? "Rename" : "Save");
+    $("#bMyDel").hidden = !q;
+    $("#bMyUpd").hidden = !from;
+    if (from) bSetT("#bMyUpd", "Update “" + from.name + "” instead");
+    inp.disabled = full;
+    inp.placeholder = full ? "No room for another" : "A name, like Evening 4-6";
+    mpCanSave();
+    if (mode === "preset") hint = "Change any timing to make a pattern of your own, then name it and save it here.";
+    else if (dup !== "custom") hint = preset(dup).mine ? "These timings are saved as “" + patName(preset(dup)) + "”." : "These are the timings of " + patName(preset(dup)) + ". Change one to make your own.";
+    else if (q) hint = "Saved on this device. Change a timing to make a variation of it.";
+    else if (full) hint = "You have " + MP_MAX + " saved patterns, as many as there's room for. Delete one to save another.";
+    else hint = "It goes beside the presets, and into Practice and search.";
+    bSetT("#bMyHint", hint);
+  }
+  // Rename waits for a new name; Save, for room
+  function mpCanSave() {
+    var q = mpQ(BC.pattern), n = mpName($("#bMyName").value);
+    var no = q ? !n || n === q.name : mpLoad().length >= MP_MAX;
+    $("#bMySave").setAttribute("aria-disabled", no ? "true" : "false");
+  }
+  function mpRefresh() { mpChips(); renderNote(); saveBreath(); }
+
+  function mpSave() {
+    if (B.finder || P.usesB) return;
+    var q = mpQ(BC.pattern), l = mpLoad(), name = mpName($("#bMyName").value), clash;
+    if (q) {                                                         // a new name for the one on screen
+      if (!name || name === q.name) return;
+      if ((clash = mpTaken(name, q.uid))) { bSetT("#bMyHint", "There's already a pattern called “" + clash + "”. Pick another name."); return; }
+      q.name = name;
+      mpStore();
+      MP.shown = null;
+      mpChips(); renderNote();
+      toast("Renamed to “" + name + "”.", { ms: 3000 });
+      return;
+    }
+    if (BC.pattern !== "custom" || matchPreset() !== "custom" || l.length >= MP_MAX) return;
+    name = name || mpFreeName();
+    if ((clash = mpTaken(name))) { bSetT("#bMyHint", "There's already a pattern called “" + clash + "”. Pick another name."); return; }
+    q = { uid: mpUid(), name: name, t: mpCopy(BC), at: Date.now() };
+    l.push(q);
+    mpStore();
+    BC.pattern = "my-" + q.uid; MP.from = "";
+    mpRefresh();
+    toast("Saved “" + name + "”. It's beside the presets, and in Practice under Yours.", { ms: 4500 });
+  }
+  // the changed timings go back into the saved pattern they came from
+  function mpUpdate() {
+    var q = mpQ(MP.from);
+    if (!q || B.finder || P.usesB || BC.pattern !== "custom" || matchPreset() !== "custom") return;
+    q.t = mpCopy(BC); q.at = Date.now();
+    mpStore();
+    BC.pattern = "my-" + q.uid; MP.from = "";
+    mpRefresh();
+    toast("Updated “" + q.name + "”: " + mpSteps(q.t).toLowerCase() + ".", { ms: 4000 });
+  }
+  // gone at once, with an undo; the timings stay on the sliders, so the undo can pick it back up
+  function mpDelete() {
+    var id = BC.pattern, i = mpIdx(id);
+    if (i < 0 || B.finder || P.usesB) return;
+    var q = MP.list.splice(i, 1)[0], key = "b:" + id, fi = favList().indexOf(key);
+    mpStore();
+    if (fi >= 0) favSet(key, false);
+    BC.pattern = "custom"; MP.from = "";
+    mpRefresh();
+    toast("Deleted “" + q.name + "”.", { action: "Undo", ms: 8000, onAct: function () {
+      if (mpIdx(id) >= 0 || mpLoad().length >= MP_MAX) return;
+      MP.list.splice(Math.min(i, MP.list.length), 0, q);
+      mpStore();
+      if (fi >= 0) favPut(key, fi);
+      if (BC.pattern === "custom" && sameT(q.t, BC)) BC.pattern = id;
+      MP.shown = null;
+      mpRefresh();
+    } });
+  }
+
+  function mpInit() {
+    mpChips();
+    $("#bMySave").addEventListener("click", function () { if (this.getAttribute("aria-disabled") !== "true") mpSave(); });
+    $("#bMyUpd").addEventListener("click", mpUpdate);
+    $("#bMyDel").addEventListener("click", mpDelete);
+    var inp = $("#bMyName");
+    inp.addEventListener("input", mpCanSave);
+    inp.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      $("#bMySave").click();
+      if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) inp.blur();   // and the keyboard goes
+    });
+  }
   /* ------------------------- live heart data -------------------------
      Any sensor that speaks the standard Bluetooth Heart Rate Service
      (0x180D) works: a Garmin watch set to Broadcast Heart Rate, an ear-clip
@@ -5915,7 +6263,7 @@
     backSync();
     var gear = $("#tbSet");
     if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
-    if (v === "breathe") setTimeout(sizeCanvas, 0);
+    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); }, 0);
     if (v !== "session" && P.state === "done") P.state = "idle";
     pImmersive();
     pPill();
@@ -5988,7 +6336,7 @@
     if (!el.efade) { el.efade = upd; el.addEventListener("scroll", upd, { passive: true }); }
     upd();
   }
-  var EDGE_ROWS = ["#prFilt", "#bPats", ".toc", "#ybCats", "#ybPos", ".si-len"];
+  var EDGE_ROWS = ["#prFilt", "#prMeth", "#bPats", ".toc", "#ybCats", "#ybPos", ".si-len"];
   function edgeFadeAll() { EDGE_ROWS.forEach(function (q) { document.querySelectorAll(q).forEach(edgeFade); }); }
 
   /* ----- breathing settings: a side panel on desktop, a sheet on a phone ----- */
@@ -6001,6 +6349,7 @@
     document.body.classList.toggle("sheet-lock", !!open);
     if (open && !was) setTimeout(function () { $("#bPanelDone").focus(); }, 60);
     if (!open && was) b.focus();
+    toastPlace();
   }
 
   /* ----- heart sensor status, mirrored in the top bar, Today and Breathe ----- */
@@ -6055,9 +6404,13 @@
   function toastPlace() {
     var t = $("#toast");
     if (!t || t.hidden) return;
-    var top = window.innerHeight;
+    var top = window.innerHeight, sh = $("#bPanel"), onSheet = !!sh && sh.classList.contains("open");
     var bar = $("#v-yoga") && !$("#v-yoga").hidden ? document.querySelector(".yb-bar") : null;
-    [document.querySelector(".rail"), $("#player"), bar].forEach(function (el) {
+    // the breathing settings cover the bottom of a phone's screen: a notice from them (an undo, say)
+    // goes over the dimmed page, just above where the sheet ends up once it has slid in
+    t.classList.toggle("on-sheet", onSheet);
+    if (onSheet) top = Math.max(60, window.innerHeight - sh.offsetHeight);
+    else [document.querySelector(".rail"), $("#player"), bar].forEach(function (el) {
       if (!el || (el.id === "player" && !el.classList.contains("open"))) return;
       var r = el.getBoundingClientRect();
       if (r.height && r.top > window.innerHeight * 0.5 && r.top < top) top = r.top;
@@ -7747,27 +8100,40 @@
       cite: "Balban et al. 2023 · Laborde et al. 2022 · Garcia-Argibay et al. 2019 · Fincham et al. 2023 (RCT)"
     },
     {
-      id: "coherence", name: "Heart Coherence", min: 15, strength: 2,
-      tone: "relax", sensor: "best", anaStyle: "heart",
-      blurb: "Heart-focused breathing at your resonance pace with live coherence, over a steady 6 Hz theta beat, the frequency tied to parasympathetic recovery.",
-      parts: "Heart-focused resonance breathing · coherence feedback · 6 Hz binaural",
-      audio: { name: "Heart Coherence", band: "Theta", carrier: 200, pts: [[0, 6], [900, 6]], fade: 8, cat: "relax" },
-      build: function () {
-        var r = pResRate(), half = Math.round(30 / r * 10) / 10;
+      id: "coherence", name: "Heart Coherence", min: 15, lengths: [10, 15, 20], strength: 2,
+      tone: "relax", sensor: "best", anaStyle: "heart", pace: true,
+      blurb: "Heart-focused breathing at your resonance pace until your heart rhythm settles, then a gentle feeling of gratitude, with live coherence over a binaural beat. Sitting or lying down.",
+      parts: "Heart-focused resonance breathing · gratitude · coherence feedback · binaural beat",
+      audio: { name: "Heart Coherence", band: "Theta", carrier: 200, pts: [[0, 6], [1200, 6]], fade: 8, cat: "relax" },
+      beats: [                                   // the first is the usual one
+        { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: [[0, 6], [1200, 6]], note: "A steady 6 Hz beat, in the theta band studied for deep relaxation." },
+        { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: [[0, 10], [1200, 10]], note: "A steady 10 Hz beat: relaxed but awake, if theta makes you drowsy." },
+        { id: "down", label: "Alpha to theta", band: "Alpha → Theta", pts: [[0, 10], [300, 6], [1200, 6]], note: "Starts at 10 Hz and slides down to 6 Hz over the first five minutes." }
+      ],
+      choices: [{ key: "pos", label: "Position", opts: [["sit", "Sitting"], ["lie", "Lying down"]], def: "sit" }],
+      build: function (min) {
+        var p = pPace(this), lie = pChoice(this, "pos") === "lie", t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+        var breath = (min || 15) * 60 - 120, first = 180, rest = breath - first;
+        var pace = p.own ? "in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds") : "evenly, " + p.rate + " a minute";
         return [
-          G(45, "Arrive", ["Sit comfortably with your feet on the floor.", "Rest your attention on the centre of your chest, around the heart.",
+          G(45, "Arrive", [lie ? "Lie on your back, a pillow under your head and, if it helps, under your knees. Let your arms rest by your sides." : "Sit comfortably, feet flat on the floor, your back upright but not stiff.",
+            "Rest your attention on the centre of your chest, around the heart.",
             "Connect a heart sensor if you have one; coherence appears after about a minute."], { vis: "glow" }),
-          Br(780, "Heart-focused breathing", { inh: half, sip: 0, hold: 0, exh: half, rest: 0 },
-            { lines: [[0, "Breathe evenly, " + r + " a minute, imagining the breath flowing in and out through the heart area."],
-              [180, "Now call up a feeling of ease or appreciation: a person, a place or a pet you love. Let it be gentle."],
-              [420, "Whatever the score does, come back to the even breath and the feeling."],
-              [660, "Keep the rhythm going for these last minutes."]] }),
-          G(75, "Return", ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
+          Br(first, "Heart-focused breathing", t,
+            { lines: [[0, "Breathe " + pace + ", imagining the breath flowing in and out through the heart area."],
+              [90, "Keep the breath soft and even. Your heart rhythm is falling into step with it."]] }),
+          Br(rest, "Breathing with gratitude", t,
+            { lines: [[0, "Keeping the same breath, call up a feeling of gratitude: a person, a place or a pet you love, or something that went well today. Feel it rather than think it, and let it be gentle."],
+              [Math.round(rest * 0.3), "If the feeling fades, picture that person or moment again and breathe the warmth in through your chest."],
+              [Math.round(rest * 0.55), "Whatever the score does, come back to the even breath and the feeling."],
+              [Math.max(Math.round(rest * 0.55) + 30, rest - 120), "Keep the rhythm and the feeling going for these last minutes."]] }),
+          G(75, "Return", lie ? ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the weight of your body on the floor.", "When you're ready, roll onto your side before you sit up."]
+            : ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
         ];
       },
-      how: "Thirteen minutes of even breathing at your resonance rate (from the resonance test, or 5.5 a minute), with attention on the chest and, after three minutes, a gentle positive feeling: the core of HeartMath's quick coherence technique. The coherence score and your heart rate show live when a sensor is connected.",
-      ev: "Breathing near 6 a minute brings heart rate and blood pressure rhythms into step, the state the coherence score measures. Theta-band binaural beats after hard exercise increased parasympathetic activation in a heart-rate-variability study. The combination itself hasn't been trialled.",
-      cite: "Lehrer & Gevirtz 2014 · McCraty et al. 2009 · McConnell et al. 2014"
+      how: "Three minutes of even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention on the chest. Then, on the same breath, a gentle feeling of gratitude to the end: the two steps of HeartMath's Quick Coherence technique. Gratitude comes second because it's easiest to feel, rather than just think, once slow breathing has calmed you and your heart rhythm has settled into a steady wave; for the same reason it fits well after a meditation such as Anapana or the Body Scan. Sit or lie down. With a sensor, the coherence score and your heart rate show live.",
+      ev: "Breathing near 6 a minute brings heart rate and blood pressure rhythms into step, the state the coherence score measures. Holding a feeling of appreciation shifted heart-rate variability toward its mid- and high-frequency bands in a 1995 HeartMath laboratory study, and across 1.8 million sessions of HeartMath's app, positive emotions went with higher coherence scores. Theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability toward parasympathetic activity in 21 young adults resting after exercise. The combination itself hasn't been trialled.",
+      cite: "Lehrer & Gevirtz 2014 · McCraty et al. 1995 · Balaji et al. 2025 · McConnell et al. 2014"
     },
     {
       id: "focus-primer", name: "Focus Primer", min: 13, strength: 2,
@@ -7787,8 +8153,8 @@
         ];
       },
       end: "Prime complete. Start your task now.",
-      how: "Under three minutes of resonance breathing, then ten minutes of a 16 Hz beta beat (the vigilance study's frequency) while you plan the first step. At the bell the audio fades out and you start. Listening before a task, rather than only during it, is where the binaural evidence for attention is clearest.",
-      ev: "In the binaural meta-analysis, exposure before the task gave clearer cognitive effects. Beta beats at 16 Hz improved vigilance performance. In a small trial, 10 minutes of heart-rate-variability biofeedback improved reaction times and accuracy on a Stroop task under stress.",
+      how: "Under three minutes of resonance breathing, then ten minutes of a 16 Hz beta beat (one of the two beta frequencies that improved watch-keeping in Lane and colleagues' 1998 vigilance trial) while you plan the first step. At the bell the audio fades out and you start. Listening before a task, rather than only during it, is where the binaural evidence for attention is clearest.",
+      ev: "In Garcia-Argibay and colleagues' 2019 meta-analysis of binaural beats, listening before a task gave clearer effects on thinking than listening only during it. Beta beats at 16 and 24 Hz improved vigilance in Lane and colleagues' trial. In a small trial, 10 minutes of heart-rate-variability biofeedback improved reaction times and accuracy on a Stroop task under stress.",
       cite: "Garcia-Argibay et al. 2019 · Lane et al. 1998 · Prinsloo et al. 2011"
     },
     {
@@ -7805,7 +8171,7 @@
     {
       id: "recovery", name: "Exercise Recovery", min: 10, strength: 2,
       tone: "relax", sensor: "best",
-      blurb: "After training: slow breathing at six a minute with a long exhale, under the theta beat from the post-exercise HRV study. Watch your heart rate come down.",
+      blurb: "After training: slow breathing at six a minute with a long exhale, over a 6 Hz theta beat. Watch your heart rate come down.",
       parts: "Slow long-exhale breathing · 6 Hz binaural · heart-rate drop",
       audio: { name: "Exercise Recovery", band: "Theta", carrier: 200, pts: [[0, 6], [600, 6]], fade: 8, cat: "relax" },
       build: function () {
@@ -7818,7 +8184,7 @@
         ];
       },
       how: "Eight and a half minutes at 6 breaths a minute (4 s in, 6 s out) over a 6 Hz theta beat. With a sensor connected the summary shows how far your heart rate fell.",
-      ev: "Slow breathing at six a minute after moderate cycling sped the return of cardiac parasympathetic activity. In a separate study, theta binaural beats after exercise increased parasympathetic activation measured by heart-rate variability.",
+      ev: "Slow breathing at six a minute after moderate cycling sped the return of cardiac parasympathetic activity in young men (Sugimoto et al. 2025). In a separate study of 21 young adults resting after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability toward parasympathetic activity over the first ten minutes, compared with the same sound without a beat (McConnell et al. 2014).",
       cite: "Sugimoto et al. 2025 · McConnell et al. 2014"
     },
 
@@ -7932,8 +8298,8 @@
       cite: "Epinat-Duclos et al. 2021 · Torre & Lieberman 2018 · Kashdan et al. 2015 · Frattaroli 2006"
     },
     {
-      id: "nvc-choose", name: "From Should to Choose", reflect: true, selfPaced: true, est: 10, strength: 1, tone: "ther",
-      blurb: "List what you do because you feel you have to, then check each one: would you still choose it, and for what? An exercise from nonviolent communication for looking at the rules you live by.",
+      id: "nvc-choose", name: "Have-Tos into Choices (NVC)", reflect: true, selfPaced: true, est: 10, strength: 1, tone: "ther",
+      blurb: "List what you do because you feel you have to, should or must, then check each one: would you still choose it, and for what? Marshall Rosenberg's exercise from Nonviolent Communication, ending with each rewritten as “I choose to… because I want…”.",
       build: function () { return nvcChooseSteps(); },
       how: "List the things you feel you have to, should or must do. Then for each, decide whether you'd still choose it, and why, picking from common reasons or writing your own. Reasons that are really pressure, like money, approval, or avoiding guilt, shame or punishment, are marked. You end with your list rewritten as \u201CI choose to\u2026 because I want\u2026\u201D, and the ones you'd like to change.",
       ev: "This exercise comes from Marshall Rosenberg's book and hasn't been tested on its own. Motivation research points the same way: in self-determination theory, acting from your own values goes with more well-being and persistence than acting from pressure, guilt or the need for approval.",
@@ -8000,7 +8366,7 @@
     {
       id: "ujjayi", name: "Ujjayi", min: 6, strength: 2,
       tone: "relax", sensor: "optional",
-      blurb: "Ocean breath at six a minute, with the soft throat sound on the out-breath only, the version that worked best for beginners.",
+      blurb: "Ocean breath at six a minute, with the soft throat sound on the out-breath only: in a study of yoga beginners that kept the blood-pressure benefit of slow breathing, which the sound on both breaths took away.",
       build: function () {
         return [
           G(60, "Find the sound", ["Breathe out through an open mouth as if fogging a mirror: haaa. Feel the slight narrowing at the back of the throat.",
@@ -8155,7 +8521,7 @@
     sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
       ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
     calm: [["calm-reset", "program", "sit"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
-      ["coherence", "program", "sit"], ["grounding", "meditate", "sit"], ["tapping", "relax", "sit"],
+      ["coherence", "program", "sit lie"], ["grounding", "meditate", "sit"], ["tapping", "relax", "sit"],
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
@@ -8240,6 +8606,42 @@
   }
   function pLenTxt(d, m) { return d.lenFmt ? d.lenFmt(m) : d.lenUnit ? m + " " + d.lenUnit + (m === 1 ? "" : "s") : m + " min"; }
   function pResRate() { return (H.find && H.find.best) ? H.find.best : 5.5; }
+
+  /* ----- a practice's own choices, kept for it: a position (d.choices), which binaural beat
+     (d.beats) and the pace of its even breathing (d.pace) ----- */
+  function pChoices(id) {
+    try { var v = JSON.parse(store.get("pCh." + id) || "null"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; }
+  }
+  function pChoiceSet(d, k, v) { var o = pChoices(d.id); o[k] = v; store.set("pCh." + d.id, JSON.stringify(o)); }
+  function pChoice(d, key) {
+    var c = (d.choices || []).filter(function (x) { return x.key === key; })[0];
+    if (!c) return undefined;
+    var v = pChoices(d.id)[key];
+    return c.opts.some(function (o) { return o[0] === v; }) ? v : c.def;
+  }
+  function pBeat(d) {
+    var v = pChoices(d.id).beat;
+    return d.beats.filter(function (b) { return b.id === v; })[0] || d.beats[0];
+  }
+  // the binaural layer as it will play: the practice's own, or the beat chosen for it
+  function pAudio(d) {
+    if (!d.audio || !d.beats) return d.audio;
+    var b = pBeat(d);
+    return ext(ext({}, d.audio), { band: b.band, pts: b.pts });
+  }
+  var P_PACE = { inh: [2, 10], exh: [2, 12] };     // seconds, in half-second steps
+  // even breathing at your resonance rate (from the test, or 5.5 a minute), or an in and out of your own
+  function pPace(d) {
+    var r = pResRate(), half = Math.round(30 / r * 10) / 10, c = pChoices(d.id);
+    if (!d.pace || c.pace !== "own") return { own: false, inh: half, exh: half, rate: r };
+    var get = function (k) {
+      var v = Math.round(parseFloat(c[k]) * 2) / 2, lim = P_PACE[k];
+      return isFinite(v) ? Math.max(lim[0], Math.min(lim[1], v)) : Math.max(lim[0], Math.min(lim[1], Math.round(half * 2) / 2));
+    };
+    var inh = get("inh"), exh = get("exh");
+    return { own: true, inh: inh, exh: exh, rate: Math.round(600 / (inh + exh)) / 10 };
+  }
+  function pSecs(v) { return (v % 1 ? v.toFixed(1) : String(v)) + " s"; }
   function pLenOf(d, len) {
     if (!d.lengths) return 0;
     return d.lengths.indexOf(len) >= 0 ? len : d.lengths.indexOf(d.min) >= 0 ? d.min : d.lengths[0];
@@ -9045,7 +9447,7 @@
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
       if (d.audio && P.opt.audio) {
-        var a = d.audio;
+        var a = pAudio(d);
         load({ id: "prac-" + d.id, pid: d.id, practice: true, cat: a.cat, band: a.band, name: a.name, carrier: a.carrier,
           beat: a.dyn ? a.start : a.pts[a.pts.length - 1][1], pts: a.dyn ? null : a.pts, dyn: !!a.dyn, cur: a.start || 0,
           minutes: plan.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "" });
@@ -9227,9 +9629,31 @@
     });
     var O = pIntroOpts(d), own = Object.keys(pOptOwn(d.id)).length > 0, hasRhy = pPlanHasRhy(plan.steps);
     var opts = [], every = [];
+    // this practice's own choices come first: how you'll be, which beat, what pace
+    (d.choices || []).forEach(function (c) {
+      var v = pChoice(d, c.key);
+      opts.push('<div class="so-row so-seg"><span class="so-l">' + esc(c.label) + (c.note ? "<small>" + esc(c.note) + "</small>" : "") + '</span><div class="mini-seg" data-choice="' + c.key + '">' +
+        c.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (v === o[0]) + '">' + esc(o[1]) + "</button>"; }).join("") + "</div></div>");
+    });
+    if (d.audio && d.beats) {
+      var bt = pBeat(d);
+      opts.push('<div class="so-row so-seg so-beat"><span class="so-l">Binaural beat<small id="sBeatNote">' + esc(pBeatNote(d, O)) + '</small></span><div class="mini-seg" id="sOptBeat">' +
+        [["off", "Off"]].concat(d.beats.map(function (b) { return [b.id, b.label]; })).map(function (o) {
+          return '<button data-v="' + o[0] + '" aria-pressed="' + (o[0] === "off" ? !O.audio : O.audio && bt.id === o[0]) + '">' + esc(o[1]) + "</button>";
+        }).join("") + "</div></div>");
+    }
+    if (d.pace) {
+      var pc = pPace(d), step = function (k, label, what) {
+        return '<span class="so-step" data-k="' + k + '"><span class="so-step-l">' + label + '</span><button data-d="-1" aria-label="' + what + ' half a second shorter" aria-disabled="' + (pc[k] <= P_PACE[k][0]) + '">−</button>' +
+          '<b id="sPace-' + k + '" aria-live="polite">' + pSecs(pc[k]) + '</b><button data-d="1" aria-label="' + what + ' half a second longer" aria-disabled="' + (pc[k] >= P_PACE[k][1]) + '">+</button></span>';
+      };
+      opts.push('<div class="so-row so-seg so-pace"><span class="so-l">Breathing pace<small id="sPaceNote">' + esc(pPaceNote(pc)) + '</small></span><div class="mini-seg" id="sOptPace">' +
+        [["auto", "Resonance rate"], ["own", "Your own"]].map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + ((o[0] === "own") === pc.own) + '">' + o[1] + "</button>"; }).join("") +
+        '</div><div class="so-steps" id="sPaceSteps"' + (pc.own ? "" : " hidden") + ">" + step("inh", "In", "Each in-breath") + step("exh", "Out", "Each out-breath") + "</div></div>");
+    }
     opts.push(pToggle("sOptVoice", "Spoken guidance", O.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
     opts.push(pToggle("sOptBells", "Bells between steps", O.bells, ""));
-    if (d.audio) opts.push(pToggle("sOptAudio", "Binaural layer", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
+    if (d.audio && !d.beats) opts.push(pToggle("sOptAudio", "Binaural layer", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
     if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesized berimbau keeps time for the capoeira moves."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
@@ -9285,7 +9709,7 @@
         }).join("") + "</ol>" +
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
-        (d.caution ? '<div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>' + esc(d.caution) + "</span></div>" : "") +
+        (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its binaural beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
       "</div>" +
       '<div class="si-side">' +                     // Start first: above the options on a computer, last on a phone (order)
       '<div class="si-bar">' +
@@ -9320,10 +9744,24 @@
     return (own ? "You've changed these for " + esc(d.name) + ". " : "For " + esc(d.name) + " only. ") +
       'The defaults for every practice are in <a href="#settings">Settings</a>.';
   }
+  // what the chosen beat is, or that there's none
+  function pBeatNote(d, O) {
+    return O.audio ? pBeat(d).note + " " + d.audio.carrier + " Hz carrier. Headphones needed." : "No beat: the guidance and breath cues only.";
+  }
+  function pPaceNote(pc) {
+    if (pc.own) return pc.rate + " breaths a minute, at your own in and out.";
+    return pc.rate + " breaths a minute, " + (H.find && H.find.best ? "from your resonance test." : "until you take the resonance test on the Heart tab.");
+  }
   function pOptSumTxt(d, O, hasRhy) {
-    var s = [O.voice && window.speechSynthesis ? "Voice" : "No voice"];
+    var s = [];
+    (d.choices || []).forEach(function (c) {                 // a choice of its own, when it isn't the usual one
+      var v = pChoice(d, c.key);
+      if (v !== c.def) s.push(c.opts.filter(function (o) { return o[0] === v; })[0][1]);
+    });
+    if (d.pace && pPace(d).own) s.push("In " + pSecs(pPace(d).inh) + ", out " + pSecs(pPace(d).exh));
+    s.push(O.voice && window.speechSynthesis ? "Voice" : "No voice");
     if (O.bells) s.push("Bells");
-    if (d.audio) s.push(O.audio ? "Binaural" : "No beats");
+    if (d.audio) s.push(O.audio ? (d.beats ? pBeat(d).label : "Binaural") : "No beats");
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -9359,6 +9797,50 @@
     on("#sOptVoice", function () { O.voice = this.checked; var r = $("#sVoiceRow"); if (r) r.hidden = !this.checked; save(); });
     on("#sOptBells", function () { O.bells = this.checked; save(); if (this.checked) pBell(0.4, 0, 0, 0, true); });
     on("#sOptAudio", function () { O.audio = this.checked; save(); });
+    // a practice's own choices change in place, so the button you pressed keeps the focus
+    var press = function (g, b) { g.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); };
+    document.querySelectorAll("#sOpts [data-choice]").forEach(function (g) {
+      g.addEventListener("click", function (e) {
+        var b = e.target.closest("button"); if (!b) return;
+        pChoiceSet(d, g.dataset.choice, b.dataset.v); press(g, b); sum();
+      });
+    });
+    var bg = $("#sOptBeat");
+    if (bg) bg.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      O.audio = b.dataset.v !== "off";
+      if (O.audio) pChoiceSet(d, "beat", b.dataset.v);
+      save(); press(bg, b);
+      bSetT("#sBeatNote", pBeatNote(d, O));
+    });
+    var pg = $("#sOptPace");
+    if (pg) {
+      var paceUI = function () {
+        var pc = pPace(d);
+        $("#sPaceSteps").hidden = !pc.own;
+        ["inh", "exh"].forEach(function (k) {
+          bSetT("#sPace-" + k, pSecs(pc[k]));
+          var bs = document.querySelectorAll('#sPaceSteps [data-k="' + k + '"] button');      // aria-disabled, so a held key keeps its place at the end
+          bs[0].setAttribute("aria-disabled", pc[k] <= P_PACE[k][0] ? "true" : "false"); bs[1].setAttribute("aria-disabled", pc[k] >= P_PACE[k][1] ? "true" : "false");
+        });
+        bSetT("#sPaceNote", pPaceNote(pc));
+        sum();
+      };
+      pg.addEventListener("click", function (e) {
+        var b = e.target.closest("button"); if (!b) return;
+        if (b.dataset.v === "own" && !("inh" in pChoices(d.id))) {    // the first time: start from the resonance pace
+          var pc0 = pPace(d);
+          pChoiceSet(d, "inh", Math.round(pc0.inh * 2) / 2); pChoiceSet(d, "exh", Math.round(pc0.exh * 2) / 2);
+        }
+        pChoiceSet(d, "pace", b.dataset.v); press(pg, b); paceUI();
+      });
+      $("#sPaceSteps").addEventListener("click", function (e) {
+        var b = e.target.closest("button[data-d]"); if (!b || b.getAttribute("aria-disabled") === "true") return;
+        var k = b.closest("[data-k]").dataset.k, lim = P_PACE[k];
+        pChoiceSet(d, k, Math.max(lim[0], Math.min(lim[1], pPace(d)[k] + 0.5 * parseInt(b.dataset.d, 10))));
+        paceUI();
+      });
+    }
     on("#sOptRhy", function () { O.rhythm = this.checked; save(); });
     on("#sOptTick", function () { O.tapTick = this.checked; save(); });
     on("#sOptBuzz", function () {
@@ -9596,7 +10078,7 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP };   // for automated tests only
   }
   /* ------------------------------- the end screen -------------------------------
      What a practice measured, as tiles you can tap for what each number means, with your own
@@ -9932,15 +10414,19 @@
   }
   /* ------------------------------- the library -------------------------------
      Goal sections (Sleep, Calm, Focus, Energy, Recover, Reflect) holding practices, breathing
-     patterns, tracks and the custom primer, each listed once, under its goal. A goal chip narrows
-     it to one goal and adds the items that are also good for it; the filter panel narrows by
-     method, length, posture and needs. On "All", each section shows its first few rows until you
-     ask for the rest, and the tinnitus track and the two builders have sections of their own.
+     patterns, tracks and the custom primer, each listed once, under its goal. Everything combines:
+     pick one goal or several, and each shows its own items, then the ones that are also good for
+     it; pick one technique or several; and the filter panel narrows by length, posture and needs,
+     again one choice or several. Within a row the choices add up (calm or sleep); the rows narrow
+     each other (calm or sleep, and breathing). Each chip says how many it would show. On "All",
+     with nothing chosen, each section shows its first few rows until you ask for the rest, and
+     the tinnitus track and the two builders have sections of their own.
      It is built each time it's shown (showView), never at start-up: working out every practice's
      length is the slowest thing the app does as it opens, and Today needs none of it.
   ------------------------------------------------------------------------------ */
 
-  var LIB = { goal: "all", f: { method: "", len: "", posture: "", needs: "" }, open: {}, panel: false, mins: {} };
+  var LIB = { goals: [], f: { method: [], len: [], posture: [], needs: [] }, open: {}, panel: false, mins: {} };
+  var LIB_FACETS = ["method", "len", "posture", "needs"];
   var LIB_LENS = [["5", "Up to 5 min"], ["10", "Up to 10 min"], ["20", "Up to 20 min"], ["long", "Longer"]];
   var LIB_TRACK_COL = { relax: "var(--relax)", stim: "var(--stim)", ther: "var(--ther)" };
 
@@ -9996,9 +10482,9 @@
   }
   function libPattern(b) {
     var t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
-    return { key: "b:" + b.id, type: "pattern", name: PATTERN_NAMES[b.id] || b.id, blurb: b.desc, goal: b.goal, also: b.also || [],
-      method: "breath", posture: b.posture, needs: [], mins: [1, 60], minsTxt: (Math.round(600 / per) / 10) + " breaths a minute",
-      label: "Breathing guide", href: "#breathe/" + b.id, icon: "breathe", col: "var(--b-in)", strength: b.strength, badges: [] };
+    return { key: "b:" + b.id, type: "pattern", name: patName(b), blurb: b.desc, goal: b.goal || "", also: b.also || [],
+      method: "breath", posture: b.posture || ["sit"], needs: [], mins: [1, 60], minsTxt: (Math.round(600 / per) / 10) + " breaths a minute",
+      label: "Breathing guide", href: "#breathe/" + b.id, icon: "breathe", col: "var(--b-in)", strength: b.strength, badges: b.mine ? [["mine", "Yours"]] : [] };
   }
   function libTrack(t) {
     return { key: "t:" + t.id, type: "track", name: t.name, blurb: t.desc, goal: t.goal, also: t.also || [],
@@ -10031,37 +10517,58 @@
     out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
     return out.slice(0, n).map(function (it) { return it.name; });
   }
-  function libMine() { return yLoad().map(function (q) { return libPractice(yDef(q)); }); }
+  // your routines, then your breathing patterns
+  function libMine() { return yLoad().map(function (q) { return libPractice(yDef(q)); }).concat(mpAll().map(libPattern)); }
   function libTinnitus() { return TRACKS.filter(function (t) { return t.goal === "tinnitus"; }).map(libTrack); }
   // any one item by its key, as favourites and the history keep it; null once it's gone
   function libItem(key) {
     if (!key) return null;
-    if (key.indexOf("b:") === 0) { var b = preset(key.slice(2)); return b && b.goal ? libPattern(b) : null; }
+    if (key.indexOf("b:") === 0) { var b = preset(key.slice(2)); return b && (b.goal || b.mine) ? libPattern(b) : null; }
     if (key.indexOf("t:") === 0) { var t = trackById(key.slice(2)); return t ? libTrack(t) : null; }
     if (key.indexOf("x:") === 0) return TOOLS[key.slice(2)] ? libTool(key.slice(2)) : null;
     var d = pDef(key);
     return d ? libPractice(d) : null;
   }
-  // the library at one goal, or at one method: from Today's goal tiles, and old links to Sounds
+  // the library at one goal, or at one technique: from Today's goal tiles, and old links to Sounds
   function libShow(goal, method) {
-    LIB.goal = goalOf(goal) ? goal : "all";
-    LIB.f = { method: method || "", len: "", posture: "", needs: "" };
-    LIB.panel = !!method;
+    libClear();
+    if (goalOf(goal)) LIB.goals = [goal];
+    if (method) LIB.f.method = [method];
+    LIB.panel = false;
     try { history.replaceState(null, "", "#practice"); } catch (e) {}
     showView("practice");
   }
 
   /* ----- filters ----- */
-  function libPass(it) {
-    var f = LIB.f;
-    if (f.method && it.method !== f.method) return false;
-    if (f.posture && it.posture.indexOf(f.posture) < 0) return false;
-    if (f.needs === "none" ? it.needs.length : f.needs && it.needs.indexOf(f.needs) < 0) return false;
-    if (f.len === "long") { if (it.mins[1] <= 20.5) return false; }
-    else if (f.len && it.mins[0] > parseInt(f.len, 10) + 0.5) return false;
+  function libClear(panelOnly) {
+    if (!panelOnly) { LIB.goals = []; LIB.f.method = []; }
+    LIB.f.len = []; LIB.f.posture = []; LIB.f.needs = [];
+  }
+  // one item against one row's choices: nothing chosen lets everything through, several let through any of them
+  function libFacet(it, k, vals) {
+    if (!vals.length) return true;
+    return vals.some(function (v) {
+      if (k === "method") return it.method === v;
+      if (k === "posture") return it.posture.indexOf(v) >= 0;
+      if (k === "needs") return v === "none" ? !it.needs.length : it.needs.indexOf(v) >= 0;
+      return v === "long" ? it.mins[1] > 20.5 : it.mins[0] <= parseInt(v, 10) + 0.5;      // length
+    });
+  }
+  // every row but one ("skip": the row whose chips are being counted)
+  function libPass(it, skip) {
+    for (var i = 0; i < LIB_FACETS.length; i++) if (LIB_FACETS[i] !== skip && !libFacet(it, LIB_FACETS[i], LIB.f[LIB_FACETS[i]])) return false;
     return true;
   }
-  function libFiltered() { var f = LIB.f; return !!(f.method || f.len || f.posture || f.needs); }
+  function libFor(it, g) { return it.goal === g || it.also.indexOf(g) >= 0; }
+  function libGoalHit(it) { return !LIB.goals.length || LIB.goals.some(function (g) { return libFor(it, g); }); }
+  function libPanelN() { return LIB.f.len.length + LIB.f.posture.length + LIB.f.needs.length; }
+  function libFiltered() { return LIB.goals.length + LIB.f.method.length + libPanelN() > 0; }
+  function libToggle(list, v) { var i = list.indexOf(v); if (i >= 0) list.splice(i, 1); else list.push(v); }
+  // "calm or sleep", in the order the chips show them
+  function libOr(ids, names) {
+    var n = names.filter(function (x) { return ids.indexOf(x[0]) >= 0; }).map(function (x) { return x[1]; });
+    return n.length > 1 ? n.slice(0, -1).join(", ") + " or " + n[n.length - 1] : n[0] || "";
+  }
 
   /* ----- rendering ----- */
   // one row; compact rows (on Today) leave out the blurb and the timeline, and can say something else under the name
@@ -10095,70 +10602,121 @@
       '<span class="pc-b"><span class="pc-top"><b>Routine builder</b></span><span class="pc-meta"><span class="pc-sub">Tool · your choice</span></span>' +
       '<span class="pc-blurb">Pick from ' + ASANAS.length + " yoga poses, stretches, mobility drills and capoeira moves, set each one's time, and save the routine. Each comes with its own drawing and spoken cues, offline.</span></span></a></li>";
   }
+  // a chip that toggles a choice, with how many it would show alongside the other rows' choices
+  // (no count for "All" and "Any": the line under the chips gives the total)
+  // (the count is read out with the name; hidden text inside a chip would stretch the page past a phone's width)
+  function libChip(attr, v, label, on, n, small) {
+    var c = typeof n === "number";
+    return '<button class="chip-b' + (small ? " small" : "") + (c && !n ? " zero" : "") + '" ' + attr + '="' + v + '" aria-pressed="' + on + '"' +
+      (c ? ' aria-label="' + label + ", " + n + (n === 1 ? " match" : " matches") + '"' : "") + ">" + label +
+      (c ? '<span class="cnt" aria-hidden="true">' + n + "</span>" : "") + "</button>";
+  }
   function pRenderLib() {
-    $("#prFilt").innerHTML = [["all", "All"]].concat(GOALS.map(function (g) { return [g.id, g.name]; })).map(function (f) {
-      return '<button class="chip-b" data-f="' + f[0] + '" aria-pressed="' + (f[0] === LIB.goal) + '">' + f[1] + "</button>";
-    }).join("");
-    libPanel();
-    var all = libAll().filter(libPass), mine = libMine().filter(libPass), filtered = libFiltered();
-    var cap = filtered ? 0 : (MOBILE.matches ? 4 : 6), h = "";
-    if (LIB.goal === "all") {
-      if (mine.length) h += libSection("mine", "Your routines", "Saved on this device.", "move", mine, cap);
+    var G = LIB.goals, f = LIB.f, filtered = libFiltered(), keep = libFocusKey();
+    var all = libAll(), mine = libMine(), tin = libTinnitus(), beats = libTool("beats"), routine = libTool("routine");
+    var every = mine.concat(all), cnt = function (fn) { var n = 0; every.forEach(function (it) { if (fn(it)) n++; }); return n; };
+    var shown = function (it) { return libPass(it) && libGoalHit(it); };
+    // the chips: goals, then techniques, each counted against everything else that's chosen
+    $("#prFilt").innerHTML = libChip("data-f", "all", "All", !G.length) +
+      GOALS.map(function (g) { return libChip("data-f", g.id, g.name, G.indexOf(g.id) >= 0, cnt(function (it) { return libPass(it) && libFor(it, g.id); })); }).join("");
+    $("#prMeth").innerHTML = libChip("data-m", "all", "Any", !f.method.length) +
+      METHODS.map(function (m) { return libChip("data-m", m[0], m[1], f.method.indexOf(m[0]) >= 0, cnt(function (it) { return libPass(it, "method") && libGoalHit(it) && it.method === m[0]; })); }).join("");
+    libPanel(every);
+    var cap = filtered ? 0 : (MOBILE.matches ? 4 : 6), h = "", n = 0;
+    var sec = function (g, title, lede, icon, items, c, extra) { n += items.length + (extra ? 1 : 0); h += libSection(g, title, lede, icon, items, c, extra); };
+    mine = mine.filter(shown); all = all.filter(shown);
+    if (!G.length) {
+      if (mine.length) {
+        var nB = mine.filter(function (it) { return it.type === "pattern"; }).length, nR = mine.length - nB;
+        sec("mine", nR && nB ? "Your routines and patterns" : nB ? "Your breathing patterns" : "Your routines", "Saved on this device.", nR ? "move" : "breathe", mine, cap);
+      }
       GOALS.forEach(function (g) {
         var items = all.filter(function (it) { return it.goal === g.id; });
-        if (items.length) h += libSection(g.id, g.name, g.lede, g.icon, items, cap);
+        if (items.length) sec(g.id, g.name, g.lede, g.icon, items, cap);
       });
-      var tin = libTinnitus().filter(libPass);
-      if (tin.length) h += libSection("tinnitus", "For tinnitus", "Sound therapy for weeks of daily use, alongside your own care.", "sounds", tin, 0);
-      var make = [libTool("beats")].filter(libPass), build = libPass(libTool("routine"));
-      if (make.length || build) h += libSection("make", "Make your own", "Your own routine or binaural beat.", "plus", make, 0, build ? libBuildRow() : "");
+      tin = tin.filter(function (it) { return libPass(it); });
+      if (tin.length) sec("tinnitus", "For tinnitus", "Sound therapy for weeks of daily use, alongside your own care.", "sounds", tin, 0);
+      var make = [beats].filter(function (it) { return libPass(it); }), build = libPass(routine);
+      if (make.length || build) sec("make", "Make your own", "Your own routine or binaural beat.", "plus", make, 0, build ? libBuildRow() : "");
     } else {
-      var g = goalOf(LIB.goal);
-      var main = mine.filter(function (it) { return it.goal === g.id; }).concat(all.filter(function (it) { return it.goal === g.id; }));
-      var also = all.filter(function (it) { return it.goal !== g.id && it.also.indexOf(g.id) >= 0; });
-      if (main.length) h += libSection(g.id, g.name, g.lede, g.icon, main, 0);
-      if (also.length) h += libSection("also", "Also good for " + g.name.toLowerCase(), "Their main goal is another one, but they suit this too.", "", also, 0);
+      // each chosen goal with its own items, in the usual order; then what's also good for any of them
+      GOALS.forEach(function (g) {
+        if (G.indexOf(g.id) < 0) return;
+        var main = mine.concat(all).filter(function (it) { return it.goal === g.id; });
+        if (main.length) sec(g.id, g.name, g.lede, g.icon, main, 0);
+      });
+      var also = all.filter(function (it) { return G.indexOf(it.goal) < 0; }), names = GOALS.map(function (g) { return [g.id, g.name.toLowerCase()]; });
+      if (also.length) sec("also", "Also good for " + libOr(G, names), G.length > 1 ? "Their main goal is another one, but they suit one of these too." : "Their main goal is another one, but they suit this too.", "", also, 0);
     }
     if (!h) h = '<div class="pr-empty"><p>Nothing matches these filters.</p><button class="btn small" data-clear="1">Clear filters</button></div>';
     $("#prLib").innerHTML = h;
-    edgeFade($("#prFilt"));
+    // what's chosen, in words, and how many it shows
+    var sum = $("#prSum"), lens = LIB_LENS.map(function (l) { return [l[0], l[1].toLowerCase()]; });
+    sum.hidden = !filtered;
+    if (filtered) sum.innerHTML = "<span><b>" + n + "</b> " + (n === 1 ? "match" : "matches") + "</span>" +
+      [libOr(G, GOALS.map(function (g) { return [g.id, g.name]; })), libOr(f.method, METHODS), libOr(f.len, lens), libOr(f.posture, POSTURES), libOr(f.needs, NEEDS)]
+        .filter(Boolean).map(function (s) { return "<span>" + esc(s.charAt(0).toUpperCase() + s.slice(1)) + "</span>"; }).join("") +
+      '<button type="button" class="sf-link pr-clear" data-clear="1">Clear all</button>';
+    edgeFade($("#prFilt")); edgeFade($("#prMeth"));
+    libRefocus(keep);
   }
-  function libPanel() {
-    var f = LIB.f, n = (f.method ? 1 : 0) + (f.len ? 1 : 0) + (f.posture ? 1 : 0) + (f.needs ? 1 : 0);
-    var btn = $("#prFbtn");
+  // re-drawn chips lose the keyboard focus: give it back to the one with the same choice
+  function libFocusKey() {
+    var a = document.activeElement;
+    if (!a || !a.closest || !a.closest("#prFilt, #prMeth, #prPanel, #prSum")) return null;
+    return ["data-f", "data-m", "data-k", "data-clear"].map(function (k) { return a.getAttribute(k) === null ? "" : "[" + k + '="' + a.getAttribute(k) + '"]'; }).join("") +
+      (a.dataset.v ? '[data-v="' + a.dataset.v + '"]' : "");
+  }
+  function libRefocus(key) {
+    if (!key) return;
+    var b = document.querySelector("#prFilt " + key + ", #prMeth " + key + ", #prPanel " + key) || $("#prFbtn");
+    try { b.focus({ preventScroll: true }); } catch (e) { b.focus(); }
+  }
+  function libPanel(every) {
+    var f = LIB.f, n = libPanelN(), btn = $("#prFbtn");
     bSetT("#prFbtnTxt", n ? "Filters · " + n : "Filters");
     btn.classList.toggle("on", n > 0);
     btn.setAttribute("aria-expanded", LIB.panel ? "true" : "false");
-    var row = function (key, label, opts) {
-      return '<div class="pf-row" role="group" aria-label="' + label + '"><span class="pf-l">' + label + "</span><div class=\"pf-chips\">" + opts.map(function (o) {
-        return '<button class="chip-b small" data-k="' + key + '" data-v="' + o[0] + '" aria-pressed="' + (f[key] === o[0]) + '">' + o[1] + "</button>";
-      }).join("") + "</div></div>";
-    };
     var p = $("#prPanel");
     p.hidden = !LIB.panel;
     if (!LIB.panel) return;
-    p.innerHTML = row("method", "Method", METHODS.map(function (m) { return [m[0], m[1]]; })) + row("len", "Length", LIB_LENS) +
-      row("posture", "Posture", POSTURES) + row("needs", "Needs", NEEDS) +
-      '<div class="pf-foot"><span>Tap a chosen filter again to remove it.</span>' + (n ? '<button class="btn small" data-clear="1">Clear filters</button>' : "") + "</div>";
+    every = every || libMine().concat(libAll());
+    var row = function (key, label, opts) {
+      return '<div class="pf-row" role="group" aria-label="' + label + '"><span class="pf-l">' + label + '</span><div class="pf-chips">' + opts.map(function (o) {
+        var c = 0;
+        every.forEach(function (it) { if (libPass(it, key) && libGoalHit(it) && libFacet(it, key, [o[0]])) c++; });
+        return libChip('data-k="' + key + '" data-v', o[0], o[1], f[key].indexOf(o[0]) >= 0, c, true);
+      }).join("") + "</div></div>";
+    };
+    p.innerHTML = row("len", "Length", LIB_LENS) + row("posture", "Posture", POSTURES) + row("needs", "Needs", NEEDS) +
+      '<div class="pf-foot"><span>Pick one or several in a row; tap a chosen one again to remove it.</span>' + (n ? '<button class="btn small" data-clear="panel">Clear these</button>' : "") + "</div>";
   }
   function libInit() {
     $("#prFilt").addEventListener("click", function (e) {
       var b = e.target.closest("button[data-f]");
       if (!b) return;
-      LIB.goal = b.dataset.f;
+      if (b.dataset.f === "all") LIB.goals = []; else libToggle(LIB.goals, b.dataset.f);
+      pRenderLib();
+    });
+    $("#prMeth").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-m]");
+      if (!b) return;
+      if (b.dataset.m === "all") LIB.f.method = []; else libToggle(LIB.f.method, b.dataset.m);
       pRenderLib();
     });
     $("#prFbtn").addEventListener("click", function () { LIB.panel = !LIB.panel; libPanel(); });
-    var clear = function () { LIB.f = { method: "", len: "", posture: "", needs: "" }; pRenderLib(); };
+    var clear = function (panelOnly) { libClear(panelOnly); pRenderLib(); };
     $("#prPanel").addEventListener("click", function (e) {
-      if (e.target.closest("[data-clear]")) { clear(); return; }
+      var c = e.target.closest("[data-clear]");
+      if (c) { clear(true); $("#prFbtn").focus(); return; }
       var b = e.target.closest("button[data-k]");
       if (!b) return;
-      LIB.f[b.dataset.k] = LIB.f[b.dataset.k] === b.dataset.v ? "" : b.dataset.v;
+      libToggle(LIB.f[b.dataset.k], b.dataset.v);
       pRenderLib();
     });
+    $("#prSum").addEventListener("click", function (e) { if (e.target.closest("[data-clear]")) { clear(false); $("#prFilt [data-f=all]").focus(); } });
     $("#prLib").addEventListener("click", function (e) {
-      if (e.target.closest("[data-clear]")) { clear(); return; }
+      if (e.target.closest("[data-clear]")) { clear(false); $("#prFilt [data-f=all]").focus(); return; }
       var m = e.target.closest("[data-more]");
       if (!m) return;
       LIB.open[m.dataset.more] = true;
@@ -11405,7 +11963,11 @@
     if (!FD.base) FD.base = fdBuildBase();
     var mine = [];
     try { yLoad().forEach(function (q) { mine.push(fdPractice(yDef(q))); }); } catch (e) {}
-    return mine.concat(FD.base);         // your routines can change between searches; the rest can't
+    mpAll().forEach(function (b) {
+      mine.push(fdEntry("breath", b.name, "Your breathing pattern · " + (Math.round(600 / cycleOf(b.t)) / 10) + " breaths a minute", [b.desc],
+        "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.2, tags: "breathe breathing pattern mine own saved" }));
+    });
+    return mine.concat(FD.base);         // your routines and patterns can change between searches; the rest can't
   }
 
   /* ----- matching and ranking ----- */
@@ -11546,7 +12108,7 @@
 
   /* ----- landing on a breathing pattern ----- */
   function fdPattern(id) {
-    var inp = document.querySelector('#bPats input[value="' + id + '"]');
+    var inp = /^[\w-]+$/.test(id) ? document.querySelector('#bPats input[value="' + id + '"]') : null;
     if (!inp) return;
     if (!(pBusy() && P.usesB) && BC.pattern !== id) {    // a practice running the guide keeps it
       inp.checked = true;
@@ -11678,7 +12240,8 @@
   // a breathing session on the guide (not one a practice is running, and not the resonance test)
   function hBreath(secs, full) {
     if (P.usesB || B.finder || secs < 60) return;
-    var e = { k: "breath", id: BC.pattern, secs: secs, full: full, rate: +(60 / cycleOf(BC)).toFixed(1) };
+    var e = { k: "breath", id: BC.pattern, secs: secs, full: full, rate: +(60 / cycleOf(BC)).toFixed(1) }, mine = mpGet(BC.pattern);
+    if (mine) e.n = mine.name;                   // your own pattern keeps its name here even once it's deleted
     var s = B.hr;
     if (s.length >= 10) {
       var end = s[s.length - 1].bt;
@@ -11720,7 +12283,7 @@
     if (e.k === "breath" && e.id === "custom") return { name: "Your own breathing pattern", href: "#breathe", icon: "breathe", col: "var(--b-in)", goal: "" };
     if (it) return { name: it.name, href: it.href, icon: it.icon, col: it.col, goal: it.goal };
     // a routine you've since deleted, or something renamed
-    return { name: e.n || "A session", href: e.k === "practice" ? "#practice" : "#home", icon: e.k === "breath" ? "breathe" : e.k === "track" ? "sounds" : "practice", col: "var(--accent)", goal: "" };
+    return { name: e.n || "A session", href: e.k === "practice" ? "#practice" : e.k === "breath" ? "#breathe" : "#home", icon: e.k === "breath" ? "breathe" : e.k === "track" ? "sounds" : "practice", col: "var(--accent)", goal: "" };
   }
   function hMins(secs) { return secs < 3600 ? Math.max(1, Math.round(secs / 60)) + " min" : Math.floor(secs / 3600) + " h " + Math.round(secs % 3600 / 60) + " min"; }
   function hDetail(e) {
@@ -12146,6 +12709,14 @@
     store.set("favs", JSON.stringify(l));
     favSync();
   }
+  // back where it was in the list, as an undo puts it
+  function favPut(key, at) {
+    var l = favList();
+    if (l.indexOf(key) >= 0) return;
+    l.splice(Math.max(0, Math.min(at, l.length)), 0, key);
+    store.set("favs", JSON.stringify(l));
+    favSync();
+  }
   // a star button for one item; the same key can show on several screens at once
   function favBtn(key, name, cls) {
     var on = favHas(key);
@@ -12153,12 +12724,13 @@
       ' aria-label="Favourite: ' + esc(name) + '" title="' + (on ? "In your favourites on Today" : "Add to your favourites on Today") + '">' +
       '<svg class="i" aria-hidden="true"><use href="#i-star"/></svg><span class="fav-t">Favourite</span></button>';
   }
-  // the star on Breathe follows the pattern on screen; your own timings have no page to come back to
+  // the star on Breathe follows the pattern on screen: a preset or one you've saved, never timings
+  // you haven't saved, which have no page to come back to
   function bFavSync() {
     var el = $("#bFav");
     if (!el) return;
     var p = preset(BC.pattern);
-    el.innerHTML = p && p.goal ? favBtn("b:" + p.id, PATTERN_NAMES[p.id] || p.id, "b-fav") : "";
+    el.innerHTML = p && (p.goal || p.mine) ? favBtn("b:" + p.id, patName(p), "b-fav") : "";
   }
   function favSync() {
     document.querySelectorAll("[data-fav]").forEach(function (b) {
@@ -12287,7 +12859,7 @@
   // whether a heart sensor has ever connected here, and when this device last saved a backup
   var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "lastBackup"];
   // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
-  var BK_LISTS = ["history", "favs", "yogaSeqs", "nvcLog"];
+  var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
   var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|resonance|nvcDraft\..+)$/;
   var BK_MAX = 5e6;                       // bytes: more than a browser's whole storage for one site
   var BK = { pending: null, persisted: null, asked: false };
@@ -12402,7 +12974,8 @@
   function bkOffer() {
     var b = BK.pending, d = b.data;
     var has = [bkN(bkCount(d, "history"), "session", "sessions"), bkN(bkCount(d, "favs"), "favourite", "favourites"),
-               bkN(bkCount(d, "yogaSeqs"), "routine", "routines"), bkN(bkCount(d, "nvcLog"), "kept reflection", "kept reflections")]
+               bkN(bkCount(d, "yogaSeqs"), "routine", "routines"), bkN(bkCount(d, "myBreaths"), "breathing pattern", "breathing patterns"),
+               bkN(bkCount(d, "nvcLog"), "kept reflection", "kept reflections")]
       .filter(function (s) { return s.charAt(0) !== "0"; });
     var here = hLoad().length;
     return "<b>" + (b.at ? "A backup from " + esc(bkWhen(b.at)) : "A backup") + "</b>" +
@@ -12454,7 +13027,7 @@
   /* ----- the card in Settings ----- */
   function bkCard() {
     return '<section class="st-card" id="st-data" aria-labelledby="stD"><h2 id="stD">Your data</h2>' +
-      '<p class="st-note">Your history, favourites, routines, settings and any reflections you keep are stored in this browser, on this device, and never sent anywhere. A backup is one file of all of it, to keep safe or to move to another phone.</p>' +
+      '<p class="st-note">Your history, favourites, routines, breathing patterns, settings and any reflections you keep are stored in this browser, on this device, and never sent anywhere. A backup is one file of all of it, to keep safe or to move to another phone.</p>' +
       '<p class="st-note" id="stKeepTxt" hidden></p>' +
       '<div class="st-data-act"><button class="btn primary small" id="stSave">Save a backup</button><button class="btn small" id="stLoadBtn">Restore from a backup</button></div>' +
       '<input type="file" id="stLoad" accept=".json,application/json" hidden>' +
@@ -12510,6 +13083,7 @@
   builderInit();
   primeInit();
   dialogsInit();
+  safeInit();
   initBreath();
   hrInit();
   shellInit();

@@ -585,7 +585,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       const sleep = await E(p, () => [...document.querySelectorAll('#prLib .pr-grp')].map(g => g.dataset.g + ': ' + [...g.querySelectorAll('.pc-top b')].map(b => b.textContent).join('|')));
       ok(sleep[0] === 'sleep: Sleep Descent|4-7-8|Cognitive Shuffle|Evening Stretch|Evening Floor Flow|Delta Sleep' && /^also: .*Body Scan\|.*Progressive Muscle Relaxation\|Bhramari\|Long exhale/.test(sleep[1]),
         'the Sleep chip: its own six, then "also good for sleep": ' + sleep[1]);
-      await p.click('#prFilt [data-f=focus]'); await p.waitForTimeout(200);
+      await p.click('#prFilt [data-f=sleep]'); await p.click('#prFilt [data-f=focus]'); await p.waitForTimeout(200);   // Sleep off again, Focus on
       ok(!(await p.$('#prLib a[href="#practice/standing-flow"]')) && await p.$('#prLib .pr-grp[data-g=also] a[href="#practice/standing-reset"]'), 'Focus: Standing Yoga Flow is not there; Standing Reset is, as also good for focus');
       await p.click('#prFilt [data-f=all]'); await p.click('#prFbtn'); await p.waitForTimeout(150);
       await p.click('#prPanel [data-k=len][data-v="5"]'); await p.waitForTimeout(150);
@@ -599,7 +599,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       await p.click('#prPanel [data-k=posture][data-v=lie]'); await p.click('#prPanel [data-k=needs][data-v=none]'); await p.waitForTimeout(150);
       const plain = await p.$$eval('#prLib .pc-a', a => a.map(x => x.getAttribute('href')));
       ok(plain.length > 15 && !plain.some(h => /track|sleep-descent|calm-reset|coherence|morning-yoga|walking/.test(h)), 'just the phone: no headphones, sensor or room needed (' + plain.length + ')');
-      await p.click('#prPanel [data-k=needs][data-v=none]'); await p.click('#prPanel [data-k=method][data-v=write]'); await p.click('#prPanel [data-k=posture][data-v=walk]'); await p.waitForTimeout(150);
+      await p.click('#prPanel [data-k=needs][data-v=none]'); await p.click('#prMeth [data-m=write]'); await p.click('#prPanel [data-k=posture][data-v=walk]'); await p.waitForTimeout(150);
       ok(/Nothing matches/.test(await t(p, '#prLib')), 'no matches: says so');
       await p.click('#prLib [data-clear]'); await p.waitForTimeout(150);
       ok(await t(p, '#prFbtnTxt') === 'Filters' && (await p.$$('#prLib .pr-grp')).length === 8, 'Clear filters brings everything back');

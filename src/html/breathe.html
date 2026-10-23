@@ -86,6 +86,17 @@
           </div>
         </div>
 
+        <div class="b-mine quiet" id="bMine">
+          <label class="b-mine-l" for="bMyName" id="bMyLab" hidden>Save as your own pattern</label>
+          <div class="b-mine-row" id="bMyRow" hidden>
+            <input id="bMyName" maxlength="40" placeholder="A name, like Evening 4-6" autocomplete="off" enterkeyhint="done">
+            <button class="btn small primary" id="bMySave">Save</button>
+            <button class="btn small" id="bMyDel" hidden>Delete</button>
+          </div>
+          <button class="btn small b-mine-upd" id="bMyUpd" hidden></button>
+          <p class="hint" id="bMyHint" aria-live="polite">Change any timing to make a pattern of your own, then name it and save it here.</p>
+        </div>
+
         <div class="prime-row">
           <div class="prime-label" id="bvLab">Visual</div>
           <div class="chips" id="bVis" role="radiogroup" aria-labelledby="bvLab">
@@ -136,7 +147,7 @@
 
         <p class="b-safety">
           <b>Go gently.</b> Stop and breathe normally if you feel light-headed or tingly. Leave out the holds if
-          you are pregnant or have a heart, lung or blood-pressure condition.
+          you are pregnant or have a heart, lung or blood-pressure condition. <button type="button" class="sf-link" data-safety="1">Safety notes</button>
         </p>
 
           </div>

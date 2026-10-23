@@ -30,7 +30,7 @@
     {
       id: "exhale", strength: 2,
       t: { inh: 3, sip: 0, hold: 0, exh: 7, rest: 0 },
-      desc: "Six breaths a minute with the out-breath more than twice as long as the in-breath, close to the ratio used in the trial.",
+      desc: "Six breaths a minute with the out-breath more than twice as long as the in-breath, close to the 0.42 in-to-out ratio that was rated the more relaxing one in Van Diest and colleagues' study.",
       ev: "At six breaths a minute, a short inhale with a long exhale (an inhale-to-exhale ratio of 0.42) was rated more relaxing than the reverse ratio and produced more high-frequency heart-rate variability, the component linked to vagal activity.",
       cite: "Van Diest et al. 2014, Appl. Psychophysiol. Biofeedback"
     },
@@ -104,9 +104,10 @@
   function sessTime() { return B.state === "running" ? bNow() - B.t0 : B.st; }
   function breathTime() { return sessTime() - B_LEAD; }
   function fmtS(s) { return (s % 1 ? s.toFixed(1) : String(s)) + "s"; }
+  // a preset, or one of your own saved patterns (mypatterns.js)
   function preset(id) {
     for (var i = 0; i < BREATHS.length; i++) if (BREATHS[i].id === id) return BREATHS[i];
-    return null;
+    return mpGet(id);
   }
   /* During the resonance test BC holds the test's timings; save the viewer's own. */
   function saveBreath() {
@@ -225,19 +226,19 @@
       bSetT(f.id + "V", (f.opt && !BC[f.k]) ? "Off" : BC[f.k].toFixed(1) + " s");
     });
   }
+  function sameT(a, b) { return a.inh === b.inh && a.sip === b.sip && a.hold === b.hold && a.exh === b.exh && a.rest === b.rest; }
+  // the preset with these timings, else your own saved pattern with them, else "custom"
   function matchPreset() {
-    for (var i = 0; i < BREATHS.length; i++) {
-      var t = BREATHS[i].t;
-      if (t.inh === BC.inh && t.sip === BC.sip && t.hold === BC.hold && t.exh === BC.exh && t.rest === BC.rest) {
-        return BREATHS[i].id;
-      }
-    }
+    for (var i = 0; i < BREATHS.length; i++) if (sameT(BREATHS[i].t, BC)) return BREATHS[i].id;
+    var l = mpLoad();
+    for (var j = 0; j < l.length; j++) if (sameT(l[j].t, BC)) return "my-" + l[j].uid;
     return "custom";
   }
   function renderNote() {
     bFavSync();
+    mpRow();
     var p = preset(BC.pattern);
-    if (p) {
+    if (p && !p.mine) {
       bSetT("#bDesc", p.desc);
       $("#bEvSum").innerHTML = "Evidence " + dots(p.strength);
       bSetT("#bEvTxt", p.ev);
@@ -246,7 +247,7 @@
       return;
     }
     var rate = 60 / cycleOf(BC);
-    var s = "Your own timings: " + rate.toFixed(1) + " breaths a minute. " + (rate <= 10
+    var s = (p ? "Your own pattern, saved on this device: " : "Your own timings: ") + rate.toFixed(1) + " breaths a minute. " + (rate <= 10
       ? "That is inside the under-10-a-minute range most slow-breathing studies used."
       : "That is faster than the under-10-a-minute range most slow-breathing studies used.");
     if (BC.exh > BC.inh + BC.sip) s += " The exhale is longer than the inhale, the ratio rated more relaxing at slow rates.";
@@ -256,6 +257,13 @@
   function syncChips(sel) {
     var chips = $(sel).querySelectorAll(".chip");
     for (var i = 0; i < chips.length; i++) chips[i].classList.toggle("on", chips[i].querySelector("input").checked);
+  }
+  // the chosen pattern in sight, in a row of chips wider than the screen
+  function bChipShow() {
+    var row = $("#bPats"), on = row && row.querySelector(".chip.on");
+    if (!on || !row.clientWidth) return;
+    var r = on.getBoundingClientRect(), rr = row.getBoundingClientRect();
+    if (r.left < rr.left || r.right > rr.right) row.scrollLeft += r.left - rr.left - 56;   // past the faded edge
   }
   function checkRadio(name, val) {
     var el = document.querySelector('input[name="' + name + '"][value="' + val + '"]');
@@ -592,6 +600,7 @@
     } catch (e) {}
 
     readColors();
+    mpInit();
     checkRadio("bpat", BC.pattern);
     checkRadio("bvis", BC.visual);
     checkRadio("blen", String(BC.minutes));
@@ -609,6 +618,7 @@
       if (B.finder) finderCancel();
       checkRadio("bpat", e.target.value);
       syncChips("#bPats");
+      MP.from = e.target.value === "custom" && mpQ(BC.pattern) ? BC.pattern : "";   // Custom from a saved pattern can update it
       BC.pattern = e.target.value;
       var p = preset(BC.pattern);
       if (p) {
@@ -623,7 +633,10 @@
         if (B.finder) finderCancel();
         BC[f.k] = v;
         var id = matchPreset();
-        if (id !== BC.pattern) { BC.pattern = id; checkRadio("bpat", id); syncChips("#bPats"); }
+        if (id !== BC.pattern) {
+          if (id === "custom" && mpQ(BC.pattern)) MP.from = BC.pattern;   // changed from a saved pattern: it can be updated
+          BC.pattern = id; checkRadio("bpat", id); syncChips("#bPats");
+        }
         syncFields(); renderNote(); syncVisHint(); applyTimings(); saveBreath();
       });
     });

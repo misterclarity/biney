@@ -300,27 +300,40 @@
       cite: "Balban et al. 2023 · Laborde et al. 2022 · Garcia-Argibay et al. 2019 · Fincham et al. 2023 (RCT)"
     },
     {
-      id: "coherence", name: "Heart Coherence", min: 15, strength: 2,
-      tone: "relax", sensor: "best", anaStyle: "heart",
-      blurb: "Heart-focused breathing at your resonance pace with live coherence, over a steady 6 Hz theta beat, the frequency tied to parasympathetic recovery.",
-      parts: "Heart-focused resonance breathing · coherence feedback · 6 Hz binaural",
-      audio: { name: "Heart Coherence", band: "Theta", carrier: 200, pts: [[0, 6], [900, 6]], fade: 8, cat: "relax" },
-      build: function () {
-        var r = pResRate(), half = Math.round(30 / r * 10) / 10;
+      id: "coherence", name: "Heart Coherence", min: 15, lengths: [10, 15, 20], strength: 2,
+      tone: "relax", sensor: "best", anaStyle: "heart", pace: true,
+      blurb: "Heart-focused breathing at your resonance pace until your heart rhythm settles, then a gentle feeling of gratitude, with live coherence over a binaural beat. Sitting or lying down.",
+      parts: "Heart-focused resonance breathing · gratitude · coherence feedback · binaural beat",
+      audio: { name: "Heart Coherence", band: "Theta", carrier: 200, pts: [[0, 6], [1200, 6]], fade: 8, cat: "relax" },
+      beats: [                                   // the first is the usual one
+        { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: [[0, 6], [1200, 6]], note: "A steady 6 Hz beat, in the theta band studied for deep relaxation." },
+        { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: [[0, 10], [1200, 10]], note: "A steady 10 Hz beat: relaxed but awake, if theta makes you drowsy." },
+        { id: "down", label: "Alpha to theta", band: "Alpha → Theta", pts: [[0, 10], [300, 6], [1200, 6]], note: "Starts at 10 Hz and slides down to 6 Hz over the first five minutes." }
+      ],
+      choices: [{ key: "pos", label: "Position", opts: [["sit", "Sitting"], ["lie", "Lying down"]], def: "sit" }],
+      build: function (min) {
+        var p = pPace(this), lie = pChoice(this, "pos") === "lie", t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+        var breath = (min || 15) * 60 - 120, first = 180, rest = breath - first;
+        var pace = p.own ? "in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds") : "evenly, " + p.rate + " a minute";
         return [
-          G(45, "Arrive", ["Sit comfortably with your feet on the floor.", "Rest your attention on the centre of your chest, around the heart.",
+          G(45, "Arrive", [lie ? "Lie on your back, a pillow under your head and, if it helps, under your knees. Let your arms rest by your sides." : "Sit comfortably, feet flat on the floor, your back upright but not stiff.",
+            "Rest your attention on the centre of your chest, around the heart.",
             "Connect a heart sensor if you have one; coherence appears after about a minute."], { vis: "glow" }),
-          Br(780, "Heart-focused breathing", { inh: half, sip: 0, hold: 0, exh: half, rest: 0 },
-            { lines: [[0, "Breathe evenly, " + r + " a minute, imagining the breath flowing in and out through the heart area."],
-              [180, "Now call up a feeling of ease or appreciation: a person, a place or a pet you love. Let it be gentle."],
-              [420, "Whatever the score does, come back to the even breath and the feeling."],
-              [660, "Keep the rhythm going for these last minutes."]] }),
-          G(75, "Return", ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
+          Br(first, "Heart-focused breathing", t,
+            { lines: [[0, "Breathe " + pace + ", imagining the breath flowing in and out through the heart area."],
+              [90, "Keep the breath soft and even. Your heart rhythm is falling into step with it."]] }),
+          Br(rest, "Breathing with gratitude", t,
+            { lines: [[0, "Keeping the same breath, call up a feeling of gratitude: a person, a place or a pet you love, or something that went well today. Feel it rather than think it, and let it be gentle."],
+              [Math.round(rest * 0.3), "If the feeling fades, picture that person or moment again and breathe the warmth in through your chest."],
+              [Math.round(rest * 0.55), "Whatever the score does, come back to the even breath and the feeling."],
+              [Math.max(Math.round(rest * 0.55) + 30, rest - 120), "Keep the rhythm and the feeling going for these last minutes."]] }),
+          G(75, "Return", lie ? ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the weight of your body on the floor.", "When you're ready, roll onto your side before you sit up."]
+            : ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
         ];
       },
-      how: "Thirteen minutes of even breathing at your resonance rate (from the resonance test, or 5.5 a minute), with attention on the chest and, after three minutes, a gentle positive feeling: the core of HeartMath's quick coherence technique. The coherence score and your heart rate show live when a sensor is connected.",
-      ev: "Breathing near 6 a minute brings heart rate and blood pressure rhythms into step, the state the coherence score measures. Theta-band binaural beats after hard exercise increased parasympathetic activation in a heart-rate-variability study. The combination itself hasn't been trialled.",
-      cite: "Lehrer & Gevirtz 2014 · McCraty et al. 2009 · McConnell et al. 2014"
+      how: "Three minutes of even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention on the chest. Then, on the same breath, a gentle feeling of gratitude to the end: the two steps of HeartMath's Quick Coherence technique. Gratitude comes second because it's easiest to feel, rather than just think, once slow breathing has calmed you and your heart rhythm has settled into a steady wave; for the same reason it fits well after a meditation such as Anapana or the Body Scan. Sit or lie down. With a sensor, the coherence score and your heart rate show live.",
+      ev: "Breathing near 6 a minute brings heart rate and blood pressure rhythms into step, the state the coherence score measures. Holding a feeling of appreciation shifted heart-rate variability toward its mid- and high-frequency bands in a 1995 HeartMath laboratory study, and across 1.8 million sessions of HeartMath's app, positive emotions went with higher coherence scores. Theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability toward parasympathetic activity in 21 young adults resting after exercise. The combination itself hasn't been trialled.",
+      cite: "Lehrer & Gevirtz 2014 · McCraty et al. 1995 · Balaji et al. 2025 · McConnell et al. 2014"
     },
     {
       id: "focus-primer", name: "Focus Primer", min: 13, strength: 2,
@@ -340,8 +353,8 @@
         ];
       },
       end: "Prime complete. Start your task now.",
-      how: "Under three minutes of resonance breathing, then ten minutes of a 16 Hz beta beat (the vigilance study's frequency) while you plan the first step. At the bell the audio fades out and you start. Listening before a task, rather than only during it, is where the binaural evidence for attention is clearest.",
-      ev: "In the binaural meta-analysis, exposure before the task gave clearer cognitive effects. Beta beats at 16 Hz improved vigilance performance. In a small trial, 10 minutes of heart-rate-variability biofeedback improved reaction times and accuracy on a Stroop task under stress.",
+      how: "Under three minutes of resonance breathing, then ten minutes of a 16 Hz beta beat (one of the two beta frequencies that improved watch-keeping in Lane and colleagues' 1998 vigilance trial) while you plan the first step. At the bell the audio fades out and you start. Listening before a task, rather than only during it, is where the binaural evidence for attention is clearest.",
+      ev: "In Garcia-Argibay and colleagues' 2019 meta-analysis of binaural beats, listening before a task gave clearer effects on thinking than listening only during it. Beta beats at 16 and 24 Hz improved vigilance in Lane and colleagues' trial. In a small trial, 10 minutes of heart-rate-variability biofeedback improved reaction times and accuracy on a Stroop task under stress.",
       cite: "Garcia-Argibay et al. 2019 · Lane et al. 1998 · Prinsloo et al. 2011"
     },
     {
@@ -358,7 +371,7 @@
     {
       id: "recovery", name: "Exercise Recovery", min: 10, strength: 2,
       tone: "relax", sensor: "best",
-      blurb: "After training: slow breathing at six a minute with a long exhale, under the theta beat from the post-exercise HRV study. Watch your heart rate come down.",
+      blurb: "After training: slow breathing at six a minute with a long exhale, over a 6 Hz theta beat. Watch your heart rate come down.",
       parts: "Slow long-exhale breathing · 6 Hz binaural · heart-rate drop",
       audio: { name: "Exercise Recovery", band: "Theta", carrier: 200, pts: [[0, 6], [600, 6]], fade: 8, cat: "relax" },
       build: function () {
@@ -371,7 +384,7 @@
         ];
       },
       how: "Eight and a half minutes at 6 breaths a minute (4 s in, 6 s out) over a 6 Hz theta beat. With a sensor connected the summary shows how far your heart rate fell.",
-      ev: "Slow breathing at six a minute after moderate cycling sped the return of cardiac parasympathetic activity. In a separate study, theta binaural beats after exercise increased parasympathetic activation measured by heart-rate variability.",
+      ev: "Slow breathing at six a minute after moderate cycling sped the return of cardiac parasympathetic activity in young men (Sugimoto et al. 2025). In a separate study of 21 young adults resting after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability toward parasympathetic activity over the first ten minutes, compared with the same sound without a beat (McConnell et al. 2014).",
       cite: "Sugimoto et al. 2025 · McConnell et al. 2014"
     },
 
@@ -485,8 +498,8 @@
       cite: "Epinat-Duclos et al. 2021 · Torre & Lieberman 2018 · Kashdan et al. 2015 · Frattaroli 2006"
     },
     {
-      id: "nvc-choose", name: "From Should to Choose", reflect: true, selfPaced: true, est: 10, strength: 1, tone: "ther",
-      blurb: "List what you do because you feel you have to, then check each one: would you still choose it, and for what? An exercise from nonviolent communication for looking at the rules you live by.",
+      id: "nvc-choose", name: "Have-Tos into Choices (NVC)", reflect: true, selfPaced: true, est: 10, strength: 1, tone: "ther",
+      blurb: "List what you do because you feel you have to, should or must, then check each one: would you still choose it, and for what? Marshall Rosenberg's exercise from Nonviolent Communication, ending with each rewritten as “I choose to… because I want…”.",
       build: function () { return nvcChooseSteps(); },
       how: "List the things you feel you have to, should or must do. Then for each, decide whether you'd still choose it, and why, picking from common reasons or writing your own. Reasons that are really pressure, like money, approval, or avoiding guilt, shame or punishment, are marked. You end with your list rewritten as \u201CI choose to\u2026 because I want\u2026\u201D, and the ones you'd like to change.",
       ev: "This exercise comes from Marshall Rosenberg's book and hasn't been tested on its own. Motivation research points the same way: in self-determination theory, acting from your own values goes with more well-being and persistence than acting from pressure, guilt or the need for approval.",
@@ -553,7 +566,7 @@
     {
       id: "ujjayi", name: "Ujjayi", min: 6, strength: 2,
       tone: "relax", sensor: "optional",
-      blurb: "Ocean breath at six a minute, with the soft throat sound on the out-breath only, the version that worked best for beginners.",
+      blurb: "Ocean breath at six a minute, with the soft throat sound on the out-breath only: in a study of yoga beginners that kept the blood-pressure benefit of slow breathing, which the sound on both breaths took away.",
       build: function () {
         return [
           G(60, "Find the sound", ["Breathe out through an open mouth as if fogging a mirror: haaa. Feel the slight narrowing at the back of the throat.",

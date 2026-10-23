@@ -9,7 +9,7 @@
   // whether a heart sensor has ever connected here, and when this device last saved a backup
   var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "lastBackup"];
   // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
-  var BK_LISTS = ["history", "favs", "yogaSeqs", "nvcLog"];
+  var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
   var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|resonance|nvcDraft\..+)$/;
   var BK_MAX = 5e6;                       // bytes: more than a browser's whole storage for one site
   var BK = { pending: null, persisted: null, asked: false };
@@ -124,7 +124,8 @@
   function bkOffer() {
     var b = BK.pending, d = b.data;
     var has = [bkN(bkCount(d, "history"), "session", "sessions"), bkN(bkCount(d, "favs"), "favourite", "favourites"),
-               bkN(bkCount(d, "yogaSeqs"), "routine", "routines"), bkN(bkCount(d, "nvcLog"), "kept reflection", "kept reflections")]
+               bkN(bkCount(d, "yogaSeqs"), "routine", "routines"), bkN(bkCount(d, "myBreaths"), "breathing pattern", "breathing patterns"),
+               bkN(bkCount(d, "nvcLog"), "kept reflection", "kept reflections")]
       .filter(function (s) { return s.charAt(0) !== "0"; });
     var here = hLoad().length;
     return "<b>" + (b.at ? "A backup from " + esc(bkWhen(b.at)) : "A backup") + "</b>" +
@@ -176,7 +177,7 @@
   /* ----- the card in Settings ----- */
   function bkCard() {
     return '<section class="st-card" id="st-data" aria-labelledby="stD"><h2 id="stD">Your data</h2>' +
-      '<p class="st-note">Your history, favourites, routines, settings and any reflections you keep are stored in this browser, on this device, and never sent anywhere. A backup is one file of all of it, to keep safe or to move to another phone.</p>' +
+      '<p class="st-note">Your history, favourites, routines, breathing patterns, settings and any reflections you keep are stored in this browser, on this device, and never sent anywhere. A backup is one file of all of it, to keep safe or to move to another phone.</p>' +
       '<p class="st-note" id="stKeepTxt" hidden></p>' +
       '<div class="st-data-act"><button class="btn primary small" id="stSave">Save a backup</button><button class="btn small" id="stLoadBtn">Restore from a backup</button></div>' +
       '<input type="file" id="stLoad" accept=".json,application/json" hidden>' +

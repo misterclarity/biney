@@ -25,7 +25,7 @@
     sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
       ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
     calm: [["calm-reset", "program", "sit"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
-      ["coherence", "program", "sit"], ["grounding", "meditate", "sit"], ["tapping", "relax", "sit"],
+      ["coherence", "program", "sit lie"], ["grounding", "meditate", "sit"], ["tapping", "relax", "sit"],
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],

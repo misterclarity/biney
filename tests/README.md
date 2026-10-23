@@ -1,6 +1,8 @@
 # Tests
 
-Each suite opens the built `index.html` in headless Chromium, mostly as a Samsung Galaxy S20 Ultra (412 × 915), and prints one `PASS` or `FAIL` line per check. `node tests/run.js` runs them all and exits with 1 if anything failed, a page threw an error, or a suite didn't finish.
+Each suite opens the built `index.html` in headless Chromium, mostly as a Samsung Galaxy S20 Ultra (412 × 915), and prints one `PASS` or `FAIL` line per check. `node tests/run.js` runs them all and exits with 1 if anything failed, a page threw an error, or a suite didn't finish (or ran past fifteen minutes).
+
+The suites run side by side, as many at a time as there are processor cores (at most four; `--jobs N` to choose), longest first, each in its own process with its own browser. Each suite's results print in one piece as it finishes. The publishing workflow runs them the same way before the site goes up, and keeps the screenshots of a failed run for a week.
 
 | Suite | Covers |
 |---|---|
@@ -14,6 +16,7 @@ Each suite opens the built `index.html` in headless Chromium, mostly as a Samsun
 | `todaytest.js` | The five tabs and old addresses, track pages and the tinnitus section, the history (moving the old practice log over, what goes in and what doesn't, History, clearing it), favourites on every kind of page, Recently and the goal tiles, nothing too wide at 360 px |
 | `findtest.js` | The resonance test end to end with a beat-to-beat sensor |
 | `cuetrend.js` | A track on the lock screen (play, pause, stop, a call pausing it, open-ended, the setting, practices kept off it); vibration cues on time, with and without sound, the end, a practice's own setting; the end screen against your own sessions; trends by week and month, by keyboard, tap and table; start-up (no library until it's opened, the goal tiles' names, the lengths worked out when idle); the Heart page's order before and after a sensor, on a wide screen, with the focus kept, and Today's link to the resonance test |
+| `choices.js` | Your own breathing patterns (saving, the chips, updating, names taken, renaming, deleting and its undo, the star, Today, the library, search, a link, the history, twelve at most, damaged entries, backups); the one safety note (in Learn, the dialog over any page, each page's own line); the library's filters combining (goals and techniques, several at once, the counts, the line under them, Clear all, the focus kept); Heart Coherence (gratitude after the breathing, lying down, its beat or none, your own pace, 10 to 20 minutes); and wording that names its study |
 
 ## Helpers
 

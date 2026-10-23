@@ -9,42 +9,42 @@
     {
       id: "sleep-descent", cat: "relax", band: "Delta", name: "Delta Sleep",
       carrier: 200, beat: 3, rampFrom: 6, minutes: 30, strength: 3,
-      desc: "Starts in theta and slides down into a 3 Hz delta beat, the frequency used in the sleep-stage trial.",
+      desc: "Starts at 6 Hz theta and slides down to a 3 Hz delta beat, the beat that lengthened deep sleep in Jirakittayakorn and Wongsawat's 2018 sleep study.",
       ev: "A 3 Hz binaural beat significantly increased delta activity and lengthened stage-3 (deep) sleep versus control nights. The descent from 6 Hz mirrors the common protocol of easing through theta before settling into delta.",
       cite: "Jirakittayakorn & Wongsawat 2018, Front. Hum. Neurosci."
     },
     {
       id: "preop-calm", cat: "relax", band: "Delta", name: "Pre-Procedure Calm",
       carrier: 250, beat: 2, rampFrom: 10, minutes: 30, strength: 3,
-      desc: "A 30-minute progressive slowing from alpha to a closing stretch of deep delta — the anxiety protocol.",
-      ev: "The randomised pre-operative trial used a 30-minute track that progressively slowed the beat to give a closing 10-minute period of delta. Theta/delta beats carry the largest pooled anxiety effect in meta-analysis (g = 0.69).",
+      desc: "Thirty minutes that slow from 10 Hz alpha to a closing stretch of 2 Hz delta, modelled on the track that lowered anxiety before day surgery in Padmanabhan's 2005 trial.",
+      ev: "In Padmanabhan and colleagues' randomised trial before day-case surgery, a 30-minute track that progressively slowed the beat, ending with 10 minutes of delta, lowered anxiety scores by about 26%, against 11% for the same soundtrack without the beat and 4% with nothing. Theta and delta beats had the largest pooled effect on anxiety (g = 0.69) in Garcia-Argibay and colleagues' 2019 meta-analysis.",
       cite: "Padmanabhan et al. 2005, Anaesthesia · Garcia-Argibay et al. 2019"
     },
     {
       id: "theta-meditation", cat: "relax", band: "Theta", name: "Theta Meditation",
       carrier: 250, beat: 6, minutes: 20, strength: 3,
-      desc: "A steady 6 Hz beat — the frequency shown to raise theta power and frontal midline theta during listening.",
+      desc: "A steady 6 Hz theta beat, the frequency that raised theta and frontal-midline theta in listeners' EEG in Jirakittayakorn and Wongsawat's 2017 study.",
       ev: "EEG recorded during 6 Hz binaural beat exposure showed increased general theta rhythm and frontal midline theta activity, the signature associated with meditative and internally focused states.",
       cite: "Jirakittayakorn & Wongsawat 2017, Front. Neurosci."
     },
     {
       id: "parasympathetic", cat: "relax", band: "Theta", name: "Parasympathetic Recovery",
       carrier: 200, beat: 6, minutes: 20, strength: 2,
-      desc: "Theta-band beats for the wind-down after hard exercise, where autonomic effects were measured.",
-      ev: "Listening to theta-frequency binaural beats post-exercise increased parasympathetic activation and sympathetic withdrawal, measured through heart-rate variability — an autonomic effect rather than a purely subjective one.",
+      desc: "A steady 6 Hz theta beat for the 20 minutes after hard exercise: theta beats tilted heart-rate variability toward rest in a 2014 study of people recovering from a workout.",
+      ev: "In 21 young adults resting for 20 minutes after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz, in pink noise) shifted heart-rate variability toward parasympathetic activity over the first ten minutes, compared with the same sound without a beat: an autonomic effect rather than a purely subjective one. By the end of the 20 minutes the two no longer differed, and this track plays a steady 6 Hz rather than the sweep.",
       cite: "McConnell et al. 2014, Front. Psychol."
     },
     {
       id: "alpha-stress", cat: "relax", band: "Alpha", name: "Alpha Stress Relief",
       carrier: 300, beat: 10, minutes: 20, strength: 2,
-      desc: "10 Hz alpha at a mid carrier — relaxed but awake, the state most anxiety protocols target.",
-      ev: "Alpha-frequency beats around 10 Hz are the most common choice in anxiety and stress work, and post-hoc analyses have found stress reduction specifically in the alpha condition. Carriers in the 200–600 Hz range are standard for this use.",
-      cite: "Garcia-Argibay et al. 2019 · band reviews"
+      desc: "A steady 10 Hz alpha beat on a 300 Hz carrier, for calm that keeps you awake: the lighter choice beside the theta and delta tracks, which had the larger effects on anxiety.",
+      ev: "In Garcia-Argibay and colleagues' 2019 meta-analysis, binaural beats lowered anxiety, with the largest effects for theta and delta beats (g = 0.69). Alpha beats around 10 Hz are used for relaxed wakefulness, when a slower beat would make you drowsy. Carriers between 200 and 600 Hz are typical.",
+      cite: "Garcia-Argibay et al. 2019"
     },
     {
       id: "creative-reverie", cat: "relax", band: "Alpha", name: "Creative Reverie",
       carrier: 340, beat: 10, minutes: 20, strength: 1,
-      desc: "Alpha for divergent thinking — with the caveat that it worked for some people and not others.",
+      desc: "A 10 Hz alpha beat for open-ended idea generation. In Reedijk and colleagues' 2013 study it helped only people whose blink rate pointed to lower dopamine.",
       ev: "Alpha binaural beats improved divergent (but not convergent) thinking. The effect appeared only in participants with lower estimated baseline dopamine; those higher on that measure showed no benefit or slightly worse performance.",
       cite: "Reedijk, Bolders & Hommel 2013, Front. Hum. Neurosci."
     },
@@ -62,35 +62,35 @@
     {
       id: "vigilance-16", cat: "stim", band: "Beta", name: "Vigilance 16",
       carrier: 400, beat: 16, minutes: 30, strength: 3,
-      desc: "The 16 Hz beta condition from the vigilance study — a 30-minute watch-keeping session.",
-      ev: "Across a 30-minute visual vigilance task, beta-frequency beats (16 and 24 Hz) produced more correct target detections and fewer false alarms than theta/delta beats, and were associated with less negative mood.",
+      desc: "A steady 16 Hz beta beat for 30 minutes of watch-keeping work, the lower of the two beta frequencies in Lane and colleagues' 1998 vigilance trial.",
+      ev: "In a 30-minute visual vigilance task, 29 people listening to beta beats (16 and 24 Hz, in pink noise) made more correct detections and fewer false alarms than with theta and delta beats (1.5 and 4 Hz), and reported less negative mood. This track plays the 16 Hz beat on its own, which the trial didn't test separately.",
       cite: "Lane et al. 1998, Physiology & Behavior"
     },
     {
       id: "sustained-24", cat: "stim", band: "Beta", name: "Sustained Attention 24",
       carrier: 400, beat: 24, minutes: 30, strength: 3,
-      desc: "The faster beta arm of the same trial, for tasks that keep drifting away from you.",
-      ev: "The 24 Hz beta condition shared the vigilance advantage over slower beats in the original trial. Beta beats in the 12–30 Hz range are the band most consistently linked to active focus in the reviews.",
-      cite: "Lane et al. 1998 · band reviews"
+      desc: "A steady 24 Hz beta beat for 30 minutes, the higher of the two beta frequencies in Lane and colleagues' 1998 vigilance trial, for tasks your attention keeps drifting away from.",
+      ev: "In Lane and colleagues' 30-minute vigilance task, beta beats at 16 and 24 Hz gave more correct detections, fewer false alarms and less negative mood than theta and delta beats. This track plays the 24 Hz beat on its own, which the trial didn't test separately. Beta (about 13 to 30 Hz) is the band studied for alert, active attention, with mixed results since.",
+      cite: "Lane et al. 1998, Physiology & Behavior"
     },
     {
       id: "deep-work", cat: "stim", band: "Beta", name: "Deep Work Block",
       carrier: 300, beat: 15, minutes: 50, strength: 2,
-      desc: "A long beta block sized to a full study or work session rather than a short burst.",
+      desc: "Fifty minutes of a 15 Hz beta beat, sized to a full work or study block: in the 2019 meta-analysis of binaural beats, longer listening went with larger effects.",
       ev: "Time under exposure contributed significantly to the meta-analytic model, with longer periods advisable for maximum effect. Study-focused guidance converges on 25–50 minute blocks followed by a short break.",
       cite: "Garcia-Argibay et al. 2019"
     },
     {
       id: "gamma-40", cat: "stim", band: "Gamma", name: "Gamma Focus 40",
       carrier: 400, beat: 40, minutes: 25, strength: 2,
-      desc: "40 Hz on a 400 Hz carrier — the exact pairing that reliably evokes a steady-state response.",
+      desc: "A 40 Hz gamma beat on a 400 Hz carrier, a pairing that evokes a measurable 40 Hz response in the brain; on carriers above about 3,000 Hz the response disappears.",
       ev: "A 40 Hz binaural-beat auditory steady-state response was evoked with a 400 Hz carrier and was undetectable above ~3000 Hz, which is why the carrier is fixed low here. In attentional-blink training, 40 Hz produced greater improvement than 16 Hz.",
       cite: "Hommel et al. 2020, Sci. Rep. · Orozco Perez et al. 2020, eNeuro"
     },
     {
       id: "gamma-memory", cat: "stim", band: "Gamma", name: "Working Memory Gamma",
       carrier: 240, beat: 40, minutes: 15, strength: 1,
-      desc: "A short gamma block for memory work — the most contested claim on this page, flagged as such.",
+      desc: "Fifteen minutes of a 40 Hz gamma beat for working-memory tasks. Some trials found better scores under 40 Hz beats and others found no change at all, so treat it as an experiment.",
       ev: "Some trials found better working-memory performance under 40 Hz stimulation, correlating with frequency-following responses. Others found no change in either memory scores or EEG and concluded entrainment never occurred. Treat as experimental.",
       cite: "Jausovec et al. 2022 · Basu & Banerjee 2023"
     }

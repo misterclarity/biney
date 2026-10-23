@@ -5,11 +5,16 @@ Paced breathing, binaural beats and live heart-rate biofeedback in one offline w
 There are five tabs: Today, Library, Breathe, Heart and Learn.
 
 - **Today** has your favourites, what you did lately and the last seven days, from one history of everything you do, with the heart-rate change and coherence whenever a sensor was connected. It also has a suggestion for the time of day and the six goals. History, behind it, charts the last twelve weeks or months: minutes, the heart-rate change from start to end, and coherence.
-- **Library** holds every practice, breathing pattern and track, each under one goal (Sleep, Calm, Focus, Energy, Recover or Reflect), with filters for method, length, posture and needs. Each track has a page of its own, like a practice, and so do the custom primer and the beat builder.
+- **Library** holds every practice, breathing pattern and track, each under one goal (Sleep, Calm, Focus, Energy, Recover or Reflect), with your own routines and breathing patterns first. The filters combine: one goal or several, one technique or several, and length, posture and needs, again one or several each. Within a row the choices add up, the rows narrow each other, each chip counts what it would show, and a line under them says what's chosen, with Clear all. Each track has a page of its own, like a practice, and so do the custom primer and the beat builder.
+- **Breathe** is the breathing guide. Timings of your own can be saved under a name (up to twelve): each becomes a chip beside the presets, a row in the library, a search result and a star for Today, and can be updated, renamed or deleted, with an undo.
 - **Heart** puts first what you need: connecting, the connection guide and the resonance test (with your last result and its pace) until a sensor is on; then your live numbers, the breath-by-breath chart, the test and the spectrum, with the guide at the bottom.
 - **Settings** holds the defaults; options can also be kept for each practice. It also decides how the screen behaves: by default it stays on and at full brightness through every session. Under Your data it saves a backup of everything as one file and restores one, for a new phone or for safekeeping.
 
+Heart Coherence is three minutes of heart-focused breathing, then breathing with gratitude: the feeling comes second because it's easiest to feel once slow breathing has settled the heart rhythm, as it is after a meditation. It can be done sitting or lying down, for 10, 15 or 20 minutes, over a theta, alpha or alpha-to-theta beat or none, at your resonance rate or at an in and out of your own. Those choices are kept for it, like its other options.
+
 A practice's end screen sets each number against your usual for that practice: the middle of your last ten sessions with the same kind of reading, or last time if there was only one, and says when it's your best yet.
+
+The safety note is written once, in Learn under Safety, and opens over any page from a "safety notes" link. Each page shows only the line that matters there: the beats on a track, the primer, the builder and any practice that plays one; the breath on Breathe; a practice's own cautions in its introduction.
 
 A playing track shows on the phone's lock screen and in its notifications, with play, pause and stop; Settings can turn that off. The breathing guide, and a practice's breath steps, can vibrate at each change: one short buzz in, one long out, two light taps for a hold.
 
@@ -49,8 +54,8 @@ The build only assembles, nothing is rewritten on the way:
 | `audio.js` | The binaural engine, pink noise, the transport and the mini player |
 | `trackpage.js`, `lockscreen.js` | A page for each track, with Play in reach; the track on the lock screen, carried by a silent audio element |
 | `builder.js`, `prime.js` | The beat builder and the custom primer pages |
-| `dialogs.js` | The headphone check and the tinnitus pitch match |
-| `breathe.js`, `breathe-draw.js` | The breathing guide: patterns, timing, controls, sound and vibration cues; its five visuals |
+| `dialogs.js`, `safety.js` | The headphone check and the tinnitus pitch match; the safety note, its lines on each page and the dialog that shows it whole |
+| `breathe.js`, `breathe-draw.js`, `mypatterns.js` | The breathing guide: patterns, timing, controls, sound and vibration cues; its five visuals; your own saved patterns |
 | `heart.js`, `heart-charts.js` | Bluetooth heart sensors and the connection guide; swing and spectrum charts, the resonance test, coherence |
 | `shell.js` | Views and routes, notices, install and offline |
 | `asanas.js`, `moves.js` | The movement library: poses, stretches, mobility drills and capoeira, each with its drawing |
@@ -67,8 +72,13 @@ The build only assembles, nothing is rewritten on the way:
 You need Node 18 or later, Playwright with Chromium (`npm install playwright`, then `npx playwright install chromium`) and Python 3.
 
 ```
-node tests/run.js              # every suite, about twenty minutes
+node tests/run.js              # every suite, as many at a time as there are cores (up to four)
+node tests/run.js --jobs 1     # one at a time, about twenty minutes (two at a time takes ten)
 node tests/run.js apptest      # one or more suites by name
 ```
 
 See `tests/README.md` for what each suite covers.
+
+## Publishing
+
+`.github/workflows/test-and-publish.yml` runs on every push to the default branch. It checks that the committed `index.html`, `sw.js` and manifest are what `src/build.py` makes from the source, runs every suite, and publishes the site to GitHub Pages only if they all pass. For that, the repository's Settings > Pages > Build and deployment > Source has to be **GitHub Actions**. While it is still "Deploy from a branch", GitHub publishes every push straight from the branch, tested or not, and the workflow only runs the tests and says so in its summary.

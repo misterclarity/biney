@@ -1,14 +1,18 @@
   /* ------------------------------- the library -------------------------------
      Goal sections (Sleep, Calm, Focus, Energy, Recover, Reflect) holding practices, breathing
-     patterns, tracks and the custom primer, each listed once, under its goal. A goal chip narrows
-     it to one goal and adds the items that are also good for it; the filter panel narrows by
-     method, length, posture and needs. On "All", each section shows its first few rows until you
-     ask for the rest, and the tinnitus track and the two builders have sections of their own.
+     patterns, tracks and the custom primer, each listed once, under its goal. Everything combines:
+     pick one goal or several, and each shows its own items, then the ones that are also good for
+     it; pick one technique or several; and the filter panel narrows by length, posture and needs,
+     again one choice or several. Within a row the choices add up (calm or sleep); the rows narrow
+     each other (calm or sleep, and breathing). Each chip says how many it would show. On "All",
+     with nothing chosen, each section shows its first few rows until you ask for the rest, and
+     the tinnitus track and the two builders have sections of their own.
      It is built each time it's shown (showView), never at start-up: working out every practice's
      length is the slowest thing the app does as it opens, and Today needs none of it.
   ------------------------------------------------------------------------------ */
 
-  var LIB = { goal: "all", f: { method: "", len: "", posture: "", needs: "" }, open: {}, panel: false, mins: {} };
+  var LIB = { goals: [], f: { method: [], len: [], posture: [], needs: [] }, open: {}, panel: false, mins: {} };
+  var LIB_FACETS = ["method", "len", "posture", "needs"];
   var LIB_LENS = [["5", "Up to 5 min"], ["10", "Up to 10 min"], ["20", "Up to 20 min"], ["long", "Longer"]];
   var LIB_TRACK_COL = { relax: "var(--relax)", stim: "var(--stim)", ther: "var(--ther)" };
 
@@ -64,9 +68,9 @@
   }
   function libPattern(b) {
     var t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
-    return { key: "b:" + b.id, type: "pattern", name: PATTERN_NAMES[b.id] || b.id, blurb: b.desc, goal: b.goal, also: b.also || [],
-      method: "breath", posture: b.posture, needs: [], mins: [1, 60], minsTxt: (Math.round(600 / per) / 10) + " breaths a minute",
-      label: "Breathing guide", href: "#breathe/" + b.id, icon: "breathe", col: "var(--b-in)", strength: b.strength, badges: [] };
+    return { key: "b:" + b.id, type: "pattern", name: patName(b), blurb: b.desc, goal: b.goal || "", also: b.also || [],
+      method: "breath", posture: b.posture || ["sit"], needs: [], mins: [1, 60], minsTxt: (Math.round(600 / per) / 10) + " breaths a minute",
+      label: "Breathing guide", href: "#breathe/" + b.id, icon: "breathe", col: "var(--b-in)", strength: b.strength, badges: b.mine ? [["mine", "Yours"]] : [] };
   }
   function libTrack(t) {
     return { key: "t:" + t.id, type: "track", name: t.name, blurb: t.desc, goal: t.goal, also: t.also || [],
@@ -99,37 +103,58 @@
     out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
     return out.slice(0, n).map(function (it) { return it.name; });
   }
-  function libMine() { return yLoad().map(function (q) { return libPractice(yDef(q)); }); }
+  // your routines, then your breathing patterns
+  function libMine() { return yLoad().map(function (q) { return libPractice(yDef(q)); }).concat(mpAll().map(libPattern)); }
   function libTinnitus() { return TRACKS.filter(function (t) { return t.goal === "tinnitus"; }).map(libTrack); }
   // any one item by its key, as favourites and the history keep it; null once it's gone
   function libItem(key) {
     if (!key) return null;
-    if (key.indexOf("b:") === 0) { var b = preset(key.slice(2)); return b && b.goal ? libPattern(b) : null; }
+    if (key.indexOf("b:") === 0) { var b = preset(key.slice(2)); return b && (b.goal || b.mine) ? libPattern(b) : null; }
     if (key.indexOf("t:") === 0) { var t = trackById(key.slice(2)); return t ? libTrack(t) : null; }
     if (key.indexOf("x:") === 0) return TOOLS[key.slice(2)] ? libTool(key.slice(2)) : null;
     var d = pDef(key);
     return d ? libPractice(d) : null;
   }
-  // the library at one goal, or at one method: from Today's goal tiles, and old links to Sounds
+  // the library at one goal, or at one technique: from Today's goal tiles, and old links to Sounds
   function libShow(goal, method) {
-    LIB.goal = goalOf(goal) ? goal : "all";
-    LIB.f = { method: method || "", len: "", posture: "", needs: "" };
-    LIB.panel = !!method;
+    libClear();
+    if (goalOf(goal)) LIB.goals = [goal];
+    if (method) LIB.f.method = [method];
+    LIB.panel = false;
     try { history.replaceState(null, "", "#practice"); } catch (e) {}
     showView("practice");
   }
 
   /* ----- filters ----- */
-  function libPass(it) {
-    var f = LIB.f;
-    if (f.method && it.method !== f.method) return false;
-    if (f.posture && it.posture.indexOf(f.posture) < 0) return false;
-    if (f.needs === "none" ? it.needs.length : f.needs && it.needs.indexOf(f.needs) < 0) return false;
-    if (f.len === "long") { if (it.mins[1] <= 20.5) return false; }
-    else if (f.len && it.mins[0] > parseInt(f.len, 10) + 0.5) return false;
+  function libClear(panelOnly) {
+    if (!panelOnly) { LIB.goals = []; LIB.f.method = []; }
+    LIB.f.len = []; LIB.f.posture = []; LIB.f.needs = [];
+  }
+  // one item against one row's choices: nothing chosen lets everything through, several let through any of them
+  function libFacet(it, k, vals) {
+    if (!vals.length) return true;
+    return vals.some(function (v) {
+      if (k === "method") return it.method === v;
+      if (k === "posture") return it.posture.indexOf(v) >= 0;
+      if (k === "needs") return v === "none" ? !it.needs.length : it.needs.indexOf(v) >= 0;
+      return v === "long" ? it.mins[1] > 20.5 : it.mins[0] <= parseInt(v, 10) + 0.5;      // length
+    });
+  }
+  // every row but one ("skip": the row whose chips are being counted)
+  function libPass(it, skip) {
+    for (var i = 0; i < LIB_FACETS.length; i++) if (LIB_FACETS[i] !== skip && !libFacet(it, LIB_FACETS[i], LIB.f[LIB_FACETS[i]])) return false;
     return true;
   }
-  function libFiltered() { var f = LIB.f; return !!(f.method || f.len || f.posture || f.needs); }
+  function libFor(it, g) { return it.goal === g || it.also.indexOf(g) >= 0; }
+  function libGoalHit(it) { return !LIB.goals.length || LIB.goals.some(function (g) { return libFor(it, g); }); }
+  function libPanelN() { return LIB.f.len.length + LIB.f.posture.length + LIB.f.needs.length; }
+  function libFiltered() { return LIB.goals.length + LIB.f.method.length + libPanelN() > 0; }
+  function libToggle(list, v) { var i = list.indexOf(v); if (i >= 0) list.splice(i, 1); else list.push(v); }
+  // "calm or sleep", in the order the chips show them
+  function libOr(ids, names) {
+    var n = names.filter(function (x) { return ids.indexOf(x[0]) >= 0; }).map(function (x) { return x[1]; });
+    return n.length > 1 ? n.slice(0, -1).join(", ") + " or " + n[n.length - 1] : n[0] || "";
+  }
 
   /* ----- rendering ----- */
   // one row; compact rows (on Today) leave out the blurb and the timeline, and can say something else under the name
@@ -163,70 +188,121 @@
       '<span class="pc-b"><span class="pc-top"><b>Routine builder</b></span><span class="pc-meta"><span class="pc-sub">Tool · your choice</span></span>' +
       '<span class="pc-blurb">Pick from ' + ASANAS.length + " yoga poses, stretches, mobility drills and capoeira moves, set each one's time, and save the routine. Each comes with its own drawing and spoken cues, offline.</span></span></a></li>";
   }
+  // a chip that toggles a choice, with how many it would show alongside the other rows' choices
+  // (no count for "All" and "Any": the line under the chips gives the total)
+  // (the count is read out with the name; hidden text inside a chip would stretch the page past a phone's width)
+  function libChip(attr, v, label, on, n, small) {
+    var c = typeof n === "number";
+    return '<button class="chip-b' + (small ? " small" : "") + (c && !n ? " zero" : "") + '" ' + attr + '="' + v + '" aria-pressed="' + on + '"' +
+      (c ? ' aria-label="' + label + ", " + n + (n === 1 ? " match" : " matches") + '"' : "") + ">" + label +
+      (c ? '<span class="cnt" aria-hidden="true">' + n + "</span>" : "") + "</button>";
+  }
   function pRenderLib() {
-    $("#prFilt").innerHTML = [["all", "All"]].concat(GOALS.map(function (g) { return [g.id, g.name]; })).map(function (f) {
-      return '<button class="chip-b" data-f="' + f[0] + '" aria-pressed="' + (f[0] === LIB.goal) + '">' + f[1] + "</button>";
-    }).join("");
-    libPanel();
-    var all = libAll().filter(libPass), mine = libMine().filter(libPass), filtered = libFiltered();
-    var cap = filtered ? 0 : (MOBILE.matches ? 4 : 6), h = "";
-    if (LIB.goal === "all") {
-      if (mine.length) h += libSection("mine", "Your routines", "Saved on this device.", "move", mine, cap);
+    var G = LIB.goals, f = LIB.f, filtered = libFiltered(), keep = libFocusKey();
+    var all = libAll(), mine = libMine(), tin = libTinnitus(), beats = libTool("beats"), routine = libTool("routine");
+    var every = mine.concat(all), cnt = function (fn) { var n = 0; every.forEach(function (it) { if (fn(it)) n++; }); return n; };
+    var shown = function (it) { return libPass(it) && libGoalHit(it); };
+    // the chips: goals, then techniques, each counted against everything else that's chosen
+    $("#prFilt").innerHTML = libChip("data-f", "all", "All", !G.length) +
+      GOALS.map(function (g) { return libChip("data-f", g.id, g.name, G.indexOf(g.id) >= 0, cnt(function (it) { return libPass(it) && libFor(it, g.id); })); }).join("");
+    $("#prMeth").innerHTML = libChip("data-m", "all", "Any", !f.method.length) +
+      METHODS.map(function (m) { return libChip("data-m", m[0], m[1], f.method.indexOf(m[0]) >= 0, cnt(function (it) { return libPass(it, "method") && libGoalHit(it) && it.method === m[0]; })); }).join("");
+    libPanel(every);
+    var cap = filtered ? 0 : (MOBILE.matches ? 4 : 6), h = "", n = 0;
+    var sec = function (g, title, lede, icon, items, c, extra) { n += items.length + (extra ? 1 : 0); h += libSection(g, title, lede, icon, items, c, extra); };
+    mine = mine.filter(shown); all = all.filter(shown);
+    if (!G.length) {
+      if (mine.length) {
+        var nB = mine.filter(function (it) { return it.type === "pattern"; }).length, nR = mine.length - nB;
+        sec("mine", nR && nB ? "Your routines and patterns" : nB ? "Your breathing patterns" : "Your routines", "Saved on this device.", nR ? "move" : "breathe", mine, cap);
+      }
       GOALS.forEach(function (g) {
         var items = all.filter(function (it) { return it.goal === g.id; });
-        if (items.length) h += libSection(g.id, g.name, g.lede, g.icon, items, cap);
+        if (items.length) sec(g.id, g.name, g.lede, g.icon, items, cap);
       });
-      var tin = libTinnitus().filter(libPass);
-      if (tin.length) h += libSection("tinnitus", "For tinnitus", "Sound therapy for weeks of daily use, alongside your own care.", "sounds", tin, 0);
-      var make = [libTool("beats")].filter(libPass), build = libPass(libTool("routine"));
-      if (make.length || build) h += libSection("make", "Make your own", "Your own routine or binaural beat.", "plus", make, 0, build ? libBuildRow() : "");
+      tin = tin.filter(function (it) { return libPass(it); });
+      if (tin.length) sec("tinnitus", "For tinnitus", "Sound therapy for weeks of daily use, alongside your own care.", "sounds", tin, 0);
+      var make = [beats].filter(function (it) { return libPass(it); }), build = libPass(routine);
+      if (make.length || build) sec("make", "Make your own", "Your own routine or binaural beat.", "plus", make, 0, build ? libBuildRow() : "");
     } else {
-      var g = goalOf(LIB.goal);
-      var main = mine.filter(function (it) { return it.goal === g.id; }).concat(all.filter(function (it) { return it.goal === g.id; }));
-      var also = all.filter(function (it) { return it.goal !== g.id && it.also.indexOf(g.id) >= 0; });
-      if (main.length) h += libSection(g.id, g.name, g.lede, g.icon, main, 0);
-      if (also.length) h += libSection("also", "Also good for " + g.name.toLowerCase(), "Their main goal is another one, but they suit this too.", "", also, 0);
+      // each chosen goal with its own items, in the usual order; then what's also good for any of them
+      GOALS.forEach(function (g) {
+        if (G.indexOf(g.id) < 0) return;
+        var main = mine.concat(all).filter(function (it) { return it.goal === g.id; });
+        if (main.length) sec(g.id, g.name, g.lede, g.icon, main, 0);
+      });
+      var also = all.filter(function (it) { return G.indexOf(it.goal) < 0; }), names = GOALS.map(function (g) { return [g.id, g.name.toLowerCase()]; });
+      if (also.length) sec("also", "Also good for " + libOr(G, names), G.length > 1 ? "Their main goal is another one, but they suit one of these too." : "Their main goal is another one, but they suit this too.", "", also, 0);
     }
     if (!h) h = '<div class="pr-empty"><p>Nothing matches these filters.</p><button class="btn small" data-clear="1">Clear filters</button></div>';
     $("#prLib").innerHTML = h;
-    edgeFade($("#prFilt"));
+    // what's chosen, in words, and how many it shows
+    var sum = $("#prSum"), lens = LIB_LENS.map(function (l) { return [l[0], l[1].toLowerCase()]; });
+    sum.hidden = !filtered;
+    if (filtered) sum.innerHTML = "<span><b>" + n + "</b> " + (n === 1 ? "match" : "matches") + "</span>" +
+      [libOr(G, GOALS.map(function (g) { return [g.id, g.name]; })), libOr(f.method, METHODS), libOr(f.len, lens), libOr(f.posture, POSTURES), libOr(f.needs, NEEDS)]
+        .filter(Boolean).map(function (s) { return "<span>" + esc(s.charAt(0).toUpperCase() + s.slice(1)) + "</span>"; }).join("") +
+      '<button type="button" class="sf-link pr-clear" data-clear="1">Clear all</button>';
+    edgeFade($("#prFilt")); edgeFade($("#prMeth"));
+    libRefocus(keep);
   }
-  function libPanel() {
-    var f = LIB.f, n = (f.method ? 1 : 0) + (f.len ? 1 : 0) + (f.posture ? 1 : 0) + (f.needs ? 1 : 0);
-    var btn = $("#prFbtn");
+  // re-drawn chips lose the keyboard focus: give it back to the one with the same choice
+  function libFocusKey() {
+    var a = document.activeElement;
+    if (!a || !a.closest || !a.closest("#prFilt, #prMeth, #prPanel, #prSum")) return null;
+    return ["data-f", "data-m", "data-k", "data-clear"].map(function (k) { return a.getAttribute(k) === null ? "" : "[" + k + '="' + a.getAttribute(k) + '"]'; }).join("") +
+      (a.dataset.v ? '[data-v="' + a.dataset.v + '"]' : "");
+  }
+  function libRefocus(key) {
+    if (!key) return;
+    var b = document.querySelector("#prFilt " + key + ", #prMeth " + key + ", #prPanel " + key) || $("#prFbtn");
+    try { b.focus({ preventScroll: true }); } catch (e) { b.focus(); }
+  }
+  function libPanel(every) {
+    var f = LIB.f, n = libPanelN(), btn = $("#prFbtn");
     bSetT("#prFbtnTxt", n ? "Filters · " + n : "Filters");
     btn.classList.toggle("on", n > 0);
     btn.setAttribute("aria-expanded", LIB.panel ? "true" : "false");
-    var row = function (key, label, opts) {
-      return '<div class="pf-row" role="group" aria-label="' + label + '"><span class="pf-l">' + label + "</span><div class=\"pf-chips\">" + opts.map(function (o) {
-        return '<button class="chip-b small" data-k="' + key + '" data-v="' + o[0] + '" aria-pressed="' + (f[key] === o[0]) + '">' + o[1] + "</button>";
-      }).join("") + "</div></div>";
-    };
     var p = $("#prPanel");
     p.hidden = !LIB.panel;
     if (!LIB.panel) return;
-    p.innerHTML = row("method", "Method", METHODS.map(function (m) { return [m[0], m[1]]; })) + row("len", "Length", LIB_LENS) +
-      row("posture", "Posture", POSTURES) + row("needs", "Needs", NEEDS) +
-      '<div class="pf-foot"><span>Tap a chosen filter again to remove it.</span>' + (n ? '<button class="btn small" data-clear="1">Clear filters</button>' : "") + "</div>";
+    every = every || libMine().concat(libAll());
+    var row = function (key, label, opts) {
+      return '<div class="pf-row" role="group" aria-label="' + label + '"><span class="pf-l">' + label + '</span><div class="pf-chips">' + opts.map(function (o) {
+        var c = 0;
+        every.forEach(function (it) { if (libPass(it, key) && libGoalHit(it) && libFacet(it, key, [o[0]])) c++; });
+        return libChip('data-k="' + key + '" data-v', o[0], o[1], f[key].indexOf(o[0]) >= 0, c, true);
+      }).join("") + "</div></div>";
+    };
+    p.innerHTML = row("len", "Length", LIB_LENS) + row("posture", "Posture", POSTURES) + row("needs", "Needs", NEEDS) +
+      '<div class="pf-foot"><span>Pick one or several in a row; tap a chosen one again to remove it.</span>' + (n ? '<button class="btn small" data-clear="panel">Clear these</button>' : "") + "</div>";
   }
   function libInit() {
     $("#prFilt").addEventListener("click", function (e) {
       var b = e.target.closest("button[data-f]");
       if (!b) return;
-      LIB.goal = b.dataset.f;
+      if (b.dataset.f === "all") LIB.goals = []; else libToggle(LIB.goals, b.dataset.f);
+      pRenderLib();
+    });
+    $("#prMeth").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-m]");
+      if (!b) return;
+      if (b.dataset.m === "all") LIB.f.method = []; else libToggle(LIB.f.method, b.dataset.m);
       pRenderLib();
     });
     $("#prFbtn").addEventListener("click", function () { LIB.panel = !LIB.panel; libPanel(); });
-    var clear = function () { LIB.f = { method: "", len: "", posture: "", needs: "" }; pRenderLib(); };
+    var clear = function (panelOnly) { libClear(panelOnly); pRenderLib(); };
     $("#prPanel").addEventListener("click", function (e) {
-      if (e.target.closest("[data-clear]")) { clear(); return; }
+      var c = e.target.closest("[data-clear]");
+      if (c) { clear(true); $("#prFbtn").focus(); return; }
       var b = e.target.closest("button[data-k]");
       if (!b) return;
-      LIB.f[b.dataset.k] = LIB.f[b.dataset.k] === b.dataset.v ? "" : b.dataset.v;
+      libToggle(LIB.f[b.dataset.k], b.dataset.v);
       pRenderLib();
     });
+    $("#prSum").addEventListener("click", function (e) { if (e.target.closest("[data-clear]")) { clear(false); $("#prFilt [data-f=all]").focus(); } });
     $("#prLib").addEventListener("click", function (e) {
-      if (e.target.closest("[data-clear]")) { clear(); return; }
+      if (e.target.closest("[data-clear]")) { clear(false); $("#prFilt [data-f=all]").focus(); return; }
       var m = e.target.closest("[data-more]");
       if (!m) return;
       LIB.open[m.dataset.more] = true;

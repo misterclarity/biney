@@ -187,7 +187,11 @@
     if (!FD.base) FD.base = fdBuildBase();
     var mine = [];
     try { yLoad().forEach(function (q) { mine.push(fdPractice(yDef(q))); }); } catch (e) {}
-    return mine.concat(FD.base);         // your routines can change between searches; the rest can't
+    mpAll().forEach(function (b) {
+      mine.push(fdEntry("breath", b.name, "Your breathing pattern · " + (Math.round(600 / cycleOf(b.t)) / 10) + " breaths a minute", [b.desc],
+        "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.2, tags: "breathe breathing pattern mine own saved" }));
+    });
+    return mine.concat(FD.base);         // your routines and patterns can change between searches; the rest can't
   }
 
   /* ----- matching and ranking ----- */
@@ -328,7 +332,7 @@
 
   /* ----- landing on a breathing pattern ----- */
   function fdPattern(id) {
-    var inp = document.querySelector('#bPats input[value="' + id + '"]');
+    var inp = /^[\w-]+$/.test(id) ? document.querySelector('#bPats input[value="' + id + '"]') : null;
     if (!inp) return;
     if (!(pBusy() && P.usesB) && BC.pattern !== id) {    // a practice running the guide keeps it
       inp.checked = true;

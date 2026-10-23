@@ -51,7 +51,7 @@
         (t.notch ? '<div class="tr-notch" id="trNotch"></div>' : "") +
         "<h3>How it runs</h3><p>" + esc(trHow(t)) + "</p>" +
         '<details class="ev si-ev"><summary>Evidence ' + dots(t.strength) + '</summary><div class="ev-body">' + esc(t.ev) + "<cite>" + esc(t.cite) + "</cite></div></details>" +
-        '<div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>Not for everyone. Avoid the beats if you have epilepsy or a seizure disorder or wear a pacemaker, and never listen while driving or operating machinery. This is not a medical device.</span></div>' +
+        safeBox([SAFE_BEATS]) +
       "</div>" +
       '<div class="si-side"><div class="si-bar">' +
         '<button class="btn primary si-go" id="trGo"></button>' +

@@ -41,8 +41,8 @@ const DAY = 864e5;
       ok(nav.join(' ') === 'Today>#home Library>#practice Breathe>#breathe Heart>#heart Learn>#learn', 'five tabs: ' + nav.join(' '));
       ok(await t(p, '#viewTitle') === 'Today' && await vis(p, '#v-home') && !(await p.$('#v-sounds')), 'opens on Today; there is no Sounds view');
       await go(p, 'sounds', 350);
-      const snd = await E(p, () => ({ hash: location.hash, title: document.querySelector('#viewTitle').textContent, subs: [...document.querySelectorAll('#prLib .pc-sub')].map(e => e.textContent), btn: document.querySelector('#prFbtnTxt').textContent }));
-      ok(snd.hash === '#practice' && snd.title === 'Library' && snd.subs.length >= 12 && snd.subs.every(s => /track|Beats before work|Tool/.test(s)) && snd.btn === 'Filters · 1',
+      const snd = await E(p, () => ({ hash: location.hash, title: document.querySelector('#viewTitle').textContent, subs: [...document.querySelectorAll('#prLib .pc-sub')].map(e => e.textContent), on: [...document.querySelectorAll('#prMeth [aria-pressed=true]')].map(b => b.dataset.m).join() }));
+      ok(snd.hash === '#practice' && snd.title === 'Library' && snd.subs.length >= 12 && snd.subs.every(s => /track|Beats before work|Tool/.test(s)) && snd.on === 'sound',
         'an old link to Sounds opens the library at its sounds: ' + snd.subs.length + ' items');
       await go(p, 'prime');
       ok(await t(p, '#viewTitle') === 'Custom primer' && await vis(p, '#primeStart') && /Start 10-minute prime/.test(await t(p, '#primeStart')), '#prime is the Custom primer page');

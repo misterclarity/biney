@@ -8,6 +8,7 @@
   builderInit();
   primeInit();
   dialogsInit();
+  safeInit();
   initBreath();
   hrInit();
   shellInit();

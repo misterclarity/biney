@@ -69,7 +69,8 @@
   // a breathing session on the guide (not one a practice is running, and not the resonance test)
   function hBreath(secs, full) {
     if (P.usesB || B.finder || secs < 60) return;
-    var e = { k: "breath", id: BC.pattern, secs: secs, full: full, rate: +(60 / cycleOf(BC)).toFixed(1) };
+    var e = { k: "breath", id: BC.pattern, secs: secs, full: full, rate: +(60 / cycleOf(BC)).toFixed(1) }, mine = mpGet(BC.pattern);
+    if (mine) e.n = mine.name;                   // your own pattern keeps its name here even once it's deleted
     var s = B.hr;
     if (s.length >= 10) {
       var end = s[s.length - 1].bt;
@@ -111,7 +112,7 @@
     if (e.k === "breath" && e.id === "custom") return { name: "Your own breathing pattern", href: "#breathe", icon: "breathe", col: "var(--b-in)", goal: "" };
     if (it) return { name: it.name, href: it.href, icon: it.icon, col: it.col, goal: it.goal };
     // a routine you've since deleted, or something renamed
-    return { name: e.n || "A session", href: e.k === "practice" ? "#practice" : "#home", icon: e.k === "breath" ? "breathe" : e.k === "track" ? "sounds" : "practice", col: "var(--accent)", goal: "" };
+    return { name: e.n || "A session", href: e.k === "practice" ? "#practice" : e.k === "breath" ? "#breathe" : "#home", icon: e.k === "breath" ? "breathe" : e.k === "track" ? "sounds" : "practice", col: "var(--accent)", goal: "" };
   }
   function hMins(secs) { return secs < 3600 ? Math.max(1, Math.round(secs / 60)) + " min" : Math.floor(secs / 3600) + " h " + Math.round(secs % 3600 / 60) + " min"; }
   function hDetail(e) {

@@ -76,9 +76,11 @@ jobs:
         run: |
           kind=$(gh api "repos/${{ github.repository }}/pages" --jq .build_type 2>/dev/null || echo unknown)
           echo "kind=$kind" >> "$GITHUB_OUTPUT"
-          if [ "$kind" != "workflow" ]; then
-            echo "::notice::Every suite passed. GitHub Pages still publishes straight from the branch, so this run publishes nothing. Set Settings > Pages > Source to GitHub Actions to publish only tested versions."
-          fi
+          case "$kind" in
+            workflow) echo "GitHub Pages publishes from this workflow: publishing." ;;
+            unknown) echo "::warning::Every suite passed, but this repository's Pages settings couldn't be read, so nothing was published." ;;
+            *) echo "::notice::Every suite passed. GitHub Pages still publishes straight from the branch (build type: $kind), so this run publishes nothing. Set Settings > Pages > Source to GitHub Actions to publish only tested versions." ;;
+          esac
 
   publish:
     needs: source

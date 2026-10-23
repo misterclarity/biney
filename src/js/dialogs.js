@@ -228,10 +228,10 @@
       if (e.key === "Escape" && !$("#pmModal").hidden) closeMatcher(false);
     });
 
-    // both are blocking, so Tab has to stay inside them
+    // they're all blocking, so Tab has to stay inside them
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return;
-      var box = !$("#scModal").hidden ? $("#scModal") : (!$("#pmModal").hidden ? $("#pmModal") : null);
+      var box = ["#sfModal", "#scModal", "#pmModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
       if (!box) return;
       var all = box.querySelectorAll("button, input, a[href], select, textarea");
       var list = [], i;

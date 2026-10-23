@@ -34,6 +34,42 @@
   }
   function pLenTxt(d, m) { return d.lenFmt ? d.lenFmt(m) : d.lenUnit ? m + " " + d.lenUnit + (m === 1 ? "" : "s") : m + " min"; }
   function pResRate() { return (H.find && H.find.best) ? H.find.best : 5.5; }
+
+  /* ----- a practice's own choices, kept for it: a position (d.choices), which binaural beat
+     (d.beats) and the pace of its even breathing (d.pace) ----- */
+  function pChoices(id) {
+    try { var v = JSON.parse(store.get("pCh." + id) || "null"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; }
+  }
+  function pChoiceSet(d, k, v) { var o = pChoices(d.id); o[k] = v; store.set("pCh." + d.id, JSON.stringify(o)); }
+  function pChoice(d, key) {
+    var c = (d.choices || []).filter(function (x) { return x.key === key; })[0];
+    if (!c) return undefined;
+    var v = pChoices(d.id)[key];
+    return c.opts.some(function (o) { return o[0] === v; }) ? v : c.def;
+  }
+  function pBeat(d) {
+    var v = pChoices(d.id).beat;
+    return d.beats.filter(function (b) { return b.id === v; })[0] || d.beats[0];
+  }
+  // the binaural layer as it will play: the practice's own, or the beat chosen for it
+  function pAudio(d) {
+    if (!d.audio || !d.beats) return d.audio;
+    var b = pBeat(d);
+    return ext(ext({}, d.audio), { band: b.band, pts: b.pts });
+  }
+  var P_PACE = { inh: [2, 10], exh: [2, 12] };     // seconds, in half-second steps
+  // even breathing at your resonance rate (from the test, or 5.5 a minute), or an in and out of your own
+  function pPace(d) {
+    var r = pResRate(), half = Math.round(30 / r * 10) / 10, c = pChoices(d.id);
+    if (!d.pace || c.pace !== "own") return { own: false, inh: half, exh: half, rate: r };
+    var get = function (k) {
+      var v = Math.round(parseFloat(c[k]) * 2) / 2, lim = P_PACE[k];
+      return isFinite(v) ? Math.max(lim[0], Math.min(lim[1], v)) : Math.max(lim[0], Math.min(lim[1], Math.round(half * 2) / 2));
+    };
+    var inh = get("inh"), exh = get("exh");
+    return { own: true, inh: inh, exh: exh, rate: Math.round(600 / (inh + exh)) / 10 };
+  }
+  function pSecs(v) { return (v % 1 ? v.toFixed(1) : String(v)) + " s"; }
   function pLenOf(d, len) {
     if (!d.lengths) return 0;
     return d.lengths.indexOf(len) >= 0 ? len : d.lengths.indexOf(d.min) >= 0 ? d.min : d.lengths[0];
@@ -839,7 +875,7 @@
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
       if (d.audio && P.opt.audio) {
-        var a = d.audio;
+        var a = pAudio(d);
         load({ id: "prac-" + d.id, pid: d.id, practice: true, cat: a.cat, band: a.band, name: a.name, carrier: a.carrier,
           beat: a.dyn ? a.start : a.pts[a.pts.length - 1][1], pts: a.dyn ? null : a.pts, dyn: !!a.dyn, cur: a.start || 0,
           minutes: plan.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "" });
@@ -1021,9 +1057,31 @@
     });
     var O = pIntroOpts(d), own = Object.keys(pOptOwn(d.id)).length > 0, hasRhy = pPlanHasRhy(plan.steps);
     var opts = [], every = [];
+    // this practice's own choices come first: how you'll be, which beat, what pace
+    (d.choices || []).forEach(function (c) {
+      var v = pChoice(d, c.key);
+      opts.push('<div class="so-row so-seg"><span class="so-l">' + esc(c.label) + (c.note ? "<small>" + esc(c.note) + "</small>" : "") + '</span><div class="mini-seg" data-choice="' + c.key + '">' +
+        c.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (v === o[0]) + '">' + esc(o[1]) + "</button>"; }).join("") + "</div></div>");
+    });
+    if (d.audio && d.beats) {
+      var bt = pBeat(d);
+      opts.push('<div class="so-row so-seg so-beat"><span class="so-l">Binaural beat<small id="sBeatNote">' + esc(pBeatNote(d, O)) + '</small></span><div class="mini-seg" id="sOptBeat">' +
+        [["off", "Off"]].concat(d.beats.map(function (b) { return [b.id, b.label]; })).map(function (o) {
+          return '<button data-v="' + o[0] + '" aria-pressed="' + (o[0] === "off" ? !O.audio : O.audio && bt.id === o[0]) + '">' + esc(o[1]) + "</button>";
+        }).join("") + "</div></div>");
+    }
+    if (d.pace) {
+      var pc = pPace(d), step = function (k, label, what) {
+        return '<span class="so-step" data-k="' + k + '"><span class="so-step-l">' + label + '</span><button data-d="-1" aria-label="' + what + ' half a second shorter" aria-disabled="' + (pc[k] <= P_PACE[k][0]) + '">−</button>' +
+          '<b id="sPace-' + k + '" aria-live="polite">' + pSecs(pc[k]) + '</b><button data-d="1" aria-label="' + what + ' half a second longer" aria-disabled="' + (pc[k] >= P_PACE[k][1]) + '">+</button></span>';
+      };
+      opts.push('<div class="so-row so-seg so-pace"><span class="so-l">Breathing pace<small id="sPaceNote">' + esc(pPaceNote(pc)) + '</small></span><div class="mini-seg" id="sOptPace">' +
+        [["auto", "Resonance rate"], ["own", "Your own"]].map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + ((o[0] === "own") === pc.own) + '">' + o[1] + "</button>"; }).join("") +
+        '</div><div class="so-steps" id="sPaceSteps"' + (pc.own ? "" : " hidden") + ">" + step("inh", "In", "Each in-breath") + step("exh", "Out", "Each out-breath") + "</div></div>");
+    }
     opts.push(pToggle("sOptVoice", "Spoken guidance", O.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
     opts.push(pToggle("sOptBells", "Bells between steps", O.bells, ""));
-    if (d.audio) opts.push(pToggle("sOptAudio", "Binaural layer", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
+    if (d.audio && !d.beats) opts.push(pToggle("sOptAudio", "Binaural layer", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
     if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesized berimbau keeps time for the capoeira moves."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
@@ -1079,7 +1137,7 @@
         }).join("") + "</ol>" +
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
-        (d.caution ? '<div class="si-caution"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>' + esc(d.caution) + "</span></div>" : "") +
+        (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its binaural beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
       "</div>" +
       '<div class="si-side">' +                     // Start first: above the options on a computer, last on a phone (order)
       '<div class="si-bar">' +
@@ -1114,10 +1172,24 @@
     return (own ? "You've changed these for " + esc(d.name) + ". " : "For " + esc(d.name) + " only. ") +
       'The defaults for every practice are in <a href="#settings">Settings</a>.';
   }
+  // what the chosen beat is, or that there's none
+  function pBeatNote(d, O) {
+    return O.audio ? pBeat(d).note + " " + d.audio.carrier + " Hz carrier. Headphones needed." : "No beat: the guidance and breath cues only.";
+  }
+  function pPaceNote(pc) {
+    if (pc.own) return pc.rate + " breaths a minute, at your own in and out.";
+    return pc.rate + " breaths a minute, " + (H.find && H.find.best ? "from your resonance test." : "until you take the resonance test on the Heart tab.");
+  }
   function pOptSumTxt(d, O, hasRhy) {
-    var s = [O.voice && window.speechSynthesis ? "Voice" : "No voice"];
+    var s = [];
+    (d.choices || []).forEach(function (c) {                 // a choice of its own, when it isn't the usual one
+      var v = pChoice(d, c.key);
+      if (v !== c.def) s.push(c.opts.filter(function (o) { return o[0] === v; })[0][1]);
+    });
+    if (d.pace && pPace(d).own) s.push("In " + pSecs(pPace(d).inh) + ", out " + pSecs(pPace(d).exh));
+    s.push(O.voice && window.speechSynthesis ? "Voice" : "No voice");
     if (O.bells) s.push("Bells");
-    if (d.audio) s.push(O.audio ? "Binaural" : "No beats");
+    if (d.audio) s.push(O.audio ? (d.beats ? pBeat(d).label : "Binaural") : "No beats");
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -1153,6 +1225,50 @@
     on("#sOptVoice", function () { O.voice = this.checked; var r = $("#sVoiceRow"); if (r) r.hidden = !this.checked; save(); });
     on("#sOptBells", function () { O.bells = this.checked; save(); if (this.checked) pBell(0.4, 0, 0, 0, true); });
     on("#sOptAudio", function () { O.audio = this.checked; save(); });
+    // a practice's own choices change in place, so the button you pressed keeps the focus
+    var press = function (g, b) { g.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); };
+    document.querySelectorAll("#sOpts [data-choice]").forEach(function (g) {
+      g.addEventListener("click", function (e) {
+        var b = e.target.closest("button"); if (!b) return;
+        pChoiceSet(d, g.dataset.choice, b.dataset.v); press(g, b); sum();
+      });
+    });
+    var bg = $("#sOptBeat");
+    if (bg) bg.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      O.audio = b.dataset.v !== "off";
+      if (O.audio) pChoiceSet(d, "beat", b.dataset.v);
+      save(); press(bg, b);
+      bSetT("#sBeatNote", pBeatNote(d, O));
+    });
+    var pg = $("#sOptPace");
+    if (pg) {
+      var paceUI = function () {
+        var pc = pPace(d);
+        $("#sPaceSteps").hidden = !pc.own;
+        ["inh", "exh"].forEach(function (k) {
+          bSetT("#sPace-" + k, pSecs(pc[k]));
+          var bs = document.querySelectorAll('#sPaceSteps [data-k="' + k + '"] button');      // aria-disabled, so a held key keeps its place at the end
+          bs[0].setAttribute("aria-disabled", pc[k] <= P_PACE[k][0] ? "true" : "false"); bs[1].setAttribute("aria-disabled", pc[k] >= P_PACE[k][1] ? "true" : "false");
+        });
+        bSetT("#sPaceNote", pPaceNote(pc));
+        sum();
+      };
+      pg.addEventListener("click", function (e) {
+        var b = e.target.closest("button"); if (!b) return;
+        if (b.dataset.v === "own" && !("inh" in pChoices(d.id))) {    // the first time: start from the resonance pace
+          var pc0 = pPace(d);
+          pChoiceSet(d, "inh", Math.round(pc0.inh * 2) / 2); pChoiceSet(d, "exh", Math.round(pc0.exh * 2) / 2);
+        }
+        pChoiceSet(d, "pace", b.dataset.v); press(pg, b); paceUI();
+      });
+      $("#sPaceSteps").addEventListener("click", function (e) {
+        var b = e.target.closest("button[data-d]"); if (!b || b.getAttribute("aria-disabled") === "true") return;
+        var k = b.closest("[data-k]").dataset.k, lim = P_PACE[k];
+        pChoiceSet(d, k, Math.max(lim[0], Math.min(lim[1], pPace(d)[k] + 0.5 * parseInt(b.dataset.d, 10))));
+        paceUI();
+      });
+    }
     on("#sOptRhy", function () { O.rhythm = this.checked; save(); });
     on("#sOptTick", function () { O.tapTick = this.checked; save(); });
     on("#sOptBuzz", function () {
@@ -1390,5 +1506,5 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP };   // for automated tests only
   }
