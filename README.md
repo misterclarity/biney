@@ -49,7 +49,7 @@ The build only assembles, nothing is rewritten on the way:
 
 - **Markup.** Each `{include:name}` line in `src/html/app.html` is replaced by `src/html/name`, and `{i:name}` anywhere in the markup becomes an icon from `src/html/icons.svg`. The build stops on an icon that isn't in the sprite.
 - **Script.** The files in `src/js/` are joined in the order listed in `build.py`, inside one function, so they share one scope. `core.js` comes first and `boot.js` last. Every other file only declares things; `boot.js` wires the page up in order. Because the scope is shared, the build stops if a top-level name is declared twice. Otherwise the second declaration would silently replace the first.
-- **Styles.** `src/styles.css`, with the Poppins subset from `src/poppins.b64` inlined.
+- **Styles.** `src/styles.css`, with the Poppins subset from `src/poppins.b64` inlined and its licence, `src/poppins-OFL.txt`, in a comment just above it (the font's licence asks that every copy carry it).
 
 | Script file | What it holds |
 |---|---|

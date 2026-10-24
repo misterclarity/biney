@@ -474,7 +474,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
     /* K. what the full code check found: fast breathing goes no faster than it was made to; a beat turned
        off stays off through a restart, and a paused one stops; the end screen's panel has a name of its own;
        the routine builder's tiles say their time, level and caution; the safety link is big enough to tap;
-       a backup with a damaged choice of a practice's is refused */
+       a backup with a damaged choice of a practice's is refused; the embedded font carries its licence */
     if (!only || only === 'K') {
       const p = await page(OPT({ audio: true }));
       await E(p, () => location.hash = 'practice/wim-hof'); await p.waitForTimeout(400);
@@ -513,6 +513,9 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await q.setInputFiles('#stLoad', f); await q.waitForTimeout(250);
       ok(/damaged/.test(await t(q, '#stRestore')), 'a backup whose choices for a practice are damaged is refused');
       await q.context().close();
+      const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8'), ff = html.indexOf('@font-face'), note = html.slice(html.lastIndexOf('/*', ff), ff);
+      ok(/Copyright 2020 The Poppins Project Authors/.test(note) && /SIL OPEN FONT LICENSE Version 1\.1/.test(note) && /PERMISSION & CONDITIONS[\s\S]*5\) The Font Software[\s\S]*DISCLAIMER/.test(note) && /\*\/\s*$/.test(note),
+        'the embedded font carries its copyright and licence in the page, as the licence asks');
     }
   } catch (e) {
     log.push('ERROR ' + (e && e.stack || e));

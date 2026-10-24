@@ -45,6 +45,7 @@
     --maxw:1120px;
     color-scheme:dark;
   }
+  /*__POPPINS_OFL__*/
   @font-face{
     font-family:"Entrain Display";font-style:normal;font-weight:700;font-display:swap;
     src:url(data:font/woff;base64,__POPPINS_BOLD__) format("woff");

@@ -8,6 +8,8 @@ Inputs, all in this folder:
   js/*.js         the script, in the order of JS below; every file shares one scope
   styles.css      the stylesheet (with the __POPPINS_BOLD__ placeholder)
   poppins.b64     base64 of the subset Poppins Bold WOFF
+  poppins-OFL.txt the font's copyright and licence, put next to it in the page (the licence asks that
+                  every copy carry them)
 Outputs, one folder up:
   index.html            the whole app in one file, with no network requests
   sw.js, manifest.webmanifest   for installing it and opening it offline (icons/ is kept as it is)
@@ -122,7 +124,10 @@ if twice:
 
 
 # ---- the page ----
-css = rd("styles.css").replace("__POPPINS_BOLD__", rd("poppins.b64").strip())
+ofl = rd("poppins-OFL.txt").strip()
+assert "*/" not in ofl and "/*__POPPINS_OFL__*/" in rd("styles.css"), "the font licence needs its place in styles.css"
+css = rd("styles.css").replace("__POPPINS_BOLD__", rd("poppins.b64").strip()).replace(
+    "/*__POPPINS_OFL__*/", "/* The font below, under its licence:\n\n" + ofl + "\n*/")
 head = """<!DOCTYPE html>
 <html lang="en">
 <head>
