@@ -2,7 +2,8 @@
 // Run: node tests/choices.js [group letter]
 //   M  your own breathing patterns     N  one safety note
 //   F  library filters that combine   R  Heart Coherence: gratitude, lying down, its beat and pace
-//   W  wording that names its study
+//   W  wording that names its study    A  the pace and beat changed while a practice runs, and Restart
+//   Q  the three new quotes            I  the impressum and copyright
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -310,7 +311,8 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       let pl = await plan(15);
       ok(/gratitude/.test(pl[2].lines[0][1]) && pl[1].secs === 180 && /Sit comfortably/.test(pl[0].lines[0][1]) && pl[1].t.inh === 5 && pl[1].t.exh === 5 && /evenly, 6 a minute/.test(pl[1].lines[0][1]),
         'at your resonance rate from the test (6 a minute: 5 s in, 5 s out), sitting');
-      ok(/6 breaths a minute, from your resonance test/.test(await t(p, '#sPaceNote')), 'and says where the pace comes from: ' + await t(p, '#sPaceNote'));
+      ok(/^Your resonance rate, even in and out: 6 breaths a minute, from your resonance test/.test(await t(p, '#sPaceNote')) && await t(p, '#sOptPace [aria-pressed=true]') === 'Optimal defaults',
+        'the optimal default is your resonance rate, and says where it comes from: ' + await t(p, '#sPaceNote'));
       // lying down
       await p.click('[data-choice="pos"] button[data-v="lie"]'); await p.waitForTimeout(100);
       pl = await plan(15);
@@ -352,7 +354,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       // the rate without a test, and Learn
       const q = await page(Object.assign(OPT(), { optsOpen: '1' }));
       await E(q, () => location.hash = 'practice/coherence'); await q.waitForTimeout(400);
-      ok(/^5\.5 breaths a minute, until you take the resonance test on the Heart tab/.test(await t(q, '#sPaceNote')), 'without a test it\'s 5.5 a minute, and says how to find yours');
+      ok(/^Your resonance rate, even in and out: 5\.5 breaths a minute, the usual one, until you take the resonance test on the Heart tab/.test(await t(q, '#sPaceNote')), 'without a test it\'s 5.5 a minute, and says how to find yours');
       await E(q, () => location.hash = 'l-breathing'); await q.waitForTimeout(400);
       ok(/three\s+minutes of slow, heart-focused breathing first, then gratitude/.test(await t(q, '#v-learn')) && /McCraty, R\., Atkinson, M\., Tiller, W\. A\., Rein, G\., & Watkins, A\. D\. \(1995\)/.test(await t(q, '#v-learn')),
         'Learn explains the order, with its reference');
@@ -373,6 +375,98 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await E(p, () => location.hash = 'practice'); await p.waitForTimeout(300);
       await p.click('#prFilt [data-f=reflect]'); await p.waitForTimeout(150);
       ok(/Have-Tos into Choices \(NVC\)/.test(await t(p, '#prLib')) && /Marshall Rosenberg's exercise/.test(await t(p, '#prLib a[href="#practice/nvc-choose"]')), 'From Should to Choose is Have-Tos into Choices (NVC), and says whose exercise it is');
+      await p.context().close();
+    }
+
+    /* A. while a practice runs: the breathing pace slower or faster (from the next breath), the beat lower or
+       higher (gliding there) or off and on again, and Restart, two taps like End */
+    if (!only || only === 'A') {
+      const p = await page(OPT({ audio: true }), null, { speed: 1, rr: false });
+      const st = () => E(p, () => { const X = window.__entrain, q = s => document.querySelector(s), A = X.A;
+        return { idx: X.P.idx, K: X.P.paceK, adj: X.P.beatAdj, row: !q('#sAdj').hidden, br: q('#sAdjBr').hidden ? null : q('#sAdjBrV').textContent, bt: q('#sAdjBt').hidden ? null : q('#sAdjBtV').textContent,
+          sig: (X.B.pending || X.B.ph || {}).sig || '', playing: A.playing, pts: A.track ? JSON.stringify(A.track.pts) : '', sub: q('#pSub').textContent, live: q('#sLive').textContent,
+          hz: A.oscR && A.track ? +(A.oscR.frequency.value - A.track.carrier).toFixed(2) : null, T: X.P.state === 'running' ? 0 : 0 }; });
+      await E(p, () => location.hash = 'practice/coherence'); await p.waitForTimeout(400);
+      await p.click('#sGo'); await p.waitForTimeout(700);
+      let s = await st();
+      ok(s.row && s.br === '5.5 /min' && s.bt === '6.0 Hz', 'a practice with breathing and a beat shows both, already during its first step: ' + s.br + ', ' + s.bt);
+      await p.click('#sNext'); await p.waitForTimeout(500);
+      await p.click('#sAdjBr [data-d="-1"]'); await p.waitForTimeout(150);
+      s = await st();
+      ok(s.br === '5.0 /min' && /in6\|out6/.test(s.sig) && await t(p, '#sLine') === 'Slower: 5.0 breaths a minute, from the next breath.', 'Breath − slows it to 5 a minute, 6 s in and 6 s out, from the next breath, and says so: ' + s.sig);
+      await p.click('#sAdjBr [data-d="1"]'); await p.click('#sAdjBr [data-d="1"]'); await p.waitForTimeout(150);
+      s = await st();
+      ok(s.br === '6.0 /min' && /in5\|out5/.test(s.sig), 'and + speeds it up: ' + s.br);
+      for (let i = 0; i < 14; i++) await p.click('#sAdjBr [data-d="-1"]', { force: true });
+      s = await st();
+      ok(Math.abs(s.K - 2) < 1e-6 && s.br === '2.7 /min' && await p.$eval('#sAdjBr [data-d="-1"]', b => b.getAttribute('aria-disabled')) === 'true', 'it goes as slow as half the pace and no further: ' + s.br);
+      for (let i = 0; i < 6; i++) await p.click('#sAdjBr [data-d="1"]');
+      await p.click('#sAdjBt [data-d="1"]'); await p.waitForTimeout(1800);
+      s = await st();
+      ok(s.adj === 1 && s.pts === '[[0,7],[1200,7]]' && s.bt === '7.0 Hz' && Math.abs(s.hz - 7) < 0.05 && /7\.0 Hz/.test(s.sub) && /7\.0 Hz/.test(s.live) && await t(p, '#sLine') === 'The beat moves to 7.0 Hz, theta.',
+        'Beat + moves the beat up 1 Hz, and it glides there: ' + s.hz + ' Hz');
+      for (let i = 0; i < 12; i++) await p.click('#sAdjBt [data-d="-1"]');
+      s = await st();
+      ok(s.pts === '[[0,0.5],[1200,0.5]]' && s.bt === '0.5 Hz' && s.sub.startsWith('Delta'), 'down to 0.5 Hz at the lowest, in half steps below 4 Hz, and its band follows: ' + s.sub);
+      for (let i = 0; i < 9; i++) await p.click('#sAdjBt [data-d="1"]');
+      await p.click('#sAdjBtOn'); await p.waitForTimeout(1600);
+      s = await st();
+      ok(!s.playing && s.bt === 'Off' && !/paused/.test(s.live) && await p.$eval('#sAdjBtOn', b => b.getAttribute('aria-pressed')) === 'false', 'the beat can be turned off: it fades, and no "sound paused"');
+      await p.click('#sAdjBtOn'); await p.waitForTimeout(900);
+      const sync = await E(p, () => { const X = window.__entrain; return [X.A.ctx.currentTime - X.A.startedAt, (performance.now() / 1000) - X.P.t0, X.A.playing]; });
+      s = await st();
+      ok(sync[2] && Math.abs(sync[0] - sync[1]) < 2.5 && s.bt === '6.0 Hz', 'and on again, where the practice is: ' + sync[0].toFixed(1) + ' s into a ' + sync[1].toFixed(1) + ' s practice, at ' + s.bt);
+      await p.screenshot({ path: OUT + 'choices-a-adjust.png' });
+      // restart: two taps
+      await p.click('#sqRestart'); await p.waitForTimeout(100);
+      ok(await t(p, '#sqRestartTxt') === 'Tap again to restart' && await p.$eval('#sqRestart', b => b.classList.contains('armed')), 'Restart asks for a second tap');
+      await p.waitForTimeout(3300);
+      ok(await t(p, '#sqRestartTxt') === 'Restart', 'and forgets it after three seconds');
+      const before = (await st()).br;
+      await p.click('#sqRestart'); await p.click('#sqRestart'); await p.waitForTimeout(700);
+      s = await st();
+      const back = await E(p, () => ({ T: (performance.now() / 1000) - window.__entrain.P.t0, step: document.querySelector('#sStepTxt').textContent, toast: document.querySelector('#toastTxt').textContent }));
+      ok(s.idx === 0 && back.T < 2 && /^Step 1 of 4/.test(back.step) && back.toast === 'Started again from the top.' && s.playing && s.br === before && s.bt === '6.0 Hz', 'two taps start it again from the top, keeping the pace and beat you set: ' + back.step + ', ' + s.br);
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
+      await p.context().close();
+      // which practices show which controls
+      const q = await page(OPT({ audio: true }));
+      const shows = async id => { await E(q, i => location.hash = 'practice/' + i, id); await q.waitForTimeout(300); await q.click('#sGo'); await q.waitForTimeout(500);
+        const r = await E(q, () => ({ row: !document.querySelector('#sAdj').hidden, br: !document.querySelector('#sAdjBr').hidden, bt: !document.querySelector('#sAdjBt').hidden, rs: !document.querySelector('#sqRestart').hidden }));
+        await q.click('#sEnd'); await q.click('#sEnd'); await q.waitForTimeout(300); return r; };
+      const uj = await shows('ujjayi'), ana = await shows('anapana'), hl = await shows('heart-led'), nvc = await shows('nvc-self');
+      ok(uj.br && !uj.bt && !ana.row && !hl.bt && ana.rs && !nvc.rs, 'breathing without a beat shows only the pace; Anapana neither; heart-led beats keep the beat to your heart; a reflection has no Restart');
+      await q.context().close();
+      // a restart after a minute or more keeps what was done as a session ended early
+      const r = await page(OPT({ audio: false }), null, { speed: 30, rr: false });
+      await E(r, () => location.hash = 'practice/body-scan'); await r.waitForTimeout(300);
+      await r.click('#sGo'); await r.waitForTimeout(3000);
+      await r.click('#sqRestart'); await r.click('#sqRestart'); await r.waitForTimeout(400);
+      const hist = await E(r, () => JSON.parse(localStorage.getItem('entrain.history') || '[]'));
+      ok(hist.length === 1 && hist[0].id === 'body-scan' && hist[0].full === false && hist[0].secs >= 60, 'a restart after a minute keeps the minutes done as a session ended early: ' + (hist[0] && hist[0].secs) + ' s');
+      await r.context().close();
+    }
+
+    /* Q. the three new quotes, signed Entrain and kept as written */
+    if (!only || only === 'Q') {
+      const p = await page(OPT());
+      const qs = await E(p, () => { const X = window.__entrain; return ["There's nothing to do but enjoy the view.", 'Health is a state of co-operation.', 'Revolution is an ongoing process of self discovery.']
+        .map(x => { const q = X.QUOTES.find(y => y[0] === x); return q ? x + ' / ' + (q[1] || 'Entrain') + ' / ' + q[2] : 'missing: ' + x; }); });
+      ok(qs.every(x => / \/ Entrain \/ as written$/.test(x)), 'three new quotes, signed Entrain: ' + qs.map(x => x.split(' / ')[0]).join(' | '));
+      await p.context().close();
+    }
+
+    /* I. the impressum and copyright: in Learn, in its contents, and from Settings */
+    if (!only || only === 'I') {
+      const p = await page(OPT());
+      await E(p, () => location.hash = 'settings'); await p.waitForTimeout(400);
+      ok(/© 2026 misterclarity/.test(await t(p, '.st-about')), 'Settings ends with the copyright: ' + await t(p, '.st-about'));
+      await p.click('.st-about a[href="#l-impressum"]'); await p.waitForTimeout(900);
+      const im = await E(p, () => { const h = document.querySelector('#l-impressum'), s = h.closest('section'), r = h.getBoundingClientRect();
+        return { view: !document.querySelector('#v-learn').hidden, top: r.top, inView: r.top >= 0 && r.bottom <= innerHeight, txt: s.textContent.replace(/\s+/g, ' '), link: s.querySelector('a').getAttribute('href'), toc: !!document.querySelector('.toc a[href="#l-impressum"]') }; });
+      ok(im.view && im.inView && im.toc, 'its link opens Learn at the impressum, which Learn\'s contents list too');
+      ok(/personal, non-commercial project by misterclarity/.test(im.txt) && /© 2026 misterclarity\. All rights reserved\./.test(im.txt) && im.link === 'https://github.com/misterclarity/biney' &&
+        /Poppins typeface is Copyright 2020 The Poppins Project Authors, used under the SIL Open Font License 1\.1/.test(im.txt), 'the impressum names the project\'s author and page, the copyright and the font\'s licence');
       await p.context().close();
     }
   } catch (e) {

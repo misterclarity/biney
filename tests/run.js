@@ -17,7 +17,7 @@ const SUITES = [   // name, what it covers, and about how long it takes on its o
   ['todaytest', 'Today, one history, favourites, the library with sounds', 50],
   ['findtest', 'Resonance test with a sensor (about two minutes)', 110],
   ['cuetrend', 'Lock screen, vibration, comparisons, trends, start-up, Heart', 70],
-  ['choices', 'Your own breathing patterns, one safety note, filters, Heart Coherence', 40]
+  ['choices', 'Saved patterns, safety note, filters, Heart Coherence, live changes, Restart', 80]
 ];
 const MAX = 15 * 60 * 1000;                 // a suite that runs longer than this has hung
 

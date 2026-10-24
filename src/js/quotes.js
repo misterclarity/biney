@@ -4,7 +4,8 @@
      come from public-domain translations: George Long's Marcus Aurelius and Epictetus,
      Richard Gummere's Seneca, Max Müller's Dhammapada and James Legge's Tao Te Ching,
      plus Thoreau's Walden. Carl Rogers's line on self-acceptance and change is paraphrased,
-     as his book is still in copyright. Lines without a name are Entrain's own, and say so.
+     as his book is still in copyright. Lines without a name are Entrain's own, and say so; the
+     ones marked "as written" were added in their author's own words and are kept that way.
   ---------------------------------------------------------------------- */
   var QUOTES = [
     ["A balanced mind perceives the most subtle sensations.", "Vipassana teaching"],
@@ -43,7 +44,10 @@
     ["There is always time for one slow breath.", ""],
     ["Feel your feet on the floor. You're here.", ""],
     ["Progress is quiet. Keep going anyway.", ""],
-    ["Let the out-breath be a little longer than the in-breath, and let the day go with it.", ""]
+    ["Let the out-breath be a little longer than the in-breath, and let the day go with it.", ""],
+    ["There's nothing to do but enjoy the view.", "", "as written"],
+    ["Health is a state of co-operation.", "", "as written"],
+    ["Revolution is an ongoing process of self discovery.", "", "as written"]
   ];
   var ROGERS = QUOTES[14];
   var Q = { i: 0 };

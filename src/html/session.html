@@ -35,6 +35,21 @@
               <button class="ses-b main" id="sPlay" aria-label="Pause">{i:pause}</button>
               <button class="ses-b" id="sNext" aria-label="Next step">{i:next}</button>
             </div>
+            <div class="ses-adj" id="sAdj" hidden>
+              <div class="adj" id="sAdjBr" role="group" aria-label="Breathing pace" hidden>
+                <span class="adj-l">Breath</span>
+                <button class="adj-b" data-d="-1" aria-label="Slower: fewer breaths a minute">−</button>
+                <b class="adj-v" id="sAdjBrV" aria-live="polite"></b>
+                <button class="adj-b" data-d="1" aria-label="Faster: more breaths a minute">+</button>
+              </div>
+              <div class="adj" id="sAdjBt" role="group" aria-label="Binaural beat" hidden>
+                <span class="adj-l">Beat</span>
+                <button class="adj-b" data-d="-1" aria-label="Lower beat">−</button>
+                <b class="adj-v" id="sAdjBtV" aria-live="polite"></b>
+                <button class="adj-b" data-d="1" aria-label="Higher beat">+</button>
+                <button class="adj-on" id="sAdjBtOn" aria-pressed="true" aria-label="Binaural beat on"><span id="sAdjBtOnTxt">On</span></button>
+              </div>
+            </div>
             <div class="ses-quick">
               <button class="qt" id="sqVoice" aria-pressed="true">{i:voice}Voice</button>
               <button class="qt" id="sqBells" aria-pressed="true">{i:bell}Bells</button>
@@ -42,6 +57,7 @@
               <button class="qt" id="sqAmb" aria-pressed="false">{i:rain}<span id="sqAmbTxt">Background</span></button>
               <label class="qt-vol" id="sqVolRow">{i:volume}<input type="range" id="sqVol" min="0" max="100" aria-label="Binaural volume"></label>
               <label class="qt-vol amb-volrow" id="sqAmbVolRow" hidden>{i:rain}<input type="range" class="amb-vol" min="0" max="100" aria-label="Background volume"></label>
+              <button class="qt qt-rs" id="sqRestart">{i:restart}<span id="sqRestartTxt">Restart</span></button>
             </div>
           </div>
 

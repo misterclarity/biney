@@ -423,7 +423,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
           add(id + ' / blurb', d.blurb); add(id + ' / end', d.end);
         });
         Object.values(X.ASANA).forEach(a => a.cues.forEach(c => add('pose ' + a.id, c)));
-        X.QUOTES.forEach(q => { if (!q[1]) add('quote', q[0]); });     // Entrain's own lines; quoted authors stay as written
+        X.QUOTES.forEach(q => { if (!q[1] && q[2] !== 'as written') add('quote', q[0]); });     // Entrain's own lines; quoted authors, and lines added as written, stay as they are
         return { n: seen.length, bad: seen.filter(x => RE.test(x[1])).map(x => x[0] + ': ' + x[1]) };
       });
       ok(bad.n > 800 && bad.bad.length === 0, bad.n + ' spoken and shown lines checked; worded as what to do' + (bad.bad.length ? ': ' + bad.bad.slice(0, 4).join(' | ') : ''));

@@ -16,7 +16,8 @@
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true }
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true },
+    paceK: 1, beatAdj: 0, runLen: 0, base: 0, rsArm: 0     // changes made while it runs, and what a restart needs
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
 
@@ -267,11 +268,12 @@
   function pUnlock() { wlKick(); }
 
   /* ----- breath steps run on the breathing guide's engine ----- */
+  // a breath step's timings at a moment in it, slowed or sped up by any change made while it runs (P.paceK)
   function pCfgAt(s, st) {
-    var c = {}, f = s.to ? Math.min(1, Math.max(0, st / (s.glide || s.secs))) : 0;
+    var c = {}, f = s.to ? Math.min(1, Math.max(0, st / (s.glide || s.secs))) : 0, K = pBusy() ? P.paceK || 1 : 1;
     B_KEYS.forEach(function (k) {
       var a = s.t[k] || 0, b = s.to ? (s.to[k] || 0) : a;
-      c[k] = Math.round((a + (b - a) * f) * 10) / 10;
+      c[k] = Math.round((a + (b - a) * f) * K * 10) / 10;
     });
     return c;
   }
@@ -382,6 +384,120 @@
     var tr = pTrack();
     if (!tr || !A.playing || !A.ctx) return;
     if (Math.abs((A.ctx.currentTime - A.startedAt) - T) > 4) aSeek(T);
+  }
+
+  /* ----- changes while it runs: the breathing pace, from the next breath, and the beat, which glides there ----- */
+  // the practice's beat as a track, moved up or down by any change made while it runs (P.beatAdj)
+  function pBeatTrack(d) {
+    var a = pAudio(d), adj = P.beatAdj || 0, pts = a.dyn ? null : a.pts.map(function (p) { return [p[0], p[1] + adj]; });
+    return { id: "prac-" + d.id, pid: d.id, practice: true, cat: a.cat, band: adj && pts ? pBandTxt(pts) : a.band, name: a.name, carrier: a.carrier,
+      beat: a.dyn ? a.start : pts[pts.length - 1][1], pts: pts, dyn: !!a.dyn, cur: a.start || 0,
+      minutes: P.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "" };
+  }
+  function pBandTxt(pts) {
+    var a = bandFor(pts[0][1]).name, b = bandFor(pts[pts.length - 1][1]).name;
+    return a === b ? a : a + " → " + b;
+  }
+  function pTrackT() { return A.playing && A.ctx ? A.ctx.currentTime - A.startedAt : A.elapsed; }
+  function pBeatable() { var d = P.def; return !!(d && d.audio && !d.audio.dyn); }
+  // the breath step on now, or failing that the next one
+  function pBrNow() {
+    var s = P.steps[P.idx];
+    if (s && s.k === "breath") return { s: s, st: pT() - s.at };
+    for (var i = P.idx + 1; i < P.steps.length; i++) if (P.steps[i].k === "breath") return { s: P.steps[i], st: 0 };
+    return null;
+  }
+  function pBrRate(b) { return 60 / cycleOf(pCfgAt(b.s, b.st)); }
+  function pPaceStep(dir) {
+    var b = pBrNow();
+    if (!b || !pBusy()) return;
+    var r = pBrRate(b), step = r < 12 ? 0.5 : 2, to = Math.round((r + dir * step) / step) * step;
+    var K = Math.max(0.5, Math.min(2, P.paceK * r / Math.max(step, to)));
+    if (Math.abs(K - P.paceK) < 1e-6) return;
+    P.paceK = K;
+    var s = P.steps[P.idx];
+    if (s && s.k === "breath" && P.usesB && (B.state === "running" || B.state === "paused")) {    // from the next breath, as a change on Breathe does
+      var c = pCfgAt(s, pT() - s.at), ph = buildPhases(c), bt = breathTime();
+      B_KEYS.forEach(function (k) { BC[k] = c[k]; });
+      if (bt < 0) { B.ph = ph; B.pending = null; }
+      else { normalize(bt); B.pending = ph.sig === B.ph.sig ? null : ph; }
+    }
+    // said on screen, since the guidance may name the pace it started with
+    bSetT("#sLine", (dir < 0 ? "Slower: " : "Faster: ") + pBrRate(b).toFixed(1) + " breaths a minute" + (s && s.k === "breath" ? ", from the next breath." : ", from the next breathing step."));
+    pAdjUI();
+  }
+  function pBeatStep(dir) {
+    var tr = pTrack();
+    if (!tr || !P.audioOn || !pBeatable()) return;
+    var cur = beatAt(tr, pTrackT()), step = cur < 4 || (cur < 4.01 && dir < 0) ? 0.5 : 1;
+    var base = pAudio(P.def).pts, lo = Math.min.apply(null, base.map(function (p) { return p[1]; })), hi = Math.max.apply(null, base.map(function (p) { return p[1]; }));
+    var adj = Math.max(0.5 - lo, Math.min(40 - hi, P.beatAdj + dir * step));       // the whole schedule stays between 0.5 and 40 Hz
+    if (Math.abs(adj - P.beatAdj) < 1e-6) return;
+    P.beatAdj = Math.round(adj * 10) / 10;
+    var nt = pBeatTrack(P.def);
+    tr.pts = nt.pts; tr.beat = nt.beat; tr.band = nt.band;
+    if (A.playing && A.oscR && A.ctx) {             // glide to the new schedule over a second and a half
+      var now = A.ctx.currentTime, T = now - A.startedAt, f = A.oscR.frequency;
+      if (f.cancelAndHoldAtTime) f.cancelAndHoldAtTime(now); else { f.cancelScheduledValues(now); f.setValueAtTime(f.value, now); }
+      f.linearRampToValueAtTime(tr.carrier + beatAt(tr, T + 1.5), now + 1.5);
+      tr.pts.forEach(function (p) { if (p[0] > T + 1.5) f.linearRampToValueAtTime(tr.carrier + p[1], now + (p[0] - T)); });
+    }
+    $("#pSub").textContent = trackSub(tr);
+    bSetT("#sLine", "The beat moves to " + beatAt(tr, pTrackT() + 1.5).toFixed(1) + " Hz, " + bandFor(beatAt(tr, pTrackT() + 1.5)).name.toLowerCase() + ".");
+    P.chipsHtml = null;
+    pAdjUI();
+  }
+  // the beat off for the rest of the session (it fades), or on again from where the practice is
+  function pBeatToggle() {
+    var d = P.def;
+    if (!pBusy() || !pBeatable()) return;
+    if (P.audioOn) {
+      P.audioOn = false; P.audioHeld = false;
+      var tr = pTrack();
+      if (tr && A.playing) {
+        fadeOutAndStop("", 1);
+        setTimeout(function () { if (A.track === tr && !A.playing) $("#player").classList.remove("open", "expanded"); }, 1400);
+      }
+    } else {
+      gate(function () {
+        if (!pBusy() || P.def !== d) return;
+        P.audioOn = true;
+        load(pBeatTrack(d));
+        aSeek(pT());
+        if (P.state === "paused") { pause(); P.audioHeld = true; }
+        pQuickSync(); P.chipsHtml = null; pUI();
+      });
+    }
+    pQuickSync(); P.chipsHtml = null; pUI();
+  }
+  function pAdjUI() {
+    var row = $("#sAdj");
+    if (!row || !P.def) return;
+    var b = pBusy() ? pBrNow() : null, beatable = pBeatable(), tr = pTrack(), on = beatable && P.audioOn && !!tr;
+    $("#sAdjBr").hidden = !b;
+    if (b) {
+      var r = pBrRate(b);
+      bSetT("#sAdjBrV", r.toFixed(1) + " /min");
+      $("#sAdjBr [data-d='-1']").setAttribute("aria-disabled", P.paceK >= 2 - 1e-6 ? "true" : "false");
+      $("#sAdjBr [data-d='1']").setAttribute("aria-disabled", P.paceK <= 0.5 + 1e-6 ? "true" : "false");
+    }
+    $("#sAdjBt").hidden = !beatable;
+    if (beatable) {
+      bSetT("#sAdjBtV", on ? beatAt(tr, pTrackT()).toFixed(1) + " Hz" : "Off");
+      $("#sAdjBt [data-d='-1']").setAttribute("aria-disabled", on ? "false" : "true");
+      $("#sAdjBt [data-d='1']").setAttribute("aria-disabled", on ? "false" : "true");
+      var t = $("#sAdjBtOn");
+      t.setAttribute("aria-pressed", on ? "true" : "false");
+      bSetT("#sAdjBtOnTxt", on ? "On" : "Off");
+    }
+    row.hidden = !b && !beatable;
+  }
+  // start this practice again from the top, at the length it was started with
+  function pRestart() {
+    if (!pBusy() || !P.def) return;
+    P.view = P.def; P.len = P.runLen;
+    pStart(true);
+    toast("Started again from the top.", { over: true, ms: 2500 });
   }
 
   /* ----- steps ----- */
@@ -678,7 +794,7 @@
     if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
     if (live && H.coh) chips.push('<span class="lc coh">Coherence <b>' + H.coh.cs.toFixed(1) + "</b></span>");
     if (tr && A.playing) chips.push('<span class="lc beat">' + esc(tr.band) + " <b>" + beatAt(tr, A.elapsed).toFixed(1) + "</b> Hz</span>");
-    else if (tr && !A.playing && P.state === "running" && T < tr.minutes * 60 - (tr.fade || FADE_OUT)) chips.push('<span class="lc off">Sound paused</span>');   // not once the sound has ended as planned
+    else if (tr && P.audioOn && !A.playing && P.state === "running" && T < tr.minutes * 60 - (tr.fade || FADE_OUT)) chips.push('<span class="lc off">Sound paused</span>');   // not once the sound has ended as planned
     var h = chips.join("");
     if (P.chipsHtml !== h) { P.chipsHtml = h; $("#sLive").innerHTML = h; }
     var play = $("#sPlay"), icon = P.state === "running" ? "pause" : "play";
@@ -688,6 +804,7 @@
       play.setAttribute("aria-label", icon === "pause" ? "Pause" : "Resume");
     }
     $("#sPrev").disabled = P.idx <= 0 && T < 3;
+    pAdjUI();
     $("#sNext").disabled = P.idx >= P.steps.length - 1;
     pPill();
   }
@@ -855,19 +972,21 @@
   }
 
   /* ----- transport ----- */
-  function pStart() {
+  // again: a restart, which keeps the pace and beat you set while it ran and skips the cautions you've already confirmed
+  function pStart(again) {
     var d = P.view, resume = P.resume;                 // resume: a reflection's draft to carry on from (nvcDraftResume)
     P.resume = null;
     if (!d) return;
-    if (d.confirm && !$("#sOk").checked) { $("#sOk").focus(); return; }
+    if (d.confirm && again !== true && !$("#sOk").checked) { $("#sOk").focus(); return; }
     var go = function () {
       if (pBusy()) pFinish(true, true);
+      if (again !== true) { P.paceK = 1; P.beatAdj = 0; }
       P.def = d;
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
       if (B.finder) finderCancel();
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
-      P.steps = plan.steps; P.total = plan.total;
+      P.steps = plan.steps; P.total = plan.total; P.base = plan.base; P.runLen = P.len;
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
@@ -875,10 +994,7 @@
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
       if (d.audio && P.opt.audio) {
-        var a = pAudio(d);
-        load({ id: "prac-" + d.id, pid: d.id, practice: true, cat: a.cat, band: a.band, name: a.name, carrier: a.carrier,
-          beat: a.dyn ? a.start : a.pts[a.pts.length - 1][1], pts: a.dyn ? null : a.pts, dyn: !!a.dyn, cur: a.start || 0,
-          minutes: plan.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "" });
+        load(pBeatTrack(d));
         P.audioOn = true;
       } else P.audioOn = false;
       P.audioHeld = false;
@@ -1076,7 +1192,7 @@
           '<b id="sPace-' + k + '" aria-live="polite">' + pSecs(pc[k]) + '</b><button data-d="1" aria-label="' + what + ' half a second longer" aria-disabled="' + (pc[k] >= P_PACE[k][1]) + '">+</button></span>';
       };
       opts.push('<div class="so-row so-seg so-pace"><span class="so-l">Breathing pace<small id="sPaceNote">' + esc(pPaceNote(pc)) + '</small></span><div class="mini-seg" id="sOptPace">' +
-        [["auto", "Resonance rate"], ["own", "Your own"]].map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + ((o[0] === "own") === pc.own) + '">' + o[1] + "</button>"; }).join("") +
+        [["auto", "Optimal defaults"], ["own", "Your own"]].map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + ((o[0] === "own") === pc.own) + '">' + o[1] + "</button>"; }).join("") +
         '</div><div class="so-steps" id="sPaceSteps"' + (pc.own ? "" : " hidden") + ">" + step("inh", "In", "Each in-breath") + step("exh", "Out", "Each out-breath") + "</div></div>");
     }
     opts.push(pToggle("sOptVoice", "Spoken guidance", O.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
@@ -1176,9 +1292,10 @@
   function pBeatNote(d, O) {
     return O.audio ? pBeat(d).note + " " + d.audio.carrier + " Hz carrier. Headphones needed." : "No beat: the guidance and breath cues only.";
   }
+  // the optimal default is your own resonance rate: the test's answer, or 5.5 a minute, the usual one, until you take it
   function pPaceNote(pc) {
     if (pc.own) return pc.rate + " breaths a minute, at your own in and out.";
-    return pc.rate + " breaths a minute, " + (H.find && H.find.best ? "from your resonance test." : "until you take the resonance test on the Heart tab.");
+    return "Your resonance rate, even in and out: " + pc.rate + " breaths a minute, " + (H.find && H.find.best ? "from your resonance test." : "the usual one, until you take the resonance test on the Heart tab.");
   }
   function pOptSumTxt(d, O, hasRhy) {
     var s = [];
@@ -1376,6 +1493,8 @@
     ambUI();
     $("#sqVolRow").hidden = !P.audioOn;
     $("#sqVol").value = $("#vol").value;
+    $("#sqRestart").hidden = !!(P.def && P.def.reflect);       // a reflection would lose what you've written
+    pAdjUI();
   }
   function pImmersive() {
     var on = curView === "session" && pBusy();
@@ -1443,6 +1562,22 @@
       this.classList.add("armed");
       var b = this;
       setTimeout(function () { b.classList.remove("armed"); bSetT("#sEndTxt", "End"); }, 3000);
+    });
+    $("#sqRestart").addEventListener("click", function () {      // two taps, like End
+      if (!pBusy()) return;
+      var b = this;
+      if (P.rsArm && bNow() - P.rsArm < 3) { P.rsArm = 0; b.classList.remove("armed"); bSetT("#sqRestartTxt", "Restart"); pRestart(); return; }
+      P.rsArm = bNow();
+      b.classList.add("armed");
+      bSetT("#sqRestartTxt", "Tap again to restart");
+      setTimeout(function () { if (P.rsArm && bNow() - P.rsArm >= 2.9) { P.rsArm = 0; b.classList.remove("armed"); bSetT("#sqRestartTxt", "Restart"); } }, 3000);
+    });
+    $("#sAdj").addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b || b.getAttribute("aria-disabled") === "true") return;
+      if (b.id === "sAdjBtOn") { pBeatToggle(); return; }
+      var d = parseInt(b.dataset.d, 10);
+      if (b.closest("#sAdjBr")) pPaceStep(d); else pBeatStep(d);
     });
     $("#sTap").addEventListener("click", function () {
       var s = P.steps[P.idx];

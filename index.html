@@ -591,6 +591,12 @@
   .fineprint{border-top:1px solid var(--line-soft);margin-top:44px;padding-top:22px;color:var(--text-faint);font-size:13px}
   .fineprint p{margin:0 0 9px;max-width:70ch}
   .fineprint strong{color:var(--text-dim)}
+  .imprint{margin-top:26px;padding-top:18px;border-top:1px solid var(--line-soft);color:var(--text-faint);font-size:13px}
+  .imprint h3{font-size:15px;margin:0 0 8px;color:var(--text-dim)}
+  .imprint p{margin:0 0 8px;max-width:70ch}
+  .imprint b{color:var(--text-dim)}
+  .imprint a{color:var(--text-dim)}
+  .st-about a{color:var(--text-dim)}
   @media (max-width:900px){
     .learn{grid-template-columns:minmax(0,1fr);gap:8px}
     .toc{
@@ -1024,6 +1030,19 @@
   .qt[aria-pressed="true"]{color:var(--text-dim);background:var(--panel)}
   .qt[aria-pressed="false"]{text-decoration:line-through}
   #sqAmb[aria-pressed="false"]{text-decoration:none}
+  .qt-rs{color:var(--text-dim);background:var(--panel)}
+  .qt-rs.armed{background:color-mix(in srgb,var(--warn,#fbbf24) 22%,var(--panel));color:var(--text)}
+  .qt-rs[hidden]{display:none}
+  /* the pace and the beat, changed while it runs */
+  .ses-adj{display:flex;justify-content:center;gap:10px 14px;flex-wrap:wrap;margin-top:14px}
+  .ses-adj[hidden],.adj[hidden]{display:none}
+  .adj{display:inline-flex;align-items:center;gap:4px;padding:4px;border-radius:14px;background:var(--panel);font-size:13px}
+  .adj-l{padding:0 6px 0 8px;color:var(--text-faint);font-weight:700}
+  .adj-v{min-width:4.9em;text-align:center;color:var(--text);font-weight:750;font-variant-numeric:tabular-nums}
+  .adj-b{width:38px;height:34px;border:0;border-radius:10px;background:var(--panel-2);color:var(--text);font:inherit;font-size:18px;font-weight:700;line-height:1;cursor:pointer}
+  .adj-b[aria-disabled="true"]{opacity:.35;cursor:default}
+  .adj-on{margin-left:2px;min-width:44px;height:34px;border:0;border-radius:10px;background:var(--panel-2);color:var(--text-faint);font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+  .adj-on[aria-pressed="true"]{background:color-mix(in srgb,var(--pcol) 26%,var(--panel-2));color:var(--text)}
   .qt-vol{display:inline-flex;align-items:center;gap:8px;color:var(--text-faint);width:170px}
   .qt-vol[hidden]{display:none}
   .qt-vol svg.i{width:16px;height:16px;flex:none}
@@ -1539,6 +1558,7 @@
   <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6.5 5.5v13M18 6l-8.5 6 8.5 6z"/></symbol>
   <symbol id="i-next" viewBox="0 0 24 24"><path d="M17.5 5.5v13M6 6l8.5 6L6 18z"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></symbol>
+  <symbol id="i-restart" viewBox="0 0 24 24"><path d="M4.8 12a7.2 7.2 0 1 0 2.1-5.1"/><path d="M4.8 4.6v4.2H9"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5H5z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
   <symbol id="i-voice" viewBox="0 0 24 24"><path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4 3.5v-3.5H6.5a2 2 0 0 1-2-2z"/><path d="M8.5 10.5h7"/></symbol>
@@ -1740,6 +1760,21 @@
               <button class="ses-b main" id="sPlay" aria-label="Pause"><svg class="i" aria-hidden="true"><use href="#i-pause"/></svg></button>
               <button class="ses-b" id="sNext" aria-label="Next step"><svg class="i" aria-hidden="true"><use href="#i-next"/></svg></button>
             </div>
+            <div class="ses-adj" id="sAdj" hidden>
+              <div class="adj" id="sAdjBr" role="group" aria-label="Breathing pace" hidden>
+                <span class="adj-l">Breath</span>
+                <button class="adj-b" data-d="-1" aria-label="Slower: fewer breaths a minute">−</button>
+                <b class="adj-v" id="sAdjBrV" aria-live="polite"></b>
+                <button class="adj-b" data-d="1" aria-label="Faster: more breaths a minute">+</button>
+              </div>
+              <div class="adj" id="sAdjBt" role="group" aria-label="Binaural beat" hidden>
+                <span class="adj-l">Beat</span>
+                <button class="adj-b" data-d="-1" aria-label="Lower beat">−</button>
+                <b class="adj-v" id="sAdjBtV" aria-live="polite"></b>
+                <button class="adj-b" data-d="1" aria-label="Higher beat">+</button>
+                <button class="adj-on" id="sAdjBtOn" aria-pressed="true" aria-label="Binaural beat on"><span id="sAdjBtOnTxt">On</span></button>
+              </div>
+            </div>
             <div class="ses-quick">
               <button class="qt" id="sqVoice" aria-pressed="true"><svg class="i" aria-hidden="true"><use href="#i-voice"/></svg>Voice</button>
               <button class="qt" id="sqBells" aria-pressed="true"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg>Bells</button>
@@ -1747,6 +1782,7 @@
               <button class="qt" id="sqAmb" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-rain"/></svg><span id="sqAmbTxt">Background</span></button>
               <label class="qt-vol" id="sqVolRow"><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><input type="range" id="sqVol" min="0" max="100" aria-label="Binaural volume"></label>
               <label class="qt-vol amb-volrow" id="sqAmbVolRow" hidden><svg class="i" aria-hidden="true"><use href="#i-rain"/></svg><input type="range" class="amb-vol" min="0" max="100" aria-label="Background volume"></label>
+              <button class="qt qt-rs" id="sqRestart"><svg class="i" aria-hidden="true"><use href="#i-restart"/></svg><span id="sqRestartTxt">Restart</span></button>
             </div>
           </div>
 
@@ -2231,6 +2267,7 @@
             <a href="#l-practices">Guided practices</a>
             <a href="#l-safety">Safety</a>
             <a href="#references">References</a>
+            <a href="#l-impressum">Impressum</a>
           </nav>
           <article class="prose" id="science">
             <h2>What the research supports</h2>
@@ -2599,6 +2636,15 @@
     <p><strong>Not medical advice.</strong> Binaural beats and paced breathing are self-help techniques, not treatments, and the effects reported in the literature are modest and vary from person to person. The <a href="#l-safety">safety notes</a> say who should check with a doctor first.</p>
     <p>All audio is synthesised in your browser with the Web Audio API. Nothing is downloaded, streamed, recorded or sent anywhere.</p>
   </div>
+            <section class="imprint" aria-labelledby="l-impressum">
+              <h3 id="l-impressum">Impressum and copyright</h3>
+              <p>Entrain is a personal, non-commercial project by <b>misterclarity</b>. Project page and contact:
+                <a href="https://github.com/misterclarity/biney" rel="noopener">github.com/misterclarity/biney</a>.</p>
+              <p>&copy; 2026 misterclarity. All rights reserved.</p>
+              <p>The Poppins typeface is Copyright 2020 The Poppins Project Authors, used under the SIL Open Font License 1.1.
+                The quoted translations and Thoreau's <em>Walden</em> are in the public domain, and the research behind each
+                claim is listed under References.</p>
+            </section>
           </article>
         </div>
       </section>
@@ -3159,16 +3205,18 @@
     $("#player").style.setProperty("--pc", "var(--" +
       (track.cat === "relax" ? "relax" : track.cat === "ther" ? "ther" : "stim") + ")");
     $("#pName").textContent = track.name;
-    var lengthTxt = Math.round(track.minutes) + " min";
+    $("#pSub").textContent = trackSub(track);
+    paint();
+    play();
+  }
+  // the player's second line: band, beat (or where it goes), carrier and length
+  function trackSub(track) {
     var beatTxt = track.pts
       ? (track.pts[0][1] === track.beat ? track.beat.toFixed(1) : track.pts[0][1].toFixed(1) + " → " + track.beat.toFixed(1)) + " Hz"
       : typeof track.rampFrom === "number"
       ? track.rampFrom.toFixed(1) + " → " + track.beat.toFixed(1) + " Hz"
       : track.beat.toFixed(1) + " Hz";
-    $("#pSub").textContent = (track.then ? "Prime · " : "") +
-      track.band + " · " + beatTxt + " · " + track.carrier + " Hz carrier · " + lengthTxt;
-    paint();
-    play();
+    return (track.then ? "Prime · " : "") + track.band + " · " + beatTxt + " · " + track.carrier + " Hz carrier · " + Math.round(track.minutes) + " min";
   }
 
   function play() {
@@ -7602,7 +7650,8 @@
      come from public-domain translations: George Long's Marcus Aurelius and Epictetus,
      Richard Gummere's Seneca, Max Müller's Dhammapada and James Legge's Tao Te Ching,
      plus Thoreau's Walden. Carl Rogers's line on self-acceptance and change is paraphrased,
-     as his book is still in copyright. Lines without a name are Entrain's own, and say so.
+     as his book is still in copyright. Lines without a name are Entrain's own, and say so; the
+     ones marked "as written" were added in their author's own words and are kept that way.
   ---------------------------------------------------------------------- */
   var QUOTES = [
     ["A balanced mind perceives the most subtle sensations.", "Vipassana teaching"],
@@ -7641,7 +7690,10 @@
     ["There is always time for one slow breath.", ""],
     ["Feel your feet on the floor. You're here.", ""],
     ["Progress is quiet. Keep going anyway.", ""],
-    ["Let the out-breath be a little longer than the in-breath, and let the day go with it.", ""]
+    ["Let the out-breath be a little longer than the in-breath, and let the day go with it.", ""],
+    ["There's nothing to do but enjoy the view.", "", "as written"],
+    ["Health is a state of co-operation.", "", "as written"],
+    ["Revolution is an ongoing process of self discovery.", "", "as written"]
   ];
   var ROGERS = QUOTES[14];
   var Q = { i: 0 };
@@ -8588,7 +8640,8 @@
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true }
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true },
+    paceK: 1, beatAdj: 0, runLen: 0, base: 0, rsArm: 0     // changes made while it runs, and what a restart needs
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
 
@@ -8839,11 +8892,12 @@
   function pUnlock() { wlKick(); }
 
   /* ----- breath steps run on the breathing guide's engine ----- */
+  // a breath step's timings at a moment in it, slowed or sped up by any change made while it runs (P.paceK)
   function pCfgAt(s, st) {
-    var c = {}, f = s.to ? Math.min(1, Math.max(0, st / (s.glide || s.secs))) : 0;
+    var c = {}, f = s.to ? Math.min(1, Math.max(0, st / (s.glide || s.secs))) : 0, K = pBusy() ? P.paceK || 1 : 1;
     B_KEYS.forEach(function (k) {
       var a = s.t[k] || 0, b = s.to ? (s.to[k] || 0) : a;
-      c[k] = Math.round((a + (b - a) * f) * 10) / 10;
+      c[k] = Math.round((a + (b - a) * f) * K * 10) / 10;
     });
     return c;
   }
@@ -8954,6 +9008,120 @@
     var tr = pTrack();
     if (!tr || !A.playing || !A.ctx) return;
     if (Math.abs((A.ctx.currentTime - A.startedAt) - T) > 4) aSeek(T);
+  }
+
+  /* ----- changes while it runs: the breathing pace, from the next breath, and the beat, which glides there ----- */
+  // the practice's beat as a track, moved up or down by any change made while it runs (P.beatAdj)
+  function pBeatTrack(d) {
+    var a = pAudio(d), adj = P.beatAdj || 0, pts = a.dyn ? null : a.pts.map(function (p) { return [p[0], p[1] + adj]; });
+    return { id: "prac-" + d.id, pid: d.id, practice: true, cat: a.cat, band: adj && pts ? pBandTxt(pts) : a.band, name: a.name, carrier: a.carrier,
+      beat: a.dyn ? a.start : pts[pts.length - 1][1], pts: pts, dyn: !!a.dyn, cur: a.start || 0,
+      minutes: P.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "" };
+  }
+  function pBandTxt(pts) {
+    var a = bandFor(pts[0][1]).name, b = bandFor(pts[pts.length - 1][1]).name;
+    return a === b ? a : a + " → " + b;
+  }
+  function pTrackT() { return A.playing && A.ctx ? A.ctx.currentTime - A.startedAt : A.elapsed; }
+  function pBeatable() { var d = P.def; return !!(d && d.audio && !d.audio.dyn); }
+  // the breath step on now, or failing that the next one
+  function pBrNow() {
+    var s = P.steps[P.idx];
+    if (s && s.k === "breath") return { s: s, st: pT() - s.at };
+    for (var i = P.idx + 1; i < P.steps.length; i++) if (P.steps[i].k === "breath") return { s: P.steps[i], st: 0 };
+    return null;
+  }
+  function pBrRate(b) { return 60 / cycleOf(pCfgAt(b.s, b.st)); }
+  function pPaceStep(dir) {
+    var b = pBrNow();
+    if (!b || !pBusy()) return;
+    var r = pBrRate(b), step = r < 12 ? 0.5 : 2, to = Math.round((r + dir * step) / step) * step;
+    var K = Math.max(0.5, Math.min(2, P.paceK * r / Math.max(step, to)));
+    if (Math.abs(K - P.paceK) < 1e-6) return;
+    P.paceK = K;
+    var s = P.steps[P.idx];
+    if (s && s.k === "breath" && P.usesB && (B.state === "running" || B.state === "paused")) {    // from the next breath, as a change on Breathe does
+      var c = pCfgAt(s, pT() - s.at), ph = buildPhases(c), bt = breathTime();
+      B_KEYS.forEach(function (k) { BC[k] = c[k]; });
+      if (bt < 0) { B.ph = ph; B.pending = null; }
+      else { normalize(bt); B.pending = ph.sig === B.ph.sig ? null : ph; }
+    }
+    // said on screen, since the guidance may name the pace it started with
+    bSetT("#sLine", (dir < 0 ? "Slower: " : "Faster: ") + pBrRate(b).toFixed(1) + " breaths a minute" + (s && s.k === "breath" ? ", from the next breath." : ", from the next breathing step."));
+    pAdjUI();
+  }
+  function pBeatStep(dir) {
+    var tr = pTrack();
+    if (!tr || !P.audioOn || !pBeatable()) return;
+    var cur = beatAt(tr, pTrackT()), step = cur < 4 || (cur < 4.01 && dir < 0) ? 0.5 : 1;
+    var base = pAudio(P.def).pts, lo = Math.min.apply(null, base.map(function (p) { return p[1]; })), hi = Math.max.apply(null, base.map(function (p) { return p[1]; }));
+    var adj = Math.max(0.5 - lo, Math.min(40 - hi, P.beatAdj + dir * step));       // the whole schedule stays between 0.5 and 40 Hz
+    if (Math.abs(adj - P.beatAdj) < 1e-6) return;
+    P.beatAdj = Math.round(adj * 10) / 10;
+    var nt = pBeatTrack(P.def);
+    tr.pts = nt.pts; tr.beat = nt.beat; tr.band = nt.band;
+    if (A.playing && A.oscR && A.ctx) {             // glide to the new schedule over a second and a half
+      var now = A.ctx.currentTime, T = now - A.startedAt, f = A.oscR.frequency;
+      if (f.cancelAndHoldAtTime) f.cancelAndHoldAtTime(now); else { f.cancelScheduledValues(now); f.setValueAtTime(f.value, now); }
+      f.linearRampToValueAtTime(tr.carrier + beatAt(tr, T + 1.5), now + 1.5);
+      tr.pts.forEach(function (p) { if (p[0] > T + 1.5) f.linearRampToValueAtTime(tr.carrier + p[1], now + (p[0] - T)); });
+    }
+    $("#pSub").textContent = trackSub(tr);
+    bSetT("#sLine", "The beat moves to " + beatAt(tr, pTrackT() + 1.5).toFixed(1) + " Hz, " + bandFor(beatAt(tr, pTrackT() + 1.5)).name.toLowerCase() + ".");
+    P.chipsHtml = null;
+    pAdjUI();
+  }
+  // the beat off for the rest of the session (it fades), or on again from where the practice is
+  function pBeatToggle() {
+    var d = P.def;
+    if (!pBusy() || !pBeatable()) return;
+    if (P.audioOn) {
+      P.audioOn = false; P.audioHeld = false;
+      var tr = pTrack();
+      if (tr && A.playing) {
+        fadeOutAndStop("", 1);
+        setTimeout(function () { if (A.track === tr && !A.playing) $("#player").classList.remove("open", "expanded"); }, 1400);
+      }
+    } else {
+      gate(function () {
+        if (!pBusy() || P.def !== d) return;
+        P.audioOn = true;
+        load(pBeatTrack(d));
+        aSeek(pT());
+        if (P.state === "paused") { pause(); P.audioHeld = true; }
+        pQuickSync(); P.chipsHtml = null; pUI();
+      });
+    }
+    pQuickSync(); P.chipsHtml = null; pUI();
+  }
+  function pAdjUI() {
+    var row = $("#sAdj");
+    if (!row || !P.def) return;
+    var b = pBusy() ? pBrNow() : null, beatable = pBeatable(), tr = pTrack(), on = beatable && P.audioOn && !!tr;
+    $("#sAdjBr").hidden = !b;
+    if (b) {
+      var r = pBrRate(b);
+      bSetT("#sAdjBrV", r.toFixed(1) + " /min");
+      $("#sAdjBr [data-d='-1']").setAttribute("aria-disabled", P.paceK >= 2 - 1e-6 ? "true" : "false");
+      $("#sAdjBr [data-d='1']").setAttribute("aria-disabled", P.paceK <= 0.5 + 1e-6 ? "true" : "false");
+    }
+    $("#sAdjBt").hidden = !beatable;
+    if (beatable) {
+      bSetT("#sAdjBtV", on ? beatAt(tr, pTrackT()).toFixed(1) + " Hz" : "Off");
+      $("#sAdjBt [data-d='-1']").setAttribute("aria-disabled", on ? "false" : "true");
+      $("#sAdjBt [data-d='1']").setAttribute("aria-disabled", on ? "false" : "true");
+      var t = $("#sAdjBtOn");
+      t.setAttribute("aria-pressed", on ? "true" : "false");
+      bSetT("#sAdjBtOnTxt", on ? "On" : "Off");
+    }
+    row.hidden = !b && !beatable;
+  }
+  // start this practice again from the top, at the length it was started with
+  function pRestart() {
+    if (!pBusy() || !P.def) return;
+    P.view = P.def; P.len = P.runLen;
+    pStart(true);
+    toast("Started again from the top.", { over: true, ms: 2500 });
   }
 
   /* ----- steps ----- */
@@ -9250,7 +9418,7 @@
     if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
     if (live && H.coh) chips.push('<span class="lc coh">Coherence <b>' + H.coh.cs.toFixed(1) + "</b></span>");
     if (tr && A.playing) chips.push('<span class="lc beat">' + esc(tr.band) + " <b>" + beatAt(tr, A.elapsed).toFixed(1) + "</b> Hz</span>");
-    else if (tr && !A.playing && P.state === "running" && T < tr.minutes * 60 - (tr.fade || FADE_OUT)) chips.push('<span class="lc off">Sound paused</span>');   // not once the sound has ended as planned
+    else if (tr && P.audioOn && !A.playing && P.state === "running" && T < tr.minutes * 60 - (tr.fade || FADE_OUT)) chips.push('<span class="lc off">Sound paused</span>');   // not once the sound has ended as planned
     var h = chips.join("");
     if (P.chipsHtml !== h) { P.chipsHtml = h; $("#sLive").innerHTML = h; }
     var play = $("#sPlay"), icon = P.state === "running" ? "pause" : "play";
@@ -9260,6 +9428,7 @@
       play.setAttribute("aria-label", icon === "pause" ? "Pause" : "Resume");
     }
     $("#sPrev").disabled = P.idx <= 0 && T < 3;
+    pAdjUI();
     $("#sNext").disabled = P.idx >= P.steps.length - 1;
     pPill();
   }
@@ -9427,19 +9596,21 @@
   }
 
   /* ----- transport ----- */
-  function pStart() {
+  // again: a restart, which keeps the pace and beat you set while it ran and skips the cautions you've already confirmed
+  function pStart(again) {
     var d = P.view, resume = P.resume;                 // resume: a reflection's draft to carry on from (nvcDraftResume)
     P.resume = null;
     if (!d) return;
-    if (d.confirm && !$("#sOk").checked) { $("#sOk").focus(); return; }
+    if (d.confirm && again !== true && !$("#sOk").checked) { $("#sOk").focus(); return; }
     var go = function () {
       if (pBusy()) pFinish(true, true);
+      if (again !== true) { P.paceK = 1; P.beatAdj = 0; }
       P.def = d;
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
       if (B.finder) finderCancel();
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
-      P.steps = plan.steps; P.total = plan.total;
+      P.steps = plan.steps; P.total = plan.total; P.base = plan.base; P.runLen = P.len;
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
@@ -9447,10 +9618,7 @@
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
       if (d.audio && P.opt.audio) {
-        var a = pAudio(d);
-        load({ id: "prac-" + d.id, pid: d.id, practice: true, cat: a.cat, band: a.band, name: a.name, carrier: a.carrier,
-          beat: a.dyn ? a.start : a.pts[a.pts.length - 1][1], pts: a.dyn ? null : a.pts, dyn: !!a.dyn, cur: a.start || 0,
-          minutes: plan.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "" });
+        load(pBeatTrack(d));
         P.audioOn = true;
       } else P.audioOn = false;
       P.audioHeld = false;
@@ -9648,7 +9816,7 @@
           '<b id="sPace-' + k + '" aria-live="polite">' + pSecs(pc[k]) + '</b><button data-d="1" aria-label="' + what + ' half a second longer" aria-disabled="' + (pc[k] >= P_PACE[k][1]) + '">+</button></span>';
       };
       opts.push('<div class="so-row so-seg so-pace"><span class="so-l">Breathing pace<small id="sPaceNote">' + esc(pPaceNote(pc)) + '</small></span><div class="mini-seg" id="sOptPace">' +
-        [["auto", "Resonance rate"], ["own", "Your own"]].map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + ((o[0] === "own") === pc.own) + '">' + o[1] + "</button>"; }).join("") +
+        [["auto", "Optimal defaults"], ["own", "Your own"]].map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + ((o[0] === "own") === pc.own) + '">' + o[1] + "</button>"; }).join("") +
         '</div><div class="so-steps" id="sPaceSteps"' + (pc.own ? "" : " hidden") + ">" + step("inh", "In", "Each in-breath") + step("exh", "Out", "Each out-breath") + "</div></div>");
     }
     opts.push(pToggle("sOptVoice", "Spoken guidance", O.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
@@ -9748,9 +9916,10 @@
   function pBeatNote(d, O) {
     return O.audio ? pBeat(d).note + " " + d.audio.carrier + " Hz carrier. Headphones needed." : "No beat: the guidance and breath cues only.";
   }
+  // the optimal default is your own resonance rate: the test's answer, or 5.5 a minute, the usual one, until you take it
   function pPaceNote(pc) {
     if (pc.own) return pc.rate + " breaths a minute, at your own in and out.";
-    return pc.rate + " breaths a minute, " + (H.find && H.find.best ? "from your resonance test." : "until you take the resonance test on the Heart tab.");
+    return "Your resonance rate, even in and out: " + pc.rate + " breaths a minute, " + (H.find && H.find.best ? "from your resonance test." : "the usual one, until you take the resonance test on the Heart tab.");
   }
   function pOptSumTxt(d, O, hasRhy) {
     var s = [];
@@ -9948,6 +10117,8 @@
     ambUI();
     $("#sqVolRow").hidden = !P.audioOn;
     $("#sqVol").value = $("#vol").value;
+    $("#sqRestart").hidden = !!(P.def && P.def.reflect);       // a reflection would lose what you've written
+    pAdjUI();
   }
   function pImmersive() {
     var on = curView === "session" && pBusy();
@@ -10015,6 +10186,22 @@
       this.classList.add("armed");
       var b = this;
       setTimeout(function () { b.classList.remove("armed"); bSetT("#sEndTxt", "End"); }, 3000);
+    });
+    $("#sqRestart").addEventListener("click", function () {      // two taps, like End
+      if (!pBusy()) return;
+      var b = this;
+      if (P.rsArm && bNow() - P.rsArm < 3) { P.rsArm = 0; b.classList.remove("armed"); bSetT("#sqRestartTxt", "Restart"); pRestart(); return; }
+      P.rsArm = bNow();
+      b.classList.add("armed");
+      bSetT("#sqRestartTxt", "Tap again to restart");
+      setTimeout(function () { if (P.rsArm && bNow() - P.rsArm >= 2.9) { P.rsArm = 0; b.classList.remove("armed"); bSetT("#sqRestartTxt", "Restart"); } }, 3000);
+    });
+    $("#sAdj").addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b || b.getAttribute("aria-disabled") === "true") return;
+      if (b.id === "sAdjBtOn") { pBeatToggle(); return; }
+      var d = parseInt(b.dataset.d, 10);
+      if (b.closest("#sAdjBr")) pPaceStep(d); else pBeatStep(d);
     });
     $("#sTap").addEventListener("click", function () {
       var s = P.steps[P.idx];
@@ -10790,7 +10977,10 @@
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap and Cognitive Shuffle go almost dark. The screen still stays on.") +
-      "</section>" + bkCard();
+      "</section>" + bkCard() +
+      '<section class="st-card st-about" aria-labelledby="stI"><h2 id="stI">About</h2>' +
+        '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project. <a href="#l-impressum">Impressum, copyright and credits</a></p>' +
+      "</section>";
     stWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");

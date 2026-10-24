@@ -10,13 +10,17 @@ There are five tabs: Today, Library, Breathe, Heart and Learn.
 - **Heart** puts first what you need: connecting, the connection guide and the resonance test (with your last result and its pace) until a sensor is on; then your live numbers, the breath-by-breath chart, the test and the spectrum, with the guide at the bottom.
 - **Settings** holds the defaults; options can also be kept for each practice. It also decides how the screen behaves: by default it stays on and at full brightness through every session. Under Your data it saves a backup of everything as one file and restores one, for a new phone or for safekeeping.
 
-Heart Coherence is three minutes of heart-focused breathing, then breathing with gratitude: the feeling comes second because it's easiest to feel once slow breathing has settled the heart rhythm, as it is after a meditation. It can be done sitting or lying down, for 10, 15 or 20 minutes, over a theta, alpha or alpha-to-theta beat or none, at your resonance rate or at an in and out of your own. Those choices are kept for it, like its other options.
+Heart Coherence is three minutes of heart-focused breathing, then breathing with gratitude: the feeling comes second because it's easiest to feel once slow breathing has settled the heart rhythm, as it is after a meditation. It can be done sitting or lying down, for 10, 15 or 20 minutes, over a theta, alpha or alpha-to-theta beat or none, at its optimal default (your resonance rate: the test's answer, or 5.5 a minute until you take it) or at an in and out of your own. Those choices are kept for it, like its other options.
+
+While a practice runs, its breathing can be made slower or faster, from the next breath, and its beat lower or higher, gliding there over a second and a half, or turned off and on again. Restart starts it again from the top with two taps, like End, keeping those changes; the reflections leave it out, since it would lose what you've written.
 
 A practice's end screen sets each number against your usual for that practice: the middle of your last ten sessions with the same kind of reading, or last time if there was only one, and says when it's your best yet.
 
 The safety note is written once, in Learn under Safety, and opens over any page from a "safety notes" link. Each page shows only the line that matters there: the beats on a track, the primer, the builder and any practice that plays one; the breath on Breathe; a practice's own cautions in its introduction.
 
 A playing track shows on the phone's lock screen and in its notifications, with play, pause and stop; Settings can turn that off. The breathing guide, and a practice's breath steps, can vibrate at each change: one short buzz in, one long out, two light taps for a hold.
+
+The impressum and copyright are at the end of Learn, linked from the end of Settings.
 
 Everything runs on the device and stays there: the history, favourites and reflections are kept in the browser's storage, and nothing is sent anywhere. Once there is a session worth keeping, the app asks the browser to keep its storage when space runs low, and Settings says what the browser answered.
 

@@ -22,6 +22,7 @@
   <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6.5 5.5v13M18 6l-8.5 6 8.5 6z"/></symbol>
   <symbol id="i-next" viewBox="0 0 24 24"><path d="M17.5 5.5v13M6 6l8.5 6L6 18z"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></symbol>
+  <symbol id="i-restart" viewBox="0 0 24 24"><path d="M4.8 12a7.2 7.2 0 1 0 2.1-5.1"/><path d="M4.8 4.6v4.2H9"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5H5z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
   <symbol id="i-voice" viewBox="0 0 24 24"><path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4 3.5v-3.5H6.5a2 2 0 0 1-2-2z"/><path d="M8.5 10.5h7"/></symbol>

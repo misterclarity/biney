@@ -579,6 +579,12 @@
   .fineprint{border-top:1px solid var(--line-soft);margin-top:44px;padding-top:22px;color:var(--text-faint);font-size:13px}
   .fineprint p{margin:0 0 9px;max-width:70ch}
   .fineprint strong{color:var(--text-dim)}
+  .imprint{margin-top:26px;padding-top:18px;border-top:1px solid var(--line-soft);color:var(--text-faint);font-size:13px}
+  .imprint h3{font-size:15px;margin:0 0 8px;color:var(--text-dim)}
+  .imprint p{margin:0 0 8px;max-width:70ch}
+  .imprint b{color:var(--text-dim)}
+  .imprint a{color:var(--text-dim)}
+  .st-about a{color:var(--text-dim)}
   @media (max-width:900px){
     .learn{grid-template-columns:minmax(0,1fr);gap:8px}
     .toc{
@@ -1012,6 +1018,19 @@
   .qt[aria-pressed="true"]{color:var(--text-dim);background:var(--panel)}
   .qt[aria-pressed="false"]{text-decoration:line-through}
   #sqAmb[aria-pressed="false"]{text-decoration:none}
+  .qt-rs{color:var(--text-dim);background:var(--panel)}
+  .qt-rs.armed{background:color-mix(in srgb,var(--warn,#fbbf24) 22%,var(--panel));color:var(--text)}
+  .qt-rs[hidden]{display:none}
+  /* the pace and the beat, changed while it runs */
+  .ses-adj{display:flex;justify-content:center;gap:10px 14px;flex-wrap:wrap;margin-top:14px}
+  .ses-adj[hidden],.adj[hidden]{display:none}
+  .adj{display:inline-flex;align-items:center;gap:4px;padding:4px;border-radius:14px;background:var(--panel);font-size:13px}
+  .adj-l{padding:0 6px 0 8px;color:var(--text-faint);font-weight:700}
+  .adj-v{min-width:4.9em;text-align:center;color:var(--text);font-weight:750;font-variant-numeric:tabular-nums}
+  .adj-b{width:38px;height:34px;border:0;border-radius:10px;background:var(--panel-2);color:var(--text);font:inherit;font-size:18px;font-weight:700;line-height:1;cursor:pointer}
+  .adj-b[aria-disabled="true"]{opacity:.35;cursor:default}
+  .adj-on{margin-left:2px;min-width:44px;height:34px;border:0;border-radius:10px;background:var(--panel-2);color:var(--text-faint);font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+  .adj-on[aria-pressed="true"]{background:color-mix(in srgb,var(--pcol) 26%,var(--panel-2));color:var(--text)}
   .qt-vol{display:inline-flex;align-items:center;gap:8px;color:var(--text-faint);width:170px}
   .qt-vol[hidden]{display:none}
   .qt-vol svg.i{width:16px;height:16px;flex:none}

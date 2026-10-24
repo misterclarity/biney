@@ -62,7 +62,10 @@
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap and Cognitive Shuffle go almost dark. The screen still stays on.") +
-      "</section>" + bkCard();
+      "</section>" + bkCard() +
+      '<section class="st-card st-about" aria-labelledby="stI"><h2 id="stI">About</h2>' +
+        '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project. <a href="#l-impressum">Impressum, copyright and credits</a></p>' +
+      "</section>";
     stWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");

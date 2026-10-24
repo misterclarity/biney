@@ -222,16 +222,18 @@
     $("#player").style.setProperty("--pc", "var(--" +
       (track.cat === "relax" ? "relax" : track.cat === "ther" ? "ther" : "stim") + ")");
     $("#pName").textContent = track.name;
-    var lengthTxt = Math.round(track.minutes) + " min";
+    $("#pSub").textContent = trackSub(track);
+    paint();
+    play();
+  }
+  // the player's second line: band, beat (or where it goes), carrier and length
+  function trackSub(track) {
     var beatTxt = track.pts
       ? (track.pts[0][1] === track.beat ? track.beat.toFixed(1) : track.pts[0][1].toFixed(1) + " → " + track.beat.toFixed(1)) + " Hz"
       : typeof track.rampFrom === "number"
       ? track.rampFrom.toFixed(1) + " → " + track.beat.toFixed(1) + " Hz"
       : track.beat.toFixed(1) + " Hz";
-    $("#pSub").textContent = (track.then ? "Prime · " : "") +
-      track.band + " · " + beatTxt + " · " + track.carrier + " Hz carrier · " + lengthTxt;
-    paint();
-    play();
+    return (track.then ? "Prime · " : "") + track.band + " · " + beatTxt + " · " + track.carrier + " Hz carrier · " + Math.round(track.minutes) + " min";
   }
 
   function play() {
