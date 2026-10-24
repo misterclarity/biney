@@ -4,6 +4,7 @@
 //   F  library filters that combine   R  Heart Coherence: gratitude, lying down, its beat and pace
 //   W  wording that names its study    A  the pace and beat changed while a practice runs, and Restart
 //   Q  the three new quotes            I  the impressum and copyright
+//   K  the code check's fixes
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -468,6 +469,50 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(/personal, non-commercial project by misterclarity/.test(im.txt) && /© 2026 misterclarity\. All rights reserved\./.test(im.txt) && im.link === 'https://github.com/misterclarity/biney' &&
         /Poppins typeface is Copyright 2020 The Poppins Project Authors, used under the SIL Open Font License 1\.1/.test(im.txt), 'the impressum names the project\'s author and page, the copyright and the font\'s licence');
       await p.context().close();
+    }
+
+    /* K. what the full code check found: fast breathing goes no faster than it was made to; a beat turned
+       off stays off through a restart, and a paused one stops; the end screen's panel has a name of its own;
+       the routine builder's tiles say their time, level and caution; the safety link is big enough to tap;
+       a backup with a damaged choice of a practice's is refused */
+    if (!only || only === 'K') {
+      const p = await page(OPT({ audio: true }));
+      await E(p, () => location.hash = 'practice/wim-hof'); await p.waitForTimeout(400);
+      await p.click('#sOk'); await p.click('#sGo'); await p.waitForTimeout(600);
+      await p.click('#sNext'); await p.waitForTimeout(400);
+      const fast = await E(p, () => ({ v: document.querySelector('#sAdjBrV').textContent, plus: document.querySelector('#sAdjBr [data-d="1"]').getAttribute('aria-disabled') }));
+      await p.click('#sAdjBr [data-d="1"]', { force: true }); await p.waitForTimeout(100);
+      const after = await E(p, () => [document.querySelector('#sAdjBrV').textContent, window.__entrain.P.paceK]);
+      await p.click('#sAdjBr [data-d="-1"]'); await p.waitForTimeout(100);
+      const slower = await E(p, () => [document.querySelector('#sAdjBrV').textContent, window.__entrain.P.paceK]);
+      ok(fast.plus === 'true' && after[1] === 1 && after[0] === fast.v && slower[1] > 1, 'fast breathing goes slower but no faster than it was made to: ' + fast.v + ' → ' + slower[0]);
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
+      await E(p, () => location.hash = 'practice/calm-reset'); await p.waitForTimeout(400);
+      await p.click('#sGo'); await p.waitForTimeout(700);
+      await p.click('#sPlay'); await p.waitForTimeout(300);
+      await p.click('#sAdjBtOn'); await p.waitForTimeout(300);
+      const off = await E(p, () => ({ playing: window.__entrain.A.playing, player: document.querySelector('#player').classList.contains('open'), held: window.__entrain.P.audioHeld }));
+      await p.click('#sPlay'); await p.waitForTimeout(500);
+      const resumed = await E(p, () => window.__entrain.A.playing);
+      ok(!off.playing && !off.player && !off.held && !resumed, 'turned off while paused, the beat stops and stays off when the practice resumes');
+      await p.click('#sqRestart'); await p.click('#sqRestart'); await p.waitForTimeout(700);
+      ok(await E(p, () => !window.__entrain.A.playing && document.querySelector('#sAdjBtV').textContent === 'Off'), 'and a restart keeps it off');
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
+      ok(await E(p, () => { const x = document.querySelector('#sdEx'); return x.getAttribute('aria-label') === 'What this number means' && !x.hasAttribute('aria-labelledby'); }), 'the end screen\'s explanation panel has a name of its own, never a missing one');
+      await E(p, () => location.hash = 'yoga'); await p.waitForTimeout(400);
+      const tile = await E(p, () => { const b = [...document.querySelectorAll('#ybLib .yb-tile')].find(x => /caution/.test(x.textContent)); return b ? { label: b.getAttribute('aria-label'), dots: b.querySelector('.lv').getAttribute('aria-hidden') } : null; });
+      ok(tile && /^Add .+, \d.*, level [123] of 3, with a caution$/.test(tile.label) && tile.dots === 'true', 'a pose tile says its time, level and caution, not just its name: ' + (tile && tile.label));
+      await E(p, () => location.hash = 'practice/coherence'); await p.waitForTimeout(400);
+      const hit = await E(p, () => { const r = document.querySelector('.si-caution .sf-link').getBoundingClientRect(); return r.height; });
+      ok(hit >= 24, 'the safety link inside a caution is ' + Math.round(hit) + ' px tall, enough to tap');
+      await p.context().close();
+      const DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'entrain-k-')), f = path.join(DIR, 'b.json');
+      fs.writeFileSync(f, JSON.stringify({ app: 'Entrain', kind: 'backup', version: 1, savedAt: new Date().toISOString(), data: { history: '[]', 'pCh.coherence': 'nope' } }));
+      const q = await page(OPT());
+      await E(q, () => location.hash = 'settings'); await q.waitForTimeout(400);
+      await q.setInputFiles('#stLoad', f); await q.waitForTimeout(250);
+      ok(/damaged/.test(await t(q, '#stRestore')), 'a backup whose choices for a practice are damaged is refused');
+      await q.context().close();
     }
   } catch (e) {
     log.push('ERROR ' + (e && e.stack || e));

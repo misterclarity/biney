@@ -107,11 +107,12 @@
     bSetT("#ybLibN", n + " " + noun);
     edgeFade($("#ybCats")); edgeFade($("#ybPos"));
     $("#ybLib").innerHTML = list.map(function (a) {
-      return '<li><button class="yb-tile" data-add="' + a.id + '" aria-label="Add ' + esc(a.en) + '">' +
+      var say = "Add " + a.en + ", " + yHoldTxt(a.hold) + (a.sides ? ", both sides" : "") + (a.move ? ", moving" : "") + ", level " + a.level + " of 3" + (a.caution ? ", with a caution" : "");
+      return '<li><button class="yb-tile" data-add="' + a.id + '" aria-label="' + esc(say) + '">' +
         '<span class="yb-tfig">' + yFig(a.id) + "</span>" +
         '<span class="yb-tt"><b>' + esc(a.en) + "</b><small>" + esc(a.sa) + "</small>" +
         '<span class="yb-cue">' + esc(aCue(a.cues[0], a.sides ? "right" : null)) + "</span>" +
-        '<span class="yb-tm">' + yHoldTxt(a.hold) + (a.sides ? " · both sides" : "") + (a.move ? " · moving" : "") + '<i class="lv">' + "●●●".slice(0, a.level) + '<s>' + "●●●".slice(a.level) + "</s></i>" +
+        '<span class="yb-tm">' + yHoldTxt(a.hold) + (a.sides ? " · both sides" : "") + (a.move ? " · moving" : "") + '<i class="lv" aria-hidden="true">' + "●●●".slice(0, a.level) + '<s>' + "●●●".slice(a.level) + "</s></i>" +
         (a.caution ? ' · <em>caution</em>' : "") + "</span></span>" +
         '<span class="yb-plus" aria-hidden="true">+</span></button></li>';
     }).join("");

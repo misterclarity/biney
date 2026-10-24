@@ -10,7 +10,7 @@
   var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "lastBackup"];
   // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
   var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
-  var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|resonance|nvcDraft\..+)$/;
+  var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+)$/;
   var BK_MAX = 5e6;                       // bytes: more than a browser's whole storage for one site
   var BK = { pending: null, persisted: null, asked: false };
 

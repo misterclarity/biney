@@ -17,7 +17,7 @@
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true },
-    paceK: 1, beatAdj: 0, runLen: 0, base: 0, rsArm: 0     // changes made while it runs, and what a restart needs
+    paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0     // changes made while it runs, and what a restart needs
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
 
@@ -408,11 +408,15 @@
     return null;
   }
   function pBrRate(b) { return 60 / cycleOf(pCfgAt(b.s, b.st)); }
+  // as fast as twice the practice's own pace, except fast breathing (over 12 a minute, like Wim Hof's
+  // power breaths), which goes no faster than it was made to
+  function pPaceMin(b) { return pBrRate(b) * P.paceK > 12 ? 1 : 0.5; }
+  function pAttr(el, k, v) { if (el && el.getAttribute(k) !== v) el.setAttribute(k, v); }    // every tick: only what changed
   function pPaceStep(dir) {
     var b = pBrNow();
     if (!b || !pBusy()) return;
     var r = pBrRate(b), step = r < 12 ? 0.5 : 2, to = Math.round((r + dir * step) / step) * step;
-    var K = Math.max(0.5, Math.min(2, P.paceK * r / Math.max(step, to)));
+    var K = Math.max(pPaceMin(b), Math.min(2, P.paceK * r / Math.max(step, to)));
     if (Math.abs(K - P.paceK) < 1e-6) return;
     P.paceK = K;
     var s = P.steps[P.idx];
@@ -452,16 +456,16 @@
     var d = P.def;
     if (!pBusy() || !pBeatable()) return;
     if (P.audioOn) {
-      P.audioOn = false; P.audioHeld = false;
+      P.audioOn = false; P.audioHeld = false; P.beatOff = true;
       var tr = pTrack();
       if (tr && A.playing) {
         fadeOutAndStop("", 1);
         setTimeout(function () { if (A.track === tr && !A.playing) $("#player").classList.remove("open", "expanded"); }, 1400);
-      }
+      } else if (tr) { hardStop(true); $("#player").classList.remove("open", "expanded"); }      // paused: nothing to fade
     } else {
       gate(function () {
         if (!pBusy() || P.def !== d) return;
-        P.audioOn = true;
+        P.audioOn = true; P.beatOff = false;
         load(pBeatTrack(d));
         aSeek(pT());
         if (P.state === "paused") { pause(); P.audioHeld = true; }
@@ -474,23 +478,22 @@
     var row = $("#sAdj");
     if (!row || !P.def) return;
     var b = pBusy() ? pBrNow() : null, beatable = pBeatable(), tr = pTrack(), on = beatable && P.audioOn && !!tr;
-    $("#sAdjBr").hidden = !b;
+    if ($("#sAdjBr").hidden !== !b) $("#sAdjBr").hidden = !b;
     if (b) {
       var r = pBrRate(b);
       bSetT("#sAdjBrV", r.toFixed(1) + " /min");
-      $("#sAdjBr [data-d='-1']").setAttribute("aria-disabled", P.paceK >= 2 - 1e-6 ? "true" : "false");
-      $("#sAdjBr [data-d='1']").setAttribute("aria-disabled", P.paceK <= 0.5 + 1e-6 ? "true" : "false");
+      pAttr($("#sAdjBr [data-d='-1']"), "aria-disabled", P.paceK >= 2 - 1e-6 ? "true" : "false");
+      pAttr($("#sAdjBr [data-d='1']"), "aria-disabled", P.paceK <= pPaceMin(b) + 1e-6 ? "true" : "false");
     }
-    $("#sAdjBt").hidden = !beatable;
+    if ($("#sAdjBt").hidden !== !beatable) $("#sAdjBt").hidden = !beatable;
     if (beatable) {
       bSetT("#sAdjBtV", on ? beatAt(tr, pTrackT()).toFixed(1) + " Hz" : "Off");
-      $("#sAdjBt [data-d='-1']").setAttribute("aria-disabled", on ? "false" : "true");
-      $("#sAdjBt [data-d='1']").setAttribute("aria-disabled", on ? "false" : "true");
-      var t = $("#sAdjBtOn");
-      t.setAttribute("aria-pressed", on ? "true" : "false");
+      pAttr($("#sAdjBt [data-d='-1']"), "aria-disabled", on ? "false" : "true");
+      pAttr($("#sAdjBt [data-d='1']"), "aria-disabled", on ? "false" : "true");
+      pAttr($("#sAdjBtOn"), "aria-pressed", on ? "true" : "false");
       bSetT("#sAdjBtOnTxt", on ? "On" : "Off");
     }
-    row.hidden = !b && !beatable;
+    if (row.hidden !== (!b && !beatable)) row.hidden = !b && !beatable;
   }
   // start this practice again from the top, at the length it was started with
   function pRestart() {
@@ -980,7 +983,7 @@
     if (d.confirm && again !== true && !$("#sOk").checked) { $("#sOk").focus(); return; }
     var go = function () {
       if (pBusy()) pFinish(true, true);
-      if (again !== true) { P.paceK = 1; P.beatAdj = 0; }
+      if (again !== true) { P.paceK = 1; P.beatAdj = 0; P.beatOff = false; }
       P.def = d;
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
       if (B.finder) finderCancel();
@@ -993,7 +996,7 @@
       pAdaptReset(); napReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
-      if (d.audio && P.opt.audio) {
+      if (d.audio && P.opt.audio && !P.beatOff) {
         load(pBeatTrack(d));
         P.audioOn = true;
       } else P.audioOn = false;

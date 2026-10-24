@@ -628,7 +628,7 @@
   .modal-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line-soft)}
   /* the safety note: in Learn, and over any page */
   .sf-link{
-    background:none;border:0;padding:0;margin:0;font:inherit;font-weight:650;color:inherit;cursor:pointer;
+    background:none;border:0;padding:3px 0;margin:-3px 0;font:inherit;font-weight:650;color:inherit;cursor:pointer;
     text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;
   }
   .sf-link:hover{text-decoration-thickness:2px}
@@ -1376,7 +1376,7 @@
   .yb-tm{font-size:11px;color:var(--text-faint);margin-top:2px}
   .yb-tm em{font-style:normal;color:var(--stim)}
   .yb-tm .lv{font-style:normal;margin-left:6px;letter-spacing:1px;color:var(--relax)}
-  .yb-tm .lv s{text-decoration:none;color:var(--line)}
+  .yb-tm .lv s{text-decoration:none;color:color-mix(in srgb,var(--text-faint) 45%,transparent)}
   .yb-plus{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#0b1120;display:grid;place-items:center;font-weight:800;font-size:17px;line-height:1}
   .yb-bar{position:sticky;bottom:14px;z-index:30;display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 12px;border-radius:16px;
     background:rgba(26,36,64,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:0 14px 34px -16px rgba(0,0,0,.8)}
@@ -1772,7 +1772,7 @@
                 <button class="adj-b" data-d="-1" aria-label="Lower beat">−</button>
                 <b class="adj-v" id="sAdjBtV" aria-live="polite"></b>
                 <button class="adj-b" data-d="1" aria-label="Higher beat">+</button>
-                <button class="adj-on" id="sAdjBtOn" aria-pressed="true" aria-label="Binaural beat on"><span id="sAdjBtOnTxt">On</span></button>
+                <button class="adj-on" id="sAdjBtOn" aria-pressed="true" aria-label="Binaural beat"><span id="sAdjBtOnTxt">On</span></button>
               </div>
             </div>
             <div class="ses-quick">
@@ -8641,7 +8641,7 @@
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true },
-    paceK: 1, beatAdj: 0, runLen: 0, base: 0, rsArm: 0     // changes made while it runs, and what a restart needs
+    paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0     // changes made while it runs, and what a restart needs
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
 
@@ -9032,11 +9032,15 @@
     return null;
   }
   function pBrRate(b) { return 60 / cycleOf(pCfgAt(b.s, b.st)); }
+  // as fast as twice the practice's own pace, except fast breathing (over 12 a minute, like Wim Hof's
+  // power breaths), which goes no faster than it was made to
+  function pPaceMin(b) { return pBrRate(b) * P.paceK > 12 ? 1 : 0.5; }
+  function pAttr(el, k, v) { if (el && el.getAttribute(k) !== v) el.setAttribute(k, v); }    // every tick: only what changed
   function pPaceStep(dir) {
     var b = pBrNow();
     if (!b || !pBusy()) return;
     var r = pBrRate(b), step = r < 12 ? 0.5 : 2, to = Math.round((r + dir * step) / step) * step;
-    var K = Math.max(0.5, Math.min(2, P.paceK * r / Math.max(step, to)));
+    var K = Math.max(pPaceMin(b), Math.min(2, P.paceK * r / Math.max(step, to)));
     if (Math.abs(K - P.paceK) < 1e-6) return;
     P.paceK = K;
     var s = P.steps[P.idx];
@@ -9076,16 +9080,16 @@
     var d = P.def;
     if (!pBusy() || !pBeatable()) return;
     if (P.audioOn) {
-      P.audioOn = false; P.audioHeld = false;
+      P.audioOn = false; P.audioHeld = false; P.beatOff = true;
       var tr = pTrack();
       if (tr && A.playing) {
         fadeOutAndStop("", 1);
         setTimeout(function () { if (A.track === tr && !A.playing) $("#player").classList.remove("open", "expanded"); }, 1400);
-      }
+      } else if (tr) { hardStop(true); $("#player").classList.remove("open", "expanded"); }      // paused: nothing to fade
     } else {
       gate(function () {
         if (!pBusy() || P.def !== d) return;
-        P.audioOn = true;
+        P.audioOn = true; P.beatOff = false;
         load(pBeatTrack(d));
         aSeek(pT());
         if (P.state === "paused") { pause(); P.audioHeld = true; }
@@ -9098,23 +9102,22 @@
     var row = $("#sAdj");
     if (!row || !P.def) return;
     var b = pBusy() ? pBrNow() : null, beatable = pBeatable(), tr = pTrack(), on = beatable && P.audioOn && !!tr;
-    $("#sAdjBr").hidden = !b;
+    if ($("#sAdjBr").hidden !== !b) $("#sAdjBr").hidden = !b;
     if (b) {
       var r = pBrRate(b);
       bSetT("#sAdjBrV", r.toFixed(1) + " /min");
-      $("#sAdjBr [data-d='-1']").setAttribute("aria-disabled", P.paceK >= 2 - 1e-6 ? "true" : "false");
-      $("#sAdjBr [data-d='1']").setAttribute("aria-disabled", P.paceK <= 0.5 + 1e-6 ? "true" : "false");
+      pAttr($("#sAdjBr [data-d='-1']"), "aria-disabled", P.paceK >= 2 - 1e-6 ? "true" : "false");
+      pAttr($("#sAdjBr [data-d='1']"), "aria-disabled", P.paceK <= pPaceMin(b) + 1e-6 ? "true" : "false");
     }
-    $("#sAdjBt").hidden = !beatable;
+    if ($("#sAdjBt").hidden !== !beatable) $("#sAdjBt").hidden = !beatable;
     if (beatable) {
       bSetT("#sAdjBtV", on ? beatAt(tr, pTrackT()).toFixed(1) + " Hz" : "Off");
-      $("#sAdjBt [data-d='-1']").setAttribute("aria-disabled", on ? "false" : "true");
-      $("#sAdjBt [data-d='1']").setAttribute("aria-disabled", on ? "false" : "true");
-      var t = $("#sAdjBtOn");
-      t.setAttribute("aria-pressed", on ? "true" : "false");
+      pAttr($("#sAdjBt [data-d='-1']"), "aria-disabled", on ? "false" : "true");
+      pAttr($("#sAdjBt [data-d='1']"), "aria-disabled", on ? "false" : "true");
+      pAttr($("#sAdjBtOn"), "aria-pressed", on ? "true" : "false");
       bSetT("#sAdjBtOnTxt", on ? "On" : "Off");
     }
-    row.hidden = !b && !beatable;
+    if (row.hidden !== (!b && !beatable)) row.hidden = !b && !beatable;
   }
   // start this practice again from the top, at the length it was started with
   function pRestart() {
@@ -9604,7 +9607,7 @@
     if (d.confirm && again !== true && !$("#sOk").checked) { $("#sOk").focus(); return; }
     var go = function () {
       if (pBusy()) pFinish(true, true);
-      if (again !== true) { P.paceK = 1; P.beatAdj = 0; }
+      if (again !== true) { P.paceK = 1; P.beatAdj = 0; P.beatOff = false; }
       P.def = d;
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
       if (B.finder) finderCancel();
@@ -9617,7 +9620,7 @@
       pAdaptReset(); napReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
-      if (d.audio && P.opt.audio) {
+      if (d.audio && P.opt.audio && !P.beatOff) {
         load(pBeatTrack(d));
         P.audioOn = true;
       } else P.audioOn = false;
@@ -10301,7 +10304,7 @@
         return '<button class="sd-t" data-ex="' + t[3] + '" aria-expanded="false" aria-controls="sdEx"><span>' + t[0] + "</span><b>" + t[1] + "</b><small>" + t[2] + "</small>" +
           (t[4] ? '<em class="sd-cmp">' + esc(t[4]) + "</em>" : "") + "</button>";
       }).join("") + "</div>" +
-      '<div class="sd-ex" id="sdEx" role="region" aria-labelledby="sdExT" hidden></div>' +
+      '<div class="sd-ex" id="sdEx" role="region" aria-label="What this number means" hidden></div>' +
       (chart ? '<div class="sd-chart"><span>Heart rate across the session, in bpm' + (r.beatLog ? ", with the beat in violet" : "") + "</span>" +
         '<canvas id="sdChart" tabindex="0" role="slider" aria-label="Read the heart-rate chart" aria-valuemin="0" aria-valuemax="' + r.secs + '" aria-valuenow="0" aria-valuetext="Tap or use the arrow keys to read a point"></canvas>' +
         '<p class="sd-read" id="sdRead">Tap or drag on the chart to read any point.</p>' +
@@ -11883,11 +11886,12 @@
     bSetT("#ybLibN", n + " " + noun);
     edgeFade($("#ybCats")); edgeFade($("#ybPos"));
     $("#ybLib").innerHTML = list.map(function (a) {
-      return '<li><button class="yb-tile" data-add="' + a.id + '" aria-label="Add ' + esc(a.en) + '">' +
+      var say = "Add " + a.en + ", " + yHoldTxt(a.hold) + (a.sides ? ", both sides" : "") + (a.move ? ", moving" : "") + ", level " + a.level + " of 3" + (a.caution ? ", with a caution" : "");
+      return '<li><button class="yb-tile" data-add="' + a.id + '" aria-label="' + esc(say) + '">' +
         '<span class="yb-tfig">' + yFig(a.id) + "</span>" +
         '<span class="yb-tt"><b>' + esc(a.en) + "</b><small>" + esc(a.sa) + "</small>" +
         '<span class="yb-cue">' + esc(aCue(a.cues[0], a.sides ? "right" : null)) + "</span>" +
-        '<span class="yb-tm">' + yHoldTxt(a.hold) + (a.sides ? " · both sides" : "") + (a.move ? " · moving" : "") + '<i class="lv">' + "●●●".slice(0, a.level) + '<s>' + "●●●".slice(a.level) + "</s></i>" +
+        '<span class="yb-tm">' + yHoldTxt(a.hold) + (a.sides ? " · both sides" : "") + (a.move ? " · moving" : "") + '<i class="lv" aria-hidden="true">' + "●●●".slice(0, a.level) + '<s>' + "●●●".slice(a.level) + "</s></i>" +
         (a.caution ? ' · <em>caution</em>' : "") + "</span></span>" +
         '<span class="yb-plus" aria-hidden="true">+</span></button></li>';
     }).join("");
@@ -13050,7 +13054,7 @@
   var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "lastBackup"];
   // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
   var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
-  var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|resonance|nvcDraft\..+)$/;
+  var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+)$/;
   var BK_MAX = 5e6;                       // bytes: more than a browser's whole storage for one site
   var BK = { pending: null, persisted: null, asked: false };
 

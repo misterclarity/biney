@@ -32,7 +32,7 @@
         return '<button class="sd-t" data-ex="' + t[3] + '" aria-expanded="false" aria-controls="sdEx"><span>' + t[0] + "</span><b>" + t[1] + "</b><small>" + t[2] + "</small>" +
           (t[4] ? '<em class="sd-cmp">' + esc(t[4]) + "</em>" : "") + "</button>";
       }).join("") + "</div>" +
-      '<div class="sd-ex" id="sdEx" role="region" aria-labelledby="sdExT" hidden></div>' +
+      '<div class="sd-ex" id="sdEx" role="region" aria-label="What this number means" hidden></div>' +
       (chart ? '<div class="sd-chart"><span>Heart rate across the session, in bpm' + (r.beatLog ? ", with the beat in violet" : "") + "</span>" +
         '<canvas id="sdChart" tabindex="0" role="slider" aria-label="Read the heart-rate chart" aria-valuemin="0" aria-valuemax="' + r.secs + '" aria-valuenow="0" aria-valuetext="Tap or use the arrow keys to read a point"></canvas>' +
         '<p class="sd-read" id="sdRead">Tap or drag on the chart to read any point.</p>' +
