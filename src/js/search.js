@@ -1,6 +1,7 @@
   /* ------------------------------- search -------------------------------
      One box for everything: practices and your own routines, the movement library, breathing
-     patterns, tracks, the Heart tools, History and Settings, and every paragraph and reference in Learn.
+     patterns, tracks, the Heart tools, Healthy living's recipes and supplements, History and Settings, and every
+     paragraph and reference in Learn.
      Matching ignores case and accents, and each word you type has to match the start of a word
      somewhere in the entry, so "anap" finds Anapana and "bencao" finds Bênção. Results come in
      groups, the group with the best match first. Enter opens the top result; "/" or Ctrl+K opens
@@ -9,7 +10,7 @@
 
   var FD = { open: false, base: null, items: [], q: "", more: {}, pushed: false, back: null, t: 0 };
   var FD_KINDS = [["practice", "Practices"], ["pose", "Poses and moves"], ["breath", "Breathing"],
-    ["sound", "Sounds"], ["heart", "Heart"], ["learn", "Learn"], ["app", "History and Settings"]];
+    ["sound", "Sounds"], ["heart", "Heart"], ["living", "Healthy living"], ["learn", "Learn"], ["app", "History and Settings"]];
   var FD_CAP = 6;                        // results shown per group until you ask for the rest
   var FD_TRY = ["Sleep", "Anapana", "Tree", "4-7-8", "Coherence", "Tinnitus", "Capoeira", "Needs"];
 
@@ -153,6 +154,7 @@
     out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
       ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
       { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));
+    fdLiving(out);
     fdLearn(out);
     return out;
   }
@@ -240,7 +242,7 @@
     FD.q = q;
     FD.items = [];
     if (!terms.length) {
-      res.innerHTML = '<div class="fd-empty"><p>Search the practices, poses and moves, breathing patterns, tracks and everything in Learn.</p>' + fdTryRow() + "</div>";
+      res.innerHTML = '<div class="fd-empty"><p>Search the practices, poses and moves, breathing patterns, tracks, recipes and supplements, and everything in Learn.</p>' + fdTryRow() + "</div>";
       bSetT("#fdCount", "");
       return;
     }

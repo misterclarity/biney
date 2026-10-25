@@ -5,7 +5,10 @@
 
    Version __VERSION__ is a hash of every stored file, so each new deploy changes this script.
    The browser notices that, installs the new copy in the background, and the page offers an
-   "Update" button; the old copy keeps serving until then. */
+   "Update" button; the old copy keeps serving until then.
+
+   Copyright (C) 2026 misterclarity. Free software under the GNU Affero General Public License,
+   version 3: https://www.gnu.org/licenses/agpl-3.0.html. Source: https://github.com/misterclarity/biney */
 "use strict";
 
 var CACHE = "entrain-__VERSION__";

@@ -91,7 +91,7 @@
     paced: ["Keep a little attention at the nostrils: cool air coming in, warmer air going out.",
       "Observe the touch of the breath just below the nostrils as you follow the pace.",
       "If the mind has wandered, come back to the breath at the nostrils, and the next breath in.",
-      "Observe exactly where the air touches as it enters. Stay with this one breath."],
+      "Observe where the air touches as it enters. Stay with this one breath."],
     natural: ["Bring your attention to the small area below the nostrils, and observe the touch of the breath there.",
       "If the mind has wandered, notice where it went, and come back to the breath at the nostrils.",
       "Breathe naturally, and observe the touch of the breath at the nostrils, in and out.",
@@ -222,7 +222,7 @@
   function pHush() { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {} }
 
   /* ----- the screen stays on, at full brightness, through every session ----- */
-  // One lock for practices, the breathing guide and tracks. It's held while any of them runs, and
+  // One lock for practices, the breathing guide, tracks and a recipe being cooked. It's held while any of them runs, and
   // for ten minutes after a pause, so the screen is still lit when you come back to it. The browser drops
   // the lock whenever the page is hidden, so it's asked for again on return; a check every 15 seconds
   // also catches a lock the system took back, and the end of a pause's ten minutes.
@@ -230,7 +230,7 @@
   var WL_GRACE = 600000;
   function wlNeed() {
     var ses = ST.screenSessions, trk = ST.screenTracks;
-    if ((ses && (P.state === "running" || B.state === "running")) || (trk && A.playing)) { WL.stop = 0; return true; }
+    if ((ses && (P.state === "running" || B.state === "running")) || (trk && A.playing) || (LV && LV.cook && LV.rid)) { WL.stop = 0; return true; }
     if (!WL.stop) WL.stop = Date.now();               // the moment the last session paused or ended
     var paused = (ses && (P.state === "paused" || B.state === "paused")) || (trk && !!A.track && A.elapsed > 0);
     return paused && Date.now() - WL.stop < WL_GRACE;
@@ -1644,5 +1644,5 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, lvAmt: lvAmt };   // for automated tests only
   }

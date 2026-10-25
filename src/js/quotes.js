@@ -27,7 +27,7 @@
     ["Begin as you are, and let the calm catch up.", ""],
     ["Small sessions, often, add up to a steadier you.", ""],
     ["The body learns what you repeat.", ""],
-    ["Observe what's here, exactly as it is. That is most of the practice.", ""],
+    ["Observe what's here, just as it is. That is most of the practice.", ""],
     ["Your heart keeps time for you. Listen in now and then.", ""],
     ["A long out-breath is the shortest way back to yourself.", ""],
     ["Five quiet minutes still count.", ""],

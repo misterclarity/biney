@@ -2,17 +2,18 @@
      Views behind a hash router. The five tabs are #home (Today), #practice (the library),
      #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
      practice, #track/<id> for a track, #prime and #builder for the custom primer and the beat
-     builder, #yoga for the routine builder; and #settings from the gear. Links and search also
+     builder, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
+     #living/<recipe or supplement>; and #settings from the gear. Links and search also
      use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>. Older
      addresses still work: #sounds and #tracks open the library at its sounds, and in-page anchors
      (#connect, #science, #references and the rest) open the view that holds them.
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
 
-  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings"];
+  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings", "living"];
   var V_TITLE = { home: "Today", practice: "Library", breathe: "Breathe", heart: "Heart", learn: "Learn", history: "History", session: "Practice",
-    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings" };
-  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice" };   // the tab each page belongs to
+    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings", living: "Healthy living" };
+  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice", living: "learn" };   // the tab each page belongs to
   var ALIAS = { today: "home", library: "practice" };
   var BACK = "practice";                 // the list a page was opened from: Today, the library or History
   var BASE_TITLE = document.title;
@@ -27,6 +28,7 @@
   function showView(v) {
     if (VIEWS.indexOf(v) < 0) v = "home";
     if (v !== "breathe") sheet(false);
+    if (v !== "living") lvLeave();                // a recipe stops keeping the screen on
     VIEWS.forEach(function (n) { $("#v-" + n).hidden = n !== v; });
     var links = document.querySelectorAll(".nav a"), navV = V_TAB[v] || v;
     for (var i = 0; i < links.length; i++) {
@@ -85,6 +87,7 @@
     if (h === "sounds" || h === "tracks") { libShow("", "sound"); return; }   // Sounds was a tab of its own
     if (h === "yoga" || h.indexOf("yoga/") === 0) { showView("yoga"); yOpen(h.slice(5)); return; }
     if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
+    if (h === "living" || h.indexOf("living/") === 0) { showView("living"); lvOpen(h.slice(7)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
     var el = document.getElementById(h), v = el && viewOf(el);
     if (!v) { showView("home"); return; }

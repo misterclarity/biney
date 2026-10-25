@@ -64,7 +64,7 @@
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap and Cognitive Shuffle go almost dark. The screen still stays on.") +
       "</section>" + bkCard() +
       '<section class="st-card st-about" aria-labelledby="stI"><h2 id="stI">About</h2>' +
-        '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project. <a href="#l-impressum">Impressum, copyright and credits</a></p>' +
+        '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project, and free software under the GNU AGPL, version 3. <a href="#l-impressum">Impressum, licence and credits</a></p>' +
       "</section>";
     stWire();
     bkWire();

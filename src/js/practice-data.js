@@ -45,7 +45,7 @@
   var SCAN = [
     [["all"], "Settling in", ["Lie on your back or sit comfortably, and let your eyes close if that feels okay.",
       "Feel where your body touches the floor, the bed or the chair. Let it take your weight.",
-      "Observe whatever you find, exactly as it is."]],
+      "Observe whatever you find, just as it is."]],
     [["belly"], "The breath", ["Let the breath flow at its own pace, and observe the belly rising and falling.",
       "Each out-breath is a small chance to let go.", WANDER]],
     [["footL"], "Left foot", ["Bring your attention down to your left foot: the toes, the sole, the heel.",
@@ -54,7 +54,7 @@
     [["shinL", "kneeL", "thighL"], "Left leg", ["Move up into the left ankle, the shin and the calf.",
       "Now the knee, and the long muscles of the thigh.", "Let the whole left leg feel heavy and supported."]],
     [["footR"], "Right foot", ["Now shift to your right foot: the toes, the sole, the heel.",
-      "Observe any sensation here, exactly as it is.", "If the mind has drifted, bring it back to the right foot."]],
+      "Observe any sensation here, as it is.", "If the mind has drifted, bring it back to the right foot."]],
     [["shinR", "kneeR", "thighR"], "Right leg", ["Move up through the right ankle, shin and calf.",
       "The knee, and the thigh.", "Let both legs rest, heavy and still."]],
     [["hips"], "Hips and pelvis", ["Bring your attention to your hips and pelvis, and where they meet the surface below you.",
@@ -65,7 +65,7 @@
     [["belly"], "Belly", ["Return to the belly. Observe it rising as you breathe in and falling as you breathe out.",
       "Let it be soft and loose.", WANDER]],
     [["chest"], "Chest", ["Move up to the chest. Notice the ribs widening and the breath moving.",
-      "You might feel your heartbeat here. If you do, observe its rhythm.", "Observe the sensations of the chest, exactly as they are."]],
+      "You might feel your heartbeat here. If you do, observe its rhythm.", "Observe the sensations of the chest, just as they are."]],
     [["handL", "armL"], "Left hand and arm", ["Bring your attention to your left hand: fingertips, palm, the back of the hand.",
       "Up through the wrist, the forearm, the elbow and the upper arm.", "Let the arm be heavy."]],
     [["handR", "armR"], "Right hand and arm", ["Now the right hand: fingertips, palm, the back of the hand.",
@@ -121,7 +121,7 @@
         "Each time the mind wanders, return to the small area below the nostrils."] },
     { title: "The small dimple", back: "the small dimple",
       start: "Now narrow to the small dimple just beneath the ridge between the nostrils. Rest all your attention on this one small point, and observe every sensation there.",
-      more: ["Stay at the small dimple. Observe even the subtlest sensation, exactly as it is.",
+      more: ["Stay at the small dimple. Observe even the subtlest sensation, just as it is.",
         "Each time the mind wanders, return to the small dimple beneath the ridge between the nostrils.",
         "Observe the touch of the breath at this one small point, as it comes in and as it goes out."] }
   ];
@@ -403,7 +403,7 @@
     {
       id: "body-scan", name: "Body Scan", lengths: [10, 20, 30], min: 10, strength: 1,
       tone: "relax", lie: true, voice: true,
-      blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation exactly as it is.",
+      blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation as it is.",
       build: function (min) { return bodyScan(min, "wake"); },
       how: "Sixteen stops, from the feet up, each with a few spoken cues. The body map shows where you are. Choose 10, 20 or 30 minutes.",
       ev: "The body scan is a core practice of mindfulness-based stress reduction. On its own, a meta-analysis of about 15 trials found a small rise in mindfulness and no clear effect on stress or anxiety. Mindfulness programs that include it have moderate evidence for reducing anxiety, depression and pain.",
@@ -436,7 +436,7 @@
           G(40, "Bring it to mind", ["Think of something that's troubling you right now, something of moderate weight.",
             "Notice where you feel it in your body."], { vis: "glow" }),
           G(70, "This is hard", ["Say to yourself: this is a moment of difficulty.", "Or: this hurts. This is stress.",
-            "Acknowledge it, exactly as it is."], { vis: "glow" }),
+            "Acknowledge it, just as it is."], { vis: "glow" }),
           G(70, "Part of being human", ["Difficulty is part of being human. Other people feel this way too.",
             "Everyone struggles sometimes. You share this with many others."], { vis: "glow" }),
           G(80, "Kindness", ["Place your hands over your heart, or anywhere that feels soothing. Feel their warmth.",

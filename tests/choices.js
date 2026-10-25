@@ -3,8 +3,8 @@
 //   M  your own breathing patterns     N  one safety note
 //   F  library filters that combine   R  Heart Coherence: gratitude, lying down, its beat and pace
 //   W  wording that names its study    A  the pace and beat changed while a practice runs, and Restart
-//   Q  the three new quotes            I  the impressum and copyright
-//   K  the code check's fixes
+//   Q  the three new quotes            I  the impressum, copyright and licence
+//   K  the code check's fixes          L  Healthy living: recipes and supplements
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -201,7 +201,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(!/Not for everyone/.test(await E(p, () => document.documentElement.innerHTML)), 'the paragraph repeated on five pages is gone');
       const learn = await E(p, () => ({ toc: !!document.querySelector('.toc a[href="#l-safety"]'), h: document.querySelector('#l-safety').textContent,
         items: [...document.querySelectorAll('#sfNote .sf-list li b')].map(b => b.textContent) }));
-      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Moving. | Feelings.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
+      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Moving. | Feelings. | Food and supplements.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
       const opened = async (from) => {
         await p.click(from); await p.waitForTimeout(250);
         return E(p, () => { const m = document.querySelector('#sfModal'), b = document.querySelector('#sfBody');
@@ -448,27 +448,40 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await r.context().close();
     }
 
-    /* Q. the three new quotes, signed Entrain and kept as written */
+    /* Q. the three new quotes, signed Entrain and kept as written; "just as it is" rather than "exactly as it is" */
     if (!only || only === 'Q') {
       const p = await page(OPT());
       const qs = await E(p, () => { const X = window.__entrain; return ["There's nothing to do but enjoy the view.", 'Health is a state of co-operation.', 'Revolution is an ongoing process of self discovery.']
         .map(x => { const q = X.QUOTES.find(y => y[0] === x); return q ? x + ' / ' + (q[1] || 'Entrain') + ' / ' + q[2] : 'missing: ' + x; }); });
       ok(qs.every(x => / \/ Entrain \/ as written$/.test(x)), 'three new quotes, signed Entrain: ' + qs.map(x => x.split(' / ')[0]).join(' | '));
+      const soft = await E(p, () => window.__entrain.QUOTES.some(q => q[0] === "Observe what's here, just as it is. That is most of the practice."));
+      const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+      ok(soft && !/exactly as (it is|they are)|Observe exactly/.test(html), 'the quote and the guidance observe things "just as they are", not "exactly"');
       await p.context().close();
     }
 
-    /* I. the impressum and copyright: in Learn, in its contents, and from Settings */
+    /* I. the impressum, copyright and licence: in Learn, in its contents, and from Settings; the licence
+       file, and the notice every copy of the page carries */
     if (!only || only === 'I') {
       const p = await page(OPT());
       await E(p, () => location.hash = 'settings'); await p.waitForTimeout(400);
-      ok(/© 2026 misterclarity/.test(await t(p, '.st-about')), 'Settings ends with the copyright: ' + await t(p, '.st-about'));
+      ok(/© 2026 misterclarity\. .*free software under the GNU AGPL, version 3\. Impressum, licence and credits$/.test(await t(p, '.st-about')), 'Settings ends with the copyright and licence: ' + await t(p, '.st-about'));
       await p.click('.st-about a[href="#l-impressum"]'); await p.waitForTimeout(900);
       const im = await E(p, () => { const h = document.querySelector('#l-impressum'), s = h.closest('section'), r = h.getBoundingClientRect();
-        return { view: !document.querySelector('#v-learn').hidden, top: r.top, inView: r.top >= 0 && r.bottom <= innerHeight, txt: s.textContent.replace(/\s+/g, ' '), link: s.querySelector('a').getAttribute('href'), toc: !!document.querySelector('.toc a[href="#l-impressum"]') }; });
+        const lic = s.querySelector('a[rel~="license"]');
+        return { view: !document.querySelector('#v-learn').hidden, top: r.top, inView: r.top >= 0 && r.bottom <= innerHeight, txt: s.textContent.replace(/\s+/g, ' '), link: s.querySelector('a').getAttribute('href'), toc: !!document.querySelector('.toc a[href="#l-impressum"]'),
+          lic: lic ? lic.getAttribute('href') : '', head: (document.querySelector('link[rel="license"]') || {}).href || '' }; });
       ok(im.view && im.inView && im.toc, 'its link opens Learn at the impressum, which Learn\'s contents list too');
-      ok(/personal, non-commercial project by misterclarity/.test(im.txt) && /© 2026 misterclarity\. All rights reserved\./.test(im.txt) && im.link === 'https://github.com/misterclarity/biney' &&
-        /Poppins typeface is Copyright 2020 The Poppins Project Authors, used under the SIL Open Font License 1\.1/.test(im.txt), 'the impressum names the project\'s author and page, the copyright and the font\'s licence');
+      ok(/personal, non-commercial project by misterclarity/.test(im.txt) && /© 2026 misterclarity\. Entrain is free software under the GNU Affero General Public License, version 3: you may use, study, share and change it\./.test(im.txt) &&
+        !/All rights reserved/.test(im.txt) && im.link === 'https://github.com/misterclarity/biney' && im.lic === 'https://www.gnu.org/licenses/agpl-3.0.html' &&
+        /Poppins typeface is Copyright 2020 The Poppins Project Authors, used under the SIL Open Font License 1\.1/.test(im.txt), 'the impressum names the project\'s author and page, the copyright, the AGPL and the font\'s licence');
       await p.context().close();
+      const root = path.join(__dirname, '..'), rd = f => fs.readFileSync(path.join(root, f), 'utf8');
+      const L = rd('LICENSE'), idx = rd('index.html'), prev = fs.existsSync(path.join(root, 'entrain-page.html')) ? rd('entrain-page.html') : '';
+      const note = /^<!DOCTYPE html>\n<!--\n  Entrain: [^\n]+\n  Copyright \(C\) 2026 misterclarity\n[\s\S]*?GNU Affero General Public License as published by the Free Software Foundation, version 3\.[\s\S]*?Source: https:\/\/github\.com\/misterclarity\/biney\n[\s\S]*?-->\n<html lang="en">/;
+      ok(/^\s+GNU AFFERO GENERAL PUBLIC LICENSE\n\s+Version 3, 19 November 2007\n/.test(L) && /END OF TERMS AND CONDITIONS/.test(L) && L.length > 34000 &&
+        note.test(idx) && /<link rel="license" href="https:\/\/www\.gnu\.org\/licenses\/agpl-3\.0\.html">/.test(idx) && (!prev || /^<!--\n  Entrain: /.test(prev)),
+        'LICENSE holds the GNU AGPL, version 3, and every copy of the page opens with its notice and a licence link');
     }
 
     /* K. what the full code check found: fast breathing goes no faster than it was made to; a beat turned
@@ -516,6 +529,99 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8'), ff = html.indexOf('@font-face'), note = html.slice(html.lastIndexOf('/*', ff), ff);
       ok(/Copyright 2020 The Poppins Project Authors/.test(note) && /SIL OPEN FONT LICENSE Version 1\.1/.test(note) && /PERMISSION & CONDITIONS[\s\S]*5\) The Font Software[\s\S]*DISCLAIMER/.test(note) && /\*\/\s*$/.test(note),
         'the embedded font carries its copyright and licence in the page, as the licence asks');
+    }
+
+    /* L. Healthy living: a page under Learn, from Learn, Today and search, with two tabs. Recipes have a
+       page each, whose servings scale every amount, with ingredients and steps to tick off and the screen
+       kept on while you cook. Supplements are cards with the evidence, the amounts studied, what to check
+       first and their sources, and the safety note has a line for them */
+    if (!only || only === 'L') {
+      const p = await page(OPT());
+      await E(p, () => location.hash = 'learn'); await p.waitForTimeout(400);
+      await p.click('.lv-promo'); await p.waitForTimeout(500);
+      const v = await E(p, () => ({ hash: location.hash, view: !document.querySelector('#v-living').hidden, title: document.querySelector('#viewTitle').textContent,
+        nav: (document.querySelector('.nav a[aria-current="page"]') || {}).textContent, cards: [...document.querySelectorAll('#lvp-recipes .pc-a')].map(a => a.getAttribute('href')),
+        tab: document.querySelector('#lvt-recipes').getAttribute('aria-selected'), w: document.documentElement.scrollWidth }));
+      ok(v.hash === '#living' && v.view && v.title === 'Healthy living' && /Learn/.test(v.nav) && v.tab === 'true' && v.w <= 412,
+        'Learn\'s card opens Healthy living, under the Learn tab, at Recipes, with nothing wider than the phone');
+      ok(v.cards.length === 8 && v.cards.every(h => /^#living\/[a-z-]+$/.test(h)) && v.cards[0] === '#living/congee', 'eight recipes, each with its own page: ' + v.cards.map(h => h.slice(8)).join(', '));
+      await p.click('#lvp-recipes .pc-a[href="#living/congee"]'); await p.waitForTimeout(450);
+      const ing = () => E(p, () => [...document.querySelectorAll('.lv-ing li')].map(l => l.querySelector('label > span').firstChild.textContent + ' ' + l.querySelector('.lv-n').textContent).map(s => s.trim()));
+      let r = await E(p, () => ({ title: document.querySelector('#viewTitle').textContent, back: document.querySelector('#lvBody .si-back').getAttribute('href'), n: document.querySelector('#lvServ').textContent,
+        kind: document.querySelector('#lvBody .si-kind').textContent, steps: document.querySelectorAll('.lv-steps li').length, top: scrollY }));
+      ok(r.title === 'Congee' && r.back === '#living/recipes' && r.n === '4' && r.kind === 'Recipe · 1 h 25 min' && r.steps === 5 && r.top === 0, 'Congee has its own page, from the top, serving 4: ' + r.kind);
+      let a = await ing();
+      ok(a[0] === '150 g jasmine rice' && a[1] === '1.6 L water, or half water and half light stock' && a[4] === '2 spring onions, thinly sliced', 'its amounts as written: ' + a.slice(0, 2).join(' | '));
+      await p.click('.lv-ing li:first-child label'); await p.click('.lv-steps li:nth-child(2) label');
+      await p.click('.lv-serv [data-d="1"]'); await p.click('.lv-serv [data-d="1"]'); await p.waitForTimeout(100);
+      a = await ing();
+      const ticked = await E(p, () => [document.querySelector('.lv-ing li:first-child').classList.contains('done'), document.querySelector('.lv-ing li:first-child input').checked, document.querySelector('.lv-steps li:nth-child(2)').classList.contains('done')]);
+      ok(a[0] === '225 g jasmine rice' && a[1] === '2.4 L water, or half water and half light stock' && a[2] === '4.5 cm fresh ginger' && a[3] === '¾ tsp salt' && a[4] === '3 spring onions, thinly sliced' && a[6] === 'soy sauce and ground white pepper, to taste',
+        'for 6, every amount scales: ' + a.slice(0, 5).join(' | '));
+      ok(ticked.every(Boolean) && /Scaled from 4/.test(await t(p, '#lvServNote')), 'what you ticked stays ticked, and the note says it\'s scaled');
+      for (let i = 0; i < 6; i++) await p.click('.lv-serv [data-d="-1"]', { force: true });
+      a = await ing();
+      const lo = await E(p, () => ({ n: document.querySelector('#lvServ').textContent, minus: document.querySelector('.lv-serv [data-d="-1"]').getAttribute('aria-disabled') }));
+      ok(lo.n === '1' && lo.minus === 'true' && a[0] === '40 g jasmine rice' && a[1] === '400 ml water, or half water and half light stock' && a[4] === '½ spring onion, thinly sliced', 'for 1, the amounts follow and the minus button stops: ' + a[0] + ' | ' + a[4]);
+      // the screen stays on while you cook, and stops when you leave the recipe
+      await p.click('label:has(#lvWake)'); await p.waitForTimeout(300);
+      const on = await E(p, () => ({ cook: window.__entrain.LV.cook, req: window.__wl.req, held: window.__wl.held, lock: !!window.__entrain.WL.lock }));
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(400);
+      const off = await E(p, () => ({ cook: window.__entrain.LV.cook, rid: window.__entrain.LV.rid, lock: !!window.__entrain.WL.lock, held: window.__wl.held, rel: window.__wl.rel }));
+      ok(on.cook && on.req >= 1 && on.held === 1 && on.lock && !off.cook && !off.rid && !off.lock && off.held === 0 && off.rel >= 1, 'Keep the screen on holds a wake lock while the recipe is open, and lets go when you leave it');
+      // a starred recipe shows on Today; Today's tile opens the page
+      await E(p, () => location.hash = 'living/kitchari'); await p.waitForTimeout(400);
+      await p.click('#lvBody .fav'); await p.waitForTimeout(200);
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(500);
+      const fav = await E(p, () => [...document.querySelectorAll('#tdFavList .pc-a')].map(x => x.getAttribute('href') + ' ' + x.querySelector('b').textContent));
+      ok(fav.length === 1 && fav[0] === '#living/kitchari Kitchari', 'a starred recipe shows in Today\'s favourites: ' + fav.join(', '));
+      await p.click('.qk-wide'); await p.waitForTimeout(450);
+      ok(await E(p, () => location.hash === '#living' && !document.querySelector('#v-living').hidden), 'Today\'s Healthy living tile opens the page');
+      // supplements: a tab of cards, by keyboard too, remembered
+      await p.focus('#lvt-recipes'); await p.keyboard.press('ArrowRight'); await p.waitForTimeout(200);
+      const sp = await E(p, () => ({ hash: location.hash, sel: document.querySelector('#lvt-supplements').getAttribute('aria-selected'), focus: document.activeElement.id,
+        panel: !document.querySelector('#lvp-supplements').hidden && document.querySelector('#lvp-recipes').hidden,
+        main: [...document.querySelectorAll('#lvp-supplements .lv-sup:not(.lv-brief)')].map(d => d.id.slice(3)), more: document.querySelectorAll('#lvp-supplements .lv-brief').length,
+        box: (document.querySelector('#lvp-supplements .si-caution') || {}).textContent || '',
+        refs: [...document.querySelectorAll('#lvp-supplements .lv-sup')].every(d => d.querySelectorAll('.lv-refl a[href^="https://"]').length >= 1),
+        shut: [...document.querySelectorAll('#lvp-supplements .lv-sup')].every(d => !d.open) }));
+      ok(sp.hash === '#living/supplements' && sp.sel === 'true' && sp.focus === 'lvt-supplements' && sp.panel, 'the arrow keys move between the tabs, and the address follows');
+      ok(sp.main.join(' ') === 'omega-3 coq10 creatine vitamin-d magnesium vitamin-b12' && sp.more === 7 && sp.refs && sp.shut,
+        'six supplements in full and seven in brief, each with its sources, all closed to start: ' + sp.main.join(', '));
+      ok(/^Supplements aren't checked like medicines/.test(sp.box) && /Safety notes$/.test(sp.box), 'the tab opens with the line from the safety note, and the link to the whole note');
+      await p.click('#lvp-supplements .si-caution [data-safety]'); await p.waitForTimeout(250);
+      ok(await E(p, () => !document.querySelector('#sfModal').hidden && /Food and supplements\. Supplements aren't checked like medicines/.test(document.querySelector('#sfBody').textContent.replace(/\s+/g, ' '))),
+        'the safety note itself has a line for food and supplements');
+      await p.click('#sfClose'); await p.waitForTimeout(200);
+      await p.click('#lv-creatine > summary'); await p.waitForTimeout(150);
+      const cr = await E(p, () => { const d = document.querySelector('#lv-creatine'); return { open: d.open, uses: [...d.querySelectorAll('.lv-uses li')].map(l => l.querySelector('b').textContent + ' ' + l.querySelectorAll('.strength i.on').length),
+        facts: [...d.querySelectorAll('.lv-facts dt')].map(x => x.textContent), care: d.querySelectorAll('.lv-care li').length }; });
+      ok(cr.open && cr.uses[0] === 'Strength and muscle, with training 3' && cr.facts.join(', ') === 'Amounts studied, How to take it, In food' && cr.care >= 3,
+        'a card opens to what it may help, with the strength of each, the amounts studied, how to take it, food and what to check: ' + cr.uses.join(' | '));
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(300);
+      await E(p, () => location.hash = 'living'); await p.waitForTimeout(400);
+      ok(await E(p, () => document.querySelector('#lvt-supplements').getAttribute('aria-selected') === 'true'), 'Healthy living opens again at the tab you had');
+      await E(p, () => location.hash = 'living/vitamin-d'); await p.waitForTimeout(700);
+      const vd = await E(p, () => { const d = document.querySelector('#lv-vitamin-d'), r = d.getBoundingClientRect(); return { open: d.open, seen: r.top >= 0 && r.top < innerHeight / 2 }; });
+      ok(vd.open && vd.seen, 'a supplement\'s address opens its card, scrolled into view');
+      // search finds the recipes and supplements
+      for (const [q, h] of [['congee', '#living/congee'], ['creatine', '#living/creatine'], ['fish oil', '#living/omega-3'], ['healthy living', '#living']]) {
+        await E(p, () => location.hash = 'home'); await p.waitForTimeout(250);
+        await p.click('#tbFind'); await p.fill('#fdIn', q); await p.waitForTimeout(200);
+        const top = await E(p, () => { const a = document.querySelector('#fdRes .fd-it'); return a ? a.getAttribute('href') + ' / ' + a.closest('.fd-grp').querySelector('h3').firstChild.textContent.trim() : ''; });
+        await p.keyboard.press('Enter'); await p.waitForTimeout(500);
+        ok(top === h + ' / Healthy living' && await E(p, h => location.hash === h, h), 'search: "' + q + '" finds ' + h + ' first, and Enter opens it');
+      }
+      // every recipe, at every number of servings, says a sensible amount
+      const bad = await E(p, () => { const X = window.__entrain, out = [];
+        X.RECIPES.forEach(r => { for (let n = 1; n <= 12; n++) (r.ing.concat(r.serve || [])).forEach(it => { const m = X.lvAmt(it, n / r.serves); if (/NaN|undefined|^0 |Infinity/.test(m.a + ' ' + m.n) || (it[0] !== null && !m.a)) out.push(r.id + ' ' + n + ': ' + m.a + ' ' + m.n); }); });
+        return out; });
+      ok(!bad.length, 'every ingredient of every recipe has an amount at 1 to 12 servings' + (bad.length ? ': ' + bad.slice(0, 3).join(' | ') : ''));
+      const units = await E(p, () => { const f = window.__entrain.lvAmt, c = ['2', 'tin', ['of chickpeas (400 g), drained', 'of chickpeas (400 g each), drained']]; c[0] = 2;
+        return [f(c, 0.25), f(c, 1.5), f([1, 'handful', 'of berries'], 2), f([0.25, 'tsp', 'cinnamon'], 3), f([1, '', ['lemon', 'lemons']], 0.5), f([1000, 'ml', 'water'], 0.5)].map(m => m.a + ' ' + m.n); });
+      ok(units.join(' | ') === '½ tin of chickpeas (400 g), drained | 3 tins of chickpeas (400 g each), drained | 2 handfuls of berries | ¾ tsp cinnamon | ½ lemon | 500 ml water',
+        'tins by the half, handfuls whole, spoons by the quarter, counts by the half: ' + units.join(' | '));
+      await p.context().close();
     }
   } catch (e) {
     log.push('ERROR ' + (e && e.stack || e));

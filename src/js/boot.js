@@ -23,6 +23,7 @@
   libInit();
   yInit();
   nvcInit();
+  lvInit();
   fdInit();
   bkInit();
   route();                               // the library is built when it's first shown, not here

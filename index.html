@@ -1,10 +1,28 @@
 <!DOCTYPE html>
+<!--
+  Entrain: paced breathing, binaural beats, heart coherence and guided practices, offline.
+  Copyright (C) 2026 misterclarity
+
+  This program is free software: you can redistribute it and/or modify it under the terms of
+  the GNU Affero General Public License as published by the Free Software Foundation, version 3.
+
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License along with this
+  program. If not, see <https://www.gnu.org/licenses/>.
+
+  Source: https://github.com/misterclarity/biney
+  The Poppins font inside is under the SIL Open Font License 1.1, whose text comes with it below.
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1120">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%238e98fc'/%3E%3Cstop offset='.5' stop-color='%23fbbf24'/%3E%3Cstop offset='1' stop-color='%235eead4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='10' fill='url%28%23g%29'/%3E%3Crect x='8' y='8' width='16' height='16' rx='4' fill='%230b1120'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>Entrain — Evidence-Based Binaural Beats</title>
@@ -14,7 +32,7 @@
      rail becomes a bottom tab bar and the mini player docks just above it.
      Palette: ink-blue night surfaces, and each accent carries one meaning:
      teal = relax and breathing in, amber = stimulation and holds, violet = tinnitus and
-     breathing out, rose = heart data, indigo = the action you can take. */
+     breathing out, rose = heart data, indigo = the action you can take, green = food and supplements. */
   :root{
     --bg:#0b1120;
     --bg-2:#0d1426;
@@ -38,6 +56,7 @@
     --b-hold:#f5d38b;
     --b-out:#a78bfa;
     --hr:#fb7185;
+    --food:#95d98c;
     /* chart marks: the accent, relax and stim hues stepped to one OKLCH lightness (0.66), inside
        the band where marks sit evenly on the dark panel; checked for colour-blind separation and
        contrast with the dataviz validator. The full tokens mark the selected period. */
@@ -1584,6 +1603,88 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .tr-notch b{color:var(--ther)}
   .si-main .prime,.si-main .builder{background:none;padding:0;margin-bottom:20px}
   .si-main .band-readout{margin-left:0}
+
+  /* ---------- healthy living: recipes and supplements ---------- */
+  .qk-wide{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:14px;row-gap:2px;align-items:center}
+  .qk-wide .qi{grid-row:span 2;margin-bottom:0}
+  .lv-promo{display:flex;align-items:center;gap:14px;margin:0 0 26px;padding:14px 16px;border-radius:16px;text-decoration:none;color:var(--text);
+    background:linear-gradient(150deg,color-mix(in srgb,var(--food) 13%,var(--panel)),var(--panel) 70%);border:1px solid color-mix(in srgb,var(--food) 20%,transparent)}
+  .lv-promo:hover{background:color-mix(in srgb,var(--food) 9%,var(--panel-2))}
+  .lv-promo-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--food) 16%,transparent);color:var(--food)}
+  .lv-promo-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1;line-height:1.45}
+  .lv-promo-t b{font-size:15.5px;font-weight:750;color:var(--text)}
+  .lv-promo-t span{font-size:13.5px;color:var(--text-dim)}
+  .lv-go{transform:rotate(90deg);color:var(--text-faint)}
+  .lv-page{--c1:var(--pcol)}
+  .lv-intro{margin-bottom:14px}
+  .lv-tabs{margin:0 0 16px}
+  .lv-lede{color:var(--text-dim);font-size:14.5px;margin:0 0 14px;max-width:70ch;line-height:1.55}
+  .lv-panel > .si-caution{margin:0 0 14px;max-width:880px}
+  .lv-panel > .pr-legend{margin-bottom:10px}
+  .lv-sups{display:flex;flex-direction:column;gap:8px;max-width:880px}
+  .lv-h2{font-size:18px;font-weight:780;letter-spacing:-.015em;margin:28px 0 10px}
+  .lv-sup{background:var(--panel);border-radius:16px;border:1px solid transparent;--c1:var(--pcol);scroll-margin-top:calc(var(--top) + 12px)}
+  .lv-sup[open]{border-color:color-mix(in srgb,var(--pcol) 24%,transparent)}
+  .lv-sup > summary{list-style:none;display:flex;gap:12px;align-items:flex-start;padding:14px 16px;cursor:pointer;border-radius:16px}
+  .lv-sup > summary::-webkit-details-marker{display:none}
+  .lv-sup > summary:hover{background:var(--panel-2)}
+  .lv-sup > summary .pc-ic{background:color-mix(in srgb,var(--pcol) 14%,transparent);color:var(--pcol)}
+  .lv-sum{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+  .lv-best{font-size:12.5px;font-weight:650;color:var(--pcol)}
+  .lv-sum .pc-blurb{margin-top:2px}
+  .lv-sup[open] .lv-sum .pc-blurb{-webkit-line-clamp:unset;display:block}
+  .lv-chev{transform:rotate(180deg);transition:transform .2s;color:var(--text-faint);margin-top:8px}
+  .lv-sup[open] > summary .lv-chev{transform:none}
+  .lv-body{padding:2px 18px 18px 64px}
+  .lv-body > p{margin:0 0 10px;font-size:14px;color:var(--text-dim);line-height:1.55;max-width:70ch}
+  .lv-body h3{font-size:14px;font-weight:750;margin:4px 0 8px;color:var(--text)}
+  .lv-uses{list-style:none;margin:0;padding:0;display:grid;gap:12px;max-width:70ch}
+  .lv-use-h{display:flex;align-items:center;gap:10px}
+  .lv-use-h b{font-size:14px;font-weight:720;color:var(--text)}
+  .lv-use-h .strength{margin-left:0}
+  .lv-uses p{margin:3px 0 0;font-size:13.5px;color:var(--text-dim);line-height:1.55}
+  .lv-facts{margin:16px 0 0;display:grid;gap:12px;max-width:70ch}
+  .lv-facts dt{font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint)}
+  .lv-facts dd{margin:3px 0 0;font-size:13.5px;color:var(--text-dim);line-height:1.55}
+  .lv-care{margin-top:16px;padding:12px 14px;border-radius:12px;background:rgba(251,191,36,.09);color:#fcd34d;max-width:70ch}
+  .lv-care h3{display:flex;align-items:center;gap:8px;color:#fcd34d;margin:0 0 6px}
+  .lv-care h3 svg.i{width:17px;height:17px}
+  .lv-care ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.5}
+  .lv-care li + li{margin-top:5px}
+  .lv-care1{display:flex;gap:9px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:rgba(251,191,36,.09);color:#fcd34d!important;font-size:13.5px!important}
+  .lv-care1 svg.i{width:17px;height:17px;flex:none;margin-top:1px}
+  .lv-refs{margin-top:16px;max-width:70ch}
+  .lv-refl{margin:8px 0 0;padding-left:20px;font-size:12.5px;color:var(--text-faint);line-height:1.5}
+  .lv-refl li + li{margin-top:6px}
+  .lv-refl a{color:var(--text-dim);text-underline-offset:3px;display:inline-block;padding:3px 0}
+  .lv-tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0}
+  .lv-tags span{font-size:11.5px;font-weight:650;color:var(--text-dim);background:var(--panel-2);border-radius:7px;padding:3px 8px}
+  .lv-recipe h3 + .lv-ing,.lv-recipe h3 + .lv-steps{margin-top:6px}
+  .lv-recipe h3:not(:first-child){margin-top:22px}
+  .lv-recipe h4{font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);margin:16px 0 2px}
+  .lv-ing,.lv-steps{list-style:none;margin:0;padding:0}
+  .lv-steps{counter-reset:lvs}
+  .lv-steps li{counter-increment:lvs}
+  .lv-ing label,.lv-steps label{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line-soft);cursor:pointer;font-size:14.5px;line-height:1.5;color:var(--text)}
+  .lv-ing li:last-child label,.lv-steps li:last-child label{border-bottom:0}
+  .lv-ing input,.lv-steps input{accent-color:var(--pcol);width:18px;height:18px;margin:2px 0 0;flex:none}
+  .lv-ing b{font-weight:760;font-variant-numeric:tabular-nums}
+  .lv-q:empty{display:none}
+  .lv-ing small{display:block;font-size:12.5px;color:var(--text-faint);margin-top:1px}
+  .lv-steps label > span::before{content:counter(lvs) ".";font-weight:800;color:var(--pcol);margin-right:8px;font-variant-numeric:tabular-nums}
+  .lv-ing li.done label > span,.lv-steps li.done label > span{color:var(--text-faint)}
+  .lv-ing li.done b{color:var(--text-faint)}
+  .lv-ing li.done .lv-n{text-decoration:line-through;text-decoration-color:var(--line)}
+  .lv-tips{margin:6px 0 0;padding-left:18px;font-size:14px;color:var(--text-dim);line-height:1.55}
+  .lv-tips li + li{margin-top:6px}
+  .si-main > p.lv-keep{margin-top:16px;font-size:14px}
+  .lv-keep b{color:var(--text)}
+  .lv-opts .so-step{flex:none}
+  @media (max-width:640px){
+    .lv-body{padding:2px 16px 16px}
+    .lv-sup > summary{padding:13px 14px}
+  }
+
 </style>
 </head>
 <body>
@@ -1604,6 +1705,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   <symbol id="i-install" viewBox="0 0 24 24"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M12 7.5v7M9.2 11.8 12 14.6l2.8-2.8"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
   <symbol id="i-practice" viewBox="0 0 24 24"><circle cx="12" cy="5.2" r="2.1"/><path d="M12 8.3v5.2M7.2 11.6l4.8 2 4.8-2M4.5 18.6c2.4-2.4 4.9-3 7.5-3s5.1.6 7.5 3"/></symbol>
+  <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3.5 11.5h17a8.5 7.5 0 0 1-17 0z"/><path d="M9 20h6"/><path d="M9 8.5c-.9-1.1.9-2 0-3.2M12.5 8.5c-.9-1.1.9-2 0-3.2M16 8.5c-.9-1.1.9-2 0-3.2"/></symbol>
+  <symbol id="i-pill" viewBox="0 0 24 24"><g transform="rotate(-45 12 12)"><rect x="2.5" y="8" width="19" height="8" rx="4"/><path d="M12 8h-5.5a4 4 0 0 0 0 8H12z" fill="currentColor" opacity=".35"/><path d="M12 8v8"/></g></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19.5C4.5 10.5 10 5 19.5 4.5 20 14 14.5 19.5 5 19.5z"/><path d="M5 19.5 13.5 11"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.6A7.8 7.8 0 0 1 9.4 4.5a7.8 7.8 0 1 0 10.1 10.1z"/></symbol>
   <symbol id="i-move" viewBox="0 0 24 24"><circle cx="12" cy="4.6" r="2"/><path d="M12 7.5v7M7 4.5l5 4 5-4M12 14.5l-3.5 6M12 14.5l3.5 6"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 4 3.5 8.5 12 13l8.5-4.5z"/><path d="M3.5 12.5 12 17l8.5-4.5M3.5 16.5 12 21l8.5-4.5"/></symbol>
@@ -1704,6 +1808,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         <div class="quick">
           <button class="qk" data-go="resonance-test" style="--qc:var(--hr)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
           <button class="qk" data-go="heart" style="--qc:var(--accent)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg></span><b id="qkSensorT">Heart sensor</b><span id="qkSensor">Not connected</span></button>
+          <button class="qk qk-wide" data-go="living" style="--qc:var(--food)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></span><b>Healthy living</b><span>Recipes like congee and dal, and what the research says about supplements</span></button>
         </div>
 
         <div class="note-card td-safety">
@@ -2324,6 +2429,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-impressum">Impressum</a>
           </nav>
           <article class="prose" id="science">
+            <a class="lv-promo" href="#living"><span class="lv-promo-ic"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></span><span class="lv-promo-t"><b>Healthy living</b><span>Recipes such as congee, kitchari and dal, and what the research says about omega-3, CoQ10, creatine and other supplements.</span></span><svg class="i lv-go" aria-hidden="true"><use href="#i-up"/></svg></a>
             <h2>What the research supports</h2>
             <p class="v-lede">Real but modest effects: decent evidence for anxiety and attention, weaker and noisier evidence for memory.</p>
             
@@ -2608,6 +2714,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <li><b>Feelings.</b> A body scan, tapping or a reflection can bring up strong feelings. If one does, stop, look
                   around the room and breathe slowly, and talk to someone you trust or a professional if it keeps
                   happening.</li>
+                <li><b>Food and supplements.</b> Supplements aren't checked like medicines, and some interact with them: ask a
+                  doctor or pharmacist before you start one if you take medicines (blood thinners above all), are pregnant or
+                  breastfeeding, have kidney or liver disease, or have an operation coming up. The amounts in Healthy living are
+                  those used in studies, not prescriptions.</li>
               </ul>
               <p>Check with a clinician before you start if you have a heart, lung or seizure condition, are pregnant, or are
                 in treatment for anxiety, trauma or depression. Practices with cautions of their own give them in their
@@ -2691,10 +2801,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     <p>All audio is synthesised in your browser with the Web Audio API. Nothing is downloaded, streamed, recorded or sent anywhere.</p>
   </div>
             <section class="imprint" aria-labelledby="l-impressum">
-              <h3 id="l-impressum">Impressum and copyright</h3>
+              <h3 id="l-impressum">Impressum, copyright and licence</h3>
               <p>Entrain is a personal, non-commercial project by <b>misterclarity</b>. Project page and contact:
                 <a href="https://github.com/misterclarity/biney" rel="noopener">github.com/misterclarity/biney</a>.</p>
-              <p>&copy; 2026 misterclarity. All rights reserved.</p>
+              <p>&copy; 2026 misterclarity. Entrain is free software under the
+                <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="license noopener">GNU Affero General Public License, version 3</a>:
+                you may use, study, share and change it. Copies you pass on, and changed versions you put online, have to carry
+                the same licence and their source. It comes with no warranty. The source is on the project page.</p>
               <p>The Poppins typeface is Copyright 2020 The Poppins Project Authors, used under the SIL Open Font License 1.1.
                 The quoted translations and Thoreau's <em>Walden</em> are in the public domain, and the research behind each
                 claim is listed under References.</p>
@@ -2703,6 +2816,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         </div>
       </section>
 
+      <!-- ============ HEALTHY LIVING ============ -->
+      <section class="view" id="v-living" aria-labelledby="viewTitle" hidden>
+        <div class="lv-page" id="lvBody"></div>
+      </section>
     </main>
   </div>
 </div>
@@ -6321,17 +6438,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      Views behind a hash router. The five tabs are #home (Today), #practice (the library),
      #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
      practice, #track/<id> for a track, #prime and #builder for the custom primer and the beat
-     builder, #yoga for the routine builder; and #settings from the gear. Links and search also
+     builder, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
+     #living/<recipe or supplement>; and #settings from the gear. Links and search also
      use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>. Older
      addresses still work: #sounds and #tracks open the library at its sounds, and in-page anchors
      (#connect, #science, #references and the rest) open the view that holds them.
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
 
-  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings"];
+  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings", "living"];
   var V_TITLE = { home: "Today", practice: "Library", breathe: "Breathe", heart: "Heart", learn: "Learn", history: "History", session: "Practice",
-    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings" };
-  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice" };   // the tab each page belongs to
+    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings", living: "Healthy living" };
+  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice", living: "learn" };   // the tab each page belongs to
   var ALIAS = { today: "home", library: "practice" };
   var BACK = "practice";                 // the list a page was opened from: Today, the library or History
   var BASE_TITLE = document.title;
@@ -6346,6 +6464,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function showView(v) {
     if (VIEWS.indexOf(v) < 0) v = "home";
     if (v !== "breathe") sheet(false);
+    if (v !== "living") lvLeave();                // a recipe stops keeping the screen on
     VIEWS.forEach(function (n) { $("#v-" + n).hidden = n !== v; });
     var links = document.querySelectorAll(".nav a"), navV = V_TAB[v] || v;
     for (var i = 0; i < links.length; i++) {
@@ -6404,6 +6523,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (h === "sounds" || h === "tracks") { libShow("", "sound"); return; }   // Sounds was a tab of its own
     if (h === "yoga" || h.indexOf("yoga/") === 0) { showView("yoga"); yOpen(h.slice(5)); return; }
     if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
+    if (h === "living" || h.indexOf("living/") === 0) { showView("living"); lvOpen(h.slice(7)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
     var el = document.getElementById(h), v = el && viewOf(el);
     if (!v) { showView("home"); return; }
@@ -7727,7 +7847,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["Begin as you are, and let the calm catch up.", ""],
     ["Small sessions, often, add up to a steadier you.", ""],
     ["The body learns what you repeat.", ""],
-    ["Observe what's here, exactly as it is. That is most of the practice.", ""],
+    ["Observe what's here, just as it is. That is most of the practice.", ""],
     ["Your heart keeps time for you. Listen in now and then.", ""],
     ["A long out-breath is the shortest way back to yourself.", ""],
     ["Five quiet minutes still count.", ""],
@@ -7951,7 +8071,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var SCAN = [
     [["all"], "Settling in", ["Lie on your back or sit comfortably, and let your eyes close if that feels okay.",
       "Feel where your body touches the floor, the bed or the chair. Let it take your weight.",
-      "Observe whatever you find, exactly as it is."]],
+      "Observe whatever you find, just as it is."]],
     [["belly"], "The breath", ["Let the breath flow at its own pace, and observe the belly rising and falling.",
       "Each out-breath is a small chance to let go.", WANDER]],
     [["footL"], "Left foot", ["Bring your attention down to your left foot: the toes, the sole, the heel.",
@@ -7960,7 +8080,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     [["shinL", "kneeL", "thighL"], "Left leg", ["Move up into the left ankle, the shin and the calf.",
       "Now the knee, and the long muscles of the thigh.", "Let the whole left leg feel heavy and supported."]],
     [["footR"], "Right foot", ["Now shift to your right foot: the toes, the sole, the heel.",
-      "Observe any sensation here, exactly as it is.", "If the mind has drifted, bring it back to the right foot."]],
+      "Observe any sensation here, as it is.", "If the mind has drifted, bring it back to the right foot."]],
     [["shinR", "kneeR", "thighR"], "Right leg", ["Move up through the right ankle, shin and calf.",
       "The knee, and the thigh.", "Let both legs rest, heavy and still."]],
     [["hips"], "Hips and pelvis", ["Bring your attention to your hips and pelvis, and where they meet the surface below you.",
@@ -7971,7 +8091,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     [["belly"], "Belly", ["Return to the belly. Observe it rising as you breathe in and falling as you breathe out.",
       "Let it be soft and loose.", WANDER]],
     [["chest"], "Chest", ["Move up to the chest. Notice the ribs widening and the breath moving.",
-      "You might feel your heartbeat here. If you do, observe its rhythm.", "Observe the sensations of the chest, exactly as they are."]],
+      "You might feel your heartbeat here. If you do, observe its rhythm.", "Observe the sensations of the chest, just as they are."]],
     [["handL", "armL"], "Left hand and arm", ["Bring your attention to your left hand: fingertips, palm, the back of the hand.",
       "Up through the wrist, the forearm, the elbow and the upper arm.", "Let the arm be heavy."]],
     [["handR", "armR"], "Right hand and arm", ["Now the right hand: fingertips, palm, the back of the hand.",
@@ -8027,7 +8147,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         "Each time the mind wanders, return to the small area below the nostrils."] },
     { title: "The small dimple", back: "the small dimple",
       start: "Now narrow to the small dimple just beneath the ridge between the nostrils. Rest all your attention on this one small point, and observe every sensation there.",
-      more: ["Stay at the small dimple. Observe even the subtlest sensation, exactly as it is.",
+      more: ["Stay at the small dimple. Observe even the subtlest sensation, just as it is.",
         "Each time the mind wanders, return to the small dimple beneath the ridge between the nostrils.",
         "Observe the touch of the breath at this one small point, as it comes in and as it goes out."] }
   ];
@@ -8309,7 +8429,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     {
       id: "body-scan", name: "Body Scan", lengths: [10, 20, 30], min: 10, strength: 1,
       tone: "relax", lie: true, voice: true,
-      blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation exactly as it is.",
+      blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation as it is.",
       build: function (min) { return bodyScan(min, "wake"); },
       how: "Sixteen stops, from the feet up, each with a few spoken cues. The body map shows where you are. Choose 10, 20 or 30 minutes.",
       ev: "The body scan is a core practice of mindfulness-based stress reduction. On its own, a meta-analysis of about 15 trials found a small rise in mindfulness and no clear effect on stress or anxiety. Mindfulness programs that include it have moderate evidence for reducing anxiety, depression and pain.",
@@ -8342,7 +8462,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           G(40, "Bring it to mind", ["Think of something that's troubling you right now, something of moderate weight.",
             "Notice where you feel it in your body."], { vis: "glow" }),
           G(70, "This is hard", ["Say to yourself: this is a moment of difficulty.", "Or: this hurts. This is stress.",
-            "Acknowledge it, exactly as it is."], { vis: "glow" }),
+            "Acknowledge it, just as it is."], { vis: "glow" }),
           G(70, "Part of being human", ["Difficulty is part of being human. Other people feel this way too.",
             "Everyone struggles sometimes. You share this with many others."], { vis: "glow" }),
           G(80, "Kindness", ["Place your hands over your heart, or anywhere that feels soothing. Feel their warmth.",
@@ -8769,7 +8889,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     paced: ["Keep a little attention at the nostrils: cool air coming in, warmer air going out.",
       "Observe the touch of the breath just below the nostrils as you follow the pace.",
       "If the mind has wandered, come back to the breath at the nostrils, and the next breath in.",
-      "Observe exactly where the air touches as it enters. Stay with this one breath."],
+      "Observe where the air touches as it enters. Stay with this one breath."],
     natural: ["Bring your attention to the small area below the nostrils, and observe the touch of the breath there.",
       "If the mind has wandered, notice where it went, and come back to the breath at the nostrils.",
       "Breathe naturally, and observe the touch of the breath at the nostrils, in and out.",
@@ -8900,7 +9020,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function pHush() { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {} }
 
   /* ----- the screen stays on, at full brightness, through every session ----- */
-  // One lock for practices, the breathing guide and tracks. It's held while any of them runs, and
+  // One lock for practices, the breathing guide, tracks and a recipe being cooked. It's held while any of them runs, and
   // for ten minutes after a pause, so the screen is still lit when you come back to it. The browser drops
   // the lock whenever the page is hidden, so it's asked for again on return; a check every 15 seconds
   // also catches a lock the system took back, and the end of a pause's ten minutes.
@@ -8908,7 +9028,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var WL_GRACE = 600000;
   function wlNeed() {
     var ses = ST.screenSessions, trk = ST.screenTracks;
-    if ((ses && (P.state === "running" || B.state === "running")) || (trk && A.playing)) { WL.stop = 0; return true; }
+    if ((ses && (P.state === "running" || B.state === "running")) || (trk && A.playing) || (LV && LV.cook && LV.rid)) { WL.stop = 0; return true; }
     if (!WL.stop) WL.stop = Date.now();               // the moment the last session paused or ended
     var paused = (ses && (P.state === "paused" || B.state === "paused")) || (trk && !!A.track && A.elapsed > 0);
     return paused && Date.now() - WL.stop < WL_GRACE;
@@ -10322,7 +10442,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, lvAmt: lvAmt };   // for automated tests only
   }
   /* ------------------------------- the end screen -------------------------------
      What a practice measured, as tiles you can tap for what each number means, with your own
@@ -10770,6 +10890,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (key.indexOf("b:") === 0) { var b = preset(key.slice(2)); return b && (b.goal || b.mine) ? libPattern(b) : null; }
     if (key.indexOf("t:") === 0) { var t = trackById(key.slice(2)); return t ? libTrack(t) : null; }
     if (key.indexOf("x:") === 0) return TOOLS[key.slice(2)] ? libTool(key.slice(2)) : null;
+    if (key.indexOf("r:") === 0) { var r = recipeById(key.slice(2)); return r ? libRecipe(r) : null; }
     var d = pDef(key);
     return d ? libPractice(d) : null;
   }
@@ -11036,7 +11157,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap and Cognitive Shuffle go almost dark. The screen still stays on.") +
       "</section>" + bkCard() +
       '<section class="st-card st-about" aria-labelledby="stI"><h2 id="stI">About</h2>' +
-        '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project. <a href="#l-impressum">Impressum, copyright and credits</a></p>' +
+        '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project, and free software under the GNU AGPL, version 3. <a href="#l-impressum">Impressum, licence and credits</a></p>' +
       "</section>";
     stWire();
     bkWire();
@@ -12024,7 +12145,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   /* ------------------------------- search -------------------------------
      One box for everything: practices and your own routines, the movement library, breathing
-     patterns, tracks, the Heart tools, History and Settings, and every paragraph and reference in Learn.
+     patterns, tracks, the Heart tools, Healthy living's recipes and supplements, History and Settings, and every
+     paragraph and reference in Learn.
      Matching ignores case and accents, and each word you type has to match the start of a word
      somewhere in the entry, so "anap" finds Anapana and "bencao" finds Bênção. Results come in
      groups, the group with the best match first. Enter opens the top result; "/" or Ctrl+K opens
@@ -12033,7 +12155,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   var FD = { open: false, base: null, items: [], q: "", more: {}, pushed: false, back: null, t: 0 };
   var FD_KINDS = [["practice", "Practices"], ["pose", "Poses and moves"], ["breath", "Breathing"],
-    ["sound", "Sounds"], ["heart", "Heart"], ["learn", "Learn"], ["app", "History and Settings"]];
+    ["sound", "Sounds"], ["heart", "Heart"], ["living", "Healthy living"], ["learn", "Learn"], ["app", "History and Settings"]];
   var FD_CAP = 6;                        // results shown per group until you ask for the rest
   var FD_TRY = ["Sleep", "Anapana", "Tree", "4-7-8", "Coherence", "Tinnitus", "Capoeira", "Needs"];
 
@@ -12177,6 +12299,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
       ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
       { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));
+    fdLiving(out);
     fdLearn(out);
     return out;
   }
@@ -12264,7 +12387,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     FD.q = q;
     FD.items = [];
     if (!terms.length) {
-      res.innerHTML = '<div class="fd-empty"><p>Search the practices, poses and moves, breathing patterns, tracks and everything in Learn.</p>' + fdTryRow() + "</div>";
+      res.innerHTML = '<div class="fd-empty"><p>Search the practices, poses and moves, breathing patterns, tracks, recipes and supplements, and everything in Learn.</p>' + fdTryRow() + "</div>";
       bSetT("#fdCount", "");
       return;
     }
@@ -12415,6 +12538,695 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var n = 0;
     document.querySelectorAll(FD_LEARN).forEach(function (el) {
       if (!el.closest(".toc") && !el.id) el.id = "lx-" + (n++);
+    });
+  }
+  /* --------------------------- healthy living: the content ---------------------------
+     Recipes, and what the research says about common supplements. A recipe's ingredients are
+     [amount, unit, name, note]: the amount scales with the servings (null for "to taste"), the unit
+     is one of LV_UNITS or "" for a count, and a counted name can be [one, several]. Steps carry no
+     amounts, so they stay right at any number of servings.
+     A supplement's uses are [evidence, what for, what the trials found], evidence on the library's
+     scale of one to three; the amounts are those studied, not prescriptions. Sources were checked
+     in October 2026.
+  ---------------------------------------------------------------------------------------- */
+
+  var RECIPES = [
+    { id: "congee", name: "Congee", sub: "Rice porridge with ginger and spring onion", serves: 4, prep: 5, cook: 80,
+      tags: ["Warming", "Easy to digest", "Breakfast or supper"], also: "jook juk rice porridge",
+      why: "Rice simmered in plenty of water until it breaks down into a smooth, soft porridge. Gentle on the stomach, it's breakfast across much of Asia, and what many families cook for someone who's tired or unwell.",
+      ing: [
+        [150, "g", "jasmine rice"],
+        [1600, "ml", "water, or half water and half light stock"],
+        [3, "cm", "fresh ginger", "half thinly sliced, half cut into fine matchsticks"],
+        [0.5, "tsp", "salt", "or to taste"]
+      ],
+      serve: [
+        [2, "", ["spring onion, thinly sliced", "spring onions, thinly sliced"]],
+        [1, "tsp", "toasted sesame oil"],
+        [null, "", "soy sauce and ground white pepper, to taste"],
+        [null, "", "soft-boiled eggs, coriander, chilli crisp or fried shallots", "if you like"]
+      ],
+      steps: [
+        "Rinse the rice in a sieve under cold water once or twice, and drain it.",
+        "Bring the water to the boil in a large, heavy pot. Add the rice and the sliced ginger and stir.",
+        "When it boils again, turn the heat down to a gentle simmer and set the lid ajar. Cook for 60 to 80 minutes, stirring every 10 to 15 minutes and scraping the bottom, a little more often towards the end.",
+        "It's ready when the grains have broken down and it's thick and silky. Stir in the salt, and a splash of hot water if it's too thick: it keeps thickening as it stands.",
+        "Serve in bowls, topped with the spring onion, the ginger matchsticks, a few drops of sesame oil, soy sauce and white pepper."
+      ],
+      tips: [
+        "Faster: freeze the rinsed, still-wet rice for an hour or more first. The grains crack and break down in about 30 minutes.",
+        "In a pressure cooker, use a little less water (1 part rice to 8 by volume) and fill it no more than half full. Cook for 25 minutes at high pressure, let the pressure drop by itself, then stir.",
+        "From leftover rice: simmer 1 part cooked rice with 3 parts water for about 20 minutes.",
+        "Chicken congee: poach two chicken thighs in the pot for 25 minutes, then shred the meat back in."
+      ],
+      keep: "Keeps 3 days in the fridge. Reheat it with a splash of water, stirring." },
+
+    { id: "kitchari", name: "Kitchari", sub: "Rice and split mung beans with gentle spices", serves: 4, prep: 10, cook: 40,
+      tags: ["One pot", "Vegetarian", "Easy to digest"], also: "khichdi khichari mung dal moong ayurveda",
+      why: "A soft one-pot meal of rice and split mung beans from Indian home cooking, traditional in yoga and Ayurveda for days when you want simple food. The beans bring protein and fibre.",
+      ing: [
+        [100, "g", "split yellow mung beans (moong dal)"],
+        [100, "g", "basmati rice"],
+        [1, "tbsp", "ghee or coconut oil"],
+        [1, "tsp", "cumin seeds"],
+        [0.5, "tsp", "black mustard seeds", "if you have them"],
+        [2, "cm", "fresh ginger, grated"],
+        [1, "tsp", "ground turmeric"],
+        [1, "tsp", "ground coriander"],
+        [1200, "ml", "water"],
+        [0.75, "tsp", "salt"],
+        [250, "g", "vegetables in small pieces", "carrot, courgette, green beans or spinach"]
+      ],
+      serve: [
+        [null, "", "lemon or lime wedges, fresh coriander and plain yoghurt"]
+      ],
+      steps: [
+        "Rinse the mung beans and rice together in a sieve until the water runs almost clear. If you have time, soak them for 30 minutes, then drain.",
+        "Warm the ghee in a large pot over a medium heat. Add the cumin and mustard seeds and let them sizzle for about 30 seconds, until the mustard seeds start to pop.",
+        "Stir in the ginger, turmeric and coriander for a few seconds, then the beans and rice, stirring to coat them.",
+        "Add the water and salt and bring to the boil. Skim off any foam, then simmer with the lid ajar for 30 to 35 minutes, stirring now and then, until soft and porridge-like.",
+        "Add the harder vegetables for the last 10 minutes and spinach for the last 2. Add more hot water for a looser kitchari.",
+        "Serve with a squeeze of lemon, coriander and a spoonful of yoghurt."
+      ],
+      tips: [
+        "Red lentils work in place of the mung beans and cook in about 20 minutes.",
+        "For a vegan bowl, use coconut oil and leave out the yoghurt."
+      ],
+      keep: "Keeps 3 days in the fridge. It thickens as it cools, so loosen it with water when you reheat it." },
+
+    { id: "miso-soup", name: "Miso soup with tofu and greens", sub: "Ten minutes, one pan", serves: 2, prep: 5, cook: 5,
+      tags: ["Quick", "Fermented", "Vegan"], also: "wakame dashi japanese",
+      why: "A light, savoury soup to start a meal or to have with rice. Miso is a fermented soybean paste; stirred in off the boil, it keeps its flavour.",
+      ing: [
+        [600, "ml", "water, or dashi stock"],
+        [1, "tbsp", "dried wakame seaweed"],
+        [150, "g", "silken or firm tofu, in small cubes"],
+        [1, "handful", "of spinach or sliced pak choi", "if you like"],
+        [2, "tbsp", "miso paste, white or red"],
+        [1, "", ["spring onion, thinly sliced", "spring onions, thinly sliced"]]
+      ],
+      steps: [
+        "Soak the wakame in a small bowl of water for 5 minutes, then drain it.",
+        "Bring the water to a simmer. Add the tofu, and the greens if you're using them, and cook for 2 minutes.",
+        "Turn the heat down so it stops bubbling. Mix the miso with a ladle of the hot broth in a bowl until smooth, then stir it back into the pan.",
+        "Add the wakame, warm it through for a moment without boiling, and serve topped with the spring onion."
+      ],
+      tips: [
+        "Dashi without a packet: soak a 5 cm piece of kombu in the water for 20 minutes, heat it to just below a simmer, then lift the kombu out.",
+        "Miso is salty. If you're cutting down on salt, start with less and add more to taste."
+      ],
+      keep: "Best made fresh. Leftovers keep a day in the fridge; warm them gently, without boiling." },
+
+    { id: "red-lentil-dal", name: "Red lentil dal with spinach", sub: "A pot of comfort in 35 minutes", serves: 4, prep: 10, cook: 25,
+      tags: ["Vegan", "High fibre", "Freezes well"], also: "daal dhal masoor curry",
+      why: "Red lentils cook down into a creamy dal without soaking, finished with spiced onion, tomato and spinach. Lentils are rich in protein, fibre and folate.",
+      ing: [
+        [250, "g", "red lentils, rinsed"],
+        [1000, "ml", "water"],
+        [1, "tsp", "ground turmeric"],
+        [2, "tbsp", "oil or ghee"],
+        [1, "tsp", "cumin seeds"],
+        [1, "", ["onion, finely chopped", "onions, finely chopped"]],
+        [3, "", ["garlic clove, crushed", "garlic cloves, crushed"]],
+        [3, "cm", "fresh ginger, grated"],
+        [1, "tsp", "ground coriander"],
+        [0.5, "tsp", "chilli flakes", "if you like"],
+        [2, "", ["tomato, chopped", "tomatoes, chopped"]],
+        [1, "tsp", "salt"],
+        [100, "g", "spinach"]
+      ],
+      serve: [
+        [0.5, "", ["lemon", "lemons"]],
+        [null, "", "fresh coriander, and rice or flatbread"]
+      ],
+      steps: [
+        "Put the lentils, water and turmeric in a pot and bring to the boil. Skim off the foam, then simmer for 20 to 25 minutes, stirring now and then, until the lentils have collapsed. Add a little water if it gets too thick.",
+        "Meanwhile, heat the oil in a frying pan over a medium heat. Fry the cumin seeds for 30 seconds, then add the onion with a pinch of salt and cook for 8 to 10 minutes, until golden.",
+        "Add the garlic, ginger, coriander and chilli and cook for a minute, then the tomatoes, and cook for 5 minutes until soft and jammy.",
+        "Stir the onion mixture and the salt into the lentils, then the spinach, until it wilts.",
+        "Squeeze in the lemon and serve with coriander, and rice or flatbread."
+      ],
+      tips: [
+        "For a richer dal, stir in a 400 ml tin of coconut milk with the spinach."
+      ],
+      keep: "Keeps 4 days in the fridge and freezes well for 3 months." },
+
+    { id: "overnight-oats", name: "Overnight oats with berries and walnuts", sub: "Breakfast made the night before", serves: 1, prep: 5, cook: 0,
+      rest: "plus a night in the fridge", tags: ["No cooking", "High fibre", "Plant omega-3"], also: "porridge muesli chia breakfast",
+      why: "Oats soaked overnight with chia seeds, ready when you are. The beta-glucan fibre in oats helps lower cholesterol, and walnuts and chia bring a plant omega-3 (ALA).",
+      ing: [
+        [50, "g", "rolled oats"],
+        [1, "tbsp", "chia seeds"],
+        [0.5, "tsp", "ground cinnamon"],
+        [150, "ml", "milk, or a fortified plant milk"],
+        [75, "g", "plain yoghurt", "or more milk"],
+        [1, "tsp", "honey or maple syrup", "if you like"]
+      ],
+      serve: [
+        [1, "handful", "of berries, fresh or frozen"],
+        [15, "g", "walnuts, chopped"]
+      ],
+      steps: [
+        "Stir the oats, chia seeds, cinnamon, milk, yoghurt and honey together in a jar or bowl.",
+        "Cover and leave in the fridge overnight, or for at least 4 hours.",
+        "In the morning, stir, loosen with a splash of milk if you like, and top with the berries and walnuts."
+      ],
+      tips: [
+        "Frozen berries stirred in the night before thaw into a quick compote.",
+        "Warm it for a minute in a pan if you'd rather have it hot."
+      ],
+      keep: "Keeps 3 days in the fridge, so several jars can be made at once. Add the walnuts when you eat it." },
+
+    { id: "salmon-traybake", name: "Salmon traybake with potatoes and greens", sub: "Oily fish on one tray, in 40 minutes", serves: 2, prep: 10, cook: 30,
+      tags: ["Omega-3", "One tray", "High protein"], also: "fish trout mackerel oven bake sheet pan",
+      why: "Oily fish such as salmon, trout and mackerel are the richest food source of the omega-3 fats EPA and DHA. The NHS suggests two portions of fish a week, one of them oily.",
+      ing: [
+        [400, "g", "small potatoes, halved"],
+        [2, "tbsp", "olive oil"],
+        [2, "", ["salmon fillet, about 130 g", "salmon fillets, about 130 g each"], "or trout or mackerel"],
+        [200, "g", "broccoli florets or green beans"],
+        [1, "", ["garlic clove, crushed", "garlic cloves, crushed"]],
+        [1, "", ["lemon", "lemons"]],
+        [1, "tsp", "dried dill", "or a few sprigs of fresh dill"],
+        [null, "", "salt and black pepper"]
+      ],
+      steps: [
+        "Heat the oven to 220°C (200°C fan, 425°F). Toss the potatoes on a baking tray with half the oil, salt and pepper, and roast for 20 minutes.",
+        "Meanwhile, toss the broccoli with the rest of the oil and the garlic. Grate the zest from the lemon, then cut it into wedges.",
+        "Push the potatoes to the sides. Lay the salmon in the middle, skin side down, with the broccoli around it, and season the salmon with the lemon zest, dill, salt and pepper.",
+        "Roast for 10 to 12 minutes, until the salmon flakes easily and is just opaque in the middle, and the broccoli is browning at the edges.",
+        "Serve with the lemon wedges."
+      ],
+      tips: [
+        "Pregnant, breastfeeding or planning a pregnancy? The NHS advises no more than two portions of oily fish a week.",
+        "Tinned sardines or mackerel on toast are a quick, cheap way to the same fats."
+      ],
+      keep: "Leftovers keep a day in the fridge: flake the cold salmon into a salad or over rice." },
+
+    { id: "chickpea-stew", name: "Chickpea, tomato and greens stew", sub: "A Mediterranean supper from the cupboard", serves: 4, prep: 10, cook: 25,
+      tags: ["Vegan", "High fibre", "Pantry staples"], also: "garbanzo beans kale spinach mediterranean",
+      why: "Chickpeas simmered with tomato, smoked paprika and greens: the beans, olive oil and vegetables at the heart of Mediterranean eating, mostly from the cupboard.",
+      ing: [
+        [2, "tbsp", "olive oil"],
+        [1, "", ["onion, chopped", "onions, chopped"]],
+        [2, "", ["carrot, diced", "carrots, diced"]],
+        [3, "", ["garlic clove, sliced", "garlic cloves, sliced"]],
+        [1, "tsp", "smoked paprika"],
+        [1, "tsp", "ground cumin"],
+        [2, "tin", ["of chickpeas (400 g), drained", "of chickpeas (400 g each), drained"]],
+        [1, "tin", ["of chopped tomatoes (400 g)", "of chopped tomatoes (400 g each)"]],
+        [400, "ml", "vegetable stock or water"],
+        [150, "g", "kale or spinach, tough stems removed, chopped"],
+        [0.5, "tsp", "salt", "less if your stock is salted"],
+        [null, "", "black pepper"]
+      ],
+      serve: [
+        [0.5, "", ["lemon", "lemons"]],
+        [null, "", "chopped parsley, and bread, rice or yoghurt"]
+      ],
+      steps: [
+        "Heat the oil in a large pan over a medium heat. Cook the onion and carrots with a pinch of salt for 8 to 10 minutes, until soft.",
+        "Add the garlic, paprika and cumin and stir for a minute.",
+        "Add the chickpeas, tomatoes and stock and simmer for 15 minutes, crushing a few chickpeas against the side of the pan to thicken it.",
+        "Stir in the kale and cook for 5 minutes (spinach needs only 1), then season with the salt and pepper.",
+        "Finish with a squeeze of lemon and the parsley."
+      ],
+      tips: [
+        "A spoonful of yoghurt or some crumbled feta on top is good.",
+        "For more protein, add a tin of tuna or some cooked chicken at the end."
+      ],
+      keep: "Keeps 4 days in the fridge, and tastes even better the next day." },
+
+    { id: "golden-milk", name: "Golden milk", sub: "A warm, caffeine-free evening drink", serves: 1, prep: 1, cook: 5,
+      tags: ["Evening", "Caffeine-free", "Five minutes"], also: "turmeric latte haldi doodh",
+      why: "Warm milk with turmeric, cinnamon and ginger: a calm way to end the day. A pinch of black pepper helps the body take up turmeric's curcumin.",
+      ing: [
+        [250, "ml", "milk or a plant milk"],
+        [0.5, "tsp", "ground turmeric"],
+        [0.25, "tsp", "ground cinnamon"],
+        [1, "slice", "of fresh ginger", "or a pinch of ground ginger"],
+        [1, "pinch", "of black pepper"],
+        [1, "tsp", "honey or maple syrup", "if you like"]
+      ],
+      steps: [
+        "Whisk the milk, turmeric, cinnamon, ginger and pepper together in a small pan.",
+        "Warm it over a low heat, whisking now and then, for 3 to 4 minutes, until steaming but not boiling.",
+        "Strain out the ginger, sweeten to taste and drink it warm."
+      ],
+      tips: [
+        "Turmeric stains: rinse the pan and whisk straight away.",
+        "This is a kitchen amount of turmeric. Concentrated turmeric supplements are another matter; see Turmeric under Supplements."
+      ],
+      keep: "Mix a jar of the dry spices and it takes a minute to make." }
+  ];
+
+  // a line for every supplement page, and the bullet in the safety note
+  var SAFE_SUPPS = "Supplements aren't checked like medicines, and some interact with them: ask a doctor or pharmacist first if you take medicines, are pregnant or breastfeeding, have kidney or liver disease, or have an operation coming up. The amounts here are those used in studies, not prescriptions.";
+
+  var SUPPS = [
+    { id: "omega-3", name: "Omega-3 (EPA and DHA)", alias: "fish oil", tags: "fish oil algae oil krill epa dha omega3",
+      lead: "Long-chain fats found mainly in oily fish, built into the membranes of cells, above all in the brain and eyes. Food comes first: the NHS suggests two portions of fish a week, one of them oily.",
+      uses: [
+        [3, "High triglycerides", "Lowers raised blood triglycerides, by more at higher doses. The amounts that do this, 2 to 4 g a day, are a medicine-level dose, best taken with a doctor."],
+        [1, "Heart and circulation", "Mixed results. In VITAL, 25,871 adults over 50 without heart disease took 840 mg a day for five years: heart disease and stroke together didn't fall, though there were fewer heart attacks. A Cochrane review of 86 trials found little or no effect on deaths and a small fall in heart disease events. In people at high risk, 4 g a day of a purified EPA cut events in the REDUCE-IT trial, but the same dose of an EPA and DHA mix didn't in STRENGTH."],
+        [2, "Low mood, alongside treatment", "In a 2023 review of 10 trials (1,426 people), EPA-rich products (at least 60% EPA) eased depression at 1 to 2 g a day, though the trials varied widely."]
+      ],
+      amount: "For people who rarely eat oily fish, 250 to 500 mg of EPA and DHA together a day. The EU's reference intake is 250 mg. Read the EPA and DHA per serving, not the total amount of oil.",
+      how: "With a meal that has some fat in it. Algae oil gives the same EPA and DHA for vegetarians and vegans.",
+      food: "Salmon, trout, mackerel, herring, sardines and anchovies. Walnuts, flax and chia give ALA, a plant omega-3 that the body turns into EPA and DHA only in small amounts.",
+      care: [
+        "At high doses (over 1.5 g a day), people at high heart risk had a slightly higher risk of atrial fibrillation, an irregular heartbeat: about 8 more cases in every 1,000 people. Lower doses showed no rise (a 2026 analysis of 35 trials).",
+        "It may add to the effect of blood thinners such as warfarin, or of aspirin: ask first if you take them, or before an operation.",
+        "If you're allergic to fish, algae oil is fish-free."
+      ],
+      refs: [
+        ["Manson, J. E., Cook, N. R., Lee, I.-M., et al. (2019). Marine n−3 fatty acids and prevention of cardiovascular disease and cancer (VITAL). New England Journal of Medicine, 380, 23–32.", "https://doi.org/10.1056/NEJMoa1811403", "DOI"],
+        ["Abdelhamid, A. S., Brown, T. J., Brainard, J. S., et al. (2020). Omega-3 fatty acids for the primary and secondary prevention of cardiovascular disease. Cochrane Database of Systematic Reviews, CD003177.", "https://doi.org/10.1002/14651858.CD003177.pub5", "DOI"],
+        ["Bhatt, D. L., Steg, P. G., Miller, M., et al. (2019). Cardiovascular risk reduction with icosapent ethyl for hypertriglyceridemia (REDUCE-IT). New England Journal of Medicine, 380, 11–22.", "https://doi.org/10.1056/NEJMoa1812792", "DOI"],
+        ["Nicholls, S. J., Lincoff, A. M., Garcia, M., et al. (2020). Effect of high-dose omega-3 fatty acids vs corn oil on major adverse cardiovascular events in patients at high cardiovascular risk (STRENGTH). JAMA, 324(22), 2268–2280.", "https://doi.org/10.1001/jama.2020.22258", "DOI"],
+        ["Kelaiditis, C. F., Gibson, E. L., & Dyall, S. C. (2023). Effects of long-chain omega-3 polyunsaturated fatty acids on reducing anxiety and/or depression in adults: a systematic review and meta-analysis of randomised controlled trials. Prostaglandins, Leukotrienes and Essential Fatty Acids, 192, 102572.", "https://doi.org/10.1016/j.plefa.2023.102572", "DOI"],
+        ["Abuknesha, N. R., Minihane, A.-M., Vauzour, D., & Harris, W. S. (2026). Effects of omega-3 fatty acid treatment on risk for atrial fibrillation: an updated meta-analysis of 35 trials including 114,592 individuals. Circulation: Arrhythmia and Electrophysiology, 19(8), e014785.", "https://doi.org/10.1161/CIRCEP.125.014785", "DOI"],
+        ["EFSA Panel on Dietetic Products, Nutrition and Allergies (2010). Scientific opinion on dietary reference values for fats. EFSA Journal, 8(3), 1461.", "https://doi.org/10.2903/j.efsa.2010.1461", "DOI"]
+      ] },
+
+    { id: "coq10", name: "Coenzyme Q10", alias: "CoQ10", tags: "coq10 co q10 ubiquinone ubiquinol statin",
+      lead: "A compound every cell makes to produce energy. Levels fall with age and with statins, but the evidence for taking it is for particular conditions, alongside their treatment.",
+      uses: [
+        [2, "Heart failure, with your cardiologist", "In the Q-SYMBIO trial, 420 people with moderate to severe heart failure took 100 mg three times a day or a placebo alongside their usual treatment for two years. Major heart events fell from 26% to 15%, and deaths from 18% to 10%. A 2024 review of 33 trials points the same way, but most trials are small, and none as large has repeated Q-SYMBIO."],
+        [2, "Fewer migraines", "Six trials with 371 adults found fewer and shorter migraine attacks, though not milder ones."],
+        [1, "Muscle aches on statins", "Trials disagree, and NICE and the European Atherosclerosis Society advise against taking it for this."],
+        [1, "Blood pressure and energy", "Little evidence of an effect in healthy people."]
+      ],
+      amount: "100 to 300 mg a day in the trials, often split into two or three doses.",
+      how: "With a meal that has some fat in it, since it dissolves in fat. The trials used both forms, ubiquinone and ubiquinol.",
+      food: "Small amounts in meat, oily fish, nuts and whole grains, far less than a supplement gives.",
+      care: [
+        "It may weaken the effect of warfarin: ask your doctor before you start or stop it.",
+        "Check first if you take insulin or other medicines for diabetes or blood pressure, or are having chemotherapy.",
+        "It can upset the stomach or disturb sleep for some people, so take it earlier in the day. There's little research in pregnancy."
+      ],
+      refs: [
+        ["Mortensen, S. A., Rosenfeldt, F., Kumar, A., et al. (2014). The effect of coenzyme Q10 on morbidity and mortality in chronic heart failure: results from Q-SYMBIO, a randomized double-blind trial. JACC: Heart Failure, 2(6), 641–649.", "https://pubmed.ncbi.nlm.nih.gov/25282031/", "PubMed"],
+        ["Xu, J., Xiang, L., Yin, X., et al. (2024). Efficacy and safety of coenzyme Q10 in heart failure: a meta-analysis of randomized controlled trials. BMC Cardiovascular Disorders, 24.", "https://doi.org/10.1186/s12872-024-04232-z", "DOI"],
+        ["Sazali, S., Badrin, S., Norhayati, M. N., & Idris, N. S. (2021). Coenzyme Q10 supplementation for prophylaxis in adult patients with migraine: a meta-analysis. BMJ Open, 11, e039358.", "https://bmjopen.bmj.com/content/11/1/e039358", "BMJ Open"],
+        ["NHS Specialist Pharmacy Service. Why people take coenzyme Q10 supplements for statin-induced muscle symptoms.", "https://www.sps.nhs.uk/?p=69379", "SPS"],
+        ["National Center for Complementary and Integrative Health. Coenzyme Q10.", "https://www.nccih.nih.gov/health/coenzyme-q10", "NCCIH"]
+      ] },
+
+    { id: "creatine", name: "Creatine", tags: "creatine monohydrate strength muscle gym training brain",
+      lead: "A compound your muscles and brain keep as a quick energy reserve, made in the body and eaten in meat and fish. It's the best-studied supplement for strength, and among the safest.",
+      uses: [
+        [3, "Strength and muscle, with training", "Adds to the gains in strength and lean muscle that resistance training brings, in younger and older adults alike."],
+        [2, "Memory", "A 2024 review of 16 trials (492 adults) found better memory, with moderate certainty, and quicker attention and processing, with low certainty, but no change in thinking overall."],
+        [1, "After a night without sleep", "In one small study of 15 people, a single very large dose kept thinking sharper through a night awake. The dose was too high to take at home, and everyday doses haven't been tested for this."]
+      ],
+      amount: "3 to 5 g of creatine monohydrate a day. Taken daily, it fills the muscles in about four weeks. A loading week of 20 g a day, in four doses, does it sooner but isn't needed.",
+      how: "Any time of day, with water or a meal. Nearly all the research used monohydrate; pricier forms haven't done better.",
+      food: "Meat and fish give people who eat them about 1 to 2 g a day; vegetarians get very little.",
+      care: [
+        "It raises creatinine in blood tests, which can look like weaker kidneys: tell your doctor you take it. Ask first if you have kidney disease.",
+        "Expect 1 to 2 kg of extra water held in the muscles in the first weeks.",
+        "A 12-week trial found no change in DHT, the hormone linked to hair loss, or in the hair itself.",
+        "Choose a product tested by a third party: sports supplements are sometimes contaminated."
+      ],
+      refs: [
+        ["Kreider, R. B., Kalman, D. S., Antonio, J., et al. (2017). International Society of Sports Nutrition position stand: safety and efficacy of creatine supplementation in exercise, sport, and medicine. Journal of the International Society of Sports Nutrition, 14, 18.", "https://doi.org/10.1186/s12970-017-0173-z", "DOI"],
+        ["Antonio, J., Candow, D. G., Forbes, S. C., et al. (2021). Common questions and misconceptions about creatine supplementation: what does the scientific evidence really show? Journal of the International Society of Sports Nutrition, 18, 13.", "https://doi.org/10.1186/s12970-021-00412-w", "DOI"],
+        ["Xu, C., Bi, S., Zhang, W., & Luo, L. (2024). The effects of creatine supplementation on cognitive function in adults: a systematic review and meta-analysis. Frontiers in Nutrition, 11, 1424972.", "https://doi.org/10.3389/fnut.2024.1424972", "DOI"],
+        ["Gordji-Nejad, A., Matusch, A., Kleedörfer, S., et al. (2024). Single dose creatine improves cognitive performance and induces changes in cerebral high energy phosphates during sleep deprivation. Scientific Reports, 14, 4937.", "https://doi.org/10.1038/s41598-024-54249-9", "DOI"],
+        ["Ashtary-Larky, D., Forbes, S. C., Haghighat, N., et al. (2025). Does creatine cause hair loss? A 12-week randomized controlled trial. Journal of the International Society of Sports Nutrition, 22(sup1), 2495229.", "https://pubmed.ncbi.nlm.nih.gov/40265319/", "PubMed"]
+      ] },
+
+    { id: "vitamin-d", name: "Vitamin D", alias: "D3", tags: "vitamin d3 cholecalciferol sunshine winter bones",
+      lead: "Made in your skin in summer sunlight, and needed for strong bones and muscles. From October to March the sun in northern Europe is too weak to make it, so many people run low in winter.",
+      uses: [
+        [3, "Getting through winter", "The NHS advises everyone to consider 10 µg (400 IU) a day through autumn and winter, and all year if you're rarely outdoors, cover most of your skin outside, or have dark skin."],
+        [2, "Over 75, pregnant, or with prediabetes", "The Endocrine Society's 2024 guideline suggests a supplement for these groups, and for children. For healthy adults under 75 it found no benefit in going above the usual daily intake."],
+        [1, "Cancer, heart disease and other illness", "In VITAL, 2,000 IU a day for five years didn't lower cancer or heart disease. Those taking it had 22% fewer autoimmune diseases, a finding still to be confirmed."]
+      ],
+      amount: "10 µg (400 IU) a day through the winter for most adults; 20 µg (800 IU) is Germany's reference intake when the skin makes none. Unless a doctor advises more, stay at or under 100 µg (4,000 IU) a day, the adult upper limit.",
+      how: "D3 (cholecalciferol), daily, with a meal, rather than large doses now and then.",
+      food: "Oily fish and egg yolks, and fortified foods such as some spreads, cereals and plant milks.",
+      care: [
+        "Too much for months raises the calcium in your blood, which can harm the kidneys and heart.",
+        "Ask first if you have kidney stones or kidney disease, sarcoidosis or a parathyroid problem, or take a thiazide diuretic or digoxin.",
+        "Many D3 products add vitamin K2: leave those out if you take warfarin, unless your doctor agrees."
+      ],
+      refs: [
+        ["NHS. Vitamin D.", "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/", "NHS"],
+        ["Demay, M. B., Pittas, A. G., Bikle, D. D., et al. (2024). Vitamin D for the prevention of disease: an Endocrine Society clinical practice guideline. Journal of Clinical Endocrinology & Metabolism, 109(8), 1907–1947.", "https://pubmed.ncbi.nlm.nih.gov/38828931/", "PubMed"],
+        ["Manson, J. E., Cook, N. R., Lee, I.-M., et al. (2019). Vitamin D supplements and prevention of cancer and cardiovascular disease (VITAL). New England Journal of Medicine, 380, 33–44.", "https://doi.org/10.1056/NEJMoa1809944", "DOI"],
+        ["Hahn, J., Cook, N. R., Alexander, E. K., et al. (2022). Vitamin D and marine omega 3 fatty acid supplementation and incident autoimmune disease: VITAL randomized controlled trial. BMJ, 376, e066452.", "https://doi.org/10.1136/bmj-2021-066452", "DOI"],
+        ["EFSA Panel on Nutrition, Novel Foods and Food Allergens (2023). Scientific opinion on the tolerable upper intake level for vitamin D, including the derivation of a conversion factor for calcidiol monohydrate. EFSA Journal, 21(8), 8145.", "https://doi.org/10.2903/j.efsa.2023.8145", "DOI"],
+        ["Bundesinstitut für Risikobewertung. Ausgewählte Fragen und Antworten zu Vitamin D (with the German Nutrition Society's reference intake).", "https://www.bfr.bund.de/fragen-und-antworten/thema/ausgewaehlte-fragen-und-antworten-zu-vitamin-d/", "BfR"]
+      ] },
+
+    { id: "magnesium", name: "Magnesium", tags: "magnesium glycinate citrate oxide cramps sleep migraine",
+      lead: "A mineral your muscles, nerves and heart use. Nuts, seeds, beans, whole grains and dark greens are rich in it; a supplement helps most when your diet is short of them.",
+      uses: [
+        [2, "Fewer migraines", "Rated probably effective for preventing migraine in the American Academy of Neurology's guideline, usually at 400 to 600 mg a day, agreed with your doctor."],
+        [1, "Sleep", "In three small trials in older adults (151 people), those taking it fell asleep about 17 minutes sooner, from low-quality evidence."],
+        [1, "Night cramps", "A Cochrane review found it unlikely to help older adults' cramps."]
+      ],
+      amount: "Supplements usually give 100 to 350 mg. In the EU the safe limit for magnesium from supplements is 250 mg a day, on top of food; in the US it's 350 mg.",
+      how: "With food, in the evening if you like. Glycinate is gentle on the gut; citrate is well absorbed but can loosen stools; oxide is poorly absorbed.",
+      food: "Pumpkin seeds, almonds, cashews, beans, oats, wholemeal bread, spinach and dark chocolate.",
+      care: [
+        "Loose stools are the first sign of too much.",
+        "Ask first if you have kidney disease, since the kidneys clear it.",
+        "Take it 2 to 4 hours apart from some antibiotics (tetracyclines and quinolones), osteoporosis medicines (bisphosphonates) and levothyroxine."
+      ],
+      refs: [
+        ["Holland, S., Silberstein, S. D., Freitag, F., et al. (2012). Evidence-based guideline update: NSAIDs and other complementary treatments for episodic migraine prevention in adults. Neurology, 78(17), 1346–1353.", "https://doi.org/10.1212/WNL.0b013e3182535d0c", "DOI"],
+        ["Mah, J., & Pitre, T. (2021). Oral magnesium supplementation for insomnia in older adults: a systematic review & meta-analysis. BMC Complementary Medicine and Therapies, 21, 125.", "https://doi.org/10.1186/s12906-021-03297-z", "DOI"],
+        ["Garrison, S. R., Korownyk, C. S., Kolber, M. R., et al. (2020). Magnesium for skeletal muscle cramps. Cochrane Database of Systematic Reviews, CD009402.", "https://doi.org/10.1002/14651858.CD009402.pub3", "DOI"],
+        ["EFSA Panel on Dietetic Products, Nutrition and Allergies (2015). Scientific opinion on dietary reference values for magnesium. EFSA Journal, 13(7), 4186.", "https://doi.org/10.2903/j.efsa.2015.4186", "DOI"]
+      ] },
+
+    { id: "vitamin-b12", name: "Vitamin B12", alias: "B12 cobalamin", tags: "b12 cobalamin cyanocobalamin methylcobalamin vegan vegetarian",
+      lead: "Needed for nerves and red blood cells, and found almost only in animal foods. Vegans need a supplement or fortified foods, and many people over 50 absorb less of it from food.",
+      uses: [
+        [3, "Vegans, and many vegetarians", "Without fortified foods or a supplement, B12 runs low over months to years, which can cause anaemia, numbness and memory problems."],
+        [2, "Over 50, or on metformin or stomach-acid medicines", "Absorption from food falls with age and with these medicines; the B12 in supplements and fortified foods is taken up more easily."],
+        [1, "More energy", "No sign of a boost unless you're low."]
+      ],
+      amount: "For vegans: at least 10 µg a day, or 2,000 µg once a week, or fortified foods two or three times a day for 3 µg in all. VeganHealth suggests 50 µg a day or more to meet the EU's higher reference. No upper limit has been set.",
+      how: "Any time of day; a tablet you chew or let dissolve works too.",
+      food: "Meat, fish, eggs and dairy, and fortified plant milks, cereals, yeast flakes and spreads.",
+      care: [
+        "Tingling, numbness, unusual tiredness or a sore tongue are worth a blood test, rather than a supplement on its own.",
+        "If you take metformin, ask about having your B12 checked."
+      ],
+      refs: [
+        ["Norris, J. VeganHealth.org: vitamin B12 recommendations.", "https://veganhealth.org/?p=1565", "VeganHealth"],
+        ["Institute of Medicine (1998). Dietary Reference Intakes for thiamin, riboflavin, niacin, vitamin B6, folate, vitamin B12, pantothenic acid, biotin, and choline. National Academies Press.", "https://nap.nationalacademies.org/6015", "NAP"],
+        ["Medicines and Healthcare products Regulatory Agency (2022). Metformin and reduced vitamin B12 levels: new advice for monitoring patients at risk. Drug Safety Update.", "https://www.gov.uk/drug-safety-update/metformin-and-reduced-vitamin-b12-levels-new-advice-for-monitoring-patients-at-risk", "GOV.UK"]
+      ] }
+  ];
+
+  // briefer cards: one use, its evidence, what's known, one caution and the sources
+  var SUPPS_MORE = [
+    { id: "folic-acid", name: "Folic acid", alias: "folate", ev: 3, what: "Before and in early pregnancy", tags: "folate pregnancy spina bifida neural tube",
+      text: "If you could become pregnant, 400 µg a day from before you conceive until 12 weeks of pregnancy lowers the risk of neural tube defects such as spina bifida.",
+      care: "Some people are advised a higher dose (5 mg), for example with diabetes, epilepsy medicines or a family history: ask your GP.",
+      refs: [["Cambridge University Hospitals NHS Foundation Trust. Vitamins and supplements when planning a pregnancy.", "https://www.cuh.nhs.uk/rosie-hospital/planning-a-pregnancy/vitamins-and-supplements/", "NHS"]] },
+    { id: "psyllium", name: "Psyllium fibre", alias: "ispaghula", ev: 3, what: "Cholesterol and regularity", tags: "psyllium husk ispaghula fibre fiber cholesterol constipation",
+      text: "About 10 g a day lowered LDL cholesterol by 0.33 mmol/L across 28 trials, and it keeps you regular.",
+      care: "Take it with a large glass of water, and other medicines 2 hours apart.",
+      refs: [["Jovanovski, E., et al. (2018). Effect of psyllium (Plantago ovata) fiber on LDL cholesterol and alternative lipid targets, non-HDL cholesterol and apolipoprotein B: a systematic review and meta-analysis of randomized controlled trials. American Journal of Clinical Nutrition, 108(5), 922–932.", "https://www.epistemonikos.org/en/documents/c128648f7615b06cc4bb8a0dd4e6347c997ef265", "Epistemonikos"]] },
+    { id: "melatonin", name: "Melatonin", ev: 2, what: "Jet lag and a late body clock", tags: "melatonin sleep jet lag insomnia",
+      text: "The body's darkness signal. It helps with jet lag and with shifting a late body clock earlier; for insomnia, people fell asleep about 7 minutes sooner on average.",
+      care: "Prescription-only in the UK, with rules that vary elsewhere. It can leave you drowsy the next day and interacts with some medicines, warfarin among them.",
+      refs: [["Herxheimer, A., & Petrie, K. J. (2002). Melatonin for the prevention and treatment of jet lag. Cochrane Database of Systematic Reviews, CD001520.", "https://doi.org/10.1002/14651858.CD001520", "DOI"],
+        ["Ferracioli-Oda, E., Qawasmi, A., & Bloch, M. H. (2013). Meta-analysis: melatonin for the treatment of primary sleep disorders. PLOS ONE, 8(5), e63773.", "https://doi.org/10.1371/journal.pone.0063773", "DOI"],
+        ["Which?. Sleep drug melatonin found for sale on online marketplaces.", "https://www.which.co.uk/news/article/sleep-drug-melatonin-found-for-sale-on-online-marketplaces-aeDk46q91l7c", "Which?"]] },
+    { id: "l-theanine", name: "L-theanine", ev: 1, what: "Stress", tags: "theanine tea calm anxiety",
+      text: "An amino acid from tea. In nine small trials, 200 to 400 mg a day eased stress and anxiety in stressful situations: promising, but limited.",
+      care: "Little is known about long-term use or use in pregnancy.",
+      refs: [["Williams, J. L., Everett, J. M., D'Cunha, N. M., et al. (2020). The effects of green tea amino acid L-theanine consumption on the ability to manage stress and anxiety levels: a systematic review. Plant Foods for Human Nutrition, 75, 12–23.", "https://publications.aston.ac.uk/id/eprint/41068", "Aston"]] },
+    { id: "glycine", name: "Glycine", ev: 1, what: "Feeling rested", tags: "glycine amino acid sleep",
+      text: "3 g before bed helped people feel better rested in a few small trials, run by a company that makes it.",
+      care: "Little is known about long-term use.",
+      refs: [["Bannai, M., Kawai, N., Ono, K., Nakahara, K., & Murakami, N. (2012). The effects of glycine on subjective daytime performance in partially sleep-restricted healthy volunteers. Frontiers in Neurology, 3, 61.", "https://doi.org/10.3389/fneur.2012.00061", "DOI"],
+        ["Yamadera, W., Inagawa, K., Chiba, S., et al. (2007). Glycine ingestion improves subjective sleep quality in human volunteers, correlating with polysomnographic changes. Sleep and Biological Rhythms, 5, 126–131.", "https://link.springer.com/article/10.1111/j.1479-8425.2007.00262.x", "Springer"]] },
+    { id: "ashwagandha", name: "Ashwagandha", ev: 1, what: "Stress, with safety questions", tags: "ashwagandha withania adaptogen stress cortisol",
+      text: "Small trials report less stress, but Denmark banned it from food and supplements in 2023, and the Dutch and French food-safety agencies advise many people to avoid it, after reports of liver injury and effects on the thyroid and hormones.",
+      care: "Leave it out if you're pregnant, have a thyroid, liver or heart condition, or take sedatives.",
+      refs: [["NutritionInsight. Regulatory update: spotlight on international authorities' response to ashwagandha safety concerns.", "https://www.nutritioninsight.com/news/regulatory-update-spotlight-on-international-authorities-response-to-ashwagandha-safety-concerns.html", "Report"]] },
+    { id: "turmeric", name: "Turmeric and curcumin", alias: "curcuma", ev: 1, what: "Joint pain, with safety questions", tags: "turmeric curcumin curcuma joint arthritis knee",
+      text: "In one trial of 70 people, a turmeric extract eased knee arthritis pain over 12 weeks more than a placebo did. Concentrated supplements, often with black pepper extract added, have been linked to liver injury; the spice in cooking is a different matter.",
+      care: "Stop and see a doctor if you notice yellowing skin or eyes, dark urine or tiredness. Ask first if you take blood thinners.",
+      refs: [["Wang, Z., Jones, G., Winzenberg, T., et al. (2020). Effectiveness of Curcuma longa extract for the treatment of symptoms and effusion-synovitis of knee osteoarthritis: a randomized trial. Annals of Internal Medicine.", "https://cm.healio.com/news/primary-care/20200914/turmeric-extract-eases-knee-pain-in-randomized-trial", "Report"],
+        ["Halegoua-DeMarzio, D., Navarro, V., Ahmad, J., et al. (2023). Liver injury associated with turmeric: a growing problem. Ten cases from the Drug-Induced Liver Injury Network. American Journal of Medicine, 136(2), 200–206.", "https://pubmed.ncbi.nlm.nih.gov/36252717/", "PubMed"]] }
+  ];
+  /* ------------------------------- healthy living -------------------------------
+     A page under Learn with two tabs. Recipes: each has a page of its own, with servings that
+     scale the amounts, ingredients and steps to tick off as you go, and the screen kept on while
+     you cook. Supplements: each is a card that opens to what the trials found, how strong that
+     is, the amounts studied, what to check first and the sources.
+     #living opens the tab you had last, #living/recipes and #living/supplements open a tab,
+     #living/<recipe> a recipe's page and #living/<supplement> its card, opened.
+  -------------------------------------------------------------------------------- */
+
+  var LV = { tab: "", rid: "", n: 0, base: 0, cook: false };
+  var LV_UNITS = { g: "g", ml: "ml", tsp: "tsp", tbsp: "tbsp", cm: "cm", tin: ["tin", "tins"], handful: ["handful", "handfuls"],
+    slice: ["slice", "slices"], pinch: ["pinch", "pinches"] };
+  var LV_MAX = 12;                         // servings
+  var LV_TABS = [["recipes", "Recipes"], ["supplements", "Supplements"]];
+
+  function recipeById(id) { for (var i = 0; i < RECIPES.length; i++) if (RECIPES[i].id === id) return RECIPES[i]; return null; }
+  function suppById(id) {
+    var all = SUPPS.concat(SUPPS_MORE);
+    for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i];
+    return null;
+  }
+  // a number keeps its unit on the same line: "1 to 2\u00a0g", "80\u00a0minutes"
+  function lvNb(s) { return String(s).replace(/(\d) (?=(?:g|mg|µg|kg|IU|ml|L|cm|mmol\/L|min|minutes|hours|weeks|days|years)\b)/g, "$1\u00a0"); }
+  function lvMins(m) { return m >= 60 ? Math.floor(m / 60) + " h" + (m % 60 ? " " + (m % 60) + " min" : "") : m + " min"; }
+  function lvTime(r) { return lvMins(r.prep + r.cook) + (r.rest ? ", " + r.rest : ""); }
+
+  /* ----- amounts, scaled to the servings ----- */
+  // spoons, counts and tins to the nearest quarter or half, as a cook would say them
+  function lvFrac(x, step) {
+    var q = Math.max(step, Math.round(x / step) * step), w = Math.floor(q + 1e-9), f = Math.round((q - w) * 100) / 100;
+    var s = { 0.25: "¼", 0.5: "½", 0.75: "¾" }[f] || "";
+    return w ? w + s : s || String(q);
+  }
+  // grams and millilitres rounded more coarsely the more there is; a litre or more in litres
+  function lvMetric(x, u) {
+    var r = x < 20 ? Math.max(1, Math.round(x)) : x < 250 ? Math.round(x / 5) * 5 : x < 1000 ? Math.round(x / 10) * 10 : Math.round(x / 50) * 50;
+    if (u === "ml" && r >= 1000) return r / 1000 + " L";
+    return r + " " + u;
+  }
+  // [amount, unit, name, note] at k times the recipe's servings: the amount to show, and the name in
+  // the singular or the plural to go with it
+  function lvAmt(it, k) {
+    var q = it[0], u = it[1], one = Array.isArray(it[2]) ? it[2][0] : it[2], many = Array.isArray(it[2]) ? it[2][1] : it[2];
+    if (q === null) return { a: "", n: many };
+    var x = q * k, v;
+    if (u === "g" || u === "ml") return { a: lvMetric(x, u), n: one };
+    if (u === "cm") return { a: Math.max(0.5, Math.round(x * 2) / 2) + " cm", n: one };
+    if (u === "tsp" || u === "tbsp") return { a: lvFrac(x, 0.25) + " " + u, n: one };
+    if (LV_UNITS[u]) {                     // tins by the half, handfuls, slices and pinches whole
+      var st = u === "tin" ? 0.5 : 1;
+      v = Math.max(st, Math.round(x / st) * st);
+      return { a: lvFrac(v, st) + " " + LV_UNITS[u][v > 1 ? 1 : 0], n: v > 1 ? many : one };
+    }
+    v = Math.max(0.5, Math.round(x * 2) / 2);   // a count: half an onion is still an onion
+    return { a: lvFrac(v, 0.5), n: v > 1 ? many : one };
+  }
+  function lvIngLi(it, i, k, grp) {
+    var m = lvAmt(it, k);
+    return '<li><label><input type="checkbox" data-ing="' + grp + i + '"><span><b class="lv-q" data-q="' + grp + i + '">' + esc(m.a) + "</b> " +
+      '<span class="lv-n" data-n="' + grp + i + '">' + esc(m.n) + "</span>" + (it[3] ? "<small>" + esc(it[3]) + "</small>" : "") + "</span></label></li>";
+  }
+
+  /* ----- the list: two tabs ----- */
+  function libRecipe(r) {
+    return { key: "r:" + r.id, type: "recipe", name: r.name, blurb: r.why, goal: "", also: [], method: "", posture: [], nopos: true, needs: [],
+      mins: [r.prep + r.cook, r.prep + r.cook], minsTxt: lvTime(r), label: "Recipe · serves " + r.serves, href: "#living/" + r.id,
+      icon: "bowl", col: "var(--food)", strength: 0, badges: r.tags.map(function (t) { return ["", t]; }) };
+  }
+  function lvBest(s) {                     // a supplement's best-supported use
+    if (!s.uses) return [s.ev, s.what];
+    var b = s.uses[0];
+    s.uses.forEach(function (u) { if (u[0] > b[0]) b = u; });
+    return [b[0], b[1]];
+  }
+  function lvRefs(refs) {
+    return '<details class="ev lv-refs"><summary>Sources (' + refs.length + ")</summary><ol class=\"lv-refl\">" + refs.map(function (r) {
+      return "<li>" + esc(r[0]) + ' <a href="' + esc(r[1]) + '" rel="noopener">' + esc(r[2] || "Link") + "</a></li>";
+    }).join("") + "</ol></details>";
+  }
+  function lvSupCard(s) {
+    var b = lvBest(s), brief = !s.uses;
+    var h = '<details class="lv-sup' + (brief ? " lv-brief" : "") + '" id="lv-' + s.id + '">' +
+      '<summary><span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-pill"/></svg></span>' +
+        '<span class="lv-sum"><span class="pc-top"><b>' + esc(s.name) + "</b>" + dots(b[0]) + "</span>" +
+          '<span class="lv-best">' + (brief ? "" : "Best evidence: ") + esc(brief ? b[1] : b[1].charAt(0).toLowerCase() + b[1].slice(1)) + "</span>" +
+          (brief ? "" : '<span class="pc-blurb">' + esc(s.lead) + "</span>") + "</span>" +
+        '<svg class="i lv-chev" aria-hidden="true"><use href="#i-up"/></svg></summary><div class="lv-body">';
+    if (brief) {
+      h += "<p>" + esc(lvNb(s.text)) + "</p>" +
+        '<p class="lv-care1"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>' + esc(lvNb(s.care)) + "</span></p>";
+    } else {
+      h += "<h3>What it may help</h3><ul class=\"lv-uses\">" + s.uses.map(function (u) {
+          return '<li><span class="lv-use-h"><b>' + esc(u[1]) + "</b>" + dots(u[0]) + "</span><p>" + esc(lvNb(u[2])) + "</p></li>";
+        }).join("") + "</ul>" +
+        '<dl class="lv-facts"><div><dt>Amounts studied</dt><dd>' + esc(lvNb(s.amount)) + "</dd></div>" +
+          "<div><dt>How to take it</dt><dd>" + esc(lvNb(s.how)) + "</dd></div>" +
+          "<div><dt>In food</dt><dd>" + esc(lvNb(s.food)) + "</dd></div></dl>" +
+        '<div class="lv-care"><h3><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg>Check first</h3><ul>' +
+          s.care.map(function (c) { return "<li>" + esc(lvNb(c)) + "</li>"; }).join("") + "</ul></div>";
+    }
+    return h + lvRefs(s.refs) + "</div></details>";
+  }
+  function lvList() {
+    var tabs = '<div class="g-tabs lv-tabs" role="tablist" aria-label="Healthy living">' + LV_TABS.map(function (t, i) {
+      return '<button class="g-tab" role="tab" id="lvt-' + t[0] + '" data-tab="' + t[0] + '" aria-controls="lvp-' + t[0] + '" aria-selected="' + !i + '"' + (i ? ' tabindex="-1"' : "") + ">" + t[1] + "</button>";
+    }).join("") + "</div>";
+    var rec = '<div class="lv-panel" role="tabpanel" id="lvp-recipes" aria-labelledby="lvt-recipes">' +
+      '<p class="lv-lede">Simple, nourishing food, most of it from one pot. Each recipe scales to the number you\'re cooking for, and keeps the screen on while you cook.</p>' +
+      '<ul class="pr-list lv-rlist">' + RECIPES.map(function (r) { return libRow(libRecipe(r)); }).join("") + "</ul></div>";
+    var sup = '<div class="lv-panel" role="tabpanel" id="lvp-supplements" aria-labelledby="lvt-supplements" hidden>' +
+      '<p class="lv-lede">What the research says about the supplements people ask about most: what each may help and how strong the evidence is, the amounts studied, and what to check before you start. Food comes first; these fill gaps.</p>' +
+      safeBox([SAFE_SUPPS]) +
+      '<p class="pr-legend">Evidence' +
+        '<span><span class="strength" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>strong</span>' +
+        '<span><span class="strength" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i></span>moderate</span>' +
+        '<span><span class="strength" aria-hidden="true"><i class="on"></i><i></i><i></i></span>limited</span></p>' +
+      '<div class="lv-sups">' + SUPPS.map(lvSupCard).join("") + "</div>" +
+      '<h2 class="lv-h2">Also asked about</h2>' +
+      '<div class="lv-sups">' + SUPPS_MORE.map(lvSupCard).join("") + "</div>" +
+      '<p class="pr-note">Not medical advice, and no substitute for a blood test where one would tell you more: vitamin D, B12 and iron are better tested than guessed. ' +
+        'Choose products tested by a third party. The sources were checked in October 2026, and each card lists its own.</p></div>';
+    return '<a class="si-back" href="#learn"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Learn</a>' +
+      '<p class="v-lede lv-intro">Food that looks after you, and an honest look at supplements.</p>' + tabs + rec + sup;
+  }
+  function lvTab(tab, focus) {
+    if (!LV_TABS.some(function (t) { return t[0] === tab; })) tab = "recipes";
+    LV.tab = tab;
+    store.set("livTab", tab);
+    LV_TABS.forEach(function (t) {
+      var b = $("#lvt-" + t[0]), on = t[0] === tab;
+      if (!b) return;
+      b.setAttribute("aria-selected", on ? "true" : "false");
+      b.tabIndex = on ? 0 : -1;
+      $("#lvp-" + t[0]).hidden = !on;
+      if (on && focus) b.focus();
+    });
+  }
+
+  /* ----- a recipe's page ----- */
+  function lvRecipe(r) {
+    LV.rid = r.id; LV.base = r.serves; LV.n = r.serves;
+    var serve = r.serve || [];
+    var h = '<a class="si-back" href="#living/recipes"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Healthy living</a>' +
+      '<div class="si-head">' +
+        '<div class="si-top"><span class="si-kind">' + esc("Recipe · " + lvTime(r)) + "</span>" + favBtn("r:" + r.id, r.name) + "</div>" +
+        "<h2>" + esc(r.name) + "</h2>" +
+        '<p class="si-blurb">' + esc(r.why) + "</p>" +
+        '<p class="lv-tags">' + r.tags.map(function (t) { return "<span>" + esc(t) + "</span>"; }).join("") + "</p>" +
+      "</div>" +
+      '<div class="si-grid"><div class="si-main lv-recipe">' +
+        '<h3 id="lvIngH">Ingredients</h3><ul class="lv-ing" aria-labelledby="lvIngH">' + r.ing.map(function (it, i) { return lvIngLi(it, i, 1, "i"); }).join("") + "</ul>" +
+        (serve.length ? '<h4 id="lvSrvH">To serve</h4><ul class="lv-ing" aria-labelledby="lvSrvH">' + serve.map(function (it, i) { return lvIngLi(it, i, 1, "s"); }).join("") + "</ul>" : "") +
+        '<h3 id="lvStepH">Method</h3><ol class="lv-steps" aria-labelledby="lvStepH">' + r.steps.map(function (s, i) {
+          return '<li><label><input type="checkbox" data-step="' + i + '"><span>' + esc(lvNb(s)) + "</span></label></li>";
+        }).join("") + "</ol>" +
+        (r.tips && r.tips.length ? "<h3>Good to know</h3><ul class=\"lv-tips\">" + r.tips.map(function (t) { return "<li>" + esc(lvNb(t)) + "</li>"; }).join("") + "</ul>" : "") +
+        (r.keep ? '<p class="lv-keep"><b>Keeping it.</b> ' + esc(lvNb(r.keep)) + "</p>" : "") +
+      "</div>" +
+      '<div class="si-side"><div class="si-opts lv-opts">' +
+        '<div class="so-row"><span class="so-l">Servings<small id="lvServNote">' + esc(lvServNote()) + "</small></span>" +
+          '<span class="so-step lv-serv"><button data-d="-1" aria-label="One serving fewer">−</button><b id="lvServ" aria-live="polite">' + LV.n + "</b>" +
+          '<button data-d="1" aria-label="One serving more">+</button></span></div>' +
+        pToggle("lvWake", "Keep the screen on", LV.cook, "While this recipe is open, so it's there when your hands are busy.") +
+      "</div></div></div>";
+    return h;
+  }
+  function lvServNote() { return LV.n === LV.base ? "As written. The amounts change to match." : "Scaled from " + LV.base + ". Cooking times stay the same; a bigger pot may need longer to come to the boil."; }
+  function lvServ(d) {
+    var r = recipeById(LV.rid);
+    if (!r) return;
+    var n = Math.max(1, Math.min(LV_MAX, LV.n + d));
+    if (n === LV.n) return;
+    LV.n = n;
+    var k = n / r.serves;
+    [["i", r.ing], ["s", r.serve || []]].forEach(function (g) {
+      g[1].forEach(function (it, i) {
+        var m = lvAmt(it, k), q = document.querySelector('[data-q="' + g[0] + i + '"]'), nm = document.querySelector('[data-n="' + g[0] + i + '"]');
+        if (q && q.textContent !== m.a) q.textContent = m.a;
+        if (nm && nm.textContent !== m.n) nm.textContent = m.n;
+      });
+    });
+    bSetT("#lvServ", String(n));
+    bSetT("#lvServNote", lvServNote());
+    lvServSync();
+  }
+  function lvServSync() {
+    document.querySelectorAll(".lv-serv button").forEach(function (b) {
+      var off = b.dataset.d < 0 ? LV.n <= 1 : LV.n >= LV_MAX;
+      b.setAttribute("aria-disabled", off ? "true" : "false");
+    });
+  }
+
+  /* ----- opening it: the list, a tab, a recipe, or a supplement's card ----- */
+  function lvOpen(rest) {
+    var el = $("#lvBody"), r = recipeById(rest), s = r ? null : suppById(rest);
+    if (r) {
+      window.scrollTo(0, 0);
+      el.innerHTML = lvRecipe(r);
+      el.style.setProperty("--pcol", "var(--food)");
+      bSetT("#viewTitle", r.name);
+      document.title = r.name + " | Entrain";
+      lvServSync();
+      wlKick();
+      return;
+    }
+    if (LV.rid) { lvLeave(); window.scrollTo(0, 0); }
+    if (rest && !s && !LV_TABS.some(function (t) { return t[0] === rest; })) { location.replace("#living"); return; }
+    el.innerHTML = lvList();
+    el.style.setProperty("--pcol", "var(--food)");
+    lvTab(s ? "supplements" : rest || store.get("livTab") || "recipes");
+    if (s) {
+      var card = document.getElementById("lv-" + s.id);
+      card.open = true;
+      setTimeout(function () {
+        try { card.scrollIntoView({ block: "start", behavior: RM ? "auto" : "smooth" }); } catch (e) { card.scrollIntoView(); }
+        fdHit(card);
+      }, 40);
+    }
+  }
+  // leaving a recipe lets the screen sleep again
+  function lvLeave() {
+    if (!LV.rid && !LV.cook) return;
+    LV.rid = ""; LV.cook = false;
+    wlKick();
+  }
+
+  /* ----- search: the page, each recipe and each supplement ----- */
+  function fdLiving(out) {
+    out.push(fdEntry("living", "Healthy living", "Learn · recipes and supplements",
+      ["Simple, nourishing recipes such as congee, kitchari and dal, and what the research says about omega-3, coenzyme Q10, creatine, vitamin D, magnesium, B12 and more."], "#living",
+      { ic: "leaf", col: "var(--food)", w: 1.1, tags: "healthy living food nutrition diet eating recipes cooking supplements vitamins" }));
+    RECIPES.forEach(function (r) {
+      out.push(fdEntry("living", r.name, "Recipe · " + lvTime(r) + " · serves " + r.serves,
+        [r.sub, r.why, r.ing.concat(r.serve || []).map(function (it) { return Array.isArray(it[2]) ? it[2][0] : it[2]; }).join(", ")], "#living/" + r.id,
+        { ic: "bowl", col: "var(--food)", w: 1.1, alias: r.also, tags: "recipe cook food " + r.tags.join(" ") }));
+    });
+    SUPPS.concat(SUPPS_MORE).forEach(function (s) {
+      var b = lvBest(s);
+      out.push(fdEntry("living", s.name, "Supplement · " + (s.uses ? "best evidence: " + b[1].toLowerCase() : b[1]),
+        s.uses ? [s.lead].concat(s.uses.map(function (u) { return u[1] + ": " + u[2]; }), [s.amount, s.care.join(" ")]) : [s.text, s.care], "#living/" + s.id,
+        { ic: "pill", col: "var(--food)", w: 1.1, alias: s.alias || "", tags: "supplement " + s.tags }));
+    });
+  }
+
+  function lvInit() {
+    var body = $("#lvBody");
+    body.addEventListener("click", function (e) {
+      var t = e.target.closest("[data-tab]");
+      if (t) {
+        lvTab(t.dataset.tab);
+        try { history.replaceState(null, "", "#living/" + t.dataset.tab); } catch (x) {}
+        return;
+      }
+      var d = e.target.closest(".lv-serv button");
+      if (d) { if (d.getAttribute("aria-disabled") !== "true") lvServ(+d.dataset.d); }
+    });
+    body.addEventListener("keydown", function (e) {
+      var t = e.target.closest("[data-tab]"), dir = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!t || !dir) return;
+      e.preventDefault();
+      var i = LV_TABS.map(function (x) { return x[0]; }).indexOf(t.dataset.tab), nx = LV_TABS[(i + dir + LV_TABS.length) % LV_TABS.length][0];
+      lvTab(nx, true);
+      try { history.replaceState(null, "", "#living/" + nx); } catch (x) {}
+    });
+    body.addEventListener("change", function (e) {
+      if (e.target.id === "lvWake") { LV.cook = e.target.checked; wlKick(); return; }
+      var li = e.target.closest(".lv-ing li, .lv-steps li");
+      if (li) li.classList.toggle("done", e.target.checked);
     });
   }
   /* -------------------------------- history --------------------------------
@@ -12936,9 +13748,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     tnDraw();
   }
   /* ------------------------------- favourites -------------------------------
-     A star on a practice, a track, the primer, the beat builder or a breathing pattern keeps it
-     on Today. Stored on the device as library keys: a practice's id, b: a breathing pattern,
-     t: a track, x: a tool, in the order you starred them.
+     A star on a practice, a track, the primer, the beat builder, a breathing pattern or a recipe keeps
+     it on Today. Stored on the device as library keys: a practice's id, b: a breathing pattern,
+     t: a track, x: a tool, r: a recipe, in the order you starred them.
   ---------------------------------------------------------------------------- */
 
   var FAV = null;
@@ -13346,6 +14158,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   libInit();
   yInit();
   nvcInit();
+  lvInit();
   fdInit();
   bkInit();
   route();                               // the library is built when it's first shown, not here

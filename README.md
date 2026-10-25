@@ -1,6 +1,6 @@
 # Entrain
 
-Paced breathing, binaural beats and live heart-rate biofeedback in one offline web app. It covers guided practices and programs, yoga and capoeira routines, tapping, a monitored power nap and nonviolent-communication reflection, with one search box across all of it and Learn.
+Paced breathing, binaural beats and live heart-rate biofeedback in one offline web app. It covers guided practices and programs, yoga and capoeira routines, tapping, a monitored power nap and nonviolent-communication reflection, and Healthy living's recipes and supplements, with one search box across all of it and Learn.
 
 There are five tabs: Today, Library, Breathe, Heart and Learn.
 
@@ -20,7 +20,9 @@ The safety note is written once, in Learn under Safety, and opens over any page 
 
 A playing track shows on the phone's lock screen and in its notifications, with play, pause and stop; Settings can turn that off. The breathing guide, and a practice's breath steps, can vibrate at each change: one short buzz in, one long out, two light taps for a hold.
 
-The impressum and copyright are at the end of Learn, linked from the end of Settings.
+Healthy living, opened from the top of Learn and from Today, has two tabs. Recipes: eight simple dishes (congee, kitchari, miso soup, red lentil dal, overnight oats, a salmon traybake, a chickpea stew and golden milk), each on a page of its own where the servings, from 1 to 12, scale every amount, the ingredients and steps can be ticked off as you go, and the screen can be kept on while you cook. A recipe can be starred for Today. Supplements: omega-3, coenzyme Q10, creatine, vitamin D, magnesium and vitamin B12 in full, and seven more in brief, each a card that opens to what it may help with the strength of the evidence for each, the amounts studied, how to take it, food sources, what to check first and its sources. The safety note has a line for them, shown at the top of the tab.
+
+The impressum, copyright and licence are at the end of Learn, linked from the end of Settings.
 
 Everything runs on the device and stays there: the history, favourites and reflections are kept in the browser's storage, and nothing is sent anywhere. Once there is a session worth keeping, the app asks the browser to keep its storage when space runs low, and Settings says what the browser answered.
 
@@ -31,6 +33,7 @@ The breathing guide and the practices' visuals draw 30 frames a second, even on 
 | Path | What it is |
 |---|---|
 | `index.html`, `sw.js`, `manifest.webmanifest`, `icons/` | The built app, served as is. Don't edit these by hand. |
+| `LICENSE` | The GNU Affero General Public License, version 3, which Entrain is under |
 | `src/html/` | The markup: `app.html` is the page skeleton, with one file per view, plus the dialogs, the mini player, search and the icon sprite |
 | `src/js/` | The script, one file per feature (listed below) |
 | `src/styles.css` | The stylesheet |
@@ -69,6 +72,7 @@ The build only assembles, nothing is rewritten on the way:
 | `library.js`, `settings.js`, `yoga.js`, `nvc.js`, `search.js` | The library, Settings, the routine builder, the reflection practices, search |
 | `history.js`, `trends.js`, `favs.js`, `today.js` | The one history and its trends, favourites, and Today |
 | `backup.js` | Your data: saving a backup, restoring one, and asking the browser to keep the data |
+| `living-data.js`, `living.js` | Healthy living: the recipes and the supplements, with their sources; its page and tabs, the servings that scale a recipe, and the screen kept on while you cook |
 | `boot.js` | Starts everything, in order |
 
 ## Test
@@ -86,3 +90,9 @@ See `tests/README.md` for what each suite covers.
 ## Publishing
 
 `.github/workflows/test-and-publish.yml` runs on every push to the default branch. It checks that the committed `index.html`, `sw.js` and manifest are what `src/build.py` makes from the source, runs every suite, and publishes the site to GitHub Pages only if they all pass. For that, the repository's Settings > Pages > Build and deployment > Source has to be **GitHub Actions**. While it is still "Deploy from a branch", GitHub publishes every push straight from the branch, tested or not, and the workflow only runs the tests and says so in its summary.
+
+## Licence
+
+Entrain is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, version 3 (SPDX: `AGPL-3.0-only`). The full text is in [`LICENSE`](LICENSE). The built page carries the same notice at its top.
+
+The Poppins font embedded in the page (`src/poppins.b64`, a subset of Poppins Bold) is under the SIL Open Font License 1.1, in [`src/poppins-OFL.txt`](src/poppins-OFL.txt).

@@ -112,6 +112,7 @@
     if (key.indexOf("b:") === 0) { var b = preset(key.slice(2)); return b && (b.goal || b.mine) ? libPattern(b) : null; }
     if (key.indexOf("t:") === 0) { var t = trackById(key.slice(2)); return t ? libTrack(t) : null; }
     if (key.indexOf("x:") === 0) return TOOLS[key.slice(2)] ? libTool(key.slice(2)) : null;
+    if (key.indexOf("r:") === 0) { var r = recipeById(key.slice(2)); return r ? libRecipe(r) : null; }
     var d = pDef(key);
     return d ? libPractice(d) : null;
   }

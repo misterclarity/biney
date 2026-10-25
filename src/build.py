@@ -11,7 +11,7 @@ Inputs, all in this folder:
   poppins-OFL.txt the font's copyright and licence, put next to it in the page (the licence asks that
                   every copy carry them)
 Outputs, one folder up:
-  index.html            the whole app in one file, with no network requests
+  index.html            the whole app in one file, with no network requests, under the licence in ../LICENSE
   sw.js, manifest.webmanifest   for installing it and opening it offline (icons/ is kept as it is)
   entrain-page.html     the same app without the manifest or worker, for the artifact preview
 """
@@ -27,7 +27,7 @@ JS = [
     "breathe.js", "breathe-draw.js", "mypatterns.js", "heart.js", "heart-charts.js",
     "shell.js",
     "asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "taxonomy.js", "practice.js", "done.js",
-    "library.js", "settings.js", "adapt.js", "nvc.js", "yoga.js", "search.js",
+    "library.js", "settings.js", "adapt.js", "nvc.js", "yoga.js", "search.js", "living-data.js", "living.js",
     "history.js", "trends.js", "favs.js", "today.js", "backup.js",
     "boot.js",
 ]
@@ -124,17 +124,38 @@ if twice:
 
 
 # ---- the page ----
+# the licence notice every copy of the page carries (the GNU AGPL's own wording, for version 3 only)
+NOTICE = """<!--
+  Entrain: paced breathing, binaural beats, heart coherence and guided practices, offline.
+  Copyright (C) 2026 misterclarity
+
+  This program is free software: you can redistribute it and/or modify it under the terms of
+  the GNU Affero General Public License as published by the Free Software Foundation, version 3.
+
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License along with this
+  program. If not, see <https://www.gnu.org/licenses/>.
+
+  Source: https://github.com/misterclarity/biney
+  The Poppins font inside is under the SIL Open Font License 1.1, whose text comes with it below.
+-->"""
+assert "--" not in NOTICE[4:-3]
 ofl = rd("poppins-OFL.txt").strip()
 assert "*/" not in ofl and "/*__POPPINS_OFL__*/" in rd("styles.css"), "the font licence needs its place in styles.css"
 css = rd("styles.css").replace("__POPPINS_BOLD__", rd("poppins.b64").strip()).replace(
     "/*__POPPINS_OFL__*/", "/* The font below, under its licence:\n\n" + ofl + "\n*/")
 head = """<!DOCTYPE html>
+""" + NOTICE + """
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1120">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html">
 <link rel="icon" href="__FAVICON__">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>Entrain — Evidence-Based Binaural Beats</title>
@@ -169,7 +190,7 @@ open(os.path.join(ROOT, "sw.js"), "w", encoding="utf-8").write(sw)
 print("wrote sw.js, version", ver, "-", len(files), "files")
 
 # ---- the preview page for Claude: no manifest or worker, just the app ----
-art = ('<title>Entrain</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<style>\n' + css + '</style>\n'
+art = (NOTICE + '\n<title>Entrain</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<style>\n' + css + '</style>\n'
        + body + "\n<script>" + script + "</script>\n")
 open(os.path.join(ROOT, "entrain-page.html"), "w", encoding="utf-8").write(art)
 print("wrote entrain-page.html", len(art), "bytes")

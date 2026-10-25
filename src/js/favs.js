@@ -1,7 +1,7 @@
   /* ------------------------------- favourites -------------------------------
-     A star on a practice, a track, the primer, the beat builder or a breathing pattern keeps it
-     on Today. Stored on the device as library keys: a practice's id, b: a breathing pattern,
-     t: a track, x: a tool, in the order you starred them.
+     A star on a practice, a track, the primer, the beat builder, a breathing pattern or a recipe keeps
+     it on Today. Stored on the device as library keys: a practice's id, b: a breathing pattern,
+     t: a track, x: a tool, r: a recipe, in the order you starred them.
   ---------------------------------------------------------------------------- */
 
   var FAV = null;
