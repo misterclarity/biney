@@ -5,9 +5,10 @@
 // late: { link, service or read: ms }, a step that answers only after that long on the first try, like one
 // waiting for a pairing request to be accepted; noHR: links up but offers only battery and device information;
 // refuse: the readings are refused on the first try, as when a pairing request isn't accepted;
+// probeHang: its battery level, the one small thing it has to test-read, never answers;
 // quick: scales the page's connection deadlines and pauses down, so a test needn't wait 15 seconds.
 // Heart rate swings with the breathing pace on screen around 64 bpm, or around window.__hrBase if a test sets it.
-function mock({ speed, rr, fail, hang, hangOnce, late, noHR, refuse, quick }) {
+function mock({ speed, rr, fail, hang, hangOnce, late, noHR, refuse, probeHang, quick }) {
   const realNow = performance.now.bind(performance), t0 = realNow();
   if (speed !== 1) performance.now = () => t0 + (realNow() - t0) * speed;
   if (quick) window.__hrScale = quick;
@@ -37,10 +38,15 @@ function mock({ speed, rr, fail, hang, hangOnce, late, noHR, refuse, quick }) {
     tries++;
     if (stuck('link')) return never();
     this.connected = true;
+    const none = (what, id) => Promise.reject(err('NotFoundError', 'No ' + what + ' matching UUID ' + uuid(id) + ' found in ' + (what === 'Services' ? 'Device.' : 'Service.')));
+    const hrs = { getCharacteristic: n => n === 'heart_rate_measurement' ? Promise.resolve(chr) : none('Characteristics', '2a38') };
+    const bas = { getCharacteristic: n => n === 'battery_level' ? Promise.resolve({ readValue: () => probeHang ? never() : Promise.resolve(new DataView(Uint8Array.of(80).buffer)) }) : none('Characteristics', '2a19') };
     return later('link', {
-      getPrimaryService: () => stuck('service') ? never()
-        : noHR ? Promise.reject(err('NotFoundError', 'No Services matching UUID ' + uuid('180d') + ' found in Device.'))
-        : later('service', { getCharacteristic: () => Promise.resolve(chr) }),
+      getPrimaryService: n => n === 'battery_service' ? Promise.resolve(bas)
+        : n !== 'heart_rate' ? none('Services', '180a')
+        : stuck('service') ? never()
+        : noHR ? none('Services', '180d')
+        : later('service', hrs),
       getPrimaryServices: () => Promise.resolve((noHR ? ['180f', '180a'] : ['180d', '180f']).map(n => ({ uuid: uuid(n) })))
     });
   }, disconnect() { this.connected = false; clearInterval(timer); } };

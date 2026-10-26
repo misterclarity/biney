@@ -20,7 +20,8 @@
     since: 0, coh: null,       // when continuous data began; the latest coherence result
     pulseT: 0, tickT: 0, cohT: 0, find: null,
     gen: 0, attaching: false, attempt: 0, step: "",  // connecting: which try, and which step it's on
-    log: [], offered: null     // what went wrong on each try; the services a sensor offers when the heart-rate one is missing
+    log: [], cur: null,        // what happened on each try, and on this one
+    offered: null              // the services a sensor offers when the heart-rate one is missing
   };
   var FIND_RATES = [6.5, 6, 5.5, 5, 4.5], FIND_STEP = 120;
 
@@ -73,6 +74,7 @@
     if (H.state === "on" || H.state === "lost") { hrDisconnect(); return; }
     if (!hrSupported()) return;
     hrMsg("");
+    hrLogShow(null);
     hrSetState("busy", "Choose your sensor…");
     // battery and device information too, so that a sensor without the heart-rate service can say what it does offer
     var opts = any === true
@@ -95,31 +97,51 @@
       return hrAttach();
     }).catch(hrFail);
   }
-  /* Connecting takes three steps, each with a deadline, so a sensor that stops answering can't leave
-     the page on Connecting…: link up, find the heart-rate service, start the readings. A step that
-     fails or runs out of time starts again from the top, up to three tries in all, the later ones
-     with a pause after linking up, since on Android a second try often goes through. The last two
-     steps allow half a minute, long enough to confirm a pairing request on the watch or the phone,
-     and after a few seconds the message says to. While it runs the button reads Cancel, and the
-     message under it says which step it's on. */
-  var HR_STEPS = { link: ["linking up", 15000], service: ["finding its heart-rate service", 30000], read: ["starting its heart-rate readings", 30000] };   // ms each try
-  var HR_TRIES = 3, HR_HINT = 4000;
+  /* Connecting has up to five steps, each with a deadline, so a sensor that stops answering can't
+     leave the page on Connecting…: link up, find the heart-rate service and start the readings,
+     with two more on the later tries. A step that fails or runs out of time starts again from the
+     top, up to three tries in all.
+     - The first try allows half a minute for the service and the readings, time enough to confirm
+       a pairing request on the sensor or the phone, which the message suggests after a few seconds.
+     - The later tries allow 15 seconds a step. Once linked up they first give the sensor a few
+       seconds to settle (6, then 12), since a watch can be busy for a while setting up a new link
+       and miss what it's asked meanwhile, then check that it answers a test read, and only then
+       ask for its readings.
+     A wait that worked is kept for that sensor, so its next first try starts with it. While it runs
+     the button reads Cancel and the message says which step it's on; if every try fails, the message
+     says what to try, and a list under it what happened on each try, with a button to copy it. */
+  var HR_STEPS = {
+    link: ["linking up", 15000], settle: ["giving it a few seconds to settle", 0],
+    service: ["finding its heart-rate service", 30000], probe: ["checking that it answers", 8000],
+    read: ["starting its heart-rate readings", 30000]
+  };
+  var HR_TRIES = 3, HR_HINT = 4000, HR_LATER = 15000, HR_SETTLE = [0, 6000, 12000];
   var HR_SVC = { "180d": "heart rate", "180f": "battery", "180a": "device information" };
+  // what a test read asks for, the first the sensor has: [service, characteristic, what it is]
+  var HR_PROBE = [["heart_rate", "body_sensor_location", "its sensor location"], ["battery_service", "battery_level", "its battery level"],
+    ["device_information", "manufacturer_name_string", "its maker's name"], ["device_information", "model_number_string", "its model number"]];
   function hrPairHint() {
-    return hrGarmin() ? "If your watch shows your phone's name or a code, confirm it on the watch, and accept the pairing request on the phone if one appears."
+    return hrGarmin() ? "If the watch or the phone asks you to confirm a pairing or shows a code, accept it. Your phone's name on the watch's broadcast screen only means the two are linked."
       : "If your phone asks to pair, accept it.";
   }
   function hrErr(name, step, msg) { var e = new Error(msg || name); e.name = name; e.step = step; return e; }
-  function hrWait(ms) { return new Promise(function (r) { setTimeout(r, ms * (window.__hrScale || 1)); }); }
-  function hrStep(p, k) {
-    var sc = window.__hrScale || 1, line = "Connecting to " + H.name + ": " + HR_STEPS[k][0] + (H.attempt > 1 ? ", try " + H.attempt + " of " + HR_TRIES : "") + "…";   // the scale is for the tests
+  function hrScale() { return window.__hrScale || 1; }      // the tests run the deadlines and pauses faster
+  function hrWait(ms) { return new Promise(function (r) { setTimeout(r, ms * hrScale()); }); }
+  function hrLimit(k) { return H.attempt > 1 ? Math.min(HR_STEPS[k][1], HR_LATER) : HR_STEPS[k][1]; }
+  function hrSay(k) {
+    var line = "Connecting to " + H.name + ": " + HR_STEPS[k][0] + (H.attempt > 1 ? ", try " + H.attempt + " of " + HR_TRIES : "") + "…";
     H.step = k;
     hrMsg(line);
     guideCheck();
+    return line;
+  }
+  // one step of a try, with its deadline; a step that finishes is noted with how long it took
+  function hrStep(p, k) {
+    var line = hrSay(k), t0 = Date.now(), lim = hrLimit(k), sc = hrScale(), cur = H.cur;
     return new Promise(function (ok, no) {
-      var hint = k === "link" ? 0 : setTimeout(function () { if (H.step === k && H.attaching) hrMsg(line + " " + hrPairHint()); }, HR_HINT * sc);
-      var t = setTimeout(function () { clearTimeout(hint); no(hrErr("TimeoutError", k)); }, HR_STEPS[k][1] * sc);
-      p.then(function (v) { clearTimeout(t); clearTimeout(hint); ok(v); },
+      var hint = k === "service" || k === "read" ? setTimeout(function () { if (H.step === k && H.attaching) hrMsg(line + " " + hrPairHint()); }, HR_HINT * sc) : 0;
+      var t = setTimeout(function () { clearTimeout(hint); var e = hrErr("TimeoutError", k); e.ms = lim; no(e); }, lim * sc);
+      p.then(function (v) { clearTimeout(t); clearTimeout(hint); cur.steps.push({ k: k, ms: Date.now() - t0, what: cur.what, err: cur.perr }); ok(v); },
         function (e) { clearTimeout(t); clearTimeout(hint); no(hrErr((e && e.name) || "Error", k, e && e.message)); });
     });
   }
@@ -134,23 +156,78 @@
       }, function () { H.offered = []; throw e; });
     });
   }
-  /* What the phone reported on each try, word for word, for the message when every try fails,
-     so that it can be passed on when asking for help: "each of the 3 tries, no answer within
-     30 seconds while finding its heart-rate service", or one line a try when they differ. */
-  function hrDetail() {
-    var one = function (x) {
-      var st = HR_STEPS[x.s] ? HR_STEPS[x.s][0] : "connecting";
-      var t = x.n === "TimeoutError" && HR_STEPS[x.s] ? "no answer within " + Math.round(HR_STEPS[x.s][1] / 1000) + " seconds while " + st
-        : x.n + " while " + st + (x.m && x.m !== x.n ? ": " + String(x.m).replace(/\.\s*$/, "") : "");
-      if (x.o) t += x.o.length ? ", and it showed only " + x.o.slice(0, -1).join(", ") + (x.o.length > 1 ? " and " : "") + x.o[x.o.length - 1]
-        : ", and it showed none of the heart rate, battery or device information services";
-      return t;
+  /* A test read of something small: does the sensor answer at all? It resolves with what was read,
+     or "" if it has none of HR_PROBE. A refusal is an answer too, so it's noted and connecting goes on. */
+  function hrProbe(srv, hrSvc) {
+    var i = 0, cur = H.cur;
+    var next = function () {
+      if (i >= HR_PROBE.length) return Promise.resolve("");
+      var p = HR_PROBE[i++];
+      return (p[0] === "heart_rate" ? Promise.resolve(hrSvc) : srv.getPrimaryService(p[0]))
+        .then(function (s) { return s.getCharacteristic(p[1]); })
+        .then(function (c) {
+          cur.what = p[2];
+          return c.readValue().then(function () { return p[2]; }, function (e) {
+            cur.perr = ((e && e.name) || "Error") + (e && e.message && e.message !== e.name ? ": " + String(e.message).replace(/\.\s*$/, "") : "");
+            return p[2];
+          });
+        }, function (e) {
+          if (e && /^(NotFoundError|SecurityError)$/.test(e.name)) return next();     // it hasn't that one, or the page may not ask: the next
+          throw e;
+        });
     };
-    var l = H.log.map(one);
-    if (!l.length) return "";
-    var same = l.every(function (t) { return t === l[0]; });
-    return " (What happened: " + (same ? (l.length > 1 ? "each of the " + l.length + " tries, " : "") + l[0]
-      : l.map(function (t, i) { return "try " + (i + 1) + ", " + t; }).join("; ")) + ".)";
+    return next();
+  }
+  // the wait after linking up on try n: one rung up the ladder from the wait that last worked for this sensor
+  function hrSettleMap() { try { return JSON.parse(store.get("hrSettle") || "{}") || {}; } catch (e) { return {}; } }
+  function hrSettleFor(n) {
+    var i = Math.max(0, HR_SETTLE.indexOf(hrSettleMap()[H.name] || 0));
+    return HR_SETTLE[Math.min(i + n - 1, HR_SETTLE.length - 1)];
+  }
+  function hrSettleKeep(ms) {
+    var m = hrSettleMap();
+    if (ms) m[H.name] = ms; else delete m[H.name];
+    store.set("hrSettle", JSON.stringify(m));
+  }
+  /* What happened on one try, in words, for the list under the message: each step with how long it
+     took, then the one that didn't finish, with what the phone reported, word for word. */
+  function hrSec(ms) { var s = ms / 1000; return String(s < 10 ? Math.round(s * 10) / 10 : Math.round(s)) + "\u00a0s"; }   // a space that keeps "30 s" on one line
+  function hrTryText(x) {
+    var out = x.steps.map(function (st) {
+      if (st.k === "settle") return "waited " + hrSec(st.ms) + " for it to settle";
+      if (st.k === "probe") return !st.what ? "found nothing small to test-read" : "a test read of " + st.what + (st.err ? " was refused after " + hrSec(st.ms) + " (" + st.err + ")" : " answered in " + hrSec(st.ms));
+      return (st.k === "link" ? "linked up" : st.k === "service" ? "found its heart-rate service" : "started its readings") + " in " + hrSec(st.ms);
+    });
+    var z = x.end, what = z.s === "probe" && x.what ? "a test read of " + x.what : HR_STEPS[z.s] ? HR_STEPS[z.s][0] : "connecting";
+    var t = what + ": " + (z.n === "TimeoutError" ? "no answer within " + hrSec(z.ms) : z.n + (z.m && z.m !== z.n ? ": " + String(z.m).replace(/\.\s*$/, "") : ""));
+    if (z.o) t += z.o.length ? ", and it showed only " + z.o.slice(0, -1).join(", ") + (z.o.length > 1 ? " and " : "") + z.o[z.o.length - 1]
+      : ", and it showed none of the heart rate, battery or device information services";
+    out.push(t);
+    if (z.s !== "link") out.push(z.linked ? "the link was still up" : x.drop ? "the link dropped after " + hrSec(x.drop) : "the link was down");
+    var txt = out.join("; ") + ".";
+    return txt.charAt(0).toUpperCase() + txt.slice(1);
+  }
+  function hrBrowser() {
+    var u = navigator.userAgent || "", m;
+    var b = (m = /EdgA?\/([\d.]+)/.exec(u)) ? "Edge " + m[1] : (m = /SamsungBrowser\/([\d.]+)/.exec(u)) ? "Samsung Internet " + m[1]
+      : (m = /OPR\/([\d.]+)/.exec(u)) ? "Opera " + m[1] : (m = /Chrome\/([\d.]+)/.exec(u)) ? "Chrome " + m[1] : "";
+    var os = /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /CrOS/.test(u) ? "ChromeOS" : /Mac OS X/.test(u) ? "macOS" : /Linux/.test(u) ? "Linux" : "";
+    return b && os ? b + " on " + os : b || os;
+  }
+  function hrLogShow(log) {
+    var d = $("#hrLog"), ol = $("#hrLogList");
+    ol.textContent = "";
+    d.hidden = !log || !log.length;
+    if (d.hidden) return;
+    log.forEach(function (x) { var li = document.createElement("li"); li.textContent = hrTryText(x); ol.appendChild(li); });
+    bSetT("#hrLogEnv", H.name + ", " + hrBrowser() + ".");
+    bSetT("#hrLogCopy", "Copy the details");
+    d.open = false;
+  }
+  function hrLogText() {
+    var l = ["Entrain, connecting " + H.name + " (" + hrBrowser() + ")", $("#hrMsg").textContent];
+    Array.prototype.forEach.call(document.querySelectorAll("#hrLogList li"), function (li, i) { l.push("Try " + (i + 1) + ": " + li.textContent); });
+    return l.join("\n");
   }
   /* Worth another try: a step that ran out of time or broke off, a service missing from a list the
      phone kept from before, or readings refused because a pairing request wasn't accepted in time. */
@@ -166,12 +243,21 @@
     H.log = [];
     var go = function () {
       H.attempt++;
+      var wait = hrSettleFor(H.attempt), srv0 = null, svc0 = null, cur = H.cur = { steps: [], t0: Date.now(), wait: wait };
       hrSetState("busy", "Connecting to " + H.name + "…");
       return hrStep(dev.gatt.connect(), "link")
         .then(function (srv) {
-          return (H.attempt > 1 ? hrWait(800) : Promise.resolve()).then(function () {
-            return hrStep(hrService(srv).then(function (svc) { return svc.getCharacteristic("heart_rate_measurement"); }), "service");
-          });
+          srv0 = srv;
+          if (!wait) return;
+          hrSay("settle");
+          return hrWait(wait).then(function () { cur.steps.push({ k: "settle", ms: wait }); if (stale()) throw hrErr("AbortError", "settle"); });
+        })
+        .then(function () {
+          return hrStep(hrService(srv0).then(function (svc) { svc0 = svc; return svc.getCharacteristic("heart_rate_measurement"); }), "service");
+        })
+        .then(function (chr) {
+          if (stale()) throw hrErr("AbortError", "probe");
+          return (wait ? hrStep(hrProbe(srv0, svc0), "probe") : Promise.resolve()).then(function () { return chr; });   // the careful tries check it answers first
         })
         .then(function (chr) {
           if (stale()) throw hrErr("AbortError", "read");
@@ -182,7 +268,8 @@
         })
         .catch(function (e) {
           if (stale()) throw hrErr("AbortError", e.step);
-          H.log.push({ s: e.step, n: e.name, m: e.message, o: e.name === "NotFoundError" && e.step === "service" ? H.offered : null });
+          cur.end = { s: e.step, n: e.name, m: e.message, ms: e.ms, o: e.name === "NotFoundError" && e.step === "service" ? H.offered : null, linked: !!(dev.gatt && dev.gatt.connected) };
+          H.log.push(cur);
           if (H.attempt < HR_TRIES && hrRetryable(e)) {
             try { if (dev.gatt.connected) dev.gatt.disconnect(); } catch (x) {}
             return hrWait(1000).then(function () { if (stale()) throw hrErr("AbortError", e.step); return go(); });
@@ -193,6 +280,8 @@
     return go().then(function () {
         if (gen !== H.gen) { try { dev.gatt.disconnect(); } catch (x) {} return; }   // cancelled while the last step finished
         H.attaching = false; H.step = "";
+        hrSettleKeep(H.cur.wait);
+        hrLogShow(null);
         H.tries = 0;
         H.connAt = bNow();
         store.set("hrEver", "1");
@@ -218,6 +307,7 @@
     try { if (H.dev && H.dev.gatt.connected) H.dev.gatt.disconnect(); } catch (e) {}
     hrSetState("off", "Not connected");
     hrMsg("Stopped connecting. Press Connect sensor to try again.");
+    hrLogShow(null);
   }
   function hrGarmin() { return /venu|forerunner|f[eē]nix|epix|vivoactive|vívoactive|instinct|enduro|garmin|approach|descent|marq|quatix|tactix|lily|bounce/i.test(H.name); }
   function hrFail(e) {
@@ -229,8 +319,8 @@
     hrSetState("off", "Not connected");
     // Garmin Connect, running on the same phone, can keep hold of the watch so another app's connection never finishes
     var g = hrGarmin() ? " If it keeps happening, Garmin Connect on this phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, and tap Force stop, then connect here again. Open Garmin Connect afterwards to sync as usual." : "";
-    var said = s ? hrDetail() : "";
-    var pair = hrGarmin() ? " If your watch showed your phone's name or a code, confirm it on the watch next time (there's half a minute), and accept the pairing request on the phone if one appears; on some phones it waits in the notifications."
+    var said = s && H.log.length ? " What happened on each try is listed below." : "";
+    var pair = hrGarmin() ? " If the watch or the phone asked you to confirm a pairing or showed a code, accept it next time (there's half a minute); on some phones the request waits in the notifications."
       : " If your phone asked to pair with it (the request can also sit in the notifications), accept it next time.";
     if (s === "link") {
       hrMsg("Couldn't link up with " + H.name + " after " + HR_TRIES + " tries. Keep it close, check that it's still broadcasting, and try again." + g + said);
@@ -239,7 +329,7 @@
         ? " A Garmin watch offers it only while Broadcast Heart Rate is on, so check that it is. If it is, the watch may be answering this phone as the one it syncs with in Garmin Connect rather than as a heart-rate receiver; a tablet or computer that isn't paired with the watch can usually connect to its broadcast." : " This page can't read it.") + said);
     } else if (s === "service") {
       hrMsg(H.name + " linked up but didn't share its heart-rate service." + pair + " Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g + said);
-    } else if (s === "read") {
+    } else if (s === "read" || s === "probe") {
       hrMsg(H.name + " linked up but didn't start sending its heart rate." + pair + " Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g + said);
     } else if (n === "NotFoundError" && H.dev && /service/i.test((e && e.message) || "")) {
       hrMsg(H.name + " doesn't offer the standard heart-rate service, so this page can't read it.");
@@ -250,8 +340,10 @@
     } else {
       hrMsg("The sensor didn't answer. Check that it is on, broadcasting and close by, then try again." + (n ? " (The phone reported: " + n + (e.message && e.message !== n ? ": " + String(e.message).replace(/\.\s*$/, "") : "") + ".)" : ""));
     }
+    hrLogShow(s ? H.log : null);
   }
   function hrLost() {
+    if (H.attaching && H.cur && !H.cur.end && !H.cur.drop) H.cur.drop = Date.now() - H.cur.t0;   // noted for the list of what happened
     if (!H.wantOn || H.attaching) return;             // a connection that drops while connecting is that attempt's to retry
     if (H.tries >= 5) {
       H.wantOn = false;
@@ -585,6 +677,12 @@
     }
     $("#hrConnect").addEventListener("click", function () { hrConnect(false); });
     $("#hrAny").addEventListener("click", function () { hrConnect(true); });
+    $("#hrLogCopy").addEventListener("click", function () {
+      copyText(hrLogText(), function (ok) {
+        bSetT("#hrLogCopy", ok ? "Copied" : "Couldn't copy");
+        if (!ok) toast("This browser didn't allow copying. Open the list and copy it by hand instead.");
+      });
+    });
     $("#hrFindStart").addEventListener("click", function () { if (B.finder) bStop(); else finderStart(); });
     $("#hrFindUse").addEventListener("click", useBest);
     var redraw = function () { drawSwings(); drawFind(); drawSpectrum(); };

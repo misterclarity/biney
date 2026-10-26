@@ -10,6 +10,14 @@
             sensor works: a Garmin watch set to broadcast, an ear-clip sensor or a chest strap.
           </p>
           <p class="hr-msg" id="hrMsg" role="status"></p>
+          <details class="ev hr-log" id="hrLog" hidden>
+            <summary>What happened on each try</summary>
+            <div class="ev-body">
+              <ol id="hrLogList"></ol>
+              <p class="hr-log-env" id="hrLogEnv"></p>
+              <button class="btn small" id="hrLogCopy" type="button">Copy the details</button>
+            </div>
+          </details>
         </div>
         <div class="hr-conn">
           <span class="hr-pill" id="hrPill"><i></i><span id="hrPillTxt">Not connected</span></span>
@@ -40,7 +48,7 @@
                 <li><b>Start broadcasting on the watch.</b>Hold the upper-right button to open the controls menu and choose the heart-rate broadcast control. You can also go to Settings &gt; Health &amp; Wellness &gt; Wrist Heart Rate &gt; Broadcast Heart Rate. If the control isn't in the menu, you can add it when you customise the controls menu.</li>
                 <li><b>Wear it snug and keep your arm still.</b>Put it a finger's width above the wrist bone, tight enough not to slide. The optical sensor reads most steadily with your forearm resting on something.</li>
                 <li><b>Connect here.</b>Press Connect sensor. The watch appears in the list under its name within a few seconds; choose it and press Pair.</li>
-                <li><b>If it stays on Connecting…</b>Keep an eye on the watch: if it shows your phone's name or a code, confirm it there, and accept the pairing request on the phone if one appears (on some phones it waits in the notifications). Each step allows half a minute for this. Garmin Connect may need pairing with the watch again afterwards. If nothing appears, Garmin Connect on the same phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, tap Force stop, and connect here again. Open Garmin Connect afterwards to sync as usual. Turning the phone's Bluetooth off and on, and restarting the broadcast on the watch, can help too. If it still won't connect, a tablet or computer that isn't paired with the watch can usually connect to its broadcast. Entrain tries three times, then says which step didn't finish and what the phone reported; Cancel stops it sooner.</li>
+                <li><b>If it stays on Connecting…</b>Your phone's name above the heart icon on the watch means the two are linked; nothing needs confirming there. If the watch or the phone asks you to confirm a pairing or shows a code, accept it (on some phones the request waits in the notifications); each step allows half a minute for this, and Garmin Connect may need pairing with the watch again afterwards. Garmin Connect on the same phone may also be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, tap Force stop, and connect here again. Open Garmin Connect afterwards to sync as usual. Turning the phone's Bluetooth off and on, and restarting the broadcast on the watch, can help too. Entrain tries three times, the later tries more slowly, then lists what happened on each, with a button to copy it; Cancel stops it sooner. If it still won't connect, a tablet or computer that isn't paired with the watch can usually connect to its broadcast.</li>
                 <li><b>Stop when you're done.</b>Press the upper-right button on the watch to stop broadcasting, because it uses extra battery.</li>
               </ol>
               <p class="g-expect"><b>What you'll get:</b> heart rate about once a second, the swing in each breath and the resonance test. Garmin watches don't broadcast beat-to-beat intervals, so RMSSD stays empty and coherence is marked as an estimate.</p>

@@ -204,6 +204,19 @@
     t.style.bottom = (window.innerHeight - top + 12) + "px";
   }
 
+  /* Copy text to the clipboard, then said(true) or said(false). The clipboard API can be refused
+     (a preview frame, an insecure page); the older copy command often still works. */
+  function copyText(txt, said) {
+    var old = function () {
+      var ta = document.createElement("textarea"), ok = false;
+      ta.value = txt; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+      document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+      said(ok);
+    };
+    try { navigator.clipboard.writeText(txt).then(function () { said(true); }, old); } catch (e) { old(); }
+  }
   function toast(msg, opt) {
     opt = opt || {};
     var t = $("#toast"), a = $("#toastAct");

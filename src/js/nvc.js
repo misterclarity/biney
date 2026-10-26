@@ -533,20 +533,10 @@
       toast("You have an unfinished reflection from " + nvcWhen(left.at) + ".", { action: "Open", onAct: function () { location.hash = "practice/" + left.id; } });
     }, 1200);
   }
-  /* The clipboard API can be refused (a preview frame, an insecure page); the older copy command
-     often still works, and if neither does, say so rather than fail silently. */
+  // if copying isn't allowed, say so rather than fail silently
   function nvcCopy(txt) {
-    var said = function (ok) {
+    copyText(txt, function (ok) {
       bSetT("#nvCopy", ok ? "Copied" : "Couldn't copy");
       if (!ok) toast("This browser didn't allow copying. Select the text above and copy it instead.");
-    };
-    var old = function () {
-      var ta = document.createElement("textarea"), ok = false;
-      ta.value = txt; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
-      document.body.appendChild(ta); ta.select();
-      try { ok = document.execCommand("copy"); } catch (e) {}
-      document.body.removeChild(ta);
-      said(ok);
-    };
-    try { navigator.clipboard.writeText(txt).then(function () { said(true); }, old); } catch (e) { old(); }
+    });
   }

@@ -735,25 +735,39 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         btn: document.querySelector('#hrConnect').textContent, dis: document.querySelector('#hrConnect').getAttribute('aria-disabled'),
         guide: (document.querySelector('#gCheck li[data-k="conn"] .s') || {}).textContent, pill: document.querySelector('#tbSensorTxt').textContent }));
       const FORCE = /Garmin Connect on this phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, and tap Force stop/;
-      const PAIR = " If your watch showed your phone's name or a code, confirm it on the watch next time (there's half a minute), and accept the pairing request on the phone if one appears; on some phones it waits in the notifications. Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again.";
-      const HINT = " If your watch shows your phone's name or a code, confirm it on the watch, and accept the pairing request on the phone if one appears.";
+      const PAIR = " If the watch or the phone asked you to confirm a pairing or showed a code, accept it next time (there's half a minute); on some phones the request waits in the notifications. Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again.";
+      const HINT = " If the watch or the phone asks you to confirm a pairing or shows a code, accept it. Your phone's name on the watch's broadcast screen only means the two are linked.";
+      const LISTED = ' What happened on each try is listed below.';
       const msgHas = (p, s, ms) => p.waitForFunction(s => document.querySelector('#hrMsg').textContent.includes(s), s, { timeout: ms || 3000 }).catch(() => {});
       const until = (p, state, ms) => p.waitForFunction(s => window.__entrain.H.state === s, state, { timeout: ms }).catch(() => {});
       const open = async opts => { const p = await page(OPT(), null, Object.assign({ speed: 1, rr: false }, opts)); await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300); await p.click('#hrConnect'); return p; };
-      // readings that never start the first time: after a few seconds the message says to confirm a pairing request, and a second try goes through
+      const tries = p => E(p, () => { const d = document.querySelector('#hrLog'); return { shown: !d.hidden, open: d.open, li: [...d.querySelectorAll('li')].map(l => l.textContent.replace(/\u00a0/g, ' ')), env: document.querySelector('#hrLogEnv').textContent }; });
+      const S = '[\\d.]+ s';     // a time it took
+      // readings that never start the first time: after a few seconds the message says to confirm a pairing request, and a second, slower try goes through
       let p = await open({ hang: 'read', hangOnce: true, quick: 0.1 });
       await p.waitForTimeout(150);
       const mid = await st(p);
       ok(mid.st === 'busy' && mid.msg.startsWith('Connecting to Venu 4: starting its heart-rate readings…') && mid.btn === 'Cancel' && mid.dis === 'false' && /^Starting its heart-rate readings/.test(mid.guide) && mid.pill === 'Connecting…',
         'while it connects, the message and the guide say which step it is on, and the button reads Cancel: ' + mid.msg);
-      await msgHas(p, 'confirm it on the watch');
+      await msgHas(p, 'confirm a pairing');
       const hint = await st(p);
-      ok(hint.st === 'busy' && hint.msg === 'Connecting to Venu 4: starting its heart-rate readings…' + HINT, 'a few seconds in, it says to confirm on the watch if it shows your phone\'s name or a code: ' + hint.msg);
+      ok(hint.st === 'busy' && hint.msg === 'Connecting to Venu 4: starting its heart-rate readings…' + HINT, 'a few seconds in, it says to accept a pairing request, and what your phone\'s name on the watch means: ' + hint.msg);
+      await msgHas(p, 'giving it a few seconds to settle, try 2 of 3');
+      const set2 = await st(p);
+      ok(set2.msg === 'Connecting to Venu 4: giving it a few seconds to settle, try 2 of 3…' && /^Giving it a few seconds to settle, try 2/.test(set2.guide), 'the second try gives it a few seconds to settle first: ' + set2.msg);
       await until(p, 'on', 6000);
       const r1 = await st(p);
-      ok(r1.st === 'on' && r1.tries === 2 && r1.msg === '' && r1.btn === 'Disconnect', 'readings that never start the first time: it tries again and connects (' + r1.tries + ' tries)');
+      ok(r1.st === 'on' && r1.tries === 2 && r1.msg === '' && r1.btn === 'Disconnect' && !(await tries(p)).shown, 'readings that never start the first time: the slower try connects (' + r1.tries + ' tries)');
       await p.waitForTimeout(1500);
       ok(await E(p, () => window.__entrain.H.hr > 0), 'and the heart rate comes in');
+      ok(await E(p, () => localStorage.getItem('entrain.hrSettle')) === '{"Venu 4":6000}', 'the wait that worked is kept for this sensor');
+      await p.click('#hrConnect'); await p.waitForTimeout(200);
+      await p.click('#hrConnect'); await p.waitForTimeout(150);
+      const again = await st(p);
+      await until(p, 'on', 4000);
+      const r1b = await st(p);
+      ok(again.msg === 'Connecting to Venu 4: giving it a few seconds to settle…' && r1b.st === 'on' && r1b.tries === 3 && await E(p, () => window.__entrain.H.attempt) === 1,
+        'and the next time, the first try starts with it: ' + again.msg);
       await p.context().close();
       // a step that answers late, as once a pairing request is accepted: it connects on the first try (a sensor other than a Garmin watch)
       p = await open({ rr: true, late: { read: 900 }, quick: 0.1 });
@@ -770,40 +784,61 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const f1 = await st(p);
       ok(f1.st === 'on' && f1.tries === 2, 'readings refused the first time: it tries again and connects (' + f1.tries + ' tries)');
       await p.context().close();
-      // a heart-rate service that never turns up: three tries, then what to do and what happened
+      // a heart-rate service that never turns up: three tries, then what to do, and what happened on each try
       p = await open({ hang: 'service', quick: 0.05 });
-      await msgHas(p, 'confirm it on the watch');
+      await msgHas(p, 'confirm a pairing');
       const s0 = await st(p);
       await until(p, 'off', 12000);
-      const r2 = await st(p);
+      const r2 = await st(p), t2 = await tries(p);
       ok(s0.msg === 'Connecting to Venu 4: finding its heart-rate service…' + HINT && r2.st === 'off' && r2.tries === 3 &&
-        r2.msg.startsWith("Venu 4 linked up but didn't share its heart-rate service." + PAIR) && FORCE.test(r2.msg) &&
-        r2.msg.endsWith('(What happened: each of the 3 tries, no answer within 30 seconds while finding its heart-rate service.)') && r2.btn === 'Connect sensor',
-        'a service that never turns up: three tries, then a message that says what to do and what happened: ' + r2.msg);
+        r2.msg.startsWith("Venu 4 linked up but didn't share its heart-rate service." + PAIR) && FORCE.test(r2.msg) && r2.msg.endsWith(LISTED) && r2.btn === 'Connect sensor',
+        'a service that never turns up: three tries, then a message that says what to do: ' + r2.msg);
+      ok(t2.shown && !t2.open && t2.li.length === 3 &&
+        new RegExp('^Linked up in ' + S + '; finding its heart-rate service: no answer within 30 s; the link was still up\\.$').test(t2.li[0]) &&
+        new RegExp('^Linked up in ' + S + '; waited 6 s for it to settle; finding its heart-rate service: no answer within 15 s; the link was still up\\.$').test(t2.li[1]) &&
+        new RegExp('^Linked up in ' + S + '; waited 12 s for it to settle; finding its heart-rate service: no answer within 15 s; the link was still up\\.$').test(t2.li[2]) &&
+        /^Venu 4, Chrome [\d.]+ on (Android|Linux)\.$/.test(t2.env),
+        'and a folded list under it says what happened on each try: ' + t2.li.join(' | ') + ' | ' + t2.env);
       await p.context().close();
-      // readings that never start at all
+      // readings that never start at all: the later tries check that it answers a test read; the details can be copied
       p = await open({ hang: 'read', quick: 0.05 });
       await until(p, 'off', 12000);
-      const r3 = await st(p);
-      ok(r3.tries === 3 && r3.msg.startsWith("Venu 4 linked up but didn't start sending its heart rate." + PAIR) &&
-        r3.msg.endsWith('(What happened: each of the 3 tries, no answer within 30 seconds while starting its heart-rate readings.)'),
-        'readings that never start: it says to confirm a pairing request, and what happened: ' + r3.msg.slice(-110));
+      const r3 = await st(p), t3 = await tries(p);
+      ok(r3.tries === 3 && r3.msg.startsWith("Venu 4 linked up but didn't start sending its heart rate." + PAIR) && r3.msg.endsWith(LISTED) &&
+        new RegExp('^Linked up in ' + S + '; found its heart-rate service in ' + S + '; starting its heart-rate readings: no answer within 30 s; the link was still up\\.$').test(t3.li[0]) &&
+        new RegExp('^Linked up in ' + S + '; waited 6 s for it to settle; found its heart-rate service in ' + S + '; a test read of its battery level answered in ' + S + '; starting its heart-rate readings: no answer within 15 s; the link was still up\\.$').test(t3.li[1]),
+        'readings that never start: the later tries check it answers a test read first: ' + t3.li[1]);
+      await E(p, () => { window.__copied = null; Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: t => { window.__copied = t; return Promise.resolve(); } } }); });
+      await p.click('#hrLog summary'); await p.waitForTimeout(150);
+      await p.click('#hrLogCopy'); await p.waitForTimeout(150);
+      const cp = await E(p, () => ({ txt: (window.__copied || '').replace(/\u00a0/g, ' '), btn: document.querySelector('#hrLogCopy').textContent }));
+      ok(cp.btn === 'Copied' && /^Entrain, connecting Venu 4 \(Chrome [\d.]+ on (Android|Linux)\)\nVenu 4 linked up but didn't start sending its heart rate\./.test(cp.txt) &&
+        cp.txt.split('\n').length === 5 && cp.txt.split('\n')[3] === 'Try 2: ' + t3.li[1],
+        'Copy the details puts the message and every try on the clipboard: ' + (cp.txt || '').split('\n')[0]);
+      await p.context().close();
+      // a test read that gets no answer either
+      p = await open({ hang: 'read', probeHang: true, quick: 0.05 });
+      await until(p, 'off', 12000);
+      const r6 = await st(p), t6 = await tries(p);
+      ok(r6.tries === 3 && r6.msg.startsWith("Venu 4 linked up but didn't start sending its heart rate.") &&
+        new RegExp('^Linked up in ' + S + '; waited 6 s for it to settle; found its heart-rate service in ' + S + '; a test read of its battery level: no answer within 8 s; the link was still up\\.$').test(t6.li[1]),
+        'a sensor that answers nothing at all: the list says so: ' + t6.li[1]);
       await p.context().close();
       // a watch that links up without the heart-rate service: what it does offer, and why that can happen
       p = await open({ noHR: true, quick: 0.05 });
       await until(p, 'off', 6000);
-      const r4 = await st(p);
+      const r4 = await st(p), t4 = await tries(p);
       ok(r4.tries === 3 && r4.msg === "Venu 4 linked up but doesn't offer the standard heart-rate service. A Garmin watch offers it only while Broadcast Heart Rate is on, so check that it is. " +
-        "If it is, the watch may be answering this phone as the one it syncs with in Garmin Connect rather than as a heart-rate receiver; a tablet or computer that isn't paired with the watch can usually connect to its broadcast. " +
-        '(What happened: each of the 3 tries, NotFoundError while finding its heart-rate service: No Services matching UUID 0000180d-0000-1000-8000-00805f9b34fb found in Device, and it showed only battery and device information.)',
-        'no heart-rate service: it says what the watch offers and why: ' + r4.msg.slice(0, 80));
+        "If it is, the watch may be answering this phone as the one it syncs with in Garmin Connect rather than as a heart-rate receiver; a tablet or computer that isn't paired with the watch can usually connect to its broadcast." + LISTED &&
+        new RegExp('^Linked up in ' + S + '; finding its heart-rate service: NotFoundError: No Services matching UUID 0000180d-0000-1000-8000-00805f9b34fb found in Device, and it showed only battery and device information; the link was still up\\.$').test(t4.li[0]),
+        'no heart-rate service: it says why that can happen, and the list what the watch offers: ' + t4.li[0]);
       await p.context().close();
-      // tries that fail differently: one line each
+      // tries that fail in different ways: each in its own words
       p = await open({ noHR: true, hang: 'service', hangOnce: true, quick: 0.05 });
       await until(p, 'off', 8000);
-      const r5 = await st(p);
-      ok(r5.tries === 3 && /\(What happened: try 1, no answer within 30 seconds while finding its heart-rate service; try 2, NotFoundError while finding its heart-rate service: No Services matching UUID \S+ found in Device, and it showed only battery and device information; try 3, NotFoundError [^;]+\.\)$/.test(r5.msg),
-        'tries that fail differently are listed one by one: ' + r5.msg.slice(r5.msg.indexOf('(What')));
+      const t5 = await tries(p);
+      ok(t5.li.length === 3 && /finding its heart-rate service: no answer within 30 s/.test(t5.li[0]) && /finding its heart-rate service: NotFoundError: /.test(t5.li[1]) && /NotFoundError/.test(t5.li[2]),
+        'tries that fail differently are listed in their own words: ' + t5.li.map(l => l.slice(0, 60)).join(' | '));
       await p.context().close();
       // Cancel, while it links up at its real pace
       p = await open({ hang: 'link' });
