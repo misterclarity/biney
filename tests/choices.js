@@ -820,9 +820,11 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       p = await open({ hang: 'read', probeHang: true, quick: 0.05 });
       await until(p, 'off', 12000);
       const r6 = await st(p), t6 = await tries(p);
-      ok(r6.tries === 3 && r6.msg.startsWith("Venu 4 linked up but didn't start sending its heart rate.") &&
-        new RegExp('^Linked up in ' + S + '; waited 6 s for it to settle; found its heart-rate service in ' + S + '; a test read of its battery level: no answer within 8 s; the link was still up\\.$').test(t6.li[1]),
-        'a sensor that answers nothing at all: the list says so: ' + t6.li[1]);
+      ok(r6.tries === 3 && r6.msg === "Venu 4 linked up but didn't answer anything this page asked of it, not even a test read. This can happen when the watch is also paired with this phone in Garmin Connect. " +
+        "Two things to try: turn off the watch's connection to your phone while you use Entrain (the phone icon in the watch's controls menu; turn it back on afterwards) and connect again, or connect from a tablet or computer that isn't paired with the watch." + LISTED &&
+        new RegExp('^Linked up in ' + S + '; waited 6 s for it to settle; found its heart-rate service in ' + S + '; a test read of its battery level: no answer within 8 s; the link was still up\\.$').test(t6.li[1]) &&
+        new RegExp('^Linked up in ' + S + '; waited 12 s for it to settle; found its heart-rate service in ' + S + '; a test read of its battery level: no answer within 8 s; the link was still up\\.$').test(t6.li[2]),
+        'a watch that answers nothing at all, not even a test read: the message says what to try, and the list leaves out what the browser turned down after the deadline: ' + t6.li[1]);
       await p.context().close();
       // a watch that links up without the heart-rate service: what it does offer, and why that can happen
       p = await open({ noHR: true, quick: 0.05 });

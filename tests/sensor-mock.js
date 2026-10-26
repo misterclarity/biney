@@ -14,7 +14,9 @@ function mock({ speed, rr, fail, hang, hangOnce, late, noHR, refuse, probeHang, 
   if (quick) window.__hrScale = quick;
   let tries = 0;
   window.__hrTries = () => tries;
-  const stuck = step => hang === step && (!hangOnce || tries === 1), never = () => new Promise(() => {});
+  // a step that never answers; disconnecting turns it down, as the browser does
+  const pend = [], never = () => new Promise((_, no) => pend.push(no));
+  const stuck = step => hang === step && (!hangOnce || tries === 1);
   const later = (step, v) => late && late[step] && tries === 1 ? new Promise(r => setTimeout(() => r(v), late[step])) : Promise.resolve(v);
   const uuid = n => '0000' + n + '-0000-1000-8000-00805f9b34fb';
   const err = (name, message) => Object.assign(new Error(message), { name });
@@ -49,7 +51,10 @@ function mock({ speed, rr, fail, hang, hangOnce, late, noHR, refuse, probeHang, 
         : later('service', hrs),
       getPrimaryServices: () => Promise.resolve((noHR ? ['180f', '180a'] : ['180d', '180f']).map(n => ({ uuid: uuid(n) })))
     });
-  }, disconnect() { this.connected = false; clearInterval(timer); } };
+  }, disconnect() {
+    this.connected = false; clearInterval(timer);
+    pend.splice(0).forEach(no => no(err('NetworkError', 'GATT Server is disconnected. Cannot perform GATT operations. (Re)connect first with `device.gatt.connect`.')));
+  } };
   Object.defineProperty(navigator, 'bluetooth', { configurable: true, value: {
     getAvailability: () => Promise.resolve(true),
     requestDevice: () => fail ? Promise.reject(Object.assign(new Error('blocked by permissions policy'), { name: 'SecurityError' })) : Promise.resolve(dev) } });

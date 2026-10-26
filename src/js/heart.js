@@ -135,14 +135,16 @@
     guideCheck();
     return line;
   }
-  // one step of a try, with its deadline; a step that finishes is noted with how long it took
+  /* One step of a try, with its deadline; a step that finishes in time is noted with how long it took.
+     Once the deadline has passed, whatever the step does later is ignored: disconnecting for the next
+     try makes the browser turn down what was still waiting, and that isn't news. */
   function hrStep(p, k) {
-    var line = hrSay(k), t0 = Date.now(), lim = hrLimit(k), sc = hrScale(), cur = H.cur;
+    var line = hrSay(k), t0 = Date.now(), lim = hrLimit(k), sc = hrScale(), cur = H.cur, over = false;
     return new Promise(function (ok, no) {
       var hint = k === "service" || k === "read" ? setTimeout(function () { if (H.step === k && H.attaching) hrMsg(line + " " + hrPairHint()); }, HR_HINT * sc) : 0;
-      var t = setTimeout(function () { clearTimeout(hint); var e = hrErr("TimeoutError", k); e.ms = lim; no(e); }, lim * sc);
-      p.then(function (v) { clearTimeout(t); clearTimeout(hint); cur.steps.push({ k: k, ms: Date.now() - t0, what: cur.what, err: cur.perr }); ok(v); },
-        function (e) { clearTimeout(t); clearTimeout(hint); no(hrErr((e && e.name) || "Error", k, e && e.message)); });
+      var t = setTimeout(function () { over = true; clearTimeout(hint); var e = hrErr("TimeoutError", k); e.ms = lim; no(e); }, lim * sc);
+      p.then(function (v) { clearTimeout(t); clearTimeout(hint); if (over) return; cur.steps.push({ k: k, ms: Date.now() - t0, what: cur.what, err: cur.perr }); ok(v); },
+        function (e) { clearTimeout(t); clearTimeout(hint); if (!over) no(hrErr((e && e.name) || "Error", k, e && e.message)); });
     });
   }
   // the heart-rate service, or, if there's none, which of the services the page may ask about it does offer
@@ -329,6 +331,10 @@
         ? " A Garmin watch offers it only while Broadcast Heart Rate is on, so check that it is. If it is, the watch may be answering this phone as the one it syncs with in Garmin Connect rather than as a heart-rate receiver; a tablet or computer that isn't paired with the watch can usually connect to its broadcast." : " This page can't read it.") + said);
     } else if (s === "service") {
       hrMsg(H.name + " linked up but didn't share its heart-rate service." + pair + " Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g + said);
+    } else if (s === "probe" && n === "TimeoutError") {
+      hrMsg(H.name + " linked up but didn't answer anything this page asked of it, not even a test read." + (hrGarmin()
+        ? " This can happen when the watch is also paired with this phone in Garmin Connect. Two things to try: turn off the watch's connection to your phone while you use Entrain (the phone icon in the watch's controls menu; turn it back on afterwards) and connect again, or connect from a tablet or computer that isn't paired with the watch."
+        : " Close any other app that uses it, turn your phone's Bluetooth off and on, and try again.") + said);
     } else if (s === "read" || s === "probe") {
       hrMsg(H.name + " linked up but didn't start sending its heart rate." + pair + " Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g + said);
     } else if (n === "NotFoundError" && H.dev && /service/i.test((e && e.message) || "")) {
