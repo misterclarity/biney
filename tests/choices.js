@@ -6,7 +6,7 @@
 //   Q  the three new quotes            I  the impressum, copyright and licence
 //   K  the code check's fixes          L  Healthy living: recipes and supplements
 //   G  the gratitude practice          C  Calm Reset's beat and pace     D  donations
-//   U  what an automatic update waits for
+//   U  what an automatic update waits for B  connecting can't get stuck
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -96,7 +96,8 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok((await BC(p)).pattern === id, 'back on its timings, it\'s chosen again');
 
       // it comes back after a reload, chosen, with its timings
-      await p.reload(); await p.waitForTimeout(500);
+      await p.reload(); await p.waitForTimeout(300);
+      await p.waitForFunction(id => window.__entrain && window.__entrain.BC.pattern === id && document.querySelector('#bPats label.on'), id, { timeout: 5000 }).catch(() => {});   // slower when the suites run side by side
       b = await BC(p); c = await chips(p);
       ok(b.pattern === id && b.inh === 4 && b.exh === 7 && c.indexOf('*Evening 4-6') >= 0 && await p.$eval('#bExh', e => e.value) === '7', 'after a reload it\'s still there and still chosen: ' + c.join(' | '));
       await p.click('#bAdjust'); await p.waitForTimeout(400);
@@ -724,6 +725,56 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const prDone = await busy();
       ok(!idle0 && br && brPaused && !brDone && !rec0 && rec1 && find && pr && !prDone,
         'an update waits while a breathing session runs or is paused, a recipe has ticks, search is open or a practice runs: ' + [idle0, br, brPaused, brDone, rec0, rec1, find, pr, prDone].join(' '));
+      await p.context().close();
+    }
+
+    /* B. connecting a sensor can't get stuck at Connecting…: each step has a deadline and is tried again,
+       the button reads Cancel meanwhile, and the message says which step it's on, or what to do */
+    if (!only || only === 'B') {
+      const st = q => E(q, () => ({ st: window.__entrain.H.state, tries: window.__hrTries(), msg: document.querySelector('#hrMsg').textContent,
+        btn: document.querySelector('#hrConnect').textContent, dis: document.querySelector('#hrConnect').getAttribute('aria-disabled'),
+        guide: (document.querySelector('#gCheck li[data-k="conn"] .s') || {}).textContent, pill: document.querySelector('#tbSensorTxt').textContent }));
+      // readings that never start the first time: a second try goes through
+      let p = await page(OPT(), null, { speed: 1, rr: false, hang: 'read', hangOnce: true, quick: 0.05 });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      await p.click('#hrConnect'); await p.waitForTimeout(200);
+      const mid = await st(p);
+      ok(mid.st === 'busy' && /^Connecting to Venu 4: starting its heart-rate readings…$/.test(mid.msg) && mid.btn === 'Cancel' && mid.dis === 'false' && /^Starting its heart-rate readings/.test(mid.guide) && mid.pill === 'Connecting…',
+        'while it connects, the message and the guide say which step it is on, and the button reads Cancel: ' + mid.msg);
+      await p.waitForFunction(() => window.__entrain.H.state === 'on', null, { timeout: 5000 }).catch(() => {});
+      const r1 = await st(p);
+      ok(r1.st === 'on' && r1.tries === 2 && r1.msg === '' && r1.btn === 'Disconnect', 'readings that never start the first time: it tries again and connects (' + r1.tries + ' tries)');
+      await p.waitForTimeout(1500);
+      ok(await E(p, () => window.__entrain.H.hr > 0), 'and the heart rate comes in');
+      await p.context().close();
+      // a heart-rate service that never turns up: three tries, then what to do
+      p = await page(OPT(), null, { speed: 1, rr: false, hang: 'service', quick: 0.05 });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      await p.click('#hrConnect');
+      await p.waitForFunction(() => window.__entrain.H.state === 'off', null, { timeout: 8000 }).catch(() => {});
+      const r2 = await st(p);
+      ok(r2.st === 'off' && r2.tries === 3 && /^Venu 4 linked up but didn't share its heart-rate service in time\. Turn your phone's Bluetooth off and on, restart the broadcast, and try again\./.test(r2.msg) &&
+        /Garmin Connect on this phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, and tap Force stop/.test(r2.msg) && r2.btn === 'Connect sensor', 'a service that never turns up: three tries, then a message that says what to do: ' + r2.msg);
+      await p.context().close();
+      // readings that never start at all
+      p = await page(OPT(), null, { speed: 1, rr: false, hang: 'read', quick: 0.05 });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      await p.click('#hrConnect');
+      await p.waitForFunction(() => window.__entrain.H.state === 'off', null, { timeout: 8000 }).catch(() => {});
+      const r3 = await st(p);
+      ok(r3.tries === 3 && /^Venu 4 linked up but didn't start sending its heart rate\. If your phone asked to pair with it \(the request can also sit in the notifications\), accept it/.test(r3.msg), 'readings that never start: it mentions a pairing request to accept');
+      await p.context().close();
+      // Cancel, while it links up at its real pace
+      p = await page(OPT(), null, { speed: 1, rr: false, hang: 'link' });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      await p.click('#hrConnect'); await p.waitForTimeout(400);
+      const c0 = await st(p);
+      await p.click('#hrConnect'); await p.waitForTimeout(300);
+      const c1 = await st(p);
+      ok(c0.st === 'busy' && c0.btn === 'Cancel' && c1.st === 'off' && c1.btn === 'Connect sensor' && c1.msg === 'Stopped connecting. Press Connect sensor to try again.' && c1.pill === 'Connect sensor',
+        'Cancel stops it straight away: ' + c1.msg);
+      await p.waitForTimeout(800);
+      ok((await st(p)).st === 'off' && (await st(p)).tries === 1, 'and nothing carries on behind it');
       await p.context().close();
     }
 

@@ -18,7 +18,8 @@
     beats: [],                 // {t, rr}: beat-to-beat intervals from the last 5 minutes
     series: [],                // {t, hr}: every heart-rate point (per beat, or per notification), last 5 minutes
     since: 0, coh: null,       // when continuous data began; the latest coherence result
-    pulseT: 0, tickT: 0, cohT: 0, find: null
+    pulseT: 0, tickT: 0, cohT: 0, find: null,
+    gen: 0, attaching: false, attempt: 0, step: ""   // connecting: which try, and which step it's on
   };
   var FIND_RATES = [6.5, 6, 5.5, 5, 4.5], FIND_STEP = 120;
 
@@ -30,9 +31,9 @@
     $("#hr").dataset.state = st;
     bSetT("#hrPillTxt", pill);
     ["#hrConnect", "#gConnect"].forEach(function (sel) {
-      bSetT(sel, (st === "on" || st === "lost") ? "Disconnect" : st === "busy" ? "Connecting…" : "Connect sensor");
+      bSetT(sel, (st === "on" || st === "lost") ? "Disconnect" : st === "busy" ? (H.attaching ? "Cancel" : "Connecting…") : "Connect sensor");
       $(sel).disabled = !hrSupported();
-      $(sel).setAttribute("aria-disabled", st === "busy" ? "true" : "false");   // busy, not disabled, so the button you pressed keeps the focus
+      $(sel).setAttribute("aria-disabled", st === "busy" && !H.attaching ? "true" : "false");   // busy, not disabled, so the button you pressed keeps the focus
     });
     $("#hrAny").hidden = st === "on" || st === "lost" || !hrSupported();
     finderUI();
@@ -67,7 +68,7 @@
   /* `any` opens the browser's chooser on every nearby device, for sensors
      that offer the heart-rate service but don't advertise it. */
   function hrConnect(any) {
-    if (H.state === "busy") return;                     // already connecting
+    if (H.state === "busy") { if (H.attaching) hrCancel(); return; }   // the chooser is open, or Cancel was pressed
     if (H.state === "on" || H.state === "lost") { hrDisconnect(); return; }
     if (!hrSupported()) return;
     hrMsg("");
@@ -92,18 +93,58 @@
       return hrAttach();
     }).catch(hrFail);
   }
+  /* Connecting takes three steps, each with a deadline, so a sensor that stops answering can't leave
+     the page on Connecting…: link up, find the heart-rate service, start the readings. A step that
+     fails or runs out of time starts again from the top, up to three tries in all, the later ones
+     with a pause after linking up, since on Android a second try often goes through. While it runs
+     the button reads Cancel, and the message under it says which step it's on. */
+  var HR_STEPS = { link: ["linking up", 12000], service: ["finding its heart-rate service", 8000], read: ["starting its heart-rate readings", 8000] };   // ms each try
+  var HR_TRIES = 3;
+  function hrErr(name, step, msg) { var e = new Error(msg || name); e.name = name; e.step = step; return e; }
+  function hrWait(ms) { return new Promise(function (r) { setTimeout(r, ms * (window.__hrScale || 1)); }); }
+  function hrStep(p, k) {
+    H.step = k;
+    hrMsg("Connecting to " + H.name + ": " + HR_STEPS[k][0] + (H.attempt > 1 ? ", try " + H.attempt + " of " + HR_TRIES : "") + "…");
+    guideCheck();
+    return new Promise(function (ok, no) {
+      var t = setTimeout(function () { no(hrErr("TimeoutError", k)); }, HR_STEPS[k][1] * (window.__hrScale || 1));   // the scale is for the tests
+      p.then(function (v) { clearTimeout(t); ok(v); }, function (e) { clearTimeout(t); no(hrErr((e && e.name) || "Error", k, e && e.message)); });
+    });
+  }
+  // worth another try: a step that ran out of time or broke off, or a service missing from a list the phone kept from before
+  function hrRetryable(e) { return /^(TimeoutError|NetworkError|NotSupportedError|InvalidStateError|UnknownError|OperationError)$/.test(e.name) || (e.name === "NotFoundError" && e.step === "service"); }
   function hrAttach() {
-    hrSetState("busy", "Connecting to " + H.name + "…");
-    return H.dev.gatt.connect()
-      .then(function (srv) { return srv.getPrimaryService("heart_rate"); })
-      .then(function (svc) { return svc.getCharacteristic("heart_rate_measurement"); })
-      .then(function (chr) {
-        if (H.chr) H.chr.removeEventListener("characteristicvaluechanged", hrOnValue);
-        H.chr = chr;
-        chr.addEventListener("characteristicvaluechanged", hrOnValue);
-        return chr.startNotifications();
-      })
-      .then(function () {
+    var gen = ++H.gen, dev = H.dev, stale = function () { return gen !== H.gen || !H.wantOn; };
+    H.attaching = true;
+    H.attempt = 0;
+    var go = function () {
+      H.attempt++;
+      hrSetState("busy", "Connecting to " + H.name + "…");
+      return hrStep(dev.gatt.connect(), "link")
+        .then(function (srv) {
+          return (H.attempt > 1 ? hrWait(800) : Promise.resolve()).then(function () {
+            return hrStep(srv.getPrimaryService("heart_rate").then(function (svc) { return svc.getCharacteristic("heart_rate_measurement"); }), "service");
+          });
+        })
+        .then(function (chr) {
+          if (stale()) throw hrErr("AbortError", "read");
+          if (H.chr) H.chr.removeEventListener("characteristicvaluechanged", hrOnValue);
+          H.chr = chr;
+          chr.addEventListener("characteristicvaluechanged", hrOnValue);
+          return hrStep(chr.startNotifications(), "read");
+        })
+        .catch(function (e) {
+          if (stale()) throw hrErr("AbortError", e.step);
+          if (H.attempt < HR_TRIES && hrRetryable(e)) {
+            try { if (dev.gatt.connected) dev.gatt.disconnect(); } catch (x) {}
+            return hrWait(1000).then(function () { if (stale()) throw hrErr("AbortError", e.step); return go(); });
+          }
+          throw e;
+        });
+    };
+    return go().then(function () {
+        if (gen !== H.gen) { try { dev.gatt.disconnect(); } catch (x) {} return; }   // cancelled while the last step finished
+        H.attaching = false; H.step = "";
         H.tries = 0;
         H.connAt = bNow();
         store.set("hrEver", "1");
@@ -117,14 +158,38 @@
         clearInterval(H.cohT);
         H.cohT = setInterval(cohTick, 5000);
         hrPulse();
+      }, function (e) {
+        if (gen === H.gen) { H.attaching = false; H.step = ""; }
+        throw e;
       });
   }
-  function hrFail(e) {
-    var n = e && e.name;
+  function hrCancel() {
+    H.gen++;
     H.wantOn = false;
+    H.attaching = false; H.step = "";
+    try { if (H.dev && H.dev.gatt.connected) H.dev.gatt.disconnect(); } catch (e) {}
+    hrSetState("off", "Not connected");
+    hrMsg("Stopped connecting. Press Connect sensor to try again.");
+  }
+  function hrGarmin() { return /venu|forerunner|f[eē]nix|epix|vivoactive|vívoactive|instinct|enduro|garmin|approach|descent|marq|quatix|tactix|lily|bounce/i.test(H.name); }
+  function hrFail(e) {
+    var n = e && e.name, s = e && e.step;
+    if (n === "AbortError") return;                     // Cancel was pressed: it has said so already
+    H.wantOn = false;
+    H.attaching = false; H.step = "";
     try { if (H.dev && H.dev.gatt.connected) H.dev.gatt.disconnect(); } catch (x) {}
     hrSetState("off", "Not connected");
-    if (n === "NotFoundError" && H.dev && /service/i.test(e.message || "")) {
+    // Garmin Connect, running on the same phone, can keep hold of the watch so another app's connection never finishes
+    var g = hrGarmin() ? " If it keeps happening, Garmin Connect on this phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, and tap Force stop, then connect here again. Open Garmin Connect afterwards to sync as usual." : "";
+    if (s === "link") {
+      hrMsg("Couldn't link up with " + H.name + " after " + HR_TRIES + " tries. Keep it close, check that it's still broadcasting, and try again." + g);
+    } else if (s === "service" && n === "NotFoundError") {
+      hrMsg(H.name + " linked up but doesn't offer the standard heart-rate service" + (hrGarmin() ? ", which a Garmin watch only does while Broadcast Heart Rate is on. Check that it is, turn your phone's Bluetooth off and on, and try again." : ", so this page can't read it."));
+    } else if (s === "service") {
+      hrMsg(H.name + " linked up but didn't share its heart-rate service in time. Turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g);
+    } else if (s === "read") {
+      hrMsg(H.name + " linked up but didn't start sending its heart rate. If your phone asked to pair with it (the request can also sit in the notifications), accept it and try again. Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g);
+    } else if (n === "NotFoundError" && H.dev && /service/i.test((e && e.message) || "")) {
       hrMsg(H.name + " doesn't offer the standard heart-rate service, so this page can't read it.");
     } else if (n === "NotFoundError") {
       hrMsg("No sensor was picked. A Garmin watch only shows up while Broadcast Heart Rate is on; other sensors need to be awake and not connected to another app.");
@@ -135,7 +200,7 @@
     }
   }
   function hrLost() {
-    if (!H.wantOn) return;
+    if (!H.wantOn || H.attaching) return;             // a connection that drops while connecting is that attempt's to retry
     if (H.tries >= 5) {
       H.wantOn = false;
       hrSetState("off", "Not connected");
@@ -344,7 +409,7 @@
     var st = H.state, live = hrLive(), now = bNow();
     guideItem("bt", hrSupported() ? "ok" : "no", hrSupported() ? "Ready" : "Not available here. See Your browser.");
     if (st === "on") guideItem("conn", "ok", H.name);
-    else if (st === "busy") guideItem("conn", "wait", "Connecting…");
+    else if (st === "busy") guideItem("conn", "wait", H.step ? HR_STEPS[H.step][0].charAt(0).toUpperCase() + HR_STEPS[H.step][0].slice(1) + (H.attempt > 1 ? ", try " + H.attempt : "") + "…" : "Connecting…");
     else if (st === "lost") guideItem("conn", "wait", "Reconnecting…");
     else guideItem("conn", "", hrSupported() ? "Press Connect sensor" : "");
     if (live) guideItem("hr", "ok", Math.round(H.hr) + " bpm");
