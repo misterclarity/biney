@@ -6,6 +6,7 @@
 //   Q  the three new quotes            I  the impressum, copyright and licence
 //   K  the code check's fixes          L  Healthy living: recipes and supplements
 //   G  the gratitude practice          C  Calm Reset's beat and pace     D  donations
+//   U  what an automatic update waits for
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -695,15 +696,51 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await p.context().close();
     }
 
-    /* D. donations: a button in Settings and a line in the impressum, opening Ko-fi in the browser */
+    /* U. an update installs itself only when a reload would cut nothing short: no practice, breathing
+       session or test, no track partway through, no sensor, no search or typing, no recipe on the go */
+    if (!only || only === 'U') {
+      const p = await page(OPT({ audio: true }));
+      const busy = () => E(p, () => window.__entrain.appBusy());
+      const idle0 = await busy();
+      await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
+      await p.click('#bStart'); await p.waitForTimeout(400);
+      const br = await busy();
+      await p.click('#bStart'); await p.waitForTimeout(150);
+      const brPaused = await busy();
+      await p.click('#bReset'); await p.waitForTimeout(250);
+      const brDone = await busy();
+      await E(p, () => location.hash = 'living/congee'); await p.waitForTimeout(400);
+      const rec0 = await busy();
+      await p.click('.lv-steps li:first-child label'); await p.waitForTimeout(100);
+      const rec1 = await busy();
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(300);
+      await p.click('#tbFind'); await p.waitForTimeout(200);
+      const find = await busy();
+      await p.keyboard.press('Escape'); await p.waitForTimeout(200);
+      await E(p, () => location.hash = 'practice/body-scan'); await p.waitForTimeout(300);
+      await p.click('#sGo'); await p.waitForTimeout(500);
+      const pr = await busy();
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
+      const prDone = await busy();
+      ok(!idle0 && br && brPaused && !brDone && !rec0 && rec1 && find && pr && !prDone,
+        'an update waits while a breathing session runs or is paused, a recipe has ticks, search is open or a practice runs: ' + [idle0, br, brPaused, brDone, rec0, rec1, find, pr, prDone].join(' '));
+      await p.context().close();
+    }
+
+    /* D. donations: a button on Today and in Settings, and a line in the impressum, opening Ko-fi in the browser */
     if (!only || only === 'D') {
       const p = await page(OPT());
       await E(p, () => location.hash = 'settings'); await p.waitForTimeout(400);
-      const b = await E(p, () => { const a = document.querySelector('.st-about a.st-donate'), r = a.getBoundingClientRect(); return { href: a.getAttribute('href'), target: a.target, rel: a.rel, txt: a.textContent.trim(), h: r.height, col: getComputedStyle(a).color }; });
+      const btn = sel => E(p, sel => { const a = document.querySelector(sel), r = a.getBoundingClientRect(); return { href: a.getAttribute('href'), target: a.target, rel: a.rel, txt: a.textContent.trim(), h: r.height, col: getComputedStyle(a).color }; }, sel);
+      const b = await btn('.st-about a.btn.donate');
       ok(b.href === 'https://ko-fi.com/misterclarity' && b.target === '_blank' && /noopener/.test(b.rel) && b.txt === 'Support Entrain on Ko-fi' && b.h >= 44,
         'Settings has a donations button to Ko-fi, opening in the browser: ' + b.txt);
       await E(p, () => location.hash = 'l-impressum'); await p.waitForTimeout(400);
       ok(await E(p, () => !!document.querySelector('.imprint a[href="https://ko-fi.com/misterclarity"][target="_blank"]')), 'and the impressum links to it too');
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(400);
+      const h = await btn('.td-donate a.btn.donate');
+      ok(h.href === b.href && h.target === '_blank' && /noopener/.test(h.rel) && h.txt === b.txt && h.h >= 44 && h.col === b.col && /^Entrain is free and has no ads\./.test(await t(p, '.td-donate p')),
+        'Today has the same button, at the end: ' + await t(p, '.td-donate p'));
       await p.context().close();
     }
   } catch (e) {

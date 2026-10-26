@@ -1,4 +1,4 @@
-// Installable-app checks: offline worker, offline reloads, update flow, install strip, installability.
+// Installable-app checks: offline worker, offline reloads, updates that install themselves, install strip, installability.
 const { chromium, ROOT, PAGE, OUT: OUTDIR } = require('./pw');
 const fs = require('fs');
 const path = require('path'), http = require('http'), { spawn } = require('child_process');
@@ -72,24 +72,55 @@ const vis = (p, s) => p.$eval(s, e => !e.hidden && !!(e.offsetParent || e.getCli
   await p.click('#bStart');
   await ctx.setOffline(false);
 
-  // 4. update: a new deploy changes sw.js; the page offers Update and switches when tapped
+  // 4. updates: each new deploy changes sw.js, and the new version installs itself when that interrupts nothing
   const swSrc = fs.readFileSync(SERVE + 'sw.js', 'utf8');
   const oldVer = swSrc.match(/entrain-([0-9a-f]+)/)[1];
-  fs.writeFileSync(SERVE + 'sw.js', swSrc.split(oldVer).join('test0newver'));
   const htmlSrc = fs.readFileSync(SERVE + 'index.html', 'utf8');
-  fs.writeFileSync(SERVE + 'index.html', htmlSrc.replace('<h2 id="homePat">', '<h2 id="homePat" data-build="new">'));
-  await p.goto(URL0 + '#home'); await p.waitForTimeout(300);
-  await p.evaluate(() => navigator.serviceWorker.getRegistration().then(r => r.update()));
-  await p.waitForFunction(() => document.querySelector('#toastAct') && !document.querySelector('#toastAct').hidden, null, { timeout: 8000 }).catch(() => {});
-  ok(/new version/.test(await t(p, '#toastTxt')) && await vis(p, '#toastAct'), 'update notice with button: "' + await t(p, '#toastTxt') + '"');
-  ok(await p.evaluate(() => !document.querySelector('[data-build=new]')), 'old copy keeps running until Update is tapped');
-  await p.waitForTimeout(400); await p.screenshot({ path: OUT + 'pwa-update-toast.png' });
-  await Promise.all([p.waitForEvent('load', { timeout: 8000 }).catch(() => null), p.click('#toastAct')]);
-  await p.waitForTimeout(800);
-  ok(await p.evaluate(() => !!document.querySelector('[data-build=new]')), 'after Update the new version is running');
+  const deploy = v => { fs.writeFileSync(SERVE + 'sw.js', swSrc.split(oldVer).join(v)); fs.writeFileSync(SERVE + 'index.html', htmlSrc.replace('<h2 id="homePat">', '<h2 id="homePat" data-build="' + v + '">')); };
+  const build = () => p.evaluate(() => { const h = document.querySelector('#homePat'); return h ? h.dataset.build || '' : ''; }).catch(() => '?');
+  const until = async (f, ms) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { try { if (await f()) return true; } catch (e) {} await new Promise(r => setTimeout(r, 250)); } return false; };
+  const look = () => p.evaluate(() => navigator.serviceWorker.getRegistration().then(r => r.update())).catch(() => {});
+  const leave = () => p.evaluate(() => { Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' }); document.dispatchEvent(new Event('visibilitychange')); });
+  await p.evaluate(() => localStorage.setItem('entrain.debug', '1'));
+  // opened and not touched yet: it installs straight away, and says so
+  deploy('test0newver');
+  await p.goto(URL0 + '#home'); await look();
+  ok(await until(async () => await build() === 'test0newver', 15000), 'opened and not yet touched, the new version installs itself straight away');
+  ok(await until(async () => /^Updated: this is the newest version of Entrain/.test(await t(p, '#toastTxt')) && await vis(p, '#toast'), 5000), 'and says so: "' + await t(p, '#toastTxt') + '"');
   const keys2 = await p.evaluate(() => caches.keys());
   ok(keys2.length === 1 && keys2[0] === 'entrain-test0newver', 'old store removed: ' + keys2);
-  ok(!(await vis(p, '#toast')), 'no notice after the update reload');
+  // in use: a notice, Update now, and the old copy runs on meanwhile
+  deploy('test1newver');
+  await p.click('#qNext'); await look();
+  await until(async () => /new version/.test(await t(p, '#toastTxt')) && await vis(p, '#toastAct'), 8000);
+  ok(/^A new version of Entrain is ready\. It installs itself the next time you leave the app\.$/.test(await t(p, '#toastTxt')) && await t(p, '#toastAct') === 'Update now',
+    'in use, a notice says it installs itself next time you leave the app, and offers Update now: "' + await t(p, '#toastTxt') + '"');
+  ok(await build() === 'test0newver', 'the old copy keeps running meanwhile');
+  await p.waitForTimeout(400); await p.screenshot({ path: OUT + 'pwa-update-toast.png' });
+  await p.click('#toastAct');
+  ok(await until(async () => await build() === 'test1newver', 10000), 'Update now switches to it');
+  await p.waitForTimeout(900);
+  ok(!(await vis(p, '#toast')), 'and no notice afterwards, since you asked for it');
+  // leaving the app with nothing going on installs it; with a session running it waits for the session to end
+  deploy('test2newver');
+  await p.click('#qNext'); await look();
+  await until(async () => await vis(p, '#toastAct'), 8000);
+  await leave();
+  ok(await until(async () => await build() === 'test2newver', 10000), 'leaving the app with nothing going on installs it');
+  ok(await until(async () => /^Updated/.test(await t(p, '#toastTxt')), 5000), 'with a word when you come back: "' + await t(p, '#toastTxt') + '"');
+  deploy('test3newver');
+  await p.click('#homeStart'); await p.waitForTimeout(600); await look();
+  await until(async () => /new version/.test(await t(p, '#toastTxt')), 8000);
+  await leave(); await p.waitForTimeout(1500);
+  ok(await build() === 'test2newver' && await t(p, '#bStart') === 'Pause', 'leaving while a breathing session runs leaves the session alone');
+  await p.click('#bStart'); await p.waitForTimeout(150); await p.click('#bReset'); await p.waitForTimeout(250);
+  await p.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+  ok(await until(async () => await build() === 'test3newver', 10000), 'once it has ended, leaving the app installs the update');
+  // an app left open looks for a new version when it comes back after half an hour
+  await p.waitForTimeout(800);
+  ok(await p.evaluate(() => { const X = window.__entrain; X.APP.checked = Date.now() - 31 * 60000; document.dispatchEvent(new Event('visibilitychange')); return Date.now() - X.APP.checked < 2000; }),
+    'back on screen after half an hour away, it looks for a new version');
+  await p.evaluate(() => location.hash = 'home'); await p.waitForTimeout(300);
 
   // 5. install strip on Home, driven by a stand-in for Chrome's install event
   await p.evaluate(() => {
@@ -141,7 +172,7 @@ const vis = (p, s) => p.$eval(s, e => !e.hidden && !!(e.offsetParent || e.getCli
   ok(errs.length === 0 && await p3.evaluate(() => navigator.serviceWorker ? navigator.serviceWorker.getRegistrations().then(r => r.length).catch(() => 0) : 0) === 0 && !(await vis(p3, '#installCard')), 'preview page: no worker, no strip, no errors ' + errs.join(' | '));
 
   // 9. a passing notice doesn't push away a pending update offer
-  fs.writeFileSync(SERVE + 'sw.js', swSrc.split(oldVer).join('test1newver'));
+  fs.writeFileSync(SERVE + 'sw.js', swSrc.split(oldVer).join('test4newver'));
   await p.evaluate(() => navigator.serviceWorker.getRegistration().then(r => r.update()));
   await p.waitForFunction(() => /new version/.test(document.querySelector('#toastTxt').textContent), null, { timeout: 8000 }).catch(() => {});
   await p.evaluate(() => window.dispatchEvent(new Event('appinstalled')));

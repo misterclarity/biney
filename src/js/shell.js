@@ -180,7 +180,7 @@
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0 };
+  var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
     return (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
@@ -229,16 +229,50 @@
     APP.tt = setTimeout(function () { t.hidden = true; }, RM ? 0 : 250);
   }
 
+  /* ----- updates install themselves -----
+     The app looks for a new version each time it opens, when it comes back to the screen after half
+     an hour away, and every hour it stays on screen. A new version downloads in the background, then
+     installs itself at a moment that interrupts nothing: straight away if you haven't touched the app
+     since opening it, otherwise the next time you leave it (another app, or the screen locked) while
+     nothing is going on that a reload would cut short. Until then the notice offers Update now. */
+  var UPD_FRESH = 15000;                 // ms after opening in which an untouched app updates at once
+  // anything a reload would cut short or lose
+  function appBusy() {
+    var a = document.activeElement;
+    return pBusy() || B.state === "running" || B.state === "paused" ||      // a practice, the breathing guide or the resonance test
+      A.playing || (!!A.track && A.elapsed > 0) ||                            // a track, playing or paused partway through
+      H.state === "on" || H.state === "busy" || H.state === "lost" ||         // a heart sensor, which would have to be paired again
+      FD.open || (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
+      (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together
+      (!!LV.rid && (LV.cook || !!document.querySelector(".lv-ing input:checked, .lv-steps input:checked")));   // a recipe being cooked
+  }
+  function updateApply(auto) {
+    var w = APP.waiting;
+    if (!w || APP.reloading) return;
+    APP.reloading = true;
+    if (auto) { try { sessionStorage.setItem("entrain.updated", "1"); } catch (e) {} }
+    if (w.state === "redundant") { location.reload(); return; }    // another window has already switched to it
+    w.postMessage("skipWaiting");                                    // it takes over, and the page reloads into it
+  }
+  function updateAuto() {
+    if (!APP.waiting || APP.reloading || appBusy()) return false;
+    if (document.visibilityState !== "hidden" && (APP.touched || Date.now() - APP.t0 > UPD_FRESH)) return false;
+    updateApply(true);
+    return true;
+  }
   function updateReady(w) {
-    toast("A new version of Entrain is ready.", {
-      action: "Update", sticky: true, keep: true,
+    APP.waiting = w;
+    if (updateAuto()) return;
+    toast("A new version of Entrain is ready. It installs itself the next time you leave the app.", {
+      action: "Update now", sticky: true, keep: true,
       onAct: function () {
-        APP.reloading = true;
         $("#toastAct").disabled = true;
         $("#toastTxt").textContent = "Updating…";
-        w.postMessage("skipWaiting");
+        updateApply(false);
       }
     });
+    clearInterval(APP.autoT);
+    APP.autoT = setInterval(updateAuto, 30000);      // for a session that ends while the app is in the background
   }
 
   function installShow(ios) {
@@ -297,6 +331,12 @@
 
     if (!("serviceWorker" in navigator)) return;
     var sw = navigator.serviceWorker;
+    var touch = function () { APP.touched = true; };
+    document.addEventListener("pointerdown", touch, { capture: true, passive: true });
+    document.addEventListener("keydown", touch, true);
+    var upd = null;
+    try { upd = sessionStorage.getItem("entrain.updated"); sessionStorage.removeItem("entrain.updated"); } catch (e) {}
+    if (upd) setTimeout(function () { toast("Updated: this is the newest version of Entrain."); }, 600);
     APP.hadCtl = !!sw.controller;
     sw.addEventListener("controllerchange", function () {
       if (APP.reloading) location.reload();
@@ -305,13 +345,14 @@
       sw.register("sw.js").then(function (reg) {
         APP.reg = reg;
         APP.checked = Date.now();
-        if (reg.waiting && sw.controller) updateReady(reg.waiting);
-        reg.addEventListener("updatefound", function () {
-          var w = reg.installing;
+        var follow = function (w) {                  // a new version downloading: ready once it's installed
           if (w) w.addEventListener("statechange", function () {
             if (w.state === "installed" && sw.controller) updateReady(w);
           });
-        });
+        };
+        if (reg.waiting && sw.controller) updateReady(reg.waiting);
+        else follow(reg.installing);                 // one that started downloading before this page asked
+        reg.addEventListener("updatefound", function () { follow(reg.installing); });
       }).catch(function () {});
       sw.ready.then(function () {
         if (APP.hadCtl || store.get("offlineNoted")) return;
@@ -321,12 +362,18 @@
     };
     if (document.readyState === "complete") go(); else window.addEventListener("load", go);
 
-    // an installed app can stay open for days; look for a new version when it comes back to the front
-    document.addEventListener("visibilitychange", function () {
-      if (document.visibilityState !== "visible" || !APP.reg || Date.now() - APP.checked < 36e5) return;
+    // an installed app can stay open for days: look for a new version when it comes back to the front
+    // after half an hour, and every hour it stays there; leaving it is when a waiting one installs
+    var check = function () {
+      if (!APP.reg) return;
       APP.checked = Date.now();
       APP.reg.update().catch(function () {});
+    };
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") { updateAuto(); return; }
+      if (Date.now() - APP.checked >= 18e5) check();
     });
+    setInterval(function () { if (document.visibilityState === "visible" && Date.now() - APP.checked >= 36e5) check(); }, 6e5);
   }
 
   function shellInit() {

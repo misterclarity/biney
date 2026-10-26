@@ -1684,9 +1684,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     .lv-body{padding:2px 16px 16px}
     .lv-sup > summary{padding:13px 14px}
   }
-  .st-about a.st-donate{align-self:flex-start;gap:8px;margin-top:4px;color:var(--text);background:color-mix(in srgb,var(--stim) 13%,var(--panel-2));border-color:color-mix(in srgb,var(--stim) 30%,transparent);text-decoration:none}
-  .st-about a.st-donate:hover{background:color-mix(in srgb,var(--stim) 20%,var(--panel-2))}
-  .st-donate svg.i{color:var(--stim)}
+  a.btn.donate{gap:8px;color:var(--text);background:color-mix(in srgb,var(--stim) 13%,var(--panel-2));border-color:color-mix(in srgb,var(--stim) 30%,transparent);text-decoration:none}
+  a.btn.donate:hover{background:color-mix(in srgb,var(--stim) 20%,var(--panel-2))}
+  a.btn.donate svg.i{color:var(--stim)}
+  .st-about a.btn.donate{align-self:flex-start;margin-top:4px}
+  .td-donate{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap;margin-top:12px}
+  .td-donate p{margin:0;flex:1 1 240px}
+  .td-donate b{color:var(--text);font-weight:700}
 
 </style>
 </head>
@@ -1822,6 +1826,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <li><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></li>
             <li class="warn"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Read the safety notes once.</b> Who should ask a doctor before using the beats or the breath holds, and how to wear headphones with a pacemaker. <button type="button" class="sf-link" data-safety="1">Safety notes</button></span></li>
           </ul>
+        </div>
+
+        <div class="note-card td-donate">
+          <p><b>Entrain is free and has no ads.</b> If it helps you, a donation keeps it going.</p>
+          <a class="btn donate" href="https://ko-fi.com/misterclarity" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a>
         </div>
       </section>
 
@@ -6634,7 +6643,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0 };
+  var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
     return (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
@@ -6683,16 +6692,50 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     APP.tt = setTimeout(function () { t.hidden = true; }, RM ? 0 : 250);
   }
 
+  /* ----- updates install themselves -----
+     The app looks for a new version each time it opens, when it comes back to the screen after half
+     an hour away, and every hour it stays on screen. A new version downloads in the background, then
+     installs itself at a moment that interrupts nothing: straight away if you haven't touched the app
+     since opening it, otherwise the next time you leave it (another app, or the screen locked) while
+     nothing is going on that a reload would cut short. Until then the notice offers Update now. */
+  var UPD_FRESH = 15000;                 // ms after opening in which an untouched app updates at once
+  // anything a reload would cut short or lose
+  function appBusy() {
+    var a = document.activeElement;
+    return pBusy() || B.state === "running" || B.state === "paused" ||      // a practice, the breathing guide or the resonance test
+      A.playing || (!!A.track && A.elapsed > 0) ||                            // a track, playing or paused partway through
+      H.state === "on" || H.state === "busy" || H.state === "lost" ||         // a heart sensor, which would have to be paired again
+      FD.open || (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
+      (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together
+      (!!LV.rid && (LV.cook || !!document.querySelector(".lv-ing input:checked, .lv-steps input:checked")));   // a recipe being cooked
+  }
+  function updateApply(auto) {
+    var w = APP.waiting;
+    if (!w || APP.reloading) return;
+    APP.reloading = true;
+    if (auto) { try { sessionStorage.setItem("entrain.updated", "1"); } catch (e) {} }
+    if (w.state === "redundant") { location.reload(); return; }    // another window has already switched to it
+    w.postMessage("skipWaiting");                                    // it takes over, and the page reloads into it
+  }
+  function updateAuto() {
+    if (!APP.waiting || APP.reloading || appBusy()) return false;
+    if (document.visibilityState !== "hidden" && (APP.touched || Date.now() - APP.t0 > UPD_FRESH)) return false;
+    updateApply(true);
+    return true;
+  }
   function updateReady(w) {
-    toast("A new version of Entrain is ready.", {
-      action: "Update", sticky: true, keep: true,
+    APP.waiting = w;
+    if (updateAuto()) return;
+    toast("A new version of Entrain is ready. It installs itself the next time you leave the app.", {
+      action: "Update now", sticky: true, keep: true,
       onAct: function () {
-        APP.reloading = true;
         $("#toastAct").disabled = true;
         $("#toastTxt").textContent = "Updating…";
-        w.postMessage("skipWaiting");
+        updateApply(false);
       }
     });
+    clearInterval(APP.autoT);
+    APP.autoT = setInterval(updateAuto, 30000);      // for a session that ends while the app is in the background
   }
 
   function installShow(ios) {
@@ -6751,6 +6794,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
     if (!("serviceWorker" in navigator)) return;
     var sw = navigator.serviceWorker;
+    var touch = function () { APP.touched = true; };
+    document.addEventListener("pointerdown", touch, { capture: true, passive: true });
+    document.addEventListener("keydown", touch, true);
+    var upd = null;
+    try { upd = sessionStorage.getItem("entrain.updated"); sessionStorage.removeItem("entrain.updated"); } catch (e) {}
+    if (upd) setTimeout(function () { toast("Updated: this is the newest version of Entrain."); }, 600);
     APP.hadCtl = !!sw.controller;
     sw.addEventListener("controllerchange", function () {
       if (APP.reloading) location.reload();
@@ -6759,13 +6808,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       sw.register("sw.js").then(function (reg) {
         APP.reg = reg;
         APP.checked = Date.now();
-        if (reg.waiting && sw.controller) updateReady(reg.waiting);
-        reg.addEventListener("updatefound", function () {
-          var w = reg.installing;
+        var follow = function (w) {                  // a new version downloading: ready once it's installed
           if (w) w.addEventListener("statechange", function () {
             if (w.state === "installed" && sw.controller) updateReady(w);
           });
-        });
+        };
+        if (reg.waiting && sw.controller) updateReady(reg.waiting);
+        else follow(reg.installing);                 // one that started downloading before this page asked
+        reg.addEventListener("updatefound", function () { follow(reg.installing); });
       }).catch(function () {});
       sw.ready.then(function () {
         if (APP.hadCtl || store.get("offlineNoted")) return;
@@ -6775,12 +6825,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     };
     if (document.readyState === "complete") go(); else window.addEventListener("load", go);
 
-    // an installed app can stay open for days; look for a new version when it comes back to the front
-    document.addEventListener("visibilitychange", function () {
-      if (document.visibilityState !== "visible" || !APP.reg || Date.now() - APP.checked < 36e5) return;
+    // an installed app can stay open for days: look for a new version when it comes back to the front
+    // after half an hour, and every hour it stays there; leaving it is when a waiting one installs
+    var check = function () {
+      if (!APP.reg) return;
       APP.checked = Date.now();
       APP.reg.update().catch(function () {});
+    };
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") { updateAuto(); return; }
+      if (Date.now() - APP.checked >= 18e5) check();
     });
+    setInterval(function () { if (document.visibilityState === "visible" && Date.now() - APP.checked >= 36e5) check(); }, 6e5);
   }
 
   function shellInit() {
@@ -10509,7 +10565,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, lvAmt: lvAmt };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, lvAmt: lvAmt, APP: APP, appBusy: appBusy };   // for automated tests only
   }
   /* ------------------------------- the end screen -------------------------------
      What a practice measured, as tiles you can tap for what each number means, with your own
@@ -11226,7 +11282,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       '<section class="st-card st-about" aria-labelledby="stI"><h2 id="stI">About</h2>' +
         '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project, and free software under the GNU AGPL, version 3. <a href="#l-impressum">Impressum, licence and credits</a></p>' +
         '<p class="st-note">Entrain is free and has no ads. If it helps you, a donation keeps it going.</p>' +
-        '<a class="btn st-donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a>' +
+        '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a>' +
       "</section>";
     stWire();
     bkWire();

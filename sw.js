@@ -3,15 +3,16 @@
    (index.html) is still a complete, self-contained file; this worker only stores it, the app
    description and the icons. Nothing else is fetched, recorded or sent.
 
-   Version 7d7664a141 is a hash of every stored file, so each new deploy changes this script.
-   The browser notices that, installs the new copy in the background, and the page offers an
-   "Update" button; the old copy keeps serving until then.
+   Version 6b03a5362d is a hash of every stored file, so each new deploy changes this script.
+   The browser notices that and installs the new copy in the background; the old copy keeps
+   serving until the page tells the new one to take over, which it does by itself when that
+   interrupts nothing (or when Update now is tapped).
 
    Copyright (C) 2026 misterclarity. Free software under the GNU Affero General Public License,
    version 3: https://www.gnu.org/licenses/agpl-3.0.html. Source: https://github.com/misterclarity/biney */
 "use strict";
 
-var CACHE = "entrain-7d7664a141";
+var CACHE = "entrain-6b03a5362d";
 var FILES = [
   "./",
   "manifest.webmanifest",
