@@ -2273,7 +2273,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <li><b>Start broadcasting on the watch.</b>Hold the upper-right button to open the controls menu and choose the heart-rate broadcast control. You can also go to Settings &gt; Health &amp; Wellness &gt; Wrist Heart Rate &gt; Broadcast Heart Rate. If the control isn't in the menu, you can add it when you customise the controls menu.</li>
                 <li><b>Wear it snug and keep your arm still.</b>Put it a finger's width above the wrist bone, tight enough not to slide. The optical sensor reads most steadily with your forearm resting on something.</li>
                 <li><b>Connect here.</b>Press Connect sensor. The watch appears in the list under its name within a few seconds; choose it and press Pair.</li>
-                <li><b>If it stays on Connecting…</b>Accept the pairing request if your phone shows one; on some phones it waits in the notifications. If there's none, Garmin Connect on the same phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, tap Force stop, and connect here again. Open Garmin Connect afterwards to sync as usual. Turning the phone's Bluetooth off and on, and restarting the broadcast on the watch, can help too. Within a minute at most, Entrain stops trying and says which step didn't finish; Cancel stops it sooner.</li>
+                <li><b>If it stays on Connecting…</b>Keep an eye on the watch: if it shows your phone's name or a code, confirm it there, and accept the pairing request on the phone if one appears (on some phones it waits in the notifications). Each step allows half a minute for this. Garmin Connect may need pairing with the watch again afterwards. If nothing appears, Garmin Connect on the same phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, tap Force stop, and connect here again. Open Garmin Connect afterwards to sync as usual. Turning the phone's Bluetooth off and on, and restarting the broadcast on the watch, can help too. If it still won't connect, a tablet or computer that isn't paired with the watch can usually connect to its broadcast. Entrain tries three times, then says which step didn't finish and what the phone reported; Cancel stops it sooner.</li>
                 <li><b>Stop when you're done.</b>Press the upper-right button on the watch to stop broadcasting, because it uses extra battery.</li>
               </ol>
               <p class="g-expect"><b>What you'll get:</b> heart rate about once a second, the swing in each breath and the resonance test. Garmin watches don't broadcast beat-to-beat intervals, so RMSSD stays empty and coherence is marked as an estimate.</p>
@@ -5629,7 +5629,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     series: [],                // {t, hr}: every heart-rate point (per beat, or per notification), last 5 minutes
     since: 0, coh: null,       // when continuous data began; the latest coherence result
     pulseT: 0, tickT: 0, cohT: 0, find: null,
-    gen: 0, attaching: false, attempt: 0, step: ""   // connecting: which try, and which step it's on
+    gen: 0, attaching: false, attempt: 0, step: "",  // connecting: which try, and which step it's on
+    log: [], offered: null     // what went wrong on each try; the services a sensor offers when the heart-rate one is missing
   };
   var FIND_RATES = [6.5, 6, 5.5, 5, 4.5], FIND_STEP = 120;
 
@@ -5683,9 +5684,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!hrSupported()) return;
     hrMsg("");
     hrSetState("busy", "Choose your sensor…");
+    // battery and device information too, so that a sensor without the heart-rate service can say what it does offer
     var opts = any === true
-      ? { acceptAllDevices: true, optionalServices: ["heart_rate"] }
-      : { filters: [{ services: ["heart_rate"] }] };
+      ? { acceptAllDevices: true, optionalServices: ["heart_rate", "battery_service", "device_information"] }
+      : { filters: [{ services: ["heart_rate"] }], optionalServices: ["battery_service", "device_information"] };
     var req;
     try { req = navigator.bluetooth.requestDevice(opts); } catch (e) { hrFail(e); return; }
     req.then(function (dev) {
@@ -5706,34 +5708,79 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* Connecting takes three steps, each with a deadline, so a sensor that stops answering can't leave
      the page on Connecting…: link up, find the heart-rate service, start the readings. A step that
      fails or runs out of time starts again from the top, up to three tries in all, the later ones
-     with a pause after linking up, since on Android a second try often goes through. While it runs
-     the button reads Cancel, and the message under it says which step it's on. */
-  var HR_STEPS = { link: ["linking up", 12000], service: ["finding its heart-rate service", 8000], read: ["starting its heart-rate readings", 8000] };   // ms each try
-  var HR_TRIES = 3;
+     with a pause after linking up, since on Android a second try often goes through. The last two
+     steps allow half a minute, long enough to confirm a pairing request on the watch or the phone,
+     and after a few seconds the message says to. While it runs the button reads Cancel, and the
+     message under it says which step it's on. */
+  var HR_STEPS = { link: ["linking up", 15000], service: ["finding its heart-rate service", 30000], read: ["starting its heart-rate readings", 30000] };   // ms each try
+  var HR_TRIES = 3, HR_HINT = 4000;
+  var HR_SVC = { "180d": "heart rate", "180f": "battery", "180a": "device information" };
+  function hrPairHint() {
+    return hrGarmin() ? "If your watch shows your phone's name or a code, confirm it on the watch, and accept the pairing request on the phone if one appears."
+      : "If your phone asks to pair, accept it.";
+  }
   function hrErr(name, step, msg) { var e = new Error(msg || name); e.name = name; e.step = step; return e; }
   function hrWait(ms) { return new Promise(function (r) { setTimeout(r, ms * (window.__hrScale || 1)); }); }
   function hrStep(p, k) {
+    var sc = window.__hrScale || 1, line = "Connecting to " + H.name + ": " + HR_STEPS[k][0] + (H.attempt > 1 ? ", try " + H.attempt + " of " + HR_TRIES : "") + "…";   // the scale is for the tests
     H.step = k;
-    hrMsg("Connecting to " + H.name + ": " + HR_STEPS[k][0] + (H.attempt > 1 ? ", try " + H.attempt + " of " + HR_TRIES : "") + "…");
+    hrMsg(line);
     guideCheck();
     return new Promise(function (ok, no) {
-      var t = setTimeout(function () { no(hrErr("TimeoutError", k)); }, HR_STEPS[k][1] * (window.__hrScale || 1));   // the scale is for the tests
-      p.then(function (v) { clearTimeout(t); ok(v); }, function (e) { clearTimeout(t); no(hrErr((e && e.name) || "Error", k, e && e.message)); });
+      var hint = k === "link" ? 0 : setTimeout(function () { if (H.step === k && H.attaching) hrMsg(line + " " + hrPairHint()); }, HR_HINT * sc);
+      var t = setTimeout(function () { clearTimeout(hint); no(hrErr("TimeoutError", k)); }, HR_STEPS[k][1] * sc);
+      p.then(function (v) { clearTimeout(t); clearTimeout(hint); ok(v); },
+        function (e) { clearTimeout(t); clearTimeout(hint); no(hrErr((e && e.name) || "Error", k, e && e.message)); });
     });
   }
-  // worth another try: a step that ran out of time or broke off, or a service missing from a list the phone kept from before
-  function hrRetryable(e) { return /^(TimeoutError|NetworkError|NotSupportedError|InvalidStateError|UnknownError|OperationError)$/.test(e.name) || (e.name === "NotFoundError" && e.step === "service"); }
+  // the heart-rate service, or, if there's none, which of the services the page may ask about it does offer
+  function hrService(srv) {
+    H.offered = null;
+    return srv.getPrimaryService("heart_rate").catch(function (e) {
+      if (!e || e.name !== "NotFoundError" || !srv.getPrimaryServices) throw e;
+      return srv.getPrimaryServices().then(function (l) {
+        H.offered = l.map(function (s) { var u = String(s.uuid || "").toLowerCase(); return HR_SVC[u.slice(4, 8)] || u; });
+        throw e;
+      }, function () { H.offered = []; throw e; });
+    });
+  }
+  /* What the phone reported on each try, word for word, for the message when every try fails,
+     so that it can be passed on when asking for help: "each of the 3 tries, no answer within
+     30 seconds while finding its heart-rate service", or one line a try when they differ. */
+  function hrDetail() {
+    var one = function (x) {
+      var st = HR_STEPS[x.s] ? HR_STEPS[x.s][0] : "connecting";
+      var t = x.n === "TimeoutError" && HR_STEPS[x.s] ? "no answer within " + Math.round(HR_STEPS[x.s][1] / 1000) + " seconds while " + st
+        : x.n + " while " + st + (x.m && x.m !== x.n ? ": " + String(x.m).replace(/\.\s*$/, "") : "");
+      if (x.o) t += x.o.length ? ", and it showed only " + x.o.slice(0, -1).join(", ") + (x.o.length > 1 ? " and " : "") + x.o[x.o.length - 1]
+        : ", and it showed none of the heart rate, battery or device information services";
+      return t;
+    };
+    var l = H.log.map(one);
+    if (!l.length) return "";
+    var same = l.every(function (t) { return t === l[0]; });
+    return " (What happened: " + (same ? (l.length > 1 ? "each of the " + l.length + " tries, " : "") + l[0]
+      : l.map(function (t, i) { return "try " + (i + 1) + ", " + t; }).join("; ")) + ".)";
+  }
+  /* Worth another try: a step that ran out of time or broke off, a service missing from a list the
+     phone kept from before, or readings refused because a pairing request wasn't accepted in time. */
+  function hrRetryable(e) {
+    return /^(TimeoutError|NetworkError|NotSupportedError|InvalidStateError|UnknownError|OperationError)$/.test(e.name)
+      || (e.name === "NotFoundError" && e.step === "service")
+      || (/^(SecurityError|NotAllowedError)$/.test(e.name) && e.step === "read");
+  }
   function hrAttach() {
     var gen = ++H.gen, dev = H.dev, stale = function () { return gen !== H.gen || !H.wantOn; };
     H.attaching = true;
     H.attempt = 0;
+    H.log = [];
     var go = function () {
       H.attempt++;
       hrSetState("busy", "Connecting to " + H.name + "…");
       return hrStep(dev.gatt.connect(), "link")
         .then(function (srv) {
           return (H.attempt > 1 ? hrWait(800) : Promise.resolve()).then(function () {
-            return hrStep(srv.getPrimaryService("heart_rate").then(function (svc) { return svc.getCharacteristic("heart_rate_measurement"); }), "service");
+            return hrStep(hrService(srv).then(function (svc) { return svc.getCharacteristic("heart_rate_measurement"); }), "service");
           });
         })
         .then(function (chr) {
@@ -5745,6 +5792,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         })
         .catch(function (e) {
           if (stale()) throw hrErr("AbortError", e.step);
+          H.log.push({ s: e.step, n: e.name, m: e.message, o: e.name === "NotFoundError" && e.step === "service" ? H.offered : null });
           if (H.attempt < HR_TRIES && hrRetryable(e)) {
             try { if (dev.gatt.connected) dev.gatt.disconnect(); } catch (x) {}
             return hrWait(1000).then(function () { if (stale()) throw hrErr("AbortError", e.step); return go(); });
@@ -5791,14 +5839,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     hrSetState("off", "Not connected");
     // Garmin Connect, running on the same phone, can keep hold of the watch so another app's connection never finishes
     var g = hrGarmin() ? " If it keeps happening, Garmin Connect on this phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, and tap Force stop, then connect here again. Open Garmin Connect afterwards to sync as usual." : "";
+    var said = s ? hrDetail() : "";
+    var pair = hrGarmin() ? " If your watch showed your phone's name or a code, confirm it on the watch next time (there's half a minute), and accept the pairing request on the phone if one appears; on some phones it waits in the notifications."
+      : " If your phone asked to pair with it (the request can also sit in the notifications), accept it next time.";
     if (s === "link") {
-      hrMsg("Couldn't link up with " + H.name + " after " + HR_TRIES + " tries. Keep it close, check that it's still broadcasting, and try again." + g);
+      hrMsg("Couldn't link up with " + H.name + " after " + HR_TRIES + " tries. Keep it close, check that it's still broadcasting, and try again." + g + said);
     } else if (s === "service" && n === "NotFoundError") {
-      hrMsg(H.name + " linked up but doesn't offer the standard heart-rate service" + (hrGarmin() ? ", which a Garmin watch only does while Broadcast Heart Rate is on. Check that it is, turn your phone's Bluetooth off and on, and try again." : ", so this page can't read it."));
+      hrMsg(H.name + " linked up but doesn't offer the standard heart-rate service." + (hrGarmin()
+        ? " A Garmin watch offers it only while Broadcast Heart Rate is on, so check that it is. If it is, the watch may be answering this phone as the one it syncs with in Garmin Connect rather than as a heart-rate receiver; a tablet or computer that isn't paired with the watch can usually connect to its broadcast." : " This page can't read it.") + said);
     } else if (s === "service") {
-      hrMsg(H.name + " linked up but didn't share its heart-rate service in time. Turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g);
+      hrMsg(H.name + " linked up but didn't share its heart-rate service." + pair + " Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g + said);
     } else if (s === "read") {
-      hrMsg(H.name + " linked up but didn't start sending its heart rate. If your phone asked to pair with it (the request can also sit in the notifications), accept it and try again. Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g);
+      hrMsg(H.name + " linked up but didn't start sending its heart rate." + pair + " Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g + said);
     } else if (n === "NotFoundError" && H.dev && /service/i.test((e && e.message) || "")) {
       hrMsg(H.name + " doesn't offer the standard heart-rate service, so this page can't read it.");
     } else if (n === "NotFoundError") {
@@ -5806,7 +5858,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     } else if (n === "SecurityError" || n === "NotAllowedError") {
       hrMsg("This copy of the page isn't allowed to use Bluetooth. Open the page at its own web address in Chrome or Edge and connect from there.");
     } else {
-      hrMsg("The sensor didn't answer. Check that it is on, broadcasting and close by, then try again.");
+      hrMsg("The sensor didn't answer. Check that it is on, broadcasting and close by, then try again." + (n ? " (The phone reported: " + n + (e.message && e.message !== n ? ": " + String(e.message).replace(/\.\s*$/, "") : "") + ".)" : ""));
     }
   }
   function hrLost() {

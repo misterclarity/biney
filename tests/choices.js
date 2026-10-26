@@ -734,40 +734,80 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const st = q => E(q, () => ({ st: window.__entrain.H.state, tries: window.__hrTries(), msg: document.querySelector('#hrMsg').textContent,
         btn: document.querySelector('#hrConnect').textContent, dis: document.querySelector('#hrConnect').getAttribute('aria-disabled'),
         guide: (document.querySelector('#gCheck li[data-k="conn"] .s') || {}).textContent, pill: document.querySelector('#tbSensorTxt').textContent }));
-      // readings that never start the first time: a second try goes through
-      let p = await page(OPT(), null, { speed: 1, rr: false, hang: 'read', hangOnce: true, quick: 0.05 });
-      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
-      await p.click('#hrConnect'); await p.waitForTimeout(200);
+      const FORCE = /Garmin Connect on this phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, and tap Force stop/;
+      const PAIR = " If your watch showed your phone's name or a code, confirm it on the watch next time (there's half a minute), and accept the pairing request on the phone if one appears; on some phones it waits in the notifications. Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again.";
+      const HINT = " If your watch shows your phone's name or a code, confirm it on the watch, and accept the pairing request on the phone if one appears.";
+      const msgHas = (p, s, ms) => p.waitForFunction(s => document.querySelector('#hrMsg').textContent.includes(s), s, { timeout: ms || 3000 }).catch(() => {});
+      const until = (p, state, ms) => p.waitForFunction(s => window.__entrain.H.state === s, state, { timeout: ms }).catch(() => {});
+      const open = async opts => { const p = await page(OPT(), null, Object.assign({ speed: 1, rr: false }, opts)); await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300); await p.click('#hrConnect'); return p; };
+      // readings that never start the first time: after a few seconds the message says to confirm a pairing request, and a second try goes through
+      let p = await open({ hang: 'read', hangOnce: true, quick: 0.1 });
+      await p.waitForTimeout(150);
       const mid = await st(p);
-      ok(mid.st === 'busy' && /^Connecting to Venu 4: starting its heart-rate readings…$/.test(mid.msg) && mid.btn === 'Cancel' && mid.dis === 'false' && /^Starting its heart-rate readings/.test(mid.guide) && mid.pill === 'Connecting…',
+      ok(mid.st === 'busy' && mid.msg.startsWith('Connecting to Venu 4: starting its heart-rate readings…') && mid.btn === 'Cancel' && mid.dis === 'false' && /^Starting its heart-rate readings/.test(mid.guide) && mid.pill === 'Connecting…',
         'while it connects, the message and the guide say which step it is on, and the button reads Cancel: ' + mid.msg);
-      await p.waitForFunction(() => window.__entrain.H.state === 'on', null, { timeout: 5000 }).catch(() => {});
+      await msgHas(p, 'confirm it on the watch');
+      const hint = await st(p);
+      ok(hint.st === 'busy' && hint.msg === 'Connecting to Venu 4: starting its heart-rate readings…' + HINT, 'a few seconds in, it says to confirm on the watch if it shows your phone\'s name or a code: ' + hint.msg);
+      await until(p, 'on', 6000);
       const r1 = await st(p);
       ok(r1.st === 'on' && r1.tries === 2 && r1.msg === '' && r1.btn === 'Disconnect', 'readings that never start the first time: it tries again and connects (' + r1.tries + ' tries)');
       await p.waitForTimeout(1500);
       ok(await E(p, () => window.__entrain.H.hr > 0), 'and the heart rate comes in');
       await p.context().close();
-      // a heart-rate service that never turns up: three tries, then what to do
-      p = await page(OPT(), null, { speed: 1, rr: false, hang: 'service', quick: 0.05 });
-      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
-      await p.click('#hrConnect');
-      await p.waitForFunction(() => window.__entrain.H.state === 'off', null, { timeout: 8000 }).catch(() => {});
+      // a step that answers late, as once a pairing request is accepted: it connects on the first try (a sensor other than a Garmin watch)
+      p = await open({ rr: true, late: { read: 900 }, quick: 0.1 });
+      await msgHas(p, 'If your phone asks to pair');
+      const l0 = await st(p);
+      await until(p, 'on', 4000);
+      const l1 = await st(p);
+      ok(l0.msg === 'Connecting to Inner Balance: starting its heart-rate readings… If your phone asks to pair, accept it.' && l1.st === 'on' && l1.tries === 1 && l1.msg === '',
+        'readings that start late, as after accepting a pairing request: connected on the first try (' + l1.tries + '), after: ' + l0.msg);
+      await p.context().close();
+      // readings refused the first time, as when a pairing request isn't accepted: it asks again
+      p = await open({ refuse: true, quick: 0.05 });
+      await until(p, 'on', 4000);
+      const f1 = await st(p);
+      ok(f1.st === 'on' && f1.tries === 2, 'readings refused the first time: it tries again and connects (' + f1.tries + ' tries)');
+      await p.context().close();
+      // a heart-rate service that never turns up: three tries, then what to do and what happened
+      p = await open({ hang: 'service', quick: 0.05 });
+      await msgHas(p, 'confirm it on the watch');
+      const s0 = await st(p);
+      await until(p, 'off', 12000);
       const r2 = await st(p);
-      ok(r2.st === 'off' && r2.tries === 3 && /^Venu 4 linked up but didn't share its heart-rate service in time\. Turn your phone's Bluetooth off and on, restart the broadcast, and try again\./.test(r2.msg) &&
-        /Garmin Connect on this phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, and tap Force stop/.test(r2.msg) && r2.btn === 'Connect sensor', 'a service that never turns up: three tries, then a message that says what to do: ' + r2.msg);
+      ok(s0.msg === 'Connecting to Venu 4: finding its heart-rate service…' + HINT && r2.st === 'off' && r2.tries === 3 &&
+        r2.msg.startsWith("Venu 4 linked up but didn't share its heart-rate service." + PAIR) && FORCE.test(r2.msg) &&
+        r2.msg.endsWith('(What happened: each of the 3 tries, no answer within 30 seconds while finding its heart-rate service.)') && r2.btn === 'Connect sensor',
+        'a service that never turns up: three tries, then a message that says what to do and what happened: ' + r2.msg);
       await p.context().close();
       // readings that never start at all
-      p = await page(OPT(), null, { speed: 1, rr: false, hang: 'read', quick: 0.05 });
-      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
-      await p.click('#hrConnect');
-      await p.waitForFunction(() => window.__entrain.H.state === 'off', null, { timeout: 8000 }).catch(() => {});
+      p = await open({ hang: 'read', quick: 0.05 });
+      await until(p, 'off', 12000);
       const r3 = await st(p);
-      ok(r3.tries === 3 && /^Venu 4 linked up but didn't start sending its heart rate\. If your phone asked to pair with it \(the request can also sit in the notifications\), accept it/.test(r3.msg), 'readings that never start: it mentions a pairing request to accept');
+      ok(r3.tries === 3 && r3.msg.startsWith("Venu 4 linked up but didn't start sending its heart rate." + PAIR) &&
+        r3.msg.endsWith('(What happened: each of the 3 tries, no answer within 30 seconds while starting its heart-rate readings.)'),
+        'readings that never start: it says to confirm a pairing request, and what happened: ' + r3.msg.slice(-110));
+      await p.context().close();
+      // a watch that links up without the heart-rate service: what it does offer, and why that can happen
+      p = await open({ noHR: true, quick: 0.05 });
+      await until(p, 'off', 6000);
+      const r4 = await st(p);
+      ok(r4.tries === 3 && r4.msg === "Venu 4 linked up but doesn't offer the standard heart-rate service. A Garmin watch offers it only while Broadcast Heart Rate is on, so check that it is. " +
+        "If it is, the watch may be answering this phone as the one it syncs with in Garmin Connect rather than as a heart-rate receiver; a tablet or computer that isn't paired with the watch can usually connect to its broadcast. " +
+        '(What happened: each of the 3 tries, NotFoundError while finding its heart-rate service: No Services matching UUID 0000180d-0000-1000-8000-00805f9b34fb found in Device, and it showed only battery and device information.)',
+        'no heart-rate service: it says what the watch offers and why: ' + r4.msg.slice(0, 80));
+      await p.context().close();
+      // tries that fail differently: one line each
+      p = await open({ noHR: true, hang: 'service', hangOnce: true, quick: 0.05 });
+      await until(p, 'off', 8000);
+      const r5 = await st(p);
+      ok(r5.tries === 3 && /\(What happened: try 1, no answer within 30 seconds while finding its heart-rate service; try 2, NotFoundError while finding its heart-rate service: No Services matching UUID \S+ found in Device, and it showed only battery and device information; try 3, NotFoundError [^;]+\.\)$/.test(r5.msg),
+        'tries that fail differently are listed one by one: ' + r5.msg.slice(r5.msg.indexOf('(What')));
       await p.context().close();
       // Cancel, while it links up at its real pace
-      p = await page(OPT(), null, { speed: 1, rr: false, hang: 'link' });
-      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
-      await p.click('#hrConnect'); await p.waitForTimeout(400);
+      p = await open({ hang: 'link' });
+      await p.waitForTimeout(400);
       const c0 = await st(p);
       await p.click('#hrConnect'); await p.waitForTimeout(300);
       const c1 = await st(p);
