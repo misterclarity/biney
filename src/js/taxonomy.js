@@ -40,12 +40,12 @@
     recover: [["recovery", "program", "sit"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
       ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"]],
     reflect: [["nvc-self", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
-      ["metta", "meditate", "sit"]],
+      ["metta", "meditate", "sit"], ["gratitude", "meditate", "sit lie"]],
     tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: a section of its own
   };
   var ALSO = {
     "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],
-    anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], "back-hips": ["calm"],
+    anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], gratitude: ["calm"], "back-hips": ["calm"],
     "standing-reset": ["focus"], "balance-yoga": ["focus"]
   };
   var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8" };

@@ -279,23 +279,29 @@
     },
     {
       id: "calm-reset", name: "Calm Reset", min: 10, strength: 2,
-      tone: "relax", sensor: "optional",
+      tone: "relax", sensor: "optional", pace: true,
       blurb: "For a stressful moment: cyclic sighs to bring arousal down fast, then even breathing at your resonance pace, under an alpha-to-theta beat.",
-      parts: "Cyclic sighs · resonance breathing · 10 → 6 Hz binaural",
+      parts: "Cyclic sighs · resonance breathing · binaural beat",
       audio: { name: "Calm Reset", band: "Alpha → Theta", carrier: 250, pts: [[0, 10], [600, 6]], fade: 6, cat: "relax" },
+      beats: [                                   // the first is the usual one
+        { id: "down", label: "Alpha to theta", band: "Alpha → Theta", pts: [[0, 10], [600, 6]], note: "Slides from 10 Hz down to 6 Hz across the session, from relaxed alertness to deeper calm." },
+        { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: [[0, 6], [600, 6]], note: "A steady 6 Hz beat, in the theta band studied for deep relaxation." },
+        { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: [[0, 10], [600, 10]], note: "A steady 10 Hz beat: relaxed but awake, for when the day goes on straight after." }
+      ],
       build: function () {
-        var r = pResRate(), half = Math.round(30 / r * 10) / 10;
+        var p = pPace(this);
         return [
           G(30, "Arrive", ["Sit or stand comfortably. Let your shoulders drop.", "We'll start with a few sighs to take the edge off."], { vis: "glow" }),
           Br(150, "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
             { lines: [[0, "Breathe in through the nose, take a short second sip to fill up, then a long, slow breath out through the mouth."]] }),
-          Br(390, "Resonance breathing", { inh: half, sip: 0, hold: 0, exh: half, rest: 0 },
-            { lines: [[0, "Now even breaths in and out, " + r + " a minute, through the nose."],
+          Br(390, "Resonance breathing", { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 },
+            { lines: [[0, p.own ? "Now breathe in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds") + ", through the nose."
+                : "Now even breaths in and out, " + p.rate + " a minute, through the nose."],
               [150, "With a sensor connected, watch your heart rate rise and fall with each breath."]] }),
           G(30, "Return", ["Let the breath go back to its own rhythm.", "Notice how you feel compared with ten minutes ago."], { vis: "glow" })
         ];
       },
-      how: "Two and a half minutes of cyclic sighing (a double inhale through the nose, then a long exhale through the mouth), then six and a half minutes of even breathing at your own resonance rate: the result of the resonance test if you've taken it, otherwise 5.5 a minute. The beat slides from 10 Hz alpha to 6 Hz theta across the session.",
+      how: "Two and a half minutes of cyclic sighing (a double inhale through the nose, then a long exhale through the mouth), then six and a half minutes of even breathing at your own resonance rate (the result of the resonance test if you've taken it, otherwise 5.5 a minute) or at an in and out of your own. The beat slides from 10 Hz alpha to 6 Hz theta across the session, or stays at a steady theta or alpha beat, as you choose; both choices are kept for it.",
       ev: "Five minutes a day of cyclic sighing improved mood more than mindfulness meditation in a month-long trial. Resonance-pace breathing reliably raises heart-rate variability during and after a session. Binaural beats show a pooled anxiety-reducing effect, largest with theta and delta beats. A large 2023 trial found four weeks of coherent breathing didn't beat a placebo breathing pace on self-reported stress, so treat this as an in-the-moment tool rather than a cure.",
       cite: "Balban et al. 2023 · Laborde et al. 2022 · Garcia-Argibay et al. 2019 · Fincham et al. 2023 (RCT)"
     },
@@ -334,6 +340,47 @@
       how: "Three minutes of even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention on the chest. Then, on the same breath, a gentle feeling of gratitude to the end: the two steps of HeartMath's Quick Coherence technique. Gratitude comes second because it's easiest to feel, rather than just think, once slow breathing has calmed you and your heart rhythm has settled into a steady wave; for the same reason it fits well after a meditation such as Anapana or the Body Scan. Sit or lie down. With a sensor, the coherence score and your heart rate show live.",
       ev: "Breathing near 6 a minute brings heart rate and blood pressure rhythms into step, the state the coherence score measures. Holding a feeling of appreciation shifted heart-rate variability toward its mid- and high-frequency bands in a 1995 HeartMath laboratory study, and across 1.8 million sessions of HeartMath's app, positive emotions went with higher coherence scores. Theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability toward parasympathetic activity in 21 young adults resting after exercise. The combination itself hasn't been trialled.",
       cite: "Lehrer & Gevirtz 2014 · McCraty et al. 1995 · Balaji et al. 2025 · McConnell et al. 2014"
+    },
+    {
+      id: "gratitude", name: "Gratitude", lengths: [10, 15], min: 10, strength: 2,
+      tone: "stim", sensor: "optional", pace: true,
+      blurb: "Settle with slow, even breathing first, then let gratitude grow: for something small from today, for a person who helped you, for your own body, and for the feeling itself. Sitting or lying down.",
+      parts: "Resonance breathing · something small · someone who helped · your body · savouring · three good things",
+      choices: [{ key: "pos", label: "Position", opts: [["sit", "Sitting"], ["lie", "Lying down"]], def: "sit" }],
+      build: function (min) {
+        var p = pPace(this), lie = pChoice(this, "pos") === "lie", t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+        // seconds for each step at 10 and 15 minutes: arrive, breathing, something small, someone, the body, savouring, three good things
+        var s = (min || 10) >= 15 ? [40, 240, 120, 165, 120, 135, 80] : [40, 180, 75, 105, 75, 75, 50];
+        var pace = p.own ? "in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds") : "evenly, " + p.rate + " a minute";
+        var at = function (i, f) { return Math.round(s[i] * f); };
+        return [
+          G(s[0], "Arrive", [lie ? "Lie on your back, a pillow under your head and, if it helps, under your knees. Let your arms rest by your sides." : "Sit comfortably, feet on the floor, your back upright and at ease. Let your hands rest.",
+            "First you'll breathe slowly for a few minutes. Gratitude comes after, once you're calm, when it's easiest to feel."], { vis: "glow" }),
+          Br(s[1], "Settling breath", t,
+            { lines: [[0, "Breathe " + pace + ", softly, through the nose."],
+              [at(1, 0.45), "Rest your attention in the centre of your chest, and let the breath flow there."]] }),
+          G(s[2], "Something small", [[0, "Let the breath find its own pace again."],
+            [8, "Bring to mind one small thing from today that you're glad of: a taste, a kind word, a moment of light, a task that went well."],
+            [at(2, 0.45), "See it again in detail: where you were, what you noticed. Enjoy it a second time."],
+            [at(2, 0.8), "Notice where in your body you feel it."]], { vis: "glow" }),
+          G(s[3], "Someone who helped", [[0, "Now think of a person who has helped you, recently or long ago."],
+            [at(3, 0.25), "Picture their face. Remember what they did, and what it made possible for you."],
+            [at(3, 0.55), "Silently thank them, in your own words."],
+            [at(3, 0.8), "Let the warmth of it rest in your chest."]], { vis: "glow" }),
+          G(s[4], "Your body", [[0, "Turn the same appreciation toward your body."],
+            [at(4, 0.3), "Your breath, coming and going by itself. Your heart, beating all day long. Your feet, carrying you where you needed to go."],
+            [at(4, 0.7), "Thank your body for one thing it did for you today."]], { vis: "glow" }),
+          G(s[5], "Savour it", [[0, "Now rest in the feeling itself, whatever form it takes: warmth, ease, a quiet gladness."],
+            [at(5, 0.35), "Breathe it in through the centre of your chest, and let it spread a little with each breath out."],
+            [at(5, 0.7), "If it fades, return to the person or the moment, and let it come back."]], { vis: "glow" }),
+          G(s[6], "Three good things", [[0, "Let the breath and the body settle."],
+            [at(6, 0.25), "Later today, if you like, write down three good things that happened, and why each one went well."],
+            [Math.max(at(6, 0.25) + 15, s[6] - 15), lie ? "When you're ready, roll onto your side before you sit up." : "Bring this gladness into whatever comes next."]], { vis: "glow" })
+        ];
+      },
+      how: "Three or four minutes of slow, even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention in the chest. Gratitude comes after the breathing because it's easiest to feel, rather than just think, once you're calm; for the same reason it fits well after a meditation. Then four steps: something small from today, a person who helped you, your own body, and resting in the feeling. It ends with an invitation to write down three good things later. Sit or lie down; with a sensor, coherence shows live.",
+      ev: "Across 27 trials with 3,675 people, gratitude exercises eased symptoms of depression and anxiety a little, and a 2016 meta-analysis found small gains in well-being. Writing down three good things each day for a week raised happiness and lowered depressive symptoms for six months in an online trial. Holding a feeling of appreciation shifted heart-rate variability toward its mid- and high-frequency bands in a 1995 HeartMath laboratory study. This guided sequence itself hasn't been trialled.",
+      cite: "Cregg & Cheavens 2021 · Davis et al. 2016 · Seligman et al. 2005 · McCraty et al. 1995"
     },
     {
       id: "focus-primer", name: "Focus Primer", min: 13, strength: 2,

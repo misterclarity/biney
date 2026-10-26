@@ -5,6 +5,7 @@
 //   W  wording that names its study    A  the pace and beat changed while a practice runs, and Restart
 //   Q  the three new quotes            I  the impressum, copyright and licence
 //   K  the code check's fixes          L  Healthy living: recipes and supplements
+//   G  the gratitude practice          C  Calm Reset's beat and pace     D  donations
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -448,12 +449,13 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await r.context().close();
     }
 
-    /* Q. the three new quotes, signed Entrain and kept as written; "just as it is" rather than "exactly as it is" */
+    /* Q. the new quotes, signed Entrain and kept as written; "just as it is" rather than "exactly as it is" */
     if (!only || only === 'Q') {
       const p = await page(OPT());
-      const qs = await E(p, () => { const X = window.__entrain; return ["There's nothing to do but enjoy the view.", 'Health is a state of co-operation.', 'Revolution is an ongoing process of self discovery.']
+      const qs = await E(p, () => { const X = window.__entrain; return ["There's nothing to do but enjoy the view.", 'Health is a state of co-operation.', 'Revolution is an ongoing process of self discovery.',
+        'Mindfulness is a great way of "doing nothing".', 'Listening to your body is a sacred act.']
         .map(x => { const q = X.QUOTES.find(y => y[0] === x); return q ? x + ' / ' + (q[1] || 'Entrain') + ' / ' + q[2] : 'missing: ' + x; }); });
-      ok(qs.every(x => / \/ Entrain \/ as written$/.test(x)), 'three new quotes, signed Entrain: ' + qs.map(x => x.split(' / ')[0]).join(' | '));
+      ok(qs.length === 5 && qs.every(x => / \/ Entrain \/ as written$/.test(x)), 'five new quotes, signed Entrain and kept as written: ' + qs.map(x => x.split(' / ')[0]).join(' | '));
       const soft = await E(p, () => window.__entrain.QUOTES.some(q => q[0] === "Observe what's here, just as it is. That is most of the practice."));
       const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
       ok(soft && !/exactly as (it is|they are)|Observe exactly/.test(html), 'the quote and the guidance observe things "just as they are", not "exactly"');
@@ -465,7 +467,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
     if (!only || only === 'I') {
       const p = await page(OPT());
       await E(p, () => location.hash = 'settings'); await p.waitForTimeout(400);
-      ok(/© 2026 misterclarity\. .*free software under the GNU AGPL, version 3\. Impressum, licence and credits$/.test(await t(p, '.st-about')), 'Settings ends with the copyright and licence: ' + await t(p, '.st-about'));
+      ok(/© 2026 misterclarity\. .*free software under the GNU AGPL, version 3\. Impressum, licence and credits/.test(await t(p, '.st-about')), 'Settings ends with the copyright and licence: ' + await t(p, '.st-about'));
       await p.click('.st-about a[href="#l-impressum"]'); await p.waitForTimeout(900);
       const im = await E(p, () => { const h = document.querySelector('#l-impressum'), s = h.closest('section'), r = h.getBoundingClientRect();
         const lic = s.querySelector('a[rel~="license"]');
@@ -544,7 +546,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         tab: document.querySelector('#lvt-recipes').getAttribute('aria-selected'), w: document.documentElement.scrollWidth }));
       ok(v.hash === '#living' && v.view && v.title === 'Healthy living' && /Learn/.test(v.nav) && v.tab === 'true' && v.w <= 412,
         'Learn\'s card opens Healthy living, under the Learn tab, at Recipes, with nothing wider than the phone');
-      ok(v.cards.length === 8 && v.cards.every(h => /^#living\/[a-z-]+$/.test(h)) && v.cards[0] === '#living/congee', 'eight recipes, each with its own page: ' + v.cards.map(h => h.slice(8)).join(', '));
+      ok(v.cards.length === 9 && v.cards.every(h => /^#living\/[a-z-]+$/.test(h)) && v.cards.slice(0, 3).join(' ') === '#living/congee #living/kitchari #living/apple-oats', 'nine recipes, each with its own page: ' + v.cards.map(h => h.slice(8)).join(', '));
       await p.click('#lvp-recipes .pc-a[href="#living/congee"]'); await p.waitForTimeout(450);
       const ing = () => E(p, () => [...document.querySelectorAll('.lv-ing li')].map(l => l.querySelector('label > span').firstChild.textContent + ' ' + l.querySelector('.lv-n').textContent).map(s => s.trim()));
       let r = await E(p, () => ({ title: document.querySelector('#viewTitle').textContent, back: document.querySelector('#lvBody .si-back').getAttribute('href'), n: document.querySelector('#lvServ').textContent,
@@ -621,6 +623,87 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         return [f(c, 0.25), f(c, 1.5), f([1, 'handful', 'of berries'], 2), f([0.25, 'tsp', 'cinnamon'], 3), f([1, '', ['lemon', 'lemons']], 0.5), f([1000, 'ml', 'water'], 0.5)].map(m => m.a + ' ' + m.n); });
       ok(units.join(' | ') === '½ tin of chickpeas (400 g), drained | 3 tins of chickpeas (400 g each), drained | 2 handfuls of berries | ¾ tsp cinnamon | ½ lemon | 500 ml water',
         'tins by the half, handfuls whole, spoons by the quarter, counts by the half: ' + units.join(' | '));
+      await E(p, () => location.hash = 'living/apple-oats'); await p.waitForTimeout(450);
+      const ap = await E(p, () => ({ why: document.querySelector('#lvBody .si-blurb').textContent, ing: [...document.querySelectorAll('.lv-ing li')].map(l => l.textContent.replace(/\s+/g, ' ').trim()),
+        steps: document.querySelectorAll('.lv-steps li').length, kind: document.querySelector('#lvBody .si-kind').textContent }));
+      ok(/one of the few dishes said to balance all three doshas \(vata, pitta and kapha\)/.test(ap.why) && /^1 apple, cored and chopped/.test(ap.ing[0]) && /^40 g rolled oats/.test(ap.ing[4]) && ap.steps === 4 && ap.kind === 'Recipe · 17 min',
+        'stewed apple with oats, which Ayurveda says balances all three doshas: ' + ap.ing.slice(0, 2).join(' | '));
+      await p.context().close();
+    }
+
+    /* G. the gratitude practice: slow breathing first, then gratitude in four steps and three good things;
+       sitting or lying, your resonance pace or your own, 10 or 15 minutes; in the library, search and Learn */
+    if (!only || only === 'G') {
+      const p = await page(Object.assign(OPT(), { optsOpen: '1' }));
+      await E(p, () => location.hash = 'practice/gratitude'); await p.waitForTimeout(450);
+      const plan = (len) => E(p, len => { const X = window.__entrain, d = X.pDef('gratitude'); return X.pPlan(d, len).steps.map(s => ({ title: s.title, secs: s.secs, t: s.t, k: s.k, lines: (s.lines || []).map(l => [l[0], String(l[1])]) })); }, len);
+      const intro = await E(p, () => ({ title: document.querySelector('#viewTitle').textContent, steps: [...document.querySelectorAll('.si-steps li')].map(l => l.textContent.replace(/\s+/g, ' ')).join(' | '),
+        lens: [...document.querySelectorAll('.si-len button')].map(b => b.textContent + (b.getAttribute('aria-checked') === 'true' ? '*' : '')).join(' '),
+        pos: !!document.querySelector('[data-choice="pos"]'), pace: !!document.querySelector('#sOptPace'), beat: !!document.querySelector('#sOptBeat, #sOptAudio'), goal: window.__entrain.pDef('gratitude').goal }));
+      ok(intro.title === 'Gratitude' && intro.steps === 'Arrive00:40 | Settling breath03:00 | Something small01:15 | Someone who helped01:45 | Your body01:15 | Savour it01:15 | Three good things00:50' && intro.lens === '10 min* 15 min',
+        'Gratitude: three minutes of slow breathing, then something small, someone, your body, savouring and three good things: ' + intro.steps);
+      ok(intro.pos && intro.pace && !intro.beat && intro.goal === 'reflect', 'it has a position and a pace to choose, no beat, and lives under Reflect');
+      for (const L of [10, 15]) {
+        const pl = await plan(L), tot = pl.reduce((a, s) => a + s.secs, 0);
+        ok(tot === L * 60 && pl[1].k === 'breath' && pl[1].t.inh === 5.5 && pl[1].t.exh === 5.5 && /evenly, 5\.5 a minute/.test(pl[1].lines[0][1]) &&
+          pl.every(s => s.lines.every((l, i) => l[0] >= 0 && l[0] < s.secs && (!i || l[0] > s.lines[i - 1][0]))) && /three good things/.test(pl[6].lines[1][1]),
+          L + ' minutes: every line inside its step, the breathing at the resonance pace: ' + pl.map(s => s.secs).join('+'));
+      }
+      await p.click('[data-choice="pos"] button[data-v="lie"]'); await p.waitForTimeout(100);
+      await p.click('#sOptPace button[data-v="own"]'); await p.waitForTimeout(100);
+      await p.click('#sPaceSteps [data-k="exh"] button[data-d="1"]'); await p.waitForTimeout(100);
+      const pl = await plan(10);
+      ok(/^Lie on your back/.test(pl[0].lines[0][1]) && /roll onto your side/.test(pl[6].lines[2][1]) && pl[1].t.inh === 5.5 && pl[1].t.exh === 6 && /^Breathe in for 5\.5 seconds and out for 6 seconds/.test(pl[1].lines[0][1]),
+        'lying down and at your own pace, the guidance follows: ' + pl[1].lines[0][1]);
+      await p.click('#sGo'); await p.waitForTimeout(700);
+      await p.click('#sNext'); await p.waitForTimeout(400);
+      ok(await E(p, () => [window.__entrain.BC.inh, window.__entrain.BC.exh].join()) === '5.5,6', 'and breathes at that pace');
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(300);
+      await p.click('#tbFind'); await p.fill('#fdIn', 'gratitude'); await p.waitForTimeout(200);
+      ok(await E(p, () => (document.querySelector('#fdRes .fd-it') || {}).getAttribute('href')) === '#practice/gratitude', 'search finds it first');
+      await p.keyboard.press('Escape');
+      await E(p, () => location.hash = 'l-practices'); await p.waitForTimeout(400);
+      ok(/Gratitude\. Across 27 trials with 3,675 people/.test(await t(p, '#v-learn')) && /Cregg, D\. R\., & Cheavens, J\. S\. \(2021\)/.test(await t(p, '#v-learn')) && /Seligman, M\. E\. P\./.test(await t(p, '#v-learn')),
+        'Learn gives its evidence, with the references');
+      await p.context().close();
+    }
+
+    /* C. Calm Reset: the same beat and pace choices as Heart Coherence, kept for it */
+    if (!only || only === 'C') {
+      const p = await page(Object.assign(OPT({ audio: true }), { optsOpen: '1' }));
+      await E(p, () => location.hash = 'practice/calm-reset'); await p.waitForTimeout(450);
+      const plan = () => E(p, () => { const X = window.__entrain; return X.pPlan(X.pDef('calm-reset'), 0).steps.map(s => ({ title: s.title, t: s.t, lines: (s.lines || []).map(l => String(l[1])) })); });
+      const o = await E(p, () => ({ beats: [...document.querySelectorAll('#sOptBeat button')].map(b => b.textContent + (b.getAttribute('aria-pressed') === 'true' ? '*' : '')).join(' '),
+        pace: (document.querySelector('#sOptPace [aria-pressed="true"]') || {}).textContent, toggle: !!document.querySelector('#sOptAudio') }));
+      ok(o.beats === 'Off Alpha to theta* Theta 6 Hz Alpha 10 Hz' && o.pace === 'Optimal defaults' && !o.toggle, 'Calm Reset offers the beats and the pace: ' + o.beats);
+      let pl = await plan();
+      ok(pl[1].t.inh === 3 && pl[1].t.sip === 1 && pl[1].t.exh === 6 && pl[2].t.inh === 5.5 && pl[2].t.exh === 5.5 && /^Now even breaths in and out, 5\.5 a minute/.test(pl[2].lines[0]), 'as usual: cyclic sighs, then 5.5 a minute');
+      await p.click('#sOptBeat button[data-v="theta"]'); await p.waitForTimeout(100);
+      await p.click('#sOptPace button[data-v="own"]'); await p.waitForTimeout(100);
+      await p.click('#sPaceSteps [data-k="inh"] button[data-d="-1"]'); await p.click('#sPaceSteps [data-k="inh"] button[data-d="-1"]');
+      await p.click('#sPaceSteps [data-k="exh"] button[data-d="1"]'); await p.waitForTimeout(100);
+      pl = await plan();
+      ok(pl[1].t.inh === 3 && pl[1].t.exh === 6 && pl[2].t.inh === 4.5 && pl[2].t.exh === 6 && /^Now breathe in for 4\.5 seconds and out for 6 seconds/.test(pl[2].lines[0]) &&
+        /Theta 6 Hz/.test(await t(p, '#sOptsSum')) && /In 4\.5 s, out 6 s/.test(await t(p, '#sOptsSum')), 'theta and an in and out of your own: the sighs stay as they are, the resonance breathing follows: ' + await t(p, '#sOptsSum'));
+      const kept = await E(p, () => JSON.parse(localStorage.getItem('entrain.pCh.calm-reset') || '{}'));
+      ok(kept.beat === 'theta' && kept.pace === 'own' && kept.inh === 4.5 && kept.exh === 6, 'kept for Calm Reset: ' + JSON.stringify(kept));
+      await p.click('#sGo'); await p.waitForTimeout(900);
+      const a = await E(p, () => { const A = window.__entrain.A; return { band: A.track && A.track.band, pts: A.track && JSON.stringify(A.track.pts), min: A.track && A.track.minutes }; });
+      ok(a.band === 'Theta' && a.pts === '[[0,6],[600,6]]' && a.min === 10, 'it plays the theta beat: ' + JSON.stringify(a));
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(300);
+      await p.context().close();
+    }
+
+    /* D. donations: a button in Settings and a line in the impressum, opening Ko-fi in the browser */
+    if (!only || only === 'D') {
+      const p = await page(OPT());
+      await E(p, () => location.hash = 'settings'); await p.waitForTimeout(400);
+      const b = await E(p, () => { const a = document.querySelector('.st-about a.st-donate'), r = a.getBoundingClientRect(); return { href: a.getAttribute('href'), target: a.target, rel: a.rel, txt: a.textContent.trim(), h: r.height, col: getComputedStyle(a).color }; });
+      ok(b.href === 'https://ko-fi.com/misterclarity' && b.target === '_blank' && /noopener/.test(b.rel) && b.txt === 'Support Entrain on Ko-fi' && b.h >= 44,
+        'Settings has a donations button to Ko-fi, opening in the browser: ' + b.txt);
+      await E(p, () => location.hash = 'l-impressum'); await p.waitForTimeout(400);
+      ok(await E(p, () => !!document.querySelector('.imprint a[href="https://ko-fi.com/misterclarity"][target="_blank"]')), 'and the impressum links to it too');
       await p.context().close();
     }
   } catch (e) {

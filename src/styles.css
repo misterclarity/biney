@@ -1601,4 +1601,7 @@
     .lv-body{padding:2px 16px 16px}
     .lv-sup > summary{padding:13px 14px}
   }
+  .st-about a.st-donate{align-self:flex-start;gap:8px;margin-top:4px;color:var(--text);background:color-mix(in srgb,var(--stim) 13%,var(--panel-2));border-color:color-mix(in srgb,var(--stim) 30%,transparent);text-decoration:none}
+  .st-about a.st-donate:hover{background:color-mix(in srgb,var(--stim) 20%,var(--panel-2))}
+  .st-donate svg.i{color:var(--stim)}
 

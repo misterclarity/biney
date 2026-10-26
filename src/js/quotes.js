@@ -47,7 +47,9 @@
     ["Let the out-breath be a little longer than the in-breath, and let the day go with it.", ""],
     ["There's nothing to do but enjoy the view.", "", "as written"],
     ["Health is a state of co-operation.", "", "as written"],
-    ["Revolution is an ongoing process of self discovery.", "", "as written"]
+    ["Revolution is an ongoing process of self discovery.", "", "as written"],
+    ["Mindfulness is a great way of \"doing nothing\".", "", "as written"],
+    ["Listening to your body is a sacred act.", "", "as written"]
   ];
   var ROGERS = QUOTES[14];
   var Q = { i: 0 };

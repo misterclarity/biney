@@ -201,7 +201,7 @@ async function until(p, secs, max = 240000) {
     const p = await page(null, {});
     await p.evaluate(() => location.hash = 'practice/calm-reset'); await p.waitForTimeout(200);
     await opts(p);
-    ok(await p.$eval('#sOptAudio', c => c.checked), 'binaural layer on by default for programs');
+    ok(await t(p, '#sOptBeat [aria-pressed="true"]') === 'Alpha to theta', 'binaural layer on by default for programs, at its usual beat: ' + await t(p, '#sOptBeat [aria-pressed="true"]'));
     await p.click('#sGo'); await p.waitForTimeout(600);
     const a1 = await p.evaluate(() => { const A = window.__entrain.A; return { name: A.track && A.track.name, playing: A.playing, pts: A.track && A.track.pts.length, min: A.track && A.track.minutes }; });
     ok(a1.playing && a1.name === 'Calm Reset' && a1.pts === 2 && a1.min === 10, 'program track playing: ' + JSON.stringify(a1));

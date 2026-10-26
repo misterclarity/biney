@@ -72,6 +72,35 @@
       ],
       keep: "Keeps 3 days in the fridge. It thickens as it cools, so loosen it with water when you reheat it." },
 
+    { id: "apple-oats", name: "Stewed apple with oats", sub: "A warm Ayurvedic breakfast", serves: 1, prep: 5, cook: 12,
+      tags: ["Warming", "Ayurvedic", "Breakfast"], also: "boiled apple porridge oatmeal tridoshic vata pitta kapha doshas cloves cinnamon",
+      why: "Apple simmered soft with cinnamon and cloves, then cooked into oats. In Ayurveda, warm stewed apple is one of the few dishes said to balance all three doshas (vata, pitta and kapha), as kitchari is, and it's a traditional first meal of the day.",
+      ing: [
+        [1, "", ["apple, cored and chopped", "apples, cored and chopped"], "peeled, if you like, as Ayurveda suggests"],
+        [300, "ml", "water, or half water and half milk"],
+        [0.5, "tsp", "ground cinnamon"],
+        [2, "", ["clove", "cloves"], "or a pinch of ground cardamom"],
+        [40, "g", "rolled oats"],
+        [1, "pinch", "of salt"],
+        [1, "tsp", "ghee", "if you like"]
+      ],
+      serve: [
+        [1, "tsp", "honey or maple syrup", "honey stirred in once it's off the heat"],
+        [1, "tbsp", "chopped walnuts or almonds", "if you like"]
+      ],
+      steps: [
+        "Put the apple, water, cinnamon and cloves in a small pan. Bring to the boil, then cover and simmer for 5 minutes, until the apple starts to soften.",
+        "Stir in the oats and the salt and simmer for 5 to 7 minutes more, stirring now and then, until creamy and the apple is tender. Add a splash of water if it gets thick.",
+        "Take out the cloves and stir in the ghee. Let it cool for a minute, then stir in the honey.",
+        "Top with the nuts and eat it warm."
+      ],
+      tips: [
+        "Ayurveda suggests having it warm, as the first meal of the day.",
+        "For the classic stewed apple, cook the apple on its own with a little water, cinnamon and cloves for about 10 minutes, until soft.",
+        "Pears work the same way."
+      ],
+      keep: "Best fresh. Stewed apple on its own keeps 3 days in the fridge." },
+
     { id: "miso-soup", name: "Miso soup with tofu and greens", sub: "Ten minutes, one pan", serves: 2, prep: 5, cook: 5,
       tags: ["Quick", "Fermented", "Vegan"], also: "wakame dashi japanese",
       why: "A light, savoury soup to start a meal or to have with rice. Miso is a fermented soybean paste; stirred in off the boil, it keeps its flavour.",
