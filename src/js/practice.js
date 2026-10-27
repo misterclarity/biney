@@ -1117,7 +1117,6 @@
     if (P.coh.length) {
       r.coh = avg(P.coh.map(function (c) { return c.cs; }));
       r.cohMax = Math.max.apply(null, P.coh.map(function (c) { return c.cs; }));
-      r.cohEst = !H.hasRR;
     }
     if (P.sw.length) r.swing = avg(P.sw.map(function (s) { return s.amp; }));
     if (d.id === "anapana") r.wander = P.wander;
@@ -1140,7 +1139,7 @@
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
     if (T >= 60) r.at = Date.now();                    // the end screen tells this one from the earlier ones by it
     if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
-      coh: r.coh ? +r.coh.toFixed(2) : undefined, est: r.coh && r.cohEst ? true : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,
+      coh: r.coh ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,
       note: notes.join(", ") || undefined });
     return r;
   }

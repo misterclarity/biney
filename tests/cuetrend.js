@@ -189,7 +189,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
     }
 
     /* C. the end screen against your own sessions: your usual for the practice, last time, your best
-       yet, how many; estimated coherence only against estimates; and the whole way from a real session */
+       yet, how many; scores estimated from heart rate alone, kept from before, left out; and the whole way from a real session */
     if (!only || only === 'C') {
       const now = Date.now(), DAY = 864e5;
       const past = (id, list) => list.map((x, i) => Object.assign({ k: 'practice', id, n: id, at: now - (list.length - i) * 2 * DAY, secs: 600, full: true }, x));
@@ -228,9 +228,9 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(c.hr === 'Last time −5' && c.coh === '' && c.time === 'Your 2nd time', 'with one earlier session it\'s last time, and a beat-to-beat score isn\'t set against an estimate: ' + JSON.stringify(c));
       e = await ex('hr');
       ok(/Last time you did Calm Reset with a heart sensor, your heart rate came down 5 beats a minute\. This time it fell less than last time\./.test(e), 'last time, in words: ' + e.slice(-130));
-      await end('calm-reset', { secs: 600, early: false, hr0: 75, hr1: 78, coh: 4.4, cohMax: 6.0, cohEst: true, hrPts: [], at: now + 4 });
+      await end('calm-reset', { secs: 600, early: false, hr0: 75, hr1: 78, coh: 4.4, cohMax: 6.0, hrPts: [], at: now + 4 });
       c = await cmp();
-      ok(c.coh === 'Last time 4.0' && /This time it rose instead\./.test(await ex('hr')), 'an estimate against an estimate, and a rise where it usually falls');
+      ok(c.coh === '' && /This time it rose instead\./.test(await ex('hr')), 'an estimate kept from before is no usual for a real score; and a rise where it usually falls');
 
       await end('grounding', { secs: 300, early: false, hrPts: [], at: now + 5 });
       ok((await cmp()).time === 'Your first time' && /This was your first session of/.test(await ex('time')), 'a first session says so');

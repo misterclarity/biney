@@ -80,7 +80,7 @@
       } else e.hrAvg = Math.round(avg(s.map(function (x) { return x.hr; })));
     }
     if (B.swings.length) e.swing = +avg(B.swings.map(function (x) { return x.amp; })).toFixed(1);
-    if (B.coh.length) { e.coh = +avg(B.coh).toFixed(2); if (!H.hasRR) e.est = true; }
+    if (B.coh.length) e.coh = +avg(B.coh).toFixed(2);
     hAdd(e);
   }
   // a track, the primer or a built beat: the time actually listened, once it stops for good

@@ -7,6 +7,7 @@
 //   K  the code check's fixes          L  Healthy living: recipes and supplements
 //   G  the gratitude practice          C  Calm Reset's beat and pace     D  donations
 //   U  what an automatic update waits for B  connecting can't get stuck
+//   H  a sensor that sends heart rate only: no coherence, the test's caution, the guide
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -734,7 +735,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const st = q => E(q, () => ({ st: window.__entrain.H.state, tries: window.__hrTries(), msg: document.querySelector('#hrMsg').textContent,
         btn: document.querySelector('#hrConnect').textContent, dis: document.querySelector('#hrConnect').getAttribute('aria-disabled'),
         guide: (document.querySelector('#gCheck li[data-k="conn"] .s') || {}).textContent, pill: document.querySelector('#tbSensorTxt').textContent }));
-      const FORCE = /Garmin Connect on this phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, and tap Force stop/;
+      const FORCE = /If this is the phone the watch syncs with in Garmin Connect, connect from a tablet or computer that has never been paired with the watch instead\./;
       const PAIR = " If the watch or the phone asked you to confirm a pairing or showed a code, accept it next time (there's half a minute); on some phones the request waits in the notifications. Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again.";
       const HINT = " If the watch or the phone asks you to confirm a pairing or shows a code, accept it. Your phone's name on the watch's broadcast screen only means the two are linked.";
       const LISTED = ' What happened on each try is listed below.';
@@ -820,11 +821,11 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       p = await open({ hang: 'read', probeHang: true, quick: 0.05 });
       await until(p, 'off', 12000);
       const r6 = await st(p), t6 = await tries(p);
-      ok(r6.tries === 3 && r6.msg === "Venu 4 linked up but didn't answer anything this page asked of it, not even a test read. This can happen when the watch is also paired with this phone in Garmin Connect. " +
-        "Two things to try: turn off the watch's connection to your phone while you use Entrain (the phone icon in the watch's controls menu; turn it back on afterwards) and connect again, or connect from a tablet or computer that isn't paired with the watch." + LISTED &&
+      ok(r6.tries === 3 && r6.msg === "Venu 4 linked up but didn't answer anything this page asked of it, not even a test read. A Garmin watch can do this with the phone it syncs with in Garmin Connect. " +
+        "A tablet or computer that has never been paired with the watch connects." + LISTED &&
         new RegExp('^Linked up in ' + S + '; waited 6 s for it to settle; found its heart-rate service in ' + S + '; a test read of its battery level: no answer within 8 s; the link was still up\\.$').test(t6.li[1]) &&
         new RegExp('^Linked up in ' + S + '; waited 12 s for it to settle; found its heart-rate service in ' + S + '; a test read of its battery level: no answer within 8 s; the link was still up\\.$').test(t6.li[2]),
-        'a watch that answers nothing at all, not even a test read: the message says what to try, and the list leaves out what the browser turned down after the deadline: ' + t6.li[1]);
+        'a watch that answers nothing at all, not even a test read: the message says to use a device it was never paired with, and the list leaves out what the browser turned down after the deadline: ' + t6.li[1]);
       await p.context().close();
       // a watch that links up without the heart-rate service: what it does offer, and why that can happen
       p = await open({ noHR: true, quick: 0.05 });
@@ -855,6 +856,58 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await p.context().close();
     }
 
+    /* H. a sensor that sends heart rate only (a Garmin watch): no coherence score or spectrum, the resonance
+       test's caution, while it's on and under a result it gave; the guide starts with the HeartMath sensor,
+       and its Garmin steps start with a device that isn't paired with the watch; iPhone browsers hear of Bluefy */
+    if (!only || only === 'H') {
+      const NEED = 'Needs beat-to-beat data, which an ear-clip sensor or a chest strap sends';
+      let p = await page(OPT(), null, { speed: 4, rr: false });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      await p.click('#hrConnect');
+      await p.waitForFunction(() => window.__entrain.H.state === 'on', null, { timeout: 5000 }).catch(() => {});
+      await p.waitForTimeout(6000);                          // 24 s at this speed, and a coherence tick
+      const h = await E(p, () => {
+        const q = s => document.querySelector(s), X = window.__entrain;
+        return { coh: q('#hrCoh').textContent, cs: q('#hrCohS').textContent, spec: q('#hrSpecEmpty').textContent, specShown: !q('#hrSpecEmpty').hidden,
+          note: q('#hrFindNote').hidden ? '' : q('#hrFindNote').textContent, rr: q('#gCheck li[data-k="rr"] .s').textContent, H: X.H.coh, hr: X.H.hr };
+      });
+      ok(h.hr > 0 && h.coh === '—' && h.cs === NEED && h.H === null, 'heart rate only: no coherence score, and the tile says what it needs: ' + h.cs);
+      ok(h.specShown && /^This sensor sends heart rate only\. The spectrum needs the time between heartbeats/.test(h.spec) && h.rr === 'This sensor sends heart rate only: no RMSSD or coherence, and the swing is a rough guide.',
+        'the spectrum and the guide\'s check say the same: ' + h.spec);
+      ok(/^This sensor sends heart rate only, smoothed over a few seconds, which flattens faster breathing more than slower\. With it, the test leans towards the slower paces/.test(h.note),
+        'the resonance test says it leans towards slower paces with this sensor: ' + h.note);
+      await p.context().close();
+      // a result the watch gave, after it's gone; a beat-to-beat result has no note
+      const res = rr => ({ resonance: JSON.stringify({ at: Date.now() - 864e5, best: 4.5, rr, res: [6.5, 6, 5.5, 5, 4.5].map((rate, i) => ({ rate, amp: 3 + i * 0.4 })) }) });
+      p = await page(Object.assign(OPT(), res(false)));
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(400);
+      const r1 = await t(p, '#hrFindNote'), shown = await E(p, () => !document.querySelector('#hrFindNote').hidden);
+      await p.context().close();
+      p = await page(Object.assign(OPT(), res(true)));
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(400);
+      const hid = await E(p, () => document.querySelector('#hrFindNote').hidden);
+      ok(shown && /^This result came from a sensor that sends heart rate only, so it may lean towards the slower paces\./.test(r1) && hid,
+        'under a result a heart-rate-only sensor gave, the same caution; none under a beat-to-beat one: ' + r1);
+      // the guide: the HeartMath sensor first; the Garmin steps start with a device that isn't paired with the watch
+      const g = await E(p, () => ({
+        tabs: [...document.querySelectorAll('.g-tab')].map(b => b.textContent + (b.getAttribute('aria-selected') === 'true' ? '*' : '')).join(' | '),
+        shown: [...document.querySelectorAll('.g-panel')].filter(x => !x.hidden).map(x => x.id).join(),
+        first: document.querySelector('#gp-garmin .g-steps li').textContent,
+        expect: document.querySelector('#gp-garmin .g-expect').textContent }));
+      ok(g.tabs === 'HeartMath sensor* | Chest strap | Garmin Venu 4 | Other sensors' && g.shown === 'gp-heartmath', 'the guide opens on the HeartMath sensor: ' + g.tabs);
+      ok(/^Use a device that isn't paired with the watch\./.test(g.first) && /no RMSSD or coherence, and the resonance test leans towards slower paces/.test(g.expect),
+        'the Garmin steps start with a device that isn\'t paired with the watch, and say what it can\'t do: ' + g.first.slice(0, 60));
+      await p.context().close();
+      // an iPhone: Bluefy
+      const ctx = await browser.newContext({ userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1', viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+      p = await ctx.newPage();
+      await p.addInitScript(() => { Object.defineProperty(navigator, 'bluetooth', { configurable: true, value: undefined }); });
+      await p.goto(APP + '#heart'); await p.waitForTimeout(500);
+      const im = await t(p, '#hrMsg');
+      ok(/^Safari and the other browsers on iPhone and iPad can't reach Bluetooth sensors\. Bluefy, a free browser built for Web Bluetooth, can/.test(im), 'on an iPhone, the message points to Bluefy: ' + im);
+      await ctx.close();
+    }
+
     /* D. donations: a button on Today and in Settings, and a line in the impressum, opening Ko-fi in the browser */
     if (!only || only === 'D') {
       const p = await page(OPT());
@@ -869,6 +922,16 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const h = await btn('.td-donate a.btn.donate');
       ok(h.href === b.href && h.target === '_blank' && /noopener/.test(h.rel) && h.txt === b.txt && h.h >= 44 && h.col === b.col && /^Entrain is free and has no ads\./.test(await t(p, '.td-donate p')),
         'Today has the same button, at the end: ' + await t(p, '.td-donate p'));
+      // the end screen of any practice, under Done and Do it again, whether it ran to the end or not
+      for (const early of [false, true]) {
+        await E(p, () => location.hash = 'practice/anapana'); await p.waitForTimeout(250);
+        await E(p, early => { const X = window.__entrain; X.P.def = X.pDef('anapana'); X.P.steps = X.pPlan(X.P.def, 0).steps; X.pDone({ secs: 600, early, hrPts: [] }, early); }, early);
+        await p.waitForTimeout(150);
+        const sd = await btn('#sDone .sd-donate a.btn.donate');
+        const after = await E(p, () => { const a = document.querySelector('#sDone .sd-act'), d = document.querySelector('#sDone .sd-donate'); return !!(a && d && a.compareDocumentPosition(d) & Node.DOCUMENT_POSITION_FOLLOWING); });
+        ok(sd.href === b.href && sd.target === '_blank' && /noopener/.test(sd.rel) && sd.txt === b.txt && sd.h >= 44 && after && /^Entrain is free and has no ads\./.test(await t(p, '#sDone .sd-donate p')),
+          'the end screen of a practice ' + (early ? 'ended early' : 'run to the end') + ' has it too, under Done and Do it again');
+      }
       await p.context().close();
     }
   } catch (e) {

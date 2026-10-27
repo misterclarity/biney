@@ -568,6 +568,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .hr-empty{position:absolute;inset:0;margin:0;display:grid;place-items:center;text-align:center;padding:0 10%;font-size:13px;color:var(--text-faint)}
   .hr-summary{margin:0;font-size:13px;color:var(--text-dim)}
   .hr-find-txt{margin:0;font-size:13.5px;color:var(--text-dim)}
+  .hr-find-txt.hr-find-note{color:var(--b-hold);font-size:13px}
   .hr-find-foot{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   @media (max-width:1100px){
     .hr-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -1691,9 +1692,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   a.btn.donate:hover{background:color-mix(in srgb,var(--stim) 20%,var(--panel-2))}
   a.btn.donate svg.i{color:var(--stim)}
   .st-about a.btn.donate{align-self:flex-start;margin-top:4px}
-  .td-donate{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap;margin-top:12px}
-  .td-donate p{margin:0;flex:1 1 240px}
-  .td-donate b{color:var(--text);font-weight:700}
+  .donate-card{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap}
+  .donate-card p{margin:0;flex:1 1 240px}
+  .donate-card b{color:var(--text);font-weight:700}
+  .td-donate{margin-top:12px}
+  .sd-donate{margin-top:18px}
 
 </style>
 </head>
@@ -1831,7 +1834,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           </ul>
         </div>
 
-        <div class="note-card td-donate">
+        <div class="note-card donate-card td-donate">
           <p><b>Entrain is free and has no ads.</b> If it helps you, a donation keeps it going.</p>
           <a class="btn donate" href="https://ko-fi.com/misterclarity" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a>
         </div>
@@ -2243,7 +2246,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           <h3 id="hrTitle">Pair a heart-rate sensor</h3>
           <p>
             Watch your heart rate rise as you breathe in and fall as you breathe out. Any Bluetooth heart-rate
-            sensor works: a Garmin watch set to broadcast, an ear-clip sensor or a chest strap.
+            sensor works. An ear-clip sensor or a chest strap gives the full picture, coherence included; a watch
+            set to broadcast gives heart rate only.
           </p>
           <p class="hr-msg" id="hrMsg" role="status"></p>
           <details class="ev hr-log" id="hrLog" hidden>
@@ -2266,31 +2270,20 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         <summary>
           <span class="hr-guide-sum">
             <b>Connection guide</b>
-            <span>Step by step for a Garmin Venu 4, a HeartMath sensor or a chest strap, with a live check of each step</span>
+            <span>Step by step for a HeartMath sensor, a chest strap or a Garmin Venu 4, with a live check of each step</span>
           </span>
         </summary>
 
         <div class="hr-guide-body">
           <div class="g-main">
             <div class="g-tabs" role="tablist" aria-label="Choose your sensor">
-              <button class="g-tab" role="tab" id="gt-garmin" data-dev="garmin" aria-controls="gp-garmin" aria-selected="true">Garmin Venu 4</button>
-              <button class="g-tab" role="tab" id="gt-heartmath" data-dev="heartmath" aria-controls="gp-heartmath" aria-selected="false" tabindex="-1">HeartMath sensor</button>
+              <button class="g-tab" role="tab" id="gt-heartmath" data-dev="heartmath" aria-controls="gp-heartmath" aria-selected="true">HeartMath sensor</button>
               <button class="g-tab" role="tab" id="gt-strap" data-dev="strap" aria-controls="gp-strap" aria-selected="false" tabindex="-1">Chest strap</button>
+              <button class="g-tab" role="tab" id="gt-garmin" data-dev="garmin" aria-controls="gp-garmin" aria-selected="false" tabindex="-1">Garmin Venu 4</button>
               <button class="g-tab" role="tab" id="gt-other" data-dev="other" aria-controls="gp-other" aria-selected="false" tabindex="-1">Other sensors</button>
             </div>
 
-            <div class="g-panel" role="tabpanel" id="gp-garmin" aria-labelledby="gt-garmin">
-              <ol class="g-steps">
-                <li><b>Start broadcasting on the watch.</b>Hold the upper-right button to open the controls menu and choose the heart-rate broadcast control. You can also go to Settings &gt; Health &amp; Wellness &gt; Wrist Heart Rate &gt; Broadcast Heart Rate. If the control isn't in the menu, you can add it when you customise the controls menu.</li>
-                <li><b>Wear it snug and keep your arm still.</b>Put it a finger's width above the wrist bone, tight enough not to slide. The optical sensor reads most steadily with your forearm resting on something.</li>
-                <li><b>Connect here.</b>Press Connect sensor. The watch appears in the list under its name within a few seconds; choose it and press Pair.</li>
-                <li><b>If it stays on Connecting…</b>Your phone's name above the heart icon on the watch means the two are linked; nothing needs confirming there. If the watch or the phone asks you to confirm a pairing or shows a code, accept it (on some phones the request waits in the notifications); each step allows half a minute for this, and Garmin Connect may need pairing with the watch again afterwards. Garmin Connect on the same phone may also be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, tap Force stop, and connect here again. Open Garmin Connect afterwards to sync as usual. Turning the phone's Bluetooth off and on, and restarting the broadcast on the watch, can help too. Entrain tries three times, the later tries more slowly, then lists what happened on each, with a button to copy it; Cancel stops it sooner. If the list shows that the watch answered nothing, not even a test read, try turning off its connection to your phone while you use Entrain: the phone icon in the watch's controls menu (turn it back on afterwards). If it still won't connect, a tablet or computer that isn't paired with the watch can usually connect to its broadcast.</li>
-                <li><b>Stop when you're done.</b>Press the upper-right button on the watch to stop broadcasting, because it uses extra battery.</li>
-              </ol>
-              <p class="g-expect"><b>What you'll get:</b> heart rate about once a second, the swing in each breath and the resonance test. Garmin watches don't broadcast beat-to-beat intervals, so RMSSD stays empty and coherence is marked as an estimate.</p>
-            </div>
-
-            <div class="g-panel" role="tabpanel" id="gp-heartmath" aria-labelledby="gt-heartmath" hidden>
+            <div class="g-panel" role="tabpanel" id="gp-heartmath" aria-labelledby="gt-heartmath">
               <ol class="g-steps">
                 <li><b>Free it from the HeartMath app.</b>The sensor connects to one device at a time. Close the HeartMath or Inner Balance app on your phone or tablet (swipe it away from the recent-apps screen), or switch that device's Bluetooth off for a moment.</li>
                 <li><b>Turn it on.</b>Press the button on the sensor once. A rapidly flashing blue light means it's ready to connect. A Coherence Plus sensor blinking white is still looking for the device it last used, so step 1 isn't done yet. If the battery light blinks red, charge it first.</li>
@@ -2310,13 +2303,25 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               <p class="g-expect"><b>What you'll get:</b> everything, beat to beat. A chest strap gives the most accurate HRV. Afterwards, unclip the sensor or dry the strap so it stops broadcasting.</p>
             </div>
 
+            <div class="g-panel" role="tabpanel" id="gp-garmin" aria-labelledby="gt-garmin" hidden>
+              <ol class="g-steps">
+                <li><b>Use a device that isn't paired with the watch.</b>The watch may not share its heart rate with the phone it syncs with in Garmin Connect: that phone links up, but the watch answers nothing it asks. A tablet or computer that has never been paired with the watch connects.</li>
+                <li><b>Start broadcasting on the watch.</b>Hold the upper-right button to open the controls menu and choose the heart-rate broadcast control. You can also go to Settings &gt; Health &amp; Wellness &gt; Wrist Heart Rate &gt; Broadcast Heart Rate. If the control isn't in the menu, you can add it when you customise the controls menu.</li>
+                <li><b>Wear it snug and keep your arm still.</b>Put it a finger's width above the wrist bone, tight enough not to slide. The optical sensor reads most steadily with your forearm resting on something.</li>
+                <li><b>Connect there.</b>Open this page in Chrome or Edge on that device and press Connect sensor. The watch appears in the list under its name within a few seconds; choose it and press Pair.</li>
+                <li><b>If it stays on Connecting…</b>The device's name above the heart icon on the watch means the two are linked; nothing needs confirming there. If the watch or the device asks you to confirm a pairing or shows a code, accept it; each step allows half a minute for this. Turning Bluetooth off and on, and restarting the broadcast on the watch, can help too. Entrain tries three times, the later tries more slowly, then lists what happened on each, with a button to copy it; Cancel stops it sooner.</li>
+                <li><b>Stop when you're done.</b>Press the upper-right button on the watch to stop broadcasting, because it uses extra battery.</li>
+              </ol>
+              <p class="g-expect"><b>What you'll get:</b> heart rate about once a second, which the watch averages over a few seconds before sending it, and the swing in each breath as a rough guide. The watch doesn't send the time between beats, so there's no RMSSD or coherence, and the resonance test leans towards slower paces. For those, use the HeartMath sensor or a chest strap.</p>
+            </div>
+
             <div class="g-panel" role="tabpanel" id="gp-other" aria-labelledby="gt-other" hidden>
               <ol class="g-steps">
                 <li><b>Check it uses the standard heart-rate service.</b>Anything that pairs with gym equipment, Zwift or a bike computer as a Bluetooth heart-rate monitor almost certainly does. Some watches can't broadcast at all; look for a setting called something like "broadcast heart rate".</li>
                 <li><b>Turn broadcasting on and free it from other apps.</b>Most sensors connect to only one app or device at a time.</li>
                 <li><b>Connect here.</b>Press Connect sensor. If the sensor doesn't advertise the service up front, use My sensor isn't listed. The page tells you if the device you pick has no heart-rate service.</li>
               </ol>
-              <p class="g-expect"><b>What you'll get:</b> watches usually send heart rate only, like the Garmin. Ear-clip and chest sensors usually send beat-to-beat intervals too, which RMSSD and the full coherence score need.</p>
+              <p class="g-expect"><b>What you'll get:</b> watches usually send heart rate only, like the Garmin. Ear-clip and chest sensors usually send beat-to-beat intervals too, which RMSSD and coherence need.</p>
             </div>
           </div>
 
@@ -2355,15 +2360,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           </details>
           <details>
             <summary>The Connect button is greyed out</summary>
-            <p>This browser can't use Bluetooth. Open the page in Chrome or Edge on an Android phone or a computer. On a phone, Samsung Internet may not offer it, so use Chrome. On an iPhone, Safari and Chrome can't reach sensors; Bluefy, a browser built for Web Bluetooth, can.</p>
+            <p>This browser can't use Bluetooth. Open the page in Chrome or Edge on an Android phone or a computer. On a phone, Samsung Internet may not offer it, so use Chrome. On an iPhone or iPad, Safari and every other browser there use Apple's engine, which has no Bluetooth for web pages; Bluefy, a free browser built for Web Bluetooth, can reach sensors.</p>
           </details>
           <details>
             <summary>It connects, then drops</summary>
             <p>Move the phone closer, charge the sensor, and keep Chrome in front with the screen on, because Android pauses pages in the background. The page tries to reconnect five times on its own before giving up.</p>
           </details>
           <details>
-            <summary>Heart rate works, but RMSSD stays empty</summary>
-            <p>The sensor sends heart rate only, which is true of every Garmin watch. The swing and the resonance test still work, and coherence is shown as an estimate. For RMSSD and full coherence, use the HeartMath sensor or a chest strap.</p>
+            <summary>Heart rate works, but RMSSD and coherence stay empty</summary>
+            <p>The sensor sends heart rate only, as Garmin watches do. Heart rate works and the swing is a rough guide, but RMSSD and coherence need the time between beats, and the resonance test leans towards slower paces. For those, use the HeartMath sensor or a chest strap.</p>
           </details>
           <details>
             <summary>The numbers jump around</summary>
@@ -2421,6 +2426,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the
             biggest heart-rate swing. About 10 minutes, sitting still.
           </p>
+          <p class="hr-find-txt hr-find-note" id="hrFindNote" hidden></p>
           <div class="hr-chart sm grow"><canvas id="hrFind" aria-hidden="true"></canvas></div>
           <div class="hr-find-foot">
             <button class="btn" id="hrFindStart" disabled>Start resonance test</button>
@@ -2555,7 +2561,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         minutes of slow, heart-focused breathing first, then gratitude, which is easiest to feel once the breathing has
         calmed you and the rhythm has settled, as it is after a meditation. HeartMath's own apps rescale the score (0 to 16 in
         Inner Balance) and use thresholds they don't publish, so expect the numbers here to differ from the app's.
-        The score needs beat-to-beat data; from a watch's smoothed heart rate it is an estimate that reads high.
+        The score needs the time between heartbeats, so Entrain shows it only with a sensor that sends it, such as an
+        ear-clip sensor or a chest strap. A watch averages its heart rate over a few seconds before sending it, which
+        flattens the rise and fall the score looks for.
       </p>
 
       <h3 id="l-bands">Frequency bands at a glance</h3>
@@ -5621,10 +5629,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   /* ------------------------- live heart data -------------------------
      Any sensor that speaks the standard Bluetooth Heart Rate Service
-     (0x180D) works: a Garmin watch set to Broadcast Heart Rate, an ear-clip
-     sensor or a chest strap. Each notification carries a heart rate and,
+     (0x180D) works: an ear-clip sensor, a chest strap or a Garmin watch set
+     to Broadcast Heart Rate. Each notification carries a heart rate and,
      from beat-to-beat sensors, zero or more RR intervals in 1/1024 s.
-     Watches send heart rate only, so RMSSD lights up only when RR arrives.
+     Watches send heart rate only, so RMSSD and coherence light up only when
+     RR arrives.
 
      The biofeedback measure is the heart-rate swing within each breath
      (peak minus trough), one of the standard criteria for finding a
@@ -5647,6 +5656,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var FIND_RATES = [6.5, 6, 5.5, 5, 4.5], FIND_STEP = 120;
 
   function hrSupported() { return !!(navigator.bluetooth && navigator.bluetooth.requestDevice); }
+  // a sensor that sends heart rate only: on for ten seconds without a single beat-to-beat interval
+  function hrOnly() { return H.state === "on" && !H.hasRR && !!H.connAt && bNow() - H.connAt > 10; }
   function hrLive() { return H.state === "on" && H.hr > 0 && bNow() - H.lastAt < 5; }
 
   function hrSetState(st, pill) {
@@ -5941,7 +5952,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     try { if (H.dev && H.dev.gatt.connected) H.dev.gatt.disconnect(); } catch (x) {}
     hrSetState("off", "Not connected");
     // Garmin Connect, running on the same phone, can keep hold of the watch so another app's connection never finishes
-    var g = hrGarmin() ? " If it keeps happening, Garmin Connect on this phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, and tap Force stop, then connect here again. Open Garmin Connect afterwards to sync as usual." : "";
+    var g = hrGarmin() ? " If this is the phone the watch syncs with in Garmin Connect, connect from a tablet or computer that has never been paired with the watch instead." : "";
     var said = s && H.log.length ? " What happened on each try is listed below." : "";
     var pair = hrGarmin() ? " If the watch or the phone asked you to confirm a pairing or showed a code, accept it next time (there's half a minute); on some phones the request waits in the notifications."
       : " If your phone asked to pair with it (the request can also sit in the notifications), accept it next time.";
@@ -5954,7 +5965,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       hrMsg(H.name + " linked up but didn't share its heart-rate service." + pair + " Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g + said);
     } else if (s === "probe" && n === "TimeoutError") {
       hrMsg(H.name + " linked up but didn't answer anything this page asked of it, not even a test read." + (hrGarmin()
-        ? " This can happen when the watch is also paired with this phone in Garmin Connect. Two things to try: turn off the watch's connection to your phone while you use Entrain (the phone icon in the watch's controls menu; turn it back on afterwards) and connect again, or connect from a tablet or computer that isn't paired with the watch."
+        ? " A Garmin watch can do this with the phone it syncs with in Garmin Connect. A tablet or computer that has never been paired with the watch connects."
         : " Close any other app that uses it, turn your phone's Bluetooth off and on, and try again.") + said);
     } else if (s === "read" || s === "probe") {
       hrMsg(H.name + " linked up but didn't start sending its heart rate." + pair + " Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g + said);
@@ -6188,7 +6199,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else guideItem("hr", "", "");
     var recentBeat = H.beats.length && now - H.beats[H.beats.length - 1].t < 5;
     if (live && recentBeat) guideItem("rr", "ok", "RMSSD and coherence use every beat");
-    else if (live && H.connAt && now - H.connAt > 10) guideItem("rr", "info", "This sensor sends heart rate only. Swing works; coherence is an estimate.");
+    else if (live && H.connAt && now - H.connAt > 10) guideItem("rr", "info", "This sensor sends heart rate only: no RMSSD or coherence, and the swing is a rough guide.");
     else if (live) guideItem("rr", "wait", "Checking…");
     else guideItem("rr", "", "Needed for RMSSD and full coherence");
   }
@@ -6274,7 +6285,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         " bpm over " + B.swings.length + " breaths");
     }
     if (B.coh.length) {
-      parts.push("average coherence " + avg(B.coh).toFixed(1) + (H.hasRR ? "" : " (estimated)"));
+      parts.push("average coherence " + avg(B.coh).toFixed(1));
     }
     var now = bNow(), r = H.hasRR ? rmssd(now - 60, now) : null;
     if (r) parts.push("RMSSD " + Math.round(r.v) + " ms in the last minute");
@@ -6291,7 +6302,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     } catch (e) {}
     if (!hrSupported()) {
       hrSetState("off", "Bluetooth unavailable");
-      hrMsg("This browser can't reach Bluetooth sensors. Use Chrome or Edge on a computer or an Android phone; Safari, iPhone browsers and Firefox don't support it.");
+      var ua = navigator.userAgent || "", ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+      hrMsg(ios ? "Safari and the other browsers on iPhone and iPad can't reach Bluetooth sensors. Bluefy, a free browser built for Web Bluetooth, can: install it from the App Store and open this page in it."
+        : "This browser can't reach Bluetooth sensors. Use Chrome or Edge on a computer or an Android phone; Safari and Firefox don't support it.");
     } else {
       hrSetState("off", "Not connected");
       try {
@@ -6509,8 +6522,20 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     bSetT("#bMsg", "Set to " + H.find.best + " breaths a minute, your resonance test result.");
     goView("breathe");
   }
+  /* A sensor that sends heart rate only usually smooths it over a few seconds, which flattens the
+     swing of faster breathing more than that of slower, so with one the test leans towards the
+     slower paces. Said while one is on, and under a result that came from one. */
+  function finderNote() {
+    var t = H.find && H.find.best && H.find.rr === false
+      ? "This result came from a sensor that sends heart rate only, so it may lean towards the slower paces. An ear-clip sensor or a chest strap gives a truer result."
+      : hrOnly() ? "This sensor sends heart rate only, smoothed over a few seconds, which flattens faster breathing more than slower. With it, the test leans towards the slower paces; an ear-clip sensor or a chest strap gives a truer result."
+      : "";
+    bSetT("#hrFindNote", t);
+    $("#hrFindNote").hidden = !t;
+  }
   function finderUI(bt) {
     var F = B.finder, btn = $("#hrFindStart"), use = $("#hrFindUse");
+    finderNote();
     if (F) {
       bSetT("#hrFindStart", "Stop test");
       btn.disabled = false;
@@ -6601,24 +6626,21 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
   }
 
-  /* Every 5 s: beat-to-beat intervals when the sensor sends them, otherwise
-     the heart-rate stream, which gives only an estimate. A watch's smoothing
-     strips the faster rhythms, so the "above" power shrinks and the score
-     reads high. */
+  /* Every 5 s, from the beat-to-beat intervals. A sensor that sends heart rate only gets no
+     score: a watch averages its heart rate over a few seconds before sending it, which flattens
+     the rise and fall within each breath that the score looks for. The estimate this used to make
+     from a Garmin watch stayed low however well its wearer breathed, while the HeartMath sensor
+     reached the same person's usual scores within minutes. */
   function cohTick() {
     var now = bNow(), pts;
-    if (H.state !== "on") { H.coh = null; cohShow(); drawSpectrum(); return; }
-    if (H.hasRR) {
-      pts = H.beats.filter(function (b) { return b.t >= now - COH_WIN - 3; }).map(function (b) { return { t: b.t, v: b.rr }; });
-      if (pts.length) {
-        var med = median(pts.map(function (p) { return p.v; }));
-        pts = pts.filter(function (p) { return Math.abs(p.v - med) / med <= 0.3; });   // missed or extra beats
-      }
-    } else {
-      pts = H.series.filter(function (s) { return s.t >= now - COH_WIN - 3; }).map(function (s) { return { t: s.t, v: 60000 / s.hr }; });
+    if (H.state !== "on" || !H.hasRR) { H.coh = null; cohShow(); drawSpectrum(); return; }
+    pts = H.beats.filter(function (b) { return b.t >= now - COH_WIN - 3; }).map(function (b) { return { t: b.t, v: b.rr }; });
+    if (pts.length) {
+      var med = median(pts.map(function (p) { return p.v; }));
+      pts = pts.filter(function (p) { return Math.abs(p.v - med) / med <= 0.3; });   // missed or extra beats
     }
     var r = cohCompute(pts, now);
-    H.coh = r ? { cs: r.cs, f: r.f, P: r.P, est: !H.hasRR } : null;
+    H.coh = r ? { cs: r.cs, f: r.f, P: r.P } : null;
     if (r && B.state === "running" && breathTime() >= 0) B.coh.push(r.cs);
     if (r && P.state === "running") P.coh.push({ t: pT(), cs: r.cs });
     cohShow();
@@ -6630,14 +6652,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     bSetT("#hrCoh", on ? c.cs.toFixed(1) : "—");
     $("#hrCohBar").style.width = on ? Math.min(100, c.cs / 8 * 100).toFixed(1) + "%" : "0%";
     if (H.state !== "on") s = "Needs a heart-rate sensor";
+    else if (hrOnly()) s = "Needs beat-to-beat data, which an ear-clip sensor or a chest strap sends";
     else if (!on) {
       var left = H.since ? Math.ceil(COH_WIN - (bNow() - H.since)) : COH_WIN;
       s = left > 0 ? "Collecting: " + left + " s to go" : "Waiting for steady data";
     } else {
-      s = "Peak at " + c.f.toFixed(3) + " Hz, " + (c.f * 60).toFixed(1) + " a minute" +
-        (c.est ? ". Estimated from smoothed heart rate, so it reads high" : "");
+      s = "Peak at " + c.f.toFixed(3) + " Hz, " + (c.f * 60).toFixed(1) + " a minute";
     }
     bSetT("#hrCohS", s);
+    finderNote();
     $("#bCohStat").hidden = !on;
     bSetT("#bCoh", on ? c.cs.toFixed(1) : "—");
   }
@@ -6645,9 +6668,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The spectrum behind the score: heart-rate power by frequency, the peak
      window filled, the 0.04-0.26 Hz search band shaded, and the breathing
      pace as a dashed line while a session runs. */
+  var SPEC_EMPTY = null;     // what the empty chart says, until a sensor that sends heart rate only is on
   function drawSpectrum() {
-    var f = fitCanvas($("#hrSpec")), co = H.coh && hrLive() ? H.coh : null;
-    $("#hrSpecEmpty").hidden = !!co;
+    var f = fitCanvas($("#hrSpec")), co = H.coh && hrLive() ? H.coh : null, em = $("#hrSpecEmpty");
+    if (SPEC_EMPTY === null) SPEC_EMPTY = em.textContent;
+    bSetT("#hrSpecEmpty", hrOnly() ? "This sensor sends heart rate only. The spectrum needs the time between heartbeats, which an ear-clip sensor or a chest strap sends." : SPEC_EMPTY);
+    em.hidden = !!co;
     if (!f || !co) return;
     var c = f.c, W = f.w, Hh = f.h, padL = 6, padR = 10, padT = 22, padB = 20, FMAX = 0.4;
     var pw = W - padL - padR, ph = Hh - padT - padB, base = padT + ph;
@@ -10284,7 +10310,6 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (P.coh.length) {
       r.coh = avg(P.coh.map(function (c) { return c.cs; }));
       r.cohMax = Math.max.apply(null, P.coh.map(function (c) { return c.cs; }));
-      r.cohEst = !H.hasRR;
     }
     if (P.sw.length) r.swing = avg(P.sw.map(function (s) { return s.amp; }));
     if (d.id === "anapana") r.wander = P.wander;
@@ -10307,7 +10332,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
     if (T >= 60) r.at = Date.now();                    // the end screen tells this one from the earlier ones by it
     if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
-      coh: r.coh ? +r.coh.toFixed(2) : undefined, est: r.coh && r.cohEst ? true : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,
+      coh: r.coh ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,
       note: notes.join(", ") || undefined });
     return r;
   }
@@ -10827,7 +10852,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var napHR = r.nap && r.nap.base && r.nap.low;        // a nap has its own baseline-to-lowest tile
     if (r.hr0 && !napHR) tiles.push(["Heart rate", r.hr0 + " → " + r.hr1, "bpm, start to end", "hr", sdCmpTxt(c.hr, function (v) { v = Math.round(v); return v ? sdSigned(v) : "steady"; })]);
     else if (r.hrAvg && !napHR) tiles.push(["Heart rate", String(r.hrAvg), "bpm average", "hravg"]);
-    if (r.coh && !r.nap) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1) + (r.cohEst ? " (est.)" : ""), "coh", sdCmpTxt(c.coh, sdFix1, r.coh)]);
+    if (r.coh && !r.nap) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1), "coh", sdCmpTxt(c.coh, sdFix1, r.coh)]);
     if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath", "swing", sdCmpTxt(c.swing, sdFix1, r.swing)]);
     if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath", "wander"]);
     if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · "), "holds"]);
@@ -10855,7 +10880,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
       (r.nvc ? nvcCard(r.nvc) : "") +
       qCard(d.reflect ? ROGERS : qPick()) +
-      '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>';
+      '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>' +
+      '<div class="note-card donate-card sd-donate"><p><b>Entrain is free and has no ads.</b> If it helps you, a donation keeps it going.</p>' +
+      '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a></div>';
     var el = $("#sDone");
     el.innerHTML = h;
     $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
@@ -10903,8 +10930,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (k === "coh") {
       p.push("How much of your heart rhythm's rise and fall settled into one smooth, regular wave, usually the one your breathing sets. It's HeartMath's published measure, worked out every 5 seconds from the last 64 seconds of heartbeats, and it usually runs from 0 to 8.");
       p.push("Here it averaged " + r.coh.toFixed(1) + ", and your best moment reached " + r.cohMax.toFixed(1) + ". Everyday breathing usually scores low; slow, even breathing near your resonance pace raises it. HeartMath's own apps use a different scale, so compare it with your own sessions here.");
-      if (r.cohEst) p.push("It's marked (est.) because your sensor sends heart rate only, not the time between beats. From that smoothed signal the score is an estimate and reads high. An ear clip or a chest strap gives the full measure.");
-      if (SD.c.coh) p.push(sdAgainst(r.coh, SD.c.coh, d, "coherence", 0.3, r.cohEst ? "with an estimated score, as estimates are only compared with estimates" : "with a beat-to-beat sensor"));
+      if (SD.c.coh) p.push(sdAgainst(r.coh, SD.c.coh, d, "coherence", 0.3, "with a beat-to-beat sensor"));
       return ["Coherence", p];
     }
     if (k === "swing") {
@@ -10964,7 +10990,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function sdCompare(r, d) {
     var prev = hLoad().filter(function (e) { return e.k === "practice" && e.id === d.id && e.at !== r.at; }), c = {}, wk = Date.now() - 7 * DAY;
     if (r.hr0 && r.hr1) c.hr = sdUsual(prev.filter(function (e) { return e.hr0 && e.hr1; }).map(function (e) { return e.hr1 - e.hr0; }));
-    if (r.coh) c.coh = sdUsual(prev.filter(function (e) { return e.coh && !!e.est === !!r.cohEst; }).map(function (e) { return e.coh; }));
+    if (r.coh) c.coh = sdUsual(prev.filter(function (e) { return e.coh && !e.est; }).map(function (e) { return e.coh; }));   // not the estimates kept from before
     if (r.swing) c.swing = sdUsual(prev.filter(function (e) { return e.swing; }).map(function (e) { return e.swing; }));
     c.n = prev.length + 1;                                   // counted only once this one is in the history (r.at)
     c.week = prev.filter(function (e) { return e.at >= wk; }).length + 1;
@@ -12644,10 +12670,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ["Pick the beat frequency, the carrier tone and the session length, then play it."], "#builder",
       { ic: "sliders", col: "var(--relax)", w: 1, tags: "binaural custom builder carrier frequency" }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
-      ["Pair a Garmin watch set to broadcast, a HeartMath ear-clip sensor or a chest strap, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
+      ["Pair a HeartMath ear-clip sensor, a chest strap or a Garmin watch set to broadcast, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
       { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));
     out.push(fdEntry("heart", "Sensor connection guide", "Heart · step by step",
-      ["Step by step for a Garmin Venu 4, a HeartMath sensor or a chest strap, with a live check of each step."], "#connect",
+      ["Step by step for a HeartMath sensor, a chest strap or a Garmin Venu 4, with a live check of each step."], "#connect",
       { ic: "heart", col: "var(--hr)", w: 1, tags: "garmin venu heartmath strap broadcast pair help" }));
     out.push(fdEntry("heart", "Resonance test", "Heart · about 10 minutes",
       ["Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the biggest heart-rate swing."], "#resonance-test",
@@ -13702,7 +13728,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       } else e.hrAvg = Math.round(avg(s.map(function (x) { return x.hr; })));
     }
     if (B.swings.length) e.swing = +avg(B.swings.map(function (x) { return x.amp; })).toFixed(1);
-    if (B.coh.length) { e.coh = +avg(B.coh).toFixed(2); if (!H.hasRR) e.est = true; }
+    if (B.coh.length) e.coh = +avg(B.coh).toFixed(2);
     hAdd(e);
   }
   // a track, the primer or a built beat: the time actually listened, once it stops for good
@@ -13910,7 +13936,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   function tnMid(a) { var s = a.slice().sort(function (x, y) { return x - y; }), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
   // each period's minutes and sessions, its middle heart-rate change, and its average coherence:
-  // from a beat-to-beat sensor when you have any, as estimates read high, else the estimates
+  // from a beat-to-beat sensor when you have any, else the estimates made from heart rate alone before
+  // October 2026 (est), which aren't comparable
   function tnData(unit) {
     var per = tnPeriods(unit), soon = Date.now() + 6e4;
     per.forEach(function (p) { p.n = 0; p.secs = 0; p.dl = []; p.cr = []; p.ce = []; });

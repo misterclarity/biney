@@ -1,9 +1,10 @@
   /* ------------------------- live heart data -------------------------
      Any sensor that speaks the standard Bluetooth Heart Rate Service
-     (0x180D) works: a Garmin watch set to Broadcast Heart Rate, an ear-clip
-     sensor or a chest strap. Each notification carries a heart rate and,
+     (0x180D) works: an ear-clip sensor, a chest strap or a Garmin watch set
+     to Broadcast Heart Rate. Each notification carries a heart rate and,
      from beat-to-beat sensors, zero or more RR intervals in 1/1024 s.
-     Watches send heart rate only, so RMSSD lights up only when RR arrives.
+     Watches send heart rate only, so RMSSD and coherence light up only when
+     RR arrives.
 
      The biofeedback measure is the heart-rate swing within each breath
      (peak minus trough), one of the standard criteria for finding a
@@ -26,6 +27,8 @@
   var FIND_RATES = [6.5, 6, 5.5, 5, 4.5], FIND_STEP = 120;
 
   function hrSupported() { return !!(navigator.bluetooth && navigator.bluetooth.requestDevice); }
+  // a sensor that sends heart rate only: on for ten seconds without a single beat-to-beat interval
+  function hrOnly() { return H.state === "on" && !H.hasRR && !!H.connAt && bNow() - H.connAt > 10; }
   function hrLive() { return H.state === "on" && H.hr > 0 && bNow() - H.lastAt < 5; }
 
   function hrSetState(st, pill) {
@@ -320,7 +323,7 @@
     try { if (H.dev && H.dev.gatt.connected) H.dev.gatt.disconnect(); } catch (x) {}
     hrSetState("off", "Not connected");
     // Garmin Connect, running on the same phone, can keep hold of the watch so another app's connection never finishes
-    var g = hrGarmin() ? " If it keeps happening, Garmin Connect on this phone may be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, and tap Force stop, then connect here again. Open Garmin Connect afterwards to sync as usual." : "";
+    var g = hrGarmin() ? " If this is the phone the watch syncs with in Garmin Connect, connect from a tablet or computer that has never been paired with the watch instead." : "";
     var said = s && H.log.length ? " What happened on each try is listed below." : "";
     var pair = hrGarmin() ? " If the watch or the phone asked you to confirm a pairing or showed a code, accept it next time (there's half a minute); on some phones the request waits in the notifications."
       : " If your phone asked to pair with it (the request can also sit in the notifications), accept it next time.";
@@ -333,7 +336,7 @@
       hrMsg(H.name + " linked up but didn't share its heart-rate service." + pair + " Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g + said);
     } else if (s === "probe" && n === "TimeoutError") {
       hrMsg(H.name + " linked up but didn't answer anything this page asked of it, not even a test read." + (hrGarmin()
-        ? " This can happen when the watch is also paired with this phone in Garmin Connect. Two things to try: turn off the watch's connection to your phone while you use Entrain (the phone icon in the watch's controls menu; turn it back on afterwards) and connect again, or connect from a tablet or computer that isn't paired with the watch."
+        ? " A Garmin watch can do this with the phone it syncs with in Garmin Connect. A tablet or computer that has never been paired with the watch connects."
         : " Close any other app that uses it, turn your phone's Bluetooth off and on, and try again.") + said);
     } else if (s === "read" || s === "probe") {
       hrMsg(H.name + " linked up but didn't start sending its heart rate." + pair + " Otherwise turn your phone's Bluetooth off and on, restart the broadcast, and try again." + g + said);
@@ -567,7 +570,7 @@
     else guideItem("hr", "", "");
     var recentBeat = H.beats.length && now - H.beats[H.beats.length - 1].t < 5;
     if (live && recentBeat) guideItem("rr", "ok", "RMSSD and coherence use every beat");
-    else if (live && H.connAt && now - H.connAt > 10) guideItem("rr", "info", "This sensor sends heart rate only. Swing works; coherence is an estimate.");
+    else if (live && H.connAt && now - H.connAt > 10) guideItem("rr", "info", "This sensor sends heart rate only: no RMSSD or coherence, and the swing is a rough guide.");
     else if (live) guideItem("rr", "wait", "Checking…");
     else guideItem("rr", "", "Needed for RMSSD and full coherence");
   }
@@ -653,7 +656,7 @@
         " bpm over " + B.swings.length + " breaths");
     }
     if (B.coh.length) {
-      parts.push("average coherence " + avg(B.coh).toFixed(1) + (H.hasRR ? "" : " (estimated)"));
+      parts.push("average coherence " + avg(B.coh).toFixed(1));
     }
     var now = bNow(), r = H.hasRR ? rmssd(now - 60, now) : null;
     if (r) parts.push("RMSSD " + Math.round(r.v) + " ms in the last minute");
@@ -670,7 +673,9 @@
     } catch (e) {}
     if (!hrSupported()) {
       hrSetState("off", "Bluetooth unavailable");
-      hrMsg("This browser can't reach Bluetooth sensors. Use Chrome or Edge on a computer or an Android phone; Safari, iPhone browsers and Firefox don't support it.");
+      var ua = navigator.userAgent || "", ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+      hrMsg(ios ? "Safari and the other browsers on iPhone and iPad can't reach Bluetooth sensors. Bluefy, a free browser built for Web Bluetooth, can: install it from the App Store and open this page in it."
+        : "This browser can't reach Bluetooth sensors. Use Chrome or Edge on a computer or an Android phone; Safari and Firefox don't support it.");
     } else {
       hrSetState("off", "Not connected");
       try {

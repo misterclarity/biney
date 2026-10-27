@@ -765,15 +765,15 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
         await p.waitForTimeout(150);
       };
       const ex = async key => { await p.click('#sDone .sd-t[data-ex="' + key + '"]'); await p.waitForTimeout(80); return E(p, () => ({ hidden: document.querySelector('#sdEx').hidden, t: document.querySelector('#sdEx').textContent })); };
-      await end('calm-reset', 0, { secs: 600, early: false, hr0: 72, hr1: 64, coh: 3.2, cohMax: 5.1, cohEst: true, swing: 6.2, hrPts: pts(600, 600) });
+      await end('calm-reset', 0, { secs: 600, early: false, hr0: 72, hr1: 64, coh: 3.2, cohMax: 5.1, swing: 6.2, hrPts: pts(600, 600) });
       const tl = await p.$$eval('#sDone .sd-t', b => b.map(x => x.tagName + ':' + x.dataset.ex).join(' '));
       ok(tl === 'BUTTON:time BUTTON:hr BUTTON:coh BUTTON:swing' && /Tap a number to see what it means, or the chart to read it/.test(await t(p, '.sd-tap')), 'every number on the end screen is a button: ' + tl);
       let e = await ex('hr');
       ok(!e.hidden && /^Heart rate, start to end/.test(e.t) && /first two minutes, then in the last two.*72, then 64/.test(e.t) && /came down 8 beats/.test(e.t) &&
         await p.$eval('.sd-t[data-ex=hr]', b => b.getAttribute('aria-expanded')) === 'true', 'heart rate: what it is, and yours read back: ' + e.t.slice(0, 120));
       e = await ex('coh');
-      ok(/^Coherence/.test(e.t) && /averaged 3\.2.*best moment reached 5\.1/.test(e.t) && /marked \(est\.\) because your sensor sends heart rate only/.test(e.t) &&
-        await p.$eval('.sd-t[data-ex=hr]', b => b.getAttribute('aria-expanded')) === 'false', 'coherence, with what (est.) means; one explanation open at a time');
+      ok(/^Coherence/.test(e.t) && /averaged 3\.2.*best moment reached 5\.1/.test(e.t) && !/est\./.test(e.t) &&
+        await p.$eval('.sd-t[data-ex=hr]', b => b.getAttribute('aria-expanded')) === 'false', 'coherence, read back; one explanation open at a time');
       e = await ex('coh');
       ok(e.hidden && await p.$eval('.sd-t[data-ex=coh]', b => b.getAttribute('aria-expanded')) === 'false', 'tapping it again closes it');
       e = await ex('swing');

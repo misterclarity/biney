@@ -185,8 +185,20 @@
     bSetT("#bMsg", "Set to " + H.find.best + " breaths a minute, your resonance test result.");
     goView("breathe");
   }
+  /* A sensor that sends heart rate only usually smooths it over a few seconds, which flattens the
+     swing of faster breathing more than that of slower, so with one the test leans towards the
+     slower paces. Said while one is on, and under a result that came from one. */
+  function finderNote() {
+    var t = H.find && H.find.best && H.find.rr === false
+      ? "This result came from a sensor that sends heart rate only, so it may lean towards the slower paces. An ear-clip sensor or a chest strap gives a truer result."
+      : hrOnly() ? "This sensor sends heart rate only, smoothed over a few seconds, which flattens faster breathing more than slower. With it, the test leans towards the slower paces; an ear-clip sensor or a chest strap gives a truer result."
+      : "";
+    bSetT("#hrFindNote", t);
+    $("#hrFindNote").hidden = !t;
+  }
   function finderUI(bt) {
     var F = B.finder, btn = $("#hrFindStart"), use = $("#hrFindUse");
+    finderNote();
     if (F) {
       bSetT("#hrFindStart", "Stop test");
       btn.disabled = false;
@@ -277,24 +289,21 @@
     return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
   }
 
-  /* Every 5 s: beat-to-beat intervals when the sensor sends them, otherwise
-     the heart-rate stream, which gives only an estimate. A watch's smoothing
-     strips the faster rhythms, so the "above" power shrinks and the score
-     reads high. */
+  /* Every 5 s, from the beat-to-beat intervals. A sensor that sends heart rate only gets no
+     score: a watch averages its heart rate over a few seconds before sending it, which flattens
+     the rise and fall within each breath that the score looks for. The estimate this used to make
+     from a Garmin watch stayed low however well its wearer breathed, while the HeartMath sensor
+     reached the same person's usual scores within minutes. */
   function cohTick() {
     var now = bNow(), pts;
-    if (H.state !== "on") { H.coh = null; cohShow(); drawSpectrum(); return; }
-    if (H.hasRR) {
-      pts = H.beats.filter(function (b) { return b.t >= now - COH_WIN - 3; }).map(function (b) { return { t: b.t, v: b.rr }; });
-      if (pts.length) {
-        var med = median(pts.map(function (p) { return p.v; }));
-        pts = pts.filter(function (p) { return Math.abs(p.v - med) / med <= 0.3; });   // missed or extra beats
-      }
-    } else {
-      pts = H.series.filter(function (s) { return s.t >= now - COH_WIN - 3; }).map(function (s) { return { t: s.t, v: 60000 / s.hr }; });
+    if (H.state !== "on" || !H.hasRR) { H.coh = null; cohShow(); drawSpectrum(); return; }
+    pts = H.beats.filter(function (b) { return b.t >= now - COH_WIN - 3; }).map(function (b) { return { t: b.t, v: b.rr }; });
+    if (pts.length) {
+      var med = median(pts.map(function (p) { return p.v; }));
+      pts = pts.filter(function (p) { return Math.abs(p.v - med) / med <= 0.3; });   // missed or extra beats
     }
     var r = cohCompute(pts, now);
-    H.coh = r ? { cs: r.cs, f: r.f, P: r.P, est: !H.hasRR } : null;
+    H.coh = r ? { cs: r.cs, f: r.f, P: r.P } : null;
     if (r && B.state === "running" && breathTime() >= 0) B.coh.push(r.cs);
     if (r && P.state === "running") P.coh.push({ t: pT(), cs: r.cs });
     cohShow();
@@ -306,14 +315,15 @@
     bSetT("#hrCoh", on ? c.cs.toFixed(1) : "—");
     $("#hrCohBar").style.width = on ? Math.min(100, c.cs / 8 * 100).toFixed(1) + "%" : "0%";
     if (H.state !== "on") s = "Needs a heart-rate sensor";
+    else if (hrOnly()) s = "Needs beat-to-beat data, which an ear-clip sensor or a chest strap sends";
     else if (!on) {
       var left = H.since ? Math.ceil(COH_WIN - (bNow() - H.since)) : COH_WIN;
       s = left > 0 ? "Collecting: " + left + " s to go" : "Waiting for steady data";
     } else {
-      s = "Peak at " + c.f.toFixed(3) + " Hz, " + (c.f * 60).toFixed(1) + " a minute" +
-        (c.est ? ". Estimated from smoothed heart rate, so it reads high" : "");
+      s = "Peak at " + c.f.toFixed(3) + " Hz, " + (c.f * 60).toFixed(1) + " a minute";
     }
     bSetT("#hrCohS", s);
+    finderNote();
     $("#bCohStat").hidden = !on;
     bSetT("#bCoh", on ? c.cs.toFixed(1) : "—");
   }
@@ -321,9 +331,12 @@
   /* The spectrum behind the score: heart-rate power by frequency, the peak
      window filled, the 0.04-0.26 Hz search band shaded, and the breathing
      pace as a dashed line while a session runs. */
+  var SPEC_EMPTY = null;     // what the empty chart says, until a sensor that sends heart rate only is on
   function drawSpectrum() {
-    var f = fitCanvas($("#hrSpec")), co = H.coh && hrLive() ? H.coh : null;
-    $("#hrSpecEmpty").hidden = !!co;
+    var f = fitCanvas($("#hrSpec")), co = H.coh && hrLive() ? H.coh : null, em = $("#hrSpecEmpty");
+    if (SPEC_EMPTY === null) SPEC_EMPTY = em.textContent;
+    bSetT("#hrSpecEmpty", hrOnly() ? "This sensor sends heart rate only. The spectrum needs the time between heartbeats, which an ear-clip sensor or a chest strap sends." : SPEC_EMPTY);
+    em.hidden = !!co;
     if (!f || !co) return;
     var c = f.c, W = f.w, Hh = f.h, padL = 6, padR = 10, padT = 22, padB = 20, FMAX = 0.4;
     var pw = W - padL - padR, ph = Hh - padT - padB, base = padT + ph;

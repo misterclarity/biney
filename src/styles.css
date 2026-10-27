@@ -485,6 +485,7 @@
   .hr-empty{position:absolute;inset:0;margin:0;display:grid;place-items:center;text-align:center;padding:0 10%;font-size:13px;color:var(--text-faint)}
   .hr-summary{margin:0;font-size:13px;color:var(--text-dim)}
   .hr-find-txt{margin:0;font-size:13.5px;color:var(--text-dim)}
+  .hr-find-txt.hr-find-note{color:var(--b-hold);font-size:13px}
   .hr-find-foot{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   @media (max-width:1100px){
     .hr-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -1608,7 +1609,9 @@
   a.btn.donate:hover{background:color-mix(in srgb,var(--stim) 20%,var(--panel-2))}
   a.btn.donate svg.i{color:var(--stim)}
   .st-about a.btn.donate{align-self:flex-start;margin-top:4px}
-  .td-donate{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap;margin-top:12px}
-  .td-donate p{margin:0;flex:1 1 240px}
-  .td-donate b{color:var(--text);font-weight:700}
+  .donate-card{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap}
+  .donate-card p{margin:0;flex:1 1 240px}
+  .donate-card b{color:var(--text);font-weight:700}
+  .td-donate{margin-top:12px}
+  .sd-donate{margin-top:18px}
 

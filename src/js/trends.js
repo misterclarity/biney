@@ -35,7 +35,8 @@
   }
   function tnMid(a) { var s = a.slice().sort(function (x, y) { return x - y; }), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
   // each period's minutes and sessions, its middle heart-rate change, and its average coherence:
-  // from a beat-to-beat sensor when you have any, as estimates read high, else the estimates
+  // from a beat-to-beat sensor when you have any, else the estimates made from heart rate alone before
+  // October 2026 (est), which aren't comparable
   function tnData(unit) {
     var per = tnPeriods(unit), soon = Date.now() + 6e4;
     per.forEach(function (p) { p.n = 0; p.secs = 0; p.dl = []; p.cr = []; p.ce = []; });

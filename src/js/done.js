@@ -12,7 +12,7 @@
     var napHR = r.nap && r.nap.base && r.nap.low;        // a nap has its own baseline-to-lowest tile
     if (r.hr0 && !napHR) tiles.push(["Heart rate", r.hr0 + " → " + r.hr1, "bpm, start to end", "hr", sdCmpTxt(c.hr, function (v) { v = Math.round(v); return v ? sdSigned(v) : "steady"; })]);
     else if (r.hrAvg && !napHR) tiles.push(["Heart rate", String(r.hrAvg), "bpm average", "hravg"]);
-    if (r.coh && !r.nap) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1) + (r.cohEst ? " (est.)" : ""), "coh", sdCmpTxt(c.coh, sdFix1, r.coh)]);
+    if (r.coh && !r.nap) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1), "coh", sdCmpTxt(c.coh, sdFix1, r.coh)]);
     if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath", "swing", sdCmpTxt(c.swing, sdFix1, r.swing)]);
     if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath", "wander"]);
     if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · "), "holds"]);
@@ -40,7 +40,9 @@
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
       (r.nvc ? nvcCard(r.nvc) : "") +
       qCard(d.reflect ? ROGERS : qPick()) +
-      '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>';
+      '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>' +
+      '<div class="note-card donate-card sd-donate"><p><b>Entrain is free and has no ads.</b> If it helps you, a donation keeps it going.</p>' +
+      '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a></div>';
     var el = $("#sDone");
     el.innerHTML = h;
     $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
@@ -88,8 +90,7 @@
     if (k === "coh") {
       p.push("How much of your heart rhythm's rise and fall settled into one smooth, regular wave, usually the one your breathing sets. It's HeartMath's published measure, worked out every 5 seconds from the last 64 seconds of heartbeats, and it usually runs from 0 to 8.");
       p.push("Here it averaged " + r.coh.toFixed(1) + ", and your best moment reached " + r.cohMax.toFixed(1) + ". Everyday breathing usually scores low; slow, even breathing near your resonance pace raises it. HeartMath's own apps use a different scale, so compare it with your own sessions here.");
-      if (r.cohEst) p.push("It's marked (est.) because your sensor sends heart rate only, not the time between beats. From that smoothed signal the score is an estimate and reads high. An ear clip or a chest strap gives the full measure.");
-      if (SD.c.coh) p.push(sdAgainst(r.coh, SD.c.coh, d, "coherence", 0.3, r.cohEst ? "with an estimated score, as estimates are only compared with estimates" : "with a beat-to-beat sensor"));
+      if (SD.c.coh) p.push(sdAgainst(r.coh, SD.c.coh, d, "coherence", 0.3, "with a beat-to-beat sensor"));
       return ["Coherence", p];
     }
     if (k === "swing") {
@@ -149,7 +150,7 @@
   function sdCompare(r, d) {
     var prev = hLoad().filter(function (e) { return e.k === "practice" && e.id === d.id && e.at !== r.at; }), c = {}, wk = Date.now() - 7 * DAY;
     if (r.hr0 && r.hr1) c.hr = sdUsual(prev.filter(function (e) { return e.hr0 && e.hr1; }).map(function (e) { return e.hr1 - e.hr0; }));
-    if (r.coh) c.coh = sdUsual(prev.filter(function (e) { return e.coh && !!e.est === !!r.cohEst; }).map(function (e) { return e.coh; }));
+    if (r.coh) c.coh = sdUsual(prev.filter(function (e) { return e.coh && !e.est; }).map(function (e) { return e.coh; }));   // not the estimates kept from before
     if (r.swing) c.swing = sdUsual(prev.filter(function (e) { return e.swing; }).map(function (e) { return e.swing; }));
     c.n = prev.length + 1;                                   // counted only once this one is in the history (r.at)
     c.week = prev.filter(function (e) { return e.at >= wk; }).length + 1;

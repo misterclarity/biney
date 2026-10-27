@@ -137,10 +137,10 @@
       ["Pick the beat frequency, the carrier tone and the session length, then play it."], "#builder",
       { ic: "sliders", col: "var(--relax)", w: 1, tags: "binaural custom builder carrier frequency" }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
-      ["Pair a Garmin watch set to broadcast, a HeartMath ear-clip sensor or a chest strap, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
+      ["Pair a HeartMath ear-clip sensor, a chest strap or a Garmin watch set to broadcast, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
       { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));
     out.push(fdEntry("heart", "Sensor connection guide", "Heart · step by step",
-      ["Step by step for a Garmin Venu 4, a HeartMath sensor or a chest strap, with a live check of each step."], "#connect",
+      ["Step by step for a HeartMath sensor, a chest strap or a Garmin Venu 4, with a live check of each step."], "#connect",
       { ic: "heart", col: "var(--hr)", w: 1, tags: "garmin venu heartmath strap broadcast pair help" }));
     out.push(fdEntry("heart", "Resonance test", "Heart · about 10 minutes",
       ["Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the biggest heart-rate swing."], "#resonance-test",

@@ -7,7 +7,8 @@
           <h3 id="hrTitle">Pair a heart-rate sensor</h3>
           <p>
             Watch your heart rate rise as you breathe in and fall as you breathe out. Any Bluetooth heart-rate
-            sensor works: a Garmin watch set to broadcast, an ear-clip sensor or a chest strap.
+            sensor works. An ear-clip sensor or a chest strap gives the full picture, coherence included; a watch
+            set to broadcast gives heart rate only.
           </p>
           <p class="hr-msg" id="hrMsg" role="status"></p>
           <details class="ev hr-log" id="hrLog" hidden>
@@ -30,31 +31,20 @@
         <summary>
           <span class="hr-guide-sum">
             <b>Connection guide</b>
-            <span>Step by step for a Garmin Venu 4, a HeartMath sensor or a chest strap, with a live check of each step</span>
+            <span>Step by step for a HeartMath sensor, a chest strap or a Garmin Venu 4, with a live check of each step</span>
           </span>
         </summary>
 
         <div class="hr-guide-body">
           <div class="g-main">
             <div class="g-tabs" role="tablist" aria-label="Choose your sensor">
-              <button class="g-tab" role="tab" id="gt-garmin" data-dev="garmin" aria-controls="gp-garmin" aria-selected="true">Garmin Venu 4</button>
-              <button class="g-tab" role="tab" id="gt-heartmath" data-dev="heartmath" aria-controls="gp-heartmath" aria-selected="false" tabindex="-1">HeartMath sensor</button>
+              <button class="g-tab" role="tab" id="gt-heartmath" data-dev="heartmath" aria-controls="gp-heartmath" aria-selected="true">HeartMath sensor</button>
               <button class="g-tab" role="tab" id="gt-strap" data-dev="strap" aria-controls="gp-strap" aria-selected="false" tabindex="-1">Chest strap</button>
+              <button class="g-tab" role="tab" id="gt-garmin" data-dev="garmin" aria-controls="gp-garmin" aria-selected="false" tabindex="-1">Garmin Venu 4</button>
               <button class="g-tab" role="tab" id="gt-other" data-dev="other" aria-controls="gp-other" aria-selected="false" tabindex="-1">Other sensors</button>
             </div>
 
-            <div class="g-panel" role="tabpanel" id="gp-garmin" aria-labelledby="gt-garmin">
-              <ol class="g-steps">
-                <li><b>Start broadcasting on the watch.</b>Hold the upper-right button to open the controls menu and choose the heart-rate broadcast control. You can also go to Settings &gt; Health &amp; Wellness &gt; Wrist Heart Rate &gt; Broadcast Heart Rate. If the control isn't in the menu, you can add it when you customise the controls menu.</li>
-                <li><b>Wear it snug and keep your arm still.</b>Put it a finger's width above the wrist bone, tight enough not to slide. The optical sensor reads most steadily with your forearm resting on something.</li>
-                <li><b>Connect here.</b>Press Connect sensor. The watch appears in the list under its name within a few seconds; choose it and press Pair.</li>
-                <li><b>If it stays on Connecting…</b>Your phone's name above the heart icon on the watch means the two are linked; nothing needs confirming there. If the watch or the phone asks you to confirm a pairing or shows a code, accept it (on some phones the request waits in the notifications); each step allows half a minute for this, and Garmin Connect may need pairing with the watch again afterwards. Garmin Connect on the same phone may also be holding on to the watch: in your phone's Settings, open Apps, then Garmin Connect, tap Force stop, and connect here again. Open Garmin Connect afterwards to sync as usual. Turning the phone's Bluetooth off and on, and restarting the broadcast on the watch, can help too. Entrain tries three times, the later tries more slowly, then lists what happened on each, with a button to copy it; Cancel stops it sooner. If the list shows that the watch answered nothing, not even a test read, try turning off its connection to your phone while you use Entrain: the phone icon in the watch's controls menu (turn it back on afterwards). If it still won't connect, a tablet or computer that isn't paired with the watch can usually connect to its broadcast.</li>
-                <li><b>Stop when you're done.</b>Press the upper-right button on the watch to stop broadcasting, because it uses extra battery.</li>
-              </ol>
-              <p class="g-expect"><b>What you'll get:</b> heart rate about once a second, the swing in each breath and the resonance test. Garmin watches don't broadcast beat-to-beat intervals, so RMSSD stays empty and coherence is marked as an estimate.</p>
-            </div>
-
-            <div class="g-panel" role="tabpanel" id="gp-heartmath" aria-labelledby="gt-heartmath" hidden>
+            <div class="g-panel" role="tabpanel" id="gp-heartmath" aria-labelledby="gt-heartmath">
               <ol class="g-steps">
                 <li><b>Free it from the HeartMath app.</b>The sensor connects to one device at a time. Close the HeartMath or Inner Balance app on your phone or tablet (swipe it away from the recent-apps screen), or switch that device's Bluetooth off for a moment.</li>
                 <li><b>Turn it on.</b>Press the button on the sensor once. A rapidly flashing blue light means it's ready to connect. A Coherence Plus sensor blinking white is still looking for the device it last used, so step 1 isn't done yet. If the battery light blinks red, charge it first.</li>
@@ -74,13 +64,25 @@
               <p class="g-expect"><b>What you'll get:</b> everything, beat to beat. A chest strap gives the most accurate HRV. Afterwards, unclip the sensor or dry the strap so it stops broadcasting.</p>
             </div>
 
+            <div class="g-panel" role="tabpanel" id="gp-garmin" aria-labelledby="gt-garmin" hidden>
+              <ol class="g-steps">
+                <li><b>Use a device that isn't paired with the watch.</b>The watch may not share its heart rate with the phone it syncs with in Garmin Connect: that phone links up, but the watch answers nothing it asks. A tablet or computer that has never been paired with the watch connects.</li>
+                <li><b>Start broadcasting on the watch.</b>Hold the upper-right button to open the controls menu and choose the heart-rate broadcast control. You can also go to Settings &gt; Health &amp; Wellness &gt; Wrist Heart Rate &gt; Broadcast Heart Rate. If the control isn't in the menu, you can add it when you customise the controls menu.</li>
+                <li><b>Wear it snug and keep your arm still.</b>Put it a finger's width above the wrist bone, tight enough not to slide. The optical sensor reads most steadily with your forearm resting on something.</li>
+                <li><b>Connect there.</b>Open this page in Chrome or Edge on that device and press Connect sensor. The watch appears in the list under its name within a few seconds; choose it and press Pair.</li>
+                <li><b>If it stays on Connecting…</b>The device's name above the heart icon on the watch means the two are linked; nothing needs confirming there. If the watch or the device asks you to confirm a pairing or shows a code, accept it; each step allows half a minute for this. Turning Bluetooth off and on, and restarting the broadcast on the watch, can help too. Entrain tries three times, the later tries more slowly, then lists what happened on each, with a button to copy it; Cancel stops it sooner.</li>
+                <li><b>Stop when you're done.</b>Press the upper-right button on the watch to stop broadcasting, because it uses extra battery.</li>
+              </ol>
+              <p class="g-expect"><b>What you'll get:</b> heart rate about once a second, which the watch averages over a few seconds before sending it, and the swing in each breath as a rough guide. The watch doesn't send the time between beats, so there's no RMSSD or coherence, and the resonance test leans towards slower paces. For those, use the HeartMath sensor or a chest strap.</p>
+            </div>
+
             <div class="g-panel" role="tabpanel" id="gp-other" aria-labelledby="gt-other" hidden>
               <ol class="g-steps">
                 <li><b>Check it uses the standard heart-rate service.</b>Anything that pairs with gym equipment, Zwift or a bike computer as a Bluetooth heart-rate monitor almost certainly does. Some watches can't broadcast at all; look for a setting called something like "broadcast heart rate".</li>
                 <li><b>Turn broadcasting on and free it from other apps.</b>Most sensors connect to only one app or device at a time.</li>
                 <li><b>Connect here.</b>Press Connect sensor. If the sensor doesn't advertise the service up front, use My sensor isn't listed. The page tells you if the device you pick has no heart-rate service.</li>
               </ol>
-              <p class="g-expect"><b>What you'll get:</b> watches usually send heart rate only, like the Garmin. Ear-clip and chest sensors usually send beat-to-beat intervals too, which RMSSD and the full coherence score need.</p>
+              <p class="g-expect"><b>What you'll get:</b> watches usually send heart rate only, like the Garmin. Ear-clip and chest sensors usually send beat-to-beat intervals too, which RMSSD and coherence need.</p>
             </div>
           </div>
 
@@ -119,15 +121,15 @@
           </details>
           <details>
             <summary>The Connect button is greyed out</summary>
-            <p>This browser can't use Bluetooth. Open the page in Chrome or Edge on an Android phone or a computer. On a phone, Samsung Internet may not offer it, so use Chrome. On an iPhone, Safari and Chrome can't reach sensors; Bluefy, a browser built for Web Bluetooth, can.</p>
+            <p>This browser can't use Bluetooth. Open the page in Chrome or Edge on an Android phone or a computer. On a phone, Samsung Internet may not offer it, so use Chrome. On an iPhone or iPad, Safari and every other browser there use Apple's engine, which has no Bluetooth for web pages; Bluefy, a free browser built for Web Bluetooth, can reach sensors.</p>
           </details>
           <details>
             <summary>It connects, then drops</summary>
             <p>Move the phone closer, charge the sensor, and keep Chrome in front with the screen on, because Android pauses pages in the background. The page tries to reconnect five times on its own before giving up.</p>
           </details>
           <details>
-            <summary>Heart rate works, but RMSSD stays empty</summary>
-            <p>The sensor sends heart rate only, which is true of every Garmin watch. The swing and the resonance test still work, and coherence is shown as an estimate. For RMSSD and full coherence, use the HeartMath sensor or a chest strap.</p>
+            <summary>Heart rate works, but RMSSD and coherence stay empty</summary>
+            <p>The sensor sends heart rate only, as Garmin watches do. Heart rate works and the swing is a rough guide, but RMSSD and coherence need the time between beats, and the resonance test leans towards slower paces. For those, use the HeartMath sensor or a chest strap.</p>
           </details>
           <details>
             <summary>The numbers jump around</summary>
@@ -185,6 +187,7 @@
             Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the
             biggest heart-rate swing. About 10 minutes, sitting still.
           </p>
+          <p class="hr-find-txt hr-find-note" id="hrFindNote" hidden></p>
           <div class="hr-chart sm grow"><canvas id="hrFind" aria-hidden="true"></canvas></div>
           <div class="hr-find-foot">
             <button class="btn" id="hrFindStart" disabled>Start resonance test</button>
