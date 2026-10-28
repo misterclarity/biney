@@ -758,7 +758,8 @@
   .sg-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
   .sg-when{font-size:11.5px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;color:var(--pcol,var(--relax))}
   .sg-t b{font-size:15.5px;font-weight:750}
-  .sg-t span:last-child{font-size:13px;color:var(--text-dim);line-height:1.45}
+  .sg-t span:last-of-type{font-size:13px;color:var(--text-dim);line-height:1.45}
+  .sg-rt{align-self:flex-start;margin-top:3px;padding:3px 0;font-size:13px;font-weight:650;color:var(--food);text-underline-offset:3px}
   .sg-act{display:flex;gap:8px;flex:none}
   @media (max-width:560px){
     .suggest{flex-wrap:wrap}
@@ -1582,6 +1583,22 @@
   .lv-refl{margin:8px 0 0;padding-left:20px;font-size:12.5px;color:var(--text-faint);line-height:1.5}
   .lv-refl li + li{margin-top:6px}
   .lv-refl a{color:var(--text-dim);text-underline-offset:3px;display:inline-block;padding:3px 0}
+  /* routines: a card each, its steps in order (with when, for a timeline), and chips to the practices that fit */
+  .lv-jump{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 14px}
+  .lv-chip{display:inline-flex;align-items:center;min-height:32px;padding:5px 12px;border-radius:999px;background:var(--panel-2);color:var(--text);font-size:13px;font-weight:650;text-decoration:none;border:1px solid var(--line)}
+  .lv-chip:hover{background:color-mix(in srgb,var(--pcol) 12%,var(--panel-2));border-color:color-mix(in srgb,var(--pcol) 40%,transparent)}
+  .lv-rt{background:var(--panel);border-radius:16px;padding:16px 18px;margin:0 0 12px;max-width:880px;scroll-margin-top:calc(var(--top) + 12px)}
+  .lv-rt-h{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:780;letter-spacing:-.01em;margin:0 0 8px}
+  .lv-rt-h .pc-ic{background:color-mix(in srgb,var(--pcol) 14%,transparent);color:var(--pcol)}
+  .lv-rt-lede{margin:0 0 12px;font-size:14px;color:var(--text-dim);line-height:1.55;max-width:70ch}
+  .lv-rsteps{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:rs;max-width:70ch}
+  .lv-rsteps > li{position:relative;padding-left:34px;counter-increment:rs}
+  .lv-rsteps > li::before{content:counter(rs);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:750;background:color-mix(in srgb,var(--pcol) 16%,transparent);color:var(--pcol)}
+  .lv-rsteps b{font-size:14.5px;font-weight:720;color:var(--text)}
+  .lv-rsteps p{margin:3px 0 0;font-size:13.5px;color:var(--text-dim);line-height:1.55}
+  .lv-when{display:block;font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--pcol);margin-bottom:1px}
+  .lv-rsteps .lv-go{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .lv-rt .lv-refs{margin-top:14px}
   .lv-tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0}
   .lv-tags span{font-size:11.5px;font-weight:650;color:var(--text-dim);background:var(--panel-2);border-radius:7px;padding:3px 8px}
   .lv-recipe h3 + .lv-ing,.lv-recipe h3 + .lv-steps{margin-top:6px}

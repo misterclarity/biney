@@ -11,6 +11,7 @@
 //   T  a difficult conversation: before it (with an NVC preparation first), during the call, after it
 //   X  autogenic training (the standard phrases, week by week, the endings) and Autogenic Reframing
 //   Y  a quote read aloud without its author, Walking as a position, the feedback form
+//   Z  Healthy living's Routines (sleep habits, morning, the day, evening) and Light (a light box, red and near-infrared light)
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -208,7 +209,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(!/Not for everyone/.test(await E(p, () => document.documentElement.innerHTML)), 'the paragraph repeated on five pages is gone');
       const learn = await E(p, () => ({ toc: !!document.querySelector('.toc a[href="#l-safety"]'), h: document.querySelector('#l-safety').textContent,
         items: [...document.querySelectorAll('#sfNote .sf-list li b')].map(b => b.textContent) }));
-      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Moving. | Feelings. | Food and supplements.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
+      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Moving. | Feelings. | Food and supplements. | Light.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
       const opened = async (from) => {
         await p.click(from); await p.waitForTimeout(250);
         return E(p, () => { const m = document.querySelector('#sfModal'), b = document.querySelector('#sfBody');
@@ -1440,6 +1441,97 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const hit = await E(p, () => (document.querySelector('#fdRes .fd-it') || {}).getAttribute && document.querySelector('#fdRes .fd-it').getAttribute('href'));
       await p.keyboard.press('Escape');
       ok(hit === '#feedback' && await E(p, () => !!document.querySelector('#v-learn .imprint a[href="#feedback"], #v-learn a[href="#feedback"]')), 'search finds it first, and the impressum links to it');
+      await p.context().close();
+    }
+
+    /* Z. Healthy living's Routines and Light: healthy sleep habits, a morning, the day and an evening, each step
+       with the practices that fit and its sources; screen breaks that bring back the morning's feeling, and
+       affect as the way out of analysis paralysis; a light box and red and near-infrared light as cards; the
+       routine for the time of day on Today; search, the safety note and Learn */
+    if (!only || only === 'Z') {
+      let p = await page(OPT());
+      await E(p, () => location.hash = 'living/routines'); await p.waitForTimeout(500);
+      const R = await E(p, () => {
+        const q = s => document.querySelector(s), all = s => [...document.querySelectorAll(s)], tx = e => e.textContent.replace(/\s+/g, ' ').trim();
+        return { tabs: all('.lv-tabs .g-tab').map(b => b.textContent + (b.getAttribute('aria-selected') === 'true' ? '*' : '')).join(' | '),
+          jump: all('#lvp-routines .lv-jump a').map(a => a.textContent + '>' + a.getAttribute('href')).join(' | '),
+          secs: all('#lvp-routines .lv-rt').map(x => x.id + ':' + tx(x.querySelector('h2')) + ':' + x.querySelectorAll('.lv-rsteps > li').length + ':' + x.querySelectorAll('.lv-refl li').length).join(' | '),
+          steps: Object.fromEntries(all('#lvp-routines .lv-rt').map(x => [x.id, [...x.querySelectorAll('.lv-rsteps > li')].map(li => ({ w: li.querySelector('.lv-when') ? li.querySelector('.lv-when').textContent : '', t: li.querySelector('b').textContent, p: tx(li.querySelector('p')) }))])),
+          links: all('#lvp-routines .lv-go a').map(a => a.getAttribute('href')), refs: all('#lvp-routines .lv-refl a').map(a => a.getAttribute('href')),
+          w: document.documentElement.scrollWidth, iw: innerWidth };
+      });
+      ok(R.tabs === 'Recipes | Supplements | Routines* | Light' && R.w <= R.iw, 'Healthy living has four tabs: ' + R.tabs);
+      ok(R.secs === 'lv-sleep-habits:Healthy sleep habits:8:9 | lv-morning:A morning routine:6:3 | lv-daytime:Through the day:3:5 | lv-evening:An evening routine:7:6' &&
+        R.jump === 'Sleep habits>#living/sleep-habits | Morning>#living/morning | Through the day>#living/daytime | Evening>#living/evening',
+        'Routines: sleep habits, a morning, the day and an evening, each with its sources: ' + R.secs);
+      const S = R.steps, step = (id, t) => (S['lv-' + id] || []).find(x => x.t === t) || { p: '' };
+      ok(S['lv-sleep-habits'].map(x => x.t).join(' | ') === 'Keep regular hours | Bright days, dim evenings, dark nights | Caffeine before the afternoon | Alcohol early, if at all | Move in the day | A bed for sleep | Naps short and early | A wind-down' &&
+        /at least seven hours/.test(await t(p, '#lv-sleep-habits .lv-rt-lede')) && /cognitive behavioural therapy for insomnia \(CBT-I\)/.test(await t(p, '#lv-sleep-habits .lv-rt-lede')),
+        'healthy sleep habits, with CBT-I for insomnia that lasts');
+      ok(S['lv-evening'].map(x => x.w).filter(Boolean).join(' | ') === '9 hours before | 3 hours before | 1 to 2 hours before | 1 hour before | 30 minutes before | Bedtime' &&
+        /^Five minutes writing down what you need to do tomorrow/.test(step('evening', "Tomorrow's list").p) && /40 to 42\.5 °C/.test(step('evening', 'A warm shower or bath').p),
+        'the evening routine counts back from bedtime: ' + S['lv-evening'].map(x => x.t).join(', '));
+      ok(S['lv-morning'].map(x => x.t).join(' | ') === 'Up at your usual time | Daylight | Water and a stretch | A practice, before the screens | Breakfast | Then the screens' &&
+        /that's the feeling the day's short breaks bring you back to\.$/.test(step('morning', 'A practice, before the screens').p), 'the morning routine: daylight, a practice before the screens, breakfast');
+      ok(/Short breaks from devices and screens let your body remember the feeling from the morning's practice, and regulate around it/.test(step('daytime', 'Short breaks from screens').p),
+        'through the day: short breaks from screens let the body remember the morning practice\'s feeling and regulate around it');
+      const ap = step('daytime', 'When thinking goes round in circles').p;
+      ok(/^Analysis paralysis, a streak of intellectual overstimulation in which each thought feeds the next, is broken through affect, not more analysis\./.test(ap) &&
+        /the feeling, emotion or mood that's here, and the sensations of your body at rest, observed consciously and lovingly/.test(ap), 'analysis paralysis is broken through affect: ' + ap.slice(0, 90));
+      const bad = await E(p, links => {
+        const X = window.__entrain;
+        return links.filter(h => {
+          const m = /^#(practice|living|breathe)\/(.+)$/.exec(h);
+          if (!m) return true;
+          if (m[1] === 'practice') return !X.pDef(m[2]);
+          if (m[1] === 'breathe') return !X.BREATHS.some(b => b.id === m[2]);
+          return !document.getElementById('lv-' + m[2]) && !X.RECIPES.some(r => r.id === m[2]);
+        });
+      }, R.links);
+      ok(R.links.length >= 20 && !bad.length && R.refs.every(h => /^https:\/\//.test(h)), R.links.length + ' links to practices, recipes and pages, all of them there; every source linked' + (bad.length ? ': ' + bad.join(', ') : ''));
+      await E(p, () => location.hash = 'living/evening');
+      await p.waitForFunction(() => { const r = document.querySelector('#lv-evening'); return r && Math.abs(r.getBoundingClientRect().top - 90) < 50; }, null, { timeout: 4000 }).catch(() => {});      // a smooth scroll
+      const ev = await E(p, () => ({ sel: document.querySelector('#lvt-routines').getAttribute('aria-selected'), top: Math.round(document.querySelector('#lv-evening').getBoundingClientRect().top) }));
+      ok(ev.sel === 'true' && ev.top >= 50 && ev.top < 140, '#living/evening opens Routines at the evening routine: ' + JSON.stringify(ev));
+      // the tabs by keyboard, round to the start
+      await p.focus('#lvt-supplements'); await p.keyboard.press('ArrowRight'); await p.keyboard.press('ArrowRight'); await p.keyboard.press('ArrowRight'); await p.waitForTimeout(150);
+      ok(await E(p, () => document.activeElement.id + ' ' + location.hash) === 'lvt-recipes #living/recipes', 'the arrow keys go through all four tabs and round');
+      // light
+      await E(p, () => location.hash = 'living/light'); await p.waitForTimeout(500);
+      const L = await E(p, () => {
+        const all = s => [...document.querySelectorAll(s)], tx = e => e.textContent.replace(/\s+/g, ' ').trim();
+        return { caution: tx(document.querySelector('#lvp-light .si-caution')), legend: !!document.querySelector('#lvp-light .pr-legend'),
+          cards: all('#lvp-light .lv-sup').map(c => c.id + ':' + tx(c.querySelector('.pc-top b')) + ':' + tx(c.querySelector('.lv-best'))).join(' | ') };
+      });
+      ok(L.cards === 'lv-light-box:Light box (sun lamp):Best evidence: winter depression (SAD) | lv-red-light:Red and near-infrared light:Best evidence: mouth sores from cancer treatment' && L.legend &&
+        /^Ask a doctor before you use a light box if you have bipolar disorder or an eye condition, or take medicines that make you sensitive to light\. Shield your eyes from red and near-infrared devices, and use a light box, never a tanning lamp, for light therapy\. Safety notes$/.test(L.caution),
+        'Light: a light box and red and near-infrared light, with their best evidence and a safety line: ' + L.cards);
+      await E(p, () => location.hash = 'living/light-box'); await p.waitForTimeout(600);
+      const lb = await E(p, () => { const c = document.querySelector('#lv-light-box'), tx = e => e.textContent.replace(/\s+/g, ' ').trim();
+        return { open: c.open, sel: document.querySelector('#lvt-light').getAttribute('aria-selected'), dts: [...c.querySelectorAll('.lv-facts dt')].map(tx).join(' | '),
+          uses: [...c.querySelectorAll('.lv-use-h b')].map(tx).join(' | '), care: tx(c.querySelector('.lv-care')), refs: c.querySelectorAll('.lv-refl li').length }; });
+      ok(lb.open && lb.sel === 'true' && lb.dts === 'Doses studied | How to use it | What to buy' && lb.uses === 'Winter depression (SAD) | Depression outside winter, with treatment | A body clock that runs late' &&
+        /Bipolar disorder: bright light can set off mania/.test(lb.care) && /A tanning lamp isn't a light box/.test(lb.care) && lb.refs === 5,
+        '#living/light-box opens its card: what it may help, doses, how to use it, what to buy, what to check first');
+      await E(p, () => location.hash = 'living/red-light'); await p.waitForTimeout(600);
+      const rl = await E(p, () => { const c = document.querySelector('#lv-red-light'), tx = e => e.textContent.replace(/\s+/g, ' ').trim();
+        return { open: c.open, uses: [...c.querySelectorAll('.lv-use-h')].map(h => tx(h.querySelector('b')) + ' ' + h.querySelectorAll('.strength i.on').length).join(' | '), care: tx(c.querySelector('.lv-care')) }; });
+      ok(rl.open && rl.uses === 'Mouth sores from cancer treatment 3 | Neck pain and knee osteoarthritis 2 | Hair loss (pattern baldness) 2 | Skin ageing 1 | Sleep 1' &&
+        /Protect your eyes: wear the goggles, and never look into the light/.test(rl.care), 'red and near-infrared light: strong for one use, moderate for two, limited for the rest; protect your eyes: ' + rl.uses);
+      // search, Today, the safety note, Learn
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(400);
+      const sg = await E(p, () => { const h = new Date().getHours(), a = document.querySelector('#sgRt');
+        return { href: a.getAttribute('href'), txt: a.textContent, want: h >= 5 && h < 9 ? '#living/morning' : h >= 9 && h < 17 ? '#living/daytime' : '#living/evening',
+          tile: document.querySelector('.qk[data-go="living"] span:last-child').textContent }; });
+      ok(sg.href === sg.want && /routine|Screen breaks/.test(sg.txt) && /sleep habits, morning and evening routines, and light/.test(sg.tile), 'Today\'s suggestion links to the routine for this time of day: ' + sg.txt);
+      const find = async q => { await p.fill('#fdIn', q); await p.waitForTimeout(250); return E(p, () => [...document.querySelectorAll('#fdRes .fd-it')].map(a => a.getAttribute('href'))); };
+      await p.click('#tbFind');
+      const f1 = await find('sun lamp'), f2 = await find('red light'), f3 = await find('evening routine'), f4 = await find('analysis paralysis'), f5 = await find('screen breaks');
+      await p.keyboard.press('Escape');
+      ok(f1[0] === '#living/light-box' && f2[0] === '#living/red-light' && f3[0] === '#living/evening' && f4[0] === '#living/daytime' && f5[0] === '#living/daytime',
+        'search finds them: ' + [f1[0], f2[0], f3[0], f4[0], f5[0]].join(', '));
+      await E(p, () => location.hash = 'learn'); await p.waitForTimeout(400);
+      ok(/healthy sleep habits, a morning and an evening routine; and light therapy/.test(await t(p, '#v-learn .lv-promo')), 'Learn\'s link to Healthy living names them');
       await p.context().close();
     }
   } catch (e) {

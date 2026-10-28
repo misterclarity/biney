@@ -446,3 +446,137 @@
       refs: [["Wang, Z., Jones, G., Winzenberg, T., et al. (2020). Effectiveness of Curcuma longa extract for the treatment of symptoms and effusion-synovitis of knee osteoarthritis: a randomized trial. Annals of Internal Medicine.", "https://cm.healio.com/news/primary-care/20200914/turmeric-extract-eases-knee-pain-in-randomized-trial", "Report"],
         ["Halegoua-DeMarzio, D., Navarro, V., Ahmad, J., et al. (2023). Liver injury associated with turmeric: a growing problem. Ten cases from the Drug-Induced Liver Injury Network. American Journal of Medicine, 136(2), 200–206.", "https://pubmed.ncbi.nlm.nih.gov/36252717/", "PubMed"]] }
   ];
+
+  /* ----- daily routines: healthy sleep habits, a morning, the day and an evening -----
+     Each step is { w: when (for a routine with a timeline), t: title, p: text, go: [[href, label], ...] }:
+     the practices and pages that fit it. Suggestions to make your own, with the research behind each where
+     there is some. Sources checked in October 2026. */
+  var R_REF = {
+    watson: ["Watson, N. F., Badr, M. S., Belenky, G., et al. (2015). Recommended amount of sleep for a healthy adult: a joint consensus statement of the American Academy of Sleep Medicine and Sleep Research Society. Sleep, 38(6), 843–844.", "https://doi.org/10.5665/sleep.4716", "DOI"],
+    windred: ["Windred, D. P., Burns, A. C., Lane, J. M., et al. (2024). Sleep regularity is a stronger predictor of mortality risk than sleep duration: a prospective cohort study. Sleep, 47(1), zsad253.", "https://doi.org/10.1093/sleep/zsad253", "DOI"],
+    brown: ["Brown, T. M., Brainard, G. C., Cajochen, C., et al. (2022). Recommendations for daytime, evening, and nighttime indoor light exposure to best support physiology, sleep, and wakefulness in healthy adults. PLOS Biology, 20(3), e3001571.", "https://doi.org/10.1371/journal.pbio.3001571", "DOI"],
+    gardiner: ["Gardiner, C., Weakley, J., Burke, L. M., et al. (2023). The effect of caffeine on subsequent sleep: a systematic review and meta-analysis. Sleep Medicine Reviews, 69, 101764.", "https://doi.org/10.1016/j.smrv.2023.101764", "DOI"],
+    ebrahim: ["Ebrahim, I. O., Shapiro, C. M., Williams, A. J., & Fenwick, P. B. (2013). Alcohol and sleep I: effects on normal sleep. Alcoholism: Clinical and Experimental Research, 37(4), 539–549.", "https://doi.org/10.1111/acer.12006", "DOI"],
+    kredlow: ["Kredlow, M. A., Capozzoli, M. C., Hearon, B. A., Calkins, A. W., & Otto, M. W. (2015). The effects of physical activity on sleep: a meta-analytic review. Journal of Behavioral Medicine, 38(3), 427–449.", "https://doi.org/10.1007/s10865-015-9617-6", "DOI"],
+    stutz: ["Stutz, J., Eiholzer, R., & Spengler, C. M. (2019). Effects of evening exercise on sleep in healthy participants: a systematic review and meta-analysis. Sports Medicine, 49(2), 269–287.", "https://doi.org/10.1007/s40279-018-1015-0", "DOI"],
+    edinger: ["Edinger, J. D., Arnedt, J. T., Bertisch, S. M., et al. (2021). Behavioral and psychological treatments for chronic insomnia disorder in adults: an American Academy of Sleep Medicine clinical practice guideline. Journal of Clinical Sleep Medicine, 17(2), 255–262.", "https://doi.org/10.5664/jcsm.8986", "DOI"],
+    brooks: ["Brooks, A., & Lack, L. (2006). A brief afternoon nap following nocturnal sleep restriction: which nap duration is most recuperative? Sleep, 29(6), 831–840.", "https://doi.org/10.1093/sleep/29.6.831", "DOI"],
+    albulescu: ["Albulescu, P., Macsinga, I., Rusu, A., et al. (2022). “Give me a break!” A systematic review and meta-analysis on the efficacy of micro-breaks for increasing well-being and performance. PLOS ONE, 17(8), e0272460.", "https://doi.org/10.1371/journal.pone.0272460", "DOI"],
+    segal: ["Segal, Z. V., Williams, J. M. G., & Teasdale, J. D. (2013). Mindfulness-Based Cognitive Therapy for Depression (2nd ed.). Guilford Press.", "https://wellcomecollection.org/works/qjyu4pus", "Library record"],
+    watkins: ["Watkins, E. R. (2008). Constructive and unconstructive repetitive thought. Psychological Bulletin, 134(2), 163–206.", "https://doi.org/10.1037/0033-2909.134.2.163", "DOI"],
+    torre: ["Torre, J. B., & Lieberman, M. D. (2018). Putting feelings into words: affect labeling as implicit emotion regulation. Emotion Review, 10(2), 116–124.", "https://doi.org/10.1177/1754073917742706", "DOI"],
+    haghayegh: ["Haghayegh, S., Khoshnevis, S., Smolensky, M. H., Diller, K. R., & Castriotta, R. J. (2019). Before-bedtime passive body heating by warm shower or bath to improve sleep: a systematic review and meta-analysis. Sleep Medicine Reviews, 46, 124–135.", "https://doi.org/10.1016/j.smrv.2019.04.008", "DOI"],
+    chang: ["Chang, A.-M., Aeschbach, D., Duffy, J. F., & Czeisler, C. A. (2015). Evening use of light-emitting eReaders negatively affects sleep, circadian timing, and next-morning alertness. PNAS, 112(4), 1232–1237.", "https://doi.org/10.1073/pnas.1418490112", "DOI"],
+    scullin: ["Scullin, M. K., Krueger, M. L., Ballard, H. K., Pruett, N., & Bliwise, D. L. (2018). The effects of bedtime writing on difficulty falling asleep: a polysomnographic study comparing to-do lists and completed activity lists. Journal of Experimental Psychology: General, 147(1), 139–146.", "https://doi.org/10.1037/xge0000374", "DOI"]
+  };
+  var ROUTINES = [
+    { id: "sleep-habits", name: "Healthy sleep habits", icon: "moon", tags: "sleep hygiene insomnia habits bedtime regular schedule caffeine alcohol nap bedroom",
+      lead: "Most adults need at least seven hours a night. These habits help you get them. If poor sleep goes on for weeks, the treatment that works best is cognitive behavioural therapy for insomnia (CBT-I), from a clinician or a recommended online course: sleep guidelines advise against relying on habits alone to treat insomnia.",
+      steps: [
+        { t: "Keep regular hours", p: "Go to bed and get up at about the same times every day, weekends included. In 60,977 people who wore activity trackers, those whose sleep was more regular had a 20 to 48% lower risk of dying over about six years than the least regular, and regularity predicted it better than how long they slept." },
+        { t: "Bright days, dim evenings, dark nights", p: "Get daylight in the day, above all in the morning, keep the last three hours before bed dim, and sleep in the dark. Sleep and light researchers recommend at least 250 lux at the eye by day (outdoors, even on a cloudy day, there's far more), no more than 10 lux in the three hours before bed and no more than 1 while you sleep, counting the light the body clock responds to." },
+        { t: "Caffeine before the afternoon", p: "Caffeine shortened sleep by about 45 minutes, and added about 9 to the time it took to fall asleep, in a 2023 meta-analysis. To spare your sleep, have the last coffee at least 9 hours before bed, and a strong pre-workout drink at least 13." },
+        { t: "Alcohol early, if at all", p: "It can make you drowsy, but it breaks up the second half of the night and cuts dream (REM) sleep." },
+        { t: "Move in the day", p: "Regular exercise improves sleep. Exercise in the evening is fine for most people too, apart from a hard session that ends within an hour of bedtime." },
+        { t: "A bed for sleep", p: "Keep the bedroom cool, dark and quiet, and the bed for sleep and sex, so your body links it with sleep. If you're still awake after about 20 minutes, get up, do something calm in dim light, and go back when you feel sleepy. This is stimulus control, a part of CBT-I that sleep guidelines also recommend on its own." },
+        { t: "Naps short and early", p: "Up to about 20 minutes, before mid-afternoon. In a sleep-lab study after a short night, a 10-minute nap gave the quickest boost, with no grogginess afterwards.", go: [["#practice/power-nap", "Power Nap"]] },
+        { t: "A wind-down", p: "The last hour before bed decides a lot: see the evening routine.", go: [["#living/evening", "Evening routine"]] }
+      ],
+      refs: [R_REF.watson, R_REF.windred, R_REF.brown, R_REF.gardiner, R_REF.ebrahim, R_REF.kredlow, R_REF.stutz, R_REF.edinger, R_REF.brooks] },
+
+    { id: "morning", name: "A morning routine", icon: "today", tags: "morning routine wake up daylight sunlight breakfast meditation stretch habit",
+      lead: "A suggestion to make your own: half an hour or so that sets your body clock and your state for the day. A few of these done every morning count for more than all of them now and then.",
+      steps: [
+        { w: "On waking", t: "Up at your usual time", p: "The same time every day, weekends too, and open the curtains straight away." },
+        { w: "In the first hour", t: "Daylight", p: "10 to 30 minutes outdoors, or at a bright window: a short walk, breakfast outside, the way to work. Morning light moves the body clock earlier, so you get sleepy sooner at night and wake more easily. On dark winter mornings, a light box does the same.", go: [["#living/light-box", "Light box"]] },
+        { t: "Water and a stretch", p: "A glass of water, then a few minutes of gentle movement to wake the body.", go: [["#practice/morning-stretch", "Morning Stretch"], ["#practice/morning-yoga", "Morning Yoga"]] },
+        { t: "A practice, before the screens", p: "Ten to fifteen minutes of breathing or meditation before the day's messages and news. Afterwards, notice how it leaves you feeling in your body: that's the feeling the day's short breaks bring you back to.", go: [["#practice/calm-reset", "Calm Reset"], ["#practice/coherence", "Heart Coherence"], ["#practice/anapana", "Anapana"]] },
+        { t: "Breakfast", p: "Something with protein and fibre to keep you going until lunch.", go: [["#living/overnight-oats", "Overnight oats"], ["#living/apple-oats", "Stewed apple with oats"], ["#living/congee", "Congee"]] },
+        { t: "Then the screens", p: "Leave email, news and social feeds until after the practice and breakfast, so the day starts from your own state rather than from everyone else's. Coffee is fine now: it's the afternoon cup that costs sleep." }
+      ],
+      refs: [R_REF.brown, R_REF.windred, R_REF.gardiner] },
+
+    { id: "daytime", name: "Through the day", icon: "spark", tags: "screen break screens devices digital break mindfulness overthinking analysis paralysis rumination stuck thinking feelings body",
+      lead: "Two habits that carry the morning's practice through the day, and a third that adds daylight.",
+      steps: [
+        { t: "Short breaks from screens", p: "Every hour or so, take two to five minutes away from every screen: stand up, look out of a window or into the distance, and take a few slow breaths. Short breaks from devices and screens let your body remember the feeling from the morning's practice, and regulate around it, so the calm you found doesn't stay behind at breakfast. Mindfulness courses teach a three-minute breathing space for the same reason, and in a 2022 meta-analysis of 19 studies, short breaks raised energy and eased fatigue.",
+          go: [["#breathe/sigh", "A minute of cyclic sighs"], ["#practice/calm-reset", "Calm Reset"]] },
+        { t: "When thinking goes round in circles", p: "Analysis paralysis, a streak of intellectual overstimulation in which each thought feeds the next, is broken through affect, not more analysis. Turn to what you feel: the feeling, emotion or mood that's here, and the sensations of your body at rest, observed consciously and lovingly, with nothing to solve. Research on repetitive thinking points the same way: abstract, evaluating thought (why is this happening, what does it mean) keeps distress going, while a concrete focus on what you're experiencing lets it settle, and putting a feeling into words dampens it.",
+          go: [["#practice/body-scan", "Body Scan"], ["#practice/self-compassion", "Self-Compassion Break"], ["#practice/coherence", "Heart Coherence"]] },
+        { t: "Daylight and a walk", p: "A walk outside around midday gives you daylight, movement and a break from screens at once.", go: [["#practice/walking", "Walking Meditation"]] }
+      ],
+      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.brown] },
+
+    { id: "evening", name: "An evening routine", icon: "moon", tags: "evening routine bedtime wind down night screens bath shower to-do list relax sleep",
+      lead: "A wind-down to make your own, counted back from bedtime. For an 11 pm bedtime, the last coffee is around 2 pm and the lights go down at 8.",
+      steps: [
+        { w: "9 hours before", t: "Last coffee", p: "And the last cola, black or green tea, or energy drink." },
+        { w: "3 hours before", t: "Lights down", p: "Lamps instead of ceiling lights, warm and low. Finish the last big meal around now, and go easy on alcohol." },
+        { w: "1 to 2 hours before", t: "A warm shower or bath", p: "About 10 minutes in water at 40 to 42.5 °C. As your body cools down afterwards, sleep comes sooner: by about 10 minutes, across 13 studies, and it was rated better too." },
+        { w: "1 hour before", t: "Screens away", p: "Put the phone away for the night, outside the bedroom if you can, or turn on night mode and dim it. Reading on a tablet for four hours before bed, rather than a printed book, delayed sleep by about 10 minutes, cut dream sleep and left people less alert the next morning." },
+        { t: "Tomorrow's list", p: "Five minutes writing down what you need to do tomorrow. In a sleep-lab study, people who did fell asleep about 10 minutes sooner than those who wrote about what they'd already done, and the more specific the list, the sooner." },
+        { w: "30 minutes before", t: "Wind down", p: "Ten to twenty minutes of something calming: Autogenic Training with its bedtime ending lets it carry you into sleep. And, if you like, three good things from the day.",
+          go: [["#practice/sleep-descent", "Sleep Descent"], ["#practice/autogenic", "Autogenic Training"], ["#practice/body-scan", "Body Scan"], ["#practice/pmr", "Progressive Muscle Relaxation"]] },
+        { w: "Bedtime", t: "Lights out", p: "At your usual time, in a cool, dark, quiet room. If your mind is busy, the Cognitive Shuffle gives it something light to do; if you're still awake after about 20 minutes, get up for a while.",
+          go: [["#practice/shuffle", "Cognitive Shuffle"], ["#breathe/478", "4-7-8 breathing"]] }
+      ],
+      refs: [R_REF.gardiner, R_REF.brown, R_REF.haghayegh, R_REF.chang, R_REF.scullin, R_REF.edinger] }
+  ];
+
+  /* ----- light: a light box and red and near-infrared light, as cards like the supplements' ----- */
+  var SAFE_LIGHT = "Ask a doctor before you use a light box if you have bipolar disorder or an eye condition, or take medicines that make you sensitive to light. Shield your eyes from red and near-infrared devices, and use a light box, never a tanning lamp, for light therapy.";
+  var LIGHTS = [
+    { id: "light-box", name: "Light box (sun lamp)", alias: "sun lamp SAD lamp", light: true, icon: "sun",
+      tags: "sun lamp sad lamp light box bright light therapy daylight lamp winter depression seasonal affective disorder body clock circadian 10000 lux",
+      lead: "A bright white lamp, 10,000 lux at your eyes, that gives you in the morning what daylight would: for the dark months, or a body clock that runs late. It filters out ultraviolet; a tanning lamp is something else entirely.",
+      uses: [
+        [2, "Winter depression (SAD)", "Across 19 trials, bright light eased seasonal depression more than a placebo light did, a small to moderate effect, and more people responded to it. The trials were small and varied, but it's a standard first treatment."],
+        [2, "Depression outside winter, with treatment", "In 11 trials with 858 adults, 30 minutes or more of 10,000-lux light a day, alone or with an antidepressant, raised the share who recovered from 24% to 41%. Use it alongside care, with your doctor."],
+        [2, "A body clock that runs late", "Bright morning light moves the body clock earlier, a well-established effect: you get sleepy sooner and wake more easily. Trials of light boxes for a late body clock are fewer and smaller."]
+      ],
+      amount: "10,000 lux for 20 to 30 minutes a day, or 2,500 lux for about two hours. The trials in depression used at least 30 minutes a day at 10,000 lux.",
+      how: "Soon after you wake, every day through the darker months, starting in autumn if winters get you down. Sit 40 to 60 cm away with your eyes open and the light reaching them from in front and a little above: read or eat breakfast, glancing at it now and then rather than staring. Most people notice a change within one to two weeks. Used late in the day, it can push your sleep later.",
+      buy: "A box that states 10,000 lux at a given distance, filters out UV, and is big enough to light both eyes when you move a little.",
+      care: [
+        "Bipolar disorder: bright light can set off mania or hypomania. Use it only with your psychiatrist.",
+        "An eye condition, such as a disease of the retina, or medicines that make you sensitive to light (some antibiotics and anti-inflammatories, St John's wort): ask a doctor first.",
+        "Side effects are usually mild and pass: eyestrain, headache, nausea, feeling wired. Sit farther away, or shorten the sessions.",
+        "If you've felt low for more than two weeks, or think of harming yourself, see a doctor: light helps alongside treatment, not instead of it.",
+        "A tanning lamp isn't a light box. Its ultraviolet doesn't help mood, and using sunbeds raised the risk of melanoma by 20%, and by 87% when it began before age 35. For vitamin D in winter, a supplement is the safer way."
+      ],
+      refs: [
+        ["Pjrek, E., Friedrich, M.-E., Cambioli, L., et al. (2020). The efficacy of light therapy in the treatment of seasonal affective disorder: a meta-analysis of randomized controlled trials. Psychotherapy and Psychosomatics, 89(1), 17–24.", "https://doi.org/10.1159/000502891", "DOI"],
+        ["Menegaz de Almeida, A., Aquino de Moraes, F. C., Cavalcanti Souza, M. E., et al. (2025). Bright light therapy for nonseasonal depressive disorders: a systematic review and meta-analysis. JAMA Psychiatry, 82(1), 38–46.", "https://doi.org/10.1001/jamapsychiatry.2024.2871", "DOI"],
+        R_REF.brown,
+        ["Mayo Clinic. Seasonal affective disorder treatment: choosing a light box.", "https://www.mayoclinic.org/tests-procedures/light-therapy/about/pac-20384604", "Mayo Clinic"],
+        ["Boniol, M., Autier, P., Boyle, P., & Gandini, S. (2012). Cutaneous melanoma attributable to sunbed use: systematic review and meta-analysis. BMJ, 345, e4757.", "https://doi.org/10.1136/bmj.e4757", "DOI"]
+      ] },
+    { id: "red-light", name: "Red and near-infrared light", alias: "red light therapy photobiomodulation", light: true, icon: "sun",
+      tags: "red light therapy near infrared nir photobiomodulation pbm low level laser lllt led panel mask cap hair skin pain wrinkles",
+      lead: "Red (about 630 to 670 nm) and near-infrared light (about 800 to 850 nm) from LED panels, masks, caps or low-power lasers, at doses too low to heat tissue much; it's thought to act on the cells' mitochondria. The evidence is good for a few uses, and thin for most of what panels are sold for.",
+      uses: [
+        [3, "Mouth sores from cancer treatment", "International cancer-care guidelines recommend it, given in the clinic, to prevent oral mucositis during radiotherapy for head and neck cancer and in stem cell transplantation."],
+        [2, "Neck pain and knee osteoarthritis", "Low-level laser therapy eased neck pain by about 20 points on a 100-point scale across 16 trials (820 people), with relief from chronic neck pain lasting up to 22 weeks. In knee osteoarthritis, 22 trials (1,063 people) found less pain at the recommended doses. These were mostly clinic lasers, not home panels."],
+        [2, "Hair loss (pattern baldness)", "Laser caps, combs and helmets increased hair density in men and women across 11 double-blind trials, though many were funded by the makers."],
+        [1, "Skin ageing", "In a controlled trial with 136 volunteers, 30 sessions of red or broad-spectrum light, twice a week, improved how skin looked and felt, eased roughness and raised collagen density. Mostly single, small studies."],
+        [1, "Sleep", "In 20 athletes, 30 minutes of red light every night for two weeks improved sleep quality and melatonin levels, compared with none. A small, early result."]
+      ],
+      amount: "Doses vary widely between studies and devices. For pain, trials gave a few joules per square centimetre on each spot, several times a week for some weeks. Hair devices are used several times a week for at least four to six months.",
+      how: "On clean, bare skin, at the distance and for the time the maker gives, a few times a week. More isn't better: very high doses can do less. Give hair or skin three to six months before you judge.",
+      buy: "A device that states its wavelengths and power, comes with protective goggles and carries safety certification; for hair loss, a cap or comb cleared by a regulator such as the FDA.",
+      care: [
+        "Protect your eyes: wear the goggles, and never look into the light. Near-infrared is invisible, so it can be strong without seeming bright. Laser devices for children's short sight exceeded eye-safety limits in tests, with cases of retinal damage: use those only under an eye doctor.",
+        "Panels get warm: keep the distance given, and take extra care where your skin feels less, as it can with diabetes.",
+        "Ask a doctor first if you're pregnant, take medicines that make you sensitive to light, or have a condition that light makes worse.",
+        "Keep it off a mole that's changing, or any skin cancer, until a doctor has looked at it, and see a doctor about pain that's new, severe or lasting."
+      ],
+      refs: [
+        ["Zadik, Y., Arany, P. R., Fregnani, E. R., et al. (2019). Systematic review of photobiomodulation for the management of oral mucositis in cancer patients and clinical practice guidelines. Supportive Care in Cancer, 27(10), 3969–3983.", "https://doi.org/10.1007/s00520-019-04890-2", "DOI"],
+        ["Chow, R. T., Johnson, M. I., Lopes-Martins, R. A., & Bjordal, J. M. (2009). Efficacy of low-level laser therapy in the management of neck pain: a systematic review and meta-analysis of randomised placebo or active-treatment controlled trials. The Lancet, 374(9705), 1897–1908.", "https://doi.org/10.1016/S0140-6736(09)61522-1", "DOI"],
+        ["Stausholm, M. B., Naterstad, I. F., Joensen, J., et al. (2019). Efficacy of low-level laser therapy on pain and disability in knee osteoarthritis: systematic review and meta-analysis of randomised placebo-controlled trials. BMJ Open, 9(10), e031142.", "https://doi.org/10.1136/bmjopen-2019-031142", "DOI"],
+        ["Liu, K.-H., Liu, D., Chen, Y.-T., & Chin, S.-Y. (2019). Comparative effectiveness of low-level laser therapy for adult androgenic alopecia: a system review and meta-analysis of randomized controlled trials. Lasers in Medical Science, 34(6), 1063–1069.", "https://doi.org/10.1007/s10103-019-02723-6", "DOI"],
+        ["Wunsch, A., & Matuschka, K. (2014). A controlled trial to determine the efficacy of red and near-infrared light treatment in patient satisfaction, reduction of fine lines, wrinkles, skin roughness, and intradermal collagen density increase. Photomedicine and Laser Surgery, 32(2), 93–100.", "https://doi.org/10.1089/pho.2013.3616", "DOI"],
+        ["Zhao, J., Tian, Y., Nie, J., Xu, J., & Liu, D. (2012). Red light and the sleep quality and endurance performance of Chinese female basketball players. Journal of Athletic Training, 47(6), 673–678.", "https://doi.org/10.4085/1062-6050-47.6.08", "DOI"],
+        ["Ostrin, L. A., & Schill, A. W. (2026). Safety evaluation of 4 red light therapy devices for myopia. JAMA Ophthalmology.", "https://doi.org/10.1001/jamaophthalmol.2025.5660", "DOI"]
+      ] }
+  ];

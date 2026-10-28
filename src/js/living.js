@@ -1,21 +1,25 @@
   /* ------------------------------- healthy living -------------------------------
-     A page under Learn with two tabs. Recipes: each has a page of its own, with servings that
+     A page under Learn with four tabs. Recipes: each has a page of its own, with servings that
      scale the amounts, ingredients and steps to tick off as you go, and the screen kept on while
      you cook. Supplements: each is a card that opens to what the trials found, how strong that
-     is, the amounts studied, what to check first and the sources.
-     #living opens the tab you had last, #living/recipes and #living/supplements open a tab,
-     #living/<recipe> a recipe's page and #living/<supplement> its card, opened.
+     is, the amounts studied, what to check first and the sources. Routines: healthy sleep habits,
+     a morning, the day and an evening, each step with the practices that fit. Light: a light box
+     and red and near-infrared light, as cards like the supplements'.
+     #living opens the tab you had last, #living/<tab> opens a tab, #living/<recipe> a recipe's
+     page, #living/<supplement or light> its card, opened, and #living/<routine> that routine.
   -------------------------------------------------------------------------------- */
 
   var LV = { tab: "", rid: "", n: 0, base: 0, cook: false };
   var LV_UNITS = { g: "g", ml: "ml", tsp: "tsp", tbsp: "tbsp", cm: "cm", tin: ["tin", "tins"], handful: ["handful", "handfuls"],
     slice: ["slice", "slices"], pinch: ["pinch", "pinches"] };
   var LV_MAX = 12;                         // servings
-  var LV_TABS = [["recipes", "Recipes"], ["supplements", "Supplements"]];
+  var LV_TABS = [["recipes", "Recipes"], ["supplements", "Supplements"], ["routines", "Routines"], ["light", "Light"]];
+  var LV_SHORT = { "sleep-habits": "Sleep habits", morning: "Morning", daytime: "Through the day", evening: "Evening" };
 
+  function routineById(id) { for (var i = 0; i < ROUTINES.length; i++) if (ROUTINES[i].id === id) return ROUTINES[i]; return null; }
   function recipeById(id) { for (var i = 0; i < RECIPES.length; i++) if (RECIPES[i].id === id) return RECIPES[i]; return null; }
-  function suppById(id) {
-    var all = SUPPS.concat(SUPPS_MORE);
+  function suppById(id) {                  // a supplement's card, or a light's
+    var all = SUPPS.concat(SUPPS_MORE, LIGHTS);
     for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i];
     return null;
   }
@@ -80,7 +84,7 @@
   function lvSupCard(s) {
     var b = lvBest(s), brief = !s.uses;
     var h = '<details class="lv-sup' + (brief ? " lv-brief" : "") + '" id="lv-' + s.id + '">' +
-      '<summary><span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-pill"/></svg></span>' +
+      '<summary><span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + (s.icon || "pill") + '"/></svg></span>' +
         '<span class="lv-sum"><span class="pc-top"><b>' + esc(s.name) + "</b>" + dots(b[0]) + "</span>" +
           '<span class="lv-best">' + (brief ? "" : "Best evidence: ") + esc(brief ? b[1] : b[1].charAt(0).toLowerCase() + b[1].slice(1)) + "</span>" +
           (brief ? "" : '<span class="pc-blurb">' + esc(s.lead) + "</span>") + "</span>" +
@@ -92,14 +96,29 @@
       h += "<h3>What it may help</h3><ul class=\"lv-uses\">" + s.uses.map(function (u) {
           return '<li><span class="lv-use-h"><b>' + esc(u[1]) + "</b>" + dots(u[0]) + "</span><p>" + esc(lvNb(u[2])) + "</p></li>";
         }).join("") + "</ul>" +
-        '<dl class="lv-facts"><div><dt>Amounts studied</dt><dd>' + esc(lvNb(s.amount)) + "</dd></div>" +
-          "<div><dt>How to take it</dt><dd>" + esc(lvNb(s.how)) + "</dd></div>" +
-          "<div><dt>In food</dt><dd>" + esc(lvNb(s.food)) + "</dd></div></dl>" +
+        '<dl class="lv-facts"><div><dt>' + (s.light ? "Doses studied" : "Amounts studied") + "</dt><dd>" + esc(lvNb(s.amount)) + "</dd></div>" +
+          "<div><dt>" + (s.light ? "How to use it" : "How to take it") + "</dt><dd>" + esc(lvNb(s.how)) + "</dd></div>" +
+          "<div><dt>" + (s.food ? "In food" : "What to buy") + "</dt><dd>" + esc(lvNb(s.food || s.buy)) + "</dd></div></dl>" +
         '<div class="lv-care"><h3><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg>Check first</h3><ul>' +
           s.care.map(function (c) { return "<li>" + esc(lvNb(c)) + "</li>"; }).join("") + "</ul></div>";
     }
     return h + lvRefs(s.refs) + "</div></details>";
   }
+  // a routine: its steps, each with when (if it has a time), what and why, and the practices that fit
+  function lvRoutine(r) {
+    var timed = r.steps.some(function (x) { return x.w; });
+    return '<section class="lv-rt" id="lv-' + r.id + '" aria-labelledby="lvh-' + r.id + '">' +
+      '<h2 class="lv-rt-h" id="lvh-' + r.id + '"><span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + r.icon + '"/></svg></span>' + esc(r.name) + "</h2>" +
+      '<p class="lv-rt-lede">' + esc(lvNb(r.lead)) + "</p>" +
+      '<ol class="lv-rsteps' + (timed ? " lv-timed" : "") + '">' + r.steps.map(function (x) {
+        return "<li>" + (x.w ? '<span class="lv-when">' + esc(x.w) + "</span>" : "") + "<b>" + esc(x.t) + "</b><p>" + esc(lvNb(x.p)) + "</p>" +
+          (x.go ? '<p class="lv-go">' + x.go.map(function (g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + "</a>"; }).join("") + "</p>" : "") + "</li>";
+      }).join("") + "</ol>" + lvRefs(r.refs) + "</section>";
+  }
+  var LV_LEGEND = '<p class="pr-legend">Evidence' +
+    '<span><span class="strength" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>strong</span>' +
+    '<span><span class="strength" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i></span>moderate</span>' +
+    '<span><span class="strength" aria-hidden="true"><i class="on"></i><i></i><i></i></span>limited</span></p>';
   function lvList() {
     var tabs = '<div class="g-tabs lv-tabs" role="tablist" aria-label="Healthy living">' + LV_TABS.map(function (t, i) {
       return '<button class="g-tab" role="tab" id="lvt-' + t[0] + '" data-tab="' + t[0] + '" aria-controls="lvp-' + t[0] + '" aria-selected="' + !i + '"' + (i ? ' tabindex="-1"' : "") + ">" + t[1] + "</button>";
@@ -109,18 +128,24 @@
       '<ul class="pr-list lv-rlist">' + RECIPES.map(function (r) { return libRow(libRecipe(r)); }).join("") + "</ul></div>";
     var sup = '<div class="lv-panel" role="tabpanel" id="lvp-supplements" aria-labelledby="lvt-supplements" hidden>' +
       '<p class="lv-lede">What the research says about the supplements people ask about most: what each may help and how strong the evidence is, the amounts studied, and what to check before you start. Food comes first; these fill gaps.</p>' +
-      safeBox([SAFE_SUPPS]) +
-      '<p class="pr-legend">Evidence' +
-        '<span><span class="strength" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>strong</span>' +
-        '<span><span class="strength" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i></span>moderate</span>' +
-        '<span><span class="strength" aria-hidden="true"><i class="on"></i><i></i><i></i></span>limited</span></p>' +
+      safeBox([SAFE_SUPPS]) + LV_LEGEND +
       '<div class="lv-sups">' + SUPPS.map(lvSupCard).join("") + "</div>" +
       '<h2 class="lv-h2">Also asked about</h2>' +
       '<div class="lv-sups">' + SUPPS_MORE.map(lvSupCard).join("") + "</div>" +
       '<p class="pr-note">Not medical advice, and no substitute for a blood test where one would tell you more: vitamin D, B12 and iron are better tested than guessed. ' +
         'Choose products tested by a third party. The sources were checked in October 2026, and each card lists its own.</p></div>';
+    var rtn = '<div class="lv-panel" role="tabpanel" id="lvp-routines" aria-labelledby="lvt-routines" hidden>' +
+      '<p class="lv-lede">Healthy sleep habits, and a morning, a day and an evening built around them: suggestions to make your own, with the research behind each and the practices that fit.</p>' +
+      '<nav class="lv-jump" aria-label="Routines">' + ROUTINES.map(function (r) { return '<a class="lv-chip" href="#living/' + r.id + '">' + esc(LV_SHORT[r.id] || r.name) + "</a>"; }).join("") + "</nav>" +
+      ROUTINES.map(lvRoutine).join("") +
+      '<p class="pr-note">Not medical advice: for sleep problems that last, see a doctor. The sources were checked in October 2026, and each routine lists its own.</p></div>';
+    var lit = '<div class="lv-panel" role="tabpanel" id="lvp-light" aria-labelledby="lvt-light" hidden>' +
+      '<p class="lv-lede">Light at the right time is the body clock\'s strongest signal. Here is what the research says about two kinds of light therapy you can use at home: what each may help, how strong the evidence is, how to use it and what to check first.</p>' +
+      safeBox([SAFE_LIGHT]) + LV_LEGEND +
+      '<div class="lv-sups">' + LIGHTS.map(lvSupCard).join("") + "</div>" +
+      '<p class="pr-note">Not medical advice. The sources were checked in October 2026, and each card lists its own.</p></div>';
     return '<a class="si-back" href="#learn"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Learn</a>' +
-      '<p class="v-lede lv-intro">Food that looks after you, and an honest look at supplements.</p>' + tabs + rec + sup;
+      '<p class="v-lede lv-intro">Food, sleep and daily routines that look after you, and an honest look at supplements and light.</p>' + tabs + rec + sup + rtn + lit;
   }
   function lvTab(tab, focus) {
     if (!LV_TABS.some(function (t) { return t[0] === tab; })) tab = "recipes";
@@ -192,7 +217,7 @@
 
   /* ----- opening it: the list, a tab, a recipe, or a supplement's card ----- */
   function lvOpen(rest) {
-    var el = $("#lvBody"), r = recipeById(rest), s = r ? null : suppById(rest);
+    var el = $("#lvBody"), r = recipeById(rest), s = r ? null : suppById(rest), rt = r || s ? null : routineById(rest);
     if (r) {
       window.scrollTo(0, 0);
       el.innerHTML = lvRecipe(r);
@@ -204,13 +229,13 @@
       return;
     }
     if (LV.rid) { lvLeave(); window.scrollTo(0, 0); }
-    if (rest && !s && !LV_TABS.some(function (t) { return t[0] === rest; })) { location.replace("#living"); return; }
+    if (rest && !s && !rt && !LV_TABS.some(function (t) { return t[0] === rest; })) { location.replace("#living"); return; }
     el.innerHTML = lvList();
     el.style.setProperty("--pcol", "var(--food)");
-    lvTab(s ? "supplements" : rest || store.get("livTab") || "recipes");
-    if (s) {
-      var card = document.getElementById("lv-" + s.id);
-      card.open = true;
+    lvTab(s ? (s.light ? "light" : "supplements") : rt ? "routines" : rest || store.get("livTab") || "recipes");
+    var card = s || rt ? document.getElementById("lv-" + (s || rt).id) : null;
+    if (card) {                            // a card opens; a routine is scrolled to
+      if (s) card.open = true;
       setTimeout(function () {
         try { card.scrollIntoView({ block: "start", behavior: RM ? "auto" : "smooth" }); } catch (e) { card.scrollIntoView(); }
         fdHit(card);
@@ -226,9 +251,18 @@
 
   /* ----- search: the page, each recipe and each supplement ----- */
   function fdLiving(out) {
-    out.push(fdEntry("living", "Healthy living", "Learn · recipes and supplements",
-      ["Simple, nourishing recipes such as congee, kitchari and dal, and what the research says about omega-3, coenzyme Q10, creatine, vitamin D, magnesium, B12 and more."], "#living",
-      { ic: "leaf", col: "var(--food)", w: 1.1, tags: "healthy living food nutrition diet eating recipes cooking supplements vitamins" }));
+    out.push(fdEntry("living", "Healthy living", "Learn · recipes, supplements, routines and light",
+      ["Simple, nourishing recipes such as congee, kitchari and dal, what the research says about omega-3, coenzyme Q10, creatine, vitamin D, magnesium, B12 and more, healthy sleep habits and a morning and evening routine, and light therapy."], "#living",
+      { ic: "leaf", col: "var(--food)", w: 1.1, tags: "healthy living food nutrition diet eating recipes cooking supplements vitamins routine habits sleep light" }));
+    ROUTINES.forEach(function (r) {
+      out.push(fdEntry("living", r.name, "Healthy living · routines", [r.lead].concat(r.steps.map(function (x) { return x.t + ": " + x.p; })), "#living/" + r.id,
+        { ic: r.icon, col: "var(--food)", w: 1.1, tags: "routine habits " + r.tags }));
+    });
+    LIGHTS.forEach(function (s) {
+      var b = lvBest(s);
+      out.push(fdEntry("living", s.name, "Light therapy · best evidence: " + b[1].toLowerCase(), [s.lead].concat(s.uses.map(function (u) { return u[1] + ": " + u[2]; }), [s.amount, s.care.join(" ")]),
+        "#living/" + s.id, { ic: "sun", col: "var(--food)", w: 1.1, alias: s.alias || "", tags: "light therapy " + s.tags }));
+    });
     RECIPES.forEach(function (r) {
       out.push(fdEntry("living", r.name, "Recipe · " + lvTime(r) + " · serves " + r.serves,
         [r.sub, r.why, r.ing.concat(r.serve || []).map(function (it) { return Array.isArray(it[2]) ? it[2][0] : it[2]; }).join(", ")], "#living/" + r.id,

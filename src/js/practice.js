@@ -1577,6 +1577,9 @@
     bSetT("#sgTxt", pick[2]);
     $("#sgGo").href = "#practice/" + d.id;
     $("#homeSuggest").style.setProperty("--pcol", pColor(d));
+    var rt = hr >= 5 && hr < 9 ? ["morning", "Your morning routine"] : hr >= 9 && hr < 17 ? ["daytime", "Screen breaks through the day"] : ["evening", "Your evening routine"];
+    var a = $("#sgRt");
+    if (a) { a.href = "#living/" + rt[0]; bSetT("#sgRt", rt[1]); }        // the routine for this time of day, in Healthy living
   }
 
   function pSleepyStep(s) { return !!s.sleepy || s.k === "drift" || s.k === "nap" || s.k === "shuffle"; }
