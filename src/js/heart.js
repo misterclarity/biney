@@ -215,8 +215,9 @@
   function hrBrowser() {
     var u = navigator.userAgent || "", m;
     var b = (m = /EdgA?\/([\d.]+)/.exec(u)) ? "Edge " + m[1] : (m = /SamsungBrowser\/([\d.]+)/.exec(u)) ? "Samsung Internet " + m[1]
-      : (m = /OPR\/([\d.]+)/.exec(u)) ? "Opera " + m[1] : (m = /Chrome\/([\d.]+)/.exec(u)) ? "Chrome " + m[1] : "";
-    var os = /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /CrOS/.test(u) ? "ChromeOS" : /Mac OS X/.test(u) ? "macOS" : /Linux/.test(u) ? "Linux" : "";
+      : (m = /OPR\/([\d.]+)/.exec(u)) ? "Opera " + m[1] : (m = /(?:Firefox|FxiOS)\/([\d.]+)/.exec(u)) ? "Firefox " + m[1]
+      : (m = /(?:Chrome|CriOS)\/([\d.]+)/.exec(u)) ? "Chrome " + m[1] : (m = /Version\/([\d.]+).*Safari/.exec(u)) ? "Safari " + m[1] : "";
+    var os = /iPhone|iPad|iPod/.test(u) ? "iOS" : /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /CrOS/.test(u) ? "ChromeOS" : /Mac OS X/.test(u) ? "macOS" : /Linux/.test(u) ? "Linux" : "";
     return b && os ? b + " on " + os : b || os;
   }
   function hrLogShow(log) {

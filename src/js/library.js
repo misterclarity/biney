@@ -49,7 +49,7 @@
     var n = [];
     if ((o.audio && !(o.opt && o.opt.audio === false)) || o.method === "sound") n.push("phones");     // a beat that starts off needs none
     if (o.sensor === "best") n.push("sensor");
-    if (o.method === "move" || (o.posture || []).indexOf("walk") >= 0) n.push("space");
+    if (o.method === "move" || (o.posture || []).join() === "walk") n.push("space");      // walking as an option needs no more than a quiet route
     return n;
   }
 
@@ -166,7 +166,8 @@
       var plan = pPlan(it.def, 0);
       tl = '<span class="si-tl pc-tl" aria-hidden="true">' + plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + s.secs + ' 1 0"></i>'; }).join("") + "</span>";
     }
-    var pos = it.nopos ? "" : it.posture.map(function (p, i) { var n = postureName(p); return i ? n.toLowerCase() : n; }).join(" or ");
+    var pn = it.nopos ? [] : it.posture.map(function (p, i) { var n = postureName(p); return i ? n.toLowerCase() : n; });
+    var pos = pn.length > 2 ? pn.slice(0, -1).join(", ") + " or " + pn[pn.length - 1] : pn.join(" or ");      // Sitting, lying or walking
     var sub = o.sub || [it.label || methodName(it.method), it.minsTxt, pos].filter(Boolean).join(" · ");
     return '<li class="pc' + (it.prog ? " prog" : "") + (o.compact ? " cmp" : "") + (it.type !== "practice" ? " pc-" + it.type : "") + '" style="--pcol:' + it.col + '"' + (hide ? " hidden" : "") + ">" +
       '<a href="' + esc(it.href) + '" class="pc-a">' +

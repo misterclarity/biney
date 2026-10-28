@@ -554,7 +554,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .hr-bars{grid-column:1;grid-row:1;align-self:start}
   .hr-spec{grid-column:1;grid-row:2;align-self:start}
   .hr-body > .hr-find{grid-column:2;grid-row:1 / span 2}
-  #resonance-test,#connect{scroll-margin-top:84px}
+  #resonance-test,#connect,.st-card[id]{scroll-margin-top:84px}
   /* once a sensor is on, the page is about your numbers: the introduction steps aside */
   .hr[data-state="on"] .hr-intro > p:not(.hr-msg),.hr[data-state="lost"] .hr-intro > p:not(.hr-msg){display:none}
   .hr-box{background:var(--panel);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -1696,6 +1696,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   a.btn.donate:hover{background:color-mix(in srgb,var(--stim) 20%,var(--panel-2))}
   a.btn.donate svg.i{color:var(--stim)}
   .st-about a.btn.donate{align-self:flex-start;margin-top:4px}
+  .st-fb .fb-l{display:block;margin:2px 0 -6px;font-weight:700;font-size:14px}
+  .st-fb .fb-in,.st-fb .fb-ta{width:100%;box-sizing:border-box;background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:11px 13px;font:inherit;font-size:15.5px;line-height:1.5}
+  .st-fb .fb-ta{resize:vertical;min-height:120px}
+  .st-fb .fb-in:focus,.st-fb .fb-ta:focus{outline:2px solid color-mix(in srgb,var(--accent) 65%,transparent);border-color:transparent}
+  .st-fb .fb-act{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .st-fb .fb-n{flex:1 1 200px;font-size:13px;color:var(--text-faint)}
+  .st-fb .so-tg small{word-break:break-word}
   .donate-card{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap}
   .donate-card p{margin:0;flex:1 1 240px}
   .donate-card b{color:var(--text);font-weight:700}
@@ -1725,6 +1732,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3.5 11.5h17a8.5 7.5 0 0 1-17 0z"/><path d="M9 20h6"/><path d="M9 8.5c-.9-1.1.9-2 0-3.2M12.5 8.5c-.9-1.1.9-2 0-3.2M16 8.5c-.9-1.1.9-2 0-3.2"/></symbol>
   <symbol id="i-pill" viewBox="0 0 24 24"><g transform="rotate(-45 12 12)"><rect x="2.5" y="8" width="19" height="8" rx="4"/><path d="M12 8h-5.5a4 4 0 0 0 0 8H12z" fill="currentColor" opacity=".35"/><path d="M12 8v8"/></g></symbol>
   <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19.5C4.5 10.5 10 5 19.5 4.5 20 14 14.5 19.5 5 19.5z"/><path d="M5 19.5 13.5 11"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 3.5 10.4l6.8 3.3 3.3 6.8z"/><path d="M20.5 3.5 10.3 13.7"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.6"/><path d="M10.5 18.2h3"/></symbol>
   <symbol id="i-cup" viewBox="0 0 24 24"><path d="M4.5 9.5h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M15.5 11h1.6a2.4 2.4 0 0 1 0 4.8h-1.8"/><path d="M8.5 6.5c-.8-1 .8-1.7 0-2.8M12 6.5c-.8-1 .8-1.7 0-2.8"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.6A7.8 7.8 0 0 1 9.4 4.5a7.8 7.8 0 1 0 10.1 10.1z"/></symbol>
@@ -2930,7 +2938,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <section class="imprint" aria-labelledby="l-impressum">
               <h3 id="l-impressum">Impressum, copyright and licence</h3>
               <p>Entrain is a personal, non-commercial project by <b>misterclarity</b>. Project page and contact:
-                <a href="https://github.com/misterclarity/biney" rel="noopener">github.com/misterclarity/biney</a>.</p>
+                <a href="https://github.com/misterclarity/biney" rel="noopener">github.com/misterclarity/biney</a>. For an idea,
+                a problem or praise, the <a href="#feedback">feedback form</a> in Settings opens an issue there, ready to send.</p>
               <p>&copy; 2026 misterclarity. Entrain is free software under the
                 <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="license noopener">GNU Affero General Public License, version 3</a>:
                 you may use, study, share and change it. Copies you pass on, and changed versions you put online, have to carry
@@ -5926,8 +5935,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function hrBrowser() {
     var u = navigator.userAgent || "", m;
     var b = (m = /EdgA?\/([\d.]+)/.exec(u)) ? "Edge " + m[1] : (m = /SamsungBrowser\/([\d.]+)/.exec(u)) ? "Samsung Internet " + m[1]
-      : (m = /OPR\/([\d.]+)/.exec(u)) ? "Opera " + m[1] : (m = /Chrome\/([\d.]+)/.exec(u)) ? "Chrome " + m[1] : "";
-    var os = /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /CrOS/.test(u) ? "ChromeOS" : /Mac OS X/.test(u) ? "macOS" : /Linux/.test(u) ? "Linux" : "";
+      : (m = /OPR\/([\d.]+)/.exec(u)) ? "Opera " + m[1] : (m = /(?:Firefox|FxiOS)\/([\d.]+)/.exec(u)) ? "Firefox " + m[1]
+      : (m = /(?:Chrome|CriOS)\/([\d.]+)/.exec(u)) ? "Chrome " + m[1] : (m = /Version\/([\d.]+).*Safari/.exec(u)) ? "Safari " + m[1] : "";
+    var os = /iPhone|iPad|iPod/.test(u) ? "iOS" : /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /CrOS/.test(u) ? "ChromeOS" : /Mac OS X/.test(u) ? "macOS" : /Linux/.test(u) ? "Linux" : "";
     return b && os ? b + " on " + os : b || os;
   }
   function hrLogShow(log) {
@@ -6893,6 +6903,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
     if (h === "living" || h.indexOf("living/") === 0) { showView("living"); lvOpen(h.slice(7)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
+    if (h === "feedback" || h.indexOf("st-") === 0) {     // a section of Settings, which is drawn as it opens
+      showView("settings");
+      var sec = document.getElementById(h === "feedback" ? "st-feedback" : h);
+      if (sec) setTimeout(function () { try { sec.scrollIntoView({ block: "start", behavior: RM ? "auto" : "smooth" }); } catch (e) { sec.scrollIntoView(); } }, 30);
+      return;
+    }
     var el = document.getElementById(h), v = el && viewOf(el);
     if (!v) { showView("home"); return; }
     showView(v);
@@ -6984,6 +7000,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
+  var BUILD = "bdc08887";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -8316,7 +8333,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function qCard(q) {
     return '<figure class="quote sd-quote"><blockquote>' + esc(q[0]) + "</blockquote>" +
       "<figcaption><span>" + esc(qBy(q)) + "</span>" +
-      '<button class="btn small q-say" data-say="' + esc(q[0] + (q[1] ? " " + q[1] + "." : "")) + '"><svg class="i" aria-hidden="true"><use href="#i-voice"/></svg>Read aloud</button>' +
+      '<button class="btn small q-say" data-say="' + esc(q[0]) + '"><svg class="i" aria-hidden="true"><use href="#i-voice"/></svg>Read aloud</button>' +   // the quote alone: the author stays on the screen
       "</figcaption></figure>";
   }
   function qSay(text) {
@@ -8497,6 +8514,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var TENSION = "If you notice tension, let it soften on the out-breath.";
   var WANDER = "If your mind has wandered, that's fine. Gently come back.";
 
+  /* Walking: a position for the practices that work on the move, eyes open. Their guidance talks about steps
+     rather than a chair, and the choice's note asks for a quiet route and a volume that lets you hear around you. */
+  var WALK_NOTE = "Walking: eyes open, at an easy pace, on a quiet route away from traffic, with the volume low enough to hear what's around you. The voice and tones guide you, so your eyes can stay on the path.";
+  var SIT_WALK = [["sit", "Sitting"], ["walk", "Walking"]], SIT_LIE_WALK = [["sit", "Sitting"], ["lie", "Lying down"], ["walk", "Walking"]];
+  function posChoice(opts) { return { key: "pos", label: "Position", def: opts[0][0], note: WALK_NOTE, opts: opts }; }
+  function walkOf(d) { return pChoice(d, "pos") === "walk"; }
+  var WALK_IN = "Walk at an easy pace, somewhere quiet, with your eyes open and on the path.";
+  var WALK_STEPS = "Let your steps fall into the rhythm of the breath: a few steps in, a few more out.";
+  var WALK_STOP = "Slow down for the last few steps, and stand still for a breath or two.";
+
   /* Body scan regions: [body-map regions, title, lines]. */
   var SCAN = [
     [["all"], "Settling in", ["Lie on your back or sit comfortably, and let your eyes close if that feels okay.",
@@ -8601,19 +8628,19 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     return steps;
   }
 
-  function lovingKindness(min) {
+  function lovingKindness(min, walk) {
     var total = min * 60, settle = 60, close = 45, mid = total - settle - close;
     var stages = [
       ["Yourself", "Start with yourself. Picture yourself as you are now, or as a child.", "I"],
       ["Someone kind", "Bring to mind someone who has been kind to you. See their face.", "you"],
       ["A friend", "Now a good friend, or someone you care about.", "you"],
-      ["Someone neutral", "Now someone you see but barely know: a neighbour, a shop assistant.", "you"],
+      ["Someone neutral", walk ? "Now someone you pass, or can see from where you are: someone you barely know." : "Now someone you see but barely know: a neighbour, a shop assistant.", "you"],
       ["Someone difficult", "If it feels okay, someone you find mildly difficult: a small, everyday friction. Go gently.", "you"],
-      ["Everyone", "Now let it widen to everyone: this town, this country, all living beings.", "all"]
+      ["Everyone", walk ? "Now let it widen to everyone around you, then this town, this country, all living beings." : "Now let it widen to everyone: this town, this country, all living beings.", "all"]
     ];
     var each = Math.floor(mid / stages.length);
-    var steps = [G(settle, "Settle in", ["Sit comfortably and let your eyes close.",
-      "Rest a hand on your chest if you like, and breathe a little slower.",
+    var steps = [G(settle, "Settle in", [walk ? WALK_IN : "Sit comfortably and let your eyes close.",
+      walk ? "Let your steps be unhurried, and breathe a little slower." : "Rest a hand on your chest if you like, and breathe a little slower.",
       "You'll repeat a few simple wishes silently. Offer each one sincerely: the intention itself is the practice."], { vis: "glow" })];
     stages.forEach(function (s, i) {
       var who = s[2], ph = who === "I"
@@ -8625,7 +8652,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       for (var r = 0, t = 12; t < secs - 4 && r < ph.length * 2; r++, t += gap) lines.push([Math.round(t), ph[r % ph.length]]);
       steps.push(G(secs, s[0], lines, { vis: "glow" }));
     });
-    steps.push(G(close, "Closing", ["Let the words go, and notice how you feel now.", "Take that warmth with you as you open your eyes."], { vis: "glow" }));
+    steps.push(G(close, "Closing", ["Let the words go, and notice how you feel now.", walk ? "Take that warmth with you as you walk on." : "Take that warmth with you as you open your eyes."], { vis: "glow" }));
     return steps;
   }
 
@@ -8720,19 +8747,19 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   function steady(hz) { return function (T) { return [[0, hz], [T, hz]]; }; }
   function convSteps(d, min) {
-    var s = convSecs(min), p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+    var s = convSecs(min), p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 }, walk = walkOf(d);
     var at = function (i, f) { return Math.round(s[i] * f); };
     var pace = p.own ? "in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds")
       : "in through the nose and a longer, slower breath out, " + p.rate + " a minute";
     return [
-      G(s[0], "Arrive", ["Sit comfortably, headphones on, the volume low.",
+      G(s[0], "Arrive", [walk ? "Walk at an easy pace on your way there, eyes open, headphones on, the volume low enough to hear what's around you." : "Sit comfortably, headphones on, the volume low.",
         "First you'll settle your body. Then you'll get ready to speak."], { vis: "glow" }),
       Br(s[1], "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
         { lines: [[0, "Breathe in through the nose, take a short second sip to fill up, then let a long, slow breath out through the mouth."],
           [at(1, 0.55), "Let each long out-breath take some of the tension with it."]] }),
       Br(s[2], "Slow breathing", t,
         { lines: [[0, "Now slow breaths, " + pace + "."],
-          [at(2, 0.3), "With a sensor connected, watch your coherence rise as your heart rhythm smooths into a wave."],
+          [at(2, 0.3), walk ? WALK_STEPS : "With a sensor connected, watch your coherence rise as your heart rhythm smooths into a wave."],
           [at(2, 0.65), "If the conversation comes to mind, let it be there, and keep the long, slow out-breath."]] }),
       G(s[3], "Ready, not calm", [[0, "Let the breath find its own pace again."],
         [at(3, 0.15), "When you think of the conversation, your heart may still beat faster. That's your body getting ready: more oxygen, sharper attention."],
@@ -8777,13 +8804,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ];
   }
   function afterSteps(d) {
-    var p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+    var p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 }, walk = walkOf(d);
     return [
-      G(30, "It's over", ["Sit back and let your shoulders drop.", "Your body may still be geared up. Long out-breaths help it settle."], { vis: "glow" }),
+      G(30, "It's over", [walk ? "Walk at an easy pace, somewhere quiet, eyes open, and let your shoulders drop." : "Sit back and let your shoulders drop.",
+        walk ? "Your body may still be geared up. Long out-breaths and an easy walk help it settle." : "Your body may still be geared up. Long out-breaths help it settle."], { vis: "glow" }),
       Br(90, "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
         { lines: [[0, "Breathe in through the nose, a short second sip, then a long, slow breath out through the mouth."]] }),
       Br(180, "Long out-breaths", t, { lines: [[0, "Now slow breaths, in through the nose and a longer, slower breath out."],
-        [90, "With a sensor connected, watch your heart rate come down."]] }),
+        [90, walk ? WALK_STEPS : "With a sensor connected, watch your heart rate come down."]] }),
       G(55, "Name it", [[0, "What are you feeling now? Name it to yourself in a word or two: relieved, shaky, hurt, proud, angry, tired."],
         [30, "Naming a feeling takes some of its heat. Let it be there, named."]], { vis: "glow" }),
       G(70, "Kindness", [[0, "This was hard, and hard conversations are hard for everyone."],
@@ -8791,7 +8819,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         [50, "Whatever went well or less well, you showed up for it."]], { vis: "glow" }),
       G(45, "What went well", [[0, "Find one thing you did that you're glad of, however small: you said what you needed, you listened, you stayed steady."]], { vis: "glow" }),
       G(45, "One next step", [[0, "Is there one small next step? A message to send, a note to make, a rest to take. Choose it, and let the rest wait."]], { vis: "glow" }),
-      G(25, "Close", ["Take one more long breath out, and come back to the room."], { vis: "glow" })
+      G(25, "Close", [walk ? "Take one more long breath out, and look around you as you walk on." : "Take one more long breath out, and come back to the room."], { vis: "glow" })
     ];
   }
 
@@ -8898,10 +8926,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   // seconds at 5 and 10 minutes: arrive, name it, anxious or excited, sighs, long out-breaths, heavy and warm, strong heart, easy breath, reframe, intention, coming back
   function rfSecs(min) { return min <= 5 ? [20, 25, 35, 45, 0, 30, 30, 0, 75, 20, 20] : [30, 40, 45, 60, 90, 60, 50, 40, 120, 40, 25]; }
   function reframe(d, min) {
-    var s = rfSecs(min), W = RF_WORDS[pChoice(d, "words")] || RF_WORDS.excited, p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+    var s = rfSecs(min), W = RF_WORDS[pChoice(d, "words")] || RF_WORDS.excited, p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 }, walk = walkOf(d);
     var at = function (i, f) { return Math.round(s[i] * f); };
     var st = [
-      G(s[0], "Arrive", [[0, "Sit, or stand if you're about to go on. Let your eyes close, or rest them on the floor."],
+      G(s[0], "Arrive", [[0, walk ? WALK_IN : "Sit, or stand if you're about to go on. Let your eyes close, or rest them on the floor."],
         [at(0, 0.45), "Notice what your body is doing right now: your heart, your breath, your hands, your stomach."]], { vis: "glow" }),
       G(s[1], "Name it", [[0, "Name what you notice, plainly, the way a reporter would: my heart is racing, my breath is quick, my hands are cold."],
         [at(1, 0.6), "Naming it takes some of the heat out of it."]], { vis: "glow" }),
@@ -8924,8 +8952,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       [at(8, 0.9), W + "."]], { vis: "glow" }));
     st.push(G(s[9], "Your intention", [[0, "Now make it your intention, the way autogenic training does. Say it three times, slowly."],
       [at(9, 0.3), W + "."], [at(9, 0.55), W + "."], [at(9, 0.8), W + "."]], { vis: "glow", quiet: true }));
-    st.push(G(s[10], "Coming back", [[0, "Arms firm: make fists and bend your arms strongly."], [at(10, 0.28), "Breathe deeply."],
-      [at(10, 0.48), "Eyes open."], [at(10, 0.68), "Take this energy with you. " + W + "."]], { body: AT_ARMS }));
+    st.push(G(s[10], "Coming back", [[0, walk ? "Make fists for a moment, then let your hands swing loose." : "Arms firm: make fists and bend your arms strongly."], [at(10, 0.28), "Breathe deeply."],
+      [at(10, 0.48), walk ? "Look around you." : "Eyes open."], [at(10, 0.68), "Take this energy with you. " + W + "."]], { body: AT_ARMS }));
     return st;
   }
 
@@ -8971,17 +8999,19 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: [[0, 6], [600, 6]], note: "A steady 6 Hz beat, in the theta band studied for deep relaxation." },
         { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: [[0, 10], [600, 10]], note: "A steady 10 Hz beat: relaxed but awake, for when the day goes on straight after." }
       ],
+      choices: [posChoice(SIT_WALK)],
       build: function () {
-        var p = pPace(this);
+        var p = pPace(this), walk = walkOf(this);
         return [
-          G(30, "Arrive", ["Sit or stand comfortably. Let your shoulders drop.", "We'll start with a few sighs to take the edge off."], { vis: "glow" }),
+          G(30, "Arrive", [walk ? WALK_IN : "Sit or stand comfortably. Let your shoulders drop.", "We'll start with a few sighs to take the edge off."], { vis: "glow" }),
           Br(150, "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
-            { lines: [[0, "Breathe in through the nose, take a short second sip to fill up, then a long, slow breath out through the mouth."]] }),
+            { lines: [[0, "Breathe in through the nose, take a short second sip to fill up, then a long, slow breath out through the mouth."]].concat(
+              walk ? [[75, "Keep walking at an easy pace, and let each long breath out loosen your shoulders."]] : []) }),
           Br(390, "Resonance breathing", { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 },
             { lines: [[0, p.own ? "Now breathe in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds") + ", through the nose."
                 : "Now even breaths in and out, " + p.rate + " a minute, through the nose."],
-              [150, "With a sensor connected, watch your heart rate rise and fall with each breath."]] }),
-          G(30, "Return", ["Let the breath go back to its own rhythm.", "Notice how you feel compared with ten minutes ago."], { vis: "glow" })
+              [150, walk ? WALK_STEPS : "With a sensor connected, watch your heart rate rise and fall with each breath."]] }),
+          G(30, "Return", ["Let the breath go back to its own rhythm.", walk ? WALK_STOP : "Notice how you feel compared with ten minutes ago."], { vis: "glow" })
         ];
       },
       how: "Two and a half minutes of cyclic sighing (a double inhale through the nose, then a long exhale through the mouth), then six and a half minutes of even breathing at your own resonance rate (the result of the resonance test if you've taken it, otherwise 5.5 a minute) or at an in and out of your own. The beat slides from 10 Hz alpha to 6 Hz theta across the session, or stays at a steady theta or alpha beat, as you choose; both choices are kept for it.",
@@ -8991,7 +9021,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     {
       id: "coherence", name: "Heart Coherence", min: 15, lengths: [10, 15, 20], strength: 2,
       tone: "relax", sensor: "best", anaStyle: "heart", pace: true,
-      blurb: "Heart-focused breathing at your resonance pace until your heart rhythm settles, then a gentle feeling of gratitude, with live coherence over a binaural beat. Sitting or lying down.",
+      blurb: "Heart-focused breathing at your resonance pace until your heart rhythm settles, then a gentle feeling of gratitude, with live coherence over a binaural beat. Sitting, lying down or walking.",
       parts: "Heart-focused resonance breathing · gratitude · coherence feedback · binaural beat",
       audio: { name: "Heart Coherence", band: "Theta", carrier: 200, pts: [[0, 6], [1200, 6]], fade: 8, cat: "relax" },
       beats: [                                   // the first is the usual one
@@ -8999,24 +9029,25 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: [[0, 10], [1200, 10]], note: "A steady 10 Hz beat: relaxed but awake, if theta makes you drowsy." },
         { id: "down", label: "Alpha to theta", band: "Alpha → Theta", pts: [[0, 10], [300, 6], [1200, 6]], note: "Starts at 10 Hz and slides down to 6 Hz over the first five minutes." }
       ],
-      choices: [{ key: "pos", label: "Position", opts: [["sit", "Sitting"], ["lie", "Lying down"]], def: "sit" }],
+      choices: [posChoice(SIT_LIE_WALK)],
       build: function (min) {
-        var p = pPace(this), lie = pChoice(this, "pos") === "lie", t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+        var p = pPace(this), lie = pChoice(this, "pos") === "lie", walk = walkOf(this), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
         var breath = (min || 15) * 60 - 120, first = 180, rest = breath - first;
         var pace = p.own ? "in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds") : "evenly, " + p.rate + " a minute";
         return [
-          G(45, "Arrive", [lie ? "Lie on your back, a pillow under your head and, if it helps, under your knees. Let your arms rest by your sides." : "Sit comfortably, feet flat on the floor, your back upright but not stiff.",
-            "Rest your attention on the centre of your chest, around the heart.",
+          G(45, "Arrive", [walk ? WALK_IN : lie ? "Lie on your back, a pillow under your head and, if it helps, under your knees. Let your arms rest by your sides." : "Sit comfortably, feet flat on the floor, your back upright but not stiff.",
+            walk ? "Rest some of your attention on the centre of your chest, around the heart." : "Rest your attention on the centre of your chest, around the heart.",
             "Connect a heart sensor if you have one; coherence appears after about a minute."], { vis: "glow" }),
           Br(first, "Heart-focused breathing", t,
-            { lines: [[0, "Breathe " + pace + ", imagining the breath flowing in and out through the heart area."],
-              [90, "Keep the breath soft and even. Your heart rhythm is falling into step with it."]] }),
+            { lines: [[0, "Breathe " + pace + ", imagining the breath flowing in and out through the heart area."]].concat(walk ? [[45, WALK_STEPS]] : [],
+              [[90, "Keep the breath soft and even. Your heart rhythm is falling into step with it."]]) }),
           Br(rest, "Breathing with gratitude", t,
             { lines: [[0, "Keeping the same breath, call up a feeling of gratitude: a person, a place or a pet you love, or something that went well today. Feel it rather than think it, and let it be gentle."],
               [Math.round(rest * 0.3), "If the feeling fades, picture that person or moment again and breathe the warmth in through your chest."],
               [Math.round(rest * 0.55), "Whatever the score does, come back to the even breath and the feeling."],
               [Math.max(Math.round(rest * 0.55) + 30, rest - 120), "Keep the rhythm and the feeling going for these last minutes."]] }),
           G(75, "Return", lie ? ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the weight of your body on the floor.", "When you're ready, roll onto your side before you sit up."]
+            : walk ? ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", WALK_STOP]
             : ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
         ];
       },
@@ -9027,21 +9058,21 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     {
       id: "gratitude", name: "Gratitude", lengths: [10, 15], min: 10, strength: 2,
       tone: "stim", sensor: "optional", pace: true,
-      blurb: "Settle with slow, even breathing first, then let gratitude grow: for something small from today, for a person who helped you, for your own body, and for the feeling itself. Sitting or lying down.",
+      blurb: "Settle with slow, even breathing first, then let gratitude grow: for something small from today, for a person who helped you, for your own body, and for the feeling itself. Sitting, lying down or walking.",
       parts: "Resonance breathing · something small · someone who helped · your body · savouring · three good things",
-      choices: [{ key: "pos", label: "Position", opts: [["sit", "Sitting"], ["lie", "Lying down"]], def: "sit" }],
+      choices: [posChoice(SIT_LIE_WALK)],
       build: function (min) {
-        var p = pPace(this), lie = pChoice(this, "pos") === "lie", t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+        var p = pPace(this), lie = pChoice(this, "pos") === "lie", walk = walkOf(this), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
         // seconds for each step at 10 and 15 minutes: arrive, breathing, something small, someone, the body, savouring, three good things
         var s = (min || 10) >= 15 ? [40, 240, 120, 165, 120, 135, 80] : [40, 180, 75, 105, 75, 75, 50];
         var pace = p.own ? "in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds") : "evenly, " + p.rate + " a minute";
         var at = function (i, f) { return Math.round(s[i] * f); };
         return [
-          G(s[0], "Arrive", [lie ? "Lie on your back, a pillow under your head and, if it helps, under your knees. Let your arms rest by your sides." : "Sit comfortably, feet on the floor, your back upright and at ease. Let your hands rest.",
+          G(s[0], "Arrive", [walk ? WALK_IN : lie ? "Lie on your back, a pillow under your head and, if it helps, under your knees. Let your arms rest by your sides." : "Sit comfortably, feet on the floor, your back upright and at ease. Let your hands rest.",
             "First you'll breathe slowly for a few minutes. Gratitude comes after, once you're calm, when it's easiest to feel."], { vis: "glow" }),
           Br(s[1], "Settling breath", t,
             { lines: [[0, "Breathe " + pace + ", softly, through the nose."],
-              [at(1, 0.45), "Rest your attention in the centre of your chest, and let the breath flow there."]] }),
+              [at(1, 0.45), "Rest your attention in the centre of your chest, and let the breath flow there."]].concat(walk ? [[at(1, 0.75), WALK_STEPS]] : []) }),
           G(s[2], "Something small", [[0, "Let the breath find its own pace again."],
             [8, "Bring to mind one small thing from today that you're glad of: a taste, a kind word, a moment of light, a task that went well."],
             [at(2, 0.45), "See it again in detail: where you were, what you noticed. Enjoy it a second time."],
@@ -9058,7 +9089,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             [at(5, 0.7), "If it fades, return to the person or the moment, and let it come back."]], { vis: "glow" }),
           G(s[6], "Three good things", [[0, "Let the breath and the body settle."],
             [at(6, 0.25), "Later today, if you like, write down three good things that happened, and why each one went well."],
-            [Math.max(at(6, 0.25) + 15, s[6] - 15), lie ? "When you're ready, roll onto your side before you sit up." : "Bring this gladness into whatever comes next."]], { vis: "glow" })
+            [Math.max(at(6, 0.25) + 15, s[6] - 15), lie ? "When you're ready, roll onto your side before you sit up." : walk ? "Bring this gladness with you as you walk on." : "Bring this gladness into whatever comes next."]], { vis: "glow" })
         ];
       },
       how: "Three or four minutes of slow, even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention in the chest. Gratitude comes after the breathing because it's easiest to feel, rather than just think, once you're calm; for the same reason it fits well after a meditation. Then four steps: something small from today, a person who helped you, your own body, and resting in the feeling. It ends with an invitation to write down three good things later. Sit or lie down; with a sensor, coherence shows live.",
@@ -9104,13 +9135,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       blurb: "After training: slow breathing at six a minute with a long exhale, over a 6 Hz theta beat. Watch your heart rate come down.",
       parts: "Slow long-exhale breathing · 6 Hz binaural · heart-rate drop",
       audio: { name: "Exercise Recovery", band: "Theta", carrier: 200, pts: [[0, 6], [600, 6]], fade: 8, cat: "relax" },
+      choices: [posChoice(SIT_WALK)],
       build: function () {
+        var walk = walkOf(this);
         return [
-          G(30, "Arrive", ["Sit or lie down somewhere comfortable after your session.", "Let your breathing settle for a moment."], { vis: "glow" }),
+          G(30, "Arrive", [walk ? "Walk slowly to cool down after your session, eyes open and on the path." : "Sit or lie down somewhere comfortable after your session.", "Let your breathing settle for a moment."], { vis: "glow" }),
           Br(510, "Slow breathing", { inh: 4, sip: 0, hold: 0, exh: 6, rest: 0 },
-            { lines: [[0, "In for four through the nose, out for six. Six breaths a minute."],
-              [240, "Let each exhale be soft and complete."]] }),
-          G(60, "Return", ["Breathe naturally now.", "Notice your heart rate and how your body feels."], { vis: "glow" })
+            { lines: [[0, "In for four through the nose, out for six. Six breaths a minute."]].concat(walk ? [[120, "Let your steps slow to match: a few steps in, a few more out."]] : [],
+              [[240, "Let each exhale be soft and complete."]]) }),
+          G(60, "Return", walk ? ["Breathe naturally now.", "Let your steps come to rest, and notice your heart rate and how your body feels."] : ["Breathe naturally now.", "Notice your heart rate and how your body feels."], { vis: "glow" })
         ];
       },
       how: "Eight and a half minutes at 6 breaths a minute (4 s in, 6 s out) over a 6 Hz theta beat. With a sensor connected the summary shows how far your heart rate fell.",
@@ -9142,7 +9175,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ],
       choices: [{ key: "pre", label: "Begin with", def: "",
         note: "Writing it out first takes 10 to 15 minutes. The needs, request and first sentence you find come back in the breathing part.",
-        opts: [["", "The breathing"], ["nvc-prep", "Prepare it (NVC)"], ["nvc-self", "Self-Empathy (NVC)"]] }],
+        opts: [["", "The breathing"], ["nvc-prep", "Prepare it (NVC)"], ["nvc-self", "Self-Empathy (NVC)"]] }, posChoice(SIT_WALK)],
       next: { id: "call", txt: "Going straight into a call? During the Call keeps a quiet beat and a silent pacer with you through it." },
       chainTxt: "Slow breathing and a beat get your body ready, and what you wrote comes back as you go.",
       build: function (min) { return convSteps(this, min || 10); },
@@ -9184,6 +9217,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: steady(6), note: "A steady 6 Hz beat, the band studied for relaxation and recovery." },
         { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: steady(10), note: "A steady 10 Hz beat: relaxed but alert, if work goes on straight after." }
       ],
+      choices: [posChoice(SIT_WALK)],
       next: { id: "nvc-self", txt: "Still turning it over? Self-Empathy (NVC) helps you find what you need now." },
       build: function () { return afterSteps(this); },
       how: "A minute and a half of cyclic sighs and three minutes of slow breathing with a longer out-breath, under a 6 Hz theta beat (or 10 Hz alpha), then four short steps: naming what you feel in a word or two, a moment of self-compassion with a hand on your chest, one thing you're glad you did, and one small next step. With a sensor, the summary shows how far your heart rate came down. If it's still on your mind afterwards, Self-Empathy (NVC) can help you find what you need now.",
@@ -9213,8 +9247,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     {
       id: "metta", name: "Loving-Kindness", lengths: [10, 15], min: 10, strength: 2,
       tone: "stim",
-      blurb: "Silently offer simple wishes of safety, health and ease to yourself, then to others, widening the circle step by step.",
-      build: function (min) { return lovingKindness(min); },
+      blurb: "Silently offer simple wishes of safety, health and ease to yourself, then to others, widening the circle step by step. Sitting, or walking and including the people you pass.",
+      choices: [posChoice(SIT_WALK)],
+      build: function (min) { return lovingKindness(min, walkOf(this)); },
       how: "Six stages: yourself, someone kind to you, a friend, someone neutral, someone mildly difficult, then everyone. The phrases are spoken slowly; repeat them silently.",
       ev: "A meta-analysis of 24 studies found medium effects of loving-kindness meditation on daily positive emotions, and stronger effects when the focus was loving-kindness rather than compassion.",
       cite: "Zeng et al. 2015"
@@ -9244,15 +9279,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       id: "grounding", name: "5-4-3-2-1 Grounding", min: 5, strength: 1,
       tone: "relax",
       blurb: "When anxiety spirals: find 5 things you can see, 4 you can hear, 3 you can feel, 2 you can smell and 1 you can taste. Tap each one.",
+      choices: [posChoice(SIT_WALK)],
       build: function () {
+        var walk = walkOf(this);
         return [
-          G(20, "Look around", ["Keep your eyes open. You'll name things around you, one sense at a time. Tap the button for each one you find."]),
-          Ct(70, 5, "5 things you can see", ["Look around and find five things you can see. Name each one to yourself, with a detail: its colour, its shape."], { sense: "see" }),
+          G(20, "Look around", [walk ? "Keep walking at an easy pace, eyes open. You'll name things around you, one sense at a time. Tap the button for each one you find, or count them in your head."
+            : "Keep your eyes open. You'll name things around you, one sense at a time. Tap the button for each one you find."]),
+          Ct(70, 5, "5 things you can see", [walk ? "Find five things you can see as you walk. Name each one to yourself, with a detail: its colour, its shape." : "Look around and find five things you can see. Name each one to yourself, with a detail: its colour, its shape."], { sense: "see" }),
           Ct(60, 4, "4 things you can hear", ["Now listen. Find four things you can hear, near or far."], { sense: "hear" }),
-          Ct(55, 3, "3 things you can feel", ["Find three things you can feel: your feet on the floor, the fabric on your skin, the air."], { sense: "feel" }),
+          Ct(55, 3, "3 things you can feel", [walk ? "Find three things you can feel: your feet meeting the ground, the swing of your arms, the air on your skin." : "Find three things you can feel: your feet on the floor, the fabric on your skin, the air."], { sense: "feel" }),
           Ct(45, 2, "2 things you can smell", ["Two things you can smell, or two smells you remember and like."], { sense: "smell" }),
           Ct(35, 1, "1 thing you can taste", ["One thing you can taste, or one taste you enjoy."], { sense: "taste" }),
-          G(30, "Breathe", ["Take two slow breaths, with a long exhale.", "Notice that you're here, now."])
+          G(30, "Breathe", ["Take two slow breaths, with a long exhale.", walk ? "Notice that you're here, now, walking." : "Notice that you're here, now."])
         ];
       },
       how: "Five senses, counted down. Each tap marks one thing found; a step moves on when you've found them all or its time runs out.",
@@ -9364,7 +9402,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: steady(6), note: "A steady 6 Hz beat, the slower band, if you'd rather settle further." }
       ],
       choices: [{ key: "words", label: "Your words", def: "excited", note: "What you'll say in place of “I'm anxious”. “I am excited” is the phrase from the experiments; the others say the same in another way.",
-        opts: [["excited", "I am excited"], ["ready", "I'm ready for this"], ["energy", "This energy helps me"]] }],
+        opts: [["excited", "I am excited"], ["ready", "I'm ready for this"], ["energy", "This energy helps me"]] }, posChoice(SIT_WALK)],
       next: { id: "autogenic", txt: "The phrases work faster with daily practice: Autogenic Training is the full standard sequence." },
       build: function (min) { return reframe(this, min || 10); },
       how: "For the moments before a talk, a test, a performance or a hard conversation, or whenever anxiety rises. You notice what your body is doing and name it plainly, then hear why it can be read another way: anxiety and excitement are nearly identical in the body, the same faster heartbeat, quick breath and rush of adrenaline. Cyclic sighs and slow breathing with a longer out-breath take the edge off, then shortened autogenic phrases loosen the shoulders and warm the hands, and a heart phrase rewritten to welcome a strong heartbeat as readiness. Then the reframe: when the anxious thought comes, you answer it with “I am excited”, or another phrase you choose, out loud if you can, and make it your intention formula, as autogenic training's middle stage does with a personal resolution. It ends with arms firm, a deep breath and eyes open. 5 or 10 minutes.",
@@ -9568,9 +9606,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var CATS = {
     sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
       ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
-    calm: [["calm-reset", "program", "sit"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
-      ["coherence", "program", "sit lie"], ["conversation", "program", "sit"], ["call", "program", "sit"], ["after-talk", "program", "sit"], ["grounding", "meditate", "sit"], ["tapping", "relax", "sit"],
-      ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
+    calm: [["calm-reset", "program", "sit walk"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
+      ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
+      ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
       ["t:preop-calm", "sound", "lie"]],
@@ -9581,10 +9619,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     energy: [["morning-yoga", "move", "stand"], ["standing-flow", "move", "stand"], ["morning-stretch", "move", "stand"],
       ["standing-reset", "move", "stand"], ["balance-yoga", "move", "stand"], ["kapalabhati", "breath", "sit"],
       ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"]],
-    recover: [["recovery", "program", "sit"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
+    recover: [["recovery", "program", "sit walk"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
       ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"]],
     reflect: [["nvc-self", "write", "sit"], ["nvc-prep", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
-      ["metta", "meditate", "sit"], ["gratitude", "meditate", "sit lie"]],
+      ["metta", "meditate", "sit walk"], ["gratitude", "meditate", "sit lie walk"]],
     tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: a section of its own
   };
   var ALSO = {
@@ -11706,7 +11744,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var n = [];
     if ((o.audio && !(o.opt && o.opt.audio === false)) || o.method === "sound") n.push("phones");     // a beat that starts off needs none
     if (o.sensor === "best") n.push("sensor");
-    if (o.method === "move" || (o.posture || []).indexOf("walk") >= 0) n.push("space");
+    if (o.method === "move" || (o.posture || []).join() === "walk") n.push("space");      // walking as an option needs no more than a quiet route
     return n;
   }
 
@@ -11823,7 +11861,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       var plan = pPlan(it.def, 0);
       tl = '<span class="si-tl pc-tl" aria-hidden="true">' + plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + s.secs + ' 1 0"></i>'; }).join("") + "</span>";
     }
-    var pos = it.nopos ? "" : it.posture.map(function (p, i) { var n = postureName(p); return i ? n.toLowerCase() : n; }).join(" or ");
+    var pn = it.nopos ? [] : it.posture.map(function (p, i) { var n = postureName(p); return i ? n.toLowerCase() : n; });
+    var pos = pn.length > 2 ? pn.slice(0, -1).join(", ") + " or " + pn[pn.length - 1] : pn.join(" or ");      // Sitting, lying or walking
     var sub = o.sub || [it.label || methodName(it.method), it.minsTxt, pos].filter(Boolean).join(" · ");
     return '<li class="pc' + (it.prog ? " prog" : "") + (o.compact ? " cmp" : "") + (it.type !== "practice" ? " pc-" + it.type : "") + '" style="--pcol:' + it.col + '"' + (hide ? " hidden" : "") + ">" +
       '<a href="' + esc(it.href) + '" class="pc-a">' +
@@ -12033,18 +12072,83 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         pToggle("stScrSes", "Keep the screen on during practices and breathing", ST.screenSessions, "Also for ten minutes into a pause.") +
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
-        pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap and Cognitive Shuffle go almost dark. The screen still stays on.") +
+        pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap, Cognitive Shuffle and Autogenic Training's bedtime ending go almost dark. The screen still stays on.") +
       "</section>" + bkCard() +
+      '<section class="st-card st-fb" id="st-feedback" aria-labelledby="stF"><h2 id="stF">Feedback</h2>' + fbForm() + "</section>" +
       '<section class="st-card st-about" aria-labelledby="stI"><h2 id="stI">About</h2>' +
         '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project, and free software under the GNU AGPL, version 3. <a href="#l-impressum">Impressum, licence and credits</a></p>' +
+        '<p class="st-note">Build <span class="mono" id="stBuild">' + BUILD + '</span></p>' +
         '<p class="st-note">Entrain is free and has no ads. If it helps you, a donation keeps it going.</p>' +
         '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a>' +
       "</section>";
     stWire();
+    fbWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }
   var DONATE = "https://ko-fi.com/misterclarity";   // the donations page, opened in the browser
+
+  /* ----- feedback: written here, sent as an issue on Entrain's GitHub page. The app itself sends nothing:
+     the button opens GitHub's new-issue page in the browser with the message filled in, for you to send
+     there. The draft is kept on this device until you clear it. ----- */
+  var FB_NEW = "https://github.com/misterclarity/biney/issues/new";
+  var FB_KINDS = [["idea", "Idea"], ["problem", "Problem"], ["praise", "Praise"], ["question", "Question"]];
+  function fbDraft() {
+    try { var o = JSON.parse(store.get("fbDraft") || "null"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; }
+  }
+  // what the button adds when asked to: the build, the browser, installed or not, and the window's size
+  function fbDevice() {
+    var inst = !!(window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+    return "Entrain build " + BUILD + " · " + (hrBrowser() || "an unknown browser") + (inst ? " · installed" : " · in the browser") + " · " + innerWidth + "×" + innerHeight;
+  }
+  function fbForm() {
+    var d = fbDraft();
+    return '<p class="st-note">An idea, a problem, or something you liked? Write it here, and it opens on Entrain\'s GitHub page as an issue, ready to send. ' +
+        "Sending it needs a free GitHub account, and issues there are public, so leave out anything personal.</p>" +
+      '<div class="so-row so-seg"><span class="so-l">It\'s</span>' + stSeg("fbKind", FB_KINDS, d.kind || "idea") + "</div>" +
+      '<label class="fb-l" for="fbTitle">Title</label><input class="fb-in" id="fbTitle" maxlength="100" autocomplete="off" placeholder="In a few words" value="' + esc(d.title || "") + '">' +
+      '<label class="fb-l" for="fbTxt">Your message</label><textarea class="fb-ta" id="fbTxt" rows="6" maxlength="3000" placeholder="What happened, or what would help?">' + esc(d.txt || "") + "</textarea>" +
+      pToggle("fbDev", "Add the build and your browser", d.dev !== false, '<span id="fbDevTxt">' + esc(fbDevice()) + "</span>") +
+      '<div class="fb-act"><button class="btn primary" id="fbGo"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg>Open on GitHub</button>' +
+        '<button class="btn small" id="fbClear">Clear</button><span class="fb-n" id="fbN" aria-live="polite"></span></div>';
+  }
+  // the issue as GitHub will get it
+  function fbIssue() {
+    var d = fbDraft(), k = FB_KINDS.filter(function (x) { return x[0] === (d.kind || "idea"); })[0] || FB_KINDS[0];
+    var txt = (d.txt || "").trim(), one = txt.replace(/\s+/g, " "), cut = one.slice(0, 61);
+    if (one.length > 60) cut = cut.slice(0, cut.lastIndexOf(" ") > 20 ? cut.lastIndexOf(" ") : 60).replace(/[,;:.\s]+$/, "") + "…";      // no title: the message's first words, cut at a word
+    var title = (d.title || "").trim().replace(/\s+/g, " ") || cut;
+    var body = txt + (d.dev !== false ? "\n\n---\n" + fbDevice() : "");
+    return { title: k[1] + ": " + title, body: body, url: FB_NEW + "?title=" + encodeURIComponent(k[1] + ": " + title) + "&body=" + encodeURIComponent(body) };
+  }
+  function fbWire() {
+    var go = $("#fbGo"), title = $("#fbTitle"), txt = $("#fbTxt");
+    if (!go) return;
+    var save = function () {
+      var kb = $("#fbKind [aria-pressed=true]"), d = { kind: kb ? kb.dataset.v : "idea", title: title.value, txt: txt.value, dev: $("#fbDev").checked };
+      if (d.title.trim() || d.txt.trim()) store.set("fbDraft", JSON.stringify(d)); else storeDel("fbDraft");
+      var ok = d.txt.trim().length >= 3;
+      go.disabled = !ok; $("#fbClear").hidden = !d.title.trim() && !d.txt.trim();
+      bSetT("#fbN", ok ? "" : "Write a few words first.");
+    };
+    $("#fbKind").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      this.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      save();
+    });
+    title.addEventListener("input", save); txt.addEventListener("input", save);
+    $("#fbDev").addEventListener("change", save);
+    go.addEventListener("click", function () {
+      save();
+      if (go.disabled) return;
+      window.open(fbIssue().url, "_blank", "noopener");
+      bSetT("#fbN", "Opened on GitHub. Your draft stays here until you clear it.");
+    });
+    $("#fbClear").addEventListener("click", function () {
+      title.value = ""; txt.value = ""; save(); txt.focus();
+    });
+    save();
+  }
   function stWire() {
     var on = function (id, fn) { var el = $(id); if (el) el.addEventListener("change", fn); };
     on("#stVoice", function () { stDefault("voice", this.checked); });
@@ -13260,6 +13364,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("app", "Settings", "Defaults for every practice, sound and screen",
       ["Spoken guidance, voice, bells, breath cues and visual, binaural layer, Anapana reminders, background sound, keeping reflections, and keeping the screen on or dimming it for sleep."], "#settings",
       { ic: "gear", col: "var(--accent)", w: 1, tags: "options preferences defaults voice bells screen dim brightness wake lock background rain" }));
+    out.push(fdEntry("app", "Feedback", "Settings · an idea, a problem or something you liked",
+      ["Write it in Settings, and it opens as an issue on Entrain's GitHub page, ready to send."], "#feedback",
+      { ic: "send", col: "var(--accent)", w: 1, tags: "contact bug report issue github suggestion idea problem praise question" }));
     out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
       ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
       { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));

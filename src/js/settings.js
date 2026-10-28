@@ -61,18 +61,83 @@
         pToggle("stScrSes", "Keep the screen on during practices and breathing", ST.screenSessions, "Also for ten minutes into a pause.") +
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
-        pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap and Cognitive Shuffle go almost dark. The screen still stays on.") +
+        pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap, Cognitive Shuffle and Autogenic Training's bedtime ending go almost dark. The screen still stays on.") +
       "</section>" + bkCard() +
+      '<section class="st-card st-fb" id="st-feedback" aria-labelledby="stF"><h2 id="stF">Feedback</h2>' + fbForm() + "</section>" +
       '<section class="st-card st-about" aria-labelledby="stI"><h2 id="stI">About</h2>' +
         '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project, and free software under the GNU AGPL, version 3. <a href="#l-impressum">Impressum, licence and credits</a></p>' +
+        '<p class="st-note">Build <span class="mono" id="stBuild">' + BUILD + '</span></p>' +
         '<p class="st-note">Entrain is free and has no ads. If it helps you, a donation keeps it going.</p>' +
         '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a>' +
       "</section>";
     stWire();
+    fbWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }
   var DONATE = "https://ko-fi.com/misterclarity";   // the donations page, opened in the browser
+
+  /* ----- feedback: written here, sent as an issue on Entrain's GitHub page. The app itself sends nothing:
+     the button opens GitHub's new-issue page in the browser with the message filled in, for you to send
+     there. The draft is kept on this device until you clear it. ----- */
+  var FB_NEW = "https://github.com/misterclarity/biney/issues/new";
+  var FB_KINDS = [["idea", "Idea"], ["problem", "Problem"], ["praise", "Praise"], ["question", "Question"]];
+  function fbDraft() {
+    try { var o = JSON.parse(store.get("fbDraft") || "null"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; }
+  }
+  // what the button adds when asked to: the build, the browser, installed or not, and the window's size
+  function fbDevice() {
+    var inst = !!(window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+    return "Entrain build " + BUILD + " · " + (hrBrowser() || "an unknown browser") + (inst ? " · installed" : " · in the browser") + " · " + innerWidth + "×" + innerHeight;
+  }
+  function fbForm() {
+    var d = fbDraft();
+    return '<p class="st-note">An idea, a problem, or something you liked? Write it here, and it opens on Entrain\'s GitHub page as an issue, ready to send. ' +
+        "Sending it needs a free GitHub account, and issues there are public, so leave out anything personal.</p>" +
+      '<div class="so-row so-seg"><span class="so-l">It\'s</span>' + stSeg("fbKind", FB_KINDS, d.kind || "idea") + "</div>" +
+      '<label class="fb-l" for="fbTitle">Title</label><input class="fb-in" id="fbTitle" maxlength="100" autocomplete="off" placeholder="In a few words" value="' + esc(d.title || "") + '">' +
+      '<label class="fb-l" for="fbTxt">Your message</label><textarea class="fb-ta" id="fbTxt" rows="6" maxlength="3000" placeholder="What happened, or what would help?">' + esc(d.txt || "") + "</textarea>" +
+      pToggle("fbDev", "Add the build and your browser", d.dev !== false, '<span id="fbDevTxt">' + esc(fbDevice()) + "</span>") +
+      '<div class="fb-act"><button class="btn primary" id="fbGo"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg>Open on GitHub</button>' +
+        '<button class="btn small" id="fbClear">Clear</button><span class="fb-n" id="fbN" aria-live="polite"></span></div>';
+  }
+  // the issue as GitHub will get it
+  function fbIssue() {
+    var d = fbDraft(), k = FB_KINDS.filter(function (x) { return x[0] === (d.kind || "idea"); })[0] || FB_KINDS[0];
+    var txt = (d.txt || "").trim(), one = txt.replace(/\s+/g, " "), cut = one.slice(0, 61);
+    if (one.length > 60) cut = cut.slice(0, cut.lastIndexOf(" ") > 20 ? cut.lastIndexOf(" ") : 60).replace(/[,;:.\s]+$/, "") + "…";      // no title: the message's first words, cut at a word
+    var title = (d.title || "").trim().replace(/\s+/g, " ") || cut;
+    var body = txt + (d.dev !== false ? "\n\n---\n" + fbDevice() : "");
+    return { title: k[1] + ": " + title, body: body, url: FB_NEW + "?title=" + encodeURIComponent(k[1] + ": " + title) + "&body=" + encodeURIComponent(body) };
+  }
+  function fbWire() {
+    var go = $("#fbGo"), title = $("#fbTitle"), txt = $("#fbTxt");
+    if (!go) return;
+    var save = function () {
+      var kb = $("#fbKind [aria-pressed=true]"), d = { kind: kb ? kb.dataset.v : "idea", title: title.value, txt: txt.value, dev: $("#fbDev").checked };
+      if (d.title.trim() || d.txt.trim()) store.set("fbDraft", JSON.stringify(d)); else storeDel("fbDraft");
+      var ok = d.txt.trim().length >= 3;
+      go.disabled = !ok; $("#fbClear").hidden = !d.title.trim() && !d.txt.trim();
+      bSetT("#fbN", ok ? "" : "Write a few words first.");
+    };
+    $("#fbKind").addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      this.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      save();
+    });
+    title.addEventListener("input", save); txt.addEventListener("input", save);
+    $("#fbDev").addEventListener("change", save);
+    go.addEventListener("click", function () {
+      save();
+      if (go.disabled) return;
+      window.open(fbIssue().url, "_blank", "noopener");
+      bSetT("#fbN", "Opened on GitHub. Your draft stays here until you clear it.");
+    });
+    $("#fbClear").addEventListener("click", function () {
+      title.value = ""; txt.value = ""; save(); txt.focus();
+    });
+    save();
+  }
   function stWire() {
     var on = function (id, fn) { var el = $(id); if (el) el.addEventListener("change", fn); };
     on("#stVoice", function () { stDefault("voice", this.checked); });

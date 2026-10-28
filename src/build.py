@@ -171,6 +171,11 @@ fav = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linea
        '</linearGradient></defs><rect width="32" height="32" rx="10" fill="url(#g)"/><rect x="8" y="8" width="16" height="16" rx="4" fill="#0b1120"/></svg>')
 head = head.replace("__FAVICON__", "data:image/svg+xml," + urllib.parse.quote(fav.replace('"', "'"), safe=" :/=.-,'"))
 
+# a short build id from the sources, for About and feedback (the page can't carry the hash of itself)
+build_id = hashlib.sha256((css + body + script).encode()).hexdigest()[:8]
+assert script.count("__BUILD__") == 1, "the build id needs its one place in the script"
+script = script.replace("__BUILD__", build_id)
+
 out = head + body + "\n<script>" + script + "</script>\n</body>\n</html>\n"
 open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8").write(out)
 print("wrote index.html", len(out), "bytes")

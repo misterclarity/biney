@@ -10,6 +10,7 @@
 //   H  a sensor that sends heart rate only: no coherence, the test's caution, the guide
 //   T  a difficult conversation: before it (with an NVC preparation first), during the call, after it
 //   X  autogenic training (the standard phrases, week by week, the endings) and Autogenic Reframing
+//   Y  a quote read aloud without its author, Walking as a position, the feedback form
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -299,7 +300,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       // Heart Coherence is under Lying now
       await p.click('#prPanel [data-k=posture][data-v=lie]').catch(async () => { await p.click('#prFbtn'); await p.click('#prPanel [data-k=posture][data-v=lie]'); });
       await p.waitForTimeout(150);
-      ok(await p.$('#prLib a[href="#practice/coherence"]') !== null && /Sitting or lying/.test(await t(p, '#prLib a[href="#practice/coherence"] .pc-sub')), 'Heart Coherence shows under Lying, "sitting or lying"');
+      ok(await p.$('#prLib a[href="#practice/coherence"]') !== null && /Sitting, lying or walking/.test(await t(p, '#prLib a[href="#practice/coherence"] .pc-sub')), 'Heart Coherence shows under Lying, "sitting, lying or walking"');
       await p.context().close();
     }
 
@@ -1334,6 +1335,111 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(/Autogenic training\. The Berlin psychiatrist Johannes Heinrich Schultz/.test(lt) && /Anxious or excited\. Autogenic Reframing/.test(lt) && /nearly identical in the body/.test(lt) &&
         /Stetter, F\., & Kupper, S\. \(2002\)/.test(lt) && /Spacelab 3 flight experiment No\. 3AFT23/.test(lt) && /Bosshard, M\., & Gomez, P\. \(2024\)/.test(lt) && /Schultz, J\. H\., & Luthe, W\. \(1959\)/.test(lt),
         'Learn gives the method, NASA\'s version, the evidence and the references');
+      await p.context().close();
+    }
+
+    /* Y. a quote read aloud without its author; Walking as a position in the practices that suit it (their
+       guidance, the library's Walking filter, what they need); the feedback form, which opens a prefilled
+       issue on GitHub and sends nothing itself */
+    if (!only || only === 'Y') {
+      // the quote alone
+      let p = await page(OPT(), () => { window.__said = []; if (window.speechSynthesis) speechSynthesis.speak = u => window.__said.push(u.text); });
+      await E(p, () => location.hash = 'practice/nvc-self'); await p.waitForTimeout(300);
+      await E(p, () => { const X = window.__entrain; X.P.def = X.pDef('nvc-self'); X.P.steps = X.pPlan(X.P.def, 0).steps; X.pDone({ secs: 600, early: false, hrPts: [] }, false); });
+      await p.waitForTimeout(200);
+      const qq = await E(p, () => ({ quote: document.querySelector('#sDone .sd-quote blockquote').textContent, by: document.querySelector('#sDone .sd-quote figcaption span').textContent, say: document.querySelector('#sDone .q-say').dataset.say }));
+      await p.click('#sDone .q-say'); await p.waitForTimeout(200);
+      const heard = await E(p, () => window.__said.slice());
+      ok(qq.by === 'Carl Rogers, paraphrased' && qq.say === qq.quote && heard.length === 1 && heard[0] === qq.quote && !/Rogers/.test(heard[0]),
+        'Read aloud says the quote alone; the author stays on the screen: "' + heard[0] + '"');
+      await p.context().close();
+
+      // walking: which practices offer it, their guidance, every plan worded as what to do
+      p = await page(Object.assign(OPT(), { optsOpen: '1' }));
+      await E(p, () => location.hash = 'practice'); await p.waitForTimeout(300);
+      const W = await E(p, () => {
+        const X = window.__entrain, RE = /n't\b|\b(do not|never|nothing|without|stop|avoid|none)\b|feel the breath/i, bad = [], lines = {};
+        const ids = X.PRACTICES.filter(d => (d.choices || []).some(c => c.key === 'pos' && c.opts.some(o => o[0] === 'walk'))).map(d => d.id);
+        ids.forEach(id => {
+          const d = X.pDef(id);
+          localStorage.setItem('entrain.pCh.' + id, JSON.stringify({ pos: 'walk' }));
+          (d.lengths || [0]).forEach(L => {
+            const pl = X.pPlan(d, L);
+            pl.steps.forEach(s => (s.mkLines ? s.mkLines() : s.lines).forEach((l, k, a) => {
+              if (!(l[0] >= 0 && l[0] < s.secs) || (k && !(l[0] > a[k - 1][0])) || RE.test(l[1])) bad.push(id + ' ' + L + ' ' + s.title + ' @' + l[0] + ': ' + l[1]);
+            }));
+            if (L === (d.lengths || [0])[0]) lines[id] = [].concat(...pl.steps.map(s => (s.mkLines ? s.mkLines() : s.lines).map(l => String(l[1]))));
+          });
+          localStorage.removeItem('entrain.pCh.' + id);
+        });
+        const lib = X.libAll().filter(x => x.posture.includes('walk')).map(x => x.href.replace('#practice/', '') + ':' + x.needs.join('+'));
+        return { ids, bad, lines, lib, note: X.pDef('metta').choices[0].note };
+      });
+      ok(W.ids.sort().join() === 'after-talk,calm-reset,coherence,conversation,gratitude,grounding,metta,recovery,reframe' && !W.bad.length,
+        'Walking is a position in nine practices, every walking plan inside its steps and worded as what to do: ' + W.ids.join(', ') + (W.bad.length ? ' | ' + W.bad.slice(0, 2).join(' | ') : ''));
+      const has = (id, re) => W.lines[id].some(l => re.test(l));
+      ok(W.ids.every(id => has(id, /^(Walk (at an easy pace|slowly)|Keep walking)/)) && has('calm-reset', /^Let your steps fall into the rhythm of the breath/) && has('calm-reset', /^Slow down for the last few steps/) &&
+        has('metta', /^Now someone you pass/) && has('metta', /as you walk on\.$/) && has('grounding', /your feet meeting the ground/) && has('recovery', /^Let your steps come to rest/) &&
+        has('conversation', /^Walk at an easy pace on your way there/) && has('reframe', /^Look around you\.$/) && !has('reframe', /^Eyes open\.$/) && !has('coherence', /^Sit comfortably/),
+        'walking, the guidance talks about steps and the path rather than a chair: ' + W.lines['metta'].find(l => /someone you pass/.test(l)));
+      ok(/^Walking: eyes open, at an easy pace, on a quiet route away from traffic, with the volume low enough to hear what's around you\./.test(W.note), 'the choice asks for a quiet route and a volume that lets you hear around you');
+      ok(W.lib.sort().join(' ') === 'after-talk:phones calm-reset:phones coherence:phones+sensor conversation:phones+sensor gratitude: grounding: metta: recovery:phones+sensor reframe: walking:space',
+        'the library\'s Walking filter has them all; walking as an option needs no room to move, only the Walking Meditation does: ' + W.lib.join(' '));
+      await E(p, () => location.hash = 'practice/coherence'); await p.waitForTimeout(400);
+      ok(await E(p, () => [...document.querySelectorAll('[data-choice="pos"] button')].map(b => b.textContent + (b.getAttribute('aria-pressed') === 'true' ? '*' : '')).join(' | ')) === 'Sitting* | Lying down | Walking',
+        'Heart Coherence: sitting, lying down or walking');
+      await p.click('[data-choice="pos"] button[data-v="walk"]'); await p.waitForTimeout(100);
+      await p.click('#sGo'); await p.waitForTimeout(500);
+      ok(/^Walk at an easy pace, somewhere quiet, with your eyes open and on the path\.$/.test(await t(p, '#sLine')), 'it starts with the walking guidance: ' + await t(p, '#sLine'));
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(300);
+      await E(p, () => location.hash = 'practice'); await p.waitForTimeout(300);
+      await p.click('#prFbtn').catch(() => {}); await p.waitForTimeout(200);
+      const sub = await E(p, () => { const a = document.querySelector('#prLib a[href="#practice/coherence"] .pc-sub'); return a ? a.textContent : ''; });
+      ok(/Sitting, lying or walking$/.test(sub), 'its card says so: ' + sub);
+      await p.context().close();
+
+      // the feedback form
+      p = await page(OPT(), () => { window.__open = []; window.open = (u, tg, f) => { window.__open.push([u, tg, f]); return null; }; });
+      await E(p, () => location.hash = 'feedback'); await p.waitForTimeout(700);
+      let f = await E(p, () => ({ view: !document.querySelector('#v-settings').hidden, top: Math.round(document.querySelector('#st-feedback').getBoundingClientRect().top),
+        kinds: [...document.querySelectorAll('#fbKind button')].map(b => b.textContent + (b.getAttribute('aria-pressed') === 'true' ? '*' : '')).join(' | '),
+        go: document.querySelector('#fbGo').disabled, n: document.querySelector('#fbN').textContent, dev: document.querySelector('#fbDevTxt').textContent,
+        devOn: document.querySelector('#fbDev').checked, note: document.querySelector('#st-feedback .st-note').textContent, build: document.querySelector('#stBuild').textContent }));
+      ok(f.view && f.top >= 60 && f.top < 200 && f.kinds === 'Idea* | Problem | Praise | Question' && f.go && f.n === 'Write a few words first.',
+        'the #feedback link opens Settings at the form, clear of the top bar; Open on GitHub waits for a message');
+      ok(/issues there are public, so leave out anything personal\.$/.test(f.note) && /needs a free GitHub account/.test(f.note), 'it says that sending needs a GitHub account and that issues are public');
+      ok(/^[0-9a-f]{8}$/.test(f.build) && f.devOn && f.dev === 'Entrain build ' + f.build + ' · Chrome 129.0.0.0 on Android · in the browser · 412×915',
+        'About shows the build, and the details it can add are spelled out: ' + f.dev);
+      await p.click('#fbKind button[data-v="problem"]');
+      await p.fill('#fbTitle', 'Beat stops when the screen locks');
+      await p.fill('#fbTxt', 'It stops after a minute.\nSteps: start Calm Reset, lock the phone.');
+      await p.click('#fbGo'); await p.waitForTimeout(200);
+      let o = await E(p, () => window.__open.slice());
+      let u = o[0] && new URL(o[0][0]);
+      ok(o.length === 1 && u.origin + u.pathname === 'https://github.com/misterclarity/biney/issues/new' && o[0][1] === '_blank' && /noopener/.test(o[0][2]) &&
+        u.searchParams.get('title') === 'Problem: Beat stops when the screen locks' &&
+        u.searchParams.get('body') === 'It stops after a minute.\nSteps: start Calm Reset, lock the phone.\n\n---\n' + f.dev &&
+        await t(p, '#fbN') === 'Opened on GitHub. Your draft stays here until you clear it.',
+        'Open on GitHub opens a new issue in the browser with the kind, title, message and details filled in');
+      // the draft survives a reload; no title takes the message's start; the details can be left out
+      await p.reload(); await E(p, () => location.hash = 'feedback'); await p.waitForTimeout(600);
+      f = await E(p, () => ({ kind: document.querySelector('#fbKind [aria-pressed=true]').dataset.v, title: document.querySelector('#fbTitle').value, txt: document.querySelector('#fbTxt').value }));
+      ok(f.kind === 'problem' && f.title === 'Beat stops when the screen locks' && /^It stops after a minute\./.test(f.txt), 'the draft is kept on this device until cleared');
+      await p.fill('#fbTitle', ''); await p.click('#fbDev'); await p.click('#fbKind button[data-v="idea"]');
+      await p.fill('#fbTxt', 'A walking version of the body scan would be lovely, for slow walks in the park on Sunday mornings.');
+      await E(p, () => { window.__open.length = 0; }); await p.click('#fbGo'); await p.waitForTimeout(200);
+      o = await E(p, () => window.__open.slice()); u = new URL(o[0][0]);
+      ok(u.searchParams.get('title') === 'Idea: A walking version of the body scan would be lovely, for slow…' && u.searchParams.get('body') === 'A walking version of the body scan would be lovely, for slow walks in the park on Sunday mornings.',
+        'with no title, the message\'s first words make one; with the details off, only the message goes: ' + u.searchParams.get('title'));
+      await p.click('#fbClear'); await p.waitForTimeout(150);
+      f = await E(p, () => ({ txt: document.querySelector('#fbTxt').value, stored: localStorage.getItem('entrain.fbDraft'), go: document.querySelector('#fbGo').disabled, clear: document.querySelector('#fbClear').hidden }));
+      ok(f.txt === '' && f.stored === null && f.go && f.clear, 'Clear empties the form and forgets the draft');
+      // found by search, linked from the impressum
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(300);
+      await p.click('#tbFind'); await p.fill('#fdIn', 'feedback'); await p.waitForTimeout(250);
+      const hit = await E(p, () => (document.querySelector('#fdRes .fd-it') || {}).getAttribute && document.querySelector('#fdRes .fd-it').getAttribute('href'));
+      await p.keyboard.press('Escape');
+      ok(hit === '#feedback' && await E(p, () => !!document.querySelector('#v-learn .imprint a[href="#feedback"], #v-learn a[href="#feedback"]')), 'search finds it first, and the impressum links to it');
       await p.context().close();
     }
   } catch (e) {

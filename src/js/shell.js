@@ -89,6 +89,12 @@
     if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
     if (h === "living" || h.indexOf("living/") === 0) { showView("living"); lvOpen(h.slice(7)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
+    if (h === "feedback" || h.indexOf("st-") === 0) {     // a section of Settings, which is drawn as it opens
+      showView("settings");
+      var sec = document.getElementById(h === "feedback" ? "st-feedback" : h);
+      if (sec) setTimeout(function () { try { sec.scrollIntoView({ block: "start", behavior: RM ? "auto" : "smooth" }); } catch (e) { sec.scrollIntoView(); } }, 30);
+      return;
+    }
     var el = document.getElementById(h), v = el && viewOf(el);
     if (!v) { showView("home"); return; }
     showView(v);
@@ -180,6 +186,7 @@
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
+  var BUILD = "__BUILD__";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {

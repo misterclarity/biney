@@ -24,9 +24,9 @@
   var CATS = {
     sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
       ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
-    calm: [["calm-reset", "program", "sit"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
-      ["coherence", "program", "sit lie"], ["conversation", "program", "sit"], ["call", "program", "sit"], ["after-talk", "program", "sit"], ["grounding", "meditate", "sit"], ["tapping", "relax", "sit"],
-      ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
+    calm: [["calm-reset", "program", "sit walk"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
+      ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
+      ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
       ["t:preop-calm", "sound", "lie"]],
@@ -37,10 +37,10 @@
     energy: [["morning-yoga", "move", "stand"], ["standing-flow", "move", "stand"], ["morning-stretch", "move", "stand"],
       ["standing-reset", "move", "stand"], ["balance-yoga", "move", "stand"], ["kapalabhati", "breath", "sit"],
       ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"]],
-    recover: [["recovery", "program", "sit"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
+    recover: [["recovery", "program", "sit walk"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
       ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"]],
     reflect: [["nvc-self", "write", "sit"], ["nvc-prep", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
-      ["metta", "meditate", "sit"], ["gratitude", "meditate", "sit lie"]],
+      ["metta", "meditate", "sit walk"], ["gratitude", "meditate", "sit lie walk"]],
     tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: a section of its own
   };
   var ALSO = {

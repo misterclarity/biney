@@ -68,7 +68,7 @@
   function qCard(q) {
     return '<figure class="quote sd-quote"><blockquote>' + esc(q[0]) + "</blockquote>" +
       "<figcaption><span>" + esc(qBy(q)) + "</span>" +
-      '<button class="btn small q-say" data-say="' + esc(q[0] + (q[1] ? " " + q[1] + "." : "")) + '"><svg class="i" aria-hidden="true"><use href="#i-voice"/></svg>Read aloud</button>' +
+      '<button class="btn small q-say" data-say="' + esc(q[0]) + '"><svg class="i" aria-hidden="true"><use href="#i-voice"/></svg>Read aloud</button>' +   // the quote alone: the author stays on the screen
       "</figcaption></figure>";
   }
   function qSay(text) {

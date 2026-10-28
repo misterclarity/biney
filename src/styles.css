@@ -471,7 +471,7 @@
   .hr-bars{grid-column:1;grid-row:1;align-self:start}
   .hr-spec{grid-column:1;grid-row:2;align-self:start}
   .hr-body > .hr-find{grid-column:2;grid-row:1 / span 2}
-  #resonance-test,#connect{scroll-margin-top:84px}
+  #resonance-test,#connect,.st-card[id]{scroll-margin-top:84px}
   /* once a sensor is on, the page is about your numbers: the introduction steps aside */
   .hr[data-state="on"] .hr-intro > p:not(.hr-msg),.hr[data-state="lost"] .hr-intro > p:not(.hr-msg){display:none}
   .hr-box{background:var(--panel);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -1613,6 +1613,13 @@
   a.btn.donate:hover{background:color-mix(in srgb,var(--stim) 20%,var(--panel-2))}
   a.btn.donate svg.i{color:var(--stim)}
   .st-about a.btn.donate{align-self:flex-start;margin-top:4px}
+  .st-fb .fb-l{display:block;margin:2px 0 -6px;font-weight:700;font-size:14px}
+  .st-fb .fb-in,.st-fb .fb-ta{width:100%;box-sizing:border-box;background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:11px 13px;font:inherit;font-size:15.5px;line-height:1.5}
+  .st-fb .fb-ta{resize:vertical;min-height:120px}
+  .st-fb .fb-in:focus,.st-fb .fb-ta:focus{outline:2px solid color-mix(in srgb,var(--accent) 65%,transparent);border-color:transparent}
+  .st-fb .fb-act{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .st-fb .fb-n{flex:1 1 200px;font-size:13px;color:var(--text-faint)}
+  .st-fb .so-tg small{word-break:break-word}
   .donate-card{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap}
   .donate-card p{margin:0;flex:1 1 240px}
   .donate-card b{color:var(--text);font-weight:700}

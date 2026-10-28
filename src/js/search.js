@@ -151,6 +151,9 @@
     out.push(fdEntry("app", "Settings", "Defaults for every practice, sound and screen",
       ["Spoken guidance, voice, bells, breath cues and visual, binaural layer, Anapana reminders, background sound, keeping reflections, and keeping the screen on or dimming it for sleep."], "#settings",
       { ic: "gear", col: "var(--accent)", w: 1, tags: "options preferences defaults voice bells screen dim brightness wake lock background rain" }));
+    out.push(fdEntry("app", "Feedback", "Settings · an idea, a problem or something you liked",
+      ["Write it in Settings, and it opens as an issue on Entrain's GitHub page, ready to send."], "#feedback",
+      { ic: "send", col: "var(--accent)", w: 1, tags: "contact bug report issue github suggestion idea problem praise question" }));
     out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
       ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
       { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));

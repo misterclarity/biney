@@ -17,6 +17,7 @@
   <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3.5 11.5h17a8.5 7.5 0 0 1-17 0z"/><path d="M9 20h6"/><path d="M9 8.5c-.9-1.1.9-2 0-3.2M12.5 8.5c-.9-1.1.9-2 0-3.2M16 8.5c-.9-1.1.9-2 0-3.2"/></symbol>
   <symbol id="i-pill" viewBox="0 0 24 24"><g transform="rotate(-45 12 12)"><rect x="2.5" y="8" width="19" height="8" rx="4"/><path d="M12 8h-5.5a4 4 0 0 0 0 8H12z" fill="currentColor" opacity=".35"/><path d="M12 8v8"/></g></symbol>
   <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19.5C4.5 10.5 10 5 19.5 4.5 20 14 14.5 19.5 5 19.5z"/><path d="M5 19.5 13.5 11"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 3.5 10.4l6.8 3.3 3.3 6.8z"/><path d="M20.5 3.5 10.3 13.7"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.6"/><path d="M10.5 18.2h3"/></symbol>
   <symbol id="i-cup" viewBox="0 0 24 24"><path d="M4.5 9.5h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M15.5 11h1.6a2.4 2.4 0 0 1 0 4.8h-1.8"/><path d="M8.5 6.5c-.8-1 .8-1.7 0-2.8M12 6.5c-.8-1 .8-1.7 0-2.8"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.6A7.8 7.8 0 0 1 9.4 4.5a7.8 7.8 0 1 0 10.1 10.1z"/></symbol>

@@ -41,6 +41,16 @@
   var TENSION = "If you notice tension, let it soften on the out-breath.";
   var WANDER = "If your mind has wandered, that's fine. Gently come back.";
 
+  /* Walking: a position for the practices that work on the move, eyes open. Their guidance talks about steps
+     rather than a chair, and the choice's note asks for a quiet route and a volume that lets you hear around you. */
+  var WALK_NOTE = "Walking: eyes open, at an easy pace, on a quiet route away from traffic, with the volume low enough to hear what's around you. The voice and tones guide you, so your eyes can stay on the path.";
+  var SIT_WALK = [["sit", "Sitting"], ["walk", "Walking"]], SIT_LIE_WALK = [["sit", "Sitting"], ["lie", "Lying down"], ["walk", "Walking"]];
+  function posChoice(opts) { return { key: "pos", label: "Position", def: opts[0][0], note: WALK_NOTE, opts: opts }; }
+  function walkOf(d) { return pChoice(d, "pos") === "walk"; }
+  var WALK_IN = "Walk at an easy pace, somewhere quiet, with your eyes open and on the path.";
+  var WALK_STEPS = "Let your steps fall into the rhythm of the breath: a few steps in, a few more out.";
+  var WALK_STOP = "Slow down for the last few steps, and stand still for a breath or two.";
+
   /* Body scan regions: [body-map regions, title, lines]. */
   var SCAN = [
     [["all"], "Settling in", ["Lie on your back or sit comfortably, and let your eyes close if that feels okay.",
@@ -145,19 +155,19 @@
     return steps;
   }
 
-  function lovingKindness(min) {
+  function lovingKindness(min, walk) {
     var total = min * 60, settle = 60, close = 45, mid = total - settle - close;
     var stages = [
       ["Yourself", "Start with yourself. Picture yourself as you are now, or as a child.", "I"],
       ["Someone kind", "Bring to mind someone who has been kind to you. See their face.", "you"],
       ["A friend", "Now a good friend, or someone you care about.", "you"],
-      ["Someone neutral", "Now someone you see but barely know: a neighbour, a shop assistant.", "you"],
+      ["Someone neutral", walk ? "Now someone you pass, or can see from where you are: someone you barely know." : "Now someone you see but barely know: a neighbour, a shop assistant.", "you"],
       ["Someone difficult", "If it feels okay, someone you find mildly difficult: a small, everyday friction. Go gently.", "you"],
-      ["Everyone", "Now let it widen to everyone: this town, this country, all living beings.", "all"]
+      ["Everyone", walk ? "Now let it widen to everyone around you, then this town, this country, all living beings." : "Now let it widen to everyone: this town, this country, all living beings.", "all"]
     ];
     var each = Math.floor(mid / stages.length);
-    var steps = [G(settle, "Settle in", ["Sit comfortably and let your eyes close.",
-      "Rest a hand on your chest if you like, and breathe a little slower.",
+    var steps = [G(settle, "Settle in", [walk ? WALK_IN : "Sit comfortably and let your eyes close.",
+      walk ? "Let your steps be unhurried, and breathe a little slower." : "Rest a hand on your chest if you like, and breathe a little slower.",
       "You'll repeat a few simple wishes silently. Offer each one sincerely: the intention itself is the practice."], { vis: "glow" })];
     stages.forEach(function (s, i) {
       var who = s[2], ph = who === "I"
@@ -169,7 +179,7 @@
       for (var r = 0, t = 12; t < secs - 4 && r < ph.length * 2; r++, t += gap) lines.push([Math.round(t), ph[r % ph.length]]);
       steps.push(G(secs, s[0], lines, { vis: "glow" }));
     });
-    steps.push(G(close, "Closing", ["Let the words go, and notice how you feel now.", "Take that warmth with you as you open your eyes."], { vis: "glow" }));
+    steps.push(G(close, "Closing", ["Let the words go, and notice how you feel now.", walk ? "Take that warmth with you as you walk on." : "Take that warmth with you as you open your eyes."], { vis: "glow" }));
     return steps;
   }
 
@@ -264,19 +274,19 @@
   }
   function steady(hz) { return function (T) { return [[0, hz], [T, hz]]; }; }
   function convSteps(d, min) {
-    var s = convSecs(min), p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+    var s = convSecs(min), p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 }, walk = walkOf(d);
     var at = function (i, f) { return Math.round(s[i] * f); };
     var pace = p.own ? "in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds")
       : "in through the nose and a longer, slower breath out, " + p.rate + " a minute";
     return [
-      G(s[0], "Arrive", ["Sit comfortably, headphones on, the volume low.",
+      G(s[0], "Arrive", [walk ? "Walk at an easy pace on your way there, eyes open, headphones on, the volume low enough to hear what's around you." : "Sit comfortably, headphones on, the volume low.",
         "First you'll settle your body. Then you'll get ready to speak."], { vis: "glow" }),
       Br(s[1], "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
         { lines: [[0, "Breathe in through the nose, take a short second sip to fill up, then let a long, slow breath out through the mouth."],
           [at(1, 0.55), "Let each long out-breath take some of the tension with it."]] }),
       Br(s[2], "Slow breathing", t,
         { lines: [[0, "Now slow breaths, " + pace + "."],
-          [at(2, 0.3), "With a sensor connected, watch your coherence rise as your heart rhythm smooths into a wave."],
+          [at(2, 0.3), walk ? WALK_STEPS : "With a sensor connected, watch your coherence rise as your heart rhythm smooths into a wave."],
           [at(2, 0.65), "If the conversation comes to mind, let it be there, and keep the long, slow out-breath."]] }),
       G(s[3], "Ready, not calm", [[0, "Let the breath find its own pace again."],
         [at(3, 0.15), "When you think of the conversation, your heart may still beat faster. That's your body getting ready: more oxygen, sharper attention."],
@@ -321,13 +331,14 @@
     ];
   }
   function afterSteps(d) {
-    var p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+    var p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 }, walk = walkOf(d);
     return [
-      G(30, "It's over", ["Sit back and let your shoulders drop.", "Your body may still be geared up. Long out-breaths help it settle."], { vis: "glow" }),
+      G(30, "It's over", [walk ? "Walk at an easy pace, somewhere quiet, eyes open, and let your shoulders drop." : "Sit back and let your shoulders drop.",
+        walk ? "Your body may still be geared up. Long out-breaths and an easy walk help it settle." : "Your body may still be geared up. Long out-breaths help it settle."], { vis: "glow" }),
       Br(90, "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
         { lines: [[0, "Breathe in through the nose, a short second sip, then a long, slow breath out through the mouth."]] }),
       Br(180, "Long out-breaths", t, { lines: [[0, "Now slow breaths, in through the nose and a longer, slower breath out."],
-        [90, "With a sensor connected, watch your heart rate come down."]] }),
+        [90, walk ? WALK_STEPS : "With a sensor connected, watch your heart rate come down."]] }),
       G(55, "Name it", [[0, "What are you feeling now? Name it to yourself in a word or two: relieved, shaky, hurt, proud, angry, tired."],
         [30, "Naming a feeling takes some of its heat. Let it be there, named."]], { vis: "glow" }),
       G(70, "Kindness", [[0, "This was hard, and hard conversations are hard for everyone."],
@@ -335,7 +346,7 @@
         [50, "Whatever went well or less well, you showed up for it."]], { vis: "glow" }),
       G(45, "What went well", [[0, "Find one thing you did that you're glad of, however small: you said what you needed, you listened, you stayed steady."]], { vis: "glow" }),
       G(45, "One next step", [[0, "Is there one small next step? A message to send, a note to make, a rest to take. Choose it, and let the rest wait."]], { vis: "glow" }),
-      G(25, "Close", ["Take one more long breath out, and come back to the room."], { vis: "glow" })
+      G(25, "Close", [walk ? "Take one more long breath out, and look around you as you walk on." : "Take one more long breath out, and come back to the room."], { vis: "glow" })
     ];
   }
 
@@ -442,10 +453,10 @@
   // seconds at 5 and 10 minutes: arrive, name it, anxious or excited, sighs, long out-breaths, heavy and warm, strong heart, easy breath, reframe, intention, coming back
   function rfSecs(min) { return min <= 5 ? [20, 25, 35, 45, 0, 30, 30, 0, 75, 20, 20] : [30, 40, 45, 60, 90, 60, 50, 40, 120, 40, 25]; }
   function reframe(d, min) {
-    var s = rfSecs(min), W = RF_WORDS[pChoice(d, "words")] || RF_WORDS.excited, p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+    var s = rfSecs(min), W = RF_WORDS[pChoice(d, "words")] || RF_WORDS.excited, p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 }, walk = walkOf(d);
     var at = function (i, f) { return Math.round(s[i] * f); };
     var st = [
-      G(s[0], "Arrive", [[0, "Sit, or stand if you're about to go on. Let your eyes close, or rest them on the floor."],
+      G(s[0], "Arrive", [[0, walk ? WALK_IN : "Sit, or stand if you're about to go on. Let your eyes close, or rest them on the floor."],
         [at(0, 0.45), "Notice what your body is doing right now: your heart, your breath, your hands, your stomach."]], { vis: "glow" }),
       G(s[1], "Name it", [[0, "Name what you notice, plainly, the way a reporter would: my heart is racing, my breath is quick, my hands are cold."],
         [at(1, 0.6), "Naming it takes some of the heat out of it."]], { vis: "glow" }),
@@ -468,8 +479,8 @@
       [at(8, 0.9), W + "."]], { vis: "glow" }));
     st.push(G(s[9], "Your intention", [[0, "Now make it your intention, the way autogenic training does. Say it three times, slowly."],
       [at(9, 0.3), W + "."], [at(9, 0.55), W + "."], [at(9, 0.8), W + "."]], { vis: "glow", quiet: true }));
-    st.push(G(s[10], "Coming back", [[0, "Arms firm: make fists and bend your arms strongly."], [at(10, 0.28), "Breathe deeply."],
-      [at(10, 0.48), "Eyes open."], [at(10, 0.68), "Take this energy with you. " + W + "."]], { body: AT_ARMS }));
+    st.push(G(s[10], "Coming back", [[0, walk ? "Make fists for a moment, then let your hands swing loose." : "Arms firm: make fists and bend your arms strongly."], [at(10, 0.28), "Breathe deeply."],
+      [at(10, 0.48), walk ? "Look around you." : "Eyes open."], [at(10, 0.68), "Take this energy with you. " + W + "."]], { body: AT_ARMS }));
     return st;
   }
 
@@ -515,17 +526,19 @@
         { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: [[0, 6], [600, 6]], note: "A steady 6 Hz beat, in the theta band studied for deep relaxation." },
         { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: [[0, 10], [600, 10]], note: "A steady 10 Hz beat: relaxed but awake, for when the day goes on straight after." }
       ],
+      choices: [posChoice(SIT_WALK)],
       build: function () {
-        var p = pPace(this);
+        var p = pPace(this), walk = walkOf(this);
         return [
-          G(30, "Arrive", ["Sit or stand comfortably. Let your shoulders drop.", "We'll start with a few sighs to take the edge off."], { vis: "glow" }),
+          G(30, "Arrive", [walk ? WALK_IN : "Sit or stand comfortably. Let your shoulders drop.", "We'll start with a few sighs to take the edge off."], { vis: "glow" }),
           Br(150, "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
-            { lines: [[0, "Breathe in through the nose, take a short second sip to fill up, then a long, slow breath out through the mouth."]] }),
+            { lines: [[0, "Breathe in through the nose, take a short second sip to fill up, then a long, slow breath out through the mouth."]].concat(
+              walk ? [[75, "Keep walking at an easy pace, and let each long breath out loosen your shoulders."]] : []) }),
           Br(390, "Resonance breathing", { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 },
             { lines: [[0, p.own ? "Now breathe in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds") + ", through the nose."
                 : "Now even breaths in and out, " + p.rate + " a minute, through the nose."],
-              [150, "With a sensor connected, watch your heart rate rise and fall with each breath."]] }),
-          G(30, "Return", ["Let the breath go back to its own rhythm.", "Notice how you feel compared with ten minutes ago."], { vis: "glow" })
+              [150, walk ? WALK_STEPS : "With a sensor connected, watch your heart rate rise and fall with each breath."]] }),
+          G(30, "Return", ["Let the breath go back to its own rhythm.", walk ? WALK_STOP : "Notice how you feel compared with ten minutes ago."], { vis: "glow" })
         ];
       },
       how: "Two and a half minutes of cyclic sighing (a double inhale through the nose, then a long exhale through the mouth), then six and a half minutes of even breathing at your own resonance rate (the result of the resonance test if you've taken it, otherwise 5.5 a minute) or at an in and out of your own. The beat slides from 10 Hz alpha to 6 Hz theta across the session, or stays at a steady theta or alpha beat, as you choose; both choices are kept for it.",
@@ -535,7 +548,7 @@
     {
       id: "coherence", name: "Heart Coherence", min: 15, lengths: [10, 15, 20], strength: 2,
       tone: "relax", sensor: "best", anaStyle: "heart", pace: true,
-      blurb: "Heart-focused breathing at your resonance pace until your heart rhythm settles, then a gentle feeling of gratitude, with live coherence over a binaural beat. Sitting or lying down.",
+      blurb: "Heart-focused breathing at your resonance pace until your heart rhythm settles, then a gentle feeling of gratitude, with live coherence over a binaural beat. Sitting, lying down or walking.",
       parts: "Heart-focused resonance breathing · gratitude · coherence feedback · binaural beat",
       audio: { name: "Heart Coherence", band: "Theta", carrier: 200, pts: [[0, 6], [1200, 6]], fade: 8, cat: "relax" },
       beats: [                                   // the first is the usual one
@@ -543,24 +556,25 @@
         { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: [[0, 10], [1200, 10]], note: "A steady 10 Hz beat: relaxed but awake, if theta makes you drowsy." },
         { id: "down", label: "Alpha to theta", band: "Alpha → Theta", pts: [[0, 10], [300, 6], [1200, 6]], note: "Starts at 10 Hz and slides down to 6 Hz over the first five minutes." }
       ],
-      choices: [{ key: "pos", label: "Position", opts: [["sit", "Sitting"], ["lie", "Lying down"]], def: "sit" }],
+      choices: [posChoice(SIT_LIE_WALK)],
       build: function (min) {
-        var p = pPace(this), lie = pChoice(this, "pos") === "lie", t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+        var p = pPace(this), lie = pChoice(this, "pos") === "lie", walk = walkOf(this), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
         var breath = (min || 15) * 60 - 120, first = 180, rest = breath - first;
         var pace = p.own ? "in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds") : "evenly, " + p.rate + " a minute";
         return [
-          G(45, "Arrive", [lie ? "Lie on your back, a pillow under your head and, if it helps, under your knees. Let your arms rest by your sides." : "Sit comfortably, feet flat on the floor, your back upright but not stiff.",
-            "Rest your attention on the centre of your chest, around the heart.",
+          G(45, "Arrive", [walk ? WALK_IN : lie ? "Lie on your back, a pillow under your head and, if it helps, under your knees. Let your arms rest by your sides." : "Sit comfortably, feet flat on the floor, your back upright but not stiff.",
+            walk ? "Rest some of your attention on the centre of your chest, around the heart." : "Rest your attention on the centre of your chest, around the heart.",
             "Connect a heart sensor if you have one; coherence appears after about a minute."], { vis: "glow" }),
           Br(first, "Heart-focused breathing", t,
-            { lines: [[0, "Breathe " + pace + ", imagining the breath flowing in and out through the heart area."],
-              [90, "Keep the breath soft and even. Your heart rhythm is falling into step with it."]] }),
+            { lines: [[0, "Breathe " + pace + ", imagining the breath flowing in and out through the heart area."]].concat(walk ? [[45, WALK_STEPS]] : [],
+              [[90, "Keep the breath soft and even. Your heart rhythm is falling into step with it."]]) }),
           Br(rest, "Breathing with gratitude", t,
             { lines: [[0, "Keeping the same breath, call up a feeling of gratitude: a person, a place or a pet you love, or something that went well today. Feel it rather than think it, and let it be gentle."],
               [Math.round(rest * 0.3), "If the feeling fades, picture that person or moment again and breathe the warmth in through your chest."],
               [Math.round(rest * 0.55), "Whatever the score does, come back to the even breath and the feeling."],
               [Math.max(Math.round(rest * 0.55) + 30, rest - 120), "Keep the rhythm and the feeling going for these last minutes."]] }),
           G(75, "Return", lie ? ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the weight of your body on the floor.", "When you're ready, roll onto your side before you sit up."]
+            : walk ? ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", WALK_STOP]
             : ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
         ];
       },
@@ -571,21 +585,21 @@
     {
       id: "gratitude", name: "Gratitude", lengths: [10, 15], min: 10, strength: 2,
       tone: "stim", sensor: "optional", pace: true,
-      blurb: "Settle with slow, even breathing first, then let gratitude grow: for something small from today, for a person who helped you, for your own body, and for the feeling itself. Sitting or lying down.",
+      blurb: "Settle with slow, even breathing first, then let gratitude grow: for something small from today, for a person who helped you, for your own body, and for the feeling itself. Sitting, lying down or walking.",
       parts: "Resonance breathing · something small · someone who helped · your body · savouring · three good things",
-      choices: [{ key: "pos", label: "Position", opts: [["sit", "Sitting"], ["lie", "Lying down"]], def: "sit" }],
+      choices: [posChoice(SIT_LIE_WALK)],
       build: function (min) {
-        var p = pPace(this), lie = pChoice(this, "pos") === "lie", t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+        var p = pPace(this), lie = pChoice(this, "pos") === "lie", walk = walkOf(this), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
         // seconds for each step at 10 and 15 minutes: arrive, breathing, something small, someone, the body, savouring, three good things
         var s = (min || 10) >= 15 ? [40, 240, 120, 165, 120, 135, 80] : [40, 180, 75, 105, 75, 75, 50];
         var pace = p.own ? "in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds") : "evenly, " + p.rate + " a minute";
         var at = function (i, f) { return Math.round(s[i] * f); };
         return [
-          G(s[0], "Arrive", [lie ? "Lie on your back, a pillow under your head and, if it helps, under your knees. Let your arms rest by your sides." : "Sit comfortably, feet on the floor, your back upright and at ease. Let your hands rest.",
+          G(s[0], "Arrive", [walk ? WALK_IN : lie ? "Lie on your back, a pillow under your head and, if it helps, under your knees. Let your arms rest by your sides." : "Sit comfortably, feet on the floor, your back upright and at ease. Let your hands rest.",
             "First you'll breathe slowly for a few minutes. Gratitude comes after, once you're calm, when it's easiest to feel."], { vis: "glow" }),
           Br(s[1], "Settling breath", t,
             { lines: [[0, "Breathe " + pace + ", softly, through the nose."],
-              [at(1, 0.45), "Rest your attention in the centre of your chest, and let the breath flow there."]] }),
+              [at(1, 0.45), "Rest your attention in the centre of your chest, and let the breath flow there."]].concat(walk ? [[at(1, 0.75), WALK_STEPS]] : []) }),
           G(s[2], "Something small", [[0, "Let the breath find its own pace again."],
             [8, "Bring to mind one small thing from today that you're glad of: a taste, a kind word, a moment of light, a task that went well."],
             [at(2, 0.45), "See it again in detail: where you were, what you noticed. Enjoy it a second time."],
@@ -602,7 +616,7 @@
             [at(5, 0.7), "If it fades, return to the person or the moment, and let it come back."]], { vis: "glow" }),
           G(s[6], "Three good things", [[0, "Let the breath and the body settle."],
             [at(6, 0.25), "Later today, if you like, write down three good things that happened, and why each one went well."],
-            [Math.max(at(6, 0.25) + 15, s[6] - 15), lie ? "When you're ready, roll onto your side before you sit up." : "Bring this gladness into whatever comes next."]], { vis: "glow" })
+            [Math.max(at(6, 0.25) + 15, s[6] - 15), lie ? "When you're ready, roll onto your side before you sit up." : walk ? "Bring this gladness with you as you walk on." : "Bring this gladness into whatever comes next."]], { vis: "glow" })
         ];
       },
       how: "Three or four minutes of slow, even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention in the chest. Gratitude comes after the breathing because it's easiest to feel, rather than just think, once you're calm; for the same reason it fits well after a meditation. Then four steps: something small from today, a person who helped you, your own body, and resting in the feeling. It ends with an invitation to write down three good things later. Sit or lie down; with a sensor, coherence shows live.",
@@ -648,13 +662,15 @@
       blurb: "After training: slow breathing at six a minute with a long exhale, over a 6 Hz theta beat. Watch your heart rate come down.",
       parts: "Slow long-exhale breathing · 6 Hz binaural · heart-rate drop",
       audio: { name: "Exercise Recovery", band: "Theta", carrier: 200, pts: [[0, 6], [600, 6]], fade: 8, cat: "relax" },
+      choices: [posChoice(SIT_WALK)],
       build: function () {
+        var walk = walkOf(this);
         return [
-          G(30, "Arrive", ["Sit or lie down somewhere comfortable after your session.", "Let your breathing settle for a moment."], { vis: "glow" }),
+          G(30, "Arrive", [walk ? "Walk slowly to cool down after your session, eyes open and on the path." : "Sit or lie down somewhere comfortable after your session.", "Let your breathing settle for a moment."], { vis: "glow" }),
           Br(510, "Slow breathing", { inh: 4, sip: 0, hold: 0, exh: 6, rest: 0 },
-            { lines: [[0, "In for four through the nose, out for six. Six breaths a minute."],
-              [240, "Let each exhale be soft and complete."]] }),
-          G(60, "Return", ["Breathe naturally now.", "Notice your heart rate and how your body feels."], { vis: "glow" })
+            { lines: [[0, "In for four through the nose, out for six. Six breaths a minute."]].concat(walk ? [[120, "Let your steps slow to match: a few steps in, a few more out."]] : [],
+              [[240, "Let each exhale be soft and complete."]]) }),
+          G(60, "Return", walk ? ["Breathe naturally now.", "Let your steps come to rest, and notice your heart rate and how your body feels."] : ["Breathe naturally now.", "Notice your heart rate and how your body feels."], { vis: "glow" })
         ];
       },
       how: "Eight and a half minutes at 6 breaths a minute (4 s in, 6 s out) over a 6 Hz theta beat. With a sensor connected the summary shows how far your heart rate fell.",
@@ -686,7 +702,7 @@
       ],
       choices: [{ key: "pre", label: "Begin with", def: "",
         note: "Writing it out first takes 10 to 15 minutes. The needs, request and first sentence you find come back in the breathing part.",
-        opts: [["", "The breathing"], ["nvc-prep", "Prepare it (NVC)"], ["nvc-self", "Self-Empathy (NVC)"]] }],
+        opts: [["", "The breathing"], ["nvc-prep", "Prepare it (NVC)"], ["nvc-self", "Self-Empathy (NVC)"]] }, posChoice(SIT_WALK)],
       next: { id: "call", txt: "Going straight into a call? During the Call keeps a quiet beat and a silent pacer with you through it." },
       chainTxt: "Slow breathing and a beat get your body ready, and what you wrote comes back as you go.",
       build: function (min) { return convSteps(this, min || 10); },
@@ -728,6 +744,7 @@
         { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: steady(6), note: "A steady 6 Hz beat, the band studied for relaxation and recovery." },
         { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: steady(10), note: "A steady 10 Hz beat: relaxed but alert, if work goes on straight after." }
       ],
+      choices: [posChoice(SIT_WALK)],
       next: { id: "nvc-self", txt: "Still turning it over? Self-Empathy (NVC) helps you find what you need now." },
       build: function () { return afterSteps(this); },
       how: "A minute and a half of cyclic sighs and three minutes of slow breathing with a longer out-breath, under a 6 Hz theta beat (or 10 Hz alpha), then four short steps: naming what you feel in a word or two, a moment of self-compassion with a hand on your chest, one thing you're glad you did, and one small next step. With a sensor, the summary shows how far your heart rate came down. If it's still on your mind afterwards, Self-Empathy (NVC) can help you find what you need now.",
@@ -757,8 +774,9 @@
     {
       id: "metta", name: "Loving-Kindness", lengths: [10, 15], min: 10, strength: 2,
       tone: "stim",
-      blurb: "Silently offer simple wishes of safety, health and ease to yourself, then to others, widening the circle step by step.",
-      build: function (min) { return lovingKindness(min); },
+      blurb: "Silently offer simple wishes of safety, health and ease to yourself, then to others, widening the circle step by step. Sitting, or walking and including the people you pass.",
+      choices: [posChoice(SIT_WALK)],
+      build: function (min) { return lovingKindness(min, walkOf(this)); },
       how: "Six stages: yourself, someone kind to you, a friend, someone neutral, someone mildly difficult, then everyone. The phrases are spoken slowly; repeat them silently.",
       ev: "A meta-analysis of 24 studies found medium effects of loving-kindness meditation on daily positive emotions, and stronger effects when the focus was loving-kindness rather than compassion.",
       cite: "Zeng et al. 2015"
@@ -788,15 +806,18 @@
       id: "grounding", name: "5-4-3-2-1 Grounding", min: 5, strength: 1,
       tone: "relax",
       blurb: "When anxiety spirals: find 5 things you can see, 4 you can hear, 3 you can feel, 2 you can smell and 1 you can taste. Tap each one.",
+      choices: [posChoice(SIT_WALK)],
       build: function () {
+        var walk = walkOf(this);
         return [
-          G(20, "Look around", ["Keep your eyes open. You'll name things around you, one sense at a time. Tap the button for each one you find."]),
-          Ct(70, 5, "5 things you can see", ["Look around and find five things you can see. Name each one to yourself, with a detail: its colour, its shape."], { sense: "see" }),
+          G(20, "Look around", [walk ? "Keep walking at an easy pace, eyes open. You'll name things around you, one sense at a time. Tap the button for each one you find, or count them in your head."
+            : "Keep your eyes open. You'll name things around you, one sense at a time. Tap the button for each one you find."]),
+          Ct(70, 5, "5 things you can see", [walk ? "Find five things you can see as you walk. Name each one to yourself, with a detail: its colour, its shape." : "Look around and find five things you can see. Name each one to yourself, with a detail: its colour, its shape."], { sense: "see" }),
           Ct(60, 4, "4 things you can hear", ["Now listen. Find four things you can hear, near or far."], { sense: "hear" }),
-          Ct(55, 3, "3 things you can feel", ["Find three things you can feel: your feet on the floor, the fabric on your skin, the air."], { sense: "feel" }),
+          Ct(55, 3, "3 things you can feel", [walk ? "Find three things you can feel: your feet meeting the ground, the swing of your arms, the air on your skin." : "Find three things you can feel: your feet on the floor, the fabric on your skin, the air."], { sense: "feel" }),
           Ct(45, 2, "2 things you can smell", ["Two things you can smell, or two smells you remember and like."], { sense: "smell" }),
           Ct(35, 1, "1 thing you can taste", ["One thing you can taste, or one taste you enjoy."], { sense: "taste" }),
-          G(30, "Breathe", ["Take two slow breaths, with a long exhale.", "Notice that you're here, now."])
+          G(30, "Breathe", ["Take two slow breaths, with a long exhale.", walk ? "Notice that you're here, now, walking." : "Notice that you're here, now."])
         ];
       },
       how: "Five senses, counted down. Each tap marks one thing found; a step moves on when you've found them all or its time runs out.",
@@ -908,7 +929,7 @@
         { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: steady(6), note: "A steady 6 Hz beat, the slower band, if you'd rather settle further." }
       ],
       choices: [{ key: "words", label: "Your words", def: "excited", note: "What you'll say in place of “I'm anxious”. “I am excited” is the phrase from the experiments; the others say the same in another way.",
-        opts: [["excited", "I am excited"], ["ready", "I'm ready for this"], ["energy", "This energy helps me"]] }],
+        opts: [["excited", "I am excited"], ["ready", "I'm ready for this"], ["energy", "This energy helps me"]] }, posChoice(SIT_WALK)],
       next: { id: "autogenic", txt: "The phrases work faster with daily practice: Autogenic Training is the full standard sequence." },
       build: function (min) { return reframe(this, min || 10); },
       how: "For the moments before a talk, a test, a performance or a hard conversation, or whenever anxiety rises. You notice what your body is doing and name it plainly, then hear why it can be read another way: anxiety and excitement are nearly identical in the body, the same faster heartbeat, quick breath and rush of adrenaline. Cyclic sighs and slow breathing with a longer out-breath take the edge off, then shortened autogenic phrases loosen the shoulders and warm the hands, and a heart phrase rewritten to welcome a strong heartbeat as readiness. Then the reframe: when the anxious thought comes, you answer it with “I am excited”, or another phrase you choose, out loud if you can, and make it your intention formula, as autogenic training's middle stage does with a personal resolution. It ends with arms firm, a deep breath and eyes open. 5 or 10 minutes.",
