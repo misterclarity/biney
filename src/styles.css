@@ -1219,6 +1219,10 @@
   .sd-how{margin-top:2px}
   .sd-how-t p{margin:6px 0 0;font-size:13.5px;line-height:1.55;color:var(--text-dim);max-width:70ch}
   .sd-act{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .sd-next{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap;margin-top:12px}
+  .sd-next p{margin:0;flex:1 1 240px;color:var(--text-dim);line-height:1.5}
+  .sd-next b{color:var(--text);font-weight:700}
+  .sd-next .btn{text-decoration:none}
   /* reflection: writing steps */
   .ses[data-write="1"] .ses-cap,.ses[data-write="1"] .ses-live{display:none}
   .ses[data-write="1"] .ses-stage{min-height:0}

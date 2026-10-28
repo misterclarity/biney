@@ -246,6 +246,99 @@
       build: function () { return yogaSteps(set.items, set); }, ev: YOGA_EV, cite: "Pascoe et al. 2017" }, o);
   }
 
+  /* ----- a difficult conversation or a stressful meeting: before, during and after -----
+     Before: cyclic sighs to bring arousal down fast, slow breathing at your resonance pace with a
+     longer out-breath and live coherence, then four short steps that experiments tie to doing better
+     under social stress: reading a racing heart as readiness, a value of your own, your first sentence
+     (from an NVC preparation, if one came first) and an if-then plan said to yourself by name.
+     During: a quiet beat and a silent pacer beside the call. After: long out-breaths, naming the
+     feeling, kindness about how it went, one next step. */
+  // seconds at 6, 10 and 15 minutes: arrive, sighs, slow breathing, ready, what matters, your words, if-then, go
+  function convSecs(min) {
+    return min <= 6 ? [20, 60, 120, 35, 35, 35, 40, 15] : min >= 15 ? [40, 120, 460, 60, 60, 60, 75, 25] : [30, 90, 240, 50, 50, 50, 60, 30];
+  }
+  // the beat settles from alpha into theta for the breathing, then climbs back to alpha for the last steps
+  function convRise(T) {
+    var s = convSecs(Math.round(T / 60)), a = s[0] + s[1], b = a + s[2];
+    return [[0, 10], [a, 6], [b, 6], [b + s[3], 10], [T, 10]];
+  }
+  function steady(hz) { return function (T) { return [[0, hz], [T, hz]]; }; }
+  function convSteps(d, min) {
+    var s = convSecs(min), p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+    var at = function (i, f) { return Math.round(s[i] * f); };
+    var pace = p.own ? "in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds")
+      : "in through the nose and a longer, slower breath out, " + p.rate + " a minute";
+    return [
+      G(s[0], "Arrive", ["Sit comfortably, headphones on, the volume low.",
+        "First you'll settle your body. Then you'll get ready to speak."], { vis: "glow" }),
+      Br(s[1], "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
+        { lines: [[0, "Breathe in through the nose, take a short second sip to fill up, then let a long, slow breath out through the mouth."],
+          [at(1, 0.55), "Let each long out-breath take some of the tension with it."]] }),
+      Br(s[2], "Slow breathing", t,
+        { lines: [[0, "Now slow breaths, " + pace + "."],
+          [at(2, 0.3), "With a sensor connected, watch your coherence rise as your heart rhythm smooths into a wave."],
+          [at(2, 0.65), "If the conversation comes to mind, let it be there, and keep the long, slow out-breath."]] }),
+      G(s[3], "Ready, not calm", [[0, "Let the breath find its own pace again."],
+        [at(3, 0.15), "When you think of the conversation, your heart may still beat faster. That's your body getting ready: more oxygen, sharper attention."],
+        [at(3, 0.6), "Say to yourself, out loud if you can: I'm excited. Or: I'm ready for this."]], { vis: "glow" }),
+      G(s[4], "What matters to you", [[0, "Think of one value that matters to you in how you handle this: honesty, fairness, kindness, courage or respect."],
+        [at(4, 0.45), "Remember a time you acted on it. However they respond today, that value stays yours."]], { vis: "glow" }),
+      G(s[5], "Your words", [], { vis: "glow", mkLines: function () { return convWords(s[5]); } }),
+      G(s[6], "If, then", [[0, "Pick the moment you're most uneasy about: an interruption, a sharp word, a long silence."],
+        [at(6, 0.3), "Make a plan for it, the way a friend would say it to you: if they interrupt you, then you'll breathe out slowly and finish your sentence."],
+        [at(6, 0.7), "Now say your own plan to yourself, using your name."]], { vis: "glow" }),
+      G(s[7], "Go", ["One more long, slow breath out.", "Take this steadiness in with you."], { vis: "glow" })
+    ];
+  }
+  // what you'll say: brought back from an NVC preparation if there's one, otherwise decided now
+  function convWords(secs) {
+    var r = nvcRecall(), L = [], at = function (f) { return Math.round(secs * f); };
+    if (r && (r.need.length || r.line || r.req)) {
+      if (r.need.length) L.push([0, "From your preparation: you need " + nvcList(r.need) + ". That's what you're going in for."]);
+      if (r.line) L.push([L.length ? at(0.3) : 0, "Your first sentence: " + r.line]);
+      else if (r.req) L.push([L.length ? at(0.3) : 0, "And what you'll ask for: " + r.req + "."]);
+      L.push([at(0.72), "Say it once to yourself, slowly, as if they were here."]);
+      return L;
+    }
+    return [[0, "Decide your first sentence: what happened, what you need, and what you'd like to ask for."],
+      [at(0.5), "Say it once to yourself, slowly, as if they were here."]];
+  }
+  // beside the call: a short start, the call itself until you tap that it's over, and a short close
+  function callSteps(d, min) {
+    var p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 }, intro = 30, close = 45, mid = min * 60 - intro - close;
+    var free = pChoice(d, "guide") === "free", every = 300, lines = [];
+    var rem = ["While they speak, breathe out slowly.", "Shoulders down, jaw soft.", "Feet on the floor. Notice the chair holding you.",
+      "Before you answer, one slow breath out.", "If your heart rate jumps, lengthen the out-breath and take a moment before you reply."];
+    lines.push([0, free ? "Breathe at your own pace. A reminder shows every few minutes." : "Follow the pacer while you listen. When you speak, let the breath go, then come back to the pacer."]);
+    for (var at = every, k = 0; at < mid - 60; at += every, k++) lines.push([at, rem[k % rem.length]]);
+    var o = { open: true, mute: true, endTap: "The call's over", nobell: true, lines: lines };
+    return [
+      G(intro, "Before it starts", ["Headphones on, the beat low: just loud enough to notice under the voices.",
+        "Put this screen beside the call, where you can glance at it, and tap The call's over when it ends."], { vis: "glow" }),
+      free ? Ob(mid, "In the call", lines, ext({ vis: "still", eyesOpen: true }, (delete o.lines, o))) : Br(mid, "In the call", t, o),
+      G(close, "After the call", ["Take two long sighs: in through the nose, a short second sip, and a long breath out.",
+        "Notice how you feel now. That part is done."], { vis: "glow" })
+    ];
+  }
+  function afterSteps(d) {
+    var p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+    return [
+      G(30, "It's over", ["Sit back and let your shoulders drop.", "Your body may still be geared up. Long out-breaths help it settle."], { vis: "glow" }),
+      Br(90, "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
+        { lines: [[0, "Breathe in through the nose, a short second sip, then a long, slow breath out through the mouth."]] }),
+      Br(180, "Long out-breaths", t, { lines: [[0, "Now slow breaths, in through the nose and a longer, slower breath out."],
+        [90, "With a sensor connected, watch your heart rate come down."]] }),
+      G(55, "Name it", [[0, "What are you feeling now? Name it to yourself in a word or two: relieved, shaky, hurt, proud, angry, tired."],
+        [30, "Naming a feeling takes some of its heat. Let it be there, named."]], { vis: "glow" }),
+      G(70, "Kindness", [[0, "This was hard, and hard conversations are hard for everyone."],
+        [22, "Rest a hand on your chest if you like, and say to yourself: may I be kind to myself about how it went."],
+        [50, "Whatever went well or less well, you showed up for it."]], { vis: "glow" }),
+      G(45, "What went well", [[0, "Find one thing you did that you're glad of, however small: you said what you needed, you listened, you stayed steady."]], { vis: "glow" }),
+      G(45, "One next step", [[0, "Is there one small next step? A message to send, a note to make, a rest to take. Choose it, and let the rest wait."]], { vis: "glow" }),
+      G(25, "Close", ["Take one more long breath out, and come back to the room."], { vis: "glow" })
+    ];
+  }
+
   /* --------------------------- the library --------------------------- */
   var PRACTICES = [
     /* ===== combined programs ===== */
@@ -445,6 +538,68 @@
       ev: "This is an experiment. Alpha and theta binaural beats have small, inconsistent effects on anxiety and relaxation in meta-analyses, and heart-rate variability biofeedback has better evidence for stress. But no study has tested binaural beats that follow the heart, and the rule here is Entrain's own. Treat the summary at the end, your heart rate with the beat drawn over it, as the real test.",
       cite: "Experimental · Entrain's own rule"
     },
+    {
+      id: "conversation", name: "Difficult Conversation", lengths: [6, 10, 15], min: 10, strength: 2,
+      tone: "relax", sensor: "best", sensorWhy: "recommended: live coherence while you breathe, and your heart rate coming down", pace: true, paceSplit: 0.4,
+      opt: { ana: 0 },                           // the steps after the breathing ask for your attention elsewhere
+      blurb: "Before a hard conversation or a stressful meeting: settle your body with cyclic sighs and slow breathing, with live coherence and a binaural beat, then get ready to speak: read your racing heart as readiness, remember what matters to you, and plan your first sentence and an if-then. It can begin with an NVC preparation.",
+      parts: "NVC preparation if you like · cyclic sighs · slow breathing with a longer out-breath · coherence · binaural beat · readiness · values · first sentence · if-then plan",
+      audio: { name: "Difficult Conversation", band: "Alpha → Theta → Alpha", carrier: 250, fade: 6, cat: "relax" },
+      beats: [                                   // the first is the usual one
+        { id: "rise", label: "Settle, then rise", band: "Alpha → Theta → Alpha", pts: convRise, note: "Starts at 10 Hz, settles to 6 Hz theta while you breathe slowly, then climbs back to 10 Hz alpha for the last steps, so you go in calm and awake." },
+        { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: steady(10), note: "A steady 10 Hz beat: relaxed but alert the whole way through." },
+        { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: steady(6), note: "A steady 6 Hz beat, the slower band with the larger effects on anxiety; it can leave you a little drowsy." }
+      ],
+      choices: [{ key: "pre", label: "Begin with", def: "",
+        note: "Writing it out first takes 10 to 15 minutes. The needs, request and first sentence you find come back in the breathing part.",
+        opts: [["", "The breathing"], ["nvc-prep", "Prepare it (NVC)"], ["nvc-self", "Self-Empathy (NVC)"]] }],
+      next: { id: "call", txt: "Going straight into a call? During the Call keeps a quiet beat and a silent pacer with you through it." },
+      chainTxt: "Slow breathing and a beat get your body ready, and what you wrote comes back as you go.",
+      build: function (min) { return convSteps(this, min || 10); },
+      how: "If you like, it begins with an NVC preparation, Prepare a Hard Conversation or Self-Empathy, and leads on from it, bringing back the needs, request and first sentence you wrote. Then cyclic sighs (a double breath in through the nose, a long breath out through the mouth) and slow breathing at your resonance rate with a longer out-breath, or at a pace of your own, with live coherence from a beat-to-beat sensor. Four short steps follow: reading your racing heart as readiness, a value that matters to you, your first sentence, and an if-then plan for the moment you're most uneasy about, said to yourself by name. The beat starts at 10 Hz alpha, settles to 6 Hz theta for the breathing and climbs back to alpha for the last steps; a steady alpha or theta beat, or none, are the other choices. 6, 10 or 15 minutes; at 10, the sighs take a minute and a half and the slow breathing four minutes.",
+      ev: "Each part has its own evidence; the sequence hasn't been tested as a whole. Heart-rate-variability biofeedback, breathing at your resonance pace, reduced stress and anxiety with a large effect across 24 studies. Saying “I'm excited” before a performance improved speeches, singing and maths more than trying to calm down, and reading a racing heart as readiness gave a more efficient cardiovascular response to a speech task. Affirming a value of your own blunted the cortisol response to a stressful speech, if-then plans help people do what they intended, and talking to yourself by name led to better speeches with less distress. Binaural beats reduced anxiety in a meta-analysis, more clearly when heard before a task than only during it.",
+      cite: "Goessl et al. 2017 · Brooks 2014 · Jamieson et al. 2012 · Creswell et al. 2005 · Gollwitzer & Sheeran 2006 · Kross et al. 2014 · Garcia-Argibay et al. 2019"
+    },
+    {
+      id: "call", name: "During the Call", lengths: [30, 60, 90], min: 60, open: true, strength: 1,
+      tone: "relax", sensor: "optional", pace: true, paceSplit: 0.4,
+      opt: { voice: false, bells: false, cues: "off", buzz: false, ana: 0 },
+      optNote: "It starts silent: captions only, with no voice, bells or breath sounds, only the beat.",
+      needs: [["sounds", "Headphones", "the beat plays under the call's audio, at half your usual volume"],
+        ["pulse", "Heart sensor", "optional: your heart rate and coherence while you talk"],
+        ["phone", "This screen in view", "beside the call, on this phone or in a window next to it, to glance at the pacer while you listen"]],
+      blurb: "Runs beside a video call or a meeting: a quiet binaural beat in your headphones, a silent breath pacer to glance at while you listen, and your heart rate and coherence. Captions only, with no sounds but the beat.",
+      parts: "Quiet binaural beat · silent pacer or reminders · heart rate and coherence · a short close",
+      audio: { name: "During the Call", band: "Alpha", carrier: 200, fade: 10, gain: 0.5, cat: "relax" },
+      beats: [
+        { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: steady(10), note: "A steady 10 Hz beat for relaxed alertness, at half your usual volume so voices stay clear." },
+        { id: "beta", label: "Beta 16 Hz", band: "Beta", pts: steady(16), note: "A steady 16 Hz beat, the frequency that helped people stay alert through a 30-minute vigilance task: for long meetings." }
+      ],
+      choices: [{ key: "guide", label: "In the call", def: "pacer",
+        note: "A pacer to follow while you listen, or your own breathing with a reminder every five minutes.",
+        opts: [["pacer", "Silent pacer"], ["free", "Reminders only"]] }],
+      next: { id: "after-talk", txt: "When it's over, After the Conversation helps the stress settle." },
+      build: function (min) { return callSteps(this, min || 60); },
+      how: "A short start, then the call itself, which runs until you tap The call's over (or for the length you chose), then 45 seconds to close with two long sighs. Through the call a 10 Hz alpha beat, or 16 Hz beta for long meetings, plays at half your usual volume on a low 200 Hz carrier, so voices stay clear. A silent pacer at your resonance rate, with a longer out-breath, shows on screen: follow it while you listen, and let it go while you speak. Or choose reminders only: your own breathing, with a reminder every five minutes. It starts with captions only, no voice, bells or breath sounds; you can turn them on. With a sensor connected, your heart rate and coherence show as you go, and the summary shows how the call went for your heart.",
+      ev: "Listening to binaural beats before a task, or before and during it, worked better than during it alone in a 2019 meta-analysis, and 16 Hz beta beats helped people stay alert through a 30-minute vigilance task. Slow breathing at a moment of anxiety in daily life lowered anxiety from just before to just after it, though across weeks the evidence was mixed. Following a pacer during a real conversation hasn't been tested.",
+      cite: "Garcia-Argibay et al. 2019 · Lane et al. 1998 · Lachowicz et al. 2026"
+    },
+    {
+      id: "after-talk", name: "After the Conversation", min: 9, strength: 2,
+      tone: "relax", sensor: "optional", pace: true, paceSplit: 0.4, opt: { ana: 0 },
+      blurb: "When a hard conversation is over: let the stress settle with sighs and long out-breaths under a theta beat, name what you feel, be kind to yourself about how it went, and pick one next step.",
+      parts: "Cyclic sighs · long out-breaths · binaural beat · naming the feeling · self-compassion · what went well · one next step",
+      audio: { name: "After the Conversation", band: "Theta", carrier: 200, fade: 8, cat: "relax" },
+      beats: [
+        { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: steady(6), note: "A steady 6 Hz beat, the band studied for relaxation and recovery." },
+        { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: steady(10), note: "A steady 10 Hz beat: relaxed but alert, if work goes on straight after." }
+      ],
+      next: { id: "nvc-self", txt: "Still turning it over? Self-Empathy (NVC) helps you find what you need now." },
+      build: function () { return afterSteps(this); },
+      how: "A minute and a half of cyclic sighs and three minutes of slow breathing with a longer out-breath, under a 6 Hz theta beat (or 10 Hz alpha), then four short steps: naming what you feel in a word or two, a moment of self-compassion with a hand on your chest, one thing you're glad you did, and one small next step. With a sensor, the summary shows how far your heart rate came down. If it's still on your mind afterwards, Self-Empathy (NVC) can help you find what you need now.",
+      ev: "Right after a stressful speech, a brief self-compassion exercise reduced socially anxious students' brooding about it the next day, and self-compassion programs reduced rumination and stress across 27 trials. Putting feelings into words dampens their intensity. Cyclic sighing improved mood and slowed breathing more than mindfulness meditation in a month-long trial. This sequence itself hasn't been trialled.",
+      cite: "Blackie & Kocovski 2018 · Ferrari et al. 2019 · Torre & Lieberman 2018 · Balban et al. 2023"
+    },
 
     /* ===== meditation and mindfulness ===== */
     {
@@ -543,6 +698,15 @@
       how: "Self-paced, with short pauses between the parts: what happened, written the way a camera would record it; your judgments, uncensored; one of the rules behind them, questioned; where you feel it in your body; your feelings, picked from a feelings wheel of 88 words in 11 families (or a plain list, or your own words), and your needs; a guess at the other person's; and a request. Gentle checks point out words that carry a judgment, and feelings that are really interpretations of what someone did. You end with your own NVC sentence.",
       ev: "In a randomised study with 312 medical students, two and a half days of NVC training raised self-rated empathy three months later, though not other measures of empathy, and reviews call the evidence promising but methodologically weak. The parts this practice leans on are better supported: putting feelings into words dampens their intensity, telling emotions apart precisely goes with healthier coping under stress, and writing about difficult experiences has a small, reliable benefit across many trials.",
       cite: "Epinat-Duclos et al. 2021 · Torre & Lieberman 2018 · Kashdan et al. 2015 · Frattaroli 2006"
+    },
+    {
+      id: "nvc-prep", name: "Prepare a Hard Conversation (NVC)", reflect: true, selfPaced: true, est: 15, strength: 1, tone: "ther",
+      blurb: "Before a conversation you're dreading: write what happened the way a camera would see it, what makes it hard for you, your feelings and needs and a guess at theirs, then a request and a first sentence you could say.",
+      next: { id: "conversation", txt: "Get your body ready too: Difficult Conversation brings back your needs and first sentence while you breathe." },
+      build: function () { return nvcPrepSteps(); },
+      how: "Self-paced, with short pauses: what happened, written the way a camera would record it; what makes the conversation hard for you, including what you fear and what it might say about you; where you feel it in your body; your feelings, from the feelings wheel, and your needs; a guess at theirs; a request; and a first sentence you could say, drafted from your answers for you to make your own. It ends with your first sentence, ready to copy. Started from Difficult Conversation, it leads straight on to it, and the breathing part brings your needs and first sentence back.",
+      ev: "Writing about your worries for ten minutes before an exam improved anxious students' results, and putting feelings into words dampens their intensity. NVC training raised self-rated empathy in a randomised study with medical students, though the evidence for NVC itself is still weak. Asking what a conversation says about you comes from the Harvard Negotiation Project's book Difficult Conversations rather than from trials.",
+      cite: "Ramirez & Beilock 2011 · Torre & Lieberman 2018 · Epinat-Duclos et al. 2021 · Stone, Patton & Heen 1999"
     },
     {
       id: "nvc-choose", name: "Have-Tos into Choices (NVC)", reflect: true, selfPaced: true, est: 10, strength: 1, tone: "ther",

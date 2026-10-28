@@ -211,7 +211,7 @@
     A.track = track;
     A.elapsed = 0;
     A.phase = track.then ? "prime" : "single";
-    A.gainMul = 1;
+    A.gainMul = track.gain || 1;                      // a practice's quieter beat (During the Call: half)
     A.noisePref = $("#noise").checked;
     $("#noise").disabled = !!track.notch;
     $("#noiseLab").classList.toggle("off", !!track.notch);

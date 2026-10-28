@@ -52,12 +52,15 @@
   var NVC_SHOULD = ["should", "shouldn't", "should not", "must", "mustn't", "ought to", "have to", "has to", "had to", "supposed to", "deserve", "deserves", "deserved", "fault"];
   var NVC_LABEL = ["lazy", "selfish", "rude", "stupid", "idiot", "inconsiderate", "careless", "arrogant", "useless", "hopeless", "pathetic", "crazy",
     "weak", "failure", "loser", "mean", "cruel", "toxic", "terrible", "awful", "ridiculous", "disrespectful", "irresponsible", "unfair", "wrong",
-    "bad", "boring", "annoying", "impossible", "worthless", "ungrateful", "dramatic", "too much", "pathetic", "incompetent", "clueless"];
+    "bad", "boring", "annoying", "impossible", "worthless", "ungrateful", "dramatic", "too much", "incompetent", "clueless",
+    "petty", "needy", "unkind", "unreasonable", "coward", "too sensitive", "not good enough"];   // the last few: what we fear a hard conversation says about us
   /* What we "have to" do is often driven by pressures that cost joy even when we keep doing it. */
   var NVC_WHY = [["money", 1], ["approval", 1], ["to avoid guilt", 1], ["to avoid shame", 1], ["to avoid punishment", 1], ["duty", 1],
     ["care for someone", 0], ["health", 0], ["connection", 0], ["security", 0], ["contribution", 0], ["integrity", 0], ["growth", 0], ["enjoyment", 0]];
 
-  function nvcNew() { return { obs: "", judg: "", rule: "", feel: [], need: [], oFeel: [], oNeed: [], req: "", have: "", choose: [] }; }
+  function nvcNew() { return { obs: "", judg: "", rule: "", feel: [], need: [], oFeel: [], oNeed: [], req: "", have: "", choose: [], hard: "", line: "" }; }
+  // which of the reflections a practice is: turned inward, have-tos into choices, or preparing a conversation
+  function nvcKindOf(d) { return !d ? "self" : d.id === "nvc-choose" ? "choose" : d.id === "nvc-prep" ? "prep" : "self"; }
   P.nvc = nvcNew();
 
   function nvcFind(text, list) {
@@ -78,9 +81,12 @@
   function Wr(title, o) { return ext({ k: "write", secs: W_CAP, title: title, open: true, lines: [] }, o); }
   function nvcSelfSteps() {
     return [
-      G(35, "Arrive", ["Sit comfortably and take a few slow breaths.",
-        "Bring to mind a situation that's still alive in you: something someone said or did, a conflict, or something you keep judging yourself for.",
-        "You'll write a little at each step. It stays on this device."], { vis: "glow" }),
+      G(35, "Arrive", [], { vis: "glow", mkLines: function () {       // begun from Difficult Conversation, it's about the conversation ahead
+        return [[0, "Sit comfortably and take a few slow breaths."],
+          [12, P.chain ? "Bring to mind the conversation ahead of you, and what's still alive in you about it: something someone said or did, or something you keep judging yourself for."
+            : "Bring to mind a situation that's still alive in you: something someone said or did, a conflict, or something you keep judging yourself for."],
+          [23, P.chain ? "You'll write a little at each step, then Difficult Conversation helps your body get ready too." : "You'll write a little at each step. It stays on this device."]];
+      } }),
       Wr("What happened?", { field: "obs", input: "text", check: "eval",
         prompt: "Describe it the way a camera would have recorded it: what was said and done, where and when. Leave your interpretation out for now.",
         ph: "At dinner, she looked at her phone while I was telling her about my day." }),
@@ -113,7 +119,7 @@
         ph: "Tonight I'll ask her if we can keep dinner phone-free, and hear what she thinks." }),
       G(30, "Closing", [], { vis: "glow", mkLines: function () {
         return [[0, "Read back what you've written. It's a picture of this moment, and moments change."],
-          [10, "Change often starts when you accept yourself as you are."]];
+          [10, "Change often starts when you accept yourself as you are."]].concat(P.chain ? [[20, "Next, a few minutes of slow breathing to get your body ready."]] : []);
       } })
     ];
   }
@@ -135,6 +141,73 @@
       } }),
       G(20, "Closing", [], { vis: "glow", mkLines: function () { return [[0, "Change often starts when you accept yourself as you are."]]; } })
     ];
+  }
+
+  /* Preparing a conversation you're dreading: what happened, what makes it hard for you (the fear,
+     and what it might say about you: Stone, Patton and Heen's "identity conversation"), feelings and
+     needs, a guess at theirs, a request, and a first sentence drafted from all that for you to make
+     your own. Started from Difficult Conversation, it leads on to it (P.chain). */
+  function nvcPrepSteps() {
+    return [
+      G(30, "Arrive", [], { vis: "glow", mkLines: function () {
+        return [[0, "Sit comfortably and take a few slow breaths."],
+          [6, "Bring to mind the conversation or the meeting ahead of you."],
+          [14, P.chain ? "You'll write a little at each step, then Difficult Conversation helps your body get ready too." : "You'll write a little at each step. It stays on this device."]];
+      } }),
+      Wr("What happened?", { field: "obs", input: "text", check: "eval",
+        prompt: "What happened, or what is it about? Describe it the way a camera would record it: what was said or done. Leave your interpretation out for now.",
+        ph: "My last two reports went out under Anna's name." }),
+      Wr("Why it's hard", { field: "hard", input: "text", check: "hard", rows: 5,
+        prompt: "What makes this conversation hard for you? What are you afraid could happen? And what might it say about you if it went badly: that you're unreasonable, not good enough, unkind?",
+        ph: "I'm afraid she'll get defensive and it'll sour things between us. Part of me thinks wanting credit is petty.",
+        hint: "Fears and judgments are clues: each points at something you need, such as respect, safety or to be seen. Questions about who you are in this make a conversation hard too, and naming them loosens their grip." }),
+      G(25, "Into the body", ["Put the words aside for a moment. Where do you feel this in your body? Tight, heavy, hot, fluttery?",
+        "Breathe into that place, and let it be there."], { vis: "glow" }),
+      Wr("Feelings", { field: "feel", input: "feel", sets: NVC_FEEL, other: true,
+        prompt: "Which feelings come up when you think of the conversation? Open a family on the wheel and pick the words that fit, or add your own.",
+        hint: "Words like “ignored” or “rejected” describe what someone did. If one comes up, look for the feeling underneath it." }),
+      Wr("Needs", { field: "need", input: "chips", sets: NVC_NEED, other: true,
+        prompt: "What are you needing, in this conversation and from it? Pick the ones that matter most.",
+        hint: "Needs are universal, and many different actions could meet each one. “I need him to apologise” is a strategy; the need underneath might be respect, or understanding." }),
+      G(45, "Let it land", [], { vis: "glow", mkLines: function () {
+        var f = P.nvc.feel, n = P.nvc.need;
+        if (!f.length && !n.length) return [[0, "Notice what you're feeling now, and what matters to you underneath it."], [14, "Stay with that for a few breaths."]];
+        return [[0, "Read this to yourself, slowly."],
+          [4, "When I think of this conversation, I feel " + nvcList(f.length ? f : ["what I feel"]) + (n.length ? ", because I need " + nvcList(n) : "") + "."],
+          [22, "This is what you're going in for. Stay with the need for a few breaths."]];
+      } }),
+      Wr("Their side", { field: "other", input: "other", optional: true,
+        prompt: "What might they be feeling and needing, going into it? It's a guess, and understanding them is separate from agreeing." }),
+      Wr("Your request", { field: "req", input: "text", check: "req", optional: true,
+        prompt: "What would you like to ask for? Make it a doable, specific action, phrased as what you want, and leaving them free to say no.",
+        ph: "Would you be willing to put my name on the reports I write?" }),
+      Wr("Your first sentence", { field: "line", input: "text", rows: 5, prefill: nvcLineDraft,
+        prompt: "Put it together as a first sentence you could say: what happened, how you feel, what you need and your request. A draft from your answers is below; make it sound like you.",
+        hint: "Saying it out loud once, slowly, makes it easier to say for real." }),
+      G(30, "Closing", [], { vis: "glow", mkLines: function () {
+        return [[0, "Read your first sentence out loud, slowly, once."],
+          [10, P.chain ? "Next, a few minutes of slow breathing to get your body ready." : "You know what you need. When the time comes, breathe out slowly, then begin."]];
+      } })
+    ];
+  }
+  // a first sentence from what you've written: when…, I feel…, because I need…, and the request
+  function nvcLineDraft() {
+    var d = P.nvc, o = nvcClean(d.obs).replace(/^when\s+/i, ""), f = d.feel, n = d.need, r = nvcClean(d.req), s = "";
+    if (o) s = "When " + nvcLower(o) + ", ";
+    if (f.length) s += "I feel " + nvcList(f);
+    if (n.length) s += (f.length ? ", because I need " : "I need ") + nvcList(n);
+    s = s.replace(/,\s*$/, "");
+    if (s) s = s.charAt(0).toUpperCase() + s.slice(1) + ".";
+    if (r) s += (s ? " " : "") + r.charAt(0).toUpperCase() + r.slice(1) + (/^(would|could|can|will|are|is|do)\b/i.test(r) ? "?" : ".");
+    return s;
+  }
+  /* What a preparation (or a reflection that led into Difficult Conversation) leaves for it to bring back:
+     from this session for six hours, or from the kept copy of a preparation written in the last twelve. */
+  function nvcRecall() {
+    var now = Date.now(), m = P.lastNvc;
+    if (m && now - m.at < 6 * 3600000) return m;
+    var l = nvcLog().filter(function (e) { return e.kind === "prep" && now - e.at < 12 * 3600000; }).pop();
+    return l ? { at: l.at, need: Array.isArray(l.need) ? l.need : [], req: l.req || "", line: l.line || "" } : null;
   }
 
   /* ----- drawing a writing step ----- */
@@ -230,6 +303,7 @@
   }
   function nvcRender(s) {
     var d = P.nvc, h = '<h3 class="sw-h">' + esc(s.title) + '</h3><p class="sw-p">' + esc(s.prompt) + "</p>";
+    if (s.prefill && !(d[s.field] || "").trim()) d[s.field] = s.prefill();     // a draft from what you've written, yours to change
     P.wheel = { feel: -1, oFeel: -1 }; P.wheelAnim = false;
     if (s.ctx === "found") {
       var f = nvcJudgy(d.judg);
@@ -289,6 +363,9 @@
     } else if (s.check === "should") {
       var g = nvcJudgy(d.judg);
       if (g.length) msg = "Shoulds, absolutes and labels you used: <b>" + g.map(esc).join("</b>, <b>") + "</b>. You'll question one of them next.";
+    } else if (s.check === "hard") {
+      var hj = nvcJudgy(d.hard);
+      if (hj.length) msg = "Shoulds, absolutes and labels in there: <b>" + hj.map(esc).join("</b>, <b>") + "</b>. Each is a clue to something you need; you'll name those soon.";
     } else if (s.check === "req") {
       var r = d.req.toLowerCase();
       if (/\b(don'?t|do not|stop|never|quit)\b/.test(r)) msg = "Requests tend to land better as what you do want. What would you like instead?";
@@ -324,28 +401,42 @@
       });
       return lines.length ? { kind: kind, lines: lines, text: lines.join("\n") } : null;
     }
+    var oth = P.nvc.oFeel.length || P.nvc.oNeed.length ? "They might have felt " + (nvcList(P.nvc.oFeel) || "something") + (P.nvc.oNeed.length ? " and needed " + nvcList(P.nvc.oNeed) : "") + "." : "";
+    if (kind === "prep") {
+      var pf = P.nvc.feel, pn = P.nvc.need, ps = "", line = (P.nvc.line || "").trim().replace(/\s+/g, " ");
+      if (pf.length) ps = "When I think of this conversation, I feel " + nvcList(pf) + (pn.length ? ", because I need " + nvcList(pn) : "") + ".";
+      else if (pn.length) ps = "In this conversation, I need " + nvcList(pn) + ".";
+      var pr = { kind: kind, line: line, sentence: ps, hard: nvcClean(P.nvc.hard), req: nvcClean(P.nvc.req), need: pn.slice(), other: oth };
+      if (!line && !ps && !pr.hard && !pr.req) return null;
+      pr.text = [line ? "First sentence: " + line + (/[.?!]$/.test(line) ? "" : ".") : "", ps, pr.hard ? "Why it's hard: " + pr.hard + "." : "",
+        pr.req ? "Request: " + pr.req + "." : "", oth].filter(function (x) { return x; }).join("\n");
+      return pr;
+    }
     var o = nvcClean(P.nvc.obs), f = P.nvc.feel, n = P.nvc.need, s = "";
     if (o) s += (/^when\b/i.test(o) ? o : "When " + nvcLower(o)) + ", ";
     if (f.length) s += (s ? "I feel " : "I feel ") + nvcList(f);
     if (n.length) s += (f.length ? " because I need " : (s ? "I need " : "I need ")) + nvcList(n);
     s = s.replace(/,\s*$/, "");
     if (s) s = s.charAt(0).toUpperCase() + s.slice(1) + ".";
-    var out = { kind: kind, sentence: s, req: nvcClean(P.nvc.req), rule: nvcClean(P.nvc.rule),
-      other: P.nvc.oFeel.length || P.nvc.oNeed.length ? "They might have felt " + (nvcList(P.nvc.oFeel) || "something") + (P.nvc.oNeed.length ? " and needed " + nvcList(P.nvc.oNeed) : "") + "." : "" };
+    var out = { kind: kind, sentence: s, req: nvcClean(P.nvc.req), rule: nvcClean(P.nvc.rule), other: oth };
     if (!s && !out.req && !out.rule) return null;
     out.text = [s, out.req ? "Request: " + out.req + "." : "", out.rule ? "Rule I questioned: " + out.rule : "", out.other].filter(function (x) { return x; }).join("\n");
     return out;
   }
   function nvcCard(r) {
-    var h = '<div class="sd-nvc"><h3>' + (r.kind === "choose" ? "Your choices" : "Your reflection") + "</h3>";
+    var h = '<div class="sd-nvc"><h3>' + (r.kind === "choose" ? "Your choices" : r.kind === "prep" ? "Your preparation" : "Your reflection") + "</h3>";
     if (r.kind === "choose") h += '<ul class="nv-list">' + r.lines.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("") + "</ul>";
-    else {
+    else if (r.kind === "prep") {
+      h += '<p class="nv-s">' + esc(r.line || r.sentence) + "</p>";
+      h += "<dl>" + (r.line && r.sentence ? "<dt>What you feel and need</dt><dd>" + esc(r.sentence) + "</dd>" : "") + (r.hard ? "<dt>Why it's hard</dt><dd>" + esc(r.hard) + "</dd>" : "") +
+        (r.req ? "<dt>Request</dt><dd>" + esc(r.req) + "</dd>" : "") + (r.other ? "<dt>Their side</dt><dd>" + esc(r.other) + "</dd>" : "") + "</dl>";
+    } else {
       if (r.sentence) h += '<p class="nv-s">' + esc(r.sentence) + "</p>";
       h += "<dl>" + (r.req ? "<dt>Request</dt><dd>" + esc(r.req) + "</dd>" : "") + (r.rule ? "<dt>A rule you questioned</dt><dd>" + esc(r.rule) + "</dd>" : "") +
         (r.other ? "<dt>The other side</dt><dd>" + esc(r.other) + "</dd>" : "") + "</dl>";
     }
     return h + '<div class="nv-act"><button class="btn small" id="nvCopy" data-text="' + esc(r.text) + '">Copy</button><span>' +
-      (P.opt.nvcSave ? "Saved on this device only. Past reflections are listed on this practice's page." : "Not saved: keeping a copy is off.") + "</span></div></div>";
+      (P.opt.nvcSave ? "Saved on this device only. Past " + (r.kind === "prep" ? "preparations" : "reflections") + " are listed on this practice's page." : "Not saved: keeping a copy is off.") + "</span></div></div>";
   }
 
   /* ----- the journal: on this device only ----- */
@@ -353,15 +444,16 @@
     try { var l = JSON.parse(store.get("nvcLog") || "[]"); return Array.isArray(l) ? l : []; } catch (e) { return []; }
   }
   function nvcKeep(r) {
-    var l = nvcLog();
-    l.push({ at: Date.now(), kind: r.kind, text: r.text });
+    var l = nvcLog(), e = { at: Date.now(), kind: r.kind, text: r.text };
+    if (r.kind === "prep") { e.need = r.need; e.req = r.req; e.line = r.line; }      // for Difficult Conversation to bring back
+    l.push(e);
     while (l.length > 60) l.shift();
     store.set("nvcLog", JSON.stringify(l));
   }
   function nvcJournal(d) {
-    var kind = d.id === "nvc-choose" ? "choose" : "self", items = nvcLog().map(function (e, i) { e.i = i; return e; }).filter(function (e) { return e.kind === kind; }).reverse();
+    var kind = nvcKindOf(d), items = nvcLog().map(function (e, i) { e.i = i; return e; }).filter(function (e) { return e.kind === kind; }).reverse();
     if (!items.length) return "";
-    return '<details class="si-journal"><summary>Your past ' + (kind === "choose" ? "lists" : "reflections") + " (" + items.length + ")</summary><ol>" +
+    return '<details class="si-journal"><summary>Your past ' + (kind === "choose" ? "lists" : kind === "prep" ? "preparations" : "reflections") + " (" + items.length + ")</summary><ol>" +
       items.map(function (e) {
         return '<li><time>' + new Date(e.at).toLocaleDateString(undefined, { day: "numeric", month: "short" }) + "</time><p>" + esc(e.text).replace(/\n/g, "<br>") + "</p>" +
           '<button class="nv-del" data-nvdel="' + e.i + '" aria-label="Delete this one"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></li>';
@@ -378,7 +470,7 @@
   }
   function nvcDraftClear(id) { clearTimeout(P.draftT); storeDel(nvcDraftKey(id)); }
   function nvcHasWords(n) {
-    return !!(n.obs || n.judg || n.rule || n.req || n.have || n.feel.length || n.need.length || n.oFeel.length || n.oNeed.length);
+    return !!(n.obs || n.judg || n.rule || n.req || n.have || n.hard || n.line || n.feel.length || n.need.length || n.oFeel.length || n.oNeed.length);
   }
   function nvcDraftSave(now) {
     clearTimeout(P.draftT);
@@ -516,7 +608,7 @@
       if (b.id === "nvCopy") { nvcCopy(b.dataset.text); return; }
       var l = nvcLog();
       if (b.dataset.nvdel === "all") {
-        var kind = P.view && P.view.id === "nvc-choose" ? "choose" : "self";
+        var kind = nvcKindOf(P.view);
         l = l.filter(function (x) { return x.kind !== kind; });
       } else l.splice(+b.dataset.nvdel, 1);
       store.set("nvcLog", JSON.stringify(l));

@@ -39,6 +39,7 @@
         '<button class="btn link sd-how" id="sdHow" aria-expanded="false" aria-controls="sdHowT">How to read this chart</button>' +
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
       (r.nvc ? nvcCard(r.nvc) : "") +
+      sdNext(d) +
       qCard(d.reflect ? ROGERS : qPick()) +
       '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>' +
       '<div class="note-card donate-card sd-donate"><p><b>Entrain is free and has no ads.</b> If it helps you, a donation keeps it going.</p>' +
@@ -48,6 +49,14 @@
     $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
     $("#ses").dataset.state = "done";
     $("#sdAgain").addEventListener("click", function () { pIntro(d.id); });
+    var cg = $("#sdChain");
+    if (cg) cg.addEventListener("click", function () {     // on to the practice this one began
+      var nx = P.chain && pDef(P.chain.then);
+      if (!nx) return;
+      P.view = nx; P.len = P.chain.len; P.chainGo = true;
+      try { history.replaceState(null, "", "#practice/" + nx.id); } catch (e) {}
+      pStart();
+    });
     el.querySelector(".sd-tiles").addEventListener("click", function (e) {
       var b = e.target.closest(".sd-t");
       if (b) sdShow(SD.open === b.dataset.ex ? "" : b.dataset.ex);
@@ -57,6 +66,16 @@
       sdChartWire();
       setTimeout(function () { pChart(r.hrPts, r.secs, r); }, 30);
     }
+  }
+
+  /* What comes next: the practice this one began (chosen as "Begin with" on its page), carried on with
+     a tap, or else a suggestion of what usually follows (d.next), on its own page. */
+  function sdNext(d) {
+    var ch = P.chain && P.chain.then !== d.id ? pDef(P.chain.then) : null;
+    if (ch) return '<div class="note-card sd-next"><p><b>Next: ' + esc(ch.name) + ".</b> " + esc(ch.chainTxt || "") + "</p>" +
+      '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + "</button></div>";
+    var nx = d.next && pDef(d.next.id);
+    return nx ? '<div class="note-card sd-next"><p>' + esc(d.next.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + "</a></div>" : "";
   }
 
   // what each number means, with your own value read back

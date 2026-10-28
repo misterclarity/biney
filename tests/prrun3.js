@@ -318,7 +318,7 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(250);
     await p.click('#prFilt button[data-f="reflect"]'); await p.waitForTimeout(200);
     const cards = await p.$$eval('.pc-a', a => a.map(x => x.getAttribute('href')));
-    ok(cards.join(',') === '#practice/nvc-self,#practice/nvc-choose,#practice/self-compassion,#practice/metta,#practice/gratitude' && /Self-paced/.test(await t(p, 'a[href="#practice/nvc-self"] .pc-meta')), 'Reflect shows the two NVC practices, then self-compassion, loving-kindness and gratitude: ' + cards.join(','));
+    ok(cards.join(',') === '#practice/nvc-self,#practice/nvc-prep,#practice/nvc-choose,#practice/self-compassion,#practice/metta,#practice/gratitude,#practice/after-talk' && /Self-paced/.test(await t(p, 'a[href="#practice/nvc-self"] .pc-meta')), 'Reflect shows the three NVC practices, then self-compassion, loving-kindness and gratitude, and After the Conversation as also good for it: ' + cards.join(','));
     await p.evaluate(() => location.hash = 'practice/nvc-self'); await p.waitForTimeout(250);
     ok(await t(p, '.si-kind') === 'Reflect · Writing · self-paced, about 15 min' && /A quiet place to write/.test(await t(p, '.si-need')) && await p.$eval('#sOptKeep', e => e.checked) && !(await p.$('#sOptTap')), 'intro: ' + await t(p, '.si-kind'));
     ok((await p.$$eval('.si-steps li time', x => x.map(e => e.textContent))).filter(x => x === 'your pace').length === 7 && await t(p, '#sGo') === 'Start', 'writing steps run at your pace');

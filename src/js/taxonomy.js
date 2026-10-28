@@ -25,7 +25,7 @@
     sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
       ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
     calm: [["calm-reset", "program", "sit"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
-      ["coherence", "program", "sit lie"], ["grounding", "meditate", "sit"], ["tapping", "relax", "sit"],
+      ["coherence", "program", "sit lie"], ["conversation", "program", "sit"], ["call", "program", "sit"], ["after-talk", "program", "sit"], ["grounding", "meditate", "sit"], ["tapping", "relax", "sit"],
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
@@ -39,14 +39,14 @@
       ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"]],
     recover: [["recovery", "program", "sit"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
       ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"]],
-    reflect: [["nvc-self", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
+    reflect: [["nvc-self", "write", "sit"], ["nvc-prep", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
       ["metta", "meditate", "sit"], ["gratitude", "meditate", "sit lie"]],
     tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: a section of its own
   };
   var ALSO = {
     "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],
     anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], gratitude: ["calm"], "back-hips": ["calm"],
-    "standing-reset": ["focus"], "balance-yoga": ["focus"]
+    "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"]
   };
   var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8" };
   var TOOLS = {

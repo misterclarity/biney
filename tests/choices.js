@@ -8,6 +8,7 @@
 //   G  the gratitude practice          C  Calm Reset's beat and pace     D  donations
 //   U  what an automatic update waits for B  connecting can't get stuck
 //   H  a sensor that sends heart rate only: no coherence, the test's caution, the guide
+//   T  a difficult conversation: before it (with an NVC preparation first), during the call, after it
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -932,6 +933,217 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         ok(sd.href === b.href && sd.target === '_blank' && /noopener/.test(sd.rel) && sd.txt === b.txt && sd.h >= 44 && after && /^Entrain is free and has no ads\./.test(await t(p, '#sDone .sd-donate p')),
           'the end screen of a practice ' + (early ? 'ended early' : 'run to the end') + ' has it too, under Done and Do it again');
       }
+      await p.context().close();
+    }
+
+    /* T. a difficult conversation or a stressful meeting. Difficult Conversation: cyclic sighs, slow breathing at
+       the resonance rate with a longer out-breath, a beat that settles into theta and rises back to alpha, then
+       readiness, a value, your words and an if-then. It can begin with an NVC practice, whose end screen leads on
+       to it and whose needs, request and first sentence come back in it. During the Call: silent, beside a call,
+       until you tap that it's over. After the Conversation; Prepare a Hard Conversation (NVC). */
+    if (!only || only === 'T') {
+      const intro = p => E(p, () => {
+        const q = s => document.querySelector(s), all = s => [...document.querySelectorAll(s)], tx = e => e.textContent.replace(/\s+/g, ' ').trim();
+        return { title: q('#viewTitle').textContent, kind: tx(q('#sIntro .si-kind')), go: tx(q('#sGo')),
+          steps: all('#sIntro .si-steps li:not([hidden])').map(tx).join(' | '), needs: all('#sIntro .si-need li').map(tx).join(' | '),
+          lens: all('#sIntro .si-len button').map(b => tx(b) + (b.getAttribute('aria-checked') === 'true' ? '*' : '')).join(' | ') };
+      });
+      const segs = (p, sel) => E(p, sel => [...document.querySelectorAll(sel + ' button')].map(b => b.textContent.trim() + (b.getAttribute('aria-pressed') === 'true' ? '*' : '')).join(' | '), sel);
+      const plan = (p, id, len) => E(p, ([id, len]) => {
+        const X = window.__entrain, d = X.pDef(id), pl = X.pPlan(d, len);
+        return { total: pl.total, pts: JSON.stringify(X.pAudio(d, pl.base).pts), steps: pl.steps.map(s => ({ title: s.title, k: s.k, at: s.at, secs: s.secs, t: s.t, lines: (s.lines || []).map(l => [l[0], String(l[1])]) })) };
+      }, [id, len]);
+      const inside = pl => pl.steps.every(s => s.lines.every((l, i) => l[0] >= 0 && l[0] < s.secs && (!i || l[0] > s.lines[i - 1][0])));
+      const run = p => E(p, () => {
+        const X = window.__entrain, s = X.P.steps[X.P.idx] || {};
+        return { id: X.P.def && X.P.def.id, hash: location.hash, title: document.querySelector('#viewTitle').textContent, step: s.title, of: document.querySelector('#sStepTxt').textContent,
+          lines: (s.lines || []).map(l => String(l[1])), chain: X.P.chain, len: X.P.runLen, state: X.P.state };
+      });
+      const words = p => E(p, () => { const X = window.__entrain, s = (X.P.state === 'running' ? X.P.steps : X.pPlan(X.pDef('conversation'), 10).steps).find(s => s.title === 'Your words'); return s.mkLines().map(l => l[1]); });
+      const nextW = async p => { await p.click('#sWrite [data-sw="next"]'); await p.waitForTimeout(300); };
+      const toEnd = async p => { await E(p, () => { window.__entrain.P.t0 -= 60; }); await p.waitForFunction(() => window.__entrain.P.state === 'done', null, { timeout: 8000 }); await p.waitForTimeout(300); };
+      const sdNext = p => E(p, () => { const c = document.querySelector('#sDone .sd-next'), a = c && c.querySelector('a, button');
+        return c ? { txt: c.querySelector('p').textContent, btn: a.textContent, href: a.getAttribute('href') || '', chain: a.id === 'sdChain' } : null; });
+      const SENT = 'Anna, the last two reports I wrote went out under your name. I feel uneasy, because I need my work to be seen. Would you put my name on the ones I write?';
+
+      // its page: Anapana reminders and the beat's own defaults beside the ones for every practice
+      let p = await page(Object.assign(OPT({ audio: true, ana: 180 }), { optsOpen: '1' }));
+      await E(p, () => location.hash = 'practice/conversation'); await p.waitForTimeout(450);
+      let i = await intro(p);
+      ok(i.title === 'Difficult Conversation' && i.kind === 'Calm · Program · 10 min' && i.lens === '6 min | 10 min* | 15 min' && i.go === 'Start 10 min' &&
+        i.steps === 'Arrive00:30 | Cyclic sighs01:30 | Slow breathing04:00 | Ready, not calm00:50 | What matters to you00:50 | Your words00:50 | If, then01:00 | Go00:30',
+        'Difficult Conversation: sighs and slow breathing, then readiness, a value, your words and an if-then: ' + i.steps);
+      ok(/^Headphones for the binaural layer \| Heart sensor recommended: live coherence while you breathe, and your heart rate coming down/.test(i.needs), 'headphones, and a heart sensor recommended for its live coherence: ' + i.needs);
+      let o = await E(p, () => { const q = s => document.querySelector(s); return { preNote: q('[data-choice="pre"]').closest('.so-row').querySelector('small').textContent, beat: q('#sBeatNote').textContent, pace: q('#sPaceNote').textContent, pre: !q('#sIntro .si-pre').hidden }; });
+      ok(await segs(p, '[data-choice="pre"]') === 'The breathing* | Prepare it (NVC) | Self-Empathy (NVC)' && !o.pre &&
+        o.preNote === 'Writing it out first takes 10 to 15 minutes. The needs, request and first sentence you find come back in the breathing part.', 'it begins with the breathing, or first with an NVC practice: ' + o.preNote);
+      ok(await segs(p, '#sOptBeat') === 'Off | Settle, then rise* | Alpha 10 Hz | Theta 6 Hz' &&
+        /^Starts at 10 Hz, settles to 6 Hz theta while you breathe slowly, then climbs back to 10 Hz alpha for the last steps, so you go in calm and awake\. 250 Hz carrier\./.test(o.beat), 'its beat settles into theta for the breathing and rises to alpha before you go in: ' + o.beat);
+      ok(await segs(p, '#sOptPace') === 'Optimal defaults* | Your own' && o.pace === 'Your resonance rate, with a longer out-breath (4.4 s in, 6.5 s out): 5.5 breaths a minute, the usual one, until you take the resonance test on the Heart tab.',
+        'the pace: the resonance rate, with a longer out-breath: ' + o.pace);
+      ok(await segs(p, '#sOptAna') === 'Off* | 2 min | 3 min | 5 min', 'Anapana reminders start off here, though they are on for every practice');
+      for (const L of [6, 10, 15]) {
+        const pl = await plan(p, 'conversation', L), S = pl.steps, at = k => S[k].at;
+        ok(pl.total === L * 60 && S.length === 8 && S[1].k === 'breath' && S[1].t.inh === 3 && S[1].t.sip === 1 && S[1].t.exh === 6 && S[2].k === 'breath' && S[2].t.inh === 4.4 && S[2].t.exh === 6.5 &&
+          S[2].lines[0][1] === 'Now slow breaths, in through the nose and a longer, slower breath out, 5.5 a minute.' && inside(pl) &&
+          pl.pts === JSON.stringify([[0, 10], [at(2), 6], [at(3), 6], [at(4), 10], [L * 60, 10]]),
+          L + ' minutes: the beat reaches theta as the slow breathing starts and alpha by the value step, every line inside its step: ' + S.map(s => s.secs).join('+') + ', ' + pl.pts);
+      }
+      await p.click('#sOptPace button[data-v="own"]'); await p.waitForTimeout(100);
+      let pl = await plan(p, 'conversation', 10);
+      ok(await t(p, '#sPace-inh') === '4.5 s' && await t(p, '#sPace-exh') === '6.5 s' && pl.steps[2].t.inh === 4.5 && pl.steps[2].t.exh === 6.5 && pl.steps[1].t.exh === 6 &&
+        pl.steps[2].lines[0][1] === 'Now slow breaths, in for 4.5 seconds and out for 6.5 seconds.', 'Your own starts from the same split, in half seconds: ' + pl.steps[2].lines[0][1]);
+      await p.click('#sOptPace button[data-v="auto"]'); await p.waitForTimeout(100);
+
+      // begin with Prepare a Hard Conversation: it runs first, then its end screen leads on, and what you wrote comes back
+      await p.click('[data-choice="pre"] button[data-v="nvc-prep"]'); await p.waitForTimeout(100);
+      ok(await E(p, () => document.querySelector('#sIntro .si-pre').hidden ? '' : document.querySelector('#sIntro .si-pre').textContent) === 'Prepare a Hard Conversation (NVC)your pace' &&
+        (await E(p, () => JSON.parse(localStorage.getItem('entrain.pCh.conversation') || '{}'))).pre === 'nvc-prep' && /Prepare it \(NVC\)/.test(await t(p, '#sOptsSum')),
+        'choosing it puts it first in the steps, and it is kept for next time');
+      await p.click('#sGo'); await p.waitForTimeout(700);
+      let r = await run(p);
+      ok(r.id === 'nvc-prep' && r.hash === '#practice/nvc-prep' && r.title === 'Prepare a Hard Conversation (NVC)' && r.of === 'Step 1 of 11 · Arrive · then Difficult Conversation' &&
+        r.chain && r.chain.then === 'conversation' && r.chain.len === 10 && r.lines[2] === "You'll write a little at each step, then Difficult Conversation helps your body get ready too.",
+        'Start runs the preparation first, and says what follows it: ' + r.of);
+      await p.click('#sNext'); await p.waitForTimeout(300);
+      await p.fill('#sWrite .sw-ta', "My last two reports went out under Anna's name"); await nextW(p);
+      await p.fill('#sWrite .sw-ta', "I'm afraid she'll get defensive. Part of me thinks wanting credit is petty, and that I always make a fuss."); await p.waitForTimeout(150);
+      const hn = await t(p, '#swNote');
+      ok((await run(p)).step === "Why it's hard" && hn === "Shoulds, absolutes and labels in there: always, petty. Each is a clue to something you need; you'll name those soon.", 'why it\'s hard: the check finds the judgments in it: ' + hn);
+      await nextW(p); await p.click('#sNext'); await p.waitForTimeout(300);           // into the body, then feelings
+      await p.click('#sWrite [data-view="list"]'); await p.waitForTimeout(150);
+      await p.click('#sWrite button[data-f="feel"][data-v="nervous"]'); await p.click('#sWrite button[data-f="feel"][data-v="hopeful"]'); await nextW(p);
+      await p.click('#sWrite button[data-f="need"][data-v="appreciation"]'); await p.click('#sWrite button[data-f="need"][data-v="fairness"]'); await nextW(p);
+      r = await run(p);
+      ok(r.step === 'Let it land' && r.lines[1] === 'When I think of this conversation, I feel nervous and hopeful, because I need appreciation and fairness.', 'your feelings and needs, read back: ' + r.lines[1]);
+      await p.click('#sNext'); await p.waitForTimeout(300);
+      await p.click('#sWrite [data-sw="skip"]'); await p.waitForTimeout(300);             // their side, skipped
+      await p.fill('#sWrite .sw-ta', 'Would you be willing to put my name on the reports I write'); await nextW(p);
+      const draft = await p.$eval('#sWrite .sw-ta', e => e.value);
+      ok((await run(p)).step === 'Your first sentence' && draft === "When my last two reports went out under Anna's name, I feel nervous and hopeful, because I need appreciation and fairness. Would you be willing to put my name on the reports I write?",
+        'your first sentence starts as a draft from your answers: ' + draft);
+      await p.fill('#sWrite .sw-ta', SENT); await nextW(p);
+      r = await run(p);
+      ok(r.step === 'Closing' && r.lines.join(' / ') === 'Read your first sentence out loud, slowly, once. / Next, a few minutes of slow breathing to get your body ready.', 'it closes by leading on: ' + r.lines.join(' / '));
+      await toEnd(p);
+      let nx = await sdNext(p);
+      const card = await t(p, '#sDone .sd-nvc'), log = await E(p, () => JSON.parse(localStorage.getItem('entrain.nvcLog') || '[]')), e0 = log[log.length - 1] || {};
+      ok(card.indexOf('Your preparation' + SENT) === 0 && /Why it's hardI'm afraid she'll get defensive/.test(card), 'the end screen shows your first sentence, and why it\'s hard');
+      ok(nx && nx.chain && nx.txt === 'Next: Difficult Conversation. Slow breathing and a beat get your body ready, and what you wrote comes back as you go.' && nx.btn === 'Continue to Difficult Conversation',
+        'and leads on to Difficult Conversation: ' + (nx && nx.txt));
+      ok(e0.kind === 'prep' && e0.need.join() === 'appreciation,fairness' && e0.req === 'Would you be willing to put my name on the reports I write' && e0.line === SENT, 'kept with your preparations: the needs, request and first sentence');
+      await p.click('#sdChain'); await p.waitForTimeout(700);
+      r = await run(p);
+      const tr = await E(p, () => { const A = window.__entrain.A; return A.track ? { band: A.track.band, pts: JSON.stringify(A.track.pts) } : {}; });
+      ok(r.id === 'conversation' && r.hash === '#practice/conversation' && r.title === 'Difficult Conversation' && r.chain === null && r.len === 10 && r.of === 'Step 1 of 8 · Arrive',
+        'Continue starts Difficult Conversation, at the length chosen on its page: ' + r.of);
+      const w = await words(p);
+      ok(w.join(' / ') === "From your preparation: you need appreciation and fairness. That's what you're going in for. / Your first sentence: " + SENT + ' / Say it once to yourself, slowly, as if they were here.',
+        'Your words brings back the needs and first sentence: ' + w[0]);
+      ok(tr.band === 'Alpha → Theta → Alpha' && tr.pts === '[[0,10],[120,6],[360,6],[410,10],[600,10]]', 'its beat plays: ' + tr.pts);
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
+      nx = await sdNext(p);
+      ok(nx && !nx.chain && nx.txt === 'Going straight into a call? During the Call keeps a quiet beat and a silent pacer with you through it.' && nx.href === '#practice/call' && nx.btn === 'During the Call',
+        'its own end screen suggests During the Call: ' + (nx && nx.txt));
+      // Do it again: Difficult Conversation itself, with no preparation first
+      await p.click('#sdAgain'); await p.waitForTimeout(400);
+      await p.click('#sGo'); await p.waitForTimeout(500);
+      r = await run(p);
+      ok(r.id === 'nvc-prep' && r.chain && r.chain.then === 'conversation', 'from its page again, Start begins with the preparation you chose');
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
+      nx = await sdNext(p);
+      ok(nx && nx.chain, 'ended early, the preparation still leads on');
+      await p.context().close();
+
+      // Self-Empathy first, ended with nothing written; then what comes back with nothing to bring back,
+      // a preparation kept two hours ago, and one kept thirteen hours ago
+      p = await page(Object.assign(OPT(), { 'pCh.conversation': JSON.stringify({ pre: 'nvc-self' }) }));
+      await E(p, () => location.hash = 'practice/conversation'); await p.waitForTimeout(400);
+      ok((await intro(p)).steps.indexOf('Self-Empathy (NVC)your pace | Arrive00:30') === 0, 'a choice kept from before shows as the first step');
+      await p.click('#sGo'); await p.waitForTimeout(500);
+      r = await run(p);
+      ok(r.id === 'nvc-self' && / · then Difficult Conversation$/.test(r.of) && /^Bring to mind the conversation ahead of you, and what's still alive in you about it/.test(r.lines[1]) &&
+        r.lines[2] === "You'll write a little at each step, then Difficult Conversation helps your body get ready too.", 'Self-Empathy runs first, about the conversation ahead: ' + r.of);
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
+      nx = await sdNext(p);
+      ok(nx && nx.chain && nx.btn === 'Continue to Difficult Conversation', 'and leads on too');
+      await p.click('#sdChain'); await p.waitForTimeout(600);
+      ok((await words(p)).join(' / ') === "Decide your first sentence: what happened, what you need, and what you'd like to ask for. / Say it once to yourself, slowly, as if they were here.",
+        'with nothing written, Your words asks you to decide your first sentence');
+      await p.context().close();
+      for (const [ago, want] of [[2, "From your preparation: you need clarity. That's what you're going in for. / And what you'll ask for: Would you send me the plan by Friday. / Say it once to yourself, slowly, as if they were here."],
+        [13, "Decide your first sentence: what happened, what you need, and what you'd like to ask for. / Say it once to yourself, slowly, as if they were here."]]) {
+        p = await page(Object.assign(OPT(), { nvcLog: JSON.stringify([{ at: Date.now() - ago * 3600e3, kind: 'prep', text: 'Request: Would you send me the plan by Friday.', need: ['clarity'], req: 'Would you send me the plan by Friday', line: '' }]) }));
+        await E(p, () => location.hash = 'practice/conversation'); await p.waitForTimeout(300);
+        const ww = (await words(p)).join(' / ');
+        ok(ww === want, 'a preparation kept ' + ago + ' hours ago ' + (ago < 12 ? 'comes back' : 'is too old to bring back') + ': ' + ww.slice(0, 60));
+        await p.context().close();
+      }
+
+      // During the Call: silent beside a call, though voice, bells and tones are on for every practice
+      p = await page(Object.assign(OPT({ audio: true, voice: true, bells: true, cues: 'tones' }), { optsOpen: '1' }), () => {
+        window.__said = []; if (window.speechSynthesis) speechSynthesis.speak = u => window.__said.push(u.text);
+      });
+      await E(p, () => location.hash = 'practice/call'); await p.waitForTimeout(450);
+      i = await intro(p);
+      ok(i.title === 'During the Call' && i.kind === 'Calm · Program · up to 60 min' && i.lens === '30 min | 60 min* | 90 min' && i.go === 'Start' &&
+        i.steps === 'Before it starts00:30 | In the call58:45 | After the call00:45', 'During the Call: a short start, the call, a short close: ' + i.steps);
+      ok(i.needs === "Headphones the beat plays under the call's audio, at half your usual volume | Heart sensor optional: your heart rate and coherence while you talk | This screen in view beside the call, on this phone or in a window next to it, to glance at the pacer while you listen",
+        'it needs headphones, this screen in view, and a sensor if you like');
+      o = await E(p, () => { const q = s => document.querySelector(s); return { voice: q('#sOptVoice').checked, bells: q('#sOptBells').checked, buzz: q('#sOptBuzz') ? q('#sOptBuzz').checked : false, scope: q('#sOptsScope').textContent, sum: q('#sOptsSum').textContent }; });
+      ok(!o.voice && !o.bells && !o.buzz && await segs(p, '#sOptCues') === 'Tone | Chimes | Silent*' &&
+        o.scope === 'For During the Call only. It starts silent: captions only, with no voice, bells or breath sounds, only the beat. The defaults for every practice are in Settings.', 'it starts silent: ' + o.scope);
+      ok(await segs(p, '#sOptBeat') === 'Off | Alpha 10 Hz* | Beta 16 Hz' && await segs(p, '[data-choice="guide"]') === 'Silent pacer* | Reminders only' && /^A steady 10 Hz beat for relaxed alertness, at half your usual volume so voices stay clear\. 200 Hz carrier\./.test(await t(p, '#sBeatNote')),
+        'a steady alpha beat, or beta for long meetings, and a silent pacer: ' + await t(p, '#sBeatNote'));
+      await p.click('#sOptVoice'); await p.click('.si-len button[data-len="30"]'); await p.waitForTimeout(200);    // the voice on: the call itself stays quiet
+      await p.click('#sGo'); await p.waitForTimeout(600);
+      const said0 = await E(p, () => window.__said.slice());
+      await E(p, () => { window.__entrain.P.t0 -= 31; }); await p.waitForTimeout(800);
+      r = await run(p);
+      const c = await E(p, () => { const X = window.__entrain, tap = document.querySelector('#sTap');
+        return { tap: tap.hidden ? '' : tap.textContent.trim(), said: window.__said.slice(), cues: X.BC.sound, gain: X.A.gainMul, band: X.A.track && X.A.track.band, pts: X.A.track && JSON.stringify(X.A.track.pts), total: X.P.total, k: X.P.steps[X.P.idx].k, inh: X.BC.inh, exh: X.BC.exh }; });
+      ok(said0[0] === 'Headphones on, the beat low: just loud enough to notice under the voices.' && r.step === 'In the call' && c.said.length === said0.length && c.cues === 'off' && c.k === 'breath' && c.inh === 4.4 && c.exh === 6.5 &&
+        r.lines[0] === 'Follow the pacer while you listen. When you speak, let the breath go, then come back to the pacer.', 'in the call: a silent pacer, 4.4 s in and 6.5 s out, and no voice even with it on: ' + r.lines[0]);
+      ok(c.gain === 0.5 && c.band === 'Alpha' && c.pts === '[[0,10],[1800,10]]' && c.total === 1800 && c.tap === "The call's over", 'the beat at half volume, for the 30 minutes chosen; a button to say the call is over');
+      await p.click('#sTap'); await p.waitForTimeout(400);
+      r = await run(p);
+      ok(r.step === 'After the call' && await E(p, () => window.__entrain.P.total) < 120, "The call's over moves on to the close, and gives back the time left");
+      await toEnd(p);
+      nx = await sdNext(p);
+      ok(nx && nx.txt === "When it's over, After the Conversation helps the stress settle." && nx.href === '#practice/after-talk' && nx.btn === 'After the Conversation', 'its end screen suggests After the Conversation');
+      await p.click('#sdAgain'); await p.waitForTimeout(400);
+      await p.click('[data-choice="guide"] button[data-v="free"]'); await p.waitForTimeout(100);
+      pl = await plan(p, 'call', 30);
+      const mid = pl.steps[1];
+      ok(mid.k === 'observe' && mid.lines.map(l => l[0]).join() === '0,300,600,900,1200,1500' && mid.lines[0][1] === 'Breathe at your own pace. A reminder shows every few minutes.' && mid.lines[1][1] === 'While they speak, breathe out slowly.' && inside(pl),
+        'Reminders only: your own breathing, with a reminder every five minutes: ' + mid.lines.map(l => l[1]).slice(1, 3).join(' / '));
+      await p.context().close();
+
+      // After the Conversation and Prepare a Hard Conversation: their pages; search and Learn
+      p = await page(Object.assign(OPT({ audio: true }), { optsOpen: '1' }));
+      await E(p, () => location.hash = 'practice/after-talk'); await p.waitForTimeout(400);
+      i = await intro(p);
+      pl = await plan(p, 'after-talk', 0);
+      ok(i.kind === 'Calm · Program · 9 min' && i.go === 'Start 9 min' && pl.total === 540 &&
+        i.steps === "It's over00:30 | Cyclic sighs01:30 | Long out-breaths03:00 | Name it00:55 | Kindness01:10 | What went well00:45 | One next step00:45 | Close00:25" &&
+        await segs(p, '#sOptBeat') === 'Off | Theta 6 Hz* | Alpha 10 Hz' && pl.steps[2].t.inh === 4.4 && pl.steps[2].t.exh === 6.5 && inside(pl), 'After the Conversation: sighs and long out-breaths under theta, then naming it, kindness and one next step: ' + i.steps);
+      await E(p, () => location.hash = 'practice/nvc-prep'); await p.waitForTimeout(400);
+      i = await intro(p);
+      ok(i.kind === 'Reflect · Writing · self-paced, about 15 min' && i.go === 'Start' &&
+        i.steps === "Arrive00:30 | What happened?your pace | Why it's hardyour pace | Into the body00:25 | Feelingsyour pace | Needsyour pace | Let it land00:45 | Their sideyour pace | Your requestyour pace | Your first sentenceyour pace | Closing00:30",
+        'Prepare a Hard Conversation: what happened, why it\'s hard, feelings and needs, theirs, a request and a first sentence');
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(300);
+      await p.click('#tbFind'); await p.fill('#fdIn', 'difficult conversation'); await p.waitForTimeout(250);
+      const hits = await E(p, () => [...document.querySelectorAll('#fdRes .fd-it')].map(a => a.getAttribute('href')));
+      await p.fill('#fdIn', 'meeting'); await p.waitForTimeout(250);
+      const hits2 = await E(p, () => [...document.querySelectorAll('#fdRes .fd-it')].map(a => a.getAttribute('href')));
+      ok(hits[0] === '#practice/conversation' && hits.indexOf('#practice/nvc-prep') > 0 && hits2.indexOf('#practice/conversation') >= 0 && hits2.indexOf('#practice/call') >= 0,
+        'search finds them: ' + hits.slice(0, 4).join(', ') + '; meeting: ' + hits2.slice(0, 4).join(', '));
+      await p.keyboard.press('Escape');
+      await E(p, () => location.hash = 'l-conversations'); await p.waitForTimeout(400);
+      const lt = await t(p, '#v-learn');
+      ok(/Difficult conversations\./.test(lt) && /Brooks, A\. W\. \(2014\)/.test(lt) && /Goessl, V\. C\./.test(lt) && /Lachowicz/.test(lt) && /Blackie, R\. A\., & Kocovski, N\. L\. \(2018\)/.test(lt),
+        'Learn gives the evidence, with the references');
       await p.context().close();
     }
   } catch (e) {
