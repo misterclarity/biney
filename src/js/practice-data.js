@@ -339,6 +339,140 @@
     ];
   }
 
+  /* ----- autogenic training -----
+     Schultz's standard exercises (Schultz & Luthe 1959): short phrases said silently and slowly while the body
+     follows in its own time ("passive concentration"), the resting formula "I am completely calm" after each,
+     and a firm way back: arms firm, a deep breath, eyes open. The classic course adds one exercise a week.
+     NASA's Autogenic-Feedback Training (Cowings) taught astronauts the same exercises with biofeedback,
+     starting from paced breathing; here the session starts the same way and a heart sensor gives the feedback.
+     Autogenic Reframing keeps the heaviness, warmth and breath for anxious moments, reads the strong heartbeat
+     as readiness, and makes "I am excited" its intention formula (the method's middle stage). */
+  var AT_R = ["armR", "handR"], AT_L = ["armL", "handL"], AT_LR = ["thighR", "kneeR", "shinR", "footR"], AT_LL = ["thighL", "kneeL", "shinL", "footL"];
+  var AT_ARMS = AT_R.concat(AT_L), AT_ALL = AT_ARMS.concat(AT_LR, AT_LL);
+  var AT_LIMBS = {             // the limbs in the order the phrases take them: seven steps, or fewer when time is short
+    7: [[AT_R, "My right arm is"], [AT_L, "My left arm is"], [AT_ARMS, "Both arms are"], [AT_LR, "My right leg is"], [AT_LL, "My left leg is"],
+      [AT_LR.concat(AT_LL), "Both legs are"], [AT_ALL, "My arms and legs are"]],
+    4: [[AT_R, "My right arm is"], [AT_ARMS, "Both arms are"], [AT_LR.concat(AT_LL), "Both legs are"], [AT_ALL, "My arms and legs are"]],
+    2: [[AT_ARMS, "My arms are"], [AT_ALL, "My arms and legs are"]]
+  };
+  var AT_CALM = "I am completely calm.";
+  var AT_POS = {
+    lie: "Lie on your back, a pillow under your head, your arms resting a little away from your sides with the elbows slightly bent. Let your feet fall outward.",
+    chair: "Sit back in an armchair or a high-backed chair, your head supported, your forearms on the arms of the chair or on your thighs, feet flat on the floor.",
+    coach: "Sit on the front half of a chair, knees apart and feet flat. Lean forward a little, rest your forearms on your thighs and let your hands hang loosely. Let your head drop gently forward: the coachman's seat."
+  };
+  // a breathing pace in words: your own in and out, or the resonance rate with its longer out-breath
+  function pcTxt(p) {
+    return p.own ? "in for " + pSecs(p.inh).replace(" s", " seconds") + " and out for " + pSecs(p.exh).replace(" s", " seconds")
+      : "in through the nose and a longer, slower breath out, " + p.rate + " a minute";
+  }
+  // a phrase (or two, in turn) said every 18 to 20 seconds or so from t until end, for you to repeat silently in between
+  function atSay(L, phrases, t, end, every) {
+    var n = Math.max(phrases.length, Math.round((end - t) / every)), gap = (end - t) / n;
+    for (var i = 0; i < n; i++) L.push([Math.round(t + i * gap), phrases[i % phrases.length]]);
+    return L;
+  }
+  // heaviness or warmth, limb by limb, with the resting formula at the end
+  function atLimbs(secs, title, word, intro) {
+    var n = secs >= 150 ? 7 : secs >= 70 ? 4 : 2, each = Math.floor(secs / n);
+    return AT_LIMBS[n].map(function (x, i) {
+      var s = i === n - 1 ? secs - each * (n - 1) : each, last = i === n - 1 && s >= 20, L = [], t = 0;
+      if (i === 0) { L.push([0, intro]); t = Math.min(10, Math.round(s * 0.4)); }
+      atSay(L, [x[1] + " " + word + "."], t, last ? s - 8 : s, 18);
+      if (last) L.push([s - 7, AT_CALM]);
+      return G(s, title, L, { body: x[0], quiet: true, nobell: i > 0 });
+    });
+  }
+  // one exercise for the trunk or the head: where to rest your attention, its phrases, the resting formula
+  function atOne(secs, title, intro, phrases, body) {
+    var t = Math.min(10, Math.round(secs * 0.25)), end = secs >= 30 ? secs - 7 : secs, L = atSay([[0, intro]], phrases, t, end, 20);
+    if (secs >= 30) L.push([end, AT_CALM]);
+    return G(secs, title, L, { body: body, quiet: true });
+  }
+  // the exercises done so far, said together in their short forms
+  function atAll(secs, ex, heart) {
+    var p = [ex.indexOf(2) >= 0 ? "Arms and legs heavy and warm." : "Arms and legs heavy."];
+    if (ex.indexOf(3) >= 0) p.push(heart === "warm" ? "Chest warm and pleasant." : "Heartbeat calm and regular.");
+    if (ex.indexOf(4) >= 0) p.push("It breathes me.");
+    if (ex.indexOf(5) >= 0) p.push("Solar plexus warm.");
+    if (ex.indexOf(6) >= 0) p.push("Forehead pleasantly cool.");
+    p.push(AT_CALM);
+    var gap = (secs - 6) / p.length, L = [[0, "Now all of it together, slowly."]];
+    p.forEach(function (x, i) { L.push([Math.round(6 + i * gap), x]); });
+    return G(secs, "All together", L, { body: ["all"], quiet: true });
+  }
+  // coming back firmly; or, at bedtime, staying with it into sleep
+  function atBack(secs, sleep) {
+    if (sleep) return G(secs, "Into sleep", [[0, "Tonight, stay as you are, and let the heaviness and warmth carry you into sleep."], [Math.round(secs * 0.55), AT_CALM]],
+      { body: ["all"], quiet: true, sleepy: true });
+    return G(secs, "Coming back", [[0, "Now come back, firmly."], [4, "Arms firm: make fists and bend your arms strongly."],
+      [Math.round(secs * 0.45), "Breathe deeply."], [Math.round(secs * 0.62), "Eyes open."], [Math.round(secs * 0.8), "Stretch, and take a moment before you stand up."]], { body: AT_ARMS });
+  }
+  // seconds for arriving, the paced breathing, all of it together and coming back, at 5, 10, 15 and 20 minutes
+  function atFrame(min) { return min <= 5 ? [30, 35, 0, 25] : min <= 10 ? [40, 60, 40, 30] : min <= 15 ? [50, 90, 50, 35] : [60, 120, 90, 40]; }
+  var AT_W = { 1: 2.4, 2: 2, 3: 1.1, 4: 1.1, 5: 1.1, 6: 0.9 };     // each exercise's share of a full session
+  function autogenic(d, min) {
+    var stage = parseInt(pChoice(d, "stage"), 10) || 6, heart = pChoice(d, "heart"), sleep = pChoice(d, "end") === "sleep", fr = atFrame(min);
+    var ex = [1, 2, 3, 4, 5, 6].filter(function (x) { return x <= stage && !(x === 3 && heart === "none"); });
+    // all six: the usual shares; while learning, the newest exercise gets the most time and the earlier ones their short forms
+    var w = ex.map(function (x, i) { return stage >= 6 ? AT_W[x] : i === ex.length - 1 ? 2.4 : x <= 2 ? 1.2 : 0.8; });
+    var E = min * 60 - fr[0] - fr[1] - fr[2] - fr[3], sw = w.reduce(function (a, b) { return a + b; }, 0), used = 0;
+    var secs = ex.map(function (x, i) { var s = i === ex.length - 1 ? E - used : Math.round(E * w[i] / sw); used += s; return s; });
+    var p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 }, a = fr[0], lines = [[0, AT_POS[pChoice(d, "pos")] || AT_POS.lie],
+      [Math.round(a * 0.42), "Close your eyes. You'll say short phrases silently to yourself, slowly, and let your body follow them in its own time."]];
+    if (secs[0] >= 70) lines.push([Math.round(a * 0.68), "If you're left-handed, swap right and left in the phrases."]);
+    lines.push([a - 6, AT_CALM]);
+    var steps = [G(a, "Arrive", lines, { body: ["all"] }),
+      Br(fr[1], "Paced breathing", t, { lines: [[0, "First, a few slow breaths, " + pcTxt(p) + "."], [Math.round(fr[1] * 0.5), "Let each out-breath soften your body a little more."]] })];
+    ex.forEach(function (x, i) {
+      var s = secs[i];
+      if (x === 1) steps = steps.concat(atLimbs(s, "Heaviness", "heavy", "Heaviness. Say each phrase silently and slowly, three or four times, and let the feeling come by itself."));
+      else if (x === 2) steps = steps.concat(atLimbs(s, "Warmth", "warm", "Warmth. As the muscles let go, the blood vessels widen and the arms and legs grow warm."));
+      else if (x === 3) steps.push(heart === "warm" ? atOne(s, "Warm chest", "Now the chest. Rest your attention in the centre of your chest.", ["My chest is warm and pleasant."], ["chest"])
+        : atOne(s, "Heartbeat", "Now the heart. Notice your heartbeat, wherever you feel it: the chest, the neck or the fingertips.", ["My heartbeat is calm and regular."], ["chest"]));
+      else if (x === 4) steps.push(atOne(s, "Breath", "Now the breath. Let it come and go by itself; you're only watching it.", ["My breathing is calm and regular.", "It breathes me."], ["chest", "belly"]));
+      else if (x === 5) steps.push(atOne(s, "Solar plexus", "Now the solar plexus, between your navel and the lower end of your breastbone.", ["My solar plexus is warm.", "Warmth flows through my belly."], ["belly"]));
+      else steps.push(atOne(s, "Cool forehead", "Now the forehead, while your body stays warm. Picture a light, cool breeze across it.", ["My forehead is pleasantly cool."], ["head"]));
+    });
+    if (fr[2]) steps.push(atAll(fr[2], ex, heart));
+    steps.push(atBack(fr[3], sleep));
+    return steps;
+  }
+  var RF_WORDS = { excited: "I am excited", ready: "I'm ready for this", energy: "This energy helps me" };
+  // seconds at 5 and 10 minutes: arrive, name it, anxious or excited, sighs, long out-breaths, heavy and warm, strong heart, easy breath, reframe, intention, coming back
+  function rfSecs(min) { return min <= 5 ? [20, 25, 35, 45, 0, 30, 30, 0, 75, 20, 20] : [30, 40, 45, 60, 90, 60, 50, 40, 120, 40, 25]; }
+  function reframe(d, min) {
+    var s = rfSecs(min), W = RF_WORDS[pChoice(d, "words")] || RF_WORDS.excited, p = pPace(d), t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 };
+    var at = function (i, f) { return Math.round(s[i] * f); };
+    var st = [
+      G(s[0], "Arrive", [[0, "Sit, or stand if you're about to go on. Let your eyes close, or rest them on the floor."],
+        [at(0, 0.45), "Notice what your body is doing right now: your heart, your breath, your hands, your stomach."]], { vis: "glow" }),
+      G(s[1], "Name it", [[0, "Name what you notice, plainly, the way a reporter would: my heart is racing, my breath is quick, my hands are cold."],
+        [at(1, 0.6), "Naming it takes some of the heat out of it."]], { vis: "glow" }),
+      G(s[2], "Anxious or excited?", [[0, "Anxiety and excitement are nearly identical in the body: the same faster heartbeat, the same quick breath, the same rush of adrenaline."],
+        [at(2, 0.5), "Both are your body getting ready for something that matters. What differs is the story you tell about it."]], { vis: "glow" }),
+      Br(s[3], "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 }, { lines: [[0, "Breathe in through the nose, take a short second sip to fill up, then let a long, slow breath out through the mouth."],
+        [at(3, 0.5), "The long out-breath takes the edge off, so the energy is yours to use."]] })
+    ];
+    if (s[4]) st.push(Br(s[4], "Long out-breaths", t, { lines: [[0, "Now slow breaths, " + pcTxt(p) + "."], [at(4, 0.5), "Your heart can stay strong. You're steadying it, and that's enough."]] }));
+    st.push(G(s[5], "Heavy and warm", [[0, "Now say the autogenic phrases silently, slowly."], [at(5, 0.22), "My shoulders are heavy and loose."],
+      [at(5, 0.5), "My arms are heavy and warm."], [at(5, 0.78), "My hands are warm."]], { body: ["shoulders"].concat(AT_ARMS), quiet: true }));
+    st.push(G(s[6], "Strong heart", [[0, "Notice your heartbeat, wherever you feel it."], [at(6, 0.25), "My heart beats strongly. It's getting me ready."],
+      [at(6, 0.65), "My heart beats strongly. It's getting me ready."]], { body: ["chest"], quiet: true }));
+    if (s[7]) st.push(G(s[7], "Easy breath", [[0, "My breath is slow and easy."], [at(7, 0.5), "It breathes me."]], { body: ["chest", "belly"], quiet: true }));
+    st.push(G(s[8], "Reframe", [[0, "Now bring to mind what's ahead, and the thought that comes with it: I'm anxious. What if it goes wrong?"],
+      [at(8, 0.18), "Answer it, out loud if you can: " + W + "."],
+      [at(8, 0.36), "A faster heartbeat sends more oxygen to your brain and muscles. That's what it's for."],
+      [at(8, 0.56), W + "."],
+      [at(8, 0.72), "Each time the old thought comes back, notice it, and answer it again: " + W + "."],
+      [at(8, 0.9), W + "."]], { vis: "glow" }));
+    st.push(G(s[9], "Your intention", [[0, "Now make it your intention, the way autogenic training does. Say it three times, slowly."],
+      [at(9, 0.3), W + "."], [at(9, 0.55), W + "."], [at(9, 0.8), W + "."]], { vis: "glow", quiet: true }));
+    st.push(G(s[10], "Coming back", [[0, "Arms firm: make fists and bend your arms strongly."], [at(10, 0.28), "Breathe deeply."],
+      [at(10, 0.48), "Eyes open."], [at(10, 0.68), "Take this energy with you. " + W + "."]], { body: AT_ARMS }));
+    return st;
+  }
+
   /* --------------------------- the library --------------------------- */
   var PRACTICES = [
     /* ===== combined programs ===== */
@@ -734,6 +868,53 @@
       how: "Jacobson's technique in a shortened form: 14 muscle groups, 7 seconds of tension and 30 of release each, with the group lit on the body map.",
       ev: "In a randomised comparison, 20 minutes of progressive muscle relaxation increased felt relaxation and produced a steady physiological relaxation trend (skin conductance and heart rate), where deep breathing briefly raised arousal first. Relaxation training is a conditionally recommended treatment for chronic insomnia.",
       cite: "Toussaint et al. 2021 · Edinger et al. 2021 (AASM)"
+    },
+    {
+      id: "autogenic", name: "Autogenic Training", lengths: [5, 10, 15, 20], min: 10, strength: 2,
+      tone: "relax", voice: true, sensor: "optional", sensorWhy: "optional: your heart rate and coherence as feedback, as in NASA's autogenic-feedback training",
+      pace: true, paceSplit: 0.4, opt: { audio: false },
+      blurb: "Schultz's standard autogenic training, the method NASA adapted for astronauts: short phrases said silently, for heaviness, warmth, a calm heartbeat, the breath, a warm solar plexus and a cool forehead, until your body follows. All six at once, or week by week as in the classic course.",
+      parts: "Paced breathing · heaviness · warmth · heartbeat · breath · solar plexus · cool forehead · coming back · heart feedback",
+      audio: { name: "Autogenic Training", band: "Theta", carrier: 200, fade: 8, cat: "relax" },
+      beats: [
+        { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: steady(6), note: "A steady 6 Hz beat, the band studied for deep relaxation. Autogenic training itself is done in silence, so it starts off." },
+        { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: steady(10), note: "A steady 10 Hz beat: relaxed but awake. Autogenic training itself is done in silence, so it starts off." }
+      ],
+      choices: [
+        { key: "pos", label: "Position", def: "lie", note: "The classic three: lying down, sitting back, or the coachman's seat, which works on any chair.",
+          opts: [["lie", "Lying down"], ["chair", "Armchair"], ["coach", "Coachman's seat"]] },
+        { key: "stage", label: "Phrases", def: "6", note: "The classic course adds one a week, practised two or three times a day: heaviness, then warmth, the heartbeat, the breath, the solar plexus and the cool forehead. Choose the week you're in, or all six.",
+          opts: [["1", "Week 1"], ["2", "Week 2"], ["3", "Week 3"], ["4", "Week 4"], ["5", "Week 5"], ["6", "All six"]] },
+        { key: "heart", label: "Heart phrase", def: "beat", note: "If attending to your heartbeat makes you uneasy, or it isn't regular, a warm chest is the gentler phrase.",
+          opts: [["beat", "Heartbeat"], ["warm", "Warm chest"], ["none", "Leave it out"]] },
+        { key: "end", label: "Ending", def: "wake", note: "At bedtime, let it carry you into sleep instead of coming back.",
+          opts: [["wake", "Back to alert"], ["sleep", "Into sleep"]] }
+      ],
+      next: { id: "reframe", txt: "When anxiety rises, Autogenic Reframing uses the same phrases to turn “I am anxious” into “I am excited”." },
+      build: function (min) { return autogenic(this, min || 10); },
+      how: "Lie down, sit back in an armchair or take the coachman's seat, and close your eyes. A short spell of paced breathing with a longer out-breath comes first, as in NASA's version. Then Schultz's six standard exercises, each a short phrase said silently and slowly while the voice says it with you: heaviness, from the right arm through to the arms and legs, then warmth, a calm and regular heartbeat, the breath that breathes itself, warmth in the solar plexus and a pleasantly cool forehead, with “I am completely calm” after each, and all of them together at the end. You come back firmly: arms firm, a deep breath, eyes open. Or, at bedtime, you stay with it into sleep. The classic course adds one exercise a week, practised two or three times a day; choose the week you're in under Phrases. With a heart sensor, your heart rate and coherence show as you go, and the summary shows how your heart rate settled.",
+      ev: "A meta-analysis of 60 controlled studies, 35 of them randomised, found medium-sized benefits over control conditions, for tension headache and migraine, mild to moderate high blood pressure, anxiety, mild to moderate depression and sleep problems among others, and results about as good as other psychological treatments, or a little smaller. A 2019 meta-analysis found it lowered anxiety in healthy adults and raised high-frequency heart-rate variability. NASA combined the same exercises with biofeedback as Autogenic-Feedback Training against space motion sickness; on Spacelab missions trained astronauts generally had milder symptoms than untrained ones, though only a handful flew.",
+      cite: "Stetter & Kupper 2002 · Seo & Kim 2019 · Cowings et al. 1988 (NASA) · Cowings et al. 2017 (NASA)",
+      caution: "Ask your doctor first if you have a heart condition, epilepsy or migraines. If your heartbeat isn't regular, or attending to it makes you uneasy, choose Warm chest or Leave it out under Heart phrase; with migraines, Week 5 ends before the cool forehead. Autogenic training isn't suitable during psychosis, a dissociative disorder, a severe depression or a suicidal crisis: talk to a professional first. Twitches, tingling, tears or sudden feelings can come up while you practise; they usually pass. Unless you're going to sleep, come back with arms firm, a deep breath and eyes open before you stand up or drive."
+    },
+    {
+      id: "reframe", name: "Autogenic Reframing", lengths: [5, 10], min: 10, strength: 2,
+      tone: "stim", voice: true, sensor: "optional", pace: true, paceSplit: 0.4, opt: { audio: false },
+      blurb: "Autogenic training changed for anxious moments: name what your body is doing, remember that anxiety and excitement are nearly identical in the body, take the edge off with long out-breaths, then turn “I am anxious” into “I am excited” with the autogenic phrases.",
+      parts: "Naming the arousal · cyclic sighs · long out-breaths · heavy and warm · a strong heart as readiness · “I am excited” · intention formula",
+      audio: { name: "Autogenic Reframing", band: "Alpha", carrier: 200, fade: 6, cat: "relax" },
+      beats: [
+        { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: steady(10), note: "A steady 10 Hz beat: relaxed but alert, to go in ready." },
+        { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: steady(6), note: "A steady 6 Hz beat, the slower band, if you'd rather settle further." }
+      ],
+      choices: [{ key: "words", label: "Your words", def: "excited", note: "What you'll say in place of “I'm anxious”. “I am excited” is the phrase from the experiments; the others say the same in another way.",
+        opts: [["excited", "I am excited"], ["ready", "I'm ready for this"], ["energy", "This energy helps me"]] }],
+      next: { id: "autogenic", txt: "The phrases work faster with daily practice: Autogenic Training is the full standard sequence." },
+      build: function (min) { return reframe(this, min || 10); },
+      how: "For the moments before a talk, a test, a performance or a hard conversation, or whenever anxiety rises. You notice what your body is doing and name it plainly, then hear why it can be read another way: anxiety and excitement are nearly identical in the body, the same faster heartbeat, quick breath and rush of adrenaline. Cyclic sighs and slow breathing with a longer out-breath take the edge off, then shortened autogenic phrases loosen the shoulders and warm the hands, and a heart phrase rewritten to welcome a strong heartbeat as readiness. Then the reframe: when the anxious thought comes, you answer it with “I am excited”, or another phrase you choose, out loud if you can, and make it your intention formula, as autogenic training's middle stage does with a personal resolution. It ends with arms firm, a deep breath and eyes open. 5 or 10 minutes.",
+      ev: "Anxiety and excitement share their physiology: in Brooks's experiments heart rate rose before a performance whichever way people read it, and saying “I am excited” rather than trying to calm down improved singing, persuasive speeches and maths. A 2024 meta-analysis of randomised trials found reappraising stress arousal improved performance by a small amount, more for public performances. Reading arousal as useful also gave a more efficient cardiovascular response to a stressful speech, and naming feelings dampens them. The autogenic and breathing parts have their own evidence; this combination hasn't been tested as a whole.",
+      cite: "Brooks 2014 · Bosshard & Gomez 2024 · Jamieson et al. 2012 · Torre & Lieberman 2018 · Balban et al. 2023",
+      caution: "This is for everyday nerves, stage fright and the anxiety before something that matters. If panic attacks keep coming back, talk to a doctor or therapist: cognitive behavioural therapy treats them well. The cautions for Autogenic Training apply here too."
     },
     {
       id: "shuffle", name: "Cognitive Shuffle", lengths: [10, 20], min: 10, strength: 1,

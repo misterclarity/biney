@@ -47,7 +47,7 @@
   }
   function libNeeds(o) {
     var n = [];
-    if (o.audio || o.method === "sound") n.push("phones");
+    if ((o.audio && !(o.opt && o.opt.audio === false)) || o.method === "sound") n.push("phones");     // a beat that starts off needs none
     if (o.sensor === "best") n.push("sensor");
     if (o.method === "move" || (o.posture || []).indexOf("walk") >= 0) n.push("space");
     return n;

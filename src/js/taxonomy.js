@@ -26,7 +26,7 @@
       ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
     calm: [["calm-reset", "program", "sit"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
       ["coherence", "program", "sit lie"], ["conversation", "program", "sit"], ["call", "program", "sit"], ["after-talk", "program", "sit"], ["grounding", "meditate", "sit"], ["tapping", "relax", "sit"],
-      ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
+      ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
       ["t:preop-calm", "sound", "lie"]],
@@ -46,7 +46,7 @@
   var ALSO = {
     "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],
     anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], gratitude: ["calm"], "back-hips": ["calm"],
-    "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"]
+    "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"]
   };
   var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8" };
   var TOOLS = {

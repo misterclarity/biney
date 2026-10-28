@@ -1124,7 +1124,8 @@
     pUnlock();
     P.state = "done";
     $("#ses").dataset.dim = "";
-    if (!early && !quiet) {
+    var asleep = P.steps.length && pSleepyStep(P.steps[P.steps.length - 1]);     // a practice that ends in sleep ends without bells
+    if (!early && !quiet && !asleep) {
       pBell(0.5);
       if (A.ctx) pBell(0.4, A.ctx.currentTime + 1.4, 523.25);
       if (d.end) pSay(d.end);
@@ -1180,9 +1181,9 @@
   function pNeeds(d) {
     if (d.needs) return d.needs;
     var n = [];
-    if (d.audio) n.push(["sounds", "Headphones", "for the binaural layer"]);
+    if (d.audio) n.push(["sounds", "Headphones", d.opt && d.opt.audio === false ? "only if you add a binaural beat" : "for the binaural layer"]);
     if (d.sensor === "best") n.push(["pulse", "Heart sensor", d.sensorWhy || "recommended: live heart rate and coherence"]);
-    else if (d.sensor === "optional" || pHasBreath(d)) n.push(["pulse", "Heart sensor", "optional: adds heart rate and coherence"]);
+    else if (d.sensor === "optional" || pHasBreath(d)) n.push(["pulse", "Heart sensor", d.sensor === "optional" && d.sensorWhy || "optional: adds heart rate and coherence"]);
     if (d.lie) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
     if (d.room) n.push(["move", "Room to move", "about two metres clear around you, on a floor with good grip"]);
     else if (d.stand) n.push(["move", "Space to stand", "an arm's length all around"]);

@@ -9,6 +9,7 @@
 //   U  what an automatic update waits for B  connecting can't get stuck
 //   H  a sensor that sends heart rate only: no coherence, the test's caution, the guide
 //   T  a difficult conversation: before it (with an NVC preparation first), during the call, after it
+//   X  autogenic training (the standard phrases, week by week, the endings) and Autogenic Reframing
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -447,7 +448,8 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const r = await page(OPT({ audio: false }), null, { speed: 30, rr: false });
       await E(r, () => location.hash = 'practice/body-scan'); await r.waitForTimeout(300);
       await r.click('#sGo'); await r.waitForTimeout(3000);
-      await r.click('#sqRestart'); await r.click('#sqRestart'); await r.waitForTimeout(400);
+      await E(r, () => { const b = document.querySelector('#sqRestart'); b.click(); b.click(); });   // both taps at once: at 30 times the speed, the 3 s to confirm last a tenth of a second
+      await r.waitForTimeout(400);
       const hist = await E(r, () => JSON.parse(localStorage.getItem('entrain.history') || '[]'));
       ok(hist.length === 1 && hist[0].id === 'body-scan' && hist[0].full === false && hist[0].secs >= 60, 'a restart after a minute keeps the minutes done as a session ended early: ' + (hist[0] && hist[0].secs) + ' s');
       await r.context().close();
@@ -1144,6 +1146,194 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const lt = await t(p, '#v-learn');
       ok(/Difficult conversations\./.test(lt) && /Brooks, A\. W\. \(2014\)/.test(lt) && /Goessl, V\. C\./.test(lt) && /Lachowicz/.test(lt) && /Blackie, R\. A\., & Kocovski, N\. L\. \(2018\)/.test(lt),
         'Learn gives the evidence, with the references');
+      await p.context().close();
+    }
+
+    /* X. Autogenic Training: Schultz's standard phrases in order, each said and then repeated silently with the
+       body map on the part they name; all six or week by week; three positions; a heart phrase to choose; back
+       to alert, or into sleep without the end bells; paced breathing first and a heart sensor as feedback, as in
+       NASA's version. Autogenic Reframing: anxiety and excitement nearly identical in the body, the strong
+       heartbeat read as readiness, and "I am excited" (or other words) as its intention formula. */
+    if (!only || only === 'X') {
+      const intro = p => E(p, () => {
+        const q = s => document.querySelector(s), all = s => [...document.querySelectorAll(s)], tx = e => e.textContent.replace(/\s+/g, ' ').trim();
+        return { title: q('#viewTitle').textContent, kind: tx(q('#sIntro .si-kind')), go: tx(q('#sGo')), blurb: tx(q('#sIntro .si-blurb')),
+          steps: all('#sIntro .si-steps li:not([hidden])').map(tx).join(' | '), needs: all('#sIntro .si-need li').map(tx).join(' | '),
+          lens: all('#sIntro .si-len button').map(b => tx(b) + (b.getAttribute('aria-checked') === 'true' ? '*' : '')).join(' | '),
+          caution: q('#sIntro .si-caution') ? tx(q('#sIntro .si-caution')) : '' };
+      });
+      const segs = (p, sel) => E(p, sel => [...document.querySelectorAll(sel + ' button')].map(b => b.textContent.trim() + (b.getAttribute('aria-pressed') === 'true' ? '*' : '')).join(' | '), sel);
+      const plan = (p, id, len, ch) => E(p, ([id, len, ch]) => {
+        const X = window.__entrain, d = X.pDef(id);
+        if (ch) localStorage.setItem('entrain.pCh.' + id, JSON.stringify(ch));
+        const pl = X.pPlan(d, len);
+        return { total: pl.total, steps: pl.steps.map(s => ({ title: s.title, k: s.k, secs: s.secs, body: s.body || null, quiet: !!s.quiet, sleepy: !!s.sleepy, t: s.t, lines: (s.lines || []).map(l => [l[0], String(l[1])]) })) };
+      }, [id, len, ch || null]);
+      const said = pl => [].concat(...pl.steps.map(s => s.lines.map(l => l[1])));
+      const OSC = () => {              // every tone the page starts: the bells are 392 Hz and, at the end, 523.25 Hz
+        window.__osc = [];
+        const AC = window.AudioContext || window.webkitAudioContext, make = AC.prototype.createOscillator;
+        AC.prototype.createOscillator = function () {
+          const o = make.call(this), go = o.start;
+          o.start = function () { window.__osc.push(Math.round(o.frequency.value * 100) / 100); return go.apply(o, arguments); };
+          return o;
+        };
+        window.__said = [];
+        if (window.speechSynthesis) speechSynthesis.speak = u => window.__said.push({ t: u.text, v: u.volume });
+      };
+
+      // its page; the beat starts off and the headphones are only for it, the sensor gives feedback
+      let p = await page(Object.assign(OPT({ audio: true }), { optsOpen: '1' }));
+      await E(p, () => location.hash = 'practice/autogenic'); await p.waitForTimeout(450);
+      let i = await intro(p);
+      ok(i.title === 'Autogenic Training' && i.kind === 'Calm · Relaxation · 10 min' && i.lens === '5 min | 10 min* | 15 min | 20 min' && i.go === 'Start 10 min' &&
+        i.steps === 'Arrive00:40 | Paced breathing01:00 | Heaviness02:00 | Warmth01:40 | Heartbeat00:55 | Breath00:55 | Solar plexus00:55 | Cool forehead00:45 | All together00:40 | Coming back00:30',
+        'Autogenic Training: paced breathing, then the six standard exercises, all of them together, and coming back: ' + i.steps);
+      ok(i.needs === "Headphones only if you add a binaural beat | Heart sensor optional: your heart rate and coherence as feedback, as in NASA's autogenic-feedback training | Voice on the steps are spoken; eyes can stay closed" &&
+        /the method NASA adapted for astronauts/.test(i.blurb), 'a heart sensor as feedback, as in NASA\'s version; headphones only for a beat');
+      ok(/^Ask your doctor first if you have a heart condition, epilepsy or migraines\. .*choose Warm chest or Leave it out under Heart phrase; with migraines, Week 5 ends before the cool forehead\. Autogenic training isn't suitable during psychosis/.test(i.caution) &&
+        /come back with arms firm, a deep breath and eyes open before you stand up or drive\./.test(i.caution), 'its cautions: ' + i.caution.slice(0, 90));
+      ok(await segs(p, '[data-choice="pos"]') === "Lying down* | Armchair | Coachman's seat" && await segs(p, '[data-choice="stage"]') === 'Week 1 | Week 2 | Week 3 | Week 4 | Week 5 | All six*' &&
+        await segs(p, '[data-choice="heart"]') === 'Heartbeat* | Warm chest | Leave it out' && await segs(p, '[data-choice="end"]') === 'Back to alert* | Into sleep' &&
+        await segs(p, '#sOptBeat') === 'Off* | Theta 6 Hz | Alpha 10 Hz', 'its choices: position, the week of the course, the heart phrase, the ending; the beat starts off, though beats are on for every practice');
+      // the standard phrases, in order, each with the body map on what it names
+      let pl = await plan(p, 'autogenic', 15);
+      const phr = said(pl).filter(l => /^(My|Both|It breathes|I am completely)/.test(l));
+      const want = ['I am completely calm.', 'My right arm is heavy.', 'My left arm is heavy.', 'Both arms are heavy.', 'My right leg is heavy.', 'My left leg is heavy.', 'Both legs are heavy.', 'My arms and legs are heavy.', 'I am completely calm.',
+        'My right arm is warm.', 'My left arm is warm.', 'Both arms are warm.', 'My right leg is warm.', 'My left leg is warm.', 'Both legs are warm.', 'My arms and legs are warm.', 'I am completely calm.',
+        'My heartbeat is calm and regular.', 'I am completely calm.', 'My breathing is calm and regular.', 'It breathes me.', 'My breathing is calm and regular.', 'I am completely calm.', 'My solar plexus is warm.', 'I am completely calm.',
+        'My forehead is pleasantly cool.', 'I am completely calm.', 'It breathes me.', 'I am completely calm.'];
+      const uniq = phr.filter((l, k) => l !== phr[k - 1]);
+      ok(JSON.stringify(uniq) === JSON.stringify(want), 'at 15 minutes, the standard phrases in order, from the right arm to the cool forehead, each followed by "I am completely calm": ' + uniq.length + ' phrases' + (JSON.stringify(uniq) === JSON.stringify(want) ? '' : ': ' + JSON.stringify(uniq)));
+      const at = t => pl.steps.find(s => s.lines.some(l => l[1] === t));
+      ok(JSON.stringify(at('My right arm is heavy.').body) === '["armR","handR"]' && JSON.stringify(at('Both legs are warm.').body) === '["thighR","kneeR","shinR","footR","thighL","kneeL","shinL","footL"]' &&
+        JSON.stringify(at('My heartbeat is calm and regular.').body) === '["chest"]' && JSON.stringify(at('My solar plexus is warm.').body) === '["belly"]' && JSON.stringify(at('My forehead is pleasantly cool.').body) === '["head"]' &&
+        pl.steps.filter(s => /^(Heaviness|Warmth|Heartbeat|Breath|Solar plexus|Cool forehead|All together)$/.test(s.title)).every(s => s.quiet) && pl.steps[1].k === 'breath' && pl.steps[1].t.inh === 4.4 && pl.steps[1].t.exh === 6.5,
+        'the body map lights what each phrase names; the phrases are said softly; paced breathing comes first, 4.4 s in and 6.5 s out');
+      const hv = pl.steps.find(s => s.lines.some(l => l[1] === 'My heartbeat is calm and regular.')), gaps = hv.lines.filter(l => l[1] === 'My heartbeat is calm and regular.').map(l => l[0]);
+      ok(gaps.length === 3 && gaps.every((g, k) => !k || (g - gaps[k - 1] >= 18 && g - gaps[k - 1] <= 30)), 'each phrase comes back every 20 seconds or so, to repeat silently in between: ' + gaps.join(', '));
+      // every combination: whole minutes, every line inside its step, worded as what to do
+      const all = await E(p, () => {
+        const X = window.__entrain, RE = /n't\b|\b(do not|never|nothing|without|stop|avoid|none)\b|feel the breath/i, bad = [];
+        let n = 0;
+        const go = (id, ch, L) => {
+          localStorage.setItem('entrain.pCh.' + id, JSON.stringify(ch));
+          const pl = X.pPlan(X.pDef(id), L);
+          n++;
+          if (pl.total !== L * 60 || pl.steps.reduce((a, s) => a + s.secs, 0) !== L * 60) bad.push(id + ' ' + JSON.stringify(ch) + ' ' + L + ': ' + pl.total);
+          pl.steps.forEach(s => {
+            if (RE.test(s.title)) bad.push(s.title);
+            s.lines.forEach((l, k) => { if (!(l[0] >= 0 && l[0] < s.secs) || (k && !(l[0] > s.lines[k - 1][0])) || RE.test(l[1])) bad.push(id + ' ' + JSON.stringify(ch) + ' ' + L + ' ' + s.title + ' @' + l[0] + ': ' + l[1]); });
+          });
+        };
+        for (const stage of ['1', '2', '3', '4', '5', '6']) for (const heart of ['beat', 'warm', 'none']) for (const end of ['wake', 'sleep']) for (const pos of ['lie', 'chair', 'coach'])
+          for (const L of [5, 10, 15, 20]) go('autogenic', { stage, heart, end, pos }, L);
+        for (const words of ['excited', 'ready', 'energy']) for (const L of [5, 10]) go('reframe', { words }, L);
+        localStorage.removeItem('entrain.pCh.autogenic'); localStorage.removeItem('entrain.pCh.reframe');
+        return { n, bad };
+      });
+      ok(all.n === 438 && !all.bad.length, all.n + ' combinations of week, heart phrase, ending, position, length and words: whole minutes, every line inside its step, worded as what to do' + (all.bad.length ? ': ' + all.bad.slice(0, 3).join(' | ') : ''));
+      // week by week: week 1 is heaviness alone; at week 3 the heartbeat gets the most time and the first two their short forms
+      pl = await plan(p, 'autogenic', 10, { stage: '1' });
+      ok(pl.steps.map(s => s.title).join() === 'Arrive,Paced breathing,Heaviness,Heaviness,Heaviness,Heaviness,Heaviness,Heaviness,Heaviness,All together,Coming back' &&
+        JSON.stringify(said(pl).filter(l => /^(Arms and legs|I am completely)/.test(l)).slice(-2)) === '["Arms and legs heavy.","I am completely calm."]' &&
+        pl.steps.filter(s => s.title === 'Heaviness').every(s => s.lines.filter(l => /heavy\.$/.test(l[1])).length >= 3),
+        'week 1: heaviness alone, limb by limb, each phrase three times or more: ' + pl.steps.filter(s => s.title === 'Heaviness').map(s => s.secs).join('+'));
+      pl = await plan(p, 'autogenic', 10, { stage: '3' });
+      const sum = t => pl.steps.filter(s => s.title === t).reduce((a, s) => a + s.secs, 0);
+      ok(pl.steps.map(s => s.title).filter((x, k, a) => x !== a[k - 1]).join() === 'Arrive,Paced breathing,Heaviness,Warmth,Heartbeat,All together,Coming back' && sum('Heartbeat') > sum('Heaviness') + sum('Warmth') - 20 && sum('Heartbeat') >= 200,
+        'week 3: heaviness and warmth in short, then the heartbeat, the new one, at length: ' + ['Heaviness', 'Warmth', 'Heartbeat'].map(t => t + ' ' + sum(t)).join(', '));
+      // the heart phrase: a warm chest, or left out
+      pl = await plan(p, 'autogenic', 10, { heart: 'warm' });
+      ok(said(pl).includes('My chest is warm and pleasant.') && said(pl).includes('Chest warm and pleasant.') && !said(pl).some(l => /heartbeat|Heartbeat/.test(l) && /calm and regular/.test(l)), 'Warm chest: "My chest is warm and pleasant." in place of the heartbeat');
+      pl = await plan(p, 'autogenic', 10, { heart: 'none' });
+      ok(!pl.steps.some(s => /Heartbeat|Warm chest/.test(s.title)) && !said(pl).some(l => /heart|chest/i.test(l)) && pl.total === 600, 'Leave it out: no heart phrase at all, the time shared out among the rest');
+      // positions
+      for (const [pos, re] of [['lie', /^Lie on your back/], ['chair', /^Sit back in an armchair/], ['coach', /the coachman's seat\.$/]]) {
+        pl = await plan(p, 'autogenic', 10, { pos });
+        ok(re.test(pl.steps[0].lines[0][1]), pos + ': ' + pl.steps[0].lines[0][1].slice(0, 60));
+      }
+      // the endings
+      pl = await plan(p, 'autogenic', 10, {});
+      const back = pl.steps[pl.steps.length - 1];
+      ok(back.title === 'Coming back' && back.lines.map(l => l[1]).join(' / ') === 'Now come back, firmly. / Arms firm: make fists and bend your arms strongly. / Breathe deeply. / Eyes open. / Stretch, and take a moment before you stand up.' && !back.sleepy,
+        'back to alert: arms firm, a deep breath, eyes open');
+      pl = await plan(p, 'autogenic', 10, { end: 'sleep' });
+      const zz = pl.steps[pl.steps.length - 1];
+      ok(zz.title === 'Into sleep' && zz.sleepy && zz.quiet && !said(pl).some(l => /Eyes open/.test(l)), 'into sleep: no coming back, the last step a sleepy one');
+      await E(p, () => localStorage.removeItem('entrain.pCh.autogenic'));
+      await p.context().close();
+
+      // running it: spoken softly, no bells between the phrases; the end bells, except into sleep
+      for (const end of ['wake', 'sleep']) {
+        p = await page(Object.assign(OPT({ voice: true, bells: true, cues: 'off' }), { 'pCh.autogenic': JSON.stringify({ end }) }), OSC);
+        await E(p, () => location.hash = 'practice/autogenic'); await p.waitForTimeout(400);
+        await p.click('.si-len button[data-len="5"]'); await p.waitForTimeout(150);
+        await p.click('#sGo'); await p.waitForTimeout(400);
+        await p.click('#sNext'); await p.waitForTimeout(150); await p.click('#sNext'); await p.waitForTimeout(500);     // past arriving and the paced breathing
+        const h = await E(p, () => ({ step: window.__entrain.P.steps[window.__entrain.P.idx].title, said: window.__said.slice() }));
+        const soft = h.said.find(x => /^Heaviness\./.test(x.t));
+        await E(p, () => { window.__osc = []; }); await p.click('#sNext'); await p.waitForTimeout(400);                   // the next limb
+        const between = await E(p, () => ({ step: window.__entrain.P.steps[window.__entrain.P.idx].title, osc: window.__osc.slice() }));
+        for (let k = 0; k < 30 && await E(p, () => window.__entrain.P.idx < window.__entrain.P.steps.length - 1); k++) { await p.click('#sNext'); await p.waitForTimeout(120); }
+        await p.waitForTimeout(400);
+        const atLast = await E(p, () => window.__entrain.P.steps[window.__entrain.P.idx].title);
+        await E(p, () => { window.__osc = []; window.__entrain.P.t0 -= 60; });
+        await p.waitForFunction(() => window.__entrain.P.state === 'done', null, { timeout: 8000 }); await p.waitForTimeout(300);
+        const osc = await E(p, () => window.__osc.slice());
+        if (end === 'wake') {
+          ok(h.step === 'Heaviness' && soft && Math.abs(soft.v - 0.7) < 0.01 && h.said[0].v === 1 && between.step === 'Heaviness' && !between.osc.includes(392),
+            'the phrases are spoken softly, with no bell from one limb to the next' + (soft && Math.abs(soft.v - 0.7) < 0.01 && !between.osc.includes(392) ? '' : ': ' + JSON.stringify({ h, between })));
+          ok(atLast === 'Coming back' && osc.includes(392) && osc.includes(523.25), 'coming back, the end bells ring: ' + osc.filter(f => f === 392 || f === 523.25).join(', '));
+        } else {
+          ok(atLast === 'Into sleep' && !osc.includes(392) && !osc.includes(523.25), 'into sleep, it ends without the bells');
+        }
+        await p.context().close();
+      }
+
+      // Autogenic Reframing
+      p = await page(Object.assign(OPT({ audio: true }), { optsOpen: '1' }));
+      await E(p, () => location.hash = 'practice/reframe'); await p.waitForTimeout(450);
+      i = await intro(p);
+      ok(i.title === 'Autogenic Reframing' && i.kind === 'Calm · Relaxation · 10 min' && i.lens === '5 min | 10 min*' &&
+        i.steps === 'Arrive00:30 | Name it00:40 | Anxious or excited?00:45 | Cyclic sighs01:00 | Long out-breaths01:30 | Heavy and warm01:00 | Strong heart00:50 | Easy breath00:40 | Reframe02:00 | Your intention00:40 | Coming back00:25' &&
+        /anxiety and excitement are nearly identical in the body/.test(i.blurb) && /turn “I am anxious” into “I am excited”/.test(i.blurb),
+        'Autogenic Reframing: name it, anxious or excited, long out-breaths, the phrases, the reframe and the intention: ' + i.steps);
+      ok(await segs(p, '[data-choice="words"]') === "I am excited* | I'm ready for this | This energy helps me" && await segs(p, '#sOptBeat') === 'Off* | Alpha 10 Hz | Theta 6 Hz' &&
+        /^This is for everyday nerves, stage fright/.test(i.caution), 'your words to choose, "I am excited" first; the beat starts off');
+      pl = await plan(p, 'reframe', 10);
+      const L = s => pl.steps.find(x => x.title === s).lines.map(l => l[1]);
+      ok(L('Anxious or excited?')[0] === 'Anxiety and excitement are nearly identical in the body: the same faster heartbeat, the same quick breath, the same rush of adrenaline.' &&
+        /^Both are your body getting ready/.test(L('Anxious or excited?')[1]), 'it says that anxiety and excitement are nearly identical in the body: ' + L('Anxious or excited?')[0]);
+      ok(L('Strong heart')[1] === "My heart beats strongly. It's getting me ready." && L('Reframe')[1] === 'Answer it, out loud if you can: I am excited.' && L('Your intention').slice(1).join(' / ') === 'I am excited. / I am excited. / I am excited.' &&
+        L('Coming back')[3] === 'Take this energy with you. I am excited.' && pl.steps.find(x => x.title === 'Long out-breaths').t.exh === 6.5,
+        'the heart phrase welcomes a strong heartbeat; "I am excited" answers the anxious thought and becomes the intention formula');
+      await p.click('[data-choice="words"] button[data-v="ready"]'); await p.waitForTimeout(100);
+      pl = await plan(p, 'reframe', 10);
+      ok(L('Reframe')[1] === "Answer it, out loud if you can: I'm ready for this." && L('Your intention')[1] === "I'm ready for this." && /I'm ready for this/.test(await t(p, '#sOptsSum')), 'other words follow through: I\'m ready for this');
+      pl = await plan(p, 'reframe', 5);
+      ok(pl.steps.map(s => s.title).join() === 'Arrive,Name it,Anxious or excited?,Cyclic sighs,Heavy and warm,Strong heart,Reframe,Your intention,Coming back' && pl.total === 300, '5 minutes: the same, shorter, without the slow breathing and the easy breath');
+      // what comes next, the library, search and Learn
+      const nx = await E(p, () => { const X = window.__entrain; return [X.pDef('autogenic').next.id, X.pDef('reframe').next.id]; });
+      ok(nx.join() === 'reframe,autogenic', 'each suggests the other at its end');
+      await E(p, () => location.hash = 'practice'); await p.waitForTimeout(300);
+      const lib = await E(p, () => { const X = window.__entrain, it = X.libAll().filter(x => /autogenic|reframe/.test(x.href)); return it.map(x => x.href + ' ' + x.goal + '+' + (x.also || []).join('+') + ' ' + x.method + ' ' + x.needs.join('+')); });
+      ok(lib.join(' | ') === '#practice/autogenic calm+sleep relax  | #practice/reframe calm+focus relax ', 'in Calm, as relaxation, needing only the phone; also under Sleep and Focus: ' + lib.join(' | '));
+      await E(p, () => location.hash = 'home'); await p.waitForTimeout(300);
+      await p.click('#tbFind'); await p.fill('#fdIn', 'autogenic'); await p.waitForTimeout(250);
+      const h1 = await E(p, () => [...document.querySelectorAll('#fdRes .fd-it')].map(a => a.getAttribute('href')));
+      await p.fill('#fdIn', 'excited'); await p.waitForTimeout(250);
+      const h2 = await E(p, () => [...document.querySelectorAll('#fdRes .fd-it')].map(a => a.getAttribute('href')));
+      await p.fill('#fdIn', 'astronauts'); await p.waitForTimeout(250);
+      const h3 = await E(p, () => [...document.querySelectorAll('#fdRes .fd-it')].map(a => a.getAttribute('href')));
+      ok(h1[0] === '#practice/autogenic' && h1.includes('#practice/reframe') && h2.includes('#practice/reframe') && h3.includes('#practice/autogenic'),
+        'search finds them: ' + h1.slice(0, 3).join(', ') + '; excited: ' + h2.slice(0, 3).join(', ') + '; astronauts: ' + h3.slice(0, 3).join(', '));
+      await p.keyboard.press('Escape');
+      await E(p, () => location.hash = 'l-autogenic'); await p.waitForTimeout(400);
+      const lt = await t(p, '#v-learn');
+      ok(/Autogenic training\. The Berlin psychiatrist Johannes Heinrich Schultz/.test(lt) && /Anxious or excited\. Autogenic Reframing/.test(lt) && /nearly identical in the body/.test(lt) &&
+        /Stetter, F\., & Kupper, S\. \(2002\)/.test(lt) && /Spacelab 3 flight experiment No\. 3AFT23/.test(lt) && /Bosshard, M\., & Gomez, P\. \(2024\)/.test(lt) && /Schultz, J\. H\., & Luthe, W\. \(1959\)/.test(lt),
+        'Learn gives the method, NASA\'s version, the evidence and the references');
       await p.context().close();
     }
   } catch (e) {

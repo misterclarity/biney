@@ -568,7 +568,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
         X.TRACKS.forEach(t => { if (!G.includes(t.goal) && t.goal !== 'tinnitus') bad.push('t:' + t.id); });
         return { n: X.PRACTICES.length + X.BREATHS.length + X.TRACKS.length, bad, tagsLeft: X.PRACTICES.filter(d => d.tags || d.group).map(d => d.id) };
       });
-      ok(tax.n === 56 && !tax.bad.length && !tax.tagsLeft.length, tax.n + ' items, each with one known goal, a method and a posture; the old groups and tags are gone' + (tax.bad.length ? ': ' + tax.bad.join(', ') : ''));
+      ok(tax.n === 58 && !tax.bad.length && !tax.tagsLeft.length, tax.n + ' items, each with one known goal, a method and a posture; the old groups and tags are gone' + (tax.bad.length ? ': ' + tax.bad.join(', ') : ''));
       await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(300);
       const lib = await E(p, () => {
         const secs = [...document.querySelectorAll('#prLib .pr-grp')].map(g => ({ g: g.dataset.g, hrefs: [...g.querySelectorAll('.pc-a')].map(a => a.getAttribute('href')), shown: g.querySelectorAll('li:not([hidden])').length }));
@@ -577,13 +577,13 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       });
       ok(lib.order === 'sleep,calm,focus,energy,recover,reflect,tinnitus,make' && !lib.dup.length, 'goal sections in order, each item listed once: ' + lib.order);
       ok(lib.flow.join() === 'energy', 'Standing Yoga Flow is under Energy only');
-      ok(lib.calm.hrefs.length === 21 && lib.calm.shown === 4 && lib.calm.hrefs.includes('#breathe/sigh') && lib.calm.hrefs.includes('#track/alpha-stress'),
-        'Calm holds practices, breathing patterns and tracks: 21, the first 4 shown');
+      ok(lib.calm.hrefs.length === 23 && lib.calm.shown === 4 && lib.calm.hrefs.includes('#breathe/sigh') && lib.calm.hrefs.includes('#track/alpha-stress'),
+        'Calm holds practices, breathing patterns and tracks: 23, the first 4 shown');
       await p.click('.pr-grp[data-g=calm] .pr-more'); await p.waitForTimeout(150);
-      ok(await p.$$eval('.pr-grp[data-g=calm] li:not([hidden])', l => l.length) === 21 && !(await p.$('.pr-grp[data-g=calm] .pr-more')), 'Show all opens the rest');
+      ok(await p.$$eval('.pr-grp[data-g=calm] li:not([hidden])', l => l.length) === 23 && !(await p.$('.pr-grp[data-g=calm] .pr-more')), 'Show all opens the rest');
       await p.click('#prFilt [data-f=sleep]'); await p.waitForTimeout(200);
       const sleep = await E(p, () => [...document.querySelectorAll('#prLib .pr-grp')].map(g => g.dataset.g + ': ' + [...g.querySelectorAll('.pc-top b')].map(b => b.textContent).join('|')));
-      ok(sleep[0] === 'sleep: Sleep Descent|4-7-8|Cognitive Shuffle|Evening Stretch|Evening Floor Flow|Delta Sleep' && /^also: .*Body Scan\|.*Progressive Muscle Relaxation\|Bhramari\|Long exhale/.test(sleep[1]),
+      ok(sleep[0] === 'sleep: Sleep Descent|4-7-8|Cognitive Shuffle|Evening Stretch|Evening Floor Flow|Delta Sleep' && /^also: .*Body Scan\|.*Progressive Muscle Relaxation\|Autogenic Training\|Bhramari\|Long exhale/.test(sleep[1]),
         'the Sleep chip: its own six, then "also good for sleep": ' + sleep[1]);
       await p.click('#prFilt [data-f=sleep]'); await p.click('#prFilt [data-f=focus]'); await p.waitForTimeout(200);   // Sleep off again, Focus on
       ok(!(await p.$('#prLib a[href="#practice/standing-flow"]')) && await p.$('#prLib .pr-grp[data-g=also] a[href="#practice/standing-reset"]'), 'Focus: Standing Yoga Flow is not there; Standing Reset is, as also good for focus');
