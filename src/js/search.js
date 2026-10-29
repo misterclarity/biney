@@ -1,7 +1,7 @@
   /* ------------------------------- search -------------------------------
      One box for everything: practices and your own routines, the movement library, breathing
-     patterns, tracks, the Heart tools, Healthy living's recipes and supplements, History and Settings, and every
-     paragraph and reference in Learn.
+     patterns, tracks, the Heart tools, Healthy living's recipes, supplements, routines and light, History, Settings
+     and its feedback form, and every paragraph and reference in Learn.
      Matching ignores case and accents, and each word you type has to match the start of a word
      somewhere in the entry, so "anap" finds Anapana and "bencao" finds Bênção. Results come in
      groups, the group with the best match first. Enter opens the top result; "/" or Ctrl+K opens

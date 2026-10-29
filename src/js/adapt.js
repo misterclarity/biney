@@ -1,6 +1,6 @@
 
   /* ------------------------ heart-led beats and the power nap ------------------------
-     Both use a program track whose beat is set live (track.dyn) instead of following a
+     Both use a programme track whose beat is set live (track.dyn) instead of following a
      fixed schedule, and both read your heart through the sensor. Everything they infer
      is an estimate and is labelled that way on screen.
   ------------------------------------------------------------------------------ */
@@ -17,7 +17,7 @@
   /* ----- heart-led beats -----
      A sound picture of your heart's calm, the way biofeedback works: as heart rate falls
      below your baseline and beat-to-beat variability and coherence rise, the beat glides
-     from 10 Hz (alpha) toward 4 Hz (theta), never more than 0.15 Hz every five seconds.
+     from 10 Hz (alpha) towards 4 Hz (theta), never more than 0.15 Hz every five seconds.
      After ten minutes it leads up to 1 Hz further down. With no heart data it follows a
      gentle scripted descent. The rule is Entrain's own and hasn't been tested. */
   var AD = { base: null, last: -99, calm: 0, cur: 10, log: [], src: "" };
@@ -25,7 +25,7 @@
     var total = min * 60, settle = 60, base = 90, close = 60;
     return [
       G(settle, "Settle", ["Sit back or lie down with headphones on, and breathe at your own natural pace.",
-        "The beat will follow your heart. As your heart rate settles and its rhythm loosens, the beat slows from alpha toward theta.",
+        "The beat will follow your heart. As your heart rate settles and its rhythm loosens, the beat slows from alpha towards theta.",
         "Let your attention rest on the sound, or on the breath at the nostrils."], { vis: "orb" }),
       { k: "adapt", phase: "base", secs: base, title: "Listening to your heart", lines: [[0, "First, a minute and a half to measure your resting baseline. Rest, and breathe at your own pace."]] },
       { k: "adapt", phase: "lead", secs: total - settle - base - close, title: "Heart-led beat",

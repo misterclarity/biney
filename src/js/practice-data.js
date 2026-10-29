@@ -12,8 +12,8 @@
        drift    a soft glow while the sound carries on (sleep)
        hold     a breath hold: open (tap Breathe in, capped) or a fixed count
      Lengths are in seconds. `lines` are [offset, text] pairs, or plain strings spread
-     evenly across the step. Programs add `audio`: a binaural layer whose beat follows
-     piecewise-linear points [[second, Hz], ...] across the whole program.
+     evenly across the step. Programmes add `audio`: a binaural layer whose beat follows
+     piecewise-linear points [[second, Hz], ...] across the whole programme.
   ------------------------------------------------------------------------------ */
 
   function pLines(lines, secs) {
@@ -486,7 +486,7 @@
 
   /* --------------------------- the library --------------------------- */
   var PRACTICES = [
-    /* ===== combined programs ===== */
+    /* ===== combined programmes ===== */
     {
       id: "sleep-descent", name: "Sleep Descent", min: 30, strength: 2,
       tone: "ther", lie: true, sensor: "optional",
@@ -578,8 +578,8 @@
             : ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
         ];
       },
-      how: "Three minutes of even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention on the chest. Then, on the same breath, a gentle feeling of gratitude to the end: the two steps of HeartMath's Quick Coherence technique. Gratitude comes second because it's easiest to feel, rather than just think, once slow breathing has calmed you and your heart rhythm has settled into a steady wave; for the same reason it fits well after a meditation such as Anapana or the Body Scan. Sit or lie down. With a sensor, the coherence score and your heart rate show live.",
-      ev: "Breathing near 6 a minute brings heart rate and blood pressure rhythms into step, the state the coherence score measures. Holding a feeling of appreciation shifted heart-rate variability toward its mid- and high-frequency bands in a 1995 HeartMath laboratory study, and across 1.8 million sessions of HeartMath's app, positive emotions went with higher coherence scores. Theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability toward parasympathetic activity in 21 young adults resting after exercise. The combination itself hasn't been trialled.",
+      how: "Three minutes of even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention on the chest. Then, on the same breath, a gentle feeling of gratitude to the end: the two steps of HeartMath's Quick Coherence technique. Gratitude comes second because it's easiest to feel, rather than just think, once slow breathing has calmed you and your heart rhythm has settled into a steady wave; for the same reason it fits well after a meditation such as Anapana or the Body Scan. Sit, lie down or walk. With a sensor, the coherence score and your heart rate show live.",
+      ev: "Breathing near 6 a minute brings heart rate and blood pressure rhythms into step, the state the coherence score measures. Holding a feeling of appreciation shifted heart-rate variability towards its mid- and high-frequency bands in a 1995 HeartMath laboratory study, and across 1.8 million sessions of HeartMath's app, positive emotions went with higher coherence scores. Theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability towards parasympathetic activity in 21 young adults resting after exercise. The combination itself hasn't been trialled.",
       cite: "Lehrer & Gevirtz 2014 · McCraty et al. 1995 · Balaji et al. 2025 · McConnell et al. 2014"
     },
     {
@@ -608,7 +608,7 @@
             [at(3, 0.25), "Picture their face. Remember what they did, and what it made possible for you."],
             [at(3, 0.55), "Silently thank them, in your own words."],
             [at(3, 0.8), "Let the warmth of it rest in your chest."]], { vis: "glow" }),
-          G(s[4], "Your body", [[0, "Turn the same appreciation toward your body."],
+          G(s[4], "Your body", [[0, "Turn the same appreciation towards your body."],
             [at(4, 0.3), "Your breath, coming and going by itself. Your heart, beating all day long. Your feet, carrying you where you needed to go."],
             [at(4, 0.7), "Thank your body for one thing it did for you today."]], { vis: "glow" }),
           G(s[5], "Savour it", [[0, "Now rest in the feeling itself, whatever form it takes: warmth, ease, a quiet gladness."],
@@ -619,8 +619,8 @@
             [Math.max(at(6, 0.25) + 15, s[6] - 15), lie ? "When you're ready, roll onto your side before you sit up." : walk ? "Bring this gladness with you as you walk on." : "Bring this gladness into whatever comes next."]], { vis: "glow" })
         ];
       },
-      how: "Three or four minutes of slow, even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention in the chest. Gratitude comes after the breathing because it's easiest to feel, rather than just think, once you're calm; for the same reason it fits well after a meditation. Then four steps: something small from today, a person who helped you, your own body, and resting in the feeling. It ends with an invitation to write down three good things later. Sit or lie down; with a sensor, coherence shows live.",
-      ev: "Across 27 trials with 3,675 people, gratitude exercises eased symptoms of depression and anxiety a little, and a 2016 meta-analysis found small gains in well-being. Writing down three good things each day for a week raised happiness and lowered depressive symptoms for six months in an online trial. Holding a feeling of appreciation shifted heart-rate variability toward its mid- and high-frequency bands in a 1995 HeartMath laboratory study. This guided sequence itself hasn't been trialled.",
+      how: "Three or four minutes of slow, even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention in the chest. Gratitude comes after the breathing because it's easiest to feel, rather than just think, once you're calm; for the same reason it fits well after a meditation. Then four steps: something small from today, a person who helped you, your own body, and resting in the feeling. It ends with an invitation to write down three good things later. Sit, lie down or walk; with a sensor, coherence shows live.",
+      ev: "Across 27 trials with 3,675 people, gratitude exercises eased symptoms of depression and anxiety a little, and a 2016 meta-analysis found small gains in well-being. Writing down three good things each day for a week raised happiness and lowered depressive symptoms for six months in an online trial. Holding a feeling of appreciation shifted heart-rate variability towards its mid- and high-frequency bands in a 1995 HeartMath laboratory study. This guided sequence itself hasn't been trialled.",
       cite: "Cregg & Cheavens 2021 · Davis et al. 2016 · Seligman et al. 2005 · McCraty et al. 1995"
     },
     {
@@ -674,7 +674,7 @@
         ];
       },
       how: "Eight and a half minutes at 6 breaths a minute (4 s in, 6 s out) over a 6 Hz theta beat. With a sensor connected the summary shows how far your heart rate fell.",
-      ev: "Slow breathing at six a minute after moderate cycling sped the return of cardiac parasympathetic activity in young men (Sugimoto et al. 2025). In a separate study of 21 young adults resting after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability toward parasympathetic activity over the first ten minutes, compared with the same sound without a beat (McConnell et al. 2014).",
+      ev: "Slow breathing at six a minute after moderate cycling sped the return of cardiac parasympathetic activity in young men (Sugimoto et al. 2025). In a separate study of 21 young adults resting after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability towards parasympathetic activity over the first ten minutes, compared with the same sound without a beat (McConnell et al. 2014).",
       cite: "Sugimoto et al. 2025 · McConnell et al. 2014"
     },
 
@@ -682,9 +682,9 @@
       id: "heart-led", name: "Heart-Led Beats", exp: true, lengths: [15, 20, 30], min: 20, strength: 1,
       sensor: "best", sensorWhy: "the beat follows it; without one, it runs a scripted descent",
       audio: { dyn: true, start: 10, cat: "relax", band: "Alpha to theta, led by your heart", name: "Heart-led beat", carrier: 200, fade: 20 },
-      blurb: "An experiment in biofeedback through sound: the binaural beat follows your heart, gliding from alpha toward theta as your heart rate settles and its rhythm loosens.",
+      blurb: "An experiment in biofeedback through sound: the binaural beat follows your heart, gliding from alpha towards theta as your heart rate settles and its rhythm loosens.",
       build: function (min) { return heartLed(min || 20); },
-      how: "After a minute to settle, a minute and a half measures your resting heart rate and beat-to-beat variability. From then on, every five seconds, the beat moves toward a target set by how calm your heart looks: heart rate below your baseline counts for half, a rise in RMSSD for 30%, and coherence for 20%. The target runs from 10 Hz down to 4 Hz, and the beat never moves faster than 0.15 Hz per update. After ten minutes it leads up to 1 Hz lower. With no heart data, it follows a scripted 10 to 6 Hz descent.",
+      how: "After a minute to settle, a minute and a half measures your resting heart rate and beat-to-beat variability. From then on, every five seconds, the beat moves towards a target set by how calm your heart looks: heart rate below your baseline counts for half, a rise in RMSSD for 30%, and coherence for 20%. The target runs from 10 Hz down to 4 Hz, and the beat never moves faster than 0.15 Hz per update. After ten minutes it leads up to 1 Hz lower. With no heart data, it follows a scripted 10 to 6 Hz descent.",
       ev: "This is an experiment. Alpha and theta binaural beats have small, inconsistent effects on anxiety and relaxation in meta-analyses, and heart-rate variability biofeedback has better evidence for stress. But no study has tested binaural beats that follow the heart, and the rule here is Entrain's own. Treat the summary at the end, your heart rate with the beat drawn over it, as the real test.",
       cite: "Experimental · Entrain's own rule"
     },
@@ -748,7 +748,7 @@
       next: { id: "nvc-self", txt: "Still turning it over? Self-Empathy (NVC) helps you find what you need now." },
       build: function () { return afterSteps(this); },
       how: "A minute and a half of cyclic sighs and three minutes of slow breathing with a longer out-breath, under a 6 Hz theta beat (or 10 Hz alpha), then four short steps: naming what you feel in a word or two, a moment of self-compassion with a hand on your chest, one thing you're glad you did, and one small next step. With a sensor, the summary shows how far your heart rate came down. If it's still on your mind afterwards, Self-Empathy (NVC) can help you find what you need now.",
-      ev: "Right after a stressful speech, a brief self-compassion exercise reduced socially anxious students' brooding about it the next day, and self-compassion programs reduced rumination and stress across 27 trials. Putting feelings into words dampens their intensity. Cyclic sighing improved mood and slowed breathing more than mindfulness meditation in a month-long trial. This sequence itself hasn't been trialled.",
+      ev: "Right after a stressful speech, a brief self-compassion exercise reduced socially anxious students' brooding about it the next day, and self-compassion programmes reduced rumination and stress across 27 trials. Putting feelings into words dampens their intensity. Cyclic sighing improved mood and slowed breathing more than mindfulness meditation in a month-long trial. This sequence itself hasn't been trialled.",
       cite: "Blackie & Kocovski 2018 · Ferrari et al. 2019 · Torre & Lieberman 2018 · Balban et al. 2023"
     },
 
@@ -759,7 +759,7 @@
       blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation as it is.",
       build: function (min) { return bodyScan(min, "wake"); },
       how: "Sixteen stops, from the feet up, each with a few spoken cues. The body map shows where you are. Choose 10, 20 or 30 minutes.",
-      ev: "The body scan is a core practice of mindfulness-based stress reduction. On its own, a meta-analysis of about 15 trials found a small rise in mindfulness and no clear effect on stress or anxiety. Mindfulness programs that include it have moderate evidence for reducing anxiety, depression and pain.",
+      ev: "The body scan is a core practice of mindfulness-based stress reduction. On its own, a meta-analysis of about 15 trials found a small rise in mindfulness and no clear effect on stress or anxiety. Mindfulness programmes that include it have moderate evidence for reducing anxiety, depression and pain.",
       cite: "Gan et al. 2022 · Goyal et al. 2014"
     },
     {
@@ -768,7 +768,7 @@
       blurb: "Breath observation in the Vipassana tradition: the area of attention narrows step by step, from the triangle around the nose and upper lip to one small point beneath the nostrils.",
       build: function (min) { return anapana(min); },
       how: "The breath flows at its own natural pace while the area you observe narrows: the whole triangle from the top of the nose to the corners of the upper lip, then the nostrils and upper lip, the rims of the nostrils, the small area below them, and finally only the small dimple just beneath the ridge between the nostrils (three steps in 5 minutes, four in 10). In each area you observe every sensation, and a drawing shows where. Reminders come every few minutes, more sparsely in longer sittings: about every five minutes in the hour. Tap Mind wandered each time you notice you've drifted. Noticing is the skill being trained, so every tap is part of the practice.",
-      ev: "Anapana is the first stage of the residential Vipassana course, which was followed by lower stress and higher well-being and mindfulness, partly lasting six months. Plain breath awareness slowed breathing in a controlled study. Mindfulness meditation programs have moderate evidence for anxiety (effect size 0.38), depression and pain.",
+      ev: "Anapana is the first stage of the residential Vipassana course, which was followed by lower stress and higher well-being and mindfulness, partly lasting six months. Plain breath awareness slowed breathing in a controlled study. Mindfulness meditation programmes have moderate evidence for anxiety (effect size 0.38), depression and pain.",
       cite: "Szekeres & Wertheim 2015 · Telles et al. 2014 · Goyal et al. 2014"
     },
     {
@@ -799,7 +799,7 @@
         ];
       },
       how: "Kristin Neff's self-compassion break: mindfulness, common humanity and self-kindness, about a minute each, with a hand on the heart.",
-      ev: "Across 27 randomised trials, self-compassion interventions reduced rumination, stress, depression, anxiety and self-criticism (moderate to large effects). Those were multi-week programs; this 5-minute break is their most-used single exercise, not tested on its own.",
+      ev: "Across 27 randomised trials, self-compassion interventions reduced rumination, stress, depression, anxiety and self-criticism (moderate to large effects). Those were multi-week programmes; this 5-minute break is their most-used single exercise, not tested on its own.",
       cite: "Ferrari et al. 2019"
     },
     {

@@ -40,7 +40,7 @@
     ["Resting well is part of doing well.", ""],
     ["Move a little, breathe a little, and see what changes.", ""],
     ["Each time you return to the breath, attention gets a little stronger.", ""],
-    ["Kindness toward yourself is a strength, and it grows with practice.", ""],
+    ["Kindness towards yourself is a strength, and it grows with practice.", ""],
     ["There is always time for one slow breath.", ""],
     ["Feel your feet on the floor. You're here.", ""],
     ["Progress is quiet. Keep going anyway.", ""],

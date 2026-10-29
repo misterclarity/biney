@@ -1,6 +1,6 @@
 
   /* ------------------------- background sound and rhythm -------------------------
-     Everything here is synthesized on the device the first time it's needed, then
+     Everything here is synthesised on the device the first time it's needed, then
      looped: no recordings and nothing downloaded. Rain is filtered noise with a patter
      of tiny impacts and the odd bright drop; crickets are pulsed tones at the pitch and
      chirp rate of field crickets on a warm night; the berimbau is a struck-string model

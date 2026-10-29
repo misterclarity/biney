@@ -45,7 +45,7 @@
       id: "478", strength: 1,
       t: { inh: 4, sip: 0, hold: 7, exh: 8, rest: 0 },
       desc: "A popular wind-down before sleep: in for 4, hold for 7, out for 8.",
-      ev: "In a small study of 44 young adults, a session of 4-7-8 breathing lowered heart rate and blood pressure immediately afterwards and shifted heart-rate variability toward parasympathetic activity, whether or not they had slept the night before. Beyond that the evidence is thin. The long hold is demanding, so scale all three numbers down together if it strains.",
+      ev: "In a small study of 44 young adults, a session of 4-7-8 breathing lowered heart rate and blood pressure immediately afterwards and shifted heart-rate variability towards parasympathetic activity, whether or not they had slept the night before. Beyond that the evidence is thin. The long hold is demanding, so scale all three numbers down together if it strains.",
       cite: "Vierra et al. 2022, Physiol. Rep."
     }
   ];
@@ -466,7 +466,7 @@
     setTimeout(function () { try { v.o.stop(); v.o.disconnect(); v.g.disconnect(); } catch (e) {} }, 700);
     B.voice = null;
   }
-  /* Glide the tone toward this phase's target. setTargetAtTime starts from
+  /* Glide the tone towards this phase's target. setTargetAtTime starts from
      wherever the previous phase left the value, so no anchors are needed. */
   function toneTo(p, when, dur) {
     if (!B.voice) return;

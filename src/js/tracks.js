@@ -30,8 +30,8 @@
     {
       id: "parasympathetic", cat: "relax", band: "Theta", name: "Parasympathetic Recovery",
       carrier: 200, beat: 6, minutes: 20, strength: 2,
-      desc: "A steady 6 Hz theta beat for the 20 minutes after hard exercise: theta beats tilted heart-rate variability toward rest in a 2014 study of people recovering from a workout.",
-      ev: "In 21 young adults resting for 20 minutes after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz, in pink noise) shifted heart-rate variability toward parasympathetic activity over the first ten minutes, compared with the same sound without a beat: an autonomic effect rather than a purely subjective one. By the end of the 20 minutes the two no longer differed, and this track plays a steady 6 Hz rather than the sweep.",
+      desc: "A steady 6 Hz theta beat for the 20 minutes after hard exercise: theta beats tilted heart-rate variability towards rest in a 2014 study of people recovering from a workout.",
+      ev: "In 21 young adults resting for 20 minutes after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz, in pink noise) shifted heart-rate variability towards parasympathetic activity over the first ten minutes, compared with the same sound without a beat: an autonomic effect rather than a purely subjective one. By the end of the 20 minutes the two no longer differed, and this track plays a steady 6 Hz rather than the sweep.",
       cite: "McConnell et al. 2014, Front. Psychol."
     },
     {
@@ -46,7 +46,7 @@
       carrier: 340, beat: 10, minutes: 20, strength: 1,
       desc: "A 10 Hz alpha beat for open-ended idea generation. In Reedijk and colleagues' 2013 study it helped only people whose blink rate pointed to lower dopamine.",
       ev: "Alpha binaural beats improved divergent (but not convergent) thinking. The effect appeared only in participants with lower estimated baseline dopamine; those higher on that measure showed no benefit or slightly worse performance.",
-      cite: "Reedijk, Bolders & Hommel 2013, Front. Hum. Neurosci."
+      cite: "Reedijk et al. 2013, Front. Hum. Neurosci."
     },
 
     /* ---------- TINNITUS ---------- */
@@ -54,8 +54,8 @@
       id: "tinnitus-notch", cat: "ther", band: "Alpha + notch", name: "Notched Relief",
       carrier: 250, beat: 8, minutes: 15, strength: 2, notch: true,
       desc: "Pink noise with a one-octave hole cut around your own tinnitus pitch, under an 8 Hz alpha beat. Needs a pitch match first.",
-      ev: "Two mechanisms, each trialled separately. Removing a one-octave band centred on the individual tinnitus frequency reduced subjective loudness by roughly 30% and lowered tinnitus-related auditory cortex activity after 12 months, an effect attributed to lateral inhibition; it held for tinnitus at or below 8 kHz and not above. Separately, adding an 8 Hz alpha binaural beat to relaxing sound improved tinnitus handicap and emotional scores more than the sound alone over 15 minutes twice daily for 4 weeks. A controlled trial combining notched training with binaural beats found the combination gave the larger mean handicap reduction. This is an adjunct, not a cure, and the timescale is weeks of daily use rather than one session.",
-      cite: "Okamoto et al. 2010, PNAS \u00b7 Stein et al. 2011, PLOS One \u00b7 Am. J. Otolaryngol. 2024 RCT"
+      ev: "Two mechanisms, trialled separately. Removing a one-octave band centred on the individual tinnitus frequency reduced subjective loudness by roughly 30% and lowered tinnitus-related auditory cortex activity after 12 months, an effect attributed to lateral inhibition; it held for tinnitus at or below 8 kHz and not above. The 8 Hz alpha beat on top has weaker support: added to relaxing music for 15 minutes twice a day over 4 weeks, it didn't lower tinnitus handicap more than the music alone, though two subscales favoured it three months later, and added to notched music it gave a larger but not significant drop in annoyance. This is an adjunct, not a cure, and the timescale is weeks of daily use rather than one session.",
+      cite: "Okamoto et al. 2010, PNAS \u00b7 Teismann et al. 2011, PLOS One \u00b7 Bakhtarikia et al. 2024 \u00b7 Samaei et al. 2026"
     },
 
     /* ---------- STIMULATION ---------- */
@@ -85,14 +85,14 @@
       carrier: 400, beat: 40, minutes: 25, strength: 2,
       desc: "A 40 Hz gamma beat on a 400 Hz carrier, a pairing that evokes a measurable 40 Hz response in the brain; on carriers above about 3,000 Hz the response disappears.",
       ev: "A 40 Hz binaural-beat auditory steady-state response was evoked with a 400 Hz carrier and was undetectable above ~3000 Hz, which is why the carrier is fixed low here. In attentional-blink training, 40 Hz produced greater improvement than 16 Hz.",
-      cite: "Hommel et al. 2020, Sci. Rep. · Orozco Perez et al. 2020, eNeuro"
+      cite: "Ross & Lopez 2020, Sci. Rep. · Orozco Perez et al. 2020, eNeuro"
     },
     {
       id: "gamma-memory", cat: "stim", band: "Gamma", name: "Working Memory Gamma",
       carrier: 240, beat: 40, minutes: 15, strength: 1,
-      desc: "Fifteen minutes of a 40 Hz gamma beat for working-memory tasks. Some trials found better scores under 40 Hz beats and others found no change at all, so treat it as an experiment.",
-      ev: "Some trials found better working-memory performance under 40 Hz stimulation, correlating with frequency-following responses. Others found no change in either memory scores or EEG and concluded entrainment never occurred. Treat as experimental.",
-      cite: "Jausovec et al. 2022 · Basu & Banerjee 2023"
+      desc: "Fifteen minutes of a 40 Hz gamma beat for working-memory tasks. The studies disagree, and a trial of 40 Hz beats found no change at all, so treat it as an experiment.",
+      ev: "Across 15 studies, binaural beats improved memory and attention by a medium amount on average, but the individual studies conflicted, especially for theta and beta. For 40 Hz, a trial found no change in either memory scores or EEG and concluded entrainment never occurred. Treat as experimental.",
+      cite: "Basu & Banerjee 2023 · Borges et al. 2023"
     }
   ];
 

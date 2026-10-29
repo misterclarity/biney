@@ -12,6 +12,8 @@
 //   X  autogenic training (the standard phrases, week by week, the endings) and Autogenic Reframing
 //   Y  a quote read aloud without its author, Walking as a position, the feedback form
 //   Z  Healthy living's Routines (sleep habits, morning, the day, evening) and Light (a light box, red and near-infrared light)
+//   V  the full consistency check: citations and references, British spelling, page names on a phone, tapping's timing,
+//      a long feedback message, Edge on an iPhone, the tinnitus and gamma evidence
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -960,7 +962,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const inside = pl => pl.steps.every(s => s.lines.every((l, i) => l[0] >= 0 && l[0] < s.secs && (!i || l[0] > s.lines[i - 1][0])));
       const run = p => E(p, () => {
         const X = window.__entrain, s = X.P.steps[X.P.idx] || {};
-        return { id: X.P.def && X.P.def.id, hash: location.hash, title: document.querySelector('#viewTitle').textContent, step: s.title, of: document.querySelector('#sStepTxt').textContent,
+        return { id: X.P.def && X.P.def.id, hash: location.hash, title: document.querySelector('#viewTitle').textContent, step: s.title, of: document.querySelector('#sStepTxt').textContent, then: document.querySelector('#sThen').hidden ? '' : document.querySelector('#sThen').textContent,
           lines: (s.lines || []).map(l => String(l[1])), chain: X.P.chain, len: X.P.runLen, state: X.P.state };
       });
       const words = p => E(p, () => { const X = window.__entrain, s = (X.P.state === 'running' ? X.P.steps : X.pPlan(X.pDef('conversation'), 10).steps).find(s => s.title === 'Your words'); return s.mkLines().map(l => l[1]); });
@@ -974,7 +976,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       let p = await page(Object.assign(OPT({ audio: true, ana: 180 }), { optsOpen: '1' }));
       await E(p, () => location.hash = 'practice/conversation'); await p.waitForTimeout(450);
       let i = await intro(p);
-      ok(i.title === 'Difficult Conversation' && i.kind === 'Calm · Program · 10 min' && i.lens === '6 min | 10 min* | 15 min' && i.go === 'Start 10 min' &&
+      ok(i.title === 'Difficult Conversation' && i.kind === 'Calm · Programme · 10 min' && i.lens === '6 min | 10 min* | 15 min' && i.go === 'Start 10 min' &&
         i.steps === 'Arrive00:30 | Cyclic sighs01:30 | Slow breathing04:00 | Ready, not calm00:50 | What matters to you00:50 | Your words00:50 | If, then01:00 | Go00:30',
         'Difficult Conversation: sighs and slow breathing, then readiness, a value, your words and an if-then: ' + i.steps);
       ok(/^Headphones for the binaural layer \| Heart sensor recommended: live coherence while you breathe, and your heart rate coming down/.test(i.needs), 'headphones, and a heart sensor recommended for its live coherence: ' + i.needs);
@@ -1006,7 +1008,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         'choosing it puts it first in the steps, and it is kept for next time');
       await p.click('#sGo'); await p.waitForTimeout(700);
       let r = await run(p);
-      ok(r.id === 'nvc-prep' && r.hash === '#practice/nvc-prep' && r.title === 'Prepare a Hard Conversation (NVC)' && r.of === 'Step 1 of 11 · Arrive · then Difficult Conversation' &&
+      ok(r.id === 'nvc-prep' && r.hash === '#practice/nvc-prep' && r.title === 'Prepare a Hard Conversation (NVC)' && r.of === 'Step 1 of 11 · Arrive' && r.then === 'Next: Difficult Conversation' &&
         r.chain && r.chain.then === 'conversation' && r.chain.len === 10 && r.lines[2] === "You'll write a little at each step, then Difficult Conversation helps your body get ready too.",
         'Start runs the preparation first, and says what follows it: ' + r.of);
       await p.click('#sNext'); await p.waitForTimeout(300);
@@ -1039,7 +1041,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await p.click('#sdChain'); await p.waitForTimeout(700);
       r = await run(p);
       const tr = await E(p, () => { const A = window.__entrain.A; return A.track ? { band: A.track.band, pts: JSON.stringify(A.track.pts) } : {}; });
-      ok(r.id === 'conversation' && r.hash === '#practice/conversation' && r.title === 'Difficult Conversation' && r.chain === null && r.len === 10 && r.of === 'Step 1 of 8 · Arrive',
+      ok(r.id === 'conversation' && r.hash === '#practice/conversation' && r.title === 'Difficult Conversation' && r.chain === null && r.len === 10 && r.of === 'Step 1 of 8 · Arrive' && r.then === '',
         'Continue starts Difficult Conversation, at the length chosen on its page: ' + r.of);
       const w = await words(p);
       ok(w.join(' / ') === "From your preparation: you need appreciation and fairness. That's what you're going in for. / Your first sentence: " + SENT + ' / Say it once to yourself, slowly, as if they were here.',
@@ -1066,7 +1068,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok((await intro(p)).steps.indexOf('Self-Empathy (NVC)your pace | Arrive00:30') === 0, 'a choice kept from before shows as the first step');
       await p.click('#sGo'); await p.waitForTimeout(500);
       r = await run(p);
-      ok(r.id === 'nvc-self' && / · then Difficult Conversation$/.test(r.of) && /^Bring to mind the conversation ahead of you, and what's still alive in you about it/.test(r.lines[1]) &&
+      ok(r.id === 'nvc-self' && r.then === 'Next: Difficult Conversation' && /^Bring to mind the conversation ahead of you, and what's still alive in you about it/.test(r.lines[1]) &&
         r.lines[2] === "You'll write a little at each step, then Difficult Conversation helps your body get ready too.", 'Self-Empathy runs first, about the conversation ahead: ' + r.of);
       await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
       nx = await sdNext(p);
@@ -1090,7 +1092,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       });
       await E(p, () => location.hash = 'practice/call'); await p.waitForTimeout(450);
       i = await intro(p);
-      ok(i.title === 'During the Call' && i.kind === 'Calm · Program · up to 60 min' && i.lens === '30 min | 60 min* | 90 min' && i.go === 'Start' &&
+      ok(i.title === 'During the Call' && i.kind === 'Calm · Programme · up to 60 min' && i.lens === '30 min | 60 min* | 90 min' && i.go === 'Start' &&
         i.steps === 'Before it starts00:30 | In the call58:45 | After the call00:45', 'During the Call: a short start, the call, a short close: ' + i.steps);
       ok(i.needs === "Headphones the beat plays under the call's audio, at half your usual volume | Heart sensor optional: your heart rate and coherence while you talk | This screen in view beside the call, on this phone or in a window next to it, to glance at the pacer while you listen",
         'it needs headphones, this screen in view, and a sensor if you like');
@@ -1128,7 +1130,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await E(p, () => location.hash = 'practice/after-talk'); await p.waitForTimeout(400);
       i = await intro(p);
       pl = await plan(p, 'after-talk', 0);
-      ok(i.kind === 'Calm · Program · 9 min' && i.go === 'Start 9 min' && pl.total === 540 &&
+      ok(i.kind === 'Calm · Programme · 9 min' && i.go === 'Start 9 min' && pl.total === 540 &&
         i.steps === "It's over00:30 | Cyclic sighs01:30 | Long out-breaths03:00 | Name it00:55 | Kindness01:10 | What went well00:45 | One next step00:45 | Close00:25" &&
         await segs(p, '#sOptBeat') === 'Off | Theta 6 Hz* | Alpha 10 Hz' && pl.steps[2].t.inh === 4.4 && pl.steps[2].t.exh === 6.5 && inside(pl), 'After the Conversation: sighs and long out-breaths under theta, then naming it, kindness and one next step: ' + i.steps);
       await E(p, () => location.hash = 'practice/nvc-prep'); await p.waitForTimeout(400);
@@ -1533,6 +1535,127 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await E(p, () => location.hash = 'learn'); await p.waitForTimeout(400);
       ok(/healthy sleep habits, a morning and an evening routine; and light therapy/.test(await t(p, '#v-learn .lv-promo')), 'Learn\'s link to Healthy living names them');
       await p.context().close();
+    }
+
+    /* V. the full consistency check: every citation has its reference and every reference is cited; British spelling in
+       what people read; page names that fit a phone's top bar, with the sensor button a heart until a sensor sends
+       readings; tapping's lines given time to be said; a long feedback message kept within GitHub's link; Edge on an
+       iPhone; the tinnitus and gamma evidence as the trials found it; walking in the how-it-runs text */
+    if (!only || only === 'V') {
+      const p = await page(OPT(), () => { window.__open = []; window.open = u => { window.__open.push(u); return null; }; });
+      await E(p, () => location.hash = 'learn'); await p.waitForTimeout(400);
+      const C = await E(p, () => {
+        const X = window.__entrain, refs = [...document.querySelectorAll('#references li')].map(li => li.textContent.replace(/\s+/g, ' ').trim());
+        const body = [...document.querySelectorAll('#science > *:not(.refs-sec)')].map(e => e.textContent).join(' ').replace(/\s+/g, ' ');
+        const found = [], who = "([A-ZÀ-Ž][\\w'’À-ž-]+(?: [A-Z][\\w-]+)?)";
+        // in Learn: (Author, 2014), (Author & Author, 2014), (Author et al., 2014), several in one pair of brackets
+        (body.match(/\(([^()]*\d{4})\)/g) || []).forEach(g => g.slice(1, -1).split(';').forEach(c => {
+          const m = new RegExp('^' + who + '[^;]*?,? (\\d{4})$').exec(c.trim()); if (m) found.push([m[1], m[2], c.trim()]);
+        }));
+        // each practice's, track's and breathing pattern's line of sources
+        X.PRACTICES.concat(X.TRACKS, X.BREATHS).forEach(d => (d.cite || '').split(' · ').forEach(c => {
+          const m = new RegExp('^' + who + '[^·]*? (\\d{4})\\b').exec(c.trim()); if (m) found.push([m[1], m[2], c.trim()]);
+        }));
+        const keys = refs.map(r => { const m = /^([^,(]+?),.*?\((\d{4})\)/.exec(r); return m ? [m[1].trim(), m[2]] : null; });
+        return { n: found.length, refs: refs.length, missing: found.filter(f => !keys.some(k => k && k[0] === f[0] && k[1] === f[1])).map(f => f[2]),
+          unused: refs.filter((r, i) => keys[i] && !found.some(f => f[0] === keys[i][0] && f[1] === keys[i][1])).map(r => r.slice(0, 60)) };
+      });
+      ok(C.n > 150 && !C.missing.length && !C.unused.length, C.n + ' citations in Learn and on the practices, tracks and patterns, each with its reference among ' + C.refs +
+        ', and every reference cited' + (C.missing.length ? '; no reference for: ' + C.missing.join(' | ') : '') + (C.unused.length ? '; never cited: ' + C.unused.join(' | ') : ''));
+      const R = await E(p, () => [...document.querySelectorAll('#references li')].map(li => li.textContent.replace(/\s+/g, ' ').trim()));
+      const has = (a, re) => R.some(r => r.startsWith(a) && re.test(r));
+      ok(has('Basu, S., & Banerjee, B. (2023).', /Potential of binaural beats intervention for improving memory and attention/) &&
+        has('Ross, B., & Lopez, M. D. (2020).', /attentional blink/) && has('Borges, L. R.', /gamma frequency over memory performance/) &&
+        has('Teismann, H., Okamoto, H., & Pantev, C. (2011).', /tinnitus frequency matters/) && has('Bakhtarikia, S.', /45\(4\), 104308/) &&
+        has('Samaei, S.', /Auditory and Vestibular Research/) && !R.some(r => /^(Ingendoh|Hommel|Jausovec|Stein|Ghaffari|Kim, S\.)/.test(r) || /^Effect of binaural/.test(r)),
+        'the binaural-beat and tinnitus references name the right authors and papers');
+      const L = await E(p, () => ({ tin: document.querySelector('#l-tinnitus').nextElementSibling.textContent.replace(/\s+/g, ' '),
+        ev: document.querySelector('#l-evidence').nextElementSibling.textContent.replace(/\s+/g, ' '), nvc: document.querySelector('#v-learn').textContent.replace(/\s+/g, ' ') }));
+      ok(/didn't lower tinnitus handicap more than the music alone after four weeks/.test(L.tin) && /larger but not significant drop in annoyance \(Samaei et al\., 2026\)/.test(L.tin) &&
+        /a 40 Hz trial found no change in memory scores or EEG/.test(L.ev) && /Self-Empathy and Have-Tos into Choices turn it inward/.test(L.nvc),
+        'Learn says what the tinnitus and 40 Hz trials found, and names the reflections that turn NVC inward');
+      const T = await E(p, () => { const X = window.__entrain, t = id => X.TRACKS.find(x => x.id === id); return { tin: t('tinnitus-notch'), g40: t('gamma-40').cite, gm: t('gamma-memory') }; });
+      ok(/didn't lower tinnitus handicap more than the music alone/.test(T.tin.ev) && /larger but not significant drop in annoyance/.test(T.tin.ev) && !/improved tinnitus handicap/.test(T.tin.ev) &&
+        T.tin.cite.includes('Teismann et al. 2011') && T.tin.cite.includes('Bakhtarikia et al. 2024') && /^Ross & Lopez 2020/.test(T.g40) &&
+        T.gm.cite === 'Basu & Banerjee 2023 · Borges et al. 2023' && /no change in either memory scores or EEG/.test(T.gm.ev), 'the tinnitus and gamma tracks too, under the right authors');
+      // British spelling in everything people read (the translated quotes and the papers' own titles stay as written)
+      const S = await E(p, () => {
+        const X = window.__entrain, txt = [...document.querySelectorAll('#science > *:not(.refs-sec)')].map(e => e.textContent);
+        X.PRACTICES.forEach(d => {
+          txt.push(d.name, d.blurb, d.how || '', d.ev, d.parts || '', d.caution || '');
+          (d.choices || []).forEach(c => txt.push(c.label, c.note || '', ...c.opts.map(o => o[1])));
+          try { X.pPlan(d, d.min || (d.lengths || [0])[0]).steps.forEach(s => { txt.push(s.title, s.prompt || '', s.hint || ''); (s.lines || []).forEach(l => txt.push(String(l[1]))); }); } catch (e) {}
+        });
+        X.TRACKS.forEach(t => txt.push(t.name, t.desc, t.ev)); X.BREATHS.forEach(b => txt.push(b.desc || '', b.ev || ''));
+        X.QUOTES.forEach(q => { if (!q[1]) txt.push(q[0]); });
+        return (txt.join('\n').match(/.{0,30}\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!Research )center(?:s|ed)?|organiz\w*|realiz\w*|recogniz\w*|minimiz\w*|optimiz\w*|personaliz\w*|prioritiz\w*|visualiz\w*|analyz\w*|gray|fiber|aging)\b.{0,20}/gi) || []);
+      });
+      await E(p, () => location.hash = 'settings'); await p.waitForTimeout(400);
+      const S2 = await E(p, () => [document.querySelector('#v-settings').textContent, ...[...document.querySelectorAll('.pf-chips button, #prMeth button')].map(b => b.textContent)].join(' ').match(/.{0,20}\bprograms?\b.{0,20}/gi) || []);
+      ok(!S.length && !S2.length, 'British spelling throughout: programmes, towards, synthesised' + (S.concat(S2).length ? ': ' + S.concat(S2).slice(0, 4).join(' | ') : ''));
+      const how = await E(p, () => ['coherence', 'gratitude'].map(id => window.__entrain.pDef(id).how));
+      ok(how.every(h => /Sit, lie down or walk/.test(h)), 'Heart Coherence and Gratitude say they can be done walking');
+      // page names fit a phone's top bar, with the sensor button a heart until a sensor sends readings
+      const fit = async () => {
+        const out = [];
+        for (const v of ['home', 'practice', 'breathe', 'heart', 'learn', 'history', 'settings', 'living', 'prime', 'builder', 'yoga', 'practice/coherence', 'practice/recovery']) {
+          await E(p, v => location.hash = v, v); await p.waitForTimeout(160);
+          out.push(await E(p, () => { const h = document.querySelector('#viewTitle'); return h.scrollWidth <= h.clientWidth + 1 ? '' : h.textContent; }));
+        }
+        return out.filter(Boolean);
+      };
+      const sb = await E(p, () => { const b = document.querySelector('#tbSensor'), tx = document.querySelector('#tbSensorTxt');
+        return { w: Math.round(b.getBoundingClientRect().width), icon: getComputedStyle(b.querySelector('.tb-hr')).display !== 'none', name: tx.textContent, hid: tx.getBoundingClientRect().width <= 1 }; });
+      const cut412 = await fit();
+      await p.setViewportSize({ width: 360, height: 740 }); await p.waitForTimeout(200);
+      const cut360 = await fit();
+      ok(sb.w <= 36 && sb.icon && sb.hid && /sensor/.test(sb.name) && !cut412.length && !cut360.length,
+        'on a phone the sensor button is a heart (its words kept for screen readers: "' + sb.name + '"), and every tab and page name fits at 412 and 360 px' + (cut412.concat(cut360).length ? ': cut ' + cut412.concat(cut360).join(', ') : ''));
+      await p.setViewportSize({ width: 412, height: 915 });
+      // tapping: the instruction is said before the first point, and before the first set-up statement
+      const tap = await E(p, () => { const X = window.__entrain, st = X.pPlan(X.pDef('tapping'), 0).steps, r1 = st.find(s => s.title === 'Round 1'), su = st.find(s => s.title === 'Set-up');
+        return { lead: r1.lead, first: r1.lines[1][0], intro: r1.lines[0][1], su: su.lines.map(l => l[0]).join(), secs: r1.secs }; });
+      ok(tap.lead === 6 && tap.first === 6 && tap.intro === 'Now tap about seven times on each point, saying the phrase.' && tap.su === '0,6,13,20' && tap.secs === 63,
+        'tapping gives its instructions time to be said: the first point at ' + tap.first + ' s, the set-up\'s statements at ' + tap.su);
+      // a long message in a script that takes several bytes a letter: the link stays short enough for GitHub, and says it was cut
+      await E(p, () => location.hash = 'feedback'); await p.waitForTimeout(600);
+      await p.fill('#fbTitle', 'Отзыв'); await p.fill('#fbTxt', 'Очень длинное сообщение о приложении. '.repeat(80).slice(0, 2990).trim());
+      await p.click('#fbGo'); await p.waitForTimeout(200);
+      let fb = await E(p, () => ({ url: window.__open[window.__open.length - 1] || '', n: document.querySelector('#fbN').textContent, keep: document.querySelector('#fbTxt').value.length }));
+      let body = decodeURIComponent((fb.url.split('&body=')[1] || ''));
+      ok(fb.url.length <= 7000 && /…\n\n\[cut short to fit the link\]\n\n---\nEntrain build/.test(body) && /^Opened on GitHub with the first \d+ characters: the whole message is too long for the link/.test(fb.n) && fb.keep > 2900,
+        'a message too long for the link goes as far as it fits (' + fb.url.length + ' characters), cut at a word, and the whole of it stays in the form');
+      await p.fill('#fbTxt', 'The tapping round could start a little later.'); await p.click('#fbGo'); await p.waitForTimeout(200);
+      fb = await E(p, () => ({ url: window.__open[window.__open.length - 1] || '', n: document.querySelector('#fbN').textContent }));
+      body = decodeURIComponent((fb.url.split('&body=')[1] || ''));
+      ok(/^The tapping round could start a little later\.\n\n---\nEntrain build/.test(body) && fb.n === 'Opened on GitHub. Your draft stays here until you clear it.', 'a short one goes whole');
+      // emoji take two places in a JavaScript string, and half of one can't go in a link: the title and the message are never cut through one
+      await p.fill('#fbTitle', ''); await p.fill('#fbTxt', 'x' + '😀'.repeat(1400)); await p.click('#fbGo'); await p.waitForTimeout(200);
+      fb = await E(p, () => ({ url: window.__open[window.__open.length - 1] || '', n: document.querySelector('#fbN').textContent }));
+      ok(fb.url.length <= 7000 && /title=Idea%3A%20x(%F0%9F%98%80){29}%E2%80%A6&body=x(%F0%9F%98%80)+%E2%80%A6%0A%0A%5Bcut%20short/.test(fb.url) && /^Opened on GitHub with the first \d+ characters/.test(fb.n),
+        'a message of emoji is cut between them, in the title and the message');
+      await E(p, () => { localStorage.removeItem('entrain.fbDraft'); });
+      // the sensor's readings show in its button once it sends them
+      await p.context().close();
+      const q = await page(OPT(), null, { speed: 1, rr: true });
+      await q.click('#tbSensor'); await q.waitForTimeout(300); await q.click('#hrConnect');
+      for (let i = 0; i < 40 && !/bpm/.test(await t(q, '#tbSensorTxt')); i++) await q.waitForTimeout(150);
+      await E(q, () => location.hash = 'learn'); await q.waitForTimeout(300);
+      const on = await E(q, () => { const b = document.querySelector('#tbSensor'); return { w: Math.round(b.getBoundingClientRect().width), txt: document.querySelector('#tbSensorTxt').textContent, icon: getComputedStyle(b.querySelector('.tb-hr')).display !== 'none' }; });
+      ok(/^\d+ bpm$/.test(on.txt) && on.w > 60 && !on.icon, 'connected, it shows the heart rate: ' + on.txt);
+      await q.context().close();
+      // a computer keeps the words; an iPhone's Edge is named as Edge
+      const d = await page(OPT(), null, null, true);
+      const dk = await E(d, () => { const b = document.querySelector('#tbSensor'); return { icon: getComputedStyle(b.querySelector('.tb-hr')).display !== 'none', w: document.querySelector('#tbSensorTxt').getBoundingClientRect().width }; });
+      ok(!dk.icon && dk.w > 40, 'on a computer the sensor button keeps its words');
+      await d.context().close();
+      const ctx = await browser.newContext({ userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 EdgiOS/117.0.2045.65 Mobile/15E148 Safari/605.1.15',
+        viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+      const ip = await ctx.newPage();
+      ip.on('pageerror', e => log.push('PAGEERROR ' + e.message));
+      await ip.goto(APP + '#feedback'); await ip.waitForTimeout(700);
+      ok(/^Entrain build \w+ · Edge 117\.0\.2045\.65 on iOS · in the browser/.test(await t(ip, '#fbDevTxt')), 'Edge on an iPhone is named as Edge: ' + await t(ip, '#fbDevTxt'));
+      await ctx.close();
     }
   } catch (e) {
     log.push('ERROR ' + (e && e.stack || e));

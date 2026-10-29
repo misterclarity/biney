@@ -11,13 +11,13 @@ const SUITES = [   // name, what it covers, and about how long it takes on its o
   ['apptest', 'App shell on a phone and a desktop', 30],
   ['pwatest', 'Offline install and updates (serves the build on port 8123)', 15],
   ['prrun', 'Practices: library, sessions, breath, yoga', 160],
-  ['prrun2', 'Practices: programs, Wim Hof, builder', 130],
+  ['prrun2', 'Practices: programmes, Wim Hof, builder', 130],
   ['prrun3', 'Capoeira, tapping, heart-led beats, nap, reflection', 230],
   ['regress', 'Fixes from the October 2026 code review', 260],
   ['todaytest', 'Today, one history, favourites, the library with sounds', 50],
   ['findtest', 'Resonance test with a sensor (about two minutes)', 110],
   ['cuetrend', 'Lock screen, vibration, comparisons, trends, start-up, Heart', 70],
-  ['choices', 'Saved patterns, safety note, filters, Heart Coherence, live changes, Restart, Healthy living, Gratitude, Calm Reset, donations, connecting, difficult conversations, autogenic training, walking, feedback, routines and light', 115]
+  ['choices', 'Saved patterns, safety note, filters, Heart Coherence, live changes, Restart, Healthy living, Gratitude, Calm Reset, donations, connecting, difficult conversations, autogenic training, walking, feedback, routines and light, the consistency check', 115]
 ];
 const MAX = 15 * 60 * 1000;                 // a suite that runs longer than this has hung
 

@@ -214,10 +214,10 @@
   }
   function hrBrowser() {
     var u = navigator.userAgent || "", m;
-    var b = (m = /EdgA?\/([\d.]+)/.exec(u)) ? "Edge " + m[1] : (m = /SamsungBrowser\/([\d.]+)/.exec(u)) ? "Samsung Internet " + m[1]
+    var b = (m = /Edg(?:A|iOS)?\/([\d.]+)/.exec(u)) ? "Edge " + m[1] : (m = /SamsungBrowser\/([\d.]+)/.exec(u)) ? "Samsung Internet " + m[1]
       : (m = /OPR\/([\d.]+)/.exec(u)) ? "Opera " + m[1] : (m = /(?:Firefox|FxiOS)\/([\d.]+)/.exec(u)) ? "Firefox " + m[1]
       : (m = /(?:Chrome|CriOS)\/([\d.]+)/.exec(u)) ? "Chrome " + m[1] : (m = /Version\/([\d.]+).*Safari/.exec(u)) ? "Safari " + m[1] : "";
-    var os = /iPhone|iPad|iPod/.test(u) ? "iOS" : /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /CrOS/.test(u) ? "ChromeOS" : /Mac OS X/.test(u) ? "macOS" : /Linux/.test(u) ? "Linux" : "";
+    var os = /iPhone|iPad|iPod/.test(u) || (/Macintosh/.test(u) && navigator.maxTouchPoints > 1) ? "iOS" : /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /CrOS/.test(u) ? "ChromeOS" : /Mac OS X/.test(u) ? "macOS" : /Linux/.test(u) ? "Linux" : "";
     return b && os ? b + " on " + os : b || os;
   }
   function hrLogShow(log) {
@@ -504,7 +504,7 @@
     var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
     var os = /Android/.test(ua) ? "android" : ios ? "ios" : /CrOS/.test(ua) ? "chromeos" :
       /Mac OS X/.test(ua) ? "mac" : /Windows/.test(ua) ? "windows" : /Linux/.test(ua) ? "linux" : "other";
-    var br = /SamsungBrowser/.test(ua) ? "Samsung Internet" : /EdgA?\//.test(ua) ? "Edge" : /OPR\//.test(ua) ? "Opera" :
+    var br = /SamsungBrowser/.test(ua) ? "Samsung Internet" : /Edg(?:A|iOS)?\//.test(ua) ? "Edge" : /OPR\//.test(ua) ? "Opera" :
       /Firefox|FxiOS/.test(ua) ? "Firefox" : /CriOS/.test(ua) ? "Chrome" : /Chrome\//.test(ua) ? "Chrome" :
       /Safari\//.test(ua) ? "Safari" : "This browser";
     var osName = { android: "Android", ios: ios && /iPad/.test(ua) ? "iPad" : "iPhone", chromeos: "ChromeOS", mac: "macOS", windows: "Windows", linux: "Linux", other: "this device" }[os];

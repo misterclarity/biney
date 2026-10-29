@@ -113,6 +113,17 @@
   .pill[data-state="busy"] .dot,.pill[data-state="lost"] .dot{background:var(--b-hold)}
   .pill .hr-dot{margin:0;width:8px;height:8px;align-self:center}
   .pill:not([data-state="on"]) .hr-dot{opacity:1}
+  /* on a phone the sensor button is a heart until a sensor sends readings (then it shows the bpm, unless a
+     practice's button needs the room), so the page's name has room; its words stay for screen readers */
+  .tb-hr{display:none}
+  @media (max-width:560px){
+    #tbSensor:not([data-state="on"]),.top-actions:has(#tbPrac:not([hidden])) #tbSensor{position:relative;width:34px;padding:0;justify-content:center}
+    #tbSensor:not([data-state="on"]) .tb-hr,.top-actions:has(#tbPrac:not([hidden])) #tbSensor .tb-hr{display:inline-flex}
+    #tbSensor:not([data-state="on"]) .tb-hr svg.i,.top-actions:has(#tbPrac:not([hidden])) #tbSensor .tb-hr svg.i{width:18px;height:18px}
+    #tbSensor:not([data-state="on"]) .hr-dot,.top-actions:has(#tbPrac:not([hidden])) #tbSensor .hr-dot{position:absolute;top:5px;right:5px;width:7px;height:7px}
+    #tbSensor:not([data-state="on"]) #tbSensorTxt,.top-actions:has(#tbPrac:not([hidden])) #tbSensorTxt{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+    .topbar h1{font-size:18px}
+  }
   body.sheet-lock{overflow:hidden}
   /* what's scrolled to, or focused, stays clear of the tab bar and the practice page's Start bar */
   @media (max-width:1023px){ html{scroll-padding-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 12px)} }
@@ -973,8 +984,9 @@
   .ses-x:hover{color:var(--text)}
   .ses-x.armed{background:var(--danger);color:#0b1120}
   .ses-ttl{flex:1;min-width:0;display:flex;flex-direction:column}
-  .ses-ttl b{font-size:15px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ses-ttl b{font-size:15px;font-weight:750;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
   .ses-ttl span{font-size:12px;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ses-ttl .ses-then{color:var(--text-dim)}
   .ses-left{font-size:13px;color:var(--text-dim);font-variant-numeric:tabular-nums;font-weight:650;white-space:nowrap}
   .ses-bar{position:relative;margin:12px 0 0;height:6px}
   .ses-segs{display:flex;gap:2px;height:100%;border-radius:4px;overflow:hidden;opacity:.45}
@@ -1100,10 +1112,9 @@
   @keyframes fdhit{0%,35%{box-shadow:0 0 0 3px var(--accent);background-color:color-mix(in srgb,var(--accent) 14%,transparent)}100%{box-shadow:0 0 0 3px transparent}}
   @media (prefers-reduced-motion:reduce){ .fd-hit{animation:none;outline:3px solid var(--accent);outline-offset:3px} }
   @media (max-width:560px){
-    .pill-prac span{max-width:30vw}
+    .pill-prac span{max-width:26vw}
     .top-actions:has(#tbPrac:not([hidden])) #tbSet{display:none}
   }
-  @media (max-width:400px){ .top-actions:has(#tbPrac:not([hidden])) #tbSensorTxt{display:none} }
 
   /* dimmed for sleep, when Settings asks for it: almost nothing lit */
   .ses[data-dim="1"] .ses-run{--text:#5d6785;--text-dim:#4a536e;--text-faint:#3a4259}

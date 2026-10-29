@@ -1,5 +1,6 @@
   /* --------------------------- healthy living: the content ---------------------------
-     Recipes, and what the research says about common supplements. A recipe's ingredients are
+     Recipes, what the research says about common supplements, the routines (sleep habits, a morning,
+     the day and an evening) and light therapy. A recipe's ingredients are
      [amount, unit, name, note]: the amount scales with the servings (null for "to taste"), the unit
      is one of LV_UNITS or "" for a count, and a counted name can be [one, several]. Steps carry no
      amounts, so they stay right at any number of servings.

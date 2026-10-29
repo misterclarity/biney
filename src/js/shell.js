@@ -3,7 +3,8 @@
      #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
      practice, #track/<id> for a track, #prime and #builder for the custom primer and the beat
      builder, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
-     #living/<recipe or supplement>; and #settings from the gear. Links and search also
+     #living/<tab, recipe, supplement, light or routine>; and #settings from the gear, with #feedback and
+     #st-<section> for a section of it. Links and search also
      use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>. Older
      addresses still work: #sounds and #tracks open the library at its sounds, and in-page anchors
      (#connect, #science, #references and the rest) open the view that holds them.

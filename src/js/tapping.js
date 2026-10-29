@@ -59,13 +59,14 @@
   function TRate(title, line, o) {
     return ext({ k: "rate", secs: o && o.cap || 60, title: title, open: true, lines: [[0, line]] }, o);
   }
+  // each spoken line has time to finish before the next: the first statement comes once the instruction is said
   function TSetup(secs, title, statement, times) {
     var lines = [[0, "Tap the side of one hand with the fingertips of the other, and say:"]];
-    for (var i = 0; i < times; i++) lines.push([4 + i * Math.floor((secs - 6) / times), statement]);
+    for (var i = 0; i < times; i++) lines.push([6 + i * Math.floor((secs - 8) / times), statement]);
     return { k: "tap", secs: secs, title: title, pts: ["hand"], per: secs, lines: lines };
   }
   function TRound(title, phrases, per, first) {
-    var lead = 3, lines = [[0, first ? "Now tap about seven times on each point, saying the phrase. Start at the top of the head." : "Top of the head again."]];
+    var lead = first ? 6 : 3, lines = [[0, first ? "Now tap about seven times on each point, saying the phrase." : "Top of the head again."]];
     TAP_SEQ.forEach(function (id, i) {
       var p = TAP_PT[id], ph = phrases[i % phrases.length];
       lines.push([lead + i * per, (first ? p.name + ". " : "") + ph]);

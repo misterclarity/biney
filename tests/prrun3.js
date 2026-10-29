@@ -190,7 +190,7 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     ok(/Even though I have this tight chest, I deeply and completely accept myself\./.test(said), 'set-up statement uses the phrase');
     ok(await p.$eval('#sFig g[data-p="hand"] .tp', c => c.classList.contains('on')), 'side of the hand lit');
     await untilStep(p, /^Round 1$/);
-    await until(p, await p.evaluate(() => { const P = window.__entrain.P; return P.steps[P.idx].at + 3 + 7 + 1; }));
+    await until(p, await p.evaluate(() => { const P = window.__entrain.P; return P.steps[P.idx].at + P.steps[P.idx].lead + 7 + 1; }));
     for (let i = 0; i < 30 && !/Point 2 of 8/.test(await t(p, '#sSub')); i++) await p.waitForTimeout(100);   // the words move on with the practice's tick, five times a second
     ok(await t(p, '#sCap') === 'Eyebrow' && /Point 2 of 8/.test(await t(p, '#sSub')) && await p.$eval('#sFig g[data-p="brow"] .tp', c => c.classList.contains('on')) && await p.$eval('#sFig g[data-p="head"] .tp', c => c.classList.contains('done')), 'round 1 moves to the eyebrow, head marked done: ' + await t(p, '#sSub'));
     await p.screenshot({ path: OUT + 'tap-round.png' });
@@ -229,7 +229,7 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(250);
     ok(/Experimental/.test(await t(p, 'a[href="#practice/heart-led"] .pc-meta')), 'card is marked Experimental');
     await p.evaluate(() => location.hash = 'practice/heart-led'); await p.waitForTimeout(250);
-    ok(/Calm · Program · Experimental · 20 min/.test(await t(p, '.si-kind')) && (await p.$$eval('.si-len button', b => b.map(x => x.textContent))).join('/') === '15 min/20 min/30 min', 'intro: ' + await t(p, '.si-kind'));
+    ok(/Calm · Programme · Experimental · 20 min/.test(await t(p, '.si-kind')) && (await p.$$eval('.si-len button', b => b.map(x => x.textContent))).join('/') === '15 min/20 min/30 min', 'intro: ' + await t(p, '.si-kind'));
     ok(/the beat follows it/.test(await t(p, '.si-need')) && await p.$('#sOptAudio') !== null, 'needs: sensor drives the beat; binaural toggle');
     await p.click('.si-len button[data-len="15"]'); await p.waitForTimeout(200);
     await p.click('#sGo'); await p.waitForTimeout(800);

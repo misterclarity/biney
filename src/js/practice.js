@@ -5,7 +5,7 @@
      edits that land on the next breath, and the guide's own visuals are drawn
      onto the session canvas by swapping its drawing context. So heart-rate
      swing, coherence and cue sounds behave exactly as they do in Breathe.
-     A program's binaural layer is an ordinary track (load/play/pause) whose
+     A programme's binaural layer is an ordinary track (load/play/pause) whose
      beat follows piecewise points; skipping a step seeks it to the new time.
   ------------------------------------------------------------------------------ */
 
@@ -83,12 +83,12 @@
     var steps = d.build(len, pVar(d)), at = 0;
     steps.forEach(function (s) { s.at = at; at += s.secs; });
     if (d.method === "program" && P.opt.ana) pAna(d, steps, at, P.opt.ana);
-    var base = at;                                   // a program's sound covers the practice, not the tapping after it
+    var base = at;                                   // a programme's sound covers the practice, not the tapping after it
     if (tapOn(d)) tapShort().forEach(function (s) { s.at = at; at += s.secs; s.extra = true; steps.push(s); });
     return { steps: steps, total: at, base: base };
   }
 
-  /* Anapana reminders for the programs: every few minutes, a quiet prompt to observe the breath
+  /* Anapana reminders for the programmes: every few minutes, a quiet prompt to observe the breath
      at the nostrils, worded for paced, natural or heart-focused breathing. They skip steps that
      guide attention elsewhere (body regions, the sleep drift) and never crowd another line. */
   var ANA = {
@@ -381,7 +381,7 @@
     return { cap: cap, sub: sub, n: S.count };
   }
 
-  /* ----- the program's binaural layer ----- */
+  /* ----- the programme's binaural layer ----- */
   function pTrack() { return A.track && A.track.practice && A.track.pid === (P.def && P.def.id) ? A.track : null; }
   function aSeek(sec) {
     if (!A.track) return;
@@ -800,7 +800,10 @@
     }
     var sp = P.def.selfPaced;
     bSetT("#sLeft", sp ? "Your pace" : fmt(P.total - T) + " left");
-    bSetT("#sStepTxt", "Step " + (P.idx + 1) + " of " + P.steps.length + " · " + s.title + (P.chain && P.chain.then !== P.def.id && pDef(P.chain.then) ? " · then " + pDef(P.chain.then).name : ""));
+    bSetT("#sStepTxt", "Step " + (P.idx + 1) + " of " + P.steps.length + " · " + s.title);
+    var nx = P.chain && P.chain.then !== P.def.id ? pDef(P.chain.then) : null, th = $("#sThen");     // a line of its own, so it fits on a phone
+    if (th.hidden !== !nx) th.hidden = !nx;
+    if (nx) bSetT("#sThen", "Next: " + nx.name);
     var fw = (sp ? (P.idx + Math.min(1, st / s.secs)) / P.steps.length * 100 : T / P.total * 100).toFixed(1) + "%";
     if (fw !== P.fillW) { P.fillW = fw; $("#sFill").style.width = fw; }     // in steps of a thousandth: no redraw for changes too small to see
     // live chips
@@ -1235,7 +1238,7 @@
     opts.push(pToggle("sOptVoice", "Spoken guidance", O.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
     opts.push(pToggle("sOptBells", "Bells between steps", O.bells, ""));
     if (d.audio && !d.beats) opts.push(pToggle("sOptAudio", "Binaural layer", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
-    if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesized berimbau keeps time for the capoeira moves."));
+    if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesised berimbau keeps time for the capoeira moves."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
     if (hasTap) {

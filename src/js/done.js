@@ -95,7 +95,7 @@
       p.push("Your average heart rate " + (span >= 119 ? "in the first two minutes, then in the last two" : "in the first third of the session, then in the last third") +
         ", in beats per minute: " + r.hr0 + ", then " + r.hr1 + ".");
       var lively = d.method === "move" || d.goal === "energy" || d.id === "wim-hof" || d.id === "kapalabhati";
-      if (dl <= -3) p.push("It came down " + plural(-dl, "beat", "beats") + " a minute. A fall like this is the usual sign of the body settling: slow breathing and rest shift the nervous system toward its calming side, which slows the heart.");
+      if (dl <= -3) p.push("It came down " + plural(-dl, "beat", "beats") + " a minute. A fall like this is the usual sign of the body settling: slow breathing and rest shift the nervous system towards its calming side, which slows the heart.");
       else if (dl >= 3) p.push("It rose " + plural(dl, "beat", "beats") + " a minute. " + (lively ? "That's expected after movement or energising breathing." : "Sitting up, moving or a busy mind can raise it. One session is one reading: your history shows the trend."));
       else p.push("It stayed within a few beats. That's common in short or gentle sessions, or when you started out already rested.");
       if (SD.c.hr) p.push(sdHrAgainst(dl, SD.c.hr, d));
@@ -140,7 +140,7 @@
     }
     if (k === "beat") {
       p.push("Where the binaural beat started and where it finished: " + r.beat0.toFixed(1) + " Hz, then " + r.beat1.toFixed(1) + " Hz.");
-      p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) toward 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
+      p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) towards 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
         : "There was no heart data, so the beat followed a fixed, gentle descent instead.");
       p.push("This is an experiment: the rule is Entrain's own, so the chart is the honest test of what it did for you.");
       return ["The beat", p];

@@ -1,7 +1,7 @@
   /* -------------------------------- settings --------------------------------
      What every practice starts with (a practice can change its own under Options on its page),
-     the background sound, what's kept of reflections, how the screen behaves, and your data
-     (backup.js).
+     the background sound, what's kept of reflections, how the screen behaves, your data
+     (backup.js), the feedback form, and About with the build.
   ------------------------------------------------------------------------------ */
 
   var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true };
@@ -40,13 +40,13 @@
         pToggle("stVoice", "Spoken guidance", g.voice, speech ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !speech) +
         (speech ? '<div class="so-row so-voice"><span class="so-l">Voice</span><select id="stVoiceSel" aria-label="Voice"></select><button class="btn small" id="stVoiceTest">Test</button></div>' : "") +
         pToggle("stBells", "Bells between steps", g.bells, "") +
-        pToggle("stAudio", "Binaural layer in programs", g.audio, "Headphones needed.") +
+        pToggle("stAudio", "Binaural layer in programmes", g.audio, "Headphones needed.") +
         pToggle("stRhy", "Berimbau for the capoeira moves", g.rhythm, "") +
         pToggle("stTick", "Tapping tick", g.tapTick, "A soft tick to tap along with.") +
         '<div class="so-row so-seg"><span class="so-l">Breath cues</span>' + stSeg("stCues", [["tones", "Tone"], ["chimes", "Chimes"], ["off", "Silent"]], g.cues) + "</div>" +
         (bzOk() ? pToggle("stBuzz", "Vibrate with the breath", g.buzz, "A short buzz to breathe in, a long one to breathe out, two taps for a hold.") : "") +
         '<div class="so-row so-seg"><span class="so-l">Breath visual</span>' + stSeg("stVis", [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]], g.visual) + "</div>" +
-        '<div class="so-row so-seg"><span class="so-l">Anapana reminders in programs<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span>' +
+        '<div class="so-row so-seg"><span class="so-l">Anapana reminders in programmes<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span>' +
           stSeg("stAna", [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]], g.ana) + "</div>" +
         (own.length ? '<div class="st-own"><span>' + esc(list) + (own.length === 1 ? " has" : " have") + " options of " + (own.length === 1 ? "its" : "their") + ' own.</span>' +
           '<button class="btn small" id="stOwnReset">Use the defaults for ' + (own.length === 1 ? "it" : "all of them") + "</button></div>" : "") +
@@ -101,14 +101,27 @@
       '<div class="fb-act"><button class="btn primary" id="fbGo"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg>Open on GitHub</button>' +
         '<button class="btn small" id="fbClear">Clear</button><span class="fb-n" id="fbN" aria-live="polite"></span></div>';
   }
-  // the issue as GitHub will get it
+  /* the issue as GitHub will get it. GitHub turns away a link much longer than about 8,000 characters, which a
+     message in a script that takes several bytes a letter can reach: then the issue gets as much of the message
+     as fits, cut at a word, and the whole of it stays in the form to copy */
+  var FB_MAX = 7000;
+  // the first n characters, without half of an emoji or other character outside the basic plane (which a link can't carry)
+  function fbCut(s, n) { s = s.slice(0, n); return /[\uD800-\uDBFF]$/.test(s) ? s.slice(0, -1) : s; }
   function fbIssue() {
     var d = fbDraft(), k = FB_KINDS.filter(function (x) { return x[0] === (d.kind || "idea"); })[0] || FB_KINDS[0];
     var txt = (d.txt || "").trim(), one = txt.replace(/\s+/g, " "), cut = one.slice(0, 61);
-    if (one.length > 60) cut = cut.slice(0, cut.lastIndexOf(" ") > 20 ? cut.lastIndexOf(" ") : 60).replace(/[,;:.\s]+$/, "") + "…";      // no title: the message's first words, cut at a word
+    if (one.length > 60) cut = fbCut(cut, cut.lastIndexOf(" ") > 20 ? cut.lastIndexOf(" ") : 60).replace(/[,;:.\s]+$/, "") + "…";      // no title: the message's first words, cut at a word
     var title = (d.title || "").trim().replace(/\s+/g, " ") || cut;
-    var body = txt + (d.dev !== false ? "\n\n---\n" + fbDevice() : "");
-    return { title: k[1] + ": " + title, body: body, url: FB_NEW + "?title=" + encodeURIComponent(k[1] + ": " + title) + "&body=" + encodeURIComponent(body) };
+    var dev = d.dev !== false ? "\n\n---\n" + fbDevice() : "", body = txt + dev, shown = 0;
+    var head = FB_NEW + "?title=" + encodeURIComponent(k[1] + ": " + title) + "&body=", url = head + encodeURIComponent(body);
+    if (url.length > FB_MAX) {
+      var tail = "…\n\n[cut short to fit the link]" + dev, lo = 0, hi = txt.length, mid;
+      while (lo < hi) { mid = (lo + hi + 1) >> 1; if ((head + encodeURIComponent(fbCut(txt, mid) + tail)).length <= FB_MAX) lo = mid; else hi = mid - 1; }
+      var part = fbCut(txt, lo), sp = part.lastIndexOf(" ");
+      if (sp > lo - 40 && sp > 0) part = part.slice(0, sp);
+      shown = part.length; body = part + tail; url = head + encodeURIComponent(body);
+    }
+    return { title: k[1] + ": " + title, body: body, url: url, shown: shown };
   }
   function fbWire() {
     var go = $("#fbGo"), title = $("#fbTitle"), txt = $("#fbTxt");
@@ -130,8 +143,10 @@
     go.addEventListener("click", function () {
       save();
       if (go.disabled) return;
-      window.open(fbIssue().url, "_blank", "noopener");
-      bSetT("#fbN", "Opened on GitHub. Your draft stays here until you clear it.");
+      var is = fbIssue();
+      window.open(is.url, "_blank", "noopener");
+      bSetT("#fbN", is.shown ? "Opened on GitHub with the first " + is.shown + " characters: the whole message is too long for the link. Copy the rest from here." :
+        "Opened on GitHub. Your draft stays here until you clear it.");
     });
     $("#fbClear").addEventListener("click", function () {
       title.value = ""; txt.value = ""; save(); txt.focus();

@@ -196,6 +196,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .pill[data-state="busy"] .dot,.pill[data-state="lost"] .dot{background:var(--b-hold)}
   .pill .hr-dot{margin:0;width:8px;height:8px;align-self:center}
   .pill:not([data-state="on"]) .hr-dot{opacity:1}
+  /* on a phone the sensor button is a heart until a sensor sends readings (then it shows the bpm, unless a
+     practice's button needs the room), so the page's name has room; its words stay for screen readers */
+  .tb-hr{display:none}
+  @media (max-width:560px){
+    #tbSensor:not([data-state="on"]),.top-actions:has(#tbPrac:not([hidden])) #tbSensor{position:relative;width:34px;padding:0;justify-content:center}
+    #tbSensor:not([data-state="on"]) .tb-hr,.top-actions:has(#tbPrac:not([hidden])) #tbSensor .tb-hr{display:inline-flex}
+    #tbSensor:not([data-state="on"]) .tb-hr svg.i,.top-actions:has(#tbPrac:not([hidden])) #tbSensor .tb-hr svg.i{width:18px;height:18px}
+    #tbSensor:not([data-state="on"]) .hr-dot,.top-actions:has(#tbPrac:not([hidden])) #tbSensor .hr-dot{position:absolute;top:5px;right:5px;width:7px;height:7px}
+    #tbSensor:not([data-state="on"]) #tbSensorTxt,.top-actions:has(#tbPrac:not([hidden])) #tbSensorTxt{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+    .topbar h1{font-size:18px}
+  }
   body.sheet-lock{overflow:hidden}
   /* what's scrolled to, or focused, stays clear of the tab bar and the practice page's Start bar */
   @media (max-width:1023px){ html{scroll-padding-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 12px)} }
@@ -1056,8 +1067,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .ses-x:hover{color:var(--text)}
   .ses-x.armed{background:var(--danger);color:#0b1120}
   .ses-ttl{flex:1;min-width:0;display:flex;flex-direction:column}
-  .ses-ttl b{font-size:15px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ses-ttl b{font-size:15px;font-weight:750;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
   .ses-ttl span{font-size:12px;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ses-ttl .ses-then{color:var(--text-dim)}
   .ses-left{font-size:13px;color:var(--text-dim);font-variant-numeric:tabular-nums;font-weight:650;white-space:nowrap}
   .ses-bar{position:relative;margin:12px 0 0;height:6px}
   .ses-segs{display:flex;gap:2px;height:100%;border-radius:4px;overflow:hidden;opacity:.45}
@@ -1183,10 +1195,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   @keyframes fdhit{0%,35%{box-shadow:0 0 0 3px var(--accent);background-color:color-mix(in srgb,var(--accent) 14%,transparent)}100%{box-shadow:0 0 0 3px transparent}}
   @media (prefers-reduced-motion:reduce){ .fd-hit{animation:none;outline:3px solid var(--accent);outline-offset:3px} }
   @media (max-width:560px){
-    .pill-prac span{max-width:30vw}
+    .pill-prac span{max-width:26vw}
     .top-actions:has(#tbPrac:not([hidden])) #tbSet{display:none}
   }
-  @media (max-width:400px){ .top-actions:has(#tbPrac:not([hidden])) #tbSensorTxt{display:none} }
 
   /* dimmed for sleep, when Settings asks for it: almost nothing lit */
   .ses[data-dim="1"] .ses-run{--text:#5d6785;--text-dim:#4a536e;--text-faint:#3a4259}
@@ -1797,7 +1808,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         <a class="pill pill-prac" id="tbPrac" href="#practice" hidden><svg class="i" aria-hidden="true"><use href="#i-practice"/></svg><span id="tbPracTxt"></span></a>
         <button class="pill pill-ic" id="tbFind" aria-label="Search" title="Search (/)" aria-haspopup="dialog" aria-expanded="false" aria-keyshortcuts="/ Control+K"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></button>
         <a class="pill pill-ic" id="tbSet" href="#settings" aria-label="Settings" title="Settings"><svg class="i" aria-hidden="true"><use href="#i-gear"/></svg></a>
-        <a class="pill" id="tbSensor" href="#heart" data-state="off"><i class="dot hr-dot" aria-hidden="true"></i><span id="tbSensorTxt">Connect sensor</span></a>
+        <a class="pill" id="tbSensor" href="#heart" data-state="off"><i class="dot hr-dot" aria-hidden="true"></i><span class="tb-hr"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg></span><span id="tbSensorTxt">Connect sensor</span></a>
       </div>
     </header>
 
@@ -1940,7 +1951,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           <div class="ses-run" id="sRun" hidden>
             <div class="ses-top">
               <button class="ses-x" id="sEnd"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg><span id="sEndTxt">End</span></button>
-              <div class="ses-ttl"><b id="sTitle"></b><span id="sStepTxt"></span></div>
+              <div class="ses-ttl"><b id="sTitle"></b><span id="sStepTxt"></span><span class="ses-then" id="sThen" hidden></span></div>
               <span class="ses-left" id="sLeft"></span>
             </div>
             <div class="ses-bar" aria-hidden="true"><div class="ses-segs" id="sSegs"></div><div class="ses-fill" id="sFill"></div></div>
@@ -2510,8 +2521,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <h3 id="l-dosing">Dosing: timing beats frequency-picking</h3>
       <p>
         The 2019 meta-analysis of 22 studies (35 effect sizes) found an overall medium effect,
-        <span class="mono">g&nbsp;=&nbsp;0.45</span>, and two practical findings that matter more than which exact
-        frequency you choose:
+        <span class="mono">g&nbsp;=&nbsp;0.45</span> (Garcia-Argibay et al., 2019), and three practical findings that matter
+        more than which exact frequency you choose:
       </p>
       <ul>
         <li><strong>Listen before the task, not only during it.</strong> Exposure before, or before <em>and</em> during, a task outperformed exposure during the task alone.</li>
@@ -2522,12 +2533,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <h3 id="l-evidence">Where the evidence is strongest, and weakest</h3>
       <p>
         Anxiety is the best-supported outcome: theta/delta beats showed a medium-to-large effect,
-        <span class="mono">g&nbsp;=&nbsp;0.69</span>. Attention and vigilance hold up reasonably well.
-        Memory is genuinely contested — a 2022 meta-analysis of 15 studies reported a medium overall effect,
-        but the accompanying systematic review found conflicting results for theta and beta on memory tasks,
-        and several 40&nbsp;Hz studies found no entrainment at all with their parameters. Individual
-        differences are real: alpha beats improved divergent thinking only in participants with lower
-        estimated baseline dopamine.
+        <span class="mono">g&nbsp;=&nbsp;0.69</span> (Garcia-Argibay et al., 2019). Attention and vigilance hold up reasonably
+        well. Memory is genuinely contested — a meta-analysis of 15 studies found a medium overall
+        effect on memory and attention, but its systematic review found conflicting results, especially for theta and
+        beta (Basu &amp; Banerjee, 2023), and a 40&nbsp;Hz trial found no change in memory scores or EEG, concluding the
+        beats never entrained the brain (Borges et al., 2023). Individual differences are real: alpha beats improved
+        divergent thinking only in participants with lower estimated baseline dopamine (Reedijk et al., 2013).
       </p>
       <p>
         Treat the strength bars on each card as what they are — a rough read of how consistent the literature
@@ -2540,15 +2551,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         <strong>Notched Relief</strong> does not. Its active ingredient is the <em>absence</em> of sound:
         removing a one-octave band centred on your own tinnitus pitch is thought to reduce the
         over-excitable auditory cortex neurons tuned to that frequency, through lateral inhibition from
-        their unmasked neighbours. That is why it needs a pitch match and why the notch is useless if it
-        is aimed at the wrong frequency. The 8&nbsp;Hz alpha beat rides on top because adding one to
-        relaxing sound improved tinnitus handicap and emotional scores more than the sound alone.
+        their unmasked neighbours (Okamoto et al., 2010). That is why it needs a pitch match and why the notch is
+        useless if it is aimed at the wrong frequency. The 8&nbsp;Hz alpha beat on top has weaker support. Added to
+        relaxing music, it didn't lower tinnitus handicap more than the music alone after four weeks, though two
+        subscales favoured it three months later (Bakhtarikia et al., 2024); added to notched music, it gave a larger
+        but not significant drop in annoyance (Samaei et al., 2026).
       </p>
       <p>
         Two caveats worth stating plainly. The notched-training results held for tinnitus at or below
-        8&nbsp;kHz and were not observed above it. And the timescale is not one session: the trials ran
-        15&nbsp;minutes twice daily for four weeks, or daily listening across twelve months for the
-        roughly 30% loudness reduction. Sound therapy is an adjunct to clinical care, and for tinnitus
+        8&nbsp;kHz and were not observed above it (Teismann et al., 2011). And the timescale is not one session:
+        the trials with the beat ran 15 or 20&nbsp;minutes twice daily for four weeks, and the roughly 30% loudness
+        reduction came after twelve months of daily listening. Sound therapy is an adjunct to clinical care, and for tinnitus
         distress specifically, cognitive behavioural therapy remains the better-supported intervention.
       </p>
 
@@ -2587,7 +2600,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         resonance rate is the most reliable way to raise it. In HeartMath's data from 1.8 million sessions, the most
         common peak was about 0.1&nbsp;Hz, six breaths a minute, and sessions in which people reported positive emotions
         scored higher than those with negative ones. Feeling matters as well as breathing: in a 1995 laboratory study,
-        holding a feeling of appreciation shifted heart-rate variability toward its mid- and high-frequency bands
+        holding a feeling of appreciation shifted heart-rate variability towards its mid- and high-frequency bands
         (McCraty et al., 1995). Heart Coherence follows HeartMath's Quick Coherence technique in that order: three
         minutes of slow, heart-focused breathing first, then gratitude, which is easiest to feel once the breathing has
         calmed you and the rhythm has settled, as it is after a meditation. HeartMath's own apps rescale the score (0 to 16 in
@@ -2615,13 +2628,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       </div>
     
 
-            <h3 id="l-practices">Guided practices and programs</h3>
+            <h3 id="l-practices">Guided practices and programmes</h3>
             <p>
               The library adds guided sessions beyond paced breathing. They differ a lot in how well they're
               supported, so here is the evidence as it stands.
             </p>
             <p>
-              <b>Mindfulness.</b> Across 47 randomised trials with active controls, mindfulness meditation programs had
+              <b>Mindfulness.</b> Across 47 randomised trials with active controls, mindfulness meditation programmes had
               moderate evidence for easing anxiety (effect size <span class="mono">0.38</span> at eight weeks), depression
               (<span class="mono">0.30</span>) and pain (<span class="mono">0.33</span>), and low evidence for stress; they
               didn't beat other active treatments such as exercise or therapy (Goyal et al., 2014). Anapana, the breath
@@ -2634,7 +2647,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             </p>
             <p>
               <b>Kindness practices.</b> Loving-kindness meditation had medium effects on daily positive emotions across 24
-              studies (Zeng et al., 2015). Self-compassion programs reduced rumination, stress, anxiety and depression across
+              studies (Zeng et al., 2015). Self-compassion programmes reduced rumination, stress, anxiety and depression across
               27 randomised trials (Ferrari et al., 2019). The five-minute self-compassion break is their best-known single
               exercise, but it hasn't been tested on its own.
             </p>
@@ -2664,7 +2677,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               16-person pilot (Woo &amp; Kim, 2025). For beginners, slow breathing with equal in- and out-breaths improved
               baroreflex sensitivity most. Adding the ujjayi throat sound to both phases cancelled that gain, while ujjayi on
               the out-breath only kept it, which is how the Ujjayi practice here is set up (Mason et al., 2013). Kapalabhati
-              works the other way, shifting heart-rate variability toward sympathetic activity (Raghuraj et al., 1998). It is
+              works the other way, shifting heart-rate variability towards sympathetic activity (Raghuraj et al., 1998). It is
               an energiser with real contraindications, and fast breathwork is the least-studied corner of the field
               (Fincham et al., 2023).
             </p>
@@ -2714,19 +2727,19 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               2014). Across randomised trials, reappraising stress arousal improved performance by a small amount
               (<span class="mono">d&nbsp;=&nbsp;0.22</span>), more for public performances than written tests (Bosshard &amp;
               Gomez, 2024). Nearly identical isn't quite the same: reading arousal as useful also shifted the
-              cardiovascular response toward the more efficient pattern of a challenge rather than a threat (Jamieson et
+              cardiovascular response towards the more efficient pattern of a challenge rather than a threat (Jamieson et
               al., 2012). So the practice reframes the arousal rather than fighting it, while long out-breaths and the
               autogenic phrases take the edge off. It uses autogenic training's middle stage, where a personal resolution
               is said like one of the formulas, for &ldquo;I am excited&rdquo;, and rewrites the heart phrase to welcome a
               strong heartbeat as readiness. The combination hasn't been tested as a whole.
             </p>
             <p>
-              <b>Why combine them?</b> Each program pairs techniques whose evidence points at the same goal at the same
+              <b>Why combine them?</b> Each programme pairs techniques whose evidence points at the same goal at the same
               moment. Sleep Descent joins a delta-bound beat with slow pre-sleep breathing. Calm Reset pairs alpha-to-theta
               beats with cyclic sighs and resonance breathing. Focus Primer puts a beta prime after brief heart-rate-variability
               breathing, which improved reaction times and accuracy on a stressful Stroop task (Prinsloo et al., 2011).
               Exercise Recovery joins theta beats with slow breathing after training (McConnell et al., 2014; Sugimoto et al.,
-              2025). Anapana reminders can be added to any program: every few minutes, a quiet prompt brings attention back
+              2025). Anapana reminders can be added to any programme: every few minutes, a quiet prompt brings attention back
               to the breath at the nostrils, the anchor of breath-awareness practice. No study has tested these combinations as packages, and a large 2023 trial found four weeks of coherent
               breathing didn't beat a placebo pace on self-reported stress (Fincham, Strauss &amp; Cavanagh, 2023). A heart
               sensor is the honest check: each session ends with your own heart-rate change and coherence, so you can see
@@ -2744,7 +2757,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               outcomes, such as attention, self-confidence, resilience and less aggression, were clearer than for physical health,
               where results for fitness, balance and bone density were inconclusive. Robust trials are still lacking, and most
               of the studies come from Portuguese-speaking countries (K&ouml;hler et al., 2025). Solo Capoeira teaches the basics
-              on your own, to a synthesized berimbau playing the Angola rhythm.
+              on your own, to a synthesised berimbau playing the Angola rhythm.
             </p>
             <p>
               <b>Tapping.</b> Emotional Freedom Techniques (EFT) pair tapping on acupressure points with attention on the problem
@@ -2766,15 +2779,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               sleep estimate relies on. It can't see sleep stages, so treat it as a guide.
             </p>
             <p>
-              <b>Heart-led beats.</b> This program is an experiment that turns your heart data into sound, the idea behind
+              <b>Heart-led beats.</b> This programme is an experiment that turns your heart data into sound, the idea behind
               biofeedback: as your heart rate settles below your baseline and its variability and coherence rise, the binaural
-              beat glides from alpha toward theta. No study has tested binaural beats driven by the heart, and the rule is
+              beat glides from alpha towards theta. No study has tested binaural beats driven by the heart, and the rule is
               Entrain's own, so the chart at the end, your heart rate with the beat drawn over it, is the honest test.
             </p>
             <p>
               <b>Nonviolent communication.</b> Marshall Rosenberg's method separates four things that usually blur together:
-              what happened, what you feel, what you need, and what you'd like to ask for (Rosenberg, 2015). The two Reflection
-              practices turn it inward. Judgments, labels and &ldquo;shoulds&rdquo; are read as signs of needs that aren't being
+              what happened, what you feel, what you need, and what you'd like to ask for (Rosenberg, 2015). Self-Empathy and
+              Have-Tos into Choices turn it inward. Judgments, labels and &ldquo;shoulds&rdquo; are read as signs of needs that aren't being
               met, and as rules you may have absorbed without choosing them, so questioning one becomes a small, personal kind of
               ideology critique. Research on NVC itself is early: in a randomised study with 312 medical students, two and a half
               days of training raised self-rated empathy three months later, though not other measures of empathy
@@ -2819,7 +2832,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               it (Torre &amp; Lieberman, 2018). None of the four has been tested as a whole.
             </p>
             <p>
-              <b>Background sound and quotes.</b> Summer rain and crickets are synthesized on your device, like the pink-noise
+              <b>Background sound and quotes.</b> Summer rain and crickets are synthesised on your device, like the pink-noise
               bed, and are there for comfort: masking sounds didn't weaken binaural beat effects in the research above. The
               quotes come from public-domain translations (George Long's Marcus Aurelius and Epictetus, Richard Gummere's Seneca,
               Max M&uuml;ller's Dhammapada and James Legge's Tao Te Ching) and Thoreau's <em>Walden</em>. Carl Rogers's line is
@@ -2864,23 +2877,20 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               <ol class="refs">
       <li>Oster, G. (1973). Auditory beats in the brain. <em>Scientific American</em>, 229(4), 94–102. <a href="https://ia801406.us.archive.org/27/items/magazine-article-1973-scientific-american-auditory-beats-in-the-brain-gerald-oster/Magazine%20Article%201973%20%28Scientific%20American%29%20-%20Auditory%20Beats%20in%20the%20Brain%20-%20Gerald%20Oster%20_text.pdf" rel="noopener">PDF</a></li>
       <li>Garcia-Argibay, M., Santed, M. A., &amp; Reales, J. M. (2019). Efficacy of binaural auditory beats in cognition, anxiety, and pain perception: a meta-analysis. <em>Psychological Research</em>, 83, 357–372. <a href="https://link.springer.com/article/10.1007/s00426-018-1066-8" rel="noopener">Springer</a></li>
-      <li>Ingendoh, R. M., Posny, E. S., &amp; Heine, A. (2023). Binaural beats to entrain the brain? / Potential of binaural beats intervention for improving memory and attention: meta-analysis and systematic review. <em>Psychological Research</em>. <a href="https://link.springer.com/article/10.1007/s00426-022-01706-7" rel="noopener">Springer</a></li>
+      <li>Basu, S., &amp; Banerjee, B. (2023). Potential of binaural beats intervention for improving memory and attention: insights from meta-analysis and systematic review. <em>Psychological Research</em>, 87(4). <a href="https://link.springer.com/article/10.1007/s00426-022-01706-7" rel="noopener">Springer</a></li>
       <li>Lane, J. D., Kasian, S. J., Owens, J. E., &amp; Marsh, G. R. (1998). Binaural auditory beats affect vigilance performance and mood. <em>Physiology &amp; Behavior</em>, 63(2), 249–252. <a href="https://www.sciencedirect.com/science/article/abs/pii/S0031938497004368" rel="noopener">ScienceDirect</a></li>
       <li>Jirakittayakorn, N., &amp; Wongsawat, Y. (2018). A novel insight of effects of a 3-Hz binaural beat on sleep stages during sleep. <em>Frontiers in Human Neuroscience</em>, 12, 387. <a href="https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2018.00387/full" rel="noopener">Frontiers</a></li>
       <li>Jirakittayakorn, N., &amp; Wongsawat, Y. (2017). Brain responses to a 6-Hz binaural beat: effects on general theta rhythm and frontal midline theta activity. <em>Frontiers in Neuroscience</em>, 11, 365. <a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2017.00365/full" rel="noopener">Frontiers</a></li>
       <li>McConnell, P. A., Froeliger, B., Garland, E. L., Ives, J. C., &amp; Sforzo, G. A. (2014). Auditory driving of the autonomic nervous system: listening to theta-frequency binaural beats post-exercise increases parasympathetic activation and sympathetic withdrawal. <em>Frontiers in Psychology</em>, 5, 1248. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4231835/" rel="noopener">PMC</a></li>
       <li>Padmanabhan, R., Hildreth, A. J., &amp; Laws, D. (2005). A prospective, randomised, controlled study examining binaural beat audio and pre-operative anxiety in patients undergoing general anaesthesia for day case surgery. <em>Anaesthesia</em>, 60(9), 874–877. <a href="https://associationofanaesthetists-publications.onlinelibrary.wiley.com/doi/10.1111/j.1365-2044.2005.04287.x" rel="noopener">Wiley</a></li>
       <li>Reedijk, S. A., Bolders, A., &amp; Hommel, B. (2013). The impact of binaural beats on creativity. <em>Frontiers in Human Neuroscience</em>, 7, 786. <a href="https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2013.00786/full" rel="noopener">Frontiers</a></li>
-      <li>Hommel, B., Sellaro, R., et al. (2020). 40-Hz binaural beats enhance training to mitigate the attentional blink. <em>Scientific Reports</em>, 10, 6759. <a href="https://www.nature.com/articles/s41598-020-63980-y" rel="noopener">Nature</a></li>
-      <li>Jausovec, N., et al. (2022). Effects of alpha, beta and gamma binaural beat stimulation and short-term training on working memory: a within-subject randomized placebo-controlled trial. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9153928/" rel="noopener">PMC</a></li>
+      <li>Ross, B., &amp; Lopez, M. D. (2020). 40-Hz binaural beats enhance training to mitigate the attentional blink. <em>Scientific Reports</em>, 10. <a href="https://www.nature.com/articles/s41598-020-63980-y" rel="noopener">Nature</a></li>
       <li>Orozco Perez, H. D., Dumas, G., &amp; Lehmann, A. (2020). Binaural beats through the auditory pathway: from brainstem to connectivity patterns. <em>eNeuro</em>, 7(2). <a href="https://www.eneuro.org/content/7/2/ENEURO.0232-19.2020" rel="noopener">eNeuro</a></li>
-      <li>Basu, S., &amp; Banerjee, B. (2023). Potential of binaural beats intervention — gamma frequency, memory performance and EEG spectral density. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10048082/" rel="noopener">PMC</a></li>
+      <li>Borges, L. R., Arantes, A. P. B. B., &amp; Naves, E. L. M. (2023). Influence of binaural beats stimulation of gamma frequency over memory performance and EEG spectral density. <em>Healthcare</em>, 11(6), 801. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10048082/" rel="noopener">PMC</a></li>
       <li>Okamoto, H., Stracke, H., Stoll, W., &amp; Pantev, C. (2010). Listening to tailor-made notched music reduces tinnitus loudness and tinnitus-related auditory cortex activity. <em>PNAS</em>, 107(3), 1207–1210. <a href="https://www.pnas.org/doi/full/10.1073/pnas.0911268107" rel="noopener">PNAS</a></li>
-      <li>Stein, A., et al. (2011). Short and intense tailor-made notched music training against tinnitus: the tinnitus frequency matters. <em>PLOS One</em>, 6(9), e24685. <a href="https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0024685" rel="noopener">PLOS One</a></li>
-      <li>Stein, A., et al. (2015). Impact of spectral notch width on neurophysiological plasticity and clinical effectiveness of tailor-made notched music training. <em>PLOS One</em>, 10(9), e0138595. <a href="https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0138595" rel="noopener">PLOS One</a></li>
-      <li>Ghaffari, R., et al. (2024). Investigating the effectiveness of music therapy combined with binaural beats on chronic tinnitus: a randomized controlled trial. <em>American Journal of Otolaryngology</em>. <a href="https://pubmed.ncbi.nlm.nih.gov/38723376/" rel="noopener">PubMed</a></li>
-      <li>Effect of binaural beat and tailor-made notched music training on reducing the loudness and annoyance of chronic tinnitus: a controlled trial. <em>Auditory and Vestibular Research</em>. <a href="https://www.cochranelibrary.com/central/doi/10.1002/central/CN-02888726/full" rel="noopener">Cochrane CENTRAL</a></li>
-      <li>Kim, S., et al. (2024). Effect of dynamic binaural beats on sleep quality: a proof-of-concept study with questionnaire and biosignals. <em>SLEEP</em>, 47(10). <a href="https://academic.oup.com/sleep/article/47/10/zsae097/7647043" rel="noopener">Oxford Academic</a></li>
+      <li>Teismann, H., Okamoto, H., &amp; Pantev, C. (2011). Short and intense tailor-made notched music training against tinnitus: the tinnitus frequency matters. <em>PLOS One</em>, 6(9), e24685. <a href="https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0024685" rel="noopener">PLOS One</a></li>
+      <li>Bakhtarikia, S., Tavanai, E., Rouhbakhsh, N., Jafari Sayadi, A., &amp; Khorsand Sabet, V. (2024). Investigating the effectiveness of music therapy combined with binaural beats on chronic tinnitus: a randomized controlled trial. <em>American Journal of Otolaryngology</em>, 45(4), 104308. <a href="https://doi.org/10.1016/j.amjoto.2024.104308" rel="noopener">DOI</a></li>
+      <li>Samaei, S., Lotfi, Y., Yazdani, N., Vahedi, M., &amp; Shabani, M. (2026). Effect of binaural beat and tailor-made notched music training on reducing the loudness and annoyance of chronic tinnitus: a controlled trial study. <em>Auditory and Vestibular Research</em>, in press. <a href="https://avr.tums.ac.ir/index.php/avr/article/view/1503" rel="noopener">AVR</a></li>
       <li>Lehrer, P. M., &amp; Gevirtz, R. (2014). Heart rate variability biofeedback: how and why does it work? <em>Frontiers in Psychology</em>, 5, 756. <a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2014.00756/full" rel="noopener">Frontiers</a></li>
       <li>Laborde, S., Allen, M., Borges, U., et al. (2022). Effects of voluntary slow breathing on heart rate and heart rate variability: a systematic review and a meta-analysis. <em>Neuroscience &amp; Biobehavioral Reviews</em>, 138, 104711. <a href="https://doi.org/10.1016/j.neubiorev.2022.104711" rel="noopener">DOI</a></li>
       <li>Balban, M. Y., Neri, E., Kogon, M. M., et al. (2023). Brief structured respiration practices enhance mood and reduce physiological arousal. <em>Cell Reports Medicine</em>, 4(1), 100895. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9873947/" rel="noopener">PMC</a></li>
@@ -3232,8 +3242,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     {
       id: "parasympathetic", cat: "relax", band: "Theta", name: "Parasympathetic Recovery",
       carrier: 200, beat: 6, minutes: 20, strength: 2,
-      desc: "A steady 6 Hz theta beat for the 20 minutes after hard exercise: theta beats tilted heart-rate variability toward rest in a 2014 study of people recovering from a workout.",
-      ev: "In 21 young adults resting for 20 minutes after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz, in pink noise) shifted heart-rate variability toward parasympathetic activity over the first ten minutes, compared with the same sound without a beat: an autonomic effect rather than a purely subjective one. By the end of the 20 minutes the two no longer differed, and this track plays a steady 6 Hz rather than the sweep.",
+      desc: "A steady 6 Hz theta beat for the 20 minutes after hard exercise: theta beats tilted heart-rate variability towards rest in a 2014 study of people recovering from a workout.",
+      ev: "In 21 young adults resting for 20 minutes after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz, in pink noise) shifted heart-rate variability towards parasympathetic activity over the first ten minutes, compared with the same sound without a beat: an autonomic effect rather than a purely subjective one. By the end of the 20 minutes the two no longer differed, and this track plays a steady 6 Hz rather than the sweep.",
       cite: "McConnell et al. 2014, Front. Psychol."
     },
     {
@@ -3248,7 +3258,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       carrier: 340, beat: 10, minutes: 20, strength: 1,
       desc: "A 10 Hz alpha beat for open-ended idea generation. In Reedijk and colleagues' 2013 study it helped only people whose blink rate pointed to lower dopamine.",
       ev: "Alpha binaural beats improved divergent (but not convergent) thinking. The effect appeared only in participants with lower estimated baseline dopamine; those higher on that measure showed no benefit or slightly worse performance.",
-      cite: "Reedijk, Bolders & Hommel 2013, Front. Hum. Neurosci."
+      cite: "Reedijk et al. 2013, Front. Hum. Neurosci."
     },
 
     /* ---------- TINNITUS ---------- */
@@ -3256,8 +3266,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       id: "tinnitus-notch", cat: "ther", band: "Alpha + notch", name: "Notched Relief",
       carrier: 250, beat: 8, minutes: 15, strength: 2, notch: true,
       desc: "Pink noise with a one-octave hole cut around your own tinnitus pitch, under an 8 Hz alpha beat. Needs a pitch match first.",
-      ev: "Two mechanisms, each trialled separately. Removing a one-octave band centred on the individual tinnitus frequency reduced subjective loudness by roughly 30% and lowered tinnitus-related auditory cortex activity after 12 months, an effect attributed to lateral inhibition; it held for tinnitus at or below 8 kHz and not above. Separately, adding an 8 Hz alpha binaural beat to relaxing sound improved tinnitus handicap and emotional scores more than the sound alone over 15 minutes twice daily for 4 weeks. A controlled trial combining notched training with binaural beats found the combination gave the larger mean handicap reduction. This is an adjunct, not a cure, and the timescale is weeks of daily use rather than one session.",
-      cite: "Okamoto et al. 2010, PNAS \u00b7 Stein et al. 2011, PLOS One \u00b7 Am. J. Otolaryngol. 2024 RCT"
+      ev: "Two mechanisms, trialled separately. Removing a one-octave band centred on the individual tinnitus frequency reduced subjective loudness by roughly 30% and lowered tinnitus-related auditory cortex activity after 12 months, an effect attributed to lateral inhibition; it held for tinnitus at or below 8 kHz and not above. The 8 Hz alpha beat on top has weaker support: added to relaxing music for 15 minutes twice a day over 4 weeks, it didn't lower tinnitus handicap more than the music alone, though two subscales favoured it three months later, and added to notched music it gave a larger but not significant drop in annoyance. This is an adjunct, not a cure, and the timescale is weeks of daily use rather than one session.",
+      cite: "Okamoto et al. 2010, PNAS \u00b7 Teismann et al. 2011, PLOS One \u00b7 Bakhtarikia et al. 2024 \u00b7 Samaei et al. 2026"
     },
 
     /* ---------- STIMULATION ---------- */
@@ -3287,14 +3297,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       carrier: 400, beat: 40, minutes: 25, strength: 2,
       desc: "A 40 Hz gamma beat on a 400 Hz carrier, a pairing that evokes a measurable 40 Hz response in the brain; on carriers above about 3,000 Hz the response disappears.",
       ev: "A 40 Hz binaural-beat auditory steady-state response was evoked with a 400 Hz carrier and was undetectable above ~3000 Hz, which is why the carrier is fixed low here. In attentional-blink training, 40 Hz produced greater improvement than 16 Hz.",
-      cite: "Hommel et al. 2020, Sci. Rep. · Orozco Perez et al. 2020, eNeuro"
+      cite: "Ross & Lopez 2020, Sci. Rep. · Orozco Perez et al. 2020, eNeuro"
     },
     {
       id: "gamma-memory", cat: "stim", band: "Gamma", name: "Working Memory Gamma",
       carrier: 240, beat: 40, minutes: 15, strength: 1,
-      desc: "Fifteen minutes of a 40 Hz gamma beat for working-memory tasks. Some trials found better scores under 40 Hz beats and others found no change at all, so treat it as an experiment.",
-      ev: "Some trials found better working-memory performance under 40 Hz stimulation, correlating with frequency-following responses. Others found no change in either memory scores or EEG and concluded entrainment never occurred. Treat as experimental.",
-      cite: "Jausovec et al. 2022 · Basu & Banerjee 2023"
+      desc: "Fifteen minutes of a 40 Hz gamma beat for working-memory tasks. The studies disagree, and a trial of 40 Hz beats found no change at all, so treat it as an experiment.",
+      ev: "Across 15 studies, binaural beats improved memory and attention by a medium amount on average, but the individual studies conflicted, especially for theta and beta. For 40 Hz, a trial found no change in either memory scores or EEG and concluded entrainment never occurred. Treat as experimental.",
+      cite: "Basu & Banerjee 2023 · Borges et al. 2023"
     }
   ];
 
@@ -4412,7 +4422,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       id: "478", strength: 1,
       t: { inh: 4, sip: 0, hold: 7, exh: 8, rest: 0 },
       desc: "A popular wind-down before sleep: in for 4, hold for 7, out for 8.",
-      ev: "In a small study of 44 young adults, a session of 4-7-8 breathing lowered heart rate and blood pressure immediately afterwards and shifted heart-rate variability toward parasympathetic activity, whether or not they had slept the night before. Beyond that the evidence is thin. The long hold is demanding, so scale all three numbers down together if it strains.",
+      ev: "In a small study of 44 young adults, a session of 4-7-8 breathing lowered heart rate and blood pressure immediately afterwards and shifted heart-rate variability towards parasympathetic activity, whether or not they had slept the night before. Beyond that the evidence is thin. The long hold is demanding, so scale all three numbers down together if it strains.",
       cite: "Vierra et al. 2022, Physiol. Rep."
     }
   ];
@@ -4833,7 +4843,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     setTimeout(function () { try { v.o.stop(); v.o.disconnect(); v.g.disconnect(); } catch (e) {} }, 700);
     B.voice = null;
   }
-  /* Glide the tone toward this phase's target. setTargetAtTime starts from
+  /* Glide the tone towards this phase's target. setTargetAtTime starts from
      wherever the previous phase left the value, so no anchors are needed. */
   function toneTo(p, when, dur) {
     if (!B.voice) return;
@@ -5955,10 +5965,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   function hrBrowser() {
     var u = navigator.userAgent || "", m;
-    var b = (m = /EdgA?\/([\d.]+)/.exec(u)) ? "Edge " + m[1] : (m = /SamsungBrowser\/([\d.]+)/.exec(u)) ? "Samsung Internet " + m[1]
+    var b = (m = /Edg(?:A|iOS)?\/([\d.]+)/.exec(u)) ? "Edge " + m[1] : (m = /SamsungBrowser\/([\d.]+)/.exec(u)) ? "Samsung Internet " + m[1]
       : (m = /OPR\/([\d.]+)/.exec(u)) ? "Opera " + m[1] : (m = /(?:Firefox|FxiOS)\/([\d.]+)/.exec(u)) ? "Firefox " + m[1]
       : (m = /(?:Chrome|CriOS)\/([\d.]+)/.exec(u)) ? "Chrome " + m[1] : (m = /Version\/([\d.]+).*Safari/.exec(u)) ? "Safari " + m[1] : "";
-    var os = /iPhone|iPad|iPod/.test(u) ? "iOS" : /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /CrOS/.test(u) ? "ChromeOS" : /Mac OS X/.test(u) ? "macOS" : /Linux/.test(u) ? "Linux" : "";
+    var os = /iPhone|iPad|iPod/.test(u) || (/Macintosh/.test(u) && navigator.maxTouchPoints > 1) ? "iOS" : /Android/.test(u) ? "Android" : /Windows/.test(u) ? "Windows" : /CrOS/.test(u) ? "ChromeOS" : /Mac OS X/.test(u) ? "macOS" : /Linux/.test(u) ? "Linux" : "";
     return b && os ? b + " on " + os : b || os;
   }
   function hrLogShow(log) {
@@ -6245,7 +6255,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
     var os = /Android/.test(ua) ? "android" : ios ? "ios" : /CrOS/.test(ua) ? "chromeos" :
       /Mac OS X/.test(ua) ? "mac" : /Windows/.test(ua) ? "windows" : /Linux/.test(ua) ? "linux" : "other";
-    var br = /SamsungBrowser/.test(ua) ? "Samsung Internet" : /EdgA?\//.test(ua) ? "Edge" : /OPR\//.test(ua) ? "Opera" :
+    var br = /SamsungBrowser/.test(ua) ? "Samsung Internet" : /Edg(?:A|iOS)?\//.test(ua) ? "Edge" : /OPR\//.test(ua) ? "Opera" :
       /Firefox|FxiOS/.test(ua) ? "Firefox" : /CriOS/.test(ua) ? "Chrome" : /Chrome\//.test(ua) ? "Chrome" :
       /Safari\//.test(ua) ? "Safari" : "This browser";
     var osName = { android: "Android", ios: ios && /iPad/.test(ua) ? "iPad" : "iPhone", chromeos: "ChromeOS", mac: "macOS", windows: "Windows", linux: "Linux", other: "this device" }[os];
@@ -6838,7 +6848,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
      practice, #track/<id> for a track, #prime and #builder for the custom primer and the beat
      builder, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
-     #living/<recipe or supplement>; and #settings from the gear. Links and search also
+     #living/<tab, recipe, supplement, light or routine>; and #settings from the gear, with #feedback and
+     #st-<section> for a section of it. Links and search also
      use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>. Older
      addresses still work: #sounds and #tracks open the library at its sounds, and in-page anchors
      (#connect, #science, #references and the rest) open the view that holds them.
@@ -7021,7 +7032,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "41ac5023";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "2b75295f";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -7543,13 +7554,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       cues: ["Tabletop. Hands under the shoulders, knees under the hips.", "Spine long and neutral. Breathe."] },
     { id: "cat", en: "Cat", sa: "Marjaryasana", cat: "fours", pos: "fours", hold: 20, level: 1, bend: 1,
       fig: F("side", { torso: -82, head: 50, bend: 13, arm: [180, 180], leg: [180, 90] }),
-      cues: ["Cat. As you breathe out, round your back up toward the ceiling.", "Tuck the chin and the tailbone. Press the floor away."] },
+      cues: ["Cat. As you breathe out, round your back up towards the ceiling.", "Tuck the chin and the tailbone. Press the floor away."] },
     { id: "cow", en: "Cow", sa: "Bitilasana", cat: "fours", pos: "fours", hold: 20, level: 1,
       fig: F("side", { torso: -82, head: -40, bend: -9, arm: [180, 180], leg: [180, 90] }),
       cues: ["Cow. As you breathe in, let the belly drop and lift the chest and gaze.", "Broaden across the collarbones."] },
     { id: "child", en: "Child's Pose", sa: "Balasana", cat: "rest", pos: "fours", hold: 45, level: 1,
       fig: F("side", { torso: -99, head: 0, arm: [-120, -90], leg: [-120, 90] }),
-      cues: ["Child's pose. Knees wide or together, sit back toward your heels and lay the chest down.",
+      cues: ["Child's pose. Knees wide or together, sit back towards your heels and lay the chest down.",
         "Arms forward or alongside you. Forehead resting.", "Breathe into the back of the body."],
       caution: "Put a cushion under the hips or between the calves and thighs if the knees complain." },
     { id: "lowlunge", en: "Low Lunge", sa: "Anjaneyasana", cat: "fours", pos: "fours", sides: true, hold: 30, level: 1,
@@ -7594,7 +7605,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     { id: "seattwist", en: "Seated Twist", sa: "Ardha Matsyendrasana", cat: "seated", pos: "seat", sides: true, hold: 30, level: 1,
       fig: F("side", { torso: 0, head: 34, arm: [-128, -50], arm2: [160, 178], leg: [-28, 176], leg2: [-90, -90] }),
       cues: ["Seated twist to the {S}. Bend the {S} knee and place the foot outside the {O} knee.",
-        "Hug the knee with your {O} arm and turn toward the {S}. {S} hand on the floor behind you.", "Lengthen as you breathe in, turn a little as you breathe out."] },
+        "Hug the knee with your {O} arm and turn towards the {S}. {S} hand on the floor behind you.", "Lengthen as you breathe in, turn a little as you breathe out."] },
 
     /* ----- lying on the back ----- */
     { id: "kneeschest", en: "Knees to Chest", sa: "Apanasana", cat: "lying", pos: "supine", hold: 40, level: 1,
@@ -7610,7 +7621,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         "Arms out wide, and turn your head to the {O} if the neck likes it.", "Breathe and let the twist settle."] },
     { id: "happybaby", en: "Happy Baby", sa: "Ananda Balasana", cat: "lying", pos: "supine", hold: 40, level: 1,
       fig: F("side", { torso: -90, head: 0, arm: [16, 4], leg: [-24, 6] }),
-      cues: ["Happy baby. Lying down, bring the knees toward the armpits and hold the outsides of the feet.",
+      cues: ["Happy baby. Lying down, bring the knees towards the armpits and hold the outsides of the feet.",
         "Soles face the ceiling. Let the low back be heavy.", "Rock a little if you like."] },
     { id: "legswall", en: "Legs Up the Wall", sa: "Viparita Karani", cat: "rest", pos: "supine", hold: 120, level: 1,
       fig: F("side", { torso: -90, head: 0, arm: [100, 96], leg: [0, 0], wall: true }),
@@ -7775,7 +7786,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     /* ----- mobility: moving ----- */
     M({ id: "neckrolls", en: "Neck Rolls", sa: "Slow half circles", cat: "mobility", pos: "stand", hold: 40, level: 1,
       keys: [NECK(-40), NECK(0), NECK(40), NECK(0)], cycle: 10, dwell: 0.3,
-      cues: ["Neck rolls. Let your right ear drop toward your right shoulder.",
+      cues: ["Neck rolls. Let your right ear drop towards your right shoulder.",
         "Roll the chin slowly down across the chest and up to the left. Then back the other way.", "Small and slow. Keep the shoulders soft."],
       caution: "Keep to half circles and skip the head-back part, which can pinch the neck." }),
     M({ id: "armcircles", en: "Arm Circles", sa: "Big circles, backwards", cat: "mobility", pos: "stand", hold: 40, level: 1,
@@ -7805,7 +7816,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       fig: F("side", { torso: 5, head: 12, bend: -4, arm: [128, 124], leg: [180, 180] }),
       cues: ["Chest opener. Interlace your fingers behind your back, or hold a towel between your hands.",
         "Draw the shoulder blades together and lift the chest. Keep the chin level.", "Breathe into the front of the chest."] },
-    { id: "quadstretch", en: "Standing Quad Stretch", sa: "Heel toward the seat", cat: "mobility", pos: "stand", sides: true, hold: 30, level: 1,
+    { id: "quadstretch", en: "Standing Quad Stretch", sa: "Heel towards the seat", cat: "mobility", pos: "stand", sides: true, hold: 30, level: 1,
       fig: F("side", { torso: -8, head: 6, arm: [158, 158], arm2: [-62, -42], leg: [168, 20], leg2: [180, 180] }),
       cues: ["Quad stretch, {S} leg. Stand on your {O} foot, bend the {S} knee and hold the {S} foot behind you.",
         "Knees side by side, tailbone heavy. Feel the stretch along the front of the thigh.", "Hold a wall if you wobble."] },
@@ -7816,7 +7827,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     { id: "hamstring", en: "Lying Hamstring Stretch", sa: "Supta Padangusthasana", cat: "mobility", pos: "supine", sides: true, hold: 40, level: 1,
       fig: F("side", { torso: -90, head: 0, arm: [20, 20], leg: [-5, -5], leg2: [90, 90], strap: true }),
       cues: ["Hamstring stretch, {S} leg. Lie on your back and loop a towel or belt around the {S} foot.",
-        "Raise the {S} leg toward the ceiling, keeping a soft knee. The {O} leg rests long, or bent with the foot down.", "Breathe, and let the leg come a little closer as you breathe out."] },
+        "Raise the {S} leg towards the ceiling, keeping a soft knee. The {O} leg rests long, or bent with the foot down.", "Breathe, and let the leg come a little closer as you breathe out."] },
     { id: "reclinedbutterfly", en: "Reclined Butterfly", sa: "Supta Baddha Konasana", cat: "mobility", pos: "supine", hold: 60, level: 1,
       fig: F("front", { top: true, torso: 0, armR: [222, 222], armL: [138, 138], legR: [220, 132], legL: [140, 228] }),
       cues: ["Reclined butterfly. Lying on your back, bring the soles of the feet together and let the knees fall open.",
@@ -7825,9 +7836,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       fig: F("front", { torso: -18, head: -6, armR: [197, 197], armL: [-25, -50], legR: [-118, 88], legL: [118, -88] }),
       cues: ["Seated side stretch to the {S}. Sit cross-legged, {S} hand on the floor beside you.",
         "Sweep the {O} arm up and over, leaning to the {S}.", "Breathe into the long {O} side of the ribs."] },
-    { id: "neckside", en: "Seated Neck Stretch", sa: "Ear toward shoulder", cat: "mobility", pos: "seat", sides: true, hold: 30, level: 1,
+    { id: "neckside", en: "Seated Neck Stretch", sa: "Ear towards shoulder", cat: "mobility", pos: "seat", sides: true, hold: 30, level: 1,
       fig: F("front", { torso: 0, head: -32, armR: [-40, 80], armL: [160, 160], legR: [-118, 88], legL: [118, -88], over: ["armR"] }),
-      cues: ["Neck stretch to the {S}. Sit tall and let your {S} ear drop toward your {S} shoulder.",
+      cues: ["Neck stretch to the {S}. Sit tall and let your {S} ear drop towards your {S} shoulder.",
         "Rest the {S} hand lightly on your head, letting its weight do the work. Let the {O} shoulder sink.", "Breathe into the side of the neck."] },
 
     /* ----- capoeira ----- */
@@ -7837,7 +7848,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         "Step back to the middle, then the other foot back, other arm up.", "Lean forward a little and keep the knees soft. Move with the berimbau."] }),
     M({ id: "esquiva", en: "Esquiva Lateral", sa: "Side dodge", cat: "capoeira", pos: "stand", hold: 45, level: 1, rhythm: true,
       keys: [PAR_F, ESQ, PAR_F, figMirror(ESQ)], beats: 8, dwell: 0.3, still: 1,
-      cues: ["Esquiva lateral. From the wide stance, squat low and lean your chest toward one knee.",
+      cues: ["Esquiva lateral. From the wide stance, squat low and lean your chest towards one knee.",
         "Cover your head with the opposite forearm. Come back up, and go to the other side.", "Keep the eyes forward, on your imaginary partner."] }),
     M({ id: "cocorinha", en: "Cocorinha", sa: "Squat dodge", cat: "capoeira", pos: "stand", hold: 45, level: 1, rhythm: true,
       keys: [PAR_S, COC_N, PAR_S, COC_F], beats: 8, dwell: 0.3, still: 1,
@@ -7897,7 +7908,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   );
 
   /* ------------------------- background sound and rhythm -------------------------
-     Everything here is synthesized on the device the first time it's needed, then
+     Everything here is synthesised on the device the first time it's needed, then
      looped: no recordings and nothing downloaded. Rain is filtered noise with a patter
      of tiny impacts and the odd bright drop; crickets are pulsed tones at the pitch and
      chirp rate of field crickets on a warm night; the berimbau is a struck-string model
@@ -8326,7 +8337,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["Resting well is part of doing well.", ""],
     ["Move a little, breathe a little, and see what changes.", ""],
     ["Each time you return to the breath, attention gets a little stronger.", ""],
-    ["Kindness toward yourself is a strength, and it grows with practice.", ""],
+    ["Kindness towards yourself is a strength, and it grows with practice.", ""],
     ["There is always time for one slow breath.", ""],
     ["Feel your feet on the floor. You're here.", ""],
     ["Progress is quiet. Keep going anyway.", ""],
@@ -8434,13 +8445,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function TRate(title, line, o) {
     return ext({ k: "rate", secs: o && o.cap || 60, title: title, open: true, lines: [[0, line]] }, o);
   }
+  // each spoken line has time to finish before the next: the first statement comes once the instruction is said
   function TSetup(secs, title, statement, times) {
     var lines = [[0, "Tap the side of one hand with the fingertips of the other, and say:"]];
-    for (var i = 0; i < times; i++) lines.push([4 + i * Math.floor((secs - 6) / times), statement]);
+    for (var i = 0; i < times; i++) lines.push([6 + i * Math.floor((secs - 8) / times), statement]);
     return { k: "tap", secs: secs, title: title, pts: ["hand"], per: secs, lines: lines };
   }
   function TRound(title, phrases, per, first) {
-    var lead = 3, lines = [[0, first ? "Now tap about seven times on each point, saying the phrase. Start at the top of the head." : "Top of the head again."]];
+    var lead = first ? 6 : 3, lines = [[0, first ? "Now tap about seven times on each point, saying the phrase." : "Top of the head again."]];
     TAP_SEQ.forEach(function (id, i) {
       var p = TAP_PT[id], ph = phrases[i % phrases.length];
       lines.push([lead + i * per, (first ? p.name + ". " : "") + ph]);
@@ -8506,8 +8518,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
        drift    a soft glow while the sound carries on (sleep)
        hold     a breath hold: open (tap Breathe in, capped) or a fixed count
      Lengths are in seconds. `lines` are [offset, text] pairs, or plain strings spread
-     evenly across the step. Programs add `audio`: a binaural layer whose beat follows
-     piecewise-linear points [[second, Hz], ...] across the whole program.
+     evenly across the step. Programmes add `audio`: a binaural layer whose beat follows
+     piecewise-linear points [[second, Hz], ...] across the whole programme.
   ------------------------------------------------------------------------------ */
 
   function pLines(lines, secs) {
@@ -8980,7 +8992,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   /* --------------------------- the library --------------------------- */
   var PRACTICES = [
-    /* ===== combined programs ===== */
+    /* ===== combined programmes ===== */
     {
       id: "sleep-descent", name: "Sleep Descent", min: 30, strength: 2,
       tone: "ther", lie: true, sensor: "optional",
@@ -9072,8 +9084,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             : ["Let the breath go back to its own pace.", "Observe the sensations in your chest now, and the pace of your breath.", "Bring that steadiness into whatever comes next."], { vis: "glow" })
         ];
       },
-      how: "Three minutes of even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention on the chest. Then, on the same breath, a gentle feeling of gratitude to the end: the two steps of HeartMath's Quick Coherence technique. Gratitude comes second because it's easiest to feel, rather than just think, once slow breathing has calmed you and your heart rhythm has settled into a steady wave; for the same reason it fits well after a meditation such as Anapana or the Body Scan. Sit or lie down. With a sensor, the coherence score and your heart rate show live.",
-      ev: "Breathing near 6 a minute brings heart rate and blood pressure rhythms into step, the state the coherence score measures. Holding a feeling of appreciation shifted heart-rate variability toward its mid- and high-frequency bands in a 1995 HeartMath laboratory study, and across 1.8 million sessions of HeartMath's app, positive emotions went with higher coherence scores. Theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability toward parasympathetic activity in 21 young adults resting after exercise. The combination itself hasn't been trialled.",
+      how: "Three minutes of even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention on the chest. Then, on the same breath, a gentle feeling of gratitude to the end: the two steps of HeartMath's Quick Coherence technique. Gratitude comes second because it's easiest to feel, rather than just think, once slow breathing has calmed you and your heart rhythm has settled into a steady wave; for the same reason it fits well after a meditation such as Anapana or the Body Scan. Sit, lie down or walk. With a sensor, the coherence score and your heart rate show live.",
+      ev: "Breathing near 6 a minute brings heart rate and blood pressure rhythms into step, the state the coherence score measures. Holding a feeling of appreciation shifted heart-rate variability towards its mid- and high-frequency bands in a 1995 HeartMath laboratory study, and across 1.8 million sessions of HeartMath's app, positive emotions went with higher coherence scores. Theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability towards parasympathetic activity in 21 young adults resting after exercise. The combination itself hasn't been trialled.",
       cite: "Lehrer & Gevirtz 2014 · McCraty et al. 1995 · Balaji et al. 2025 · McConnell et al. 2014"
     },
     {
@@ -9102,7 +9114,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             [at(3, 0.25), "Picture their face. Remember what they did, and what it made possible for you."],
             [at(3, 0.55), "Silently thank them, in your own words."],
             [at(3, 0.8), "Let the warmth of it rest in your chest."]], { vis: "glow" }),
-          G(s[4], "Your body", [[0, "Turn the same appreciation toward your body."],
+          G(s[4], "Your body", [[0, "Turn the same appreciation towards your body."],
             [at(4, 0.3), "Your breath, coming and going by itself. Your heart, beating all day long. Your feet, carrying you where you needed to go."],
             [at(4, 0.7), "Thank your body for one thing it did for you today."]], { vis: "glow" }),
           G(s[5], "Savour it", [[0, "Now rest in the feeling itself, whatever form it takes: warmth, ease, a quiet gladness."],
@@ -9113,8 +9125,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             [Math.max(at(6, 0.25) + 15, s[6] - 15), lie ? "When you're ready, roll onto your side before you sit up." : walk ? "Bring this gladness with you as you walk on." : "Bring this gladness into whatever comes next."]], { vis: "glow" })
         ];
       },
-      how: "Three or four minutes of slow, even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention in the chest. Gratitude comes after the breathing because it's easiest to feel, rather than just think, once you're calm; for the same reason it fits well after a meditation. Then four steps: something small from today, a person who helped you, your own body, and resting in the feeling. It ends with an invitation to write down three good things later. Sit or lie down; with a sensor, coherence shows live.",
-      ev: "Across 27 trials with 3,675 people, gratitude exercises eased symptoms of depression and anxiety a little, and a 2016 meta-analysis found small gains in well-being. Writing down three good things each day for a week raised happiness and lowered depressive symptoms for six months in an online trial. Holding a feeling of appreciation shifted heart-rate variability toward its mid- and high-frequency bands in a 1995 HeartMath laboratory study. This guided sequence itself hasn't been trialled.",
+      how: "Three or four minutes of slow, even breathing at your resonance rate (from the resonance test, or 5.5 a minute) or a pace of your own, with your attention in the chest. Gratitude comes after the breathing because it's easiest to feel, rather than just think, once you're calm; for the same reason it fits well after a meditation. Then four steps: something small from today, a person who helped you, your own body, and resting in the feeling. It ends with an invitation to write down three good things later. Sit, lie down or walk; with a sensor, coherence shows live.",
+      ev: "Across 27 trials with 3,675 people, gratitude exercises eased symptoms of depression and anxiety a little, and a 2016 meta-analysis found small gains in well-being. Writing down three good things each day for a week raised happiness and lowered depressive symptoms for six months in an online trial. Holding a feeling of appreciation shifted heart-rate variability towards its mid- and high-frequency bands in a 1995 HeartMath laboratory study. This guided sequence itself hasn't been trialled.",
       cite: "Cregg & Cheavens 2021 · Davis et al. 2016 · Seligman et al. 2005 · McCraty et al. 1995"
     },
     {
@@ -9168,7 +9180,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         ];
       },
       how: "Eight and a half minutes at 6 breaths a minute (4 s in, 6 s out) over a 6 Hz theta beat. With a sensor connected the summary shows how far your heart rate fell.",
-      ev: "Slow breathing at six a minute after moderate cycling sped the return of cardiac parasympathetic activity in young men (Sugimoto et al. 2025). In a separate study of 21 young adults resting after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability toward parasympathetic activity over the first ten minutes, compared with the same sound without a beat (McConnell et al. 2014).",
+      ev: "Slow breathing at six a minute after moderate cycling sped the return of cardiac parasympathetic activity in young men (Sugimoto et al. 2025). In a separate study of 21 young adults resting after exercise, theta binaural beats (7 Hz, swept between 5.5 and 8.5 Hz) shifted heart-rate variability towards parasympathetic activity over the first ten minutes, compared with the same sound without a beat (McConnell et al. 2014).",
       cite: "Sugimoto et al. 2025 · McConnell et al. 2014"
     },
 
@@ -9176,9 +9188,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       id: "heart-led", name: "Heart-Led Beats", exp: true, lengths: [15, 20, 30], min: 20, strength: 1,
       sensor: "best", sensorWhy: "the beat follows it; without one, it runs a scripted descent",
       audio: { dyn: true, start: 10, cat: "relax", band: "Alpha to theta, led by your heart", name: "Heart-led beat", carrier: 200, fade: 20 },
-      blurb: "An experiment in biofeedback through sound: the binaural beat follows your heart, gliding from alpha toward theta as your heart rate settles and its rhythm loosens.",
+      blurb: "An experiment in biofeedback through sound: the binaural beat follows your heart, gliding from alpha towards theta as your heart rate settles and its rhythm loosens.",
       build: function (min) { return heartLed(min || 20); },
-      how: "After a minute to settle, a minute and a half measures your resting heart rate and beat-to-beat variability. From then on, every five seconds, the beat moves toward a target set by how calm your heart looks: heart rate below your baseline counts for half, a rise in RMSSD for 30%, and coherence for 20%. The target runs from 10 Hz down to 4 Hz, and the beat never moves faster than 0.15 Hz per update. After ten minutes it leads up to 1 Hz lower. With no heart data, it follows a scripted 10 to 6 Hz descent.",
+      how: "After a minute to settle, a minute and a half measures your resting heart rate and beat-to-beat variability. From then on, every five seconds, the beat moves towards a target set by how calm your heart looks: heart rate below your baseline counts for half, a rise in RMSSD for 30%, and coherence for 20%. The target runs from 10 Hz down to 4 Hz, and the beat never moves faster than 0.15 Hz per update. After ten minutes it leads up to 1 Hz lower. With no heart data, it follows a scripted 10 to 6 Hz descent.",
       ev: "This is an experiment. Alpha and theta binaural beats have small, inconsistent effects on anxiety and relaxation in meta-analyses, and heart-rate variability biofeedback has better evidence for stress. But no study has tested binaural beats that follow the heart, and the rule here is Entrain's own. Treat the summary at the end, your heart rate with the beat drawn over it, as the real test.",
       cite: "Experimental · Entrain's own rule"
     },
@@ -9242,7 +9254,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       next: { id: "nvc-self", txt: "Still turning it over? Self-Empathy (NVC) helps you find what you need now." },
       build: function () { return afterSteps(this); },
       how: "A minute and a half of cyclic sighs and three minutes of slow breathing with a longer out-breath, under a 6 Hz theta beat (or 10 Hz alpha), then four short steps: naming what you feel in a word or two, a moment of self-compassion with a hand on your chest, one thing you're glad you did, and one small next step. With a sensor, the summary shows how far your heart rate came down. If it's still on your mind afterwards, Self-Empathy (NVC) can help you find what you need now.",
-      ev: "Right after a stressful speech, a brief self-compassion exercise reduced socially anxious students' brooding about it the next day, and self-compassion programs reduced rumination and stress across 27 trials. Putting feelings into words dampens their intensity. Cyclic sighing improved mood and slowed breathing more than mindfulness meditation in a month-long trial. This sequence itself hasn't been trialled.",
+      ev: "Right after a stressful speech, a brief self-compassion exercise reduced socially anxious students' brooding about it the next day, and self-compassion programmes reduced rumination and stress across 27 trials. Putting feelings into words dampens their intensity. Cyclic sighing improved mood and slowed breathing more than mindfulness meditation in a month-long trial. This sequence itself hasn't been trialled.",
       cite: "Blackie & Kocovski 2018 · Ferrari et al. 2019 · Torre & Lieberman 2018 · Balban et al. 2023"
     },
 
@@ -9253,7 +9265,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation as it is.",
       build: function (min) { return bodyScan(min, "wake"); },
       how: "Sixteen stops, from the feet up, each with a few spoken cues. The body map shows where you are. Choose 10, 20 or 30 minutes.",
-      ev: "The body scan is a core practice of mindfulness-based stress reduction. On its own, a meta-analysis of about 15 trials found a small rise in mindfulness and no clear effect on stress or anxiety. Mindfulness programs that include it have moderate evidence for reducing anxiety, depression and pain.",
+      ev: "The body scan is a core practice of mindfulness-based stress reduction. On its own, a meta-analysis of about 15 trials found a small rise in mindfulness and no clear effect on stress or anxiety. Mindfulness programmes that include it have moderate evidence for reducing anxiety, depression and pain.",
       cite: "Gan et al. 2022 · Goyal et al. 2014"
     },
     {
@@ -9262,7 +9274,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       blurb: "Breath observation in the Vipassana tradition: the area of attention narrows step by step, from the triangle around the nose and upper lip to one small point beneath the nostrils.",
       build: function (min) { return anapana(min); },
       how: "The breath flows at its own natural pace while the area you observe narrows: the whole triangle from the top of the nose to the corners of the upper lip, then the nostrils and upper lip, the rims of the nostrils, the small area below them, and finally only the small dimple just beneath the ridge between the nostrils (three steps in 5 minutes, four in 10). In each area you observe every sensation, and a drawing shows where. Reminders come every few minutes, more sparsely in longer sittings: about every five minutes in the hour. Tap Mind wandered each time you notice you've drifted. Noticing is the skill being trained, so every tap is part of the practice.",
-      ev: "Anapana is the first stage of the residential Vipassana course, which was followed by lower stress and higher well-being and mindfulness, partly lasting six months. Plain breath awareness slowed breathing in a controlled study. Mindfulness meditation programs have moderate evidence for anxiety (effect size 0.38), depression and pain.",
+      ev: "Anapana is the first stage of the residential Vipassana course, which was followed by lower stress and higher well-being and mindfulness, partly lasting six months. Plain breath awareness slowed breathing in a controlled study. Mindfulness meditation programmes have moderate evidence for anxiety (effect size 0.38), depression and pain.",
       cite: "Szekeres & Wertheim 2015 · Telles et al. 2014 · Goyal et al. 2014"
     },
     {
@@ -9293,7 +9305,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         ];
       },
       how: "Kristin Neff's self-compassion break: mindfulness, common humanity and self-kindness, about a minute each, with a hand on the heart.",
-      ev: "Across 27 randomised trials, self-compassion interventions reduced rumination, stress, depression, anxiety and self-criticism (moderate to large effects). Those were multi-week programs; this 5-minute break is their most-used single exercise, not tested on its own.",
+      ev: "Across 27 randomised trials, self-compassion interventions reduced rumination, stress, depression, anxiety and self-criticism (moderate to large effects). Those were multi-week programmes; this 5-minute break is their most-used single exercise, not tested on its own.",
       cite: "Ferrari et al. 2019"
     },
     {
@@ -9614,12 +9626,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     { id: "focus", name: "Focus", lede: "Concentrating on a task, or training attention.", icon: "target" },
     { id: "energy", name: "Energy", lede: "Waking up the body and mind.", icon: "bolt" },
     { id: "recover", name: "Recover", lede: "Resting in the day, or recovering after training.", icon: "recover" },
-    { id: "reflect", name: "Reflect", lede: "Feelings, needs and kindness, toward yourself and others.", icon: "nvc" }
+    { id: "reflect", name: "Reflect", lede: "Feelings, needs and kindness, towards yourself and others.", icon: "nvc" }
   ];
   // each goal's colour, on Today's tiles and in History
   var GOAL_COL = { sleep: "#a78bfa", calm: "#5eead4", focus: "#fbbf24", energy: "#fb923c", recover: "#7dd3fc", reflect: "#f9a8d4" };
   var METHODS = [["breath", "Breathing", "breathe"], ["meditate", "Meditation", "practice"], ["move", "Movement", "move"],
-    ["relax", "Relaxation", "moon"], ["sound", "Sound", "sounds"], ["write", "Writing", "nvc"], ["program", "Program", "spark"]];
+    ["relax", "Relaxation", "moon"], ["sound", "Sound", "sounds"], ["write", "Writing", "nvc"], ["program", "Programme", "spark"]];
   var POSTURES = [["sit", "Sitting"], ["lie", "Lying"], ["stand", "Standing"], ["walk", "Walking"]];
   var NEEDS = [["none", "Just the phone"], ["phones", "Headphones"], ["sensor", "Heart sensor"], ["space", "Room to move"]];
 
@@ -9684,7 +9696,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      edits that land on the next breath, and the guide's own visuals are drawn
      onto the session canvas by swapping its drawing context. So heart-rate
      swing, coherence and cue sounds behave exactly as they do in Breathe.
-     A program's binaural layer is an ordinary track (load/play/pause) whose
+     A programme's binaural layer is an ordinary track (load/play/pause) whose
      beat follows piecewise points; skipping a step seeks it to the new time.
   ------------------------------------------------------------------------------ */
 
@@ -9762,12 +9774,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var steps = d.build(len, pVar(d)), at = 0;
     steps.forEach(function (s) { s.at = at; at += s.secs; });
     if (d.method === "program" && P.opt.ana) pAna(d, steps, at, P.opt.ana);
-    var base = at;                                   // a program's sound covers the practice, not the tapping after it
+    var base = at;                                   // a programme's sound covers the practice, not the tapping after it
     if (tapOn(d)) tapShort().forEach(function (s) { s.at = at; at += s.secs; s.extra = true; steps.push(s); });
     return { steps: steps, total: at, base: base };
   }
 
-  /* Anapana reminders for the programs: every few minutes, a quiet prompt to observe the breath
+  /* Anapana reminders for the programmes: every few minutes, a quiet prompt to observe the breath
      at the nostrils, worded for paced, natural or heart-focused breathing. They skip steps that
      guide attention elsewhere (body regions, the sleep drift) and never crowd another line. */
   var ANA = {
@@ -10060,7 +10072,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     return { cap: cap, sub: sub, n: S.count };
   }
 
-  /* ----- the program's binaural layer ----- */
+  /* ----- the programme's binaural layer ----- */
   function pTrack() { return A.track && A.track.practice && A.track.pid === (P.def && P.def.id) ? A.track : null; }
   function aSeek(sec) {
     if (!A.track) return;
@@ -10479,7 +10491,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
     var sp = P.def.selfPaced;
     bSetT("#sLeft", sp ? "Your pace" : fmt(P.total - T) + " left");
-    bSetT("#sStepTxt", "Step " + (P.idx + 1) + " of " + P.steps.length + " · " + s.title + (P.chain && P.chain.then !== P.def.id && pDef(P.chain.then) ? " · then " + pDef(P.chain.then).name : ""));
+    bSetT("#sStepTxt", "Step " + (P.idx + 1) + " of " + P.steps.length + " · " + s.title);
+    var nx = P.chain && P.chain.then !== P.def.id ? pDef(P.chain.then) : null, th = $("#sThen");     // a line of its own, so it fits on a phone
+    if (th.hidden !== !nx) th.hidden = !nx;
+    if (nx) bSetT("#sThen", "Next: " + nx.name);
     var fw = (sp ? (P.idx + Math.min(1, st / s.secs)) / P.steps.length * 100 : T / P.total * 100).toFixed(1) + "%";
     if (fw !== P.fillW) { P.fillW = fw; $("#sFill").style.width = fw; }     // in steps of a thousandth: no redraw for changes too small to see
     // live chips
@@ -10914,7 +10929,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     opts.push(pToggle("sOptVoice", "Spoken guidance", O.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
     opts.push(pToggle("sOptBells", "Bells between steps", O.bells, ""));
     if (d.audio && !d.beats) opts.push(pToggle("sOptAudio", "Binaural layer", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
-    if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesized berimbau keeps time for the capoeira moves."));
+    if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesised berimbau keeps time for the capoeira moves."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
     if (hasTap) {
@@ -11462,7 +11477,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       p.push("Your average heart rate " + (span >= 119 ? "in the first two minutes, then in the last two" : "in the first third of the session, then in the last third") +
         ", in beats per minute: " + r.hr0 + ", then " + r.hr1 + ".");
       var lively = d.method === "move" || d.goal === "energy" || d.id === "wim-hof" || d.id === "kapalabhati";
-      if (dl <= -3) p.push("It came down " + plural(-dl, "beat", "beats") + " a minute. A fall like this is the usual sign of the body settling: slow breathing and rest shift the nervous system toward its calming side, which slows the heart.");
+      if (dl <= -3) p.push("It came down " + plural(-dl, "beat", "beats") + " a minute. A fall like this is the usual sign of the body settling: slow breathing and rest shift the nervous system towards its calming side, which slows the heart.");
       else if (dl >= 3) p.push("It rose " + plural(dl, "beat", "beats") + " a minute. " + (lively ? "That's expected after movement or energising breathing." : "Sitting up, moving or a busy mind can raise it. One session is one reading: your history shows the trend."));
       else p.push("It stayed within a few beats. That's common in short or gentle sessions, or when you started out already rested.");
       if (SD.c.hr) p.push(sdHrAgainst(dl, SD.c.hr, d));
@@ -11507,7 +11522,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
     if (k === "beat") {
       p.push("Where the binaural beat started and where it finished: " + r.beat0.toFixed(1) + " Hz, then " + r.beat1.toFixed(1) + " Hz.");
-      p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) toward 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
+      p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) towards 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
         : "There was no heart data, so the beat followed a fixed, gentle descent instead.");
       p.push("This is an experiment: the rule is Entrain's own, so the chart is the honest test of what it did for you.");
       return ["The beat", p];
@@ -12035,8 +12050,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   /* -------------------------------- settings --------------------------------
      What every practice starts with (a practice can change its own under Options on its page),
-     the background sound, what's kept of reflections, how the screen behaves, and your data
-     (backup.js).
+     the background sound, what's kept of reflections, how the screen behaves, your data
+     (backup.js), the feedback form, and About with the build.
   ------------------------------------------------------------------------------ */
 
   var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true };
@@ -12075,13 +12090,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         pToggle("stVoice", "Spoken guidance", g.voice, speech ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !speech) +
         (speech ? '<div class="so-row so-voice"><span class="so-l">Voice</span><select id="stVoiceSel" aria-label="Voice"></select><button class="btn small" id="stVoiceTest">Test</button></div>' : "") +
         pToggle("stBells", "Bells between steps", g.bells, "") +
-        pToggle("stAudio", "Binaural layer in programs", g.audio, "Headphones needed.") +
+        pToggle("stAudio", "Binaural layer in programmes", g.audio, "Headphones needed.") +
         pToggle("stRhy", "Berimbau for the capoeira moves", g.rhythm, "") +
         pToggle("stTick", "Tapping tick", g.tapTick, "A soft tick to tap along with.") +
         '<div class="so-row so-seg"><span class="so-l">Breath cues</span>' + stSeg("stCues", [["tones", "Tone"], ["chimes", "Chimes"], ["off", "Silent"]], g.cues) + "</div>" +
         (bzOk() ? pToggle("stBuzz", "Vibrate with the breath", g.buzz, "A short buzz to breathe in, a long one to breathe out, two taps for a hold.") : "") +
         '<div class="so-row so-seg"><span class="so-l">Breath visual</span>' + stSeg("stVis", [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]], g.visual) + "</div>" +
-        '<div class="so-row so-seg"><span class="so-l">Anapana reminders in programs<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span>' +
+        '<div class="so-row so-seg"><span class="so-l">Anapana reminders in programmes<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span>' +
           stSeg("stAna", [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]], g.ana) + "</div>" +
         (own.length ? '<div class="st-own"><span>' + esc(list) + (own.length === 1 ? " has" : " have") + " options of " + (own.length === 1 ? "its" : "their") + ' own.</span>' +
           '<button class="btn small" id="stOwnReset">Use the defaults for ' + (own.length === 1 ? "it" : "all of them") + "</button></div>" : "") +
@@ -12136,14 +12151,27 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       '<div class="fb-act"><button class="btn primary" id="fbGo"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg>Open on GitHub</button>' +
         '<button class="btn small" id="fbClear">Clear</button><span class="fb-n" id="fbN" aria-live="polite"></span></div>';
   }
-  // the issue as GitHub will get it
+  /* the issue as GitHub will get it. GitHub turns away a link much longer than about 8,000 characters, which a
+     message in a script that takes several bytes a letter can reach: then the issue gets as much of the message
+     as fits, cut at a word, and the whole of it stays in the form to copy */
+  var FB_MAX = 7000;
+  // the first n characters, without half of an emoji or other character outside the basic plane (which a link can't carry)
+  function fbCut(s, n) { s = s.slice(0, n); return /[\uD800-\uDBFF]$/.test(s) ? s.slice(0, -1) : s; }
   function fbIssue() {
     var d = fbDraft(), k = FB_KINDS.filter(function (x) { return x[0] === (d.kind || "idea"); })[0] || FB_KINDS[0];
     var txt = (d.txt || "").trim(), one = txt.replace(/\s+/g, " "), cut = one.slice(0, 61);
-    if (one.length > 60) cut = cut.slice(0, cut.lastIndexOf(" ") > 20 ? cut.lastIndexOf(" ") : 60).replace(/[,;:.\s]+$/, "") + "…";      // no title: the message's first words, cut at a word
+    if (one.length > 60) cut = fbCut(cut, cut.lastIndexOf(" ") > 20 ? cut.lastIndexOf(" ") : 60).replace(/[,;:.\s]+$/, "") + "…";      // no title: the message's first words, cut at a word
     var title = (d.title || "").trim().replace(/\s+/g, " ") || cut;
-    var body = txt + (d.dev !== false ? "\n\n---\n" + fbDevice() : "");
-    return { title: k[1] + ": " + title, body: body, url: FB_NEW + "?title=" + encodeURIComponent(k[1] + ": " + title) + "&body=" + encodeURIComponent(body) };
+    var dev = d.dev !== false ? "\n\n---\n" + fbDevice() : "", body = txt + dev, shown = 0;
+    var head = FB_NEW + "?title=" + encodeURIComponent(k[1] + ": " + title) + "&body=", url = head + encodeURIComponent(body);
+    if (url.length > FB_MAX) {
+      var tail = "…\n\n[cut short to fit the link]" + dev, lo = 0, hi = txt.length, mid;
+      while (lo < hi) { mid = (lo + hi + 1) >> 1; if ((head + encodeURIComponent(fbCut(txt, mid) + tail)).length <= FB_MAX) lo = mid; else hi = mid - 1; }
+      var part = fbCut(txt, lo), sp = part.lastIndexOf(" ");
+      if (sp > lo - 40 && sp > 0) part = part.slice(0, sp);
+      shown = part.length; body = part + tail; url = head + encodeURIComponent(body);
+    }
+    return { title: k[1] + ": " + title, body: body, url: url, shown: shown };
   }
   function fbWire() {
     var go = $("#fbGo"), title = $("#fbTitle"), txt = $("#fbTxt");
@@ -12165,8 +12193,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     go.addEventListener("click", function () {
       save();
       if (go.disabled) return;
-      window.open(fbIssue().url, "_blank", "noopener");
-      bSetT("#fbN", "Opened on GitHub. Your draft stays here until you clear it.");
+      var is = fbIssue();
+      window.open(is.url, "_blank", "noopener");
+      bSetT("#fbN", is.shown ? "Opened on GitHub with the first " + is.shown + " characters: the whole message is too long for the link. Copy the rest from here." :
+        "Opened on GitHub. Your draft stays here until you clear it.");
     });
     $("#fbClear").addEventListener("click", function () {
       title.value = ""; txt.value = ""; save(); txt.focus();
@@ -12222,7 +12252,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
 
   /* ------------------------ heart-led beats and the power nap ------------------------
-     Both use a program track whose beat is set live (track.dyn) instead of following a
+     Both use a programme track whose beat is set live (track.dyn) instead of following a
      fixed schedule, and both read your heart through the sensor. Everything they infer
      is an estimate and is labelled that way on screen.
   ------------------------------------------------------------------------------ */
@@ -12239,7 +12269,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* ----- heart-led beats -----
      A sound picture of your heart's calm, the way biofeedback works: as heart rate falls
      below your baseline and beat-to-beat variability and coherence rise, the beat glides
-     from 10 Hz (alpha) toward 4 Hz (theta), never more than 0.15 Hz every five seconds.
+     from 10 Hz (alpha) towards 4 Hz (theta), never more than 0.15 Hz every five seconds.
      After ten minutes it leads up to 1 Hz further down. With no heart data it follows a
      gentle scripted descent. The rule is Entrain's own and hasn't been tested. */
   var AD = { base: null, last: -99, calm: 0, cur: 10, log: [], src: "" };
@@ -12247,7 +12277,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var total = min * 60, settle = 60, base = 90, close = 60;
     return [
       G(settle, "Settle", ["Sit back or lie down with headphones on, and breathe at your own natural pace.",
-        "The beat will follow your heart. As your heart rate settles and its rhythm loosens, the beat slows from alpha toward theta.",
+        "The beat will follow your heart. As your heart rate settles and its rhythm loosens, the beat slows from alpha towards theta.",
         "Let your attention rest on the sound, or on the breath at the nostrils."], { vis: "orb" }),
       { k: "adapt", phase: "base", secs: base, title: "Listening to your heart", lines: [[0, "First, a minute and a half to measure your resting baseline. Rest, and breathe at your own pace."]] },
       { k: "adapt", phase: "lead", secs: total - settle - base - close, title: "Heart-led beat",
@@ -13237,8 +13267,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   /* ------------------------------- search -------------------------------
      One box for everything: practices and your own routines, the movement library, breathing
-     patterns, tracks, the Heart tools, Healthy living's recipes and supplements, History and Settings, and every
-     paragraph and reference in Learn.
+     patterns, tracks, the Heart tools, Healthy living's recipes, supplements, routines and light, History, Settings
+     and its feedback form, and every paragraph and reference in Learn.
      Matching ignores case and accents, and each word you type has to match the start of a word
      somewhere in the entry, so "anap" finds Anapana and "bencao" finds Bênção. Results come in
      groups, the group with the best match first. Enter opens the top result; "/" or Ctrl+K opens
@@ -13636,7 +13666,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     });
   }
   /* --------------------------- healthy living: the content ---------------------------
-     Recipes, and what the research says about common supplements. A recipe's ingredients are
+     Recipes, what the research says about common supplements, the routines (sleep habits, a morning,
+     the day and an evening) and light therapy. A recipe's ingredients are
      [amount, unit, name, note]: the amount scales with the servings (null for "to taste"), the unit
      is one of LV_UNITS or "" for a count, and a counted name can be [one, several]. Steps carry no
      amounts, so they stay right at any number of servings.
