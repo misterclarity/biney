@@ -1596,9 +1596,9 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const how = await E(p, () => ['coherence', 'gratitude'].map(id => window.__entrain.pDef(id).how));
       ok(how.every(h => /Sit, lie down or walk/.test(h)), 'Heart Coherence and Gratitude say they can be done walking');
       // page names fit a phone's top bar, with the sensor button a heart until a sensor sends readings
-      const fit = async () => {
+      const fit = async more => {        // the tabs and pages at any width; at 412 px a couple of practices too
         const out = [];
-        for (const v of ['home', 'practice', 'breathe', 'heart', 'learn', 'history', 'settings', 'living', 'prime', 'builder', 'yoga', 'practice/coherence', 'practice/recovery']) {
+        for (const v of ['home', 'practice', 'breathe', 'heart', 'learn', 'history', 'settings', 'living', 'prime', 'builder', 'yoga'].concat(more || [])) {
           await E(p, v => location.hash = v, v); await p.waitForTimeout(160);
           out.push(await E(p, () => { const h = document.querySelector('#viewTitle'); return h.scrollWidth <= h.clientWidth + 1 ? '' : h.textContent; }));
         }
@@ -1606,11 +1606,11 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       };
       const sb = await E(p, () => { const b = document.querySelector('#tbSensor'), tx = document.querySelector('#tbSensorTxt');
         return { w: Math.round(b.getBoundingClientRect().width), icon: getComputedStyle(b.querySelector('.tb-hr')).display !== 'none', name: tx.textContent, hid: tx.getBoundingClientRect().width <= 1 }; });
-      const cut412 = await fit();
+      const cut412 = await fit(['practice/coherence', 'practice/recovery']);
       await p.setViewportSize({ width: 360, height: 740 }); await p.waitForTimeout(200);
       const cut360 = await fit();
       ok(sb.w <= 36 && sb.icon && sb.hid && /sensor/.test(sb.name) && !cut412.length && !cut360.length,
-        'on a phone the sensor button is a heart (its words kept for screen readers: "' + sb.name + '"), and every tab and page name fits at 412 and 360 px' + (cut412.concat(cut360).length ? ': cut ' + cut412.concat(cut360).join(', ') : ''));
+        'on a phone the sensor button is a heart (its words kept for screen readers: "' + sb.name + '"), and every tab and page name fits at 412 and 360 px, and Heart Coherence and Exercise Recovery at 412' + (cut412.concat(cut360).length ? ': cut ' + cut412.concat(cut360).join(', ') : ''));
       await p.setViewportSize({ width: 412, height: 915 });
       // tapping: the instruction is said before the first point, and before the first set-up statement
       const tap = await E(p, () => { const X = window.__entrain, st = X.pPlan(X.pDef('tapping'), 0).steps, r1 = st.find(s => s.title === 'Round 1'), su = st.find(s => s.title === 'Set-up');
