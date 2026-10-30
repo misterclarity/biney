@@ -16,7 +16,7 @@
     if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath", "swing", sdCmpTxt(c.swing, sdFix1, r.swing)]);
     if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath", "wander"]);
     if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · "), "holds"]);
-    if (r.suds) tiles.push(["Intensity", r.suds.join(" → "), r.suds.length > 1 ? "out of 10, first to last" : "out of 10", "suds"]);
+    if (r.suds) tiles.push([d.rate ? d.rate.name : "Intensity", r.suds.join(" → "), r.suds.length > 1 ? (d.rate ? "out of 10, before and after" : "out of 10, first to last") : "out of 10", "suds"]);   // a feeling's strength, or what the practice rates
     if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatHeart ? "Hz, led by your heart" : "Hz, scripted (no heart data)", "beat"]);
     if (r.nap) {
       if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate", "onset"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated", "nap"]); }
@@ -127,6 +127,15 @@
       p.push("How long you held your breath after the power breaths, round by round: " + r.holds.map(fmt).join(", ") + ". The longest was " + fmt(Math.max.apply(null, r.holds)) + ".");
       p.push("Holds often lengthen in later rounds: the fast breathing lowers carbon dioxide, so the urge to breathe comes later. That's also why this practice is done only sitting or lying down, with each hold ending as soon as you need to breathe.");
       return ["Breath holds", p];
+    }
+    if (k === "suds" && d.rate && d.rate.what === "hunger") {
+      p.push("How hungry you were each time you rated it, from 0 (not hungry at all) to 10 (as hungry as you get): " + r.suds.join(", then ") + ".");
+      if (r.suds.length > 1) {
+        n = r.suds[0] - r.suds[r.suds.length - 1];
+        p.push(n > 0 ? "Your hunger came down " + plural(n, "point", "points") + " over the meal." : n < 0 ? "Your hunger went up: eating can sharpen the appetite at first." : "Your hunger stayed where it was.");
+        p.push("There's no right number. Noticing it is the point, and over a few meals you'll see your own pattern.");
+      } else p.push("Rate it before and after a meal to see how it changes.");
+      return [d.rate.name, p];
     }
     if (k === "suds") {
       p.push("How strong the feeling was each time you rated it, from 0 (not at all) to 10 (as strong as it gets): " + r.suds.join(", then ") + ".");

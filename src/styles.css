@@ -1632,6 +1632,10 @@
   .lv-tips li + li{margin-top:6px}
   .si-main > p.lv-keep{margin-top:16px;font-size:14px}
   .lv-keep b{color:var(--text)}
+  /* a recipe's page ends with the Mindful Meal, for eating it */
+  .lv-eat{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap;margin-top:20px}
+  .lv-eat p{margin:0;flex:1 1 240px;line-height:1.5}
+  .lv-eat b{color:var(--text);font-weight:700}
   .lv-opts .so-step{flex:none}
   @media (max-width:640px){
     .lv-body{padding:2px 16px 16px}

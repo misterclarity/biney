@@ -1715,6 +1715,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .lv-tips li + li{margin-top:6px}
   .si-main > p.lv-keep{margin-top:16px;font-size:14px}
   .lv-keep b{color:var(--text)}
+  /* a recipe's page ends with the Mindful Meal, for eating it */
+  .lv-eat{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap;margin-top:20px}
+  .lv-eat p{margin:0;flex:1 1 240px;line-height:1.5}
+  .lv-eat b{color:var(--text);font-weight:700}
   .lv-opts .so-step{flex:none}
   @media (max-width:640px){
     .lv-body{padding:2px 16px 16px}
@@ -1964,7 +1968,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               <div class="ses-write" id="sWrite" hidden></div>
               <div class="ses-rate" id="sRate" hidden>
                 <div class="rate-g" id="sRateG" role="group" aria-label="Rate it from 0 to 10"></div>
-                <div class="rate-ends" aria-hidden="true"><span>Not at all</span><span>As strong as it gets</span></div>
+                <div class="rate-ends" aria-hidden="true"><span id="sRateLo">Not at all</span><span id="sRateHi">As strong as it gets</span></div>
                 <button class="btn small rate-skip" id="sRateSkip">Skip</button>
               </div>
             </div>
@@ -2660,6 +2664,19 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               breathing, because gratitude is easiest to feel once you're calm, then moves from something small to a person,
               your own body and the feeling itself, and ends with an invitation to note three good things.
             </p>
+            <p id="l-meal">
+              <b>Mindful eating.</b> How you eat changes how much you eat, and how much you notice of it. Across 24 studies,
+              eating while distracted, by a screen for instance, made people eat more at that meal and more again later, while
+              remembering a meal well reduced how much they ate later (Robinson et al., 2013). Eating more slowly lowered how
+              much people ate without leaving them hungrier at the end of the meal (Robinson et al., 2014), and chewing longer
+              lowered hunger (Miquel-Kergoat et al., 2015). Mindfulness meditation reduced binge eating and emotional eating,
+              though its effect on weight was mixed (Katterman et al., 2014), and teenagers who wrote a letter of gratitude each
+              week for a month reported healthier eating than those who listed their activities (Fritz et al., 2019). The
+              Mindful Meal puts these together, with a few slow breaths first and an optional binaural beat; the combination,
+              and a beat at a meal, haven't been tested. It's about noticing and enjoying a meal rather than eating less. An
+              easy walk afterwards suits it: short bouts of light walking lowered the rise in blood sugar and insulin after
+              meals, compared with sitting still (Buffey et al., 2022).
+            </p>
             <p>
               <b>Yoga and walking.</b> In 42 randomised trials, practices that included yoga postures lowered evening and
               waking cortisol, ambulatory blood pressure and resting heart rate, and raised high-frequency heart-rate
@@ -2910,6 +2927,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Cregg, D. R., &amp; Cheavens, J. S. (2021). Gratitude interventions: effective self-help? A meta-analysis of the impact on symptoms of depression and anxiety. <em>Journal of Happiness Studies</em>, 22(1), 413–445. <a href="https://doi.org/10.1007/s10902-020-00236-6" rel="noopener">DOI</a></li>
       <li>Davis, D. E., Choe, E., Meyers, J., et al. (2016). Thankful for the little things: a meta-analysis of gratitude interventions. <em>Journal of Counseling Psychology</em>, 63(1), 20–31. <a href="https://doi.org/10.1037/cou0000107" rel="noopener">DOI</a></li>
       <li>Seligman, M. E. P., Steen, T. A., Park, N., &amp; Peterson, C. (2005). Positive psychology progress: empirical validation of interventions. <em>American Psychologist</em>, 60(5), 410–421. <a href="https://doi.org/10.1037/0003-066X.60.5.410" rel="noopener">DOI</a></li>
+      <li>Robinson, E., Aveyard, P., Daley, A., et al. (2013). Eating attentively: a systematic review and meta-analysis of the effect of food intake memory and awareness on eating. <em>American Journal of Clinical Nutrition</em>, 97(4), 728–742. <a href="https://doi.org/10.3945/ajcn.112.045245" rel="noopener">DOI</a></li>
+      <li>Robinson, E., Almiron-Roig, E., Rutters, F., et al. (2014). A systematic review and meta-analysis examining the effect of eating rate on energy intake and hunger. <em>American Journal of Clinical Nutrition</em>, 100(1), 123–151. <a href="https://doi.org/10.3945/ajcn.113.081745" rel="noopener">DOI</a></li>
+      <li>Miquel-Kergoat, S., Azais-Braesco, V., Burton-Freeman, B., &amp; Hetherington, M. M. (2015). Effects of chewing on appetite, food intake and gut hormones: a systematic review and meta-analysis. <em>Physiology &amp; Behavior</em>, 151, 88–96. <a href="https://doi.org/10.1016/j.physbeh.2015.07.017" rel="noopener">DOI</a></li>
+      <li>Katterman, S. N., Kleinman, B. M., Hood, M. M., Nackers, L. M., &amp; Corsica, J. A. (2014). Mindfulness meditation as an intervention for binge eating, emotional eating, and weight loss: a systematic review. <em>Eating Behaviors</em>, 15(2), 197–204. <a href="https://pubmed.ncbi.nlm.nih.gov/24854804/" rel="noopener">PubMed</a></li>
+      <li>Fritz, M. M., Armenta, C. N., Walsh, L. C., &amp; Lyubomirsky, S. (2019). Gratitude facilitates healthy eating behavior in adolescents and young adults. <em>Journal of Experimental Social Psychology</em>, 81, 4–14. <a href="https://doi.org/10.1016/j.jesp.2018.08.011" rel="noopener">DOI</a></li>
+      <li>Buffey, A. J., Herring, M. P., Langley, C. K., Donnelly, A. E., &amp; Carson, B. P. (2022). The acute effects of interrupting prolonged sitting time in adults with standing and light-intensity walking on biomarkers of cardiometabolic health in adults: a systematic review and meta-analysis. <em>Sports Medicine</em>, 52(8), 1765–1787. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9325803/" rel="noopener">PMC</a></li>
       <li>Ferrari, M., Hunt, C., Harrysunker, A., Abbott, M. J., Beath, A. P., &amp; Einstein, D. A. (2019). Self-compassion interventions and psychosocial outcomes: a meta-analysis of RCTs. <em>Mindfulness</em>, 10, 1455–1473. <a href="https://acuresearchbank.acu.edu.au/item/87545/self-compassion-interventions-and-psychosocial-outcomes-a-meta-analysis-of-rcts" rel="noopener">ACU</a></li>
       <li>Pascoe, M. C., Thompson, D. R., &amp; Ski, C. F. (2017). Yoga, mindfulness-based stress reduction and stress-related physiological measures: a meta-analysis. <em>Psychoneuroendocrinology</em>, 86, 152–168. <a href="https://doi.org/10.1016/j.psyneuen.2017.08.008" rel="noopener">DOI</a></li>
       <li>Xu, Z., Zheng, X., Ding, H., et al. (2024). The effect of walking on depressive and anxiety symptoms: systematic review and meta-analysis. <em>JMIR Public Health and Surveillance</em>, 10, e48355. <a href="https://publichealth.jmir.org/2024/1/e48355" rel="noopener">JMIR</a></li>
@@ -7032,7 +7055,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "2b75295f";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "eeb93851";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -8499,9 +8522,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       TRate("How strong now?", "And now, from zero to ten?")
     ];
   }
-  /* Practices that end in sleep or are tapping already don't offer it. */
+  /* Practices that end in sleep, are tapping already, or have no place for it (a meal) don't offer it. */
   function tapOffered(d) {
-    return !d.tapping && !d.nap && !d.selfPaced && !pSleepy(d);
+    return !d.tapping && !d.nap && !d.selfPaced && !d.noTap && !pSleepy(d);
   }
   function tapOn(d) { return tapOffered(d) && store.get("pTap." + d.id) === "1"; }
   /* ------------------------- guided practices: content -------------------------
@@ -8518,7 +8541,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
        drift    a soft glow while the sound carries on (sleep)
        hold     a breath hold: open (tap Breathe in, capped) or a fixed count
      Lengths are in seconds. `lines` are [offset, text] pairs, or plain strings spread
-     evenly across the step. Programmes add `audio`: a binaural layer whose beat follows
+     evenly across the step; a third item marks an Anapana reminder ("ana", said softly) or a
+     chime that sounds in place of the voice ("chime"). A step can end when you tap a button
+     (endTap names it), dim the screen (dim), and put a line of its own under its name (sub). Programmes add `audio`: a binaural layer whose beat follows
      piecewise-linear points [[second, Hz], ...] across the whole programme.
   ------------------------------------------------------------------------------ */
 
@@ -8990,6 +9015,68 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     return st;
   }
 
+  /* ----- a mindful meal -----
+     A few minutes to arrive before the first bite: your hunger noticed (0 to 10), slow breathing or cyclic sighs to
+     settle, a moment of gratitude for the meal, then the food with your senses and the first bites, slowly. The rest
+     of the meal runs at your own pace until you tap I've finished (or the time you chose runs out), with a reminder
+     to pause every two and a half minutes or so, spoken softly or as a soft chime, and the screen dimmed. Then your
+     hunger again, gratitude if you chose it for after, and a moment before you get up. Each part is a choice of its
+     own on the practice's page, with the usual ones chosen for you. */
+  var MEAL_PAUSE = ["Put your fork or spoon down between bites, and take a breath.",
+    "Notice the taste of this bite, and how it changes as you chew.",
+    "Chew a little longer than usual, and notice the texture.",
+    "If your thoughts have wandered off, come back to the next bite.",
+    "Look at your food again before the next bite: its colours, the steam, the light on it.",
+    "Notice if you're reaching for the next bite before this one is done. Take your time.",
+    "Notice the temperature of each bite, warm or cool, as it reaches your mouth.",
+    "Sit back for a moment. Notice your breath, and the feeling in your stomach."];
+  var MEAL_HUNGER = "Put your fork down for a moment, and notice your hunger now. Has it changed since the first bite?";
+  var MEAL_CHIME = "Pause: fork down, one breath.";
+  var MEAL_GAP = 150;                        // seconds between the reminders while you eat
+  function mealSteps(d, min) {
+    var hunger = pChoice(d, "hunger") === "on", br = pChoice(d, "breath"), th = pChoice(d, "thanks"), bites = pChoice(d, "bites") === "on", rem = pChoice(d, "remind");
+    var p = pPace(d), before = th === "before" || th === "both", after = th === "after" || th === "both";
+    var rate = function (title, line) {               // the same 0 to 10 scale before and after, so the end screen can set them side by side
+      return TRate(title, line, { cap: 60, ends: ["Not hungry", "As hungry as you get"], sub: "0 is not hungry at all, 10 is as hungry as you get" });
+    };
+    var st = [G(30, "Arrive", ["Sit down with your meal in front of you. Put other screens away, and lay this phone beside your plate.",
+      "For these few minutes, the meal is the only thing to do."], { vis: "glow" })];
+    if (hunger) st.push(rate("How hungry are you?", "Before you start, how hungry are you, from zero to ten? Tap a number."));
+    if (br === "slow") st.push(Br(90, "Slow breathing", { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 },
+      { lines: [[0, "First, a few slow breaths, " + pcTxt(p) + "."], [45, "Let your shoulders drop and your belly soften, ready to eat."]] }));
+    else if (br === "sigh") st.push(Br(60, "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
+      { lines: [[0, "First, a few sighs: in through the nose, a short second sip to fill up, then a long, slow breath out through the mouth."],
+        [32, "Let each long breath out loosen your shoulders."]] }));
+    if (before) st.push(G(50, "Gratitude", [[0, "Look at your meal, and think of where it came from: the soil, the rain and the sun, and the people who grew it, carried it and cooked it."],
+      [26, "Take a moment to be glad of it, and of the chance to eat it."]], { vis: "glow" }));
+    if (bites) {
+      st.push(G(40, "Look and smell", [[0, "Now look at the food as if for the first time: its colours, shapes and textures."],
+        [18, "Bring it a little closer and breathe in its smell. Notice if your mouth begins to water."]], { vis: "glow" }));
+      st.push(G(100, "The first bites", [[0, "Take a first bite, a little smaller than usual, and put your fork or spoon down."],
+        [12, "Chew slowly. Notice the taste, the texture and the temperature, and how they change as you chew."],
+        [40, "Notice the moment you swallow."], [55, "Take a breath, then a second bite in the same unhurried way."],
+        [80, "Notice whether the taste is as strong as in the first bite."]], { vis: "glow" }));
+    }
+    var end = (hunger ? 60 : 0) + (after ? 45 : 0) + 40;
+    var eat = Math.max(240, min * 60 - st.reduce(function (a, s) { return a + s.secs; }, 0) - end);
+    var lines = [[0, bites ? "Now eat the rest of your meal at an easy pace, and tap I've finished when you're done." :
+      "Now eat at an easy pace, taking the first bites slowly, and tap I've finished when you're done."]];
+    if (rem !== "quiet") {
+      var n = Math.floor((eat - 45) / MEAL_GAP), half = Math.max(1, Math.round(n / 2));
+      for (var i = 1, k = 0; i <= n; i++) {          // halfway, the reminder asks about your hunger, if you're checking it
+        var txt = hunger && i === half ? MEAL_HUNGER : rem === "chime" ? MEAL_CHIME : MEAL_PAUSE[k++ % MEAL_PAUSE.length];
+        lines.push(rem === "chime" ? [i * MEAL_GAP, txt, "chime"] : [i * MEAL_GAP, txt]);
+      }
+    }
+    st.push(Ob(eat, "Eating", lines, { open: true, endTap: "I've finished", quiet: true, dim: true, sub: "At your own pace" }));
+    if (hunger) st.push(rate("How hungry now?", "And now, how hungry are you, from zero to ten?"));
+    if (after) st.push(G(45, "Gratitude", [[0, "Before you get up, take a moment to be glad of the meal you've had."],
+      [20, "And of your body, which is already turning it into energy."]], { vis: "glow" }));
+    st.push(G(40, "Closing", [[0, "Sit for a moment longer, and notice how your body feels now: warm, light, full, satisfied."],
+      [20, "Take one slow breath before you get up."]], { vis: "glow" }));
+    return st;
+  }
+
   /* --------------------------- the library --------------------------- */
   var PRACTICES = [
     /* ===== combined programmes ===== */
@@ -9256,6 +9343,41 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       how: "A minute and a half of cyclic sighs and three minutes of slow breathing with a longer out-breath, under a 6 Hz theta beat (or 10 Hz alpha), then four short steps: naming what you feel in a word or two, a moment of self-compassion with a hand on your chest, one thing you're glad you did, and one small next step. With a sensor, the summary shows how far your heart rate came down. If it's still on your mind afterwards, Self-Empathy (NVC) can help you find what you need now.",
       ev: "Right after a stressful speech, a brief self-compassion exercise reduced socially anxious students' brooding about it the next day, and self-compassion programmes reduced rumination and stress across 27 trials. Putting feelings into words dampens their intensity. Cyclic sighing improved mood and slowed breathing more than mindfulness meditation in a month-long trial. This sequence itself hasn't been trialled.",
       cite: "Blackie & Kocovski 2018 · Ferrari et al. 2019 · Torre & Lieberman 2018 · Balban et al. 2023"
+    },
+    {
+      id: "meal", name: "Mindful Meal", lengths: [20, 30, 45], min: 30, open: true, strength: 2,
+      tone: "food", sensor: "optional", sensorWhy: "optional: your heart rate before, during and after the meal", pace: true, paceSplit: 0.4, noTap: true,
+      opt: { ana: 0 },                           // the reminders while you eat take the place of Anapana's
+      optNote: "Each part of the meal is a choice of its own, kept for it.",
+      phonesWhy: "for the binaural beat, at half your usual volume: turn it off under Options when you eat with others",
+      rate: { name: "Hunger", what: "hunger" },  // its 0 to 10 ratings are of hunger, before and after eating
+      alias: "Mindful eating",                   // search finds it by this name too, ahead of Learn's paragraph
+      words: "eating food meal lunch dinner supper breakfast mindful eating chewing hunger appetite fullness gratitude grace slow",   // more for search to find it by
+      blurb: "Eat a meal slowly and attentively: notice your hunger, settle with slow breathing, take a moment of gratitude, then the first bites with all your senses and gentle reminders to pause as you eat. Each part can be changed or left out under Options.",
+      parts: "Hunger check · slow breathing or cyclic sighs · gratitude · the senses · the first bites · reminders to pause · binaural beat",
+      audio: { name: "Mindful Meal", band: "Alpha", carrier: 200, fade: 8, gain: 0.5, cat: "relax" },
+      beats: [                                   // the first is the usual one
+        { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: steady(10), note: "A steady 10 Hz beat for relaxed attention, at half your usual volume so you can hear yourself eat." },
+        { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: steady(6), note: "A steady 6 Hz beat, the slower band, for an especially unhurried meal; it can leave you a little drowsy." }
+      ],
+      choices: [
+        { key: "hunger", label: "Hunger check", def: "on", note: "Rate your hunger from 0 to 10 before you eat and after, to notice how it changes, not to judge it. The end screen shows both.",
+          opts: [["on", "Before and after"], ["off", "Leave it out"]] },
+        { key: "breath", label: "Before you eat", def: "slow", note: "A minute and a half of slow breathing at your resonance pace with a longer out-breath, or a minute of cyclic sighs, to settle before the first bite.",
+          opts: [["slow", "Slow breathing"], ["sigh", "Cyclic sighs"], ["none", "Straight to the meal"]] },
+        { key: "thanks", label: "Gratitude", def: "before", note: "A moment of gratitude for the meal and the people who brought it to you: before you eat, after, or both.",
+          opts: [["before", "Before"], ["after", "After"], ["both", "Both"], ["none", "Leave it out"]] },
+        { key: "bites", label: "First bites", def: "on", note: "Looking at the food and smelling it, then the first two bites taken slowly, noticing taste, texture and temperature.",
+          opts: [["on", "Guided"], ["off", "Leave it out"]] },
+        { key: "remind", label: "While you eat", def: "voice", note: "A reminder to pause every two and a half minutes or so: spoken softly, or a soft chime with a few words on the screen, or silence. The screen dims while you eat.",
+          opts: [["voice", "Spoken"], ["chime", "A soft chime"], ["quiet", "Silence"]] }
+      ],
+      next: { id: "walking", txt: "Afterwards, an easy walk: short bouts of light walking lowered the rise in blood sugar after meals, compared with sitting still. Walking Meditation takes you on one." },
+      build: function (min) { return mealSteps(this, min || 30); },
+      how: "A few minutes to arrive, then the meal at your own pace, at breakfast, lunch or dinner. Before the first bite you rate your hunger from 0 to 10, settle with a minute and a half of slow breathing at your resonance rate with a longer out-breath (or a minute of cyclic sighs), take a moment of gratitude for the meal and the people who brought it to you, then look at the food and smell it, and take the first two bites slowly, noticing taste, texture and temperature. The rest of the meal runs at your own pace until you tap I've finished (or the time you chose runs out), with the screen dimmed and a reminder to pause every two and a half minutes or so, spoken softly or as a soft chime; partway through, one asks about your hunger. At the end you rate your hunger again, take a moment of gratitude if you chose it for after, and sit for a breath before you get up. Each part can be changed or left out under Options, and a soft alpha beat plays at half your usual volume unless you turn it off.",
+      ev: "Across 24 studies, eating while distracted, by a screen for instance, made people eat more at that meal and more again later, and remembering a meal well reduced how much they ate later. Eating more slowly led to eating less without leaving people hungrier at the end of the meal, and chewing longer lowered hunger. Mindfulness meditation reduced binge eating and emotional eating, though its effect on weight was mixed, and teenagers who wrote a letter of gratitude each week for a month reported healthier eating. Slow breathing raises the vagal part of heart-rate variability. This combination hasn't been tested as a whole, and no study has tested binaural beats during a meal.",
+      cite: "Robinson et al. 2013 · Robinson et al. 2014 · Miquel-Kergoat et al. 2015 · Katterman et al. 2014 · Fritz et al. 2019 · Laborde et al. 2022 · Buffey et al. 2022",
+      caution: "This is about enjoying and noticing a meal, not about eating less. If you have or have had an eating disorder, follow your care team's advice about mindful eating, and leave the hunger check out if it doesn't help."
     },
 
     /* ===== meditation and mindfulness ===== */
@@ -9640,7 +9762,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
       ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
     calm: [["calm-reset", "program", "sit walk"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
-      ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
+      ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["meal", "program", "sit"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
@@ -9661,7 +9783,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var ALSO = {
     "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],
     anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], gratitude: ["calm"], "back-hips": ["calm"],
-    "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"]
+    "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"], meal: ["reflect"]
   };
   var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8" };
   var TOOLS = {
@@ -10245,7 +10367,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else if (P.usesB && B.state !== "idle") pBreathOff();
     var flowing = s.k === "breath" && prev && prev.k === "breath";
     if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
-    $("#ses").dataset.dim = ST.sleepDim && pSleepyStep(s) ? "1" : "";
+    $("#ses").dataset.dim = (ST.sleepDim && pSleepyStep(s)) || s.dim ? "1" : "";     // sleep steps if Settings asks; a step that asks for it
     pStage(s);
     pRenderSegs();
     pUI();
@@ -10269,6 +10391,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     $("#ses").dataset.write = vis === "write" ? "1" : "";
     if (vis === "write") { wr.innerHTML = nvcRender(s); wr.scrollTop = 0; nvcCheck(s); }
     if (vis === "rate") {                             // back on a rating you gave: it shows, and a new tap replaces it
+      bSetT("#sRateLo", (s.ends || [])[0] || "Not at all"); bSetT("#sRateHi", (s.ends || [])[1] || "As strong as it gets");
       var rb = document.querySelectorAll("#sRateG button");
       for (var ri = 0; ri < rb.length; ri++) rb[ri].setAttribute("aria-pressed", String(P.sudsBy[P.idx] === +rb[ri].dataset.v));
     }
@@ -10304,7 +10427,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var s = P.steps[P.idx], st = T - s.at;
     while (P.li < s.lines.length && s.lines[P.li][0] <= st + 0.05) {
       var ln = s.lines[P.li++];
-      if (st - ln[0] < 8) { if (!s.mute) pSay(ln[1], s.quiet || ln[2] === "ana"); P.lineAt = bNow(); }
+      if (st - ln[0] < 8) {
+        if (ln[2] === "chime") pBell(0.3, 0, 659.25, 0, true);      // chosen as the reminder itself, so it sounds even with the bells off
+        else if (!s.mute) pSay(ln[1], s.quiet || ln[2] === "ana");
+        P.lineAt = bNow();
+      }
       bSetT("#sLine", ln[1]);
       $("#sLine").classList.toggle("ana", ln[2] === "ana");
     }
@@ -10471,7 +10598,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       cap = tp.name;
       sub = s.pts.length === 1 ? "Tap gently while you say the set-up" : (st < (s.lead || 0) ? "Get ready: " + Math.ceil(s.lead - st) + "…" : "Point " + (ti + 1) + " of " + s.pts.length + " · " + tp.where);
     } else if (s.k === "rate") {
-      sub = "0 is not at all, 10 is as strong as it gets";
+      sub = s.sub || "0 is not at all, 10 is as strong as it gets";
     } else if (s.k === "adapt") {
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
@@ -10482,6 +10609,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         : NP.base > 0 ? "Baseline " + Math.round(NP.base) + " bpm · listening for sleep"
         : NP.base < 0 ? "No heart data · waking at " + fmt(NP.wake - s.at) : "Measuring your resting heart rate";
     }
+    if (!sub && s.sub) sub = s.sub;                  // a step's own line under its name, such as the meal's "At your own pace"
     bSetT("#sCap", cap);
     bSetT("#sSub", sub);
     var nose = $("#sNose");
@@ -10862,7 +10990,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var notes = [];
     if (r.wander !== undefined) notes.push("came back " + r.wander + (r.wander === 1 ? " time" : " times"));
     if (r.holds) notes.push("holds " + r.holds.map(fmt).join(", "));
-    if (r.suds) notes.push("intensity " + r.suds.join(" → ") + " of 10");
+    if (r.suds) notes.push((d.rate ? d.rate.what : "intensity") + " " + r.suds.join(" → ") + " of 10");
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
     if (T >= 60) r.at = Date.now();                    // the end screen tells this one from the earlier ones by it
@@ -10875,7 +11003,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function pNeeds(d) {
     if (d.needs) return d.needs;
     var n = [];
-    if (d.audio) n.push(["sounds", "Headphones", d.opt && d.opt.audio === false ? "only if you add a binaural beat" : "for the binaural layer"]);
+    if (d.audio) n.push(["sounds", "Headphones", d.phonesWhy || (d.opt && d.opt.audio === false ? "only if you add a binaural beat" : "for the binaural layer")]);
     if (d.sensor === "best") n.push(["pulse", "Heart sensor", d.sensorWhy || "recommended: live heart rate and coherence"]);
     else if (d.sensor === "optional" || pHasBreath(d)) n.push(["pulse", "Heart sensor", d.sensor === "optional" && d.sensorWhy || "optional: adds heart rate and coherence"]);
     if (d.lie) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
@@ -10886,6 +11014,34 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     return n;
   }
   function pHasBreath(d) { return pPlan(d, pLenOf(d, P.len)).steps.some(function (s) { return s.k === "breath"; }); }
+  /* The parts of a practice's page that follow its plan, drawn again in place when a choice changes the steps */
+  function pKindTxt(d, plan) {
+    return [d.custom ? "Your routine" : goalOf(d.goal) ? goalOf(d.goal).name : "", methodName(d.method)].filter(Boolean).join(" · ") + (d.exp ? " · Experimental" : "") + " · " +
+      (d.selfPaced ? "self-paced, about " + d.est + " min" : (d.open ? "up to " : "") + Math.max(1, Math.round(plan.total / 60)) + " min");
+  }
+  function pGoTxt(d, plan) { return "Start" + (d.open || d.selfPaced ? "" : " " + Math.max(1, Math.round(plan.total / 60)) + " min"); }
+  function pSegsHtml(d, plan) {
+    return plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + (d.selfPaced ? 1 : s.secs) + ' 1 0" title="' + esc(s.title) + '"></i>'; }).join("");
+  }
+  function pStepsHtml(d, plan) {
+    var rows = [];                                   // consecutive steps with the same title read as one row
+    plan.steps.forEach(function (s) {
+      var last = rows[rows.length - 1];
+      if (last && last.title === s.title) last.secs += s.secs; else rows.push({ title: s.title, secs: s.secs, k: s.k });
+    });
+    return (pHasPre(d) ? '<li class="si-pre" data-k="write"><span></span><time>your pace</time></li>' : "") + rows.map(function (r) {
+      return '<li data-k="' + r.k + '"><span>' + esc(r.title) + "</span><time>" + (d.selfPaced && r.k === "write" ? "your pace" : fmt(r.secs)) + "</time></li>";
+    }).join("");
+  }
+  function pIntroReplan(d) {
+    if (P.view !== d) return;
+    var el = $("#sIntro"), plan = pPlan(d, pLenOf(d, P.len)), go = $("#sGo");
+    bSetT("#sIntro .si-kind", pKindTxt(d, plan));
+    el.querySelector(".si-tl").innerHTML = pSegsHtml(d, plan);
+    el.querySelector(".si-steps").innerHTML = pStepsHtml(d, plan);
+    if (go) go.lastChild.textContent = pGoTxt(d, plan);
+    pPreRow(d);
+  }
   function pIntro(id) {
     var d = pDef(id);
     if (!d) { location.hash = "practice"; return; }
@@ -10894,14 +11050,6 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     P.view = d; P.len = len;
     if (!pBusy()) P.state = "intro";
     var plan = pPlan(d, len), hasB = plan.steps.some(function (s) { return s.k === "breath"; });
-    var mins = Math.max(1, Math.round(plan.total / 60)), minsTxt = d.selfPaced ? "self-paced, about " + d.est + " min" : (d.open ? "up to " : "") + mins + " min";
-    var segs = plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + (d.selfPaced ? 1 : s.secs) + ' 1 0" title="' + esc(s.title) + '"></i>'; }).join("");
-    // consecutive steps with the same title read as one row
-    var rows = [];
-    plan.steps.forEach(function (s) {
-      var last = rows[rows.length - 1];
-      if (last && last.title === s.title) last.secs += s.secs; else rows.push({ title: s.title, secs: s.secs, k: s.k });
-    });
     var O = pIntroOpts(d), own = Object.keys(pOptOwn(d.id)).length > 0, hasRhy = pPlanHasRhy(plan.steps);
     var opts = [], every = [];
     // this practice's own choices come first: how you'll be, which beat, what pace
@@ -10962,7 +11110,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var other = pBusy() && P.def !== d;
     var h = backLink() +
       '<div class="si-head">' +
-        '<div class="si-top"><span class="si-kind">' + [d.custom ? "Your routine" : goalOf(d.goal) ? goalOf(d.goal).name : "", methodName(d.method)].filter(Boolean).join(" · ") + (d.exp ? " · Experimental" : "") + " · " + minsTxt + "</span>" +
+        '<div class="si-top"><span class="si-kind">' + esc(pKindTxt(d, plan)) + "</span>" +
           favBtn(d.id, d.name) + "</div>" +
         "<h2>" + esc(d.name) + "</h2>" +
         '<p class="si-blurb">' + esc(d.blurb) + "</p>" +
@@ -10970,7 +11118,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         (d.lengths ? '<div class="si-len" role="radiogroup" aria-label="Length">' + d.lengths.map(function (m) {
           return '<button role="radio" data-len="' + m + '" aria-checked="' + (m === len) + '">' + pLenTxt(d, m) + "</button>";
         }).join("") + "</div>" : "") +
-        '<div class="si-tl" aria-hidden="true">' + segs + "</div>" +
+        '<div class="si-tl" aria-hidden="true">' + pSegsHtml(d, plan) + "</div>" +
         (d.custom ? '<a class="btn small si-edit" href="#yoga/' + d.custom + '">Edit routine</a>'
           : d.yoga ? '<a class="btn small si-edit" href="#yoga/copy/' + d.yoga + '">Customise a copy</a>' : "") +
       "</div>" +
@@ -10979,9 +11127,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           return '<li><svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] + "</span></li>";
         }).join("") + "</ul>" : "") +
         "<h3>How it runs</h3><p>" + esc(d.how || pYogaHow(plan)) + "</p>" +
-        '<ol class="si-steps">' + (pHasPre(d) ? '<li class="si-pre" data-k="write"><span></span><time>your pace</time></li>' : "") + rows.map(function (r) {
-          return '<li data-k="' + r.k + '"><span>' + esc(r.title) + "</span><time>" + (d.selfPaced && r.k === "write" ? "your pace" : fmt(r.secs)) + "</time></li>";
-        }).join("") + "</ol>" +
+        '<ol class="si-steps">' + pStepsHtml(d, plan) + "</ol>" +
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its binaural beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
@@ -10990,7 +11136,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       '<div class="si-bar">' +
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
-        '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Start' + (d.open || d.selfPaced ? "" : " " + mins + " min") + "</button>" +
+        '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>' + pGoTxt(d, plan) + "</button>" +
       "</div>" +
       '<aside class="si-opts">' + (d.reflect ? nvcDraftStrip(d) : "") +     // first thing on a phone, beside the steps on a computer
         '<button class="so-sum" id="sOptsBtn" aria-expanded="' + openOpts + '" aria-controls="sOpts"><span class="so-sum-t"><b>Options</b>' +
@@ -11074,13 +11220,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     on("#sOptVoice", function () { O.voice = this.checked; var r = $("#sVoiceRow"); if (r) r.hidden = !this.checked; save(); });
     on("#sOptBells", function () { O.bells = this.checked; save(); if (this.checked) pBell(0.4, 0, 0, 0, true); });
     on("#sOptAudio", function () { O.audio = this.checked; save(); });
-    // a practice's own choices change in place, so the button you pressed keeps the focus
+    // a practice's own choices change in place, so the button you pressed keeps the focus; the steps follow them
     var press = function (g, b) { g.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); };
     document.querySelectorAll("#sOpts [data-choice]").forEach(function (g) {
       g.addEventListener("click", function (e) {
         var b = e.target.closest("button"); if (!b) return;
         pChoiceSet(d, g.dataset.choice, b.dataset.v); press(g, b); sum();
-        if (g.dataset.choice === "pre") pPreRow(d);
+        pIntroReplan(d);
       });
     });
     pPreRow(d);
@@ -11281,7 +11427,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     stLoad();
     P.opt = pOptDefaults();
     var cs = getComputedStyle(document.documentElement);
-    ["relax", "stim", "ther", "accent"].forEach(function (k) { P.col[k] = cs.getPropertyValue("--" + k).trim() || "#5eead4"; });
+    ["relax", "stim", "ther", "accent", "food"].forEach(function (k) { P.col[k] = cs.getPropertyValue("--" + k).trim() || "#5eead4"; });
     P.col.warm = "#f5b97a";
     P.cv = $("#sCanvas");
     P.ctx = P.cv && P.cv.getContext ? P.cv.getContext("2d") : null;
@@ -11398,7 +11544,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath", "swing", sdCmpTxt(c.swing, sdFix1, r.swing)]);
     if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath", "wander"]);
     if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · "), "holds"]);
-    if (r.suds) tiles.push(["Intensity", r.suds.join(" → "), r.suds.length > 1 ? "out of 10, first to last" : "out of 10", "suds"]);
+    if (r.suds) tiles.push([d.rate ? d.rate.name : "Intensity", r.suds.join(" → "), r.suds.length > 1 ? (d.rate ? "out of 10, before and after" : "out of 10, first to last") : "out of 10", "suds"]);   // a feeling's strength, or what the practice rates
     if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatHeart ? "Hz, led by your heart" : "Hz, scripted (no heart data)", "beat"]);
     if (r.nap) {
       if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate", "onset"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated", "nap"]); }
@@ -11509,6 +11655,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       p.push("How long you held your breath after the power breaths, round by round: " + r.holds.map(fmt).join(", ") + ". The longest was " + fmt(Math.max.apply(null, r.holds)) + ".");
       p.push("Holds often lengthen in later rounds: the fast breathing lowers carbon dioxide, so the urge to breathe comes later. That's also why this practice is done only sitting or lying down, with each hold ending as soon as you need to breathe.");
       return ["Breath holds", p];
+    }
+    if (k === "suds" && d.rate && d.rate.what === "hunger") {
+      p.push("How hungry you were each time you rated it, from 0 (not hungry at all) to 10 (as hungry as you get): " + r.suds.join(", then ") + ".");
+      if (r.suds.length > 1) {
+        n = r.suds[0] - r.suds[r.suds.length - 1];
+        p.push(n > 0 ? "Your hunger came down " + plural(n, "point", "points") + " over the meal." : n < 0 ? "Your hunger went up: eating can sharpen the appetite at first." : "Your hunger stayed where it was.");
+        p.push("There's no right number. Noticing it is the point, and over a few meals you'll see your own pattern.");
+      } else p.push("Rate it before and after a meal to see how it changes.");
+      return [d.rate.name, p];
     }
     if (k === "suds") {
       p.push("How strong the feeling was each time you rated it, from 0 (not at all) to 10 (as strong as it gets): " + r.suds.join(", then ") + ".");
@@ -13368,7 +13523,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     });
     return fdEntry("practice", d.name, [d.custom ? "Your routine" : "", g ? g.name : "", methodName(d.method), fdMins(d)].filter(Boolean).join(" · "),
       [d.blurb, d.parts, steps.join(" · "), d.how], "#practice/" + d.id,
-      { ic: pIcon(d), col: pColor(d), w: 1.25, tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") });
+      { ic: pIcon(d), col: pColor(d), w: 1.25, alias: d.alias || "", tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") + (d.words ? " " + d.words : "") });
   }
   function fdBuildBase() {
     var out = [];
@@ -13670,7 +13825,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      the day and an evening) and light therapy. A recipe's ingredients are
      [amount, unit, name, note]: the amount scales with the servings (null for "to taste"), the unit
      is one of LV_UNITS or "" for a count, and a counted name can be [one, several]. Steps carry no
-     amounts, so they stay right at any number of servings.
+     amounts, so they stay right at any number of servings. A dish's page ends with the Mindful Meal;
+     a drink (drink: true) leaves it out.
      A supplement's uses are [evidence, what for, what the trials found], evidence on the library's
      scale of one to three; the amounts are those studied, not prescriptions. Sources were checked
      in October 2026.
@@ -13912,7 +14068,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ],
       keep: "Keeps 4 days in the fridge, and tastes even better the next day." },
 
-    { id: "golden-milk", name: "Golden milk", sub: "A warm, caffeine-free evening drink", serves: 1, prep: 1, cook: 5,
+    { id: "golden-milk", name: "Golden milk", sub: "A warm, caffeine-free evening drink", serves: 1, prep: 1, cook: 5, drink: true,
       tags: ["Evening", "Caffeine-free", "Five minutes"], also: "turmeric latte haldi doodh",
       why: "Warm milk with turmeric, cinnamon and ginger: a calm way to end the day. A pinch of black pepper helps the body take up turmeric's curcumin.",
       ing: [
@@ -14131,6 +14287,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     brooks: ["Brooks, A., & Lack, L. (2006). A brief afternoon nap following nocturnal sleep restriction: which nap duration is most recuperative? Sleep, 29(6), 831–840.", "https://doi.org/10.1093/sleep/29.6.831", "DOI"],
     albulescu: ["Albulescu, P., Macsinga, I., Rusu, A., et al. (2022). “Give me a break!” A systematic review and meta-analysis on the efficacy of micro-breaks for increasing well-being and performance. PLOS ONE, 17(8), e0272460.", "https://doi.org/10.1371/journal.pone.0272460", "DOI"],
     segal: ["Segal, Z. V., Williams, J. M. G., & Teasdale, J. D. (2013). Mindfulness-Based Cognitive Therapy for Depression (2nd ed.). Guilford Press.", "https://wellcomecollection.org/works/qjyu4pus", "Library record"],
+    robinson: ["Robinson, E., Aveyard, P., Daley, A., et al. (2013). Eating attentively: a systematic review and meta-analysis of the effect of food intake memory and awareness on eating. American Journal of Clinical Nutrition, 97(4), 728–742.", "https://doi.org/10.3945/ajcn.112.045245", "DOI"],
     watkins: ["Watkins, E. R. (2008). Constructive and unconstructive repetitive thought. Psychological Bulletin, 134(2), 163–206.", "https://doi.org/10.1037/0033-2909.134.2.163", "DOI"],
     torre: ["Torre, J. B., & Lieberman, M. D. (2018). Putting feelings into words: affect labeling as implicit emotion regulation. Emotion Review, 10(2), 116–124.", "https://doi.org/10.1177/1754073917742706", "DOI"],
     haghayegh: ["Haghayegh, S., Khoshnevis, S., Smolensky, M. H., Diller, K. R., & Castriotta, R. J. (2019). Before-bedtime passive body heating by warm shower or bath to improve sleep: a systematic review and meta-analysis. Sleep Medicine Reviews, 46, 124–135.", "https://doi.org/10.1016/j.smrv.2019.04.008", "DOI"],
@@ -14159,7 +14316,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         { w: "In the first hour", t: "Daylight", p: "10 to 30 minutes outdoors, or at a bright window: a short walk, breakfast outside, the way to work. Morning light moves the body clock earlier, so you get sleepy sooner at night and wake more easily. On dark winter mornings, a light box does the same.", go: [["#living/light-box", "Light box"]] },
         { t: "Water and a stretch", p: "A glass of water, then a few minutes of gentle movement to wake the body.", go: [["#practice/morning-stretch", "Morning Stretch"], ["#practice/morning-yoga", "Morning Yoga"]] },
         { t: "A practice, before the screens", p: "Ten to fifteen minutes of breathing or meditation before the day's messages and news. Afterwards, notice how it leaves you feeling in your body: that's the feeling the day's short breaks bring you back to.", go: [["#practice/calm-reset", "Calm Reset"], ["#practice/coherence", "Heart Coherence"], ["#practice/anapana", "Anapana"]] },
-        { t: "Breakfast", p: "Something with protein and fibre to keep you going until lunch.", go: [["#living/overnight-oats", "Overnight oats"], ["#living/apple-oats", "Stewed apple with oats"], ["#living/congee", "Congee"]] },
+        { t: "Breakfast", p: "Something with protein and fibre to keep you going until lunch, eaten sitting down and away from the screens.", go: [["#living/overnight-oats", "Overnight oats"], ["#living/apple-oats", "Stewed apple with oats"], ["#living/congee", "Congee"], ["#practice/meal", "Mindful Meal"]] },
         { t: "Then the screens", p: "Leave email, news and social feeds until after the practice and breakfast, so the day starts from your own state rather than from everyone else's. Coffee is fine now: it's the afternoon cup that costs sleep." }
       ],
       refs: [R_REF.brown, R_REF.windred, R_REF.gardiner] },
@@ -14171,15 +14328,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           go: [["#breathe/sigh", "A minute of cyclic sighs"], ["#practice/calm-reset", "Calm Reset"]] },
         { t: "When thinking goes round in circles", p: "Analysis paralysis, a streak of intellectual overstimulation in which each thought feeds the next, is broken through affect, not more analysis. Turn to what you feel: the feeling, emotion or mood that's here, and the sensations of your body at rest, observed consciously and lovingly, with nothing to solve. Research on repetitive thinking points the same way: abstract, evaluating thought (why is this happening, what does it mean) keeps distress going, while a concrete focus on what you're experiencing lets it settle, and putting a feeling into words dampens it.",
           go: [["#practice/body-scan", "Body Scan"], ["#practice/self-compassion", "Self-Compassion Break"], ["#practice/coherence", "Heart Coherence"]] },
+        { t: "Lunch away from the screen", p: "Eat sitting down, away from your desk and the screens. Across 24 studies, eating while distracted made people eat more at that meal and more again later; with your attention on the meal you taste it, and notice when you've had enough.", go: [["#practice/meal", "Mindful Meal"]] },
         { t: "Daylight and a walk", p: "A walk outside around midday gives you daylight, movement and a break from screens at once.", go: [["#practice/walking", "Walking Meditation"]] }
       ],
-      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.brown] },
+      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.robinson, R_REF.brown] },
 
     { id: "evening", name: "An evening routine", icon: "moon", tags: "evening routine bedtime wind down night screens bath shower to-do list relax sleep",
       lead: "A wind-down to make your own, counted back from bedtime. For an 11 pm bedtime, the last coffee is around 2 pm and the lights go down at 8.",
       steps: [
         { w: "9 hours before", t: "Last coffee", p: "And the last cola, black or green tea, or energy drink." },
-        { w: "3 hours before", t: "Lights down", p: "Lamps instead of ceiling lights, warm and low. Finish the last big meal around now, and go easy on alcohol." },
+        { w: "3 hours before", t: "Lights down", p: "Lamps instead of ceiling lights, warm and low. Finish the last big meal around now, eaten slowly, and go easy on alcohol.", go: [["#practice/meal", "Mindful Meal"]] },
         { w: "1 to 2 hours before", t: "A warm shower or bath", p: "About 10 minutes in water at 40 to 42.5 °C. As your body cools down afterwards, sleep comes sooner: by about 10 minutes, across 13 studies, and it was rated better too." },
         { w: "1 hour before", t: "Screens away", p: "Put the phone away for the night, outside the bedroom if you can, or turn on night mode and dim it. Reading on a tablet for four hours before bed, rather than a printed book, delayed sleep by about 10 minutes, cut dream sleep and left people less alert the next morning." },
         { t: "Tomorrow's list", p: "Five minutes writing down what you need to do tomorrow. In a sleep-lab study, people who did fell asleep about 10 minutes sooner than those who wrote about what they'd already done, and the more specific the list, the sooner." },
@@ -14430,6 +14588,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         }).join("") + "</ol>" +
         (r.tips && r.tips.length ? "<h3>Good to know</h3><ul class=\"lv-tips\">" + r.tips.map(function (t) { return "<li>" + esc(lvNb(t)) + "</li>"; }).join("") + "</ul>" : "") +
         (r.keep ? '<p class="lv-keep"><b>Keeping it.</b> ' + esc(lvNb(r.keep)) + "</p>" : "") +
+        (r.drink ? "" : '<div class="note-card lv-eat"><p><b>When it\'s ready,</b> eat it slowly: the Mindful Meal starts with a few slow breaths and a moment of gratitude, then takes you through the first bites.</p>' +
+          '<a class="btn" href="#practice/meal">Mindful Meal</a></div>') +                // a dish, not a drink
       "</div>" +
       '<div class="si-side"><div class="si-opts lv-opts">' +
         '<div class="so-row"><span class="so-l">Servings<small id="lvServNote">' + esc(lvServNote()) + "</small></span>" +

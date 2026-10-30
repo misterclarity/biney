@@ -113,8 +113,8 @@
       TRate("How strong now?", "And now, from zero to ten?")
     ];
   }
-  /* Practices that end in sleep or are tapping already don't offer it. */
+  /* Practices that end in sleep, are tapping already, or have no place for it (a meal) don't offer it. */
   function tapOffered(d) {
-    return !d.tapping && !d.nap && !d.selfPaced && !pSleepy(d);
+    return !d.tapping && !d.nap && !d.selfPaced && !d.noTap && !pSleepy(d);
   }
   function tapOn(d) { return tapOffered(d) && store.get("pTap." + d.id) === "1"; }

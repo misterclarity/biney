@@ -101,7 +101,7 @@
     });
     return fdEntry("practice", d.name, [d.custom ? "Your routine" : "", g ? g.name : "", methodName(d.method), fdMins(d)].filter(Boolean).join(" · "),
       [d.blurb, d.parts, steps.join(" · "), d.how], "#practice/" + d.id,
-      { ic: pIcon(d), col: pColor(d), w: 1.25, tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") });
+      { ic: pIcon(d), col: pColor(d), w: 1.25, alias: d.alias || "", tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") + (d.words ? " " + d.words : "") });
   }
   function fdBuildBase() {
     var out = [];

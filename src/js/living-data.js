@@ -3,7 +3,8 @@
      the day and an evening) and light therapy. A recipe's ingredients are
      [amount, unit, name, note]: the amount scales with the servings (null for "to taste"), the unit
      is one of LV_UNITS or "" for a count, and a counted name can be [one, several]. Steps carry no
-     amounts, so they stay right at any number of servings.
+     amounts, so they stay right at any number of servings. A dish's page ends with the Mindful Meal;
+     a drink (drink: true) leaves it out.
      A supplement's uses are [evidence, what for, what the trials found], evidence on the library's
      scale of one to three; the amounts are those studied, not prescriptions. Sources were checked
      in October 2026.
@@ -245,7 +246,7 @@
       ],
       keep: "Keeps 4 days in the fridge, and tastes even better the next day." },
 
-    { id: "golden-milk", name: "Golden milk", sub: "A warm, caffeine-free evening drink", serves: 1, prep: 1, cook: 5,
+    { id: "golden-milk", name: "Golden milk", sub: "A warm, caffeine-free evening drink", serves: 1, prep: 1, cook: 5, drink: true,
       tags: ["Evening", "Caffeine-free", "Five minutes"], also: "turmeric latte haldi doodh",
       why: "Warm milk with turmeric, cinnamon and ginger: a calm way to end the day. A pinch of black pepper helps the body take up turmeric's curcumin.",
       ing: [
@@ -464,6 +465,7 @@
     brooks: ["Brooks, A., & Lack, L. (2006). A brief afternoon nap following nocturnal sleep restriction: which nap duration is most recuperative? Sleep, 29(6), 831–840.", "https://doi.org/10.1093/sleep/29.6.831", "DOI"],
     albulescu: ["Albulescu, P., Macsinga, I., Rusu, A., et al. (2022). “Give me a break!” A systematic review and meta-analysis on the efficacy of micro-breaks for increasing well-being and performance. PLOS ONE, 17(8), e0272460.", "https://doi.org/10.1371/journal.pone.0272460", "DOI"],
     segal: ["Segal, Z. V., Williams, J. M. G., & Teasdale, J. D. (2013). Mindfulness-Based Cognitive Therapy for Depression (2nd ed.). Guilford Press.", "https://wellcomecollection.org/works/qjyu4pus", "Library record"],
+    robinson: ["Robinson, E., Aveyard, P., Daley, A., et al. (2013). Eating attentively: a systematic review and meta-analysis of the effect of food intake memory and awareness on eating. American Journal of Clinical Nutrition, 97(4), 728–742.", "https://doi.org/10.3945/ajcn.112.045245", "DOI"],
     watkins: ["Watkins, E. R. (2008). Constructive and unconstructive repetitive thought. Psychological Bulletin, 134(2), 163–206.", "https://doi.org/10.1037/0033-2909.134.2.163", "DOI"],
     torre: ["Torre, J. B., & Lieberman, M. D. (2018). Putting feelings into words: affect labeling as implicit emotion regulation. Emotion Review, 10(2), 116–124.", "https://doi.org/10.1177/1754073917742706", "DOI"],
     haghayegh: ["Haghayegh, S., Khoshnevis, S., Smolensky, M. H., Diller, K. R., & Castriotta, R. J. (2019). Before-bedtime passive body heating by warm shower or bath to improve sleep: a systematic review and meta-analysis. Sleep Medicine Reviews, 46, 124–135.", "https://doi.org/10.1016/j.smrv.2019.04.008", "DOI"],
@@ -492,7 +494,7 @@
         { w: "In the first hour", t: "Daylight", p: "10 to 30 minutes outdoors, or at a bright window: a short walk, breakfast outside, the way to work. Morning light moves the body clock earlier, so you get sleepy sooner at night and wake more easily. On dark winter mornings, a light box does the same.", go: [["#living/light-box", "Light box"]] },
         { t: "Water and a stretch", p: "A glass of water, then a few minutes of gentle movement to wake the body.", go: [["#practice/morning-stretch", "Morning Stretch"], ["#practice/morning-yoga", "Morning Yoga"]] },
         { t: "A practice, before the screens", p: "Ten to fifteen minutes of breathing or meditation before the day's messages and news. Afterwards, notice how it leaves you feeling in your body: that's the feeling the day's short breaks bring you back to.", go: [["#practice/calm-reset", "Calm Reset"], ["#practice/coherence", "Heart Coherence"], ["#practice/anapana", "Anapana"]] },
-        { t: "Breakfast", p: "Something with protein and fibre to keep you going until lunch.", go: [["#living/overnight-oats", "Overnight oats"], ["#living/apple-oats", "Stewed apple with oats"], ["#living/congee", "Congee"]] },
+        { t: "Breakfast", p: "Something with protein and fibre to keep you going until lunch, eaten sitting down and away from the screens.", go: [["#living/overnight-oats", "Overnight oats"], ["#living/apple-oats", "Stewed apple with oats"], ["#living/congee", "Congee"], ["#practice/meal", "Mindful Meal"]] },
         { t: "Then the screens", p: "Leave email, news and social feeds until after the practice and breakfast, so the day starts from your own state rather than from everyone else's. Coffee is fine now: it's the afternoon cup that costs sleep." }
       ],
       refs: [R_REF.brown, R_REF.windred, R_REF.gardiner] },
@@ -504,15 +506,16 @@
           go: [["#breathe/sigh", "A minute of cyclic sighs"], ["#practice/calm-reset", "Calm Reset"]] },
         { t: "When thinking goes round in circles", p: "Analysis paralysis, a streak of intellectual overstimulation in which each thought feeds the next, is broken through affect, not more analysis. Turn to what you feel: the feeling, emotion or mood that's here, and the sensations of your body at rest, observed consciously and lovingly, with nothing to solve. Research on repetitive thinking points the same way: abstract, evaluating thought (why is this happening, what does it mean) keeps distress going, while a concrete focus on what you're experiencing lets it settle, and putting a feeling into words dampens it.",
           go: [["#practice/body-scan", "Body Scan"], ["#practice/self-compassion", "Self-Compassion Break"], ["#practice/coherence", "Heart Coherence"]] },
+        { t: "Lunch away from the screen", p: "Eat sitting down, away from your desk and the screens. Across 24 studies, eating while distracted made people eat more at that meal and more again later; with your attention on the meal you taste it, and notice when you've had enough.", go: [["#practice/meal", "Mindful Meal"]] },
         { t: "Daylight and a walk", p: "A walk outside around midday gives you daylight, movement and a break from screens at once.", go: [["#practice/walking", "Walking Meditation"]] }
       ],
-      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.brown] },
+      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.robinson, R_REF.brown] },
 
     { id: "evening", name: "An evening routine", icon: "moon", tags: "evening routine bedtime wind down night screens bath shower to-do list relax sleep",
       lead: "A wind-down to make your own, counted back from bedtime. For an 11 pm bedtime, the last coffee is around 2 pm and the lights go down at 8.",
       steps: [
         { w: "9 hours before", t: "Last coffee", p: "And the last cola, black or green tea, or energy drink." },
-        { w: "3 hours before", t: "Lights down", p: "Lamps instead of ceiling lights, warm and low. Finish the last big meal around now, and go easy on alcohol." },
+        { w: "3 hours before", t: "Lights down", p: "Lamps instead of ceiling lights, warm and low. Finish the last big meal around now, eaten slowly, and go easy on alcohol.", go: [["#practice/meal", "Mindful Meal"]] },
         { w: "1 to 2 hours before", t: "A warm shower or bath", p: "About 10 minutes in water at 40 to 42.5 °C. As your body cools down afterwards, sleep comes sooner: by about 10 minutes, across 13 studies, and it was rated better too." },
         { w: "1 hour before", t: "Screens away", p: "Put the phone away for the night, outside the bedroom if you can, or turn on night mode and dim it. Reading on a tablet for four hours before bed, rather than a printed book, delayed sleep by about 10 minutes, cut dream sleep and left people less alert the next morning." },
         { t: "Tomorrow's list", p: "Five minutes writing down what you need to do tomorrow. In a sleep-lab study, people who did fell asleep about 10 minutes sooner than those who wrote about what they'd already done, and the more specific the list, the sooner." },

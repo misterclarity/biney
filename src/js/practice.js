@@ -554,7 +554,7 @@
     else if (P.usesB && B.state !== "idle") pBreathOff();
     var flowing = s.k === "breath" && prev && prev.k === "breath";
     if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
-    $("#ses").dataset.dim = ST.sleepDim && pSleepyStep(s) ? "1" : "";
+    $("#ses").dataset.dim = (ST.sleepDim && pSleepyStep(s)) || s.dim ? "1" : "";     // sleep steps if Settings asks; a step that asks for it
     pStage(s);
     pRenderSegs();
     pUI();
@@ -578,6 +578,7 @@
     $("#ses").dataset.write = vis === "write" ? "1" : "";
     if (vis === "write") { wr.innerHTML = nvcRender(s); wr.scrollTop = 0; nvcCheck(s); }
     if (vis === "rate") {                             // back on a rating you gave: it shows, and a new tap replaces it
+      bSetT("#sRateLo", (s.ends || [])[0] || "Not at all"); bSetT("#sRateHi", (s.ends || [])[1] || "As strong as it gets");
       var rb = document.querySelectorAll("#sRateG button");
       for (var ri = 0; ri < rb.length; ri++) rb[ri].setAttribute("aria-pressed", String(P.sudsBy[P.idx] === +rb[ri].dataset.v));
     }
@@ -613,7 +614,11 @@
     var s = P.steps[P.idx], st = T - s.at;
     while (P.li < s.lines.length && s.lines[P.li][0] <= st + 0.05) {
       var ln = s.lines[P.li++];
-      if (st - ln[0] < 8) { if (!s.mute) pSay(ln[1], s.quiet || ln[2] === "ana"); P.lineAt = bNow(); }
+      if (st - ln[0] < 8) {
+        if (ln[2] === "chime") pBell(0.3, 0, 659.25, 0, true);      // chosen as the reminder itself, so it sounds even with the bells off
+        else if (!s.mute) pSay(ln[1], s.quiet || ln[2] === "ana");
+        P.lineAt = bNow();
+      }
       bSetT("#sLine", ln[1]);
       $("#sLine").classList.toggle("ana", ln[2] === "ana");
     }
@@ -780,7 +785,7 @@
       cap = tp.name;
       sub = s.pts.length === 1 ? "Tap gently while you say the set-up" : (st < (s.lead || 0) ? "Get ready: " + Math.ceil(s.lead - st) + "…" : "Point " + (ti + 1) + " of " + s.pts.length + " · " + tp.where);
     } else if (s.k === "rate") {
-      sub = "0 is not at all, 10 is as strong as it gets";
+      sub = s.sub || "0 is not at all, 10 is as strong as it gets";
     } else if (s.k === "adapt") {
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
@@ -791,6 +796,7 @@
         : NP.base > 0 ? "Baseline " + Math.round(NP.base) + " bpm · listening for sleep"
         : NP.base < 0 ? "No heart data · waking at " + fmt(NP.wake - s.at) : "Measuring your resting heart rate";
     }
+    if (!sub && s.sub) sub = s.sub;                  // a step's own line under its name, such as the meal's "At your own pace"
     bSetT("#sCap", cap);
     bSetT("#sSub", sub);
     var nose = $("#sNose");
@@ -1171,7 +1177,7 @@
     var notes = [];
     if (r.wander !== undefined) notes.push("came back " + r.wander + (r.wander === 1 ? " time" : " times"));
     if (r.holds) notes.push("holds " + r.holds.map(fmt).join(", "));
-    if (r.suds) notes.push("intensity " + r.suds.join(" → ") + " of 10");
+    if (r.suds) notes.push((d.rate ? d.rate.what : "intensity") + " " + r.suds.join(" → ") + " of 10");
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
     if (T >= 60) r.at = Date.now();                    // the end screen tells this one from the earlier ones by it
@@ -1184,7 +1190,7 @@
   function pNeeds(d) {
     if (d.needs) return d.needs;
     var n = [];
-    if (d.audio) n.push(["sounds", "Headphones", d.opt && d.opt.audio === false ? "only if you add a binaural beat" : "for the binaural layer"]);
+    if (d.audio) n.push(["sounds", "Headphones", d.phonesWhy || (d.opt && d.opt.audio === false ? "only if you add a binaural beat" : "for the binaural layer")]);
     if (d.sensor === "best") n.push(["pulse", "Heart sensor", d.sensorWhy || "recommended: live heart rate and coherence"]);
     else if (d.sensor === "optional" || pHasBreath(d)) n.push(["pulse", "Heart sensor", d.sensor === "optional" && d.sensorWhy || "optional: adds heart rate and coherence"]);
     if (d.lie) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
@@ -1195,6 +1201,34 @@
     return n;
   }
   function pHasBreath(d) { return pPlan(d, pLenOf(d, P.len)).steps.some(function (s) { return s.k === "breath"; }); }
+  /* The parts of a practice's page that follow its plan, drawn again in place when a choice changes the steps */
+  function pKindTxt(d, plan) {
+    return [d.custom ? "Your routine" : goalOf(d.goal) ? goalOf(d.goal).name : "", methodName(d.method)].filter(Boolean).join(" · ") + (d.exp ? " · Experimental" : "") + " · " +
+      (d.selfPaced ? "self-paced, about " + d.est + " min" : (d.open ? "up to " : "") + Math.max(1, Math.round(plan.total / 60)) + " min");
+  }
+  function pGoTxt(d, plan) { return "Start" + (d.open || d.selfPaced ? "" : " " + Math.max(1, Math.round(plan.total / 60)) + " min"); }
+  function pSegsHtml(d, plan) {
+    return plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + (d.selfPaced ? 1 : s.secs) + ' 1 0" title="' + esc(s.title) + '"></i>'; }).join("");
+  }
+  function pStepsHtml(d, plan) {
+    var rows = [];                                   // consecutive steps with the same title read as one row
+    plan.steps.forEach(function (s) {
+      var last = rows[rows.length - 1];
+      if (last && last.title === s.title) last.secs += s.secs; else rows.push({ title: s.title, secs: s.secs, k: s.k });
+    });
+    return (pHasPre(d) ? '<li class="si-pre" data-k="write"><span></span><time>your pace</time></li>' : "") + rows.map(function (r) {
+      return '<li data-k="' + r.k + '"><span>' + esc(r.title) + "</span><time>" + (d.selfPaced && r.k === "write" ? "your pace" : fmt(r.secs)) + "</time></li>";
+    }).join("");
+  }
+  function pIntroReplan(d) {
+    if (P.view !== d) return;
+    var el = $("#sIntro"), plan = pPlan(d, pLenOf(d, P.len)), go = $("#sGo");
+    bSetT("#sIntro .si-kind", pKindTxt(d, plan));
+    el.querySelector(".si-tl").innerHTML = pSegsHtml(d, plan);
+    el.querySelector(".si-steps").innerHTML = pStepsHtml(d, plan);
+    if (go) go.lastChild.textContent = pGoTxt(d, plan);
+    pPreRow(d);
+  }
   function pIntro(id) {
     var d = pDef(id);
     if (!d) { location.hash = "practice"; return; }
@@ -1203,14 +1237,6 @@
     P.view = d; P.len = len;
     if (!pBusy()) P.state = "intro";
     var plan = pPlan(d, len), hasB = plan.steps.some(function (s) { return s.k === "breath"; });
-    var mins = Math.max(1, Math.round(plan.total / 60)), minsTxt = d.selfPaced ? "self-paced, about " + d.est + " min" : (d.open ? "up to " : "") + mins + " min";
-    var segs = plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + (d.selfPaced ? 1 : s.secs) + ' 1 0" title="' + esc(s.title) + '"></i>'; }).join("");
-    // consecutive steps with the same title read as one row
-    var rows = [];
-    plan.steps.forEach(function (s) {
-      var last = rows[rows.length - 1];
-      if (last && last.title === s.title) last.secs += s.secs; else rows.push({ title: s.title, secs: s.secs, k: s.k });
-    });
     var O = pIntroOpts(d), own = Object.keys(pOptOwn(d.id)).length > 0, hasRhy = pPlanHasRhy(plan.steps);
     var opts = [], every = [];
     // this practice's own choices come first: how you'll be, which beat, what pace
@@ -1271,7 +1297,7 @@
     var other = pBusy() && P.def !== d;
     var h = backLink() +
       '<div class="si-head">' +
-        '<div class="si-top"><span class="si-kind">' + [d.custom ? "Your routine" : goalOf(d.goal) ? goalOf(d.goal).name : "", methodName(d.method)].filter(Boolean).join(" · ") + (d.exp ? " · Experimental" : "") + " · " + minsTxt + "</span>" +
+        '<div class="si-top"><span class="si-kind">' + esc(pKindTxt(d, plan)) + "</span>" +
           favBtn(d.id, d.name) + "</div>" +
         "<h2>" + esc(d.name) + "</h2>" +
         '<p class="si-blurb">' + esc(d.blurb) + "</p>" +
@@ -1279,7 +1305,7 @@
         (d.lengths ? '<div class="si-len" role="radiogroup" aria-label="Length">' + d.lengths.map(function (m) {
           return '<button role="radio" data-len="' + m + '" aria-checked="' + (m === len) + '">' + pLenTxt(d, m) + "</button>";
         }).join("") + "</div>" : "") +
-        '<div class="si-tl" aria-hidden="true">' + segs + "</div>" +
+        '<div class="si-tl" aria-hidden="true">' + pSegsHtml(d, plan) + "</div>" +
         (d.custom ? '<a class="btn small si-edit" href="#yoga/' + d.custom + '">Edit routine</a>'
           : d.yoga ? '<a class="btn small si-edit" href="#yoga/copy/' + d.yoga + '">Customise a copy</a>' : "") +
       "</div>" +
@@ -1288,9 +1314,7 @@
           return '<li><svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] + "</span></li>";
         }).join("") + "</ul>" : "") +
         "<h3>How it runs</h3><p>" + esc(d.how || pYogaHow(plan)) + "</p>" +
-        '<ol class="si-steps">' + (pHasPre(d) ? '<li class="si-pre" data-k="write"><span></span><time>your pace</time></li>' : "") + rows.map(function (r) {
-          return '<li data-k="' + r.k + '"><span>' + esc(r.title) + "</span><time>" + (d.selfPaced && r.k === "write" ? "your pace" : fmt(r.secs)) + "</time></li>";
-        }).join("") + "</ol>" +
+        '<ol class="si-steps">' + pStepsHtml(d, plan) + "</ol>" +
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its binaural beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
@@ -1299,7 +1323,7 @@
       '<div class="si-bar">' +
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
-        '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Start' + (d.open || d.selfPaced ? "" : " " + mins + " min") + "</button>" +
+        '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>' + pGoTxt(d, plan) + "</button>" +
       "</div>" +
       '<aside class="si-opts">' + (d.reflect ? nvcDraftStrip(d) : "") +     // first thing on a phone, beside the steps on a computer
         '<button class="so-sum" id="sOptsBtn" aria-expanded="' + openOpts + '" aria-controls="sOpts"><span class="so-sum-t"><b>Options</b>' +
@@ -1383,13 +1407,13 @@
     on("#sOptVoice", function () { O.voice = this.checked; var r = $("#sVoiceRow"); if (r) r.hidden = !this.checked; save(); });
     on("#sOptBells", function () { O.bells = this.checked; save(); if (this.checked) pBell(0.4, 0, 0, 0, true); });
     on("#sOptAudio", function () { O.audio = this.checked; save(); });
-    // a practice's own choices change in place, so the button you pressed keeps the focus
+    // a practice's own choices change in place, so the button you pressed keeps the focus; the steps follow them
     var press = function (g, b) { g.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); }); };
     document.querySelectorAll("#sOpts [data-choice]").forEach(function (g) {
       g.addEventListener("click", function (e) {
         var b = e.target.closest("button"); if (!b) return;
         pChoiceSet(d, g.dataset.choice, b.dataset.v); press(g, b); sum();
-        if (g.dataset.choice === "pre") pPreRow(d);
+        pIntroReplan(d);
       });
     });
     pPreRow(d);
@@ -1590,7 +1614,7 @@
     stLoad();
     P.opt = pOptDefaults();
     var cs = getComputedStyle(document.documentElement);
-    ["relax", "stim", "ther", "accent"].forEach(function (k) { P.col[k] = cs.getPropertyValue("--" + k).trim() || "#5eead4"; });
+    ["relax", "stim", "ther", "accent", "food"].forEach(function (k) { P.col[k] = cs.getPropertyValue("--" + k).trim() || "#5eead4"; });
     P.col.warm = "#f5b97a";
     P.cv = $("#sCanvas");
     P.ctx = P.cv && P.cv.getContext ? P.cv.getContext("2d") : null;

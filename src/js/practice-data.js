@@ -12,7 +12,9 @@
        drift    a soft glow while the sound carries on (sleep)
        hold     a breath hold: open (tap Breathe in, capped) or a fixed count
      Lengths are in seconds. `lines` are [offset, text] pairs, or plain strings spread
-     evenly across the step. Programmes add `audio`: a binaural layer whose beat follows
+     evenly across the step; a third item marks an Anapana reminder ("ana", said softly) or a
+     chime that sounds in place of the voice ("chime"). A step can end when you tap a button
+     (endTap names it), dim the screen (dim), and put a line of its own under its name (sub). Programmes add `audio`: a binaural layer whose beat follows
      piecewise-linear points [[second, Hz], ...] across the whole programme.
   ------------------------------------------------------------------------------ */
 
@@ -484,6 +486,68 @@
     return st;
   }
 
+  /* ----- a mindful meal -----
+     A few minutes to arrive before the first bite: your hunger noticed (0 to 10), slow breathing or cyclic sighs to
+     settle, a moment of gratitude for the meal, then the food with your senses and the first bites, slowly. The rest
+     of the meal runs at your own pace until you tap I've finished (or the time you chose runs out), with a reminder
+     to pause every two and a half minutes or so, spoken softly or as a soft chime, and the screen dimmed. Then your
+     hunger again, gratitude if you chose it for after, and a moment before you get up. Each part is a choice of its
+     own on the practice's page, with the usual ones chosen for you. */
+  var MEAL_PAUSE = ["Put your fork or spoon down between bites, and take a breath.",
+    "Notice the taste of this bite, and how it changes as you chew.",
+    "Chew a little longer than usual, and notice the texture.",
+    "If your thoughts have wandered off, come back to the next bite.",
+    "Look at your food again before the next bite: its colours, the steam, the light on it.",
+    "Notice if you're reaching for the next bite before this one is done. Take your time.",
+    "Notice the temperature of each bite, warm or cool, as it reaches your mouth.",
+    "Sit back for a moment. Notice your breath, and the feeling in your stomach."];
+  var MEAL_HUNGER = "Put your fork down for a moment, and notice your hunger now. Has it changed since the first bite?";
+  var MEAL_CHIME = "Pause: fork down, one breath.";
+  var MEAL_GAP = 150;                        // seconds between the reminders while you eat
+  function mealSteps(d, min) {
+    var hunger = pChoice(d, "hunger") === "on", br = pChoice(d, "breath"), th = pChoice(d, "thanks"), bites = pChoice(d, "bites") === "on", rem = pChoice(d, "remind");
+    var p = pPace(d), before = th === "before" || th === "both", after = th === "after" || th === "both";
+    var rate = function (title, line) {               // the same 0 to 10 scale before and after, so the end screen can set them side by side
+      return TRate(title, line, { cap: 60, ends: ["Not hungry", "As hungry as you get"], sub: "0 is not hungry at all, 10 is as hungry as you get" });
+    };
+    var st = [G(30, "Arrive", ["Sit down with your meal in front of you. Put other screens away, and lay this phone beside your plate.",
+      "For these few minutes, the meal is the only thing to do."], { vis: "glow" })];
+    if (hunger) st.push(rate("How hungry are you?", "Before you start, how hungry are you, from zero to ten? Tap a number."));
+    if (br === "slow") st.push(Br(90, "Slow breathing", { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 },
+      { lines: [[0, "First, a few slow breaths, " + pcTxt(p) + "."], [45, "Let your shoulders drop and your belly soften, ready to eat."]] }));
+    else if (br === "sigh") st.push(Br(60, "Cyclic sighs", { inh: 3, sip: 1, hold: 0, exh: 6, rest: 0 },
+      { lines: [[0, "First, a few sighs: in through the nose, a short second sip to fill up, then a long, slow breath out through the mouth."],
+        [32, "Let each long breath out loosen your shoulders."]] }));
+    if (before) st.push(G(50, "Gratitude", [[0, "Look at your meal, and think of where it came from: the soil, the rain and the sun, and the people who grew it, carried it and cooked it."],
+      [26, "Take a moment to be glad of it, and of the chance to eat it."]], { vis: "glow" }));
+    if (bites) {
+      st.push(G(40, "Look and smell", [[0, "Now look at the food as if for the first time: its colours, shapes and textures."],
+        [18, "Bring it a little closer and breathe in its smell. Notice if your mouth begins to water."]], { vis: "glow" }));
+      st.push(G(100, "The first bites", [[0, "Take a first bite, a little smaller than usual, and put your fork or spoon down."],
+        [12, "Chew slowly. Notice the taste, the texture and the temperature, and how they change as you chew."],
+        [40, "Notice the moment you swallow."], [55, "Take a breath, then a second bite in the same unhurried way."],
+        [80, "Notice whether the taste is as strong as in the first bite."]], { vis: "glow" }));
+    }
+    var end = (hunger ? 60 : 0) + (after ? 45 : 0) + 40;
+    var eat = Math.max(240, min * 60 - st.reduce(function (a, s) { return a + s.secs; }, 0) - end);
+    var lines = [[0, bites ? "Now eat the rest of your meal at an easy pace, and tap I've finished when you're done." :
+      "Now eat at an easy pace, taking the first bites slowly, and tap I've finished when you're done."]];
+    if (rem !== "quiet") {
+      var n = Math.floor((eat - 45) / MEAL_GAP), half = Math.max(1, Math.round(n / 2));
+      for (var i = 1, k = 0; i <= n; i++) {          // halfway, the reminder asks about your hunger, if you're checking it
+        var txt = hunger && i === half ? MEAL_HUNGER : rem === "chime" ? MEAL_CHIME : MEAL_PAUSE[k++ % MEAL_PAUSE.length];
+        lines.push(rem === "chime" ? [i * MEAL_GAP, txt, "chime"] : [i * MEAL_GAP, txt]);
+      }
+    }
+    st.push(Ob(eat, "Eating", lines, { open: true, endTap: "I've finished", quiet: true, dim: true, sub: "At your own pace" }));
+    if (hunger) st.push(rate("How hungry now?", "And now, how hungry are you, from zero to ten?"));
+    if (after) st.push(G(45, "Gratitude", [[0, "Before you get up, take a moment to be glad of the meal you've had."],
+      [20, "And of your body, which is already turning it into energy."]], { vis: "glow" }));
+    st.push(G(40, "Closing", [[0, "Sit for a moment longer, and notice how your body feels now: warm, light, full, satisfied."],
+      [20, "Take one slow breath before you get up."]], { vis: "glow" }));
+    return st;
+  }
+
   /* --------------------------- the library --------------------------- */
   var PRACTICES = [
     /* ===== combined programmes ===== */
@@ -750,6 +814,41 @@
       how: "A minute and a half of cyclic sighs and three minutes of slow breathing with a longer out-breath, under a 6 Hz theta beat (or 10 Hz alpha), then four short steps: naming what you feel in a word or two, a moment of self-compassion with a hand on your chest, one thing you're glad you did, and one small next step. With a sensor, the summary shows how far your heart rate came down. If it's still on your mind afterwards, Self-Empathy (NVC) can help you find what you need now.",
       ev: "Right after a stressful speech, a brief self-compassion exercise reduced socially anxious students' brooding about it the next day, and self-compassion programmes reduced rumination and stress across 27 trials. Putting feelings into words dampens their intensity. Cyclic sighing improved mood and slowed breathing more than mindfulness meditation in a month-long trial. This sequence itself hasn't been trialled.",
       cite: "Blackie & Kocovski 2018 · Ferrari et al. 2019 · Torre & Lieberman 2018 · Balban et al. 2023"
+    },
+    {
+      id: "meal", name: "Mindful Meal", lengths: [20, 30, 45], min: 30, open: true, strength: 2,
+      tone: "food", sensor: "optional", sensorWhy: "optional: your heart rate before, during and after the meal", pace: true, paceSplit: 0.4, noTap: true,
+      opt: { ana: 0 },                           // the reminders while you eat take the place of Anapana's
+      optNote: "Each part of the meal is a choice of its own, kept for it.",
+      phonesWhy: "for the binaural beat, at half your usual volume: turn it off under Options when you eat with others",
+      rate: { name: "Hunger", what: "hunger" },  // its 0 to 10 ratings are of hunger, before and after eating
+      alias: "Mindful eating",                   // search finds it by this name too, ahead of Learn's paragraph
+      words: "eating food meal lunch dinner supper breakfast mindful eating chewing hunger appetite fullness gratitude grace slow",   // more for search to find it by
+      blurb: "Eat a meal slowly and attentively: notice your hunger, settle with slow breathing, take a moment of gratitude, then the first bites with all your senses and gentle reminders to pause as you eat. Each part can be changed or left out under Options.",
+      parts: "Hunger check · slow breathing or cyclic sighs · gratitude · the senses · the first bites · reminders to pause · binaural beat",
+      audio: { name: "Mindful Meal", band: "Alpha", carrier: 200, fade: 8, gain: 0.5, cat: "relax" },
+      beats: [                                   // the first is the usual one
+        { id: "alpha", label: "Alpha 10 Hz", band: "Alpha", pts: steady(10), note: "A steady 10 Hz beat for relaxed attention, at half your usual volume so you can hear yourself eat." },
+        { id: "theta", label: "Theta 6 Hz", band: "Theta", pts: steady(6), note: "A steady 6 Hz beat, the slower band, for an especially unhurried meal; it can leave you a little drowsy." }
+      ],
+      choices: [
+        { key: "hunger", label: "Hunger check", def: "on", note: "Rate your hunger from 0 to 10 before you eat and after, to notice how it changes, not to judge it. The end screen shows both.",
+          opts: [["on", "Before and after"], ["off", "Leave it out"]] },
+        { key: "breath", label: "Before you eat", def: "slow", note: "A minute and a half of slow breathing at your resonance pace with a longer out-breath, or a minute of cyclic sighs, to settle before the first bite.",
+          opts: [["slow", "Slow breathing"], ["sigh", "Cyclic sighs"], ["none", "Straight to the meal"]] },
+        { key: "thanks", label: "Gratitude", def: "before", note: "A moment of gratitude for the meal and the people who brought it to you: before you eat, after, or both.",
+          opts: [["before", "Before"], ["after", "After"], ["both", "Both"], ["none", "Leave it out"]] },
+        { key: "bites", label: "First bites", def: "on", note: "Looking at the food and smelling it, then the first two bites taken slowly, noticing taste, texture and temperature.",
+          opts: [["on", "Guided"], ["off", "Leave it out"]] },
+        { key: "remind", label: "While you eat", def: "voice", note: "A reminder to pause every two and a half minutes or so: spoken softly, or a soft chime with a few words on the screen, or silence. The screen dims while you eat.",
+          opts: [["voice", "Spoken"], ["chime", "A soft chime"], ["quiet", "Silence"]] }
+      ],
+      next: { id: "walking", txt: "Afterwards, an easy walk: short bouts of light walking lowered the rise in blood sugar after meals, compared with sitting still. Walking Meditation takes you on one." },
+      build: function (min) { return mealSteps(this, min || 30); },
+      how: "A few minutes to arrive, then the meal at your own pace, at breakfast, lunch or dinner. Before the first bite you rate your hunger from 0 to 10, settle with a minute and a half of slow breathing at your resonance rate with a longer out-breath (or a minute of cyclic sighs), take a moment of gratitude for the meal and the people who brought it to you, then look at the food and smell it, and take the first two bites slowly, noticing taste, texture and temperature. The rest of the meal runs at your own pace until you tap I've finished (or the time you chose runs out), with the screen dimmed and a reminder to pause every two and a half minutes or so, spoken softly or as a soft chime; partway through, one asks about your hunger. At the end you rate your hunger again, take a moment of gratitude if you chose it for after, and sit for a breath before you get up. Each part can be changed or left out under Options, and a soft alpha beat plays at half your usual volume unless you turn it off.",
+      ev: "Across 24 studies, eating while distracted, by a screen for instance, made people eat more at that meal and more again later, and remembering a meal well reduced how much they ate later. Eating more slowly led to eating less without leaving people hungrier at the end of the meal, and chewing longer lowered hunger. Mindfulness meditation reduced binge eating and emotional eating, though its effect on weight was mixed, and teenagers who wrote a letter of gratitude each week for a month reported healthier eating. Slow breathing raises the vagal part of heart-rate variability. This combination hasn't been tested as a whole, and no study has tested binaural beats during a meal.",
+      cite: "Robinson et al. 2013 · Robinson et al. 2014 · Miquel-Kergoat et al. 2015 · Katterman et al. 2014 · Fritz et al. 2019 · Laborde et al. 2022 · Buffey et al. 2022",
+      caution: "This is about enjoying and noticing a meal, not about eating less. If you have or have had an eating disorder, follow your care team's advice about mindful eating, and leave the hunger check out if it doesn't help."
     },
 
     /* ===== meditation and mindfulness ===== */

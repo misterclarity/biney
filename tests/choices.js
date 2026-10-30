@@ -14,6 +14,7 @@
 //   Z  Healthy living's Routines (sleep habits, morning, the day, evening) and Light (a light box, red and near-infrared light)
 //   V  the full consistency check: citations and references, British spelling, page names on a phone, tapping's timing,
 //      a long feedback message, Edge on an iPhone, the tinnitus and gamma evidence
+//   E  a mindful meal: its choices and plans, the meal itself, hunger before and after, the recipes and routines
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -1463,7 +1464,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
           w: document.documentElement.scrollWidth, iw: innerWidth };
       });
       ok(R.tabs === 'Recipes | Supplements | Routines* | Light' && R.w <= R.iw, 'Healthy living has four tabs: ' + R.tabs);
-      ok(R.secs === 'lv-sleep-habits:Healthy sleep habits:8:9 | lv-morning:A morning routine:6:3 | lv-daytime:Through the day:3:5 | lv-evening:An evening routine:7:6' &&
+      ok(R.secs === 'lv-sleep-habits:Healthy sleep habits:8:9 | lv-morning:A morning routine:6:3 | lv-daytime:Through the day:4:6 | lv-evening:An evening routine:7:6' &&
         R.jump === 'Sleep habits>#living/sleep-habits | Morning>#living/morning | Through the day>#living/daytime | Evening>#living/evening',
         'Routines: sleep habits, a morning, the day and an evening, each with its sources: ' + R.secs);
       const S = R.steps, step = (id, t) => (S['lv-' + id] || []).find(x => x.t === t) || { p: '' };
@@ -1656,6 +1657,220 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await ip.goto(APP + '#feedback'); await ip.waitForTimeout(700);
       ok(/^Entrain build \w+ · Edge 117\.0\.2045\.65 on iOS · in the browser/.test(await t(ip, '#fbDevTxt')), 'Edge on an iPhone is named as Edge: ' + await t(ip, '#fbDevTxt'));
       await ctx.close();
+    }
+
+    /* E. a mindful meal: the Mindful Meal's page with its five choices and the usual ones chosen, its own beat at
+       half volume and its pace; every combination's plan at every length; the meal itself open until I've
+       finished, with the screen dimmed and a reminder every two and a half minutes, said softly, as a chime even
+       with the bells off, or none; hunger before and after on a scale of its own, on the end screen and in the
+       history; no tapping; the library, search, Learn, the recipes and the routines */
+    if (!only || only === 'E') {
+      const segs = (p, sel) => E(p, sel => [...document.querySelectorAll(sel + ' button')].map(b => b.textContent.trim() + (b.getAttribute('aria-pressed') === 'true' ? '*' : '')).join(' | '), sel);
+      const intro = p => E(p, () => {
+        const q = s => document.querySelector(s), all = s => [...document.querySelectorAll(s)], tx = e => e ? e.textContent.replace(/\s+/g, ' ').trim() : '';
+        return { title: q('#viewTitle').textContent, kind: tx(q('#sIntro .si-kind')), go: tx(q('#sGo')), scope: tx(q('#sOptsScope')), caution: tx(q('#sIntro .si-caution')),
+          steps: all('#sIntro .si-steps li:not([hidden])').map(tx).join(' | '), needs: all('#sIntro .si-need li').map(tx).join(' | '),
+          lens: all('#sIntro .si-len button').map(b => tx(b) + (b.getAttribute('aria-checked') === 'true' ? '*' : '')).join(' | '),
+          labels: all('#sOpts [data-choice]').map(c => c.dataset.choice + ':' + tx(c.closest('.so-row').querySelector('.so-l').firstChild)).join(' | '), tap: !!q('#sOptTap') };
+      });
+      const run = p => E(p, () => {
+        const X = window.__entrain, s = X.P.steps[X.P.idx] || {}, q = x => document.querySelector(x), vis = x => !!q(x) && !q(x).hidden;
+        return { step: s.title, k: s.k, of: q('#sStepTxt').textContent, dim: q('#ses').dataset.dim || '', tap: vis('#sTap') ? q('#sTap').textContent.trim() : '', sub: q('#sSub').textContent,
+          line: q('#sLine').textContent, rate: vis('#sRate') ? q('#sRateLo').textContent + ' / ' + q('#sRateHi').textContent : '', total: X.P.total, suds: (X.P.suds || []).slice() };
+      });
+      const next = async p => { await p.click('#sNext'); await p.waitForTimeout(250); };
+      const toEnd = async p => { await E(p, () => { window.__entrain.P.t0 -= 60; }); await p.waitForFunction(() => window.__entrain.P.state === 'done', null, { timeout: 8000 }); await p.waitForTimeout(300); };
+      const tile = p => E(p, () => { const b = document.querySelector('#sDone .sd-t[data-ex="suds"]'); return b ? [...b.children].slice(0, 3).map(e => e.textContent).join(' | ') : ''; });
+      const ex = async p => { await p.click('#sDone .sd-t[data-ex="suds"]'); await p.waitForTimeout(80);
+        return E(p, () => ({ h: document.querySelector('#sdExT').textContent, t: [...document.querySelectorAll('#sdEx p')].map(x => x.textContent).join(' ') })); };
+      const spy = () => {                  // what the voice says, how loudly, and the pitch of every tone that starts
+        window.__said = []; window.__osc = [];
+        if (window.speechSynthesis) speechSynthesis.speak = u => window.__said.push([u.text, u.volume]);
+        const st = OscillatorNode.prototype.start;
+        OscillatorNode.prototype.start = function () { try { window.__osc.push(Math.round(this.frequency.value * 100) / 100); } catch (e) {} return st.apply(this, arguments); };
+      };
+
+      // its page: its five choices with the usual ones chosen, its own beat and pace; Anapana reminders off and
+      // no tapping, though one is on for every practice and the other was chosen for it
+      let p = await page(Object.assign(OPT({ audio: true, ana: 180 }), { optsOpen: '1', 'pTap.meal': '1' }));
+      await E(p, () => location.hash = 'practice/meal'); await p.waitForTimeout(450);
+      let i = await intro(p);
+      ok(i.title === 'Mindful Meal' && i.kind === 'Calm · Programme · up to 30 min' && i.lens === '20 min | 30 min* | 45 min' && i.go === 'Start' &&
+        i.steps === 'Arrive00:30 | How hungry are you?01:00 | Slow breathing01:30 | Gratitude00:50 | Look and smell00:40 | The first bites01:40 | Eating22:10 | How hungry now?01:00 | Closing00:40',
+        'Mindful Meal: your hunger, slow breathing, gratitude and the first bites, then the meal at your own pace: ' + i.steps);
+      ok(i.needs === 'Headphones for the binaural beat, at half your usual volume: turn it off under Options when you eat with others | Heart sensor optional: your heart rate before, during and after the meal' &&
+        /^This is about enjoying and noticing a meal, not about eating less\. If you have or have had an eating disorder, follow your care team's advice about mindful eating, and leave the hunger check out if it doesn't help\. About its binaural beat:/.test(i.caution),
+        'headphones at half volume, a sensor if you like, and a caution for anyone with an eating disorder');
+      ok(i.labels === 'hunger:Hunger check | breath:Before you eat | thanks:Gratitude | bites:First bites | remind:While you eat' &&
+        i.scope === 'For Mindful Meal only. Each part of the meal is a choice of its own, kept for it. The defaults for every practice are in Settings.', 'its options start with its five choices: ' + i.labels);
+      const sg = {};
+      for (const k of ['hunger', 'breath', 'thanks', 'bites', 'remind']) sg[k] = await segs(p, '[data-choice="' + k + '"]');
+      ok(sg.hunger === 'Before and after* | Leave it out' && sg.breath === 'Slow breathing* | Cyclic sighs | Straight to the meal' && sg.thanks === 'Before* | After | Both | Leave it out' &&
+        sg.bites === 'Guided* | Leave it out' && sg.remind === 'Spoken* | A soft chime | Silence', 'each part can be changed or left out, with the usual one chosen: ' + Object.values(sg).join(' / '));
+      ok(await segs(p, '#sOptBeat') === 'Off | Alpha 10 Hz* | Theta 6 Hz' && /^A steady 10 Hz beat for relaxed attention, at half your usual volume so you can hear yourself eat\. 200 Hz carrier\./.test(await t(p, '#sBeatNote')) &&
+        await segs(p, '#sOptPace') === 'Optimal defaults* | Your own' && await t(p, '#sPaceNote') === 'Your resonance rate, with a longer out-breath (4.4 s in, 6.5 s out): 5.5 breaths a minute, the usual one, until you take the resonance test on the Heart tab.',
+        'a steady alpha beat, theta or none; the pace: your resonance rate, with a longer out-breath');
+      ok(await segs(p, '#sOptAna') === 'Off* | 2 min | 3 min | 5 min' && !i.tap && !(await E(p, () => window.__entrain.pPlan(window.__entrain.pDef('meal'), 30).steps.some(s => s.extra))),
+        "Anapana reminders start off, and tapping isn't offered, even where it was chosen");
+      await p.click('.si-len button[data-len="20"]'); await p.waitForTimeout(150);
+      const s20 = (await intro(p)).steps;
+      await p.click('.si-len button[data-len="45"]'); await p.waitForTimeout(150);
+      const s45 = (await intro(p)).steps;
+      ok(/Eating12:10/.test(s20) && /Eating37:10/.test(s45), 'the meal itself takes the time the other steps leave: 12:10 in 20 minutes, 37:10 in 45');
+      await p.click('.si-len button[data-len="30"]'); await p.waitForTimeout(150);
+      // the steps follow the choices, which are kept for it
+      await p.click('[data-choice="breath"] button[data-v="sigh"]'); await p.click('[data-choice="thanks"] button[data-v="both"]');
+      await p.click('[data-choice="bites"] button[data-v="off"]'); await p.click('[data-choice="remind"] button[data-v="chime"]'); await p.waitForTimeout(150);
+      i = await intro(p);
+      const kept = await E(p, () => JSON.parse(localStorage.getItem('entrain.pCh.meal') || '{}'));
+      const bar = await E(p, () => [...document.querySelectorAll('#sIntro .si-tl i')].map(x => x.title).join());
+      ok(i.steps === 'Arrive00:30 | How hungry are you?01:00 | Cyclic sighs01:00 | Gratitude00:50 | Eating24:15 | How hungry now?01:00 | Gratitude00:45 | Closing00:40' &&
+        bar === 'Arrive,How hungry are you?,Cyclic sighs,Gratitude,Eating,How hungry now?,Gratitude,Closing' && await E(p, () => document.activeElement.textContent) === 'A soft chime' &&
+        kept.breath === 'sigh' && kept.thanks === 'both' && kept.bites === 'off' && kept.remind === 'chime', 'the steps and the bar above them follow the choices at once, the button pressed keeps the focus, and the choices are kept for it: ' + i.steps);
+      await p.reload(); await p.waitForTimeout(600);
+      ok(await segs(p, '[data-choice="remind"]') === 'Spoken | A soft chime* | Silence' && await segs(p, '[data-choice="thanks"]') === 'Before | After | Both* | Leave it out', 'and still chosen after a reload');
+      await E(p, () => localStorage.removeItem('entrain.pCh.meal')); await p.reload(); await p.waitForTimeout(600);
+      await p.click('#sOptPace button[data-v="own"]'); await p.waitForTimeout(100);
+      const own = await E(p, () => { const s = window.__entrain.pPlan(window.__entrain.pDef('meal'), 30).steps.find(s => s.title === 'Slow breathing'); return { t: s.t, line: s.lines[0][1] }; });
+      ok(await t(p, '#sPace-inh') === '4.5 s' && await t(p, '#sPace-exh') === '6.5 s' && own.t.inh === 4.5 && own.t.exh === 6.5 && own.line === 'First, a few slow breaths, in for 4.5 seconds and out for 6.5 seconds.',
+        'your own pace starts from the same split, in half seconds: ' + own.line);
+      await p.click('#sOptPace button[data-v="auto"]'); await p.waitForTimeout(100);
+      // every combination of the five choices at every length
+      const W = await E(p, () => {
+        const X = window.__entrain, d = X.pDef('meal'), bad = [], RE = /n't\b|\b(do not|never|nothing|without|stop|avoid|none)\b|feel the breath/i;
+        const PAUSE = 'Put your fork or spoon down between bites, and take a breath.', HUNGER = 'Put your fork down for a moment, and notice your hunger now. Has it changed since the first bite?', CHIME = 'Pause: fork down, one breath.';
+        let n = 0;
+        for (const hunger of ['on', 'off']) for (const breath of ['slow', 'sigh', 'none']) for (const thanks of ['before', 'after', 'both', 'none']) for (const bites of ['on', 'off']) for (const remind of ['voice', 'chime', 'quiet']) {
+          localStorage.setItem('entrain.pCh.meal', JSON.stringify({ hunger, breath, thanks, bites, remind }));
+          for (const L of [20, 30, 45]) {
+            const pl = X.pPlan(d, L), S = pl.steps, H = hunger === 'on', why = [];
+            const want = ['Arrive'].concat(H ? ['How hungry are you?'] : [], breath === 'slow' ? ['Slow breathing'] : breath === 'sigh' ? ['Cyclic sighs'] : [], /before|both/.test(thanks) ? ['Gratitude'] : [],
+              bites === 'on' ? ['Look and smell', 'The first bites'] : [], ['Eating'], H ? ['How hungry now?'] : [], /after|both/.test(thanks) ? ['Gratitude'] : [], ['Closing']);
+            const eat = S.find(s => s.title === 'Eating'), rem = eat.lines.slice(1), half = Math.max(1, Math.round(rem.length / 2)), br = S.find(s => s.k === 'breath');
+            if (S.map(s => s.title).join() !== want.join()) why.push('steps ' + S.map(s => s.title).join());
+            if (pl.total !== L * 60) why.push('total ' + pl.total);
+            S.forEach(s => s.lines.forEach((l, k, a) => {
+              if (!(l[0] >= 0 && l[0] < s.secs) || (k && !(l[0] > a[k - 1][0])) || RE.test(l[1]) || l[2] === 'ana') why.push(s.title + ' @' + l[0] + ': ' + l[1]);
+            }));
+            if (!(eat.k === 'observe' && eat.endTap === "I've finished" && eat.dim && eat.quiet && eat.sub === 'At your own pace' && !eat.wander)) why.push('the eating step');
+            if (eat.lines[0][1] !== (bites === 'on' ? "Now eat the rest of your meal at an easy pace, and tap I've finished when you're done." : "Now eat at an easy pace, taking the first bites slowly, and tap I've finished when you're done.")) why.push('its first line');
+            if (rem.length !== (remind === 'quiet' ? 0 : Math.floor((eat.secs - 45) / 150)) || rem.some((l, k) => l[0] !== 150 * (k + 1))) why.push('reminders at ' + rem.map(l => l[0]).join());
+            rem.forEach((l, k) => {
+              const txt = H && k + 1 === half ? HUNGER : remind === 'chime' ? CHIME : null;
+              if ((txt ? l[1] !== txt : l[1] === HUNGER || l[1] === CHIME) || (remind === 'chime') !== (l[2] === 'chime')) why.push('reminder ' + (k + 1) + ': ' + l[1]);
+            });
+            if (remind === 'voice' && !(H && half === 1) && rem[0][1] !== PAUSE) why.push('the first reminder: ' + rem[0][1]);
+            S.filter(s => s.k === 'rate').forEach(s => { if (s.ends.join() !== 'Not hungry,As hungry as you get' || s.sub !== '0 is not hungry at all, 10 is as hungry as you get' || s.secs !== 60) why.push('the rating ' + s.title); });
+            if (br && !(breath === 'slow' ? br.secs === 90 && br.t.inh === 4.4 && br.t.sip === 0 && br.t.exh === 6.5 : br.secs === 60 && br.t.inh === 3 && br.t.sip === 1 && br.t.exh === 6)) why.push('the breathing ' + JSON.stringify(br.t));
+            if (why.length) bad.push([hunger, breath, thanks, bites, remind, L].join('/') + ': ' + why.slice(0, 3).join('; '));
+            n++;
+          }
+        }
+        localStorage.removeItem('entrain.pCh.meal');
+        return { n, bad };
+      });
+      ok(W.n === 432 && !W.bad.length, W.n + ' plans, every combination at every length: the steps in order, the full length, every line inside its step and worded as what to do, a reminder every two and a half minutes ' +
+        '(a chime when chosen, the hunger one halfway, none in silence), and hunger on its own scale' + (W.bad.length ? ': ' + W.bad.slice(0, 3).join(' | ') : ''));
+      await p.context().close();
+
+      // a meal with the usual choices, the voice on and the bells off
+      p = await page(OPT({ audio: true, voice: true }), spy);
+      await E(p, () => location.hash = 'practice/meal'); await p.waitForTimeout(400);
+      await p.click('#sGo'); await p.waitForTimeout(600);
+      let r = await run(p);
+      const tr = await E(p, () => { const A = window.__entrain.A; return A.track ? { band: A.track.band, pts: JSON.stringify(A.track.pts), gain: A.gainMul } : {}; });
+      ok(r.step === 'Arrive' && r.of === 'Step 1 of 9 · Arrive' && !r.dim && tr.band === 'Alpha' && tr.pts === '[[0,10],[1800,10]]' && tr.gain === 0.5,
+        'it starts with a moment to arrive, under a steady 10 Hz beat at half volume: ' + JSON.stringify(tr));
+      await next(p);
+      r = await run(p);
+      ok(r.step === 'How hungry are you?' && r.k === 'rate' && r.rate === 'Not hungry / As hungry as you get' && r.sub === '0 is not hungry at all, 10 is as hungry as you get' &&
+        r.line === 'Before you start, how hungry are you, from zero to ten? Tap a number.', 'then your hunger, from 0, not hungry, to 10, as hungry as you get: ' + r.rate);
+      await p.click('#sRateG button[data-v="7"]'); await p.waitForTimeout(700);           // a rating moves on after a moment
+      r = await run(p);
+      ok(r.step === 'Slow breathing' && r.suds.join() === '7', 'a tap rates it and moves on to the slow breathing');
+      for (let k = 0; k < 6 && (await run(p)).step !== 'Eating'; k++) await next(p);
+      r = await run(p);
+      ok(r.step === 'Eating' && r.of === 'Step 7 of 9 · Eating' && r.dim === '1' && r.tap === "I've finished" && r.sub === 'At your own pace' &&
+        r.line === "Now eat the rest of your meal at an easy pace, and tap I've finished when you're done.", "the meal itself: the screen dims, at your own pace, with a button to say you've finished");
+      await E(p, () => { window.__entrain.P.t0 -= 151; }); await p.waitForTimeout(700);
+      let said = await E(p, () => window.__said.slice()), last = said[said.length - 1] || [];
+      ok(last[0] === 'Put your fork or spoon down between bites, and take a breath.' && last[1] < 1 && (await run(p)).line === last[0], 'after two and a half minutes, a reminder to pause, said softly: ' + last[0]);
+      await E(p, () => { window.__entrain.P.t0 -= 450; }); await p.waitForTimeout(700);
+      said = await E(p, () => window.__said.slice()); last = said[said.length - 1] || [];
+      ok(last[0] === 'Put your fork down for a moment, and notice your hunger now. Has it changed since the first bite?', 'halfway through the meal, one asks about your hunger');
+      const tot0 = (await run(p)).total;
+      await p.click('#sTap'); await p.waitForTimeout(400);
+      r = await run(p);
+      ok(r.step === 'How hungry now?' && !r.dim && r.total < tot0 - 300 && r.rate === 'Not hungry / As hungry as you get', "I've finished moves on to your hunger again, gives back the time left, and lights the screen again: " + Math.round(tot0) + ' s → ' + Math.round(r.total));
+      await p.click('#sRateG button[data-v="2"]'); await p.waitForTimeout(700);
+      ok((await run(p)).step === 'Closing', 'then a moment before you get up');
+      await toEnd(p);
+      const tl = await tile(p), e1 = await ex(p);
+      const nx = await E(p, () => { const c = document.querySelector('#sDone .sd-next'), a = c && c.querySelector('a, button'); return c ? { txt: c.querySelector('p').textContent, btn: a.textContent, href: a.getAttribute('href') || '' } : null; });
+      const hist = await E(p, () => { const h = JSON.parse(localStorage.getItem('entrain.history') || '[]'); return h[h.length - 1] || {}; });
+      ok(tl === 'Hunger | 7 → 2 | out of 10, before and after' && e1.h === 'Hunger' &&
+        /^How hungry you were each time you rated it, from 0 \(not hungry at all\) to 10 \(as hungry as you get\): 7, then 2\. Your hunger came down 5 points over the meal\. There's no right number\./.test(e1.t),
+        'the end screen sets your hunger after beside your hunger before, and says what it means: ' + tl);
+      ok(nx && nx.href === '#practice/walking' && nx.btn === 'Walking Meditation' && /^Afterwards, an easy walk: short bouts of light walking lowered the rise in blood sugar after meals/.test(nx.txt), 'and suggests an easy walk afterwards');
+      ok(hist.id === 'meal' && hist.note === 'hunger 7 → 2 of 10', 'the history keeps it as hunger: ' + hist.note);
+      // one rating, hunger that went up, and hunger that stayed the same
+      const end = async suds => {
+        await E(p, s => { const X = window.__entrain; X.P.def = X.pDef('meal'); X.P.steps = X.pPlan(X.P.def, 30).steps; X.pDone({ secs: 1500, early: false, suds: s, hrPts: [] }, false); }, suds);
+        await p.waitForTimeout(150); return { tl: await tile(p), e: await ex(p) };
+      };
+      const one = await end([6]), up = await end([3, 5]), same = await end([4, 4]);
+      ok(one.tl === 'Hunger | 6 | out of 10' && one.e.t === 'How hungry you were each time you rated it, from 0 (not hungry at all) to 10 (as hungry as you get): 6. Rate it before and after a meal to see how it changes.' &&
+        /Your hunger went up: eating can sharpen the appetite at first\./.test(up.e.t) && /Your hunger stayed where it was\./.test(same.e.t), 'one rating, hunger that went up, and hunger that stayed the same, each said as it is');
+      // another practice's rating keeps its own words
+      await E(p, () => location.hash = 'practice/tapping'); await p.waitForTimeout(400);
+      await p.click('#sGo'); await p.waitForTimeout(500);
+      await next(p);
+      r = await run(p);
+      ok(r.step === 'How strong is it?' && r.rate === 'Not at all / As strong as it gets' && r.sub === '0 is not at all, 10 is as strong as it gets', "tapping's rating keeps its own words: " + r.rate);
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(300);
+      await p.context().close();
+
+      // reminders as a chime: it sounds even with the bells off, with a few words on the screen, and nothing said
+      p = await page(Object.assign(OPT({ voice: true }), { 'pCh.meal': JSON.stringify({ hunger: 'off', breath: 'none', thanks: 'none', bites: 'off', remind: 'chime' }) }), spy);
+      await E(p, () => location.hash = 'practice/meal'); await p.waitForTimeout(400);
+      i = await intro(p);
+      ok(i.steps === 'Arrive00:30 | Eating28:50 | Closing00:40', 'with every part left out, it is the meal itself: ' + i.steps);
+      await p.click('#sGo'); await p.waitForTimeout(500);
+      await next(p);
+      const n0 = await E(p, () => [window.__osc.length, window.__said.length]);
+      await E(p, () => { window.__entrain.P.t0 -= 151; }); await p.waitForTimeout(700);
+      const ch = await E(p, n0 => ({ osc: window.__osc.slice(n0[0]), said: window.__said.slice(n0[1]), line: document.querySelector('#sLine').textContent, step: window.__entrain.P.steps[window.__entrain.P.idx].title }), n0);
+      ok(ch.step === 'Eating' && ch.osc.includes(659.25) && !ch.said.length && ch.line === 'Pause: fork down, one breath.', 'a soft chime and a few words on the screen, nothing said, though the bells are off: ' + ch.osc.slice(0, 4).join(', ') + ' Hz');
+      await p.context().close();
+
+      // the library, search, Learn, the recipes and the routines
+      p = await page(OPT());
+      const lib = await E(p, () => window.__entrain.libAll().filter(x => x.href === '#practice/meal').map(x => x.goal + '+' + (x.also || []).join('+') + ' ' + x.method + ' ' + x.posture.join('+') + ' ' + x.needs.join('+') + ' ' + x.mins.join('-')));
+      ok(lib.join() === 'calm+reflect program sit phones 20-45', 'in the library under Calm and Reflect, as a programme, sitting, 20 to 45 minutes: ' + lib.join());
+      await p.click('#tbFind');
+      const find = async q => { await p.fill('#fdIn', q); await p.waitForTimeout(250); return E(p, () => [...document.querySelectorAll('#fdRes .fd-it')].map(a => a.getAttribute('href'))); };
+      const f = {};
+      for (const q of ['mindful eating', 'eating', 'meal', 'lunch', 'hunger', 'chewing']) f[q] = (await find(q))[0];
+      await p.keyboard.press('Escape');
+      ok(Object.values(f).every(h => h === '#practice/meal'), 'search finds it first for mindful eating, eating, meal, lunch, hunger and chewing: ' + Object.values(f).join(', '));
+      await E(p, () => location.hash = 'l-meal'); await p.waitForTimeout(400);
+      const lt = await t(p, '#v-learn');
+      ok(/Mindful eating\. How you eat changes how much you eat/.test(lt) && /Robinson, E\., Aveyard, P\., Daley, A\., et al\. \(2013\)/.test(lt) && /Robinson, E\., Almiron-Roig, E\./.test(lt) &&
+        /Miquel-Kergoat, S\./.test(lt) && /Katterman, S\. N\./.test(lt) && /Fritz, M\. M\./.test(lt) && /Buffey, A\. J\./.test(lt), 'Learn gives the evidence for mindful eating, with the references');
+      await E(p, () => location.hash = 'living/congee'); await p.waitForTimeout(500);
+      const rc = await E(p, () => { const c = document.querySelector('#lvBody .lv-eat'); return c ? { txt: c.querySelector('p').textContent, href: c.querySelector('a').getAttribute('href') } : null; });
+      await E(p, () => location.hash = 'living/golden-milk'); await p.waitForTimeout(500);
+      const gm = await E(p, () => document.querySelector('#viewTitle').textContent + ':' + !!document.querySelector('#lvBody .lv-eat'));
+      ok(rc && rc.href === '#practice/meal' && /^When it's ready, eat it slowly: the Mindful Meal starts with a few slow breaths and a moment of gratitude/.test(rc.txt) && gm === 'Golden milk:false',
+        "a dish's recipe ends with the Mindful Meal, and a drink's doesn't");
+      await E(p, () => location.hash = 'living/routines'); await p.waitForTimeout(500);
+      const rl = await E(p, () => [...document.querySelectorAll('#lvp-routines .lv-rsteps > li')].filter(li => li.querySelector('a[href="#practice/meal"]')).map(li => li.closest('.lv-rt').id.replace('lv-', '') + ':' + li.querySelector('b').textContent));
+      const lunch = await E(p, () => { const li = [...document.querySelectorAll('#lv-daytime .lv-rsteps > li')].find(li => li.querySelector('b').textContent === 'Lunch away from the screen'); return li ? li.querySelector('p').textContent : ''; });
+      ok(rl.join(' | ') === 'morning:Breakfast | daytime:Lunch away from the screen | evening:Lights down' && /^Eat sitting down, away from your desk and the screens\. Across 24 studies, eating while distracted made people eat more/.test(lunch),
+        'the routines lead to it at breakfast, lunch and the evening meal: ' + rl.join(' | '));
+      await p.click('#lv-daytime a[href="#practice/meal"]'); await p.waitForTimeout(500);
+      ok(await E(p, () => location.hash + ' ' + document.querySelector('#viewTitle').textContent) === '#practice/meal Mindful Meal', 'and its link opens the Mindful Meal');
+      await p.context().close();
     }
   } catch (e) {
     log.push('ERROR ' + (e && e.stack || e));

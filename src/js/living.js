@@ -180,6 +180,8 @@
         }).join("") + "</ol>" +
         (r.tips && r.tips.length ? "<h3>Good to know</h3><ul class=\"lv-tips\">" + r.tips.map(function (t) { return "<li>" + esc(lvNb(t)) + "</li>"; }).join("") + "</ul>" : "") +
         (r.keep ? '<p class="lv-keep"><b>Keeping it.</b> ' + esc(lvNb(r.keep)) + "</p>" : "") +
+        (r.drink ? "" : '<div class="note-card lv-eat"><p><b>When it\'s ready,</b> eat it slowly: the Mindful Meal starts with a few slow breaths and a moment of gratitude, then takes you through the first bites.</p>' +
+          '<a class="btn" href="#practice/meal">Mindful Meal</a></div>') +                // a dish, not a drink
       "</div>" +
       '<div class="si-side"><div class="si-opts lv-opts">' +
         '<div class="so-row"><span class="so-l">Servings<small id="lvServNote">' + esc(lvServNote()) + "</small></span>" +
