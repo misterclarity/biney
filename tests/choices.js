@@ -15,6 +15,7 @@
 //   V  the full consistency check: citations and references, British spelling, page names on a phone, tapping's timing,
 //      a long feedback message, Edge on an iPhone, the tinnitus and gamma evidence
 //   E  a mindful meal: its choices and plans, the meal itself, hunger before and after, the recipes and routines
+//   S  four programmes: Morning Tonic, Sports Performance, Creative Flow and Mindful Sex
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -1870,6 +1871,240 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         'the routines lead to it at breakfast, lunch and the evening meal: ' + rl.join(' | '));
       await p.click('#lv-daytime a[href="#practice/meal"]'); await p.waitForTimeout(500);
       ok(await E(p, () => location.hash + ' ' + document.querySelector('#viewTitle').textContent) === '#practice/meal Mindful Meal', 'and its link opens the Mindful Meal');
+      await p.context().close();
+    }
+
+    /* S. four programmes. Morning Tonic: Sleep Descent the other way round. Sports Performance: each sport with its own
+       settings, before a session and during it, with a cadence tick or timed rests between sets. Creative Flow: ease,
+       play, then let it brew. Mindful Sex: slow and present under theta, or building intensity under alpha. Every
+       combination's plan and beat; choices that follow a sport, and others that come and go; the library, search,
+       Learn and the routines */
+    if (!only || only === 'S') {
+      const intro = p => E(p, () => {
+        const q = s => document.querySelector(s), all = s => [...document.querySelectorAll(s)], tx = e => e ? e.textContent.replace(/\s+/g, ' ').trim() : '';
+        const seg = s => all(s + ' button').map(b => b.textContent.trim() + (b.getAttribute('aria-pressed') === 'true' ? '*' : '')).join(' | ');
+        return { kind: tx(q('#sIntro .si-kind')), go: tx(q('#sGo')), lens: all('#sIntro .si-len button').map(b => tx(b) + (b.getAttribute('aria-checked') === 'true' ? '*' : '')).join(' | '),
+          steps: all('#sIntro .si-steps li:not([hidden])').map(tx).join(' | '), needs: all('#sIntro .si-need li').map(tx).join(' | '), caution: tx(q('#sIntro .si-caution')),
+          choices: all('#sOpts [data-choice]').map(g => g.dataset.choice + '=' + seg('#sOpts [data-choice="' + g.dataset.choice + '"]').replace(/ \| /g, '/')).join(' ; '),
+          beat: seg('#sOptBeat'), beatNote: tx(q('#sBeatNote')), ana: seg('#sOptAna'), tap: !!q('#sOptTap'), focus: tx(document.activeElement) };
+      });
+      const go = async (p, id) => { await E(p, id => location.hash = 'practice/' + id, id); await p.waitForTimeout(450); return intro(p); };
+      const pick = async (p, k, v) => { await p.click('#sOpts [data-choice="' + k + '"] button[data-v="' + v + '"]'); await p.waitForTimeout(250); return intro(p); };
+      const run = p => E(p, () => { const X = window.__entrain, s = X.P.steps[X.P.idx] || {}, q = x => document.querySelector(x), vis = x => !!q(x) && !q(x).hidden;
+        return { step: s.title, k: s.k, dim: q('#ses').dataset.dim || '', tap: vis('#sTap') ? q('#sTap').textContent.trim() : '', sub: q('#sSub').textContent, line: q('#sLine').textContent,
+          word: q('#sWord') ? q('#sWord').textContent : '', total: X.P.total, band: X.A.track && X.A.track.band, pts: X.A.track && JSON.stringify(X.A.track.pts) }; });
+      const jump = async (p, re) => { for (let i = 0; i < 60; i++) { const r = await run(p); if (re.test(r.step)) return r; await p.click('#sNext'); await p.waitForTimeout(150); } return run(p); };
+      // every combination of a practice's own choices, each of its beats, at every length: check(plan) lists what's wrong
+      const sweep = (p, id, check) => E(p, ([id, src]) => {
+        const X = window.__entrain, d = X.pDef(id), W = /n't\b|\b(do not|never|nothing|without|stop|avoid|none)\b|feel the breath/i, chk = new Function('return ' + src)();
+        let combos = [{}], n = 0;
+        const bad = [];
+        (d.choices || []).forEach(c => { const m = []; combos.forEach(o => c.opts.forEach(v => m.push(Object.assign({}, o, { [c.key]: v[0] })))); combos = m; });
+        for (const c of combos) for (const L of d.lengths) for (const b of d.beats) {
+          localStorage.setItem('entrain.pCh.' + id, JSON.stringify(Object.assign({ beat: b.id }, c)));
+          const pl = X.pPlan(d, L), a = X.pAudio(d, pl.base), why = [], T = pl.steps.map(s => s.title), at = t => T.indexOf(t);
+          pl.steps.forEach(s => { if (W.test(s.title)) why.push('title ' + s.title); s.lines.forEach((l, k, ls) => {
+            if (!(l[0] >= 0 && l[0] < s.secs) || (k && !(l[0] > ls[k - 1][0])) || W.test(l[1]) || l[2] === 'ana') why.push(s.title + ' @' + l[0] + ': ' + l[1]); }); });
+          if (a.pts[0][0] !== 0 || a.pts.some((q, i) => i && !(q[0] > a.pts[i - 1][0])) || Math.abs(a.pts[a.pts.length - 1][0] - pl.base) > 1) why.push('beat ' + JSON.stringify(a.pts));
+          why.push(...chk({ c, L, b: b.id, pl, a, T, at, d, X }));
+          if (why.length) bad.push(JSON.stringify(c) + ' L' + L + ' ' + b.id + ': ' + why.slice(0, 3).join('; '));
+          n++;
+        }
+        localStorage.removeItem('entrain.pCh.' + id);
+        return { n, bad: bad.slice(0, 4), nbad: bad.length };
+      }, [id, check.toString()]);
+      const hz = pts => pts.map(q => q[1]);
+      const spy = () => {                  // the voice, and every tone that starts (a click is a triangle wave)
+        window.__said = []; window.__osc = [];
+        if (window.speechSynthesis) speechSynthesis.speak = u => window.__said.push(u.text);
+        const st = OscillatorNode.prototype.start;
+        OscillatorNode.prototype.start = function () { try { window.__osc.push(this.type); } catch (e) {} return st.apply(this, arguments); };
+      };
+
+      // Morning Tonic: its page, every plan, and a run
+      let p = await page(Object.assign(OPT({ audio: true, ana: 180 }), { optsOpen: '1' }));
+      let i = await go(p, 'morning-tonic');
+      ok(i.kind === 'Energy · Programme · 15 min' && i.lens === '10 min | 15 min* | 20 min' && i.go === 'Start 15 min' &&
+        i.choices === 'start=In bed*/Sitting up ; breath=Rising breath*/And breath of fire ; move=Stretch, then stand*/Breathing only' &&
+        /^Waking0\d:\d\d \| First breaths0\d:\d\d \| Rising breath0\d:\d\d \| Knees to Chest00:30 \| Supine Twist, right00:35 \| Supine Twist, left00:35 \| Up you get00:10 \| Upward Salute00:25 \| .* \| Mountain00:25 \| Light and intention0\d:\d\d \| Ready00:\d\d$/.test(i.steps),
+        'Morning Tonic: a stretch in bed, breathing that quickens, stretches and standing poses, then daylight: ' + i.steps);
+      ok(i.beat === 'Off | Theta to beta* | Theta to alpha' && /^Rises from 6 Hz, where you are on waking, through 10 Hz alpha with the breath to 16 Hz beta as you move/.test(i.beatNote) && i.ana === 'Off* | 2 min | 3 min | 5 min' && !i.tap &&
+        /^Breath of fire isn't for everyone: leave it out if you're pregnant/.test(i.caution) && /Space to stand/.test(i.needs), 'its beat rises from theta to beta; Anapana off and no tapping; a caution for breath of fire');
+      let W = await sweep(p, 'morning-tonic', function (x) {
+        const w = [], fire = x.c.breath === 'fire', move = x.c.move === 'stretch', bed = x.c.start === 'bed', br = t => x.pl.steps.find(s => s.title === t);
+        if (x.pl.total !== x.L * 60) w.push('total ' + x.pl.total);
+        if (x.T.slice(0, 3).join() !== 'Waking,First breaths,Rising breath' || x.T.slice(-2).join() !== 'Light and intention,Ready') w.push('order ' + x.T.join());
+        const f = br('First breaths'), r = br('Rising breath');
+        if (f.t.exh !== 6 || f.to.exh !== 4 || r.t.inh !== 4 || r.to.inh !== 3 || r.to.exh !== 2) w.push('the breathing');
+        if (fire !== (x.at('Breath of fire 1') > 0 && x.pl.steps[x.at('Breath of fire 1')].k === 'pump' && x.pl.steps[x.at('Breath of fire 2')].n === 30)) w.push('breath of fire');
+        if (move !== (x.at('Upward Salute') > 0 && x.at('Mountain') > x.at('Upward Salute'))) w.push('standing poses');
+        if (move && bed && !(x.at('Knees to Chest') > 2 && x.at(fire ? 'Sit up' : 'Up you get') > x.at('Supine Twist, left'))) w.push('in bed');
+        if (move && !bed && x.at('Knees to Chest') >= 0) w.push('lying, though sitting up');
+        if (move && fire && !(x.at('Breath of fire 1') < x.at('Stand up') && x.at('Stand up') < x.at('Upward Salute'))) w.push('fire before standing');
+        const v = x.a.pts.map(q => q[1]), end = x.at('Rising breath'), te = x.pl.steps[end].at + x.pl.steps[end].secs;
+        if (v[0] !== 6 || Math.max(...v) !== (x.b === 'beta' ? 16 : 10) || !x.a.pts.some(q => q[0] === te && q[1] === 10)) w.push('beat ' + JSON.stringify(x.a.pts));
+        return w;
+      });
+      ok(W.n === 48 && !W.nbad, W.n + ' plans, every combination at every length: the full length, the breathing slow to quick, breath of fire, stretches in bed or sitting up, standing poses, and a beat at 10 Hz as the breathing ends and 16 Hz (or 10) at its top' + (W.nbad ? ': ' + W.bad.join(' | ') : ''));
+      await p.click('#sGo'); await p.waitForTimeout(600);
+      let r = await run(p);
+      ok(r.step === 'Waking' && r.band === 'Theta → Beta' && /^\[\[0,6\],/.test(r.pts) && /,16\]\]$/.test(r.pts), 'it starts on waking, the beat rising from 6 Hz to 16 Hz: ' + r.pts);
+      r = await jump(p, /^Supine Twist, right$/);
+      ok(r.k === 'pose' && (await E(p, () => document.querySelector('#sFig').innerHTML.length)) > 200, 'a stretch in bed, with its drawing');
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
+      let nx = await E(p, () => { const c = document.querySelector('#sDone .sd-next a'); return c ? c.getAttribute('href') : ''; });
+      ok(nx === '#practice/focus-primer', 'its end screen suggests the Focus Primer for work');
+      await p.context().close();
+
+      // Sports Performance: a sport brings its settings, the choices that apply come and go, the session itself
+      p = await page(Object.assign(OPT({ audio: true }), { optsOpen: '1' }));
+      i = await go(p, 'sport');
+      ok(i.kind === 'Energy · Programme · 10 min' && i.lens === '5 min | 10 min*' && i.go === 'Start 10 min' && i.steps === 'Arrive00:30 | Steady breathing04:00 | See it02:30 | Your words01:15 | Ready01:45' &&
+        i.choices === 'sport=Cycling*/Running/Rowing/Weight training ; when=Before*/Before and during/During ; breath=Steady breathing*/Power breaths' &&
+        i.beat === 'Off | For your sport* | Alpha 10 Hz | Beta 15 Hz' && /^10 Hz alpha while you settle, rising to 15 Hz beta as you get ready/.test(i.beatNote),
+        'Sports Performance: before a session, slow breathing, imagery and your words, over a beat rising to beta: ' + i.steps);
+      i = await pick(p, 'sport', 'weights');
+      ok(/breath=Steady breathing\/Power breaths\*/.test(i.choices) && i.steps === 'Arrive00:30 | Power breaths00:40 | Easy breaths00:20 | Power breaths00:40 | Bracing breath02:20 | See it02:30 | Your words01:15 | Ready01:45' &&
+        /^For weight training, a steady 15 Hz beta beat/.test(i.beatNote) && i.focus === 'Weight training', 'weight training brings its own settings: power breaths and the bracing breath, a steady beta beat; the button keeps the focus');
+      i = await pick(p, 'when', 'both');
+      ok(/sets=5\/10\*\/15\/20 ; rest=1 min\/1½ min\/2 min\*\/3 min$/.test(i.choices) && i.kind === 'Energy · Programme · up to 69 min' && i.go === 'Start' &&
+        /Ready01:45 \| Set 104:00 \| Rest02:00 \| Set 204:00 .* \| Set 1004:00 \| Cool down01:00$/.test(i.steps) && !/tick=/.test(i.choices), 'during a session, sets and rests appear, ten sets with two minutes between them: ' + i.kind);
+      i = await pick(p, 'sport', 'running');
+      ok(/breath=Steady breathing\*\/Power breaths ; tick=Off\/Slower\/Usual\*\/Quicker$/.test(i.choices) && /Your run120:00 \| Cool down01:00$/.test(i.steps) &&
+        /at 160, 170 or 180 steps a minute\. Runners kept going longer with a beat matched to their stride\.$/.test(await E(p, () => document.querySelector('[data-choice="tick"]').closest('.so-row').querySelector('small').textContent)),
+        'running: steady breathing again, and a cadence tick at 170 steps a minute, on: ' + i.choices);
+      await pick(p, 'breath', 'power'); i = await pick(p, 'sport', 'rowing');
+      ok(/breath=Steady breathing\*\/Power breaths ; tick=Off\*/.test(i.choices) && /Your row120:00/.test(i.steps), 'picking a sport again brings back its own settings, over a change made before');
+      W = await sweep(p, 'sport', function (x) {
+        const w = [], S = { cycling: ['Your ride', [80, 90, 100]], running: ['Your run', [160, 170, 180]], rowing: ['Your row', [18, 22, 26]] }, lift = x.c.sport === 'weights';
+        const pre = x.c.when !== 'during', during = x.c.when !== 'before', first = x.c.breath === 'power' ? 'Power breaths' : 'Steady breathing';
+        if (pre && (x.T[1] !== first || x.T.indexOf('See it') < 0 || x.T.indexOf('Ready') < 0)) w.push('getting ready ' + x.T.join());
+        if (!during && (x.pl.total !== x.L * 60 || x.pl.steps.some(s => s.endTap))) w.push('before only ' + x.pl.total);
+        if (during && x.T[x.T.length - 1] !== 'Cool down') w.push('cool down');
+        if (during && lift) {
+          const sets = x.pl.steps.filter(s => /^Set \d+$/.test(s.title)), rests = x.pl.steps.filter(s => s.title === 'Rest');
+          if (sets.length !== +x.c.sets || rests.length !== sets.length - 1 || sets.some(s => s.endTap !== 'Set done' || !s.open) || rests.some(s => s.secs !== +x.c.rest || s.t.exh !== 6)) w.push('sets and rests');
+        } else if (during) {
+          const s = x.pl.steps.find(q => q.title === S[x.c.sport][0]), bpm = x.c.tick === 'off' ? 0 : S[x.c.sport][1][{ low: 0, mid: 1, high: 2 }[x.c.tick]];
+          if (!s || s.secs !== 7200 || s.endTap !== 'Session over' || (s.metro || 0) !== bpm || s.lines.slice(1).some((l, k) => l[0] !== 300 * (k + 1))) w.push('the session');
+        }
+        const v = x.a.pts.map(q => q[1]);
+        if (x.b === 'auto' && ((lift || !pre) ? v.some(h => h !== 15) : (v[0] !== 10 || v[v.length - 1] !== 15))) w.push('beat ' + JSON.stringify(x.a.pts));
+        return w;
+      });
+      ok(W.n > 9000 && !W.nbad, W.n + ' plans, every combination at both lengths: getting ready as chosen, the full length before a session, each sport\'s session with its cadence tick and a cue every five minutes, sets and timed rests for weights, a cool-down, and the beat for your sport' + (W.nbad ? ': ' + W.bad.join(' | ') : ''));
+      await p.context().close();
+      // running, before and during: the tick while you run; weight training: a set, then the rest
+      p = await page(Object.assign(OPT({ audio: true, voice: true }), { 'pCh.sport': JSON.stringify({ sport: 'running', when: 'both' }) }), spy);
+      await go(p, 'sport'); await p.click('#sGo'); await p.waitForTimeout(500);
+      r = await jump(p, /^Your run$/);
+      await E(p, () => { window.__entrain.P.t0 -= 5; }); await p.waitForTimeout(300);      // the tick starts three seconds in
+      const o0 = await E(p, () => window.__osc.length); await p.waitForTimeout(2200);
+      const ticks = await E(p, o0 => window.__osc.slice(o0).filter(t => t === 'triangle').length, o0);
+      ok(r.tap === 'Session over' && r.sub === '170 steps a minute' && r.band === 'Alpha → Beta' && ticks >= 4, 'running: a soft tick at 170 steps a minute (' + ticks + ' in two seconds), and Session over');
+      await p.click('#sTap'); await p.waitForTimeout(400);
+      r = await run(p);
+      ok(r.step === 'Cool down' && r.total < 2000, 'Session over moves on to the cool-down, giving back the time left');
+      await p.context().close();
+      p = await page(Object.assign(OPT({ audio: true }), { 'pCh.sport': JSON.stringify({ sport: 'weights', when: 'during', sets: '5', rest: '60' }) }));
+      await go(p, 'sport'); await p.click('#sGo'); await p.waitForTimeout(500);
+      r = await jump(p, /^Set 1$/);
+      ok(r.tap === 'Set done' && r.band === 'Beta' && r.pts === '[[0,15],[' + (r.total) + ',15]]', 'weight training: a steady 15 Hz beat, and Set done: ' + r.pts);
+      await p.click('#sTap'); await p.waitForTimeout(500);
+      r = await run(p);
+      ok(r.step === 'Rest' && r.k === 'breath' && r.line === 'Rest. Breathe in for four, and out for six.', 'Set done starts the rest, with slow breathing');
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
+      nx = await E(p, () => { const c = document.querySelector('#sDone .sd-next a'); return c ? c.getAttribute('href') : ''; });
+      ok(nx === '#practice/recovery', 'its end screen suggests Exercise Recovery');
+      await p.context().close();
+
+      // Creative Flow
+      p = await page(Object.assign(OPT({ audio: true }), { optsOpen: '1', settings: JSON.stringify({ sleepDim: true }) }));
+      i = await go(p, 'creative');
+      ok(i.kind === 'Focus · Programme · 20 min' && i.lens === '15 min | 20 min* | 30 min' &&
+        i.steps === 'Arrive00:50 | Ease in03:00 | Open awareness02:30 | Play02:00 | Your question02:30 | Let it brew05:30 | Capture03:00 | Close00:40' &&
+        i.choices === 'play=Unusual uses*/Random words/Leave it out ; brew=Daydream*/A walk/Twilight/Leave it out ; then=Finish*/Into the work' &&
+        i.beat === 'Off | Alpha, theta to brew* | Alpha 10 Hz | Theta 6 Hz', 'Creative Flow: ease, open awareness, a game and your question, then let it brew, and capture: ' + i.steps);
+      i = await pick(p, 'then', 'work');
+      ok(/Capture0\d:\d\d \| Create90:00$/.test(i.steps) && i.kind === 'Focus · Programme · up to 110 min' && i.go === 'Start', 'or straight on into the work, until you tap I\'m done: ' + i.kind);
+      await pick(p, 'then', 'end');
+      W = await sweep(p, 'creative', function (x) {
+        const w = [], work = x.c.then === 'work', st = t => x.pl.steps.find(s => s.title === t);
+        const want = ['Arrive', 'Ease in', 'Open awareness'].concat(x.c.play === 'none' ? [] : ['Play'], ['Your question'], { daydream: ['Let it brew'], walk: ['A walk'], twilight: ['Twilight'], none: [] }[x.c.brew], ['Capture', work ? 'Create' : 'Close']);
+        if (x.T.join() !== want.join()) w.push('steps ' + x.T.join());
+        if (!work && x.pl.total !== x.L * 60) w.push('total ' + x.pl.total);
+        if (work && (st('Create').endTap !== "I'm done" || x.pl.total !== x.L * 60 + 5400)) w.push('into the work');
+        if (x.c.play === 'words' && !(st('Play').k === 'shuffle' && st('Play').awake && st('Play').lead === 10)) w.push('random words');
+        if (x.c.brew === 'twilight' && st('Twilight').k !== 'drift') w.push('twilight');
+        const v = x.a.pts.map(q => q[1]);
+        if (x.b === 'auto' && (x.c.brew === 'none' ? v.some(h => h !== 10) : (v[0] !== 10 || Math.min(...v) !== 6 || v[v.length - 1] !== 10))) w.push('beat ' + JSON.stringify(x.a.pts));
+        return w;
+      });
+      ok(W.n === 216 && !W.nbad, W.n + ' plans, every combination at every length: the steps chosen in order, the full length (or the work after it), random words to play with, twilight at the edge of sleep, and a beat that dips to theta while ideas brew' + (W.nbad ? ': ' + W.bad.join(' | ') : ''));
+      await E(p, () => localStorage.setItem('entrain.pCh.creative', JSON.stringify({ play: 'words' })));
+      await go(p, 'creative'); await p.click('#sGo'); await p.waitForTimeout(500);
+      r = await jump(p, /^Play$/);
+      await E(p, () => { window.__entrain.P.t0 -= 11; }); await p.waitForTimeout(600);
+      r = await run(p);
+      ok(r.k === 'shuffle' && r.word.length > 1 && !r.dim, 'random words to link to your question, with the screen lit even when sleep steps dim it: ' + r.word);
+      await p.context().close();
+
+      // Mindful Sex
+      p = await page(Object.assign(OPT({ audio: true, ana: 180 }), { optsOpen: '1', 'pTap.mindful-sex': '1' }));
+      i = await go(p, 'mindful-sex');
+      ok(i.kind === 'Calm · Programme · up to 30 min' && i.lens === '20 min | 30 min* | 45 min' && i.go === 'Start' &&
+        i.steps === 'Arrive01:00 | Agree01:00 | Breathe together03:00 | Eye to eye01:15 | Slow touch05:30 | Together16:15 | Afterglow02:00' &&
+        i.choices === 'who=A partner*/On your own ; mode=Slow and present*/Building intensity ; touch=Yes*/Leave it out ; remind=Spoken softly/A soft chime*/Silence' &&
+        i.beat === 'Off | With your state* | Theta 6 Hz | Alpha 10 Hz' && /^A steady 6 Hz theta beat/.test(i.beatNote) && i.ana === 'Off* | 2 min | 3 min | 5 min' && !i.tap &&
+        /^For consenting adults\./.test(i.caution), 'Mindful Sex: arrive and agree, breathe together, eye contact and slow touch, then lovemaking at your own pace and afterglow, under theta: ' + i.steps);
+      await E(p, () => document.querySelector('#sOptBeat button[data-v="alpha"]').click()); await p.waitForTimeout(150);
+      i = await pick(p, 'mode', 'build');
+      ok(i.beat === 'Off | With your state* | Theta 6 Hz | Alpha 10 Hz' && /^A steady 10 Hz alpha beat, relaxed and awake, for building intensity\./.test(i.beatNote) && i.focus === 'Building intensity',
+        'building intensity brings the beat with it, to alpha: ' + i.beatNote.slice(0, 40));
+      i = await pick(p, 'who', 'solo');
+      ok(i.steps.split(' | ').map(s => s.replace(/\d\d:\d\d$/, '')).join() === 'Arrive,Breathe,Slow touch,Your time,Afterglow', 'on your own: ' + i.steps);
+      await pick(p, 'who', 'partner'); await pick(p, 'mode', 'slow');
+      W = await sweep(p, 'mindful-sex', function (x) {
+        const w = [], solo = x.c.who === 'solo', build = x.c.mode === 'build', tog = x.pl.steps.find(s => s.endTap), br = x.pl.steps.find(s => s.k === 'breath');
+        const want = solo ? ['Arrive', 'Breathe'].concat(x.c.touch === 'on' ? ['Slow touch'] : [], ['Your time', 'Afterglow']) : ['Arrive', 'Agree', 'Breathe together', 'Eye to eye'].concat(x.c.touch === 'on' ? ['Slow touch'] : [], ['Together', 'Afterglow']);
+        if (x.T.join() !== want.join() || x.pl.total !== x.L * 60) w.push('steps ' + x.T.join() + ' ' + x.pl.total);
+        if (!tog || tog.endTap !== (solo ? "I'm done" : "We're done") || !tog.dim || !tog.quiet || tog.sub !== 'At your own pace') w.push('the open step');
+        if (br.t.inh !== 4.4 || br.t.exh !== (build ? 3.5 : 6.5)) w.push('breathing ' + JSON.stringify(br.t));
+        const rem = tog.lines.slice(1);
+        if ((x.c.remind === 'quiet') !== !rem.length || rem.some((l, k) => l[0] !== 240 * (k + 1) || (x.c.remind === 'chime') !== (l[2] === 'chime' && l[1] === 'Breath and sensation.'))) w.push('reminders');
+        const v = x.a.pts.map(q => q[1]), want2 = x.b === 'theta' ? 6 : x.b === 'alpha' ? 10 : build ? 10 : 6;
+        if (v.some(h => h !== want2)) w.push('beat ' + JSON.stringify(x.a.pts));
+        return w;
+      });
+      ok(W.n === 216 && !W.nbad, W.n + ' plans, every combination at every length: with a partner or on your own, the full length, the screen dimmed and a reminder every four minutes while you make love (a chime, spoken, or none), slow or fuller breathing, and theta or alpha with your state' + (W.nbad ? ': ' + W.bad.join(' | ') : ''));
+      await p.click('#sGo'); await p.waitForTimeout(500);
+      r = await jump(p, /^Together$/);
+      ok(r.dim === '1' && r.tap === "We're done" && r.sub === 'At your own pace' && r.band === 'Theta', 'lovemaking at your own pace: the screen dims, and a button to say you\'re done');
+      await p.context().close();
+
+      // the library, search, Learn and the routines
+      p = await page(OPT());
+      const lib = await E(p, () => window.__entrain.libAll().filter(x => /^#practice\/(morning-tonic|sport|creative|mindful-sex)$/.test(x.href))
+        .map(x => x.href.replace('#practice/', '') + ' ' + x.goal + '+' + (x.also || []).join('+') + ' ' + x.method + ' ' + x.posture.join('+')).sort().join(' | '));
+      ok(lib === 'creative focus+ program sit | mindful-sex calm+reflect program lie+sit | morning-tonic energy+ program lie+sit+stand | sport energy+focus program sit+stand',
+        'in the library: Morning Tonic and Sports Performance under Energy, Creative Flow under Focus, Mindful Sex under Calm: ' + lib);
+      await p.click('#tbFind');
+      const all = async q => { await p.fill('#fdIn', q); await p.waitForTimeout(250); return E(p, () => [...document.querySelectorAll('#fdRes .fd-it')].map(a => a.getAttribute('href'))); };
+      const find = async q => (await all(q))[0];
+      const f = [await find('morning tonic'), await find('wake up'), await find('rowing'), await find('weight training'), (await all('cycling')).filter(h => /^#practice\//.test(h))[0],
+        await find('creativity'), await find('brainstorm'), await find('mindful sex'), await find('intimacy'), await find('sensate focus')];
+      await p.keyboard.press('Escape');
+      ok(f.join() === '#practice/morning-tonic,#practice/morning-tonic,#practice/sport,#practice/sport,#practice/sport,#practice/creative,#practice/creative,#practice/mindful-sex,#practice/mindful-sex,#practice/mindful-sex',
+        'search finds each first (for cycling, the first practice after the cyclic sigh): ' + f.join(', '));
+      await E(p, () => location.hash = 'l-morning'); await p.waitForTimeout(400);
+      const lt = await t(p, '#v-learn');
+      ok(/Waking up\. The grogginess after waking/.test(lt) && /Sport\. What you say to yourself matters/.test(lt) && /Creative thinking\. Ideas come more freely/.test(lt) && /Mindful sex\. Mindfulness is one of the better-tested tools/.test(lt) &&
+        /Theta for slow lovemaking and alpha for intensity\? No study has tested binaural beats during sex/.test(lt) &&
+        ['Hilditch, C. J.', 'Blanchfield, A. W.', 'Bood, R. J.', 'Jebabli, N.', 'Colzato, L. S.', 'Lacaux, C.', 'Brotto, L. A.', 'Banbury, S.', 'Lorenz, T. A.', 'Safron, A.'].every(n => lt.includes(n)),
+        'Learn gives the evidence for each, with the references, and answers theta or alpha for sex');
+      await E(p, () => location.hash = 'living/routines'); await p.waitForTimeout(500);
+      const rl = await E(p, () => ['morning-tonic', 'sport'].map(id => [...document.querySelectorAll('#lvp-routines .lv-rsteps > li')].filter(li => li.querySelector('a[href="#practice/' + id + '"]')).map(li => li.querySelector('b').textContent).join()));
+      ok(rl.join(' | ') === 'Up at your usual time | Move in the day', 'the routines lead to Morning Tonic on waking, and to Sports Performance for exercise');
       await p.context().close();
     }
   } catch (e) {

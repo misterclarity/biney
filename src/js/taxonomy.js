@@ -25,16 +25,16 @@
     sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
       ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
     calm: [["calm-reset", "program", "sit walk"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
-      ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["meal", "program", "sit"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
+      ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["meal", "program", "sit"], ["mindful-sex", "program", "lie sit"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
       ["t:preop-calm", "sound", "lie"]],
-    focus: [["focus-primer", "program", "sit"], ["anapana", "meditate", "sit"], ["b:box", "breath", "sit"],
+    focus: [["focus-primer", "program", "sit"], ["creative", "program", "sit"], ["anapana", "meditate", "sit"], ["b:box", "breath", "sit"],
       ["x:prime", "sound", "sit"], ["t:deep-work", "sound", "sit"], ["t:sustained-24", "sound", "sit"],
       ["t:vigilance-16", "sound", "sit"], ["t:gamma-40", "sound", "sit"], ["t:gamma-memory", "sound", "sit"],
       ["t:creative-reverie", "sound", "sit"]],
-    energy: [["morning-yoga", "move", "stand"], ["standing-flow", "move", "stand"], ["morning-stretch", "move", "stand"],
+    energy: [["morning-tonic", "program", "lie sit stand"], ["sport", "program", "sit stand"], ["morning-yoga", "move", "stand"], ["standing-flow", "move", "stand"], ["morning-stretch", "move", "stand"],
       ["standing-reset", "move", "stand"], ["balance-yoga", "move", "stand"], ["kapalabhati", "breath", "sit"],
       ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"]],
     recover: [["recovery", "program", "sit walk"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
@@ -46,7 +46,7 @@
   var ALSO = {
     "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],
     anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], gratitude: ["calm"], "back-hips": ["calm"],
-    "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"], meal: ["reflect"]
+    "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"], meal: ["reflect"], "mindful-sex": ["reflect"], sport: ["focus"]
   };
   var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8" };
   var TOOLS = {

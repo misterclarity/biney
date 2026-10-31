@@ -43,22 +43,26 @@
     try { var v = JSON.parse(store.get("pCh." + id) || "null"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; }
   }
   function pChoiceSet(d, k, v) { var o = pChoices(d.id); o[k] = v; store.set("pCh." + d.id, JSON.stringify(o)); }
+  // a choice's usual value can follow another choice (a sport's own settings): def is then a function of the practice
+  function pChoiceDef(d, c) { return typeof c.def === "function" ? c.def(d) : c.def; }
   function pChoice(d, key) {
     var c = (d.choices || []).filter(function (x) { return x.key === key; })[0];
     if (!c) return undefined;
     var v = pChoices(d.id)[key];
-    return c.opts.some(function (o) { return o[0] === v; }) ? v : c.def;
+    return c.opts.some(function (o) { return o[0] === v; }) ? v : pChoiceDef(d, c);
   }
+  function pChoiceShown(d, c) { return !c.show || c.show(d); }       // some apply only with others (the rests between sets)
+  function pFn(v, d) { return typeof v === "function" ? v(d) : v; }  // a note or band that follows the choices
   function pBeat(d) {
     var v = pChoices(d.id).beat;
     return d.beats.filter(function (b) { return b.id === v; })[0] || d.beats[0];
   }
   // the binaural layer as it will play: the practice's own, or the beat chosen for it, whose points
-  // can follow the practice's length (a function of its total seconds)
+  // can follow the practice's length (a function of its total seconds) and its other choices
   function pAudio(d, total) {
     if (!d.audio || !d.beats) return d.audio;
     var b = pBeat(d);
-    return ext(ext({}, d.audio), { band: b.band, pts: typeof b.pts === "function" ? b.pts(total || P.base || 600) : b.pts });
+    return ext(ext({}, d.audio), { band: pFn(b.band, d), pts: typeof b.pts === "function" ? b.pts(total || P.base || 600, d) : b.pts });
   }
   var P_PACE = { inh: [2, 10], exh: [2, 12] };     // seconds, in half-second steps
   // breathing at your resonance rate (from the test, or 5.5 a minute), even in and out or, where a practice
@@ -540,7 +544,7 @@
   }
   function pEnter(i) {
     var prev = P.steps[P.idx], s = P.steps[i];
-    P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1;
+    P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1; P.metroNext = 0;
     napWakeStop();                                   // wake-up chimes belong to their own step
     if (s.k === "wake") { NP.rung = 0; NP.vibs = 0; }
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
@@ -631,6 +635,7 @@
     else if (s.k === "pump") pPumpTick(s, st);
     else if (s.k === "shuffle") pShuffleTick(s, st);
     else if (s.k === "pmr") pPmrTick(s, st);
+    if (s.metro) pMetroTick(s, st);
     pAudioSync(T);
     pUI();
   }
@@ -731,9 +736,19 @@
       P.pumpNext++;
     }
   }
+  /* ----- a cadence tick: a soft click s.metro times a minute, to move in time with (a sports session) ----- */
+  function pMetroTick(s, st) {
+    if (!A.ctx || !pBusOn() || st < 3) return;
+    var gap = 60 / s.metro, horizon = st + (document.hidden ? 2 : 0.6);
+    if (!P.metroNext) P.metroNext = Math.max(3, Math.ceil(st / gap) * gap);
+    while (P.metroNext < Math.min(horizon, s.secs - 0.5)) {
+      if (P.metroNext >= st - 0.05) pClick(A.ctx.currentTime + (P.metroNext - st), 0.07);
+      P.metroNext += gap;
+    }
+  }
   function pShuffleTick(s, st) {
-    var k = Math.floor((st - 1) / s.every);
-    if (st < 1 || k === P.wordAt) return;
+    var lead = s.lead || 1, k = Math.floor((st - lead) / s.every);      // lead: time to say what the words are for
+    if (st < lead || k === P.wordAt) return;
     P.wordAt = k;
     var pool = SHUFFLE_WORDS.filter(function (w) { return !P.used[w]; });
     if (!pool.length) { P.used = {}; pool = SHUFFLE_WORDS; }
@@ -1202,11 +1217,13 @@
   }
   function pHasBreath(d) { return pPlan(d, pLenOf(d, P.len)).steps.some(function (s) { return s.k === "breath"; }); }
   /* The parts of a practice's page that follow its plan, drawn again in place when a choice changes the steps */
+  // open: it runs until you say it's over, always (the meal) or with the choices made (a sports session)
+  function pOpenPlan(d, plan) { return !!d.open || plan.steps.some(function (s) { return s.endTap; }); }
   function pKindTxt(d, plan) {
     return [d.custom ? "Your routine" : goalOf(d.goal) ? goalOf(d.goal).name : "", methodName(d.method)].filter(Boolean).join(" · ") + (d.exp ? " · Experimental" : "") + " · " +
-      (d.selfPaced ? "self-paced, about " + d.est + " min" : (d.open ? "up to " : "") + Math.max(1, Math.round(plan.total / 60)) + " min");
+      (d.selfPaced ? "self-paced, about " + d.est + " min" : (pOpenPlan(d, plan) ? "up to " : "") + Math.max(1, Math.round(plan.total / 60)) + " min");
   }
-  function pGoTxt(d, plan) { return "Start" + (d.open || d.selfPaced ? "" : " " + Math.max(1, Math.round(plan.total / 60)) + " min"); }
+  function pGoTxt(d, plan) { return "Start" + (pOpenPlan(d, plan) || d.selfPaced ? "" : " " + Math.max(1, Math.round(plan.total / 60)) + " min"); }
   function pSegsHtml(d, plan) {
     return plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + (d.selfPaced ? 1 : s.secs) + ' 1 0" title="' + esc(s.title) + '"></i>'; }).join("");
   }
@@ -1241,8 +1258,9 @@
     var opts = [], every = [];
     // this practice's own choices come first: how you'll be, which beat, what pace
     (d.choices || []).forEach(function (c) {
-      var v = pChoice(d, c.key);
-      opts.push('<div class="so-row so-seg"><span class="so-l">' + esc(c.label) + (c.note ? "<small>" + esc(c.note) + "</small>" : "") + '</span><div class="mini-seg" data-choice="' + c.key + '">' +
+      if (!pChoiceShown(d, c)) return;
+      var v = pChoice(d, c.key), note = pFn(c.note, d);
+      opts.push('<div class="so-row so-seg"><span class="so-l">' + esc(c.label) + (note ? "<small>" + esc(note) + "</small>" : "") + '</span><div class="mini-seg" data-choice="' + c.key + '">' +
         c.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (v === o[0]) + '">' + esc(o[1]) + "</button>"; }).join("") + "</div></div>");
     });
     if (d.audio && d.beats) {
@@ -1354,7 +1372,7 @@
   }
   // what the chosen beat is, or that there's none
   function pBeatNote(d, O) {
-    return O.audio ? pBeat(d).note + " " + d.audio.carrier + " Hz carrier. Headphones needed." : "No beat: the guidance and breath cues only.";
+    return O.audio ? pFn(pBeat(d).note, d) + " " + d.audio.carrier + " Hz carrier. Headphones needed." : "No beat: the guidance and breath cues only.";
   }
   // the optimal default is your own resonance rate: the test's answer, or 5.5 a minute, the usual one, until you take it
   function pPaceNote(pc) {
@@ -1366,7 +1384,7 @@
     var s = [];
     (d.choices || []).forEach(function (c) {                 // a choice of its own, when it isn't the usual one
       var v = pChoice(d, c.key);
-      if (v !== c.def) s.push(c.opts.filter(function (o) { return o[0] === v; })[0][1]);
+      if (pChoiceShown(d, c) && v !== pChoiceDef(d, c)) s.push(c.opts.filter(function (o) { return o[0] === v; })[0][1]);
     });
     if (d.pace && pPace(d).own) s.push("In " + pSecs(pPace(d).inh) + ", out " + pSecs(pPace(d).exh));
     s.push(O.voice && window.speechSynthesis ? "Voice" : "No voice");
@@ -1412,7 +1430,16 @@
     document.querySelectorAll("#sOpts [data-choice]").forEach(function (g) {
       g.addEventListener("click", function (e) {
         var b = e.target.closest("button"); if (!b) return;
-        pChoiceSet(d, g.dataset.choice, b.dataset.v); press(g, b); sum();
+        var k = g.dataset.choice, c = (d.choices || []).filter(function (x) { return x.key === k; })[0] || {};
+        pChoiceSet(d, k, b.dataset.v);
+        if (c.resets || c.redraw) {                   // a sport brings back its own settings; other choices appear or go
+          if (c.resets) { var o = pChoices(d.id); c.resets.forEach(function (r) { delete o[r]; }); store.set("pCh." + d.id, JSON.stringify(o)); }
+          pIntro(d.id);
+          var nb = document.querySelector('#sOpts [data-choice="' + k + '"] button[data-v="' + b.dataset.v + '"]');
+          if (nb) nb.focus();
+          return;
+        }
+        press(g, b); sum();
         pIntroReplan(d);
       });
     });
@@ -1593,7 +1620,7 @@
   /* ----- Today: a suggestion for the time of day ----- */
   function pSuggest() {
     var hr = new Date().getHours(), pick;
-    if (hr >= 5 && hr < 9) pick = ["standing-flow", "This morning", "Wake the body up with a few minutes of standing yoga."];
+    if (hr >= 5 && hr < 9) pick = ["morning-tonic", "This morning", "Wake up gently: a long stretch, breathing that quickens, and a beat that rises with you."];
     else if (hr >= 9 && hr < 12) pick = ["focus-primer", "Before you work", "Steady your breath, then prime with beta before you start."];
     else if (hr >= 12 && hr < 17) pick = ["calm-reset", "This afternoon", "Ten minutes to bring stress down: cyclic sighs, then resonance breathing."];
     else if (hr >= 17 && hr < 21) pick = ["coherence", "This evening", "Heart-focused breathing at your resonance pace, with live coherence."];
@@ -1609,12 +1636,12 @@
     if (a) { a.href = "#living/" + rt[0]; bSetT("#sgRt", rt[1]); }        // the routine for this time of day, in Healthy living
   }
 
-  function pSleepyStep(s) { return !!s.sleepy || s.k === "drift" || s.k === "nap" || s.k === "shuffle"; }
+  function pSleepyStep(s) { return !!s.sleepy || s.k === "drift" || s.k === "nap" || (s.k === "shuffle" && !s.awake); }   // awake: words to play with, not to sleep by
   function pInit() {
     stLoad();
     P.opt = pOptDefaults();
     var cs = getComputedStyle(document.documentElement);
-    ["relax", "stim", "ther", "accent", "food"].forEach(function (k) { P.col[k] = cs.getPropertyValue("--" + k).trim() || "#5eead4"; });
+    ["relax", "stim", "ther", "accent", "food", "hr"].forEach(function (k) { P.col[k] = cs.getPropertyValue("--" + k).trim() || "#5eead4"; });
     P.col.warm = "#f5b97a";
     P.cv = $("#sCanvas");
     P.ctx = P.cv && P.cv.getContext ? P.cv.getContext("2d") : null;
