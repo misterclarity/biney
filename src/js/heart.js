@@ -476,10 +476,10 @@
     else sub = H.hasRR ? "Beat to beat" : "Smoothed rate from the sensor";
     bSetT("#hrNowS", sub);
 
-    var sw = B.swings, last = sw[sw.length - 1];
+    var sw = swingList(), last = sw[sw.length - 1];
     bSetT("#hrSwLast", last ? last.amp.toFixed(1) : "—");
     bSetT("#hrSwAvg", sw.length ? avg(sw.map(function (s) { return s.amp; })).toFixed(1) : "—");
-    bSetT("#hrSwAvgS", sw.length ? "Average of " + sw.length + (sw.length === 1 ? " breath" : " breaths") : "Average across breaths");
+    bSetT("#hrSwAvgS", sw.length ? "Average of " + sw.length + (sw.length === 1 ? " breath" : " breaths") + (swingsHeard() ? " heard" : "") : "Average across breaths");
 
     var now = bNow(), r = H.state === "on" ? rmssd(now - 60, now) : null;
     bSetT("#hrRmssd", r ? String(Math.round(r.v)) : "—");
@@ -697,6 +697,7 @@
     });
     $("#hrFindStart").addEventListener("click", function () { if (B.finder) bStop(); else finderStart(); });
     $("#hrFindUse").addEventListener("click", useBest);
+    micInit();
     var redraw = function () { drawSwings(); drawFind(); drawSpectrum(); };
     if (window.ResizeObserver) {
       var ro = new ResizeObserver(redraw);

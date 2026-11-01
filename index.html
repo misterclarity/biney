@@ -383,6 +383,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .b-stat b{color:var(--text);font-weight:780}
   .b-stat.b-hr{color:var(--hr);background:color-mix(in srgb,var(--hr) 12%,transparent)}
   .b-stat.b-hr b{color:var(--hr)}
+  .b-stat.b-mic{color:var(--b-in);background:color-mix(in srgb,var(--b-in) 12%,transparent)}
+  .b-stat.b-mic b{color:var(--b-in)}
   .b-stat.b-hr .hr-dot{width:7px;height:7px;margin:0 6px 0 0;vertical-align:1px;opacity:.5}
   .b-view{
     position:relative;height:clamp(300px,50vh,560px);border-radius:18px;overflow:hidden;
@@ -561,10 +563,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .hr-meter span{position:absolute;top:9px;font-size:10.5px;color:var(--text-faint);line-height:1}
   .hr-meter span:first-of-type{left:0}
   .hr-meter span:last-of-type{right:0}
-  .hr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-rows:auto 1fr;gap:12px}
+  .hr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-rows:auto 1fr auto;gap:12px}
   .hr-bars{grid-column:1;grid-row:1;align-self:start}
   .hr-spec{grid-column:1;grid-row:2;align-self:start}
   .hr-body > .hr-find{grid-column:2;grid-row:1 / span 2}
+  .hr-mic{grid-column:1 / -1;grid-row:3}
   #resonance-test,#connect,.st-card[id]{scroll-margin-top:84px}
   /* once a sensor is on, the page is about your numbers: the introduction steps aside */
   .hr[data-state="on"] .hr-intro > p:not(.hr-msg),.hr[data-state="lost"] .hr-intro > p:not(.hr-msg){display:none}
@@ -581,11 +584,29 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .hr-find-txt{margin:0;font-size:13.5px;color:var(--text-dim)}
   .hr-find-txt.hr-find-note{color:var(--b-hold);font-size:13px}
   .hr-find-foot{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  /* what each number and chart shows, folded under it */
+  details.ev.hr-what{margin-top:2px}
+  .hr-what .ev-body{max-width:72ch}
+  .hr-what .ev-body p{margin:0 0 8px;line-height:1.55}
+  .hr-what .ev-body p:last-child{margin-bottom:0}
+  .hr-what-tiles{background:var(--panel);border-radius:16px;padding:12px 16px;border-top:0;margin-top:-4px}
+  .hr-dl{margin:0 0 8px;display:grid;gap:10px}
+  .hr-dl dt{font-weight:750;color:var(--text);font-size:13.5px}
+  .hr-dl dd{margin:2px 0 0;line-height:1.55}
+  .hr-spec-read{margin:0;font-size:13px;color:var(--text-dim);line-height:1.5}
+  /* breath from the microphone: its trace, what it hears, and a microphone to choose */
+  .hr-chart.mc-chart{height:150px}
+  .mc-read{margin:0;font-size:13.5px;color:var(--text-dim);line-height:1.5}
+  .mc-read:empty{display:none}
+  .mc-warn{margin:0;font-size:13px;color:var(--b-hold);line-height:1.5}
+  .mc-pick{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);min-width:0;max-width:100%}
+  .mc-pick select{min-width:0;max-width:100%;min-height:40px;background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font:inherit;font-size:13.5px}
+  .hr-mic[data-on="1"] #mcStart{border-color:color-mix(in srgb,var(--b-in) 45%,transparent)}
   @media (max-width:1100px){
     .hr-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
     .hr-tile.coh{grid-column:span 2}
   }
-  @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr);grid-template-rows:none} .hr-bars,.hr-spec,.hr-body > .hr-find{grid-column:auto;grid-row:auto} }
+  @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr);grid-template-rows:none} .hr-bars,.hr-spec,.hr-body > .hr-find,.hr-mic{grid-column:auto;grid-row:auto} }
   @media (max-width:640px){
     .hr-top{padding:18px}
     .hr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -1634,7 +1655,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .lv-promo-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1;line-height:1.45}
   .lv-promo-t b{font-size:15.5px;font-weight:750;color:var(--text)}
   .lv-promo-t span{font-size:13.5px;color:var(--text-dim)}
-  .lv-go{transform:rotate(90deg);color:var(--text-faint)}
+  .lv-promo-go{transform:rotate(90deg);color:var(--text-faint)}
   .lv-page{--c1:var(--pcol)}
   .lv-intro{margin-bottom:14px}
   .lv-tabs{margin:0 0 16px}
@@ -1664,6 +1685,20 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .lv-use-h .strength{margin-left:0}
   .lv-uses p{margin:3px 0 0;font-size:13.5px;color:var(--text-dim);line-height:1.55}
   .lv-facts{margin:16px 0 0;display:grid;gap:12px;max-width:70ch}
+  /* coffee: what it does in the body, with a chart of how long a cup's caffeine stays */
+  .lv-fx{list-style:none;margin:0;padding:0;display:grid;gap:12px;max-width:70ch}
+  .lv-fx b{font-size:14px;font-weight:720;color:var(--text)}
+  .lv-fx p{margin:3px 0 0;font-size:13.5px;color:var(--text-dim);line-height:1.55}
+  .lv-body h3.lv-h3-gap{margin-top:20px}
+  .lv-curve{margin:12px 0 4px;max-width:440px}
+  .lv-curve svg{display:block;width:100%;height:auto;overflow:visible}
+  .lv-cv-grid{stroke:var(--line);stroke-width:1}
+  .lv-cv-t{fill:var(--text-faint);font-size:10.5px;font-weight:600}
+  .lv-cv-band{fill:var(--pcol);opacity:.17}
+  .lv-cv-line{fill:none;stroke:var(--pcol);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+  .lv-cv-dot{fill:var(--pcol);stroke:var(--panel);stroke-width:2}
+  .lv-cv-lab{fill:var(--text-dim);font-size:11px;font-weight:650}
+  .lv-curve figcaption{margin-top:6px;font-size:12.5px;color:var(--text-faint);line-height:1.5}
   .lv-facts dt{font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint)}
   .lv-facts dd{margin:3px 0 0;font-size:13.5px;color:var(--text-dim);line-height:1.55}
   .lv-care{margin-top:16px;padding:12px 14px;border-radius:12px;background:rgba(251,191,36,.09);color:#fcd34d;max-width:70ch}
@@ -1691,7 +1726,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .lv-rsteps b{font-size:14.5px;font-weight:720;color:var(--text)}
   .lv-rsteps p{margin:3px 0 0;font-size:13.5px;color:var(--text-dim);line-height:1.55}
   .lv-when{display:block;font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--pcol);margin-bottom:1px}
-  .lv-rsteps .lv-go{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  /* a step's practices and pages, behind a button that shows them */
+  .lv-sugg{margin-top:9px}
+  .lv-sugg > summary{display:inline-flex;align-items:center;gap:8px;min-height:36px;box-sizing:border-box;padding:6px 12px 6px 14px;border-radius:999px;cursor:pointer;list-style:none;user-select:none;
+    background:var(--panel-2);border:1px solid var(--line);color:var(--text);font-size:13px;font-weight:680}
+  .lv-sugg > summary::-webkit-details-marker{display:none}
+  .lv-sugg > summary:hover{background:color-mix(in srgb,var(--pcol) 12%,var(--panel-2));border-color:color-mix(in srgb,var(--pcol) 40%,transparent)}
+  .lv-sugg[open] > summary{border-color:color-mix(in srgb,var(--pcol) 40%,transparent)}
+  .lv-sugg-n{min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:999px;display:inline-grid;place-items:center;font-size:11.5px;font-weight:750;
+    background:color-mix(in srgb,var(--pcol) 18%,transparent);color:var(--pcol)}
+  .lv-sugg .lv-chev{margin:0;width:15px;height:15px}
+  .lv-sugg[open] > summary .lv-chev{transform:none}
+  .lv-rsteps .lv-go{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0 2px}
   .lv-rt .lv-refs{margin-top:14px}
   .lv-tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0}
   .lv-tags span{font-size:11.5px;font-weight:650;color:var(--text-dim);background:var(--panel-2);border-radius:7px;padding:3px 8px}
@@ -2149,6 +2195,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <span class="b-stat"><b id="bClock">04:57</b> <span id="bClockL">left</span></span>
             <span class="b-stat b-hr" id="bHrStat" title="Heart rate from your sensor" hidden><i class="hr-dot" aria-hidden="true"></i><b id="bHr">—</b> bpm</span>
             <span class="b-stat b-hr" id="bCohStat" title="Coherence score over the last 64 seconds, usually 0 to 8" hidden>coherence <b id="bCoh">—</b></span>
+            <span class="b-stat b-mic" id="bMicStat" title="Your breathing pace, as the microphone hears it" hidden>heard <b id="bMic">—</b> /min</span>
             <span class="b-favs" id="bFav"></span>
           </div>
         </div>
@@ -2455,6 +2502,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           <div class="s" id="hrCohS">Needs a heart-rate sensor</div>
         </div>
       </div>
+      <details class="ev hr-what hr-what-tiles">
+        <summary>What these numbers mean</summary>
+        <div class="ev-body">
+          <dl class="hr-dl">
+            <div><dt>Heart rate</dt><dd>Beats a minute. With a sensor that sends the time between beats, an ear clip or a chest strap, it's worked out beat by beat, so you can watch it rise as you breathe in and fall as you breathe out. A watch sends a rate it has averaged over a few seconds, so it moves more slowly.</dd></div>
+            <div><dt>Swing</dt><dd>How far your heart rate rises and falls within one breath: its highest minus its lowest. Breathing in speeds the heart and breathing out slows it, a rhythm called respiratory sinus arrhythmia. The swing grows as you breathe more slowly and evenly, and is usually largest near your resonance pace, about 4.5 to 6.5 breaths a minute. <i>Last breath</i> is the newest; <i>this session</i> averages them. Breaths count during a breathing session, on Breathe or in a practice, or whenever Breath from the microphone hears them.</dd></div>
+            <div><dt>RMSSD</dt><dd>How much each gap between heartbeats differs from the one before, in milliseconds (the root mean square of successive differences). It's the main short-term measure of the variability your vagus nerve, the brake of your rest-and-digest system, puts into your heartbeat: higher generally means more relaxed and recovered. It varies a lot between people and with age, so compare it with your own readings, taken the same way at the same time of day, rather than with anyone else's. Studies usually record five minutes; here it's the last 60 seconds, which needs beat-to-beat data.</dd></div>
+            <div><dt>Coherence</dt><dd>How much of your heart rhythm's variation falls into one smooth wave: the strongest peak between 0.04 and 0.26&nbsp;Hz, against everything else, scored as HeartMath publishes it, usually from 0 to 8. Slow, even breathing raises it most reliably, and so does a warm feeling such as appreciation. It updates every 5 seconds from the last 64 seconds of heartbeats, so it takes up to a minute to show a change. The spectrum below shows what it measures.</dd></div>
+          </dl>
+          <p><a href="#l-mic">More in Learn</a>, with the research behind these measures and the microphone.</p>
+        </div>
+      </details>
 
       <!-- the order of these, and of the guide, follows the sensor: see hrLayout() in heart.js -->
       <div class="hr-body">
@@ -2462,9 +2521,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           <div class="hr-box-head"><b>Breath by breath</b><span class="hint">Each bar is one breath's heart-rate swing, in bpm</span></div>
           <div class="hr-chart">
             <canvas id="hrBars" aria-hidden="true"></canvas>
-            <p class="hr-empty" id="hrBarsEmpty">Connect a sensor and start a breathing session. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
+            <p class="hr-empty" id="hrBarsEmpty">Connect a sensor, then start a breathing session or turn on Breath from the microphone. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
           </div>
           <p class="hr-summary" id="hrSummary" hidden></p>
+          <details class="ev hr-what">
+            <summary>What this shows</summary>
+            <div class="ev-body">
+              <p>Each bar is one breath: how far your heart rate rose and fell within it, the newest brightest on the right. Bars come during a breathing session on Breathe or in a practice, timed by the guide; with Breath from the microphone on, every breath it hears adds one too, at any time.</p>
+              <p>Taller bars mean your heart is following your breath more strongly, and bars of an even height mean a steady rhythm. They usually grow as you slow down towards about six breaths a minute, and shrink when breathing is fast, shallow or uneven, or when you move or talk. A watch smooths its heart rate over a few seconds, so its bars come out shorter than a chest strap's or an ear clip's.</p>
+            </div>
+          </details>
         </div>
         <div class="hr-box hr-find" id="resonance-test">
           <div class="hr-box-head"><b>Resonance test</b><span class="hint" id="hrFindWhen">Connect a sensor first</span></div>
@@ -2478,13 +2544,53 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <button class="btn" id="hrFindStart" disabled>Start resonance test</button>
             <button class="btn primary" id="hrFindUse" hidden>Breathe at this pace</button>
           </div>
+          <details class="ev hr-what">
+            <summary>What this shows</summary>
+            <div class="ev-body">
+              <p>Your resonance pace is the breathing rate at which your heart rate swings the most. Each breath's swing then falls in step with your blood-pressure reflex, the baroreflex, which has its own rhythm of about 10 seconds, so the two add up. In adults it usually lies between 4.5 and 6.5 breaths a minute, and breathing there is the core of heart rate variability biofeedback.</p>
+              <p>The test follows the steps of the published protocol, without its rests between paces: two minutes at each of five paces, slowing from 6.5 to 4.5, then the average swing at each, leaving out the first breath at each pace while your heart settles. Each bar is one pace; the tallest is your result. Sit still, breathe gently through your nose rather than deeply, and keep the sensor still. Differences under about 1&nbsp;bpm are within the noise, so between two close paces pick the one that feels easier.</p>
+            </div>
+          </details>
         </div>
         <div class="hr-box hr-spec">
-          <div class="hr-box-head"><b>Heart rhythm spectrum</b><span class="hint">Pink: your heart rhythm · dashed: your breathing pace</span></div>
+          <div class="hr-box-head"><b>Heart rhythm spectrum</b><span class="hint">Pink: your heart rhythm · dashed: your breathing</span></div>
           <div class="hr-chart sm">
             <canvas id="hrSpec" aria-hidden="true"></canvas>
             <p class="hr-empty" id="hrSpecEmpty">After 64 seconds of heart data, this shows which rhythms your heart rate is moving in. Coherence is high when one smooth peak stands out, usually right on your breathing pace.</p>
           </div>
+          <p class="hr-spec-read" id="hrSpecRead" aria-live="polite" hidden></p>
+          <details class="ev hr-what">
+            <summary>How to read it</summary>
+            <div class="ev-body">
+              <p>The chart splits the last 64 seconds of your heart rate into its rhythms, the way a prism splits light into colours. Left to right is how fast each rhythm is, in hertz, cycles a second; the height is how strongly your heart rate moves in it. Hertz times 60 gives breaths a minute: 0.1&nbsp;Hz is 6 a minute, 0.2&nbsp;Hz is 12.</p>
+              <p>The shaded band, 0.04 to 0.26&nbsp;Hz, is where the coherence score looks for its peak, and the darker fill under the peak is the 0.030&nbsp;Hz window it counts as the peak. One tall, narrow peak means a coherent rhythm; low, scattered bumps mean your heart rate wanders with no rhythm leading.</p>
+              <p>The dashed line is your breathing: during a session, the guide's pace; with Breath from the microphone on, the pace it hears. Your breathing usually makes the biggest peak, so when the two line up, your breathing is setting your heart's rhythm. A peak near 0.1&nbsp;Hz with your breathing elsewhere comes from the blood-pressure reflex, whose rhythm is about 10 seconds. Researchers name two bands: 0.04 to 0.15&nbsp;Hz, low frequency, mostly that reflex at rest and slow breathing below about 8.5 a minute; and 0.15 to 0.4&nbsp;Hz, high frequency, the rhythm of breathing at ordinary paces.</p>
+            </div>
+          </details>
+        </div>
+        <div class="hr-box hr-mic" id="breath-mic">
+          <div class="hr-box-head"><b>Breath from the microphone</b><span class="hint" id="mcHint">Off</span></div>
+          <p class="hr-find-txt">Your headset's or phone's microphone can hear you breathe: your breathing pace shows here and as the dashed line on the spectrum, and each breath it hears adds a bar to Breath by breath, without a breathing session. Nothing is recorded or sent anywhere.</p>
+          <div class="hr-chart mc-chart">
+            <canvas id="mcTrace" aria-hidden="true"></canvas>
+            <p class="hr-empty" id="mcEmpty">Turn it on and breathe as you normally would. The sound of your breath shows here as it rises and falls, with your heart rate under it when a sensor is on.</p>
+          </div>
+          <p class="mc-read" id="mcRead" role="status"></p>
+          <p class="mc-warn" id="mcWarn" hidden></p>
+          <div class="hr-find-foot">
+            <button class="btn" id="mcStart" aria-pressed="false">Listen for my breathing</button>
+            <label class="mc-pick" id="mcPickL" hidden><span>Microphone</span><select id="mcPick"></select></label>
+          </div>
+          <details class="ev hr-what">
+            <summary>How it works, and what helps</summary>
+            <div class="ev-body">
+              <p>Breathing is a soft rushing sound. The page keeps the part of the microphone's sound where breath noise lies, 0.5 to 5&nbsp;kHz, above the beat's tones and a room's hum, measures how loud it is ten times a second, and finds the rhythm in that, the method a published study tested with a headset microphone under the nose. It needs about 25 seconds to find your pace, then updates every second, from the last minute. When in-breath and out-breath sound alike, the pace could read double; the guide's pace or your heart's rhythm settles which it is.</p>
+              <p>What helps: the microphone close to your nose or mouth, a headset's, wired earphones' clipped near your chin, or the phone propped up 10 to 20&nbsp;cm from your face. Gentle breathing through the nose is very quiet; a slightly longer, audible out-breath, through the nose or pursed lips, is far easier to hear. Slow breathing at about six a minute is the hardest pace to read, so give it time. Listen to any sound through headphones, since the beat or rain from a speaker drowns your breathing; talking and music get in the way too.</p>
+              <p>Bluetooth earbuds switch to their call mode while their own microphone is in use, which plays sound in mono, and a binaural beat needs a different tone in each ear. To keep the beat, choose the phone's or computer's own microphone below, or use wired earphones.</p>
+              <p>The coherence score doesn't use it: it stays HeartMath's, from your heartbeat alone, so it stays comparable with their published figures. The microphone adds what your heartbeat can't tell: your actual breathing pace, to set beside your heart's rhythm, and when each breath happens, for the swing of every breath.</p>
+              <p>Nothing is recorded or sent: the sound becomes one loudness number every tenth of a second on this device, and only the last two minutes of those are kept, for the chart. The microphone stays on until you press Stop listening or close the page.</p>
+            </div>
+          </details>
         </div>
       </div>
     </div>
@@ -2506,7 +2612,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-impressum">Impressum</a>
           </nav>
           <article class="prose" id="science">
-            <a class="lv-promo" href="#living"><span class="lv-promo-ic"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></span><span class="lv-promo-t"><b>Healthy living</b><span>Recipes such as congee, kitchari and dal; what the research says about omega-3, CoQ10, creatine and other supplements; healthy sleep habits, a morning and an evening routine; and light therapy.</span></span><svg class="i lv-go" aria-hidden="true"><use href="#i-up"/></svg></a>
+            <a class="lv-promo" href="#living"><span class="lv-promo-ic"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></span><span class="lv-promo-t"><b>Healthy living</b><span>Recipes such as congee, kitchari and dal; what the research says about omega-3, CoQ10, creatine and other supplements, and about coffee; healthy sleep habits, a morning and an evening routine; and light therapy.</span></span><svg class="i lv-promo-go" aria-hidden="true"><use href="#i-up"/></svg></a>
             <h2>What the research supports</h2>
             <p class="v-lede">Real but modest effects: decent evidence for anxiety and attention, weaker and noisier evidence for memory.</p>
             
@@ -2612,6 +2718,21 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         The score needs the time between heartbeats, so Entrain shows it only with a sensor that sends it, such as an
         ear-clip sensor or a chest strap. A watch averages its heart rate over a few seconds before sending it, which
         flattens the rise and fall the score looks for.
+      </p>
+      <p id="l-mic">
+        The Heart page explains each of its numbers and charts under them. RMSSD, the change from one heartbeat to the
+        next, is the main short-term measure of the variability the vagus nerve puts into the heartbeat, and breathing
+        slower than about 8.5 breaths a minute moves the breathing rhythm into the spectrum's low-frequency band, 0.04 to
+        0.15&nbsp;Hz, where the blood-pressure reflex also works (Shaffer &amp; Ginsberg, 2017). Breath from the microphone,
+        an option there, listens for your breathing: it keeps the sound between 0.5 and 5&nbsp;kHz, where breath noise lies,
+        measures its loudness ten times a second and finds the rhythm in it, much as a study did with a headset microphone
+        under the nose, which read most breathing rates to within about 1% but couldn't read 6 breaths a minute reliably,
+        the slow rhythm lost in background noise (Nam et al., 2016). Entrain listens over a full minute, to give slow
+        breathing more breaths to go on, and says how sure it is. The coherence score doesn't use it and stays HeartMath's,
+        from the heartbeat alone, so it stays comparable with their published figures. What the microphone adds is your
+        actual breathing pace, the dashed line on the spectrum, so you can see whether the rhythm the score finds is your
+        breathing, and the swing of each breath without a breathing session. Nothing is recorded or sent: the sound becomes
+        one loudness number every tenth of a second on your device, and only the last two minutes are kept, for the chart.
       </p>
 
       <h3 id="l-bands">Frequency bands at a glance</h3>
@@ -2975,6 +3096,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>McCraty, R., Atkinson, M., Tiller, W. A., Rein, G., &amp; Watkins, A. D. (1995). The effects of emotions on short-term power spectrum analysis of heart rate variability. <em>American Journal of Cardiology</em>, 76(14), 1089–1093. <a href="https://doi.org/10.1016/S0002-9149(99)80309-9" rel="noopener">DOI</a></li>
       <li>Balaji, S., Plonka, N., Atkinson, M., et al., &amp; McCraty, R. (2025). Heart rate variability biofeedback in a global study of the most common coherence frequencies and the impact of emotional states. <em>Scientific Reports</em>, 15, 3241. <a href="https://www.nature.com/articles/s41598-025-87729-7" rel="noopener">Nature</a></li>
       <li>Shaffer, F., &amp; Meehan, Z. M. (2020). A practical guide to resonance frequency assessment for heart rate variability biofeedback. <em>Frontiers in Neuroscience</em>, 14, 570400. <a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2020.570400/full" rel="noopener">Frontiers</a></li>
+      <li>Shaffer, F., &amp; Ginsberg, J. P. (2017). An overview of heart rate variability metrics and norms. <em>Frontiers in Public Health</em>, 5, 258. <a href="https://doi.org/10.3389/fpubh.2017.00258" rel="noopener">DOI</a></li>
+      <li>Nam, Y., Reyes, B. A., &amp; Chon, K. H. (2016). Estimation of respiratory rates using the built-in microphone of a smartphone or headset. <em>IEEE Journal of Biomedical and Health Informatics</em>, 20(6), 1493–1501. <a href="https://doi.org/10.1109/JBHI.2015.2480838" rel="noopener">DOI</a></li>
       <li>Vierra, J., Boonla, O., &amp; Prasertsri, P. (2022). Effects of sleep deprivation and 4-7-8 breathing control on heart rate variability, blood pressure, blood glucose, and endothelial function in healthy young adults. <em>Physiological Reports</em>, 10, e15389. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9277512/" rel="noopener">PMC</a></li>
     
       <li>Goyal, M., Singh, S., Sibinga, E. M. S., et al. (2014). Meditation programs for psychological stress and well-being: a systematic review and meta-analysis. <em>JAMA Internal Medicine</em>, 174(3), 357–368. <a href="https://pubmed.ncbi.nlm.nih.gov/24395196/" rel="noopener">PubMed</a></li>
@@ -6334,10 +6457,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else sub = H.hasRR ? "Beat to beat" : "Smoothed rate from the sensor";
     bSetT("#hrNowS", sub);
 
-    var sw = B.swings, last = sw[sw.length - 1];
+    var sw = swingList(), last = sw[sw.length - 1];
     bSetT("#hrSwLast", last ? last.amp.toFixed(1) : "—");
     bSetT("#hrSwAvg", sw.length ? avg(sw.map(function (s) { return s.amp; })).toFixed(1) : "—");
-    bSetT("#hrSwAvgS", sw.length ? "Average of " + sw.length + (sw.length === 1 ? " breath" : " breaths") : "Average across breaths");
+    bSetT("#hrSwAvgS", sw.length ? "Average of " + sw.length + (sw.length === 1 ? " breath" : " breaths") + (swingsHeard() ? " heard" : "") : "Average across breaths");
 
     var now = bNow(), r = H.state === "on" ? rmssd(now - 60, now) : null;
     bSetT("#hrRmssd", r ? String(Math.round(r.v)) : "—");
@@ -6555,6 +6678,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     });
     $("#hrFindStart").addEventListener("click", function () { if (B.finder) bStop(); else finderStart(); });
     $("#hrFindUse").addEventListener("click", useBest);
+    micInit();
     var redraw = function () { drawSwings(); drawFind(); drawSpectrum(); };
     if (window.ResizeObserver) {
       var ro = new ResizeObserver(redraw);
@@ -6580,7 +6704,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function niceMax(v) { return Math.max(4, Math.ceil(v / 4) * 4); }
 
   function drawSwings() {
-    var cv = $("#hrBars"), f = fitCanvas(cv), sw = B.swings;
+    var cv = $("#hrBars"), f = fitCanvas(cv), sw = swingList();
     $("#hrBarsEmpty").hidden = sw.length > 0;
     if (!f || !sw.length) return;
     var c = f.c, W = f.w, Hh = f.h, padL = 30, padT = 8, padB = 6, ph = Hh - padT - padB;
@@ -6887,7 +7011,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       var left = H.since ? Math.ceil(COH_WIN - (bNow() - H.since)) : COH_WIN;
       s = left > 0 ? "Collecting: " + left + " s to go" : "Waiting for steady data";
     } else {
-      s = "Peak at " + c.f.toFixed(3) + " Hz, " + (c.f * 60).toFixed(1) + " a minute";
+      s = "Peak at " + c.f.toFixed(3) + " Hz, " + (c.f * 60).toFixed(1) + " a minute" + (micOk() ? "; breathing " + micFmt(MIC.est.rate) : "");
     }
     bSetT("#hrCohS", s);
     finderNote();
@@ -6895,12 +7019,38 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     bSetT("#bCoh", on ? c.cs.toFixed(1) : "—");
   }
 
+  /* The breathing pace to set beside the heart's rhythm: what the microphone hears, when it's sure
+     enough, or else the guide's pace while a session runs. */
+  function breathPace() {
+    if (micOk()) return { rate: MIC.est.rate, src: "mic" };
+    if ((B.state === "running" || B.state === "paused") && B.ph) return { rate: 60 / B.ph.cycle, src: "guide" };
+    return null;
+  }
+  // under the spectrum: where the heart's rhythm peaks, your breathing pace, and whether they match
+  function specRead() {
+    var co = H.coh && hrLive() ? H.coh : null, bp = breathPace(), s = "";
+    if (co) {
+      var hm = co.f * 60;
+      s = "Your heart's rhythm peaks at " + micFmt(hm) + " a minute (" + co.f.toFixed(3) + " Hz).";
+      if (bp) {
+        s += bp.src === "mic" ? " You're breathing about " + micFmt(bp.rate) + " a minute, as the microphone hears it." : " The guide is at " + micFmt(bp.rate) + " a minute.";
+        s += Math.abs(hm - bp.rate) <= Math.max(0.4, 0.08 * bp.rate) ? " They match: your breathing is setting your heart's rhythm."
+          : " They differ, so this peak isn't your breathing. Slow, even breathing brings them together.";
+      } else {
+        s += MIC.on ? " Listening for your breathing pace…" : " To see your breathing pace here as a dashed line, start a session on Breathe, or turn on Breath from the microphone.";
+      }
+    }
+    bSetT("#hrSpecRead", s);
+    $("#hrSpecRead").hidden = !s;
+  }
   /* The spectrum behind the score: heart-rate power by frequency, the peak
-     window filled, the 0.04-0.26 Hz search band shaded, and the breathing
-     pace as a dashed line while a session runs. */
+     window filled, the 0.04-0.26 Hz search band shaded, and your breathing
+     pace as a dashed line: as the microphone hears it, or the guide's. */
   var SPEC_EMPTY = null;     // what the empty chart says, until a sensor that sends heart rate only is on
   function drawSpectrum() {
-    var f = fitCanvas($("#hrSpec")), co = H.coh && hrLive() ? H.coh : null, em = $("#hrSpecEmpty");
+    var f = fitCanvas($("#hrSpec")), co = H.coh && hrLive() ? H.coh : null, em = $("#hrSpecEmpty"), bp = breathPace();
+    specRead();
+    $("#hrSpec").dataset.breath = co && bp ? bp.src + ":" + bp.rate.toFixed(2) : "";        // what the dashed line marks, for the tests
     if (SPEC_EMPTY === null) SPEC_EMPTY = em.textContent;
     bSetT("#hrSpecEmpty", hrOnly() ? "This sensor sends heart rate only. The spectrum needs the time between heartbeats, which an ear-clip sensor or a chest strap sends." : SPEC_EMPTY);
     em.hidden = !!co;
@@ -6938,8 +7088,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     for (k = 0; k <= kMax; k++) { var px = X(k * COH_DF), py = Y(P[k]); if (k) c.lineTo(px, py); else c.moveTo(px, py); }
     c.strokeStyle = rgba(BCOL.hr, 0.95); c.lineWidth = 1.5; c.stroke();
 
-    if ((B.state === "running" || B.state === "paused") && B.ph) {
-      var fb = 1 / B.ph.cycle;
+    if (bp && bp.rate / 60 < FMAX) {
+      var fb = bp.rate / 60;
       c.setLineDash([3, 4]); c.strokeStyle = BCOL["b-in"]; c.lineWidth = 1.5;
       c.beginPath(); c.moveTo(X(fb), padT - 6); c.lineTo(X(fb), base); c.stroke();
       c.setLineDash([]);
@@ -6950,6 +7100,395 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     c.fillText(co.f.toFixed(3) + " Hz", lx, padT - 8);
   }
 
+  /* ------------------------- breath from the microphone -------------------------
+     An option on the Heart page. Breathing is a soft rushing sound, so the page listens to the
+     microphone, keeps the band where breath noise lies (0.5 to 5 kHz, above the beat's tones and a
+     room's hum), measures its loudness ten times a second, and finds the rhythm in that loudness,
+     the method Nam, Reyes & Chon (2016) tested with a headset microphone under the nose. From it
+     come your breathing pace (the dashed line on the spectrum), the moment of each breath (for the
+     swing of every breath without a breathing session), and a live trace with your heart rate.
+
+     The coherence score doesn't use it. It stays HeartMath's, from the heartbeat alone, so it stays
+     comparable with their published figures; the microphone adds what the heartbeat can't say,
+     your actual breathing pace, so you can see whether the rhythm the score finds is your breathing.
+
+     Nothing is recorded or sent: the sound becomes one loudness number every tenth of a second on
+     this device, and only the last two minutes of those are kept, for the chart.
+  ------------------------------------------------------------------------------ */
+  var MIC = {
+    on: false, busy: false, stream: null, ctx: null, node: null, timer: 0,
+    env: [],                  // {t, db}: the breath band's loudness ten times a second, the last two minutes
+    est: null,                // the latest reading: { q, rate, period, conf, snr } (q: listening, silent, quiet, unsteady, ok, clear)
+    marks: [],                // when each breath was loudest (s, on the page's clock), the last five minutes
+    sw: [],                   // { t, amp, cyc }: how far heart rate rose and fell across each breath heard
+    swAt: 0,                  // the mark the swings have been worked out up to
+    label: "", devId: "", cur: "", err: "", n: 0, t0: 0, prior: "", wasOk: false
+  };
+  var MIC_FS = 10, MIC_WIN = 60, MIC_MIN = 25, MIC_KEEP = 120;
+  // the audio thread's part: the mean square of each tenth of a second, sent to the page
+  var MIC_WORKLET = "registerProcessor('breath-level', class extends AudioWorkletProcessor {" +
+    "constructor() { super(); this.n = 0; this.s = 0; this.N = Math.round(sampleRate / 10); }" +
+    "process(inp) { var c = inp[0] && inp[0][0]; if (c) for (var i = 0; i < c.length; i++) { this.s += c[i] * c[i];" +
+    " if (++this.n >= this.N) { this.port.postMessage(this.s / this.n); this.n = 0; this.s = 0; } } return true; } });";
+
+  function micPct(a, q) {
+    var s = a.slice().sort(function (x, y) { return x - y; });
+    return s[Math.min(s.length - 1, Math.max(0, Math.round(q * (s.length - 1))))];
+  }
+  function micOk() { return !!(MIC.on && MIC.est && (MIC.est.q === "ok" || MIC.est.q === "clear")); }
+
+  /* The breathing pace in a stretch of loudness (dB, fs a second, oldest first). The level above the
+     room's floor (its 10th percentile), smoothed over half a second, is weighed for every pace from 2
+     to 42 a minute, and the strongest from 3 to 40 is the rhythm in the sound. Each breath can make
+     two sounds, in and out, so the pace is half that rhythm when a peak at half the rate is at least a
+     quarter as strong (in and out sound different), or when the rhythm is faster than 24 a minute,
+     unusual for breathing at rest. A pace being followed settles such a pair when the sound alone
+     leaves a choice, never further than 20% from it: the guide's (guided), which decides outright, or
+     the heart's own peak, which needs some sign of the other pace in the sound. conf is the share of
+     the rhythm in the sound that is this pace and its overtones; snr how far the loudest moments rise
+     above the floor. */
+  function micRate(db, fs, prior, guided) {
+    var n = db.length, i, j, k;
+    if (n < 8) return { q: "listening", conf: 0, snr: 0 };
+    var fl = micPct(db, 0.1), hi = micPct(db, 0.95), snr = hi - fl;
+    if (hi < -100) return { q: "silent", conf: 0, snr: 0 };
+    var a = new Array(n), m = 0;
+    for (i = 0; i < n; i++) {
+      var s = 0, c = 0;
+      for (j = Math.max(0, i - 2); j <= Math.min(n - 1, i + 2); j++) { s += Math.max(0, db[j] - fl); c++; }
+      a[i] = s / c; m += a[i];
+    }
+    m /= n;
+    var w = new Array(n);
+    for (i = 0; i < n; i++) w[i] = (a[i] - m) * (0.5 - 0.5 * Math.cos(2 * Math.PI * i / (n - 1)));
+    var R0 = 2, STEP = 0.1, K = Math.round((42 - R0) / STEP), P = new Array(K + 1);
+    for (k = 0; k <= K; k++) {
+      var om = 2 * Math.PI * (R0 + k * STEP) / 60 / fs, cr = Math.cos(om), si = Math.sin(om), re = 0, im = 0, pc = 1, ps = 0, t2;
+      for (i = 0; i < n; i++) { re += w[i] * pc; im -= w[i] * ps; t2 = pc * cr - ps * si; ps = ps * cr + pc * si; pc = t2; }
+      P[k] = re * re + im * im;
+    }
+    var rateOf = function (x) { return R0 + x * STEP; }, kOf = function (r) { return Math.round((r - R0) / STEP); };
+    var near = function (r) {
+      var c0 = kOf(r), b = -1;
+      for (var x = Math.max(1, c0 - 3); x <= Math.min(K - 1, c0 + 3); x++) if (b < 0 || P[x] > P[b]) b = x;
+      return b;
+    };
+    var best = -1;
+    for (k = kOf(3); k <= kOf(40); k++) if (P[k] >= P[k - 1] && P[k] >= P[k + 1] && (best < 0 || P[k] > P[best])) best = k;
+    if (best < 0 || !(P[best] > 0)) return { q: snr < 3.5 ? "quiet" : "unsteady", conf: 0, snr: snr, a: a };
+    var top = best, half = near(rateOf(best) / 2), used = "";
+    if (rateOf(best) / 2 >= 3 && half > 0 && (P[half] >= 0.25 * P[top] || rateOf(top) > 24)) best = half;
+    if (prior) {
+      [rateOf(best) / 2, rateOf(best) * 2].forEach(function (r) {
+        if (r < 3 || r > 24) return;
+        var x = near(r);
+        if (x > 0 && (guided || P[x] >= 0.1 * P[top]) && Math.abs(rateOf(x) / prior - 1) <= 0.2 &&
+          Math.abs(Math.log(rateOf(x) / prior)) < Math.abs(Math.log(rateOf(best) / prior))) { best = x; used = "prior"; }
+      });
+    }
+    var y0 = P[best - 1], y1 = P[best], y2 = P[best + 1], d = y0 - 2 * y1 + y2;
+    var rate = rateOf(best + (d < 0 ? Math.max(-0.5, Math.min(0.5, 0.5 * (y0 - y2) / d)) : 0));
+    var pk = 0, all = 0;
+    for (k = 0; k <= K; k++) {
+      all += P[k];
+      for (var hm = 1; hm <= 3; hm++) if (Math.abs(rateOf(k) / (rate * hm) - 1) <= 0.1) { pk += P[k]; break; }
+    }
+    var conf = all > 0 ? pk / all : 0;
+    return { rate: rate, period: 60 / rate, conf: conf, snr: snr, a: a, used: used,
+      q: snr < 3.5 ? "quiet" : conf < 0.4 ? "unsteady" : conf < 0.6 ? "ok" : "clear" };
+  }
+
+  /* The loudest moment of each breath in a smoothed loudness a: peaks that rise well above the
+     quiet between breaths, the strongest first, at least 0.6 of a breath apart. */
+  function micPeaks(a, fs, period) {
+    var n = a.length, gap = 0.6 * period * fs, lo = micPct(a, 0.1), need = 0.3 * (micPct(a, 0.9) - lo), cand = [], keep = [], i;
+    for (i = 1; i < n - 1; i++) if (a[i] > a[i - 1] && a[i] >= a[i + 1] && a[i] - lo >= need) cand.push(i);
+    cand.sort(function (x, y) { return a[y] - a[x]; });
+    cand.forEach(function (c) { if (keep.every(function (x) { return Math.abs(x - c) >= gap; })) keep.push(c); });
+    return keep.sort(function (x, y) { return x - y; });
+  }
+
+  // a pace being followed: the guide's while a session runs, or else the heart's own clear peak
+  function micPrior() {
+    if ((B.state === "running" || B.state === "paused") && B.ph) { MIC.prior = "guide"; return 60 / B.ph.cycle; }
+    if (H.coh && hrLive() && H.coh.cs >= 1.5) { MIC.prior = "heart"; return H.coh.f * 60; }
+    MIC.prior = "";
+    return 0;
+  }
+
+  // once a second: the pace, each breath's moment, and the swing across each breath heard
+  function micAnalyse() {
+    var now = bNow(), e = MIC.env.filter(function (x) { return x.t >= now - MIC_WIN; });
+    if (now - MIC.t0 < MIC_MIN || e.length < MIC_MIN * MIC_FS * 0.8) {
+      var sil = e.length > 20 && micPct(e.map(function (x) { return x.db; }), 0.95) < -100;
+      MIC.est = { q: sil ? "silent" : "listening", left: Math.max(1, Math.ceil(MIC_MIN - (now - MIC.t0))), conf: 0, snr: 0 };
+      micUI(); specRead();
+      return;
+    }
+    var r = micRate(e.map(function (x) { return x.db; }), MIC_FS, micPrior(), MIC.prior === "guide");
+    MIC.est = r;
+    if (r.period && (r.q === "ok" || r.q === "clear")) {
+      var P0 = r.period;
+      micPeaks(r.a, MIC_FS, P0).forEach(function (i) {
+        var t = e[i].t;
+        if (t > now - 0.35 * P0) return;                                   // still rising, perhaps
+        if (MIC.marks.some(function (x) { return Math.abs(x - t) < 0.35 * P0; })) return;
+        MIC.marks.push(t);
+      });
+      MIC.marks.sort(function (x, y) { return x - y; });
+      while (MIC.marks.length && MIC.marks[0] < now - 300) MIC.marks.shift();
+      micSwings(P0);
+    }
+    delete r.a;
+    micUI(); specRead();
+    if (micOk() !== MIC.wasOk) { MIC.wasOk = micOk(); drawSpectrum(); }   // the dashed line comes or goes at once
+  }
+  function micSwings(P0) {
+    var mk = MIC.marks, added = false;
+    for (var i = 1; i < mk.length; i++) {
+      var a = mk[i - 1], b = mk[i], g = b - a;
+      if (b <= MIC.swAt) continue;
+      MIC.swAt = b;
+      if (H.state !== "on" || g < 0.6 * P0 || g > 1.5 * P0) continue;     // a breath missed, or one heard twice
+      var pts = H.series.filter(function (s) { return s.t >= a && s.t <= b; });
+      if (pts.length < 3 || pts[pts.length - 1].t - pts[0].t < 0.6 * g) continue;
+      var hi = -Infinity, lo = Infinity;
+      pts.forEach(function (s) { if (s.hr > hi) hi = s.hr; if (s.hr < lo) lo = s.hr; });
+      MIC.sw.push({ t: b, amp: hi - lo, cyc: g });
+      added = true;
+    }
+    if (MIC.sw.length > 300) MIC.sw.splice(0, MIC.sw.length - 300);
+    if (added) { drawSwings(); hrTiles(); }
+  }
+  // the breaths whose swings the page shows: a breathing session's while one runs or has just ended, else those heard
+  function swingList() {
+    return B.swings.length || B.state === "running" || B.state === "paused" ? B.swings : MIC.sw;
+  }
+  function swingsHeard() { return swingList() === MIC.sw && MIC.sw.length > 0; }
+
+  function micLevel(ms) {
+    if (!MIC.on) return;
+    var t = bNow();
+    MIC.env.push({ t: t, db: 10 * Math.log10(ms + 1e-12) });
+    while (MIC.env.length && MIC.env[0].t < t - MIC_KEEP) MIC.env.shift();
+    if (++MIC.n % MIC_FS === 0) micAnalyse();
+    if (!document.hidden && $("#mcTrace").offsetParent !== null) micDraw();
+  }
+
+  /* Start listening. The audio context is made at once, in the tap, so the browser lets it run;
+     the microphone comes with its own processing off (echo cancelling, noise suppression and
+     automatic gain would take the breath sounds out or flatten them). */
+  function micStart() {
+    if (MIC.on || MIC.busy) return;
+    var md = navigator.mediaDevices, AC = window.AudioContext || window.webkitAudioContext;
+    MIC.err = "";
+    if (!md || !md.getUserMedia || !AC) { micFail({ name: "NotSupportedError" }); return; }
+    var ctx;
+    try { ctx = new AC(); if (ctx.resume) ctx.resume().catch(function () {}); } catch (e) { micFail(e); return; }
+    MIC.busy = true; MIC.ctx = ctx;
+    micUI();
+    var audio = { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 };
+    if (MIC.devId) audio.deviceId = { exact: MIC.devId };
+    md.getUserMedia({ audio: audio }).catch(function (e) {
+      if (!MIC.devId || !e || !/^(OverconstrainedError|NotFoundError)$/.test(e.name)) throw e;
+      MIC.devId = ""; store.set("micDev", "");                                // the one picked before is gone: the usual one
+      delete audio.deviceId;
+      return md.getUserMedia({ audio: audio });
+    }).then(function (stream) {
+      if (!MIC.busy || MIC.ctx !== ctx) { stream.getTracks().forEach(function (t) { t.stop(); }); return; }   // turned off meanwhile
+      return micGraph(ctx, stream);
+    }).catch(micFail);
+  }
+  function micGraph(ctx, stream) {
+    MIC.stream = stream;
+    var tr = stream.getAudioTracks()[0];
+    MIC.label = tr && tr.label || "";
+    try { MIC.cur = tr && tr.getSettings ? tr.getSettings().deviceId || "" : ""; } catch (e) { MIC.cur = ""; }
+    if (tr) tr.addEventListener("ended", function () { if (MIC.on && MIC.stream === stream) { micStop(); MIC.err = "ended"; micUI(); } });
+    var src = ctx.createMediaStreamSource(stream), f1 = ctx.createBiquadFilter(), f2 = ctx.createBiquadFilter(), f3 = ctx.createBiquadFilter();
+    f1.type = f2.type = "highpass"; f1.frequency.value = f2.frequency.value = 500;
+    f3.type = "lowpass"; f3.frequency.value = 5000;
+    src.connect(f1); f1.connect(f2); f2.connect(f3);
+    var go = function () {
+      MIC.busy = false; MIC.on = true; MIC.t0 = bNow(); MIC.env = []; MIC.est = { q: "listening", left: MIC_MIN, conf: 0, snr: 0 }; MIC.n = 0;
+      micUI(); micDraw(); micDevices(); specRead();
+    };
+    var analyser = function () {                     // where the audio thread can't run a worklet: read the level on a timer
+      var an = ctx.createAnalyser(), buf;
+      an.fftSize = 4096;
+      buf = new Float32Array(an.fftSize);
+      f3.connect(an);
+      MIC.node = an;
+      MIC.timer = setInterval(function () {
+        an.getFloatTimeDomainData(buf);
+        var s = 0;
+        for (var i = 0; i < buf.length; i++) s += buf[i] * buf[i];
+        micLevel(s / buf.length);
+      }, 100);
+    };
+    if (ctx.audioWorklet && window.AudioWorkletNode && window.Blob && window.URL && URL.createObjectURL) {
+      var url = URL.createObjectURL(new Blob([MIC_WORKLET], { type: "application/javascript" }));
+      return ctx.audioWorklet.addModule(url).then(function () {
+        URL.revokeObjectURL(url);
+        if (MIC.ctx !== ctx) return;
+        var node = new window.AudioWorkletNode(ctx, "breath-level", { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1] }), mute = ctx.createGain();
+        mute.gain.value = 0;                         // pulled by the speakers, so it runs, but silent
+        node.port.onmessage = function (e) { micLevel(e.data); };
+        f3.connect(node); node.connect(mute); mute.connect(ctx.destination);
+        MIC.node = node;
+        go();
+      }, function () { URL.revokeObjectURL(url); if (MIC.ctx !== ctx) return; analyser(); go(); });
+    }
+    analyser(); go();
+  }
+  function micStop() {
+    clearInterval(MIC.timer);
+    MIC.timer = 0;
+    if (MIC.stream) MIC.stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} });
+    if (MIC.node && MIC.node.port) MIC.node.port.onmessage = null;
+    if (MIC.ctx && MIC.ctx.close) MIC.ctx.close().catch(function () {});
+    MIC.stream = null; MIC.ctx = null; MIC.node = null;
+    MIC.on = false; MIC.busy = false; MIC.est = null; MIC.wasOk = false;
+    micUI(); micDraw(); specRead(); drawSpectrum();
+  }
+  function micFail(e) {
+    var n = (e && e.name) || "Error", embedded = false;
+    try { embedded = window.self !== window.top; } catch (x) { embedded = true; }
+    if (MIC.ctx && MIC.ctx.close) MIC.ctx.close().catch(function () {});
+    MIC.ctx = null; MIC.busy = false; MIC.on = false;
+    MIC.err = n === "NotAllowedError" || n === "SecurityError" ? (embedded ? "embedded" : "denied")
+      : n === "NotFoundError" || n === "OverconstrainedError" ? "none"
+      : n === "NotReadableError" || n === "AbortError" ? "busy"
+      : n === "NotSupportedError" ? "unsupported" : "other:" + n;
+    micUI();
+  }
+
+  // the microphones to choose from, with their names, once the page may use one
+  function micDevices() {
+    var md = navigator.mediaDevices, sel = $("#mcPick");
+    if (!md || !md.enumerateDevices) return;
+    md.enumerateDevices().then(function (ds) {
+      var ins = ds.filter(function (d) { return d.kind === "audioinput" && d.label; });
+      $("#mcPickL").hidden = ins.length < 2;
+      sel.innerHTML = "";
+      ins.forEach(function (d) {
+        var o = document.createElement("option");
+        o.value = d.deviceId; o.textContent = d.label;
+        if (d.deviceId === (MIC.devId || MIC.cur) || (!MIC.devId && d.label === MIC.label)) o.selected = true;
+        sel.appendChild(o);
+      });
+    }).catch(function () {});
+  }
+
+  /* Bluetooth earbuds and headsets switch to their call mode while their microphone is in use: sound
+     comes back in mono and at call quality, and a binaural beat needs a different tone in each ear. */
+  function micBluetooth() { return /bluetooth|hands-?free|airpods|buds|\bbt\b|headset/i.test(MIC.label); }
+  function micFmt(r) { var x = Math.round(r * 10) / 10; return String(x % 1 ? x.toFixed(1) : x); }
+
+  function micUI() {
+    var e = MIC.est, s = "", hint = "Off";
+    bSetT("#mcStart", MIC.busy ? "Starting…" : MIC.on ? "Stop listening" : "Listen for my breathing");
+    $("#mcStart").setAttribute("aria-pressed", MIC.on ? "true" : "false");
+    $("#breath-mic").dataset.on = MIC.on ? "1" : "";
+    if (MIC.busy) { s = "Asking for the microphone…"; hint = "Starting"; }
+    else if (!MIC.on) {
+      s = MIC.err === "denied" ? "The microphone wasn't allowed. To use it, allow it for this page in the browser's site settings (tap the icon left of the address), then try again."
+        : MIC.err === "embedded" ? "This copy sits inside another page, such as a preview, which blocks the microphone. Open the page at its own web address to use it."
+        : MIC.err === "none" ? "No microphone was found. Plug one in, or check that the browser may use one."
+        : MIC.err === "busy" ? "The microphone is busy or couldn't start: close any app that's using it, such as a call, and try again."
+        : MIC.err === "unsupported" ? "This browser can't use the microphone here."
+        : MIC.err === "ended" ? "The microphone stopped, perhaps because it was unplugged. Press Listen for my breathing to start again."
+        : MIC.err ? "The microphone didn't start (" + MIC.err.slice(6) + "). Try again, or choose another browser." : "";
+    } else if (!e || e.q === "listening") {
+      s = "Listening… your breathing pace appears in about " + ((e && e.left) || MIC_MIN) + " s.";
+      hint = "Listening";
+    } else if (e.q === "silent") {
+      s = "The microphone is sending silence. Is it muted, or is another app using it?";
+      hint = "Silent";
+    } else if (e.q === "quiet") {
+      s = "Can't hear your breathing yet. Bring the microphone closer to your nose or mouth, or breathe out a little more audibly.";
+      hint = "Too quiet";
+    } else if (e.q === "unsteady") {
+      s = "Hearing sound, but no steady breathing rhythm in it yet. Talking, music or noise in the room can cover your breathing.";
+      hint = "No steady rhythm";
+    } else {
+      s = "Breathing about " + micFmt(e.rate) + " a minute" + (e.q === "ok" ? ", fairly sure" : "") +
+        (e.used === "prior" ? (MIC.prior === "guide" ? ", taking the guide's pace into account" : ", taking your heart's rhythm into account") : "") + ".";
+      hint = micFmt(e.rate) + " a minute";
+      if (swingsHeard()) s += " Each breath it hears adds a bar to Breath by breath.";
+    }
+    bSetT("#mcRead", s);
+    bSetT("#mcHint", hint);
+    var warn = MIC.on && micBluetooth()
+      ? "This looks like a Bluetooth microphone (" + MIC.label + "). While it's in use, Bluetooth earbuds switch to their call mode, which plays sound in mono: a binaural beat stops working. To keep the beat, choose the phone's or computer's own microphone, or use wired earphones." : "";
+    bSetT("#mcWarn", warn);
+    $("#mcWarn").hidden = !warn;
+    if (!MIC.on) $("#mcPickL").hidden = true;
+    var ok = micOk();
+    $("#bMicStat").hidden = !ok;
+    if (ok) bSetT("#bMic", micFmt(e.rate));
+  }
+
+  /* The last minute: the breath band's loudness above the room's floor on top, each breath it found
+     marked, and heart rate below on its own scale, on one time line. */
+  function micDraw() {
+    var cv = $("#mcTrace"), f = fitCanvas(cv), now = bNow(), SPAN = 60;
+    $("#mcEmpty").hidden = MIC.on && MIC.env.length > 3;
+    if (!f || !MIC.on || MIC.env.length < 2) return;
+    var c = f.c, W = f.w, Hh = f.h, padL = 36, padR = 8, padT = 16, padB = 18, gapY = 12;
+    var hs = hrLive() ? H.series.filter(function (s) { return s.t >= now - SPAN; }) : [];
+    var hasHr = hs.length > 3, ph = Hh - padT - padB, bh = hasHr ? Math.round((ph - gapY) * 0.56) : ph, hh = ph - gapY - bh;
+    var X = function (t) { return padL + (1 - (now - t) / SPAN) * (W - padL - padR); };
+    var e = MIC.env.filter(function (x) { return x.t >= now - SPAN; }), dbs = e.map(function (x) { return x.db; });
+    var fl = micPct(dbs, 0.1), span = Math.max(6, micPct(dbs, 0.98) - fl), base = padT + bh;
+    c.font = "600 10.5px " + B_SANS; c.fillStyle = BCOL["text-faint"]; c.textBaseline = "bottom"; c.textAlign = "left";
+    c.fillText("Breath sound", padL, padT - 3);
+    c.strokeStyle = BCOL.line; c.lineWidth = 1;
+    c.beginPath(); c.moveTo(padL, base + 0.5); c.lineTo(W - padR, base + 0.5); c.stroke();
+    c.beginPath(); c.moveTo(X(e[0].t), base);
+    e.forEach(function (x) { c.lineTo(X(x.t), base - Math.min(1, Math.max(0, x.db - fl) / span) * bh); });
+    c.lineTo(X(e[e.length - 1].t), base); c.closePath();
+    c.fillStyle = rgba(BCOL["b-in"], 0.22); c.fill();
+    c.beginPath();
+    e.forEach(function (x, i) { var y = base - Math.min(1, Math.max(0, x.db - fl) / span) * bh; if (i) c.lineTo(X(x.t), y); else c.moveTo(X(x.t), y); });
+    c.strokeStyle = rgba(BCOL["b-in"], 0.95); c.lineWidth = 1.5; c.stroke();
+    c.fillStyle = BCOL.text;                                                 // each breath found
+    MIC.marks.forEach(function (t) {
+      if (t < now - SPAN) return;
+      c.beginPath(); c.arc(X(t), padT + 3, 3, 0, 2 * Math.PI); c.fill();
+    });
+    if (hasHr) {
+      var top = base + gapY, lo = Infinity, hi = -Infinity;
+      hs.forEach(function (s) { if (s.hr < lo) lo = s.hr; if (s.hr > hi) hi = s.hr; });
+      lo = Math.floor(lo - 1); hi = Math.ceil(hi + 1);
+      var Y = function (v) { return top + (1 - (v - lo) / (hi - lo)) * hh; };
+      c.strokeStyle = BCOL.line; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(padL, top + hh + 0.5); c.lineTo(W - padR, top + hh + 0.5); c.stroke();
+      c.textAlign = "right"; c.textBaseline = "middle"; c.fillStyle = BCOL["text-faint"];
+      c.fillText(String(hi), padL - 6, top + 4); c.fillText(String(lo), padL - 6, top + hh - 4);
+      c.textAlign = "left"; c.textBaseline = "bottom";
+      c.fillText("Heart rate, bpm", padL, top + 1);
+      c.beginPath();
+      hs.forEach(function (s, i) { if (i) c.lineTo(X(s.t), Y(s.hr)); else c.moveTo(X(s.t), Y(s.hr)); });
+      c.strokeStyle = rgba(BCOL.hr, 0.95); c.lineWidth = 2; c.lineJoin = "round"; c.stroke();
+    }
+    c.fillStyle = BCOL["text-faint"]; c.textBaseline = "top";
+    c.textAlign = "left"; c.fillText("1 min ago", padL, Hh - padB + 4);
+    c.textAlign = "right"; c.fillText("now", W - padR, Hh - padB + 4);
+  }
+
+  function micInit() {
+    MIC.devId = store.get("micDev") || "";
+    $("#mcStart").addEventListener("click", function () { if (MIC.on || MIC.busy) { micStop(); MIC.err = ""; micUI(); } else micStart(); });
+    $("#mcPick").addEventListener("change", function () {
+      MIC.devId = this.value;
+      store.set("micDev", MIC.devId);
+      if (MIC.on) { micStop(); micStart(); }
+    });
+    if (window.ResizeObserver) new ResizeObserver(function () { micDraw(); }).observe($("#mcTrace"));
+    window.addEventListener("pagehide", function () { if (MIC.on || MIC.busy) micStop(); });
+    micUI();
+  }
   /* ---------------------------- app shell ----------------------------
      Views behind a hash router. The five tabs are #home (Today), #practice (the library),
      #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
@@ -7139,7 +7678,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "e3c7ceef";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "ee25957c";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -7215,6 +7754,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     return pBusy() || B.state === "running" || B.state === "paused" ||      // a practice, the breathing guide or the resonance test
       A.playing || (!!A.track && A.elapsed > 0) ||                            // a track, playing or paused partway through
       H.state === "on" || H.state === "busy" || H.state === "lost" ||         // a heart sensor, which would have to be paired again
+      MIC.on || MIC.busy ||                                                   // the microphone listening for your breathing
       FD.open || (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
       (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together
       (!!LV.rid && (LV.cook || !!document.querySelector(".lv-ing input:checked, .lv-steps input:checked")));   // a recipe being cooked
@@ -12054,7 +12594,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, lvAmt: lvAmt, APP: APP, appBusy: appBusy };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList };   // for automated tests only
   }
   /* ------------------------------- the end screen -------------------------------
      What a practice measured, as tiles you can tap for what each number means, with your own
@@ -14830,7 +15370,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       steps: [
         { t: "Keep regular hours", p: "Go to bed and get up at about the same times every day, weekends included. In 60,977 people who wore activity trackers, those whose sleep was more regular had a 20 to 48% lower risk of dying over about six years than the least regular, and regularity predicted it better than how long they slept." },
         { t: "Bright days, dim evenings, dark nights", p: "Get daylight in the day, above all in the morning, keep the last three hours before bed dim, and sleep in the dark. Sleep and light researchers recommend at least 250 lux at the eye by day (outdoors, even on a cloudy day, there's far more), no more than 10 lux in the three hours before bed and no more than 1 while you sleep, counting the light the body clock responds to." },
-        { t: "Caffeine before the afternoon", p: "Caffeine shortened sleep by about 45 minutes, and added about 9 to the time it took to fall asleep, in a 2023 meta-analysis. To spare your sleep, have the last coffee at least 9 hours before bed, and a strong pre-workout drink at least 13." },
+        { t: "Caffeine before the afternoon", p: "Caffeine shortened sleep by about 45 minutes, and added about 9 to the time it took to fall asleep, in a 2023 meta-analysis. To spare your sleep, have the last coffee at least 9 hours before bed, and a strong pre-workout drink at least 13.", go: [["#living/coffee", "Coffee and caffeine"]] },
         { t: "Alcohol early, if at all", p: "It can make you drowsy, but it breaks up the second half of the night and cuts dream (REM) sleep." },
         { t: "Move in the day", p: "Regular exercise improves sleep. Exercise in the evening is fine for most people too, apart from a hard session that ends within an hour of bedtime.", go: [["#practice/sport", "Sports Performance"]] },
         { t: "A bed for sleep", p: "Keep the bedroom cool, dark and quiet, and the bed for sleep and sex, so your body links it with sleep. If you're still awake after about 20 minutes, get up, do something calm in dim light, and go back when you feel sleepy. This is stimulus control, a part of CBT-I that sleep guidelines also recommend on its own." },
@@ -14866,7 +15406,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     { id: "evening", name: "An evening routine", icon: "moon", tags: "evening routine bedtime wind down night screens bath shower to-do list relax sleep",
       lead: "A wind-down to make your own, counted back from bedtime. For an 11 pm bedtime, the last coffee is around 2 pm and the lights go down at 8.",
       steps: [
-        { w: "9 hours before", t: "Last coffee", p: "And the last cola, black or green tea, or energy drink." },
+        { w: "9 hours before", t: "Last coffee", p: "And the last cola, black or green tea, or energy drink.", go: [["#living/coffee", "Coffee and caffeine"]] },
         { w: "3 hours before", t: "Lights down", p: "Lamps instead of ceiling lights, warm and low. Finish the last big meal around now, eaten slowly, and go easy on alcohol.", go: [["#practice/meal", "Mindful Meal"]] },
         { w: "1 to 2 hours before", t: "A warm shower or bath", p: "About 10 minutes in water at 40 to 42.5 °C. As your body cools down afterwards, sleep comes sooner: by about 10 minutes, across 13 studies, and it was rated better too." },
         { w: "1 hour before", t: "Screens away", p: "Put the phone away for the night, outside the bedroom if you can, or turn on night mode and dim it. Reading on a tablet for four hours before bed, rather than a printed book, delayed sleep by about 10 minutes, cut dream sleep and left people less alert the next morning." },
@@ -14936,6 +15476,69 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         ["Ostrin, L. A., & Schill, A. W. (2026). Safety evaluation of 4 red light therapy devices for myopia. JAMA Ophthalmology.", "https://doi.org/10.1001/jamaophthalmol.2025.5660", "DOI"]
       ] }
   ];
+
+  /* ----- coffee and caffeine: what a cup does in the body, hour by hour and over the years -----
+     A card like the supplements', with a section on the body and a chart of how long a cup's caffeine
+     stays (living.js lvCaffeineSvg). Sources checked in November 2026. */
+  var COFFEE = { id: "coffee", name: "Coffee and caffeine", alias: "caffeine espresso", icon: "cup",
+    tags: "coffee caffeine espresso filter instant decaf decaffeinated tea cola energy drink pre-workout adenosine half-life sleep heart blood pressure palpitations withdrawal headache cholesterol cafetiere french press",
+    lead: "Caffeine is the most widely used stimulant in the world. Here is what a cup does in your body, hour by hour, and what's known about drinking it for years.",
+    body: [
+      ["How it works", "Adenosine builds up in your brain the longer you're awake, and it makes you sleepy. Caffeine has a similar shape: it sits in adenosine's receptors without setting them off, so the sleepiness eases. It hides tiredness rather than making energy, and the need for sleep is still there when it wears off."],
+      ["Hour by hour", "It starts working 15 to 30 minutes after a cup, and its level in your blood peaks within about an hour. Half of it has gone after about 4 hours on average, but that ranges from 2 to 8 hours between people. It stays longer with the contraceptive pill and in pregnancy, its half-life reaching about 10 hours by the fourth month and up to 18 by the end, and clears faster in smokers.", "curve"],
+      ["Your brain", "From about 40 to 300 mg, people are more alert, react faster and keep their attention better, above all when they're tired; memory and complex decisions change less. Large amounts bring jitters and anxiety: in trials, 400 to 750 mg set off a panic attack in about half of people with panic disorder, against 2% of others. In a 2025 trial, 150 mg, a cup or two, didn't raise anxiety on average, in people with panic disorder or without."],
+      ["Your sleep", "Caffeine costs sleep even when you don't feel it: about 45 minutes less, and 9 more to fall asleep, in a 2023 meta-analysis. In a trial that randomised 100 people's days to coffee or none, they slept 36 minutes less on coffee days."],
+      ["Your heart and blood pressure", "In people with high blood pressure, 200 to 300 mg raised it by about 8 mmHg (systolic) and 6 (diastolic) within the hour, for 3 hours or more. After two weeks of drinking coffee it was no higher than without, and people who drank coffee for years had no more heart disease. In the same 100 people, coffee days brought no more extra beats from the heart's upper chambers, but about half as many again from its lower chambers (154 a day against 102), and about 1,000 more steps."],
+      ["Your heart readings", "In 30 men who drank coffee every day, 100 or 200 mg didn't change their heart rate variability over the next 90 minutes. Still, for readings you can compare from day to day, take them at the same time and in the same way each day, for example always before your coffee."],
+      ["Your stomach and bowel", "Coffee raises stomach acid and gets bile and the bowel moving. In a lab study, caffeinated coffee set the colon working as strongly as a 1,000-calorie meal: 60% more than water and 23% more than decaf. Whether it worsens heartburn is still unclear."],
+      ["Fluids", "Coffee counts towards what you drink. In 50 men who drank it daily, four cups a day kept them as well hydrated as the same amount of water."],
+      ["Cholesterol", "Coffee beans carry two fat-like compounds, cafestol and kahweol, that raise LDL cholesterol. A paper filter holds them back; boiled coffee, a cafetière (French press) and Turkish coffee let them through. In Norway, people who drank 3 to 5 espressos a day had slightly higher cholesterol than those who drank none."],
+      ["Iron", "Coffee with a meal cut the iron absorbed from it by 39%. Drunk an hour before the meal it made no difference, but an hour after it still did."],
+      ["Every day, and stopping", "Taken every day, some of its effects fade. Stopping suddenly brings a headache to about half of people in trials, with tiredness, low mood and poor concentration, 12 to 24 hours after the last cup. It's worst after one to two days and gone within 2 to 9, even from 100 mg a day."]
+    ],
+    uses: [
+      [3, "Alertness, attention and reaction time", "From about 40 to 300 mg, above all when you're tired or short of sleep."],
+      [3, "Endurance, strength and power", "3 to 6 mg per kg of body weight, about an hour before, improved performance in trials, most consistently in endurance sports. Very high doses (9 mg per kg) mostly added side effects. For someone of 70 kg, 3 mg per kg is 210 mg, about two cups of filter coffee."],
+      [1, "A longer, healthier life", "In observational studies, people who drank 3 to 4 cups a day had a 17% lower risk of death from any cause, and less heart disease, type 2 diabetes, liver disease and Parkinson's, than people who drank none. Studies like these can't show that coffee is the cause."]
+    ],
+    facts: [
+      ["How much is safe", "Up to 400 mg a day for healthy adults, and up to 200 mg at a time, about 3 mg per kg of body weight, says the European Food Safety Authority. Up to 200 mg a day in pregnancy and while breastfeeding, and for children and teenagers up to 3 mg per kg a day."],
+      ["Caffeine in a drink", "Filter coffee (200 ml) about 90 mg; espresso (60 ml) 80 mg; black tea (220 ml) 50 mg; an energy drink (250 ml) 80 mg; cola (355 ml) 40 mg; dark chocolate (50 g) 25 mg. A large mug or a double shot holds more, and decaf very little."],
+      ["When", "For your sleep, the last coffee at least 9 hours before bed, and a strong pre-workout drink at least 13. Thyroid tablets (levothyroxine) with water, and coffee an hour later. If your iron is low, coffee at least an hour before a meal, rather than with it or soon after."]
+    ],
+    care: [
+      "In pregnancy, up to 200 mg a day: caffeine stays far longer, and higher intakes go with more low birth weight, preterm birth and pregnancy loss in observational studies.",
+      "If you have an irregular heartbeat, palpitations, high blood pressure or panic attacks, ask your doctor how much suits you: less, or decaf, may.",
+      "Some medicines slow the clearing of caffeine, so the same cup acts stronger and longer: the antidepressant fluvoxamine, the antipsychotic clozapine, the asthma medicine theophylline and some quinolone antibiotics. Some painkillers and cold remedies contain caffeine too: check the label.",
+      "If your LDL cholesterol is high, use a paper filter.",
+      "Women at high risk of fractures: observational studies link more coffee with more fractures."
+    ],
+    refs: [
+      ["Fredholm, B. B., Bättig, K., Holmén, J., Nehlig, A., & Zvartau, E. E. (1999). Actions of caffeine in the brain with special reference to factors that contribute to its widespread use. Pharmacological Reviews, 51(1), 83–133.", "https://pubmed.ncbi.nlm.nih.gov/10049999/", "PubMed"],
+      ["European Food Safety Authority (2015). EFSA explains risk assessment: caffeine (with how long caffeine stays in the body).", "https://www.efsa.europa.eu/sites/default/files/corporate_publications/files/efsaexplainscaffeine150527.pdf", "EFSA"],
+      ["EFSA Panel on Dietetic Products, Nutrition and Allergies (2015). Scientific opinion on the safety of caffeine. EFSA Journal, 13(5), 4102.", "https://doi.org/10.2903/j.efsa.2015.4102", "DOI"],
+      ["European Food Information Council (2015). EFSA opinion on the safety of caffeine (with the caffeine in common drinks).", "https://eufic.org/en/whats-in-food/article/efsa-opinion-on-the-safety-of-caffeine", "EUFIC"],
+      ["Food Standards Australia New Zealand (2025). P1056 caffeine review, supporting document 1: safety assessment of caffeine (absorption, and the half-life in pregnancy).", "https://www.foodstandards.gov.au/food-standards-code/proposals/p1056", "FSANZ"],
+      ["Grzegorzewski, J., Bartsch, F., Köller, A., & König, M. (2022). Pharmacokinetics of caffeine: a systematic analysis of reported data for application in metabolic phenotyping and liver function testing. Frontiers in Pharmacology, 12, 752826.", "https://doi.org/10.3389/fphar.2021.752826", "DOI"],
+      ["McLellan, T. M., Caldwell, J. A., & Lieberman, H. R. (2016). A review of caffeine's effects on cognitive, physical and occupational performance. Neuroscience & Biobehavioral Reviews, 71, 294–312.", "https://doi.org/10.1016/j.neubiorev.2016.09.001", "DOI"],
+      ["Klevebrant, L., & Frick, A. (2022). Effects of caffeine on anxiety and panic attacks in patients with panic disorder: a systematic review and meta-analysis. General Hospital Psychiatry, 74, 22–31.", "https://doi.org/10.1016/j.genhosppsych.2021.11.005", "DOI"],
+      ["Hoppe, J. M., Björkstrand, J., Vegelius, J., Klevebrant, L., Gingnell, M., & Frick, A. (2025). Acute effects of 150 mg caffeine on subjective, physiological, and behavioral components of anxiety in panic disorder and healthy controls: a randomized placebo-controlled crossover trial. Journal of Psychopharmacology, 39(8), 836–846.", "https://doi.org/10.1177/02698811251344692", "DOI"],
+      R_REF.gardiner,
+      ["Marcus, G. M., Rosenthal, D. G., Nah, G., et al. (2023). Acute effects of coffee consumption on health among ambulatory adults (CRAVE). New England Journal of Medicine, 388(12), 1092–1100.", "https://doi.org/10.1056/NEJMoa2204737", "DOI"],
+      ["Mesas, A. E., Leon-Muñoz, L. M., Rodriguez-Artalejo, F., & Lopez-Garcia, E. (2011). The effect of coffee on blood pressure and cardiovascular disease in hypertensive individuals: a systematic review and meta-analysis. American Journal of Clinical Nutrition, 94(4), 1113–1126.", "https://doi.org/10.3945/ajcn.111.016667", "DOI"],
+      ["Rauh, R., Burkert, M., Siepmann, M., & Mueck-Weymann, M. (2006). Acute effects of caffeine on heart rate variability in habitual caffeine consumers. Clinical Physiology and Functional Imaging, 26(3), 163–166.", "https://pubmed.ncbi.nlm.nih.gov/16640511/", "PubMed"],
+      ["Nehlig, A. (2022). Effects of coffee on the gastro-intestinal tract: a narrative review and literature update. Nutrients, 14(2), 399.", "https://doi.org/10.3390/nu14020399", "DOI"],
+      ["Rao, S. S. C., Welcher, K., Zimmerman, B., & Stumbo, P. (1998). Is coffee a colonic stimulant? European Journal of Gastroenterology & Hepatology, 10(2), 113–118.", "https://doi.org/10.1097/00042737-199802000-00003", "DOI"],
+      ["Killer, S. C., Blannin, A. K., & Jeukendrup, A. E. (2014). No evidence of dehydration with moderate daily coffee intake: a counterbalanced cross-over study in a free-living population. PLOS ONE, 9(1), e84154.", "https://doi.org/10.1371/journal.pone.0084154", "DOI"],
+      ["Urgert, R., & Katan, M. B. (1997). The cholesterol-raising factor from coffee beans. Annual Review of Nutrition, 17, 305–324.", "https://doi.org/10.1146/annurev.nutr.17.1.305", "DOI"],
+      ["Svatun, Å. L., Løchen, M.-L., Thelle, D. S., & Wilsgaard, T. (2022). Association between espresso coffee and serum total cholesterol: the Tromsø Study 2015–2016. Open Heart, 9(1), e001946.", "https://doi.org/10.1136/openhrt-2021-001946", "DOI"],
+      ["Morck, T. A., Lynch, S. R., & Cook, J. D. (1983). Inhibition of food iron absorption by coffee. American Journal of Clinical Nutrition, 37(3), 416–420.", "https://doi.org/10.1093/ajcn/37.3.416", "DOI"],
+      ["Juliano, L. M., & Griffiths, R. R. (2004). A critical review of caffeine withdrawal: empirical validation of symptoms and signs, incidence, severity, and associated features. Psychopharmacology, 176(1), 1–29.", "https://doi.org/10.1007/s00213-004-2000-x", "DOI"],
+      ["Guest, N. S., VanDusseldorp, T. A., Nelson, M. T., et al. (2021). International Society of Sports Nutrition position stand: caffeine and exercise performance. Journal of the International Society of Sports Nutrition, 18, 1.", "https://doi.org/10.1186/s12970-020-00383-4", "DOI"],
+      ["Poole, R., Kennedy, O. J., Roderick, P., Fallowfield, J. A., Hayes, P. C., & Parkes, J. (2017). Coffee consumption and health: umbrella review of meta-analyses of multiple health outcomes. BMJ, 359, j5024.", "https://doi.org/10.1136/bmj.j5024", "DOI"],
+      ["Benvenga, S., Bartolone, L., Pappalardo, M. A., et al. (2008). Altered intestinal absorption of L-thyroxine caused by coffee. Thyroid, 18(3), 293–301.", "https://doi.org/10.1089/thy.2007.0222", "DOI"],
+      ["Carrillo, J. A., & Benitez, J. (2000). Clinically significant pharmacokinetic interactions between dietary caffeine and medications. Clinical Pharmacokinetics, 39(2), 127–153.", "https://doi.org/10.2165/00003088-200039020-00004", "DOI"]
+    ] };
   /* ------------------------------- healthy living -------------------------------
      A page under Learn with four tabs. Recipes: each has a page of its own, with servings that
      scale the amounts, ingredients and steps to tick off as you go, and the screen kept on while
@@ -14956,8 +15559,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   function routineById(id) { for (var i = 0; i < ROUTINES.length; i++) if (ROUTINES[i].id === id) return ROUTINES[i]; return null; }
   function recipeById(id) { for (var i = 0; i < RECIPES.length; i++) if (RECIPES[i].id === id) return RECIPES[i]; return null; }
-  function suppById(id) {                  // a supplement's card, or a light's
-    var all = SUPPS.concat(SUPPS_MORE, LIGHTS);
+  function suppById(id) {                  // a supplement's card, a light's, or coffee's
+    var all = SUPPS.concat(SUPPS_MORE, LIGHTS, [COFFEE]);
     for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i];
     return null;
   }
@@ -15019,6 +15622,39 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       return "<li>" + esc(r[0]) + ' <a href="' + esc(r[1]) + '" rel="noopener">' + esc(r[2] || "Link") + "</a></li>";
     }).join("") + "</ol></details>";
   }
+  /* How much of a cup's caffeine is still in the body, hour by hour: taken up with a peak at about
+     45 minutes, then cleared with the average half-life of 4 hours (the line) or anything from 2 to 8
+     (the band), the range EFSA gives for healthy adults. A one-compartment model, drawn to show what a
+     half-life means; real levels vary with the person and the cup. */
+  function lvCaffeineSvg() {
+    var W = 340, Hh = 176, L = 38, R = 12, T = 14, B = 40, pw = W - L - R, ph = Hh - T - B, TM = 24, KA = 4.5;
+    var X = function (t) { return (L + t / TM * pw).toFixed(1); }, Y = function (f) { return (T + (1 - f) * ph).toFixed(1); };
+    var amt = function (half, t) { var ke = Math.LN2 / half; return KA / (KA - ke) * (Math.exp(-ke * t) - Math.exp(-KA * t)); };
+    var pts = function (half) { var a = []; for (var i = 0; i <= TM * 4; i++) a.push([i / 4, amt(half, i / 4)]); return a; };
+    var line = function (a) { return a.map(function (p, i) { return (i ? "L" : "M") + X(p[0]) + " " + Y(p[1]); }).join(""); };
+    var band = line(pts(8)) + pts(2).reverse().map(function (p) { return "L" + X(p[0]) + " " + Y(p[1]); }).join("") + "Z";
+    var g = "";
+    [0, 0.5, 1].forEach(function (f) {
+      g += '<line class="lv-cv-grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(f) + '" y2="' + Y(f) + '"/>' +
+        '<text class="lv-cv-t" x="' + (L - 7) + '" y="' + Y(f) + '" text-anchor="end" dominant-baseline="middle">' + (f ? f * 100 + "%" : "0") + "</text>";
+    });
+    [0, 4, 8, 12, 16, 20, 24].forEach(function (t) {
+      g += '<text class="lv-cv-t" x="' + X(t) + '" y="' + (T + ph + 15) + '" text-anchor="middle">' + t + "</text>";
+    });
+    g += '<text class="lv-cv-t" x="' + (L + pw / 2) + '" y="' + (T + ph + 32) + '" text-anchor="middle">hours after the cup</text>';
+    var dot = function (t, lab) {
+      var f = amt(4, t);
+      return '<circle class="lv-cv-dot" cx="' + X(t) + '" cy="' + Y(f) + '" r="4.5"/>' +
+        '<text class="lv-cv-lab" x="' + (+X(t) + 9) + '" y="' + (+Y(f) - 7) + '">' + lab + "</text>";
+    };
+    return '<figure class="lv-curve"><svg viewBox="0 0 ' + W + " " + Hh + '" role="img" aria-labelledby="lvCvT">' +
+      '<title id="lvCvT">How much of a cup\'s caffeine is still in your body, hour by hour</title>' + g +
+      '<path class="lv-cv-band" d="' + band + '"/><path class="lv-cv-line" d="' + line(pts(4)) + '"/>' +
+      dot(4, "half at 4 h") + dot(8, "a quarter at 8 h") + "</svg>" +
+      "<figcaption>How much of a cup's caffeine is still in your body, hour by hour. The line is the average, a half-life of 4 hours: " +
+        "a coffee at 2 pm still has a quarter of its caffeine in you at 10 pm. The band is the usual range between people, half-lives from 2 to 8 hours: " +
+        "someone who clears it slowly still has half of it at 10 pm.</figcaption></figure>";
+  }
   function lvSupCard(s) {
     var b = lvBest(s), brief = !s.uses;
     var h = '<details class="lv-sup' + (brief ? " lv-brief" : "") + '" id="lv-' + s.id + '">' +
@@ -15031,18 +15667,32 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       h += "<p>" + esc(lvNb(s.text)) + "</p>" +
         '<p class="lv-care1"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>' + esc(lvNb(s.care)) + "</span></p>";
     } else {
-      h += "<h3>What it may help</h3><ul class=\"lv-uses\">" + s.uses.map(function (u) {
+      if (s.body) h += "<h3>What it does in your body</h3><ul class=\"lv-fx\">" + s.body.map(function (x) {
+          return "<li><b>" + esc(x[0]) + "</b><p>" + esc(lvNb(x[1])) + "</p>" + (x[2] === "curve" ? lvCaffeineSvg() : "") + "</li>";
+        }).join("") + "</ul><h3 class=\"lv-h3-gap\">What it may help</h3>";
+      else h += "<h3>What it may help</h3>";
+      h += "<ul class=\"lv-uses\">" + s.uses.map(function (u) {
           return '<li><span class="lv-use-h"><b>' + esc(u[1]) + "</b>" + dots(u[0]) + "</span><p>" + esc(lvNb(u[2])) + "</p></li>";
         }).join("") + "</ul>" +
-        '<dl class="lv-facts"><div><dt>' + (s.light ? "Doses studied" : "Amounts studied") + "</dt><dd>" + esc(lvNb(s.amount)) + "</dd></div>" +
-          "<div><dt>" + (s.light ? "How to use it" : "How to take it") + "</dt><dd>" + esc(lvNb(s.how)) + "</dd></div>" +
-          "<div><dt>" + (s.food ? "In food" : "What to buy") + "</dt><dd>" + esc(lvNb(s.food || s.buy)) + "</dd></div></dl>" +
+        '<dl class="lv-facts">' + (s.facts || [[s.light ? "Doses studied" : "Amounts studied", s.amount], [s.light ? "How to use it" : "How to take it", s.how],
+          [s.food ? "In food" : "What to buy", s.food || s.buy]]).map(function (f) { return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(lvNb(f[1])) + "</dd></div>"; }).join("") + "</dl>" +
         '<div class="lv-care"><h3><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg>Check first</h3><ul>' +
           s.care.map(function (c) { return "<li>" + esc(lvNb(c)) + "</li>"; }).join("") + "</ul></div>";
     }
     return h + lvRefs(s.refs) + "</div></details>";
   }
-  // a routine: its steps, each with when (if it has a time), what and why, and the practices that fit
+  /* What a step's links lead to, named on the button that shows them: practices, recipes, both,
+     or other pages (another routine, a light or coffee card). */
+  function lvGoLabel(go) {
+    var pr = 0, rc = 0, ot = 0;
+    go.forEach(function (g) {
+      if (/^#(practice|breathe)\//.test(g[0])) pr++;
+      else if (recipeById(g[0].replace(/^#living\//, ""))) rc++;
+      else ot++;
+    });
+    return ot ? "See also" : rc && pr ? "Suggested recipes and practices" : rc ? "Suggested recipes" : "Suggested practices";
+  }
+  // a routine: its steps, each with when (if it has a time), what and why, and the practices that fit behind a button
   function lvRoutine(r) {
     var timed = r.steps.some(function (x) { return x.w; });
     return '<section class="lv-rt" id="lv-' + r.id + '" aria-labelledby="lvh-' + r.id + '">' +
@@ -15050,7 +15700,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       '<p class="lv-rt-lede">' + esc(lvNb(r.lead)) + "</p>" +
       '<ol class="lv-rsteps' + (timed ? " lv-timed" : "") + '">' + r.steps.map(function (x) {
         return "<li>" + (x.w ? '<span class="lv-when">' + esc(x.w) + "</span>" : "") + "<b>" + esc(x.t) + "</b><p>" + esc(lvNb(x.p)) + "</p>" +
-          (x.go ? '<p class="lv-go">' + x.go.map(function (g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + "</a>"; }).join("") + "</p>" : "") + "</li>";
+          (x.go ? '<details class="lv-sugg"><summary>' + esc(lvGoLabel(x.go)) + '<span class="lv-sugg-n" aria-hidden="true">' + x.go.length + "</span>" +
+            '<svg class="i lv-chev" aria-hidden="true"><use href="#i-up"/></svg></summary>' +
+            '<p class="lv-go">' + x.go.map(function (g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + "</a>"; }).join("") + "</p></details>" : "") + "</li>";
       }).join("") + "</ol>" + lvRefs(r.refs) + "</section>";
   }
   var LV_LEGEND = '<p class="pr-legend">Evidence' +
@@ -15065,13 +15717,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       '<p class="lv-lede">Simple, nourishing food, most of it from one pot. Each recipe scales to the number you\'re cooking for, and keeps the screen on while you cook.</p>' +
       '<ul class="pr-list lv-rlist">' + RECIPES.map(function (r) { return libRow(libRecipe(r)); }).join("") + "</ul></div>";
     var sup = '<div class="lv-panel" role="tabpanel" id="lvp-supplements" aria-labelledby="lvt-supplements" hidden>' +
-      '<p class="lv-lede">What the research says about the supplements people ask about most: what each may help and how strong the evidence is, the amounts studied, and what to check before you start. Food comes first; these fill gaps.</p>' +
+      '<p class="lv-lede">What the research says about the supplements people ask about most, and about coffee: what each may help and how strong the evidence is, the amounts studied, and what to check before you start. Food comes first; supplements fill gaps.</p>' +
       safeBox([SAFE_SUPPS]) + LV_LEGEND +
       '<div class="lv-sups">' + SUPPS.map(lvSupCard).join("") + "</div>" +
+      '<h2 class="lv-h2">Coffee</h2>' +
+      '<div class="lv-sups">' + lvSupCard(COFFEE) + "</div>" +
       '<h2 class="lv-h2">Also asked about</h2>' +
       '<div class="lv-sups">' + SUPPS_MORE.map(lvSupCard).join("") + "</div>" +
       '<p class="pr-note">Not medical advice, and no substitute for a blood test where one would tell you more: vitamin D, B12 and iron are better tested than guessed. ' +
-        'Choose products tested by a third party. The sources were checked in October 2026, and each card lists its own.</p></div>';
+        'Choose products tested by a third party. The sources were checked in October 2026, coffee\'s in November, and each card lists its own.</p></div>';
     var rtn = '<div class="lv-panel" role="tabpanel" id="lvp-routines" aria-labelledby="lvt-routines" hidden>' +
       '<p class="lv-lede">Healthy sleep habits, and a morning, a day and an evening built around them: suggestions to make your own, with the research behind each and the practices that fit.</p>' +
       '<nav class="lv-jump" aria-label="Routines">' + ROUTINES.map(function (r) { return '<a class="lv-chip" href="#living/' + r.id + '">' + esc(LV_SHORT[r.id] || r.name) + "</a>"; }).join("") + "</nav>" +
@@ -15208,6 +15862,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         [r.sub, r.why, r.ing.concat(r.serve || []).map(function (it) { return Array.isArray(it[2]) ? it[2][0] : it[2]; }).join(", ")], "#living/" + r.id,
         { ic: "bowl", col: "var(--food)", w: 1.1, alias: r.also, tags: "recipe cook food " + r.tags.join(" ") }));
     });
+    out.push(fdEntry("living", COFFEE.name, "Healthy living · what a cup does in your body",
+      [COFFEE.lead].concat(COFFEE.body.map(function (x) { return x[0] + ": " + x[1]; }), COFFEE.uses.map(function (u) { return u[1] + ": " + u[2]; }),
+        COFFEE.facts.map(function (f) { return f[0] + ": " + f[1]; }), [COFFEE.care.join(" ")]), "#living/coffee",
+      { ic: "cup", col: "var(--food)", w: 1.2, alias: COFFEE.alias, tags: COFFEE.tags }));
     SUPPS.concat(SUPPS_MORE).forEach(function (s) {
       var b = lvBest(s);
       out.push(fdEntry("living", s.name, "Supplement · " + (s.uses ? "best evidence: " + b[1].toLowerCase() : b[1]),

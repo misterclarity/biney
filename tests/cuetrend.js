@@ -346,10 +346,10 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const res = JSON.stringify({ at: Date.now() - 3 * 864e5, best: 5.5, res: [[6.5, 6.1], [6, 7.2], [5.5, 8.4], [5, 7.9], [4.5, 6.8]].map(x => ({ rate: x[0], amp: x[1], n: 12 })) });
       let p = await page(OPT(), null, { speed: 6, rr: true });
       await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
-      ok(await order(p) === 'hr-top > connect > resonance-test > hr-tiles > hr-body | hr-bars > hr-spec' && await p.$eval('#connect', d => d.open) && await intro(p),
+      ok(await order(p) === 'hr-top > connect > resonance-test > hr-tiles > hr-what-tiles > hr-body | hr-bars > hr-spec > breath-mic' && await p.$eval('#connect', d => d.open) && await intro(p),
         'before any sensor: connecting, the guide (open the first time) and the resonance test come first: ' + await order(p));
       await p.click('#gConnect'); await p.waitForTimeout(900);
-      ok(await order(p) === 'hr-top > hr-tiles > hr-body > connect | hr-bars > resonance-test > hr-spec' && !(await p.$eval('#connect', d => d.open)) && !(await intro(p)),
+      ok(await order(p) === 'hr-top > hr-tiles > hr-what-tiles > hr-body > connect | hr-bars > resonance-test > hr-spec > breath-mic' && !(await p.$eval('#connect', d => d.open)) && !(await intro(p)),
         'once it\'s on: the live numbers first, then the charts and the test, and the guide, closed, at the bottom: ' + await order(p));
       ok(await E(p, () => document.activeElement && document.activeElement.id) === 'hrConnect' && await t(p, '#hrConnect') === 'Disconnect', 'connecting from the guide hands the focus to the same button at the top, now Disconnect, as the guide folds away');
       await p.click('#hrConnect'); await p.waitForTimeout(400);
@@ -361,7 +361,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const pos = await E(p, () => ({ test: document.querySelector('#resonance-test').getBoundingClientRect().top, tiles: document.querySelector('.hr-tiles').getBoundingClientRect().top, use: document.querySelector('#hrFindUse').hidden ? '' : document.querySelector('#hrFindUse').textContent }));
       ok(pos.test < pos.tiles && pos.use === 'Breathe at 5.5 /min' && !(await p.$eval('#connect', d => d.open)), 'coming back without a sensor, your result and its pace are near the top: ' + pos.use);
       await p.setViewportSize({ width: 1280, height: 900 }); await p.waitForTimeout(300);
-      ok(await order(p) === 'hr-top > connect > hr-tiles > hr-body | hr-bars > resonance-test > hr-spec', 'on a wide screen the charts and the test stay side by side: ' + await order(p));
+      ok(await order(p) === 'hr-top > connect > hr-tiles > hr-what-tiles > hr-body | hr-bars > resonance-test > hr-spec > breath-mic', 'on a wide screen the charts and the test stay side by side: ' + await order(p));
       const cols = await E(p, () => { const r = s => document.querySelector(s).getBoundingClientRect(); return [r('.hr-bars').left < r('#resonance-test').left, Math.abs(r('.hr-bars').top - r('#resonance-test').top) < 2, r('.hr-spec').left === r('.hr-bars').left]; });
       ok(cols.every(Boolean), 'the test in its own column, beside the two charts');
       await p.setViewportSize({ width: 412, height: 915 }); await p.waitForTimeout(300);

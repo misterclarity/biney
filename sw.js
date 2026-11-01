@@ -3,7 +3,7 @@
    (index.html) is still a complete, self-contained file; this worker only stores it, the app
    description and the icons. Nothing else is fetched, recorded or sent.
 
-   Version 1a4d311b5d is a hash of every stored file, so each new deploy changes this script.
+   Version 79d1441151 is a hash of every stored file, so each new deploy changes this script.
    The browser notices that and installs the new copy in the background; the old copy keeps
    serving until the page tells the new one to take over, which it does by itself when that
    interrupts nothing (or when Update now is tapped).
@@ -12,7 +12,7 @@
    version 3: https://www.gnu.org/licenses/agpl-3.0.html. Source: https://github.com/misterclarity/biney */
 "use strict";
 
-var CACHE = "entrain-1a4d311b5d";
+var CACHE = "entrain-79d1441151";
 var FILES = [
   "./",
   "manifest.webmanifest",

@@ -16,10 +16,13 @@
 //      a long feedback message, Edge on an iPhone, the tinnitus and gamma evidence
 //   E  a mindful meal: its choices and plans, the meal itself, hunger before and after, the recipes and routines
 //   S  four programmes: Morning Tonic, Sports Performance, Creative Flow and Mindful Sex
+//   J  the Heart page explained, breath from the microphone and the spectrum's dashed line, coffee, and the
+//      routines' suggestions behind a button
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
 const mock = require('./sensor-mock');
+const micMock = require('./mic-mock');
 const only = process.argv[2] || '';
 const t = (p, s) => p.$eval(s, e => e.textContent.replace(/\s+/g, ' ').trim()).catch(() => '(missing)');
 const E = (p, f, a) => p.evaluate(f, a);
@@ -27,7 +30,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
 (async () => {
   const browser = await chromium.launch();
   const log = []; const ok = (c, m) => log.push((c ? 'PASS ' : 'FAIL ') + m);
-  const page = async (st, init, sensor, desk) => {
+  const page = async (st, init, sensor, desk, mic) => {
     const ctx = await browser.newContext(desk ? { viewport: { width: 1280, height: 900 } } : { userAgent: S20, viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
     const p = await ctx.newPage();
     p.on('pageerror', e => log.push('PAGEERROR ' + e.message));
@@ -41,6 +44,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       if (window.speechSynthesis) { speechSynthesis.speak = () => {}; speechSynthesis.cancel = () => {}; }
     }, st || {});
     if (sensor) await p.addInitScript(mock, sensor);
+    if (mic) await p.addInitScript(micMock, mic);
     if (init) await p.addInitScript(init);
     await p.goto(APP);
     return p;
@@ -600,8 +604,8 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         refs: [...document.querySelectorAll('#lvp-supplements .lv-sup')].every(d => d.querySelectorAll('.lv-refl a[href^="https://"]').length >= 1),
         shut: [...document.querySelectorAll('#lvp-supplements .lv-sup')].every(d => !d.open) }));
       ok(sp.hash === '#living/supplements' && sp.sel === 'true' && sp.focus === 'lvt-supplements' && sp.panel, 'the arrow keys move between the tabs, and the address follows');
-      ok(sp.main.join(' ') === 'omega-3 coq10 creatine vitamin-d magnesium vitamin-b12' && sp.more === 7 && sp.refs && sp.shut,
-        'six supplements in full and seven in brief, each with its sources, all closed to start: ' + sp.main.join(', '));
+      ok(sp.main.join(' ') === 'omega-3 coq10 creatine vitamin-d magnesium vitamin-b12 coffee' && sp.more === 7 && sp.refs && sp.shut,
+        'six supplements in full, then coffee, and seven in brief, each with its sources, all closed to start: ' + sp.main.join(', '));
       ok(/^Supplements aren't checked like medicines/.test(sp.box) && /Safety notes$/.test(sp.box), 'the tab opens with the line from the safety note, and the link to the whole note');
       await p.click('#lvp-supplements .si-caution [data-safety]'); await p.waitForTimeout(250);
       ok(await E(p, () => !document.querySelector('#sfModal').hidden && /Food and supplements\. Supplements aren't checked like medicines/.test(document.querySelector('#sfBody').textContent.replace(/\s+/g, ' '))),
@@ -1869,6 +1873,8 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const lunch = await E(p, () => { const li = [...document.querySelectorAll('#lv-daytime .lv-rsteps > li')].find(li => li.querySelector('b').textContent === 'Lunch away from the screen'); return li ? li.querySelector('p').textContent : ''; });
       ok(rl.join(' | ') === 'morning:Breakfast | daytime:Lunch away from the screen | evening:Lights down' && /^Eat sitting down, away from your desk and the screens\. Across 24 studies, eating while distracted made people eat more/.test(lunch),
         'the routines lead to it at breakfast, lunch and the evening meal: ' + rl.join(' | '));
+      await E(p, () => document.querySelector('#lv-daytime a[href="#practice/meal"]').closest('details').scrollIntoView({ block: 'center' }));
+      await p.click('#lv-daytime details:has(a[href="#practice/meal"]) > summary'); await p.waitForTimeout(200);
       await p.click('#lv-daytime a[href="#practice/meal"]'); await p.waitForTimeout(500);
       ok(await E(p, () => location.hash + ' ' + document.querySelector('#viewTitle').textContent) === '#practice/meal Mindful Meal', 'and its link opens the Mindful Meal');
       await p.context().close();
@@ -2106,6 +2112,206 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const rl = await E(p, () => ['morning-tonic', 'sport'].map(id => [...document.querySelectorAll('#lvp-routines .lv-rsteps > li')].filter(li => li.querySelector('a[href="#practice/' + id + '"]')).map(li => li.querySelector('b').textContent).join()));
       ok(rl.join(' | ') === 'Up at your usual time | Move in the day', 'the routines lead to Morning Tonic on waking, and to Sports Performance for exercise');
       await p.context().close();
+    }
+
+    /* J. the Heart page explained, breath from the microphone and the spectrum's dashed line, coffee, and the routines'
+       suggestions behind a button. The microphone's end-to-end check runs in real time, so it starts first and the
+       rest runs while it listens. */
+    if (!only || only === 'J') {
+      // breath from the microphone, end to end: a beat-to-beat sensor and breath sounds at the guide's pace
+      const live = await page(OPT(), null, { speed: 1, rr: true }, false, { bpm: 5.5 });
+      await E(live, () => location.hash = 'heart'); await live.waitForTimeout(300);
+      await live.click('#hrConnect');
+      await live.waitForFunction(() => window.__entrain.H.state === 'on', null, { timeout: 8000 }).catch(() => {});
+      const pace = await E(live, () => parseFloat(document.querySelector('#bRateV').textContent));
+      await E(live, v => { window.__micBpm = v; }, pace);
+      await live.click('#mcStart');
+      const started = Date.now();
+      await live.waitForTimeout(400);
+      const asked = await E(live, () => ({ a: window.__mic.opts[0] && window.__mic.opts[0].audio, btn: document.querySelector('#mcStart').textContent, pressed: document.querySelector('#mcStart').getAttribute('aria-pressed'),
+        read: document.querySelector('#mcRead').textContent, busy: window.__entrain.appBusy() }));
+      ok(asked.a && asked.a.echoCancellation === false && asked.a.noiseSuppression === false && asked.a.autoGainControl === false && asked.btn === 'Stop listening' && asked.pressed === 'true' &&
+        /^Listening… your breathing pace appears in about \d+ s\.$/.test(asked.read) && asked.busy,
+        'Listen for my breathing asks for the microphone with echo cancelling, noise suppression and automatic gain off, says it\'s listening, and holds back an automatic update: ' + asked.read);
+
+      // the routines: each step's links behind a button, nothing turned on its side
+      let p = await page(OPT());
+      await E(p, () => location.hash = 'living/routines'); await p.waitForTimeout(500);
+      const R = await E(p, () => {
+        const all = s => [...document.querySelectorAll(s)];
+        return { rot: all('#v-living *').filter(e => { const m = /^matrix\(([^,]+), ([^,]+)/.exec(getComputedStyle(e).transform); return m && Math.abs(+m[1]) < 0.01 && Math.abs(Math.abs(+m[2]) - 1) < 0.01; }).length,
+          sugg: all('#lvp-routines .lv-sugg').map(d => (d.open ? '*' : '') + d.querySelector('summary').textContent.replace(/\s+/g, ' ').trim()).join(' | '),
+          loose: all('#lvp-routines .lv-go').filter(g => !g.closest('details.lv-sugg')).length, hid: all('#lvp-routines .lv-rsteps .lv-chip').filter(a => a.checkVisibility ? a.checkVisibility() : a.closest('details').open).length };
+      });
+      ok(R.rot === 0 && !R.loose && R.hid === 0 && R.sugg === 'See also1 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | See also1 | Suggested practices2 | Suggested practices3 | ' +
+        'Suggested recipes and practices4 | Suggested practices2 | Suggested practices3 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | Suggested practices4 | Suggested practices2',
+        'in the routines nothing is turned on its side, and each step\'s practices wait behind a closed button named for what\'s there, with a count: ' + R.sugg.slice(0, 80) + '…');
+      await E(p, () => document.querySelector('#lv-morning .lv-sugg').scrollIntoView({ block: 'center' }));
+      await p.click('#lv-morning .lv-sugg > summary'); await p.waitForTimeout(250);
+      const op = await E(p, () => { const d = document.querySelector('#lv-morning .lv-sugg'), a = d.querySelector('.lv-chip'), r = a.getBoundingClientRect(), t = d.closest('li').querySelector('p').getBoundingClientRect();
+        return { open: d.open, txt: a.textContent, w: Math.round(r.width), h: Math.round(r.height), below: r.top >= t.bottom - 1, left: r.left >= t.left - 1 }; });
+      ok(op.open && op.txt === 'Morning Tonic' && op.w > op.h && op.h < 48 && op.below && op.left, 'pressed, it opens to the practices, lying flat under the step\'s text: ' + JSON.stringify(op));
+      await E(p, () => location.hash = 'learn'); await p.waitForTimeout(400);
+      const pr = await E(p, () => { const m = /^matrix\(([^,]+), ([^,]+)/.exec(getComputedStyle(document.querySelector('.lv-promo-go')).transform); return m ? [+m[1], +m[2]] : null; });
+      ok(pr && Math.abs(pr[0]) < 0.01 && Math.abs(pr[1] - 1) < 0.01 && /and about coffee/.test(await t(p, '#v-learn .lv-promo')), 'Learn\'s link to Healthy living keeps its arrow turned to point on, and names coffee');
+
+      // coffee
+      await E(p, () => location.hash = 'living/coffee'); await p.waitForTimeout(800);
+      const C = await E(p, () => {
+        const c = document.querySelector('#lv-coffee'), tx = e => e.textContent.replace(/\s+/g, ' ').trim(), all = (s, r) => [...(r || document).querySelectorAll(s)];
+        const h2 = c.closest('.lv-sups').previousElementSibling, svg = c.querySelector('.lv-curve svg');
+        return { open: c.open, sel: document.querySelector('#lvt-supplements').getAttribute('aria-selected'), h2: h2 && tx(h2), next: tx(c.closest('.lv-sups').nextElementSibling),
+          name: tx(c.querySelector('.pc-top b')), best: tx(c.querySelector('.lv-best')), fx: all('.lv-fx > li > b', c).map(tx).join(' | '),
+          uses: all('.lv-use-h', c).map(h => tx(h.querySelector('b')) + ' ' + h.querySelectorAll('.strength i.on').length).join(' | '),
+          dts: all('.lv-facts dt', c).map(tx).join(' | '), care: all('.lv-care li', c).length, refs: all('.lv-refl a', c).map(a => a.getAttribute('href')),
+          chart: svg ? { role: svg.getAttribute('role'), title: tx(svg.querySelector('title')), line: !!svg.querySelector('.lv-cv-line'), band: !!svg.querySelector('.lv-cv-band'),
+            labs: all('.lv-cv-lab', svg).map(tx).join(' | '), w: Math.round(svg.getBoundingClientRect().width) } : null,
+          cap: tx(c.querySelector('.lv-curve figcaption')), txt: tx(c), lede: tx(document.querySelector('#lvp-supplements .lv-lede')), w: document.documentElement.scrollWidth, iw: innerWidth };
+      });
+      ok(C.open && C.sel === 'true' && C.h2 === 'Coffee' && C.next === 'Also asked about' && C.name === 'Coffee and caffeine' && C.best === 'Best evidence: alertness, attention and reaction time' && /and about coffee/.test(C.lede),
+        '#living/coffee opens Supplements at its own section, Coffee, between the full cards and the brief ones: ' + C.name + ', ' + C.best);
+      ok(C.fx === 'How it works | Hour by hour | Your brain | Your sleep | Your heart and blood pressure | Your heart readings | Your stomach and bowel | Fluids | Cholesterol | Iron | Every day, and stopping',
+        'it explains what a cup does in the body, part by part: ' + C.fx);
+      ok(C.chart && C.chart.role === 'img' && /still in your body, hour by hour/.test(C.chart.title) && C.chart.line && C.chart.band && C.chart.labs === 'half at 4 h | a quarter at 8 h' &&
+        /a coffee at 2 pm still has a quarter of its caffeine in you at 10 pm/.test(C.cap) && /half-lives from 2 to 8 hours/.test(C.cap) && C.chart.w > 250 && C.w <= C.iw,
+        'a chart shows how long a cup\'s caffeine stays: the average half-life of 4 hours, the range from 2 to 8, labelled, and the page still fits a phone');
+      ok(/Adenosine builds up in your brain the longer you're awake/.test(C.txt) && /starts working 15 to 30 minutes after a cup/.test(C.txt) && /Half of it has gone after about 4 hours on average, but that ranges from 2 to 8 hours/.test(C.txt) &&
+        /about 45 minutes less, and 9 more to fall asleep/.test(C.txt) && /by about 8 mmHg \(systolic\) and 6 \(diastolic\) within the hour/.test(C.txt) && /154 a day against 102/.test(C.txt) &&
+        /60% more than water and 23% more than decaf/.test(C.txt) && /A paper filter holds them back/.test(C.txt) && /cut the iron absorbed from it by 39%/.test(C.txt) &&
+        /brings a headache to about half of people in trials/.test(C.txt) && /didn't change their heart rate variability over the next 90 minutes/.test(C.txt),
+        'with the numbers from its sources: half-life, sleep, blood pressure, extra heartbeats, the gut, cholesterol, iron, withdrawal and heart readings');
+      ok(C.uses === 'Alertness, attention and reaction time 3 | Endurance, strength and power 3 | A longer, healthier life 1' && C.dts === 'How much is safe | Caffeine in a drink | When' &&
+        /Up to 400 mg a day for healthy adults, and up to 200 mg at a time/.test(C.txt) && /Filter coffee \(200 ml\) about 90 mg; espresso \(60 ml\) 80 mg/.test(C.txt) && /the last coffee at least 9 hours before bed/.test(C.txt) &&
+        C.care === 5 && C.refs.length === 24 && C.refs.every(h => /^https:\/\//.test(h)),
+        'what it may help with the evidence for each, how much is safe, the caffeine in a drink, when to have it, five checks and 24 sources');
+      await E(p, () => location.hash = 'living/routines'); await p.waitForTimeout(500);
+      const cl = await E(p, () => [...document.querySelectorAll('#lvp-routines a[href="#living/coffee"]')].map(a => a.closest('li').querySelector('b').textContent + ':' + a.closest('details').querySelector('summary').firstChild.textContent));
+      ok(cl.join(' | ') === 'Caffeine before the afternoon:See also | Last coffee:See also', 'the sleep habits and the evening routine lead to it: ' + cl.join(' | '));
+      await p.click('#tbFind');
+      const fd = async q => { await p.fill('#fdIn', q); await p.waitForTimeout(250); return E(p, () => (document.querySelector('#fdRes .fd-it') || { getAttribute: () => '' }).getAttribute('href')); };
+      const fs1 = [await fd('coffee'), await fd('caffeine'), await fd('espresso'), await fd('caffeine half-life')];
+      await p.keyboard.press('Escape');
+      ok(fs1.every(h => h === '#living/coffee'), 'search finds it first for coffee, caffeine, espresso and caffeine half-life: ' + fs1.join(', '));
+      await p.context().close();
+
+      // the Heart page explained: every box, and the numbers above them
+      p = await page(OPT());
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(400);
+      const X = await E(p, () => {
+        const tx = e => e.textContent.replace(/\s+/g, ' ').trim();
+        return { list: [...document.querySelectorAll('#hr details.hr-what')].map(d => { const b = d.closest('.hr-box'); return (b ? b.id || b.className.split(' ').pop() : 'tiles') + ':' + tx(d.querySelector('summary')) + ':' + (tx(d.querySelector('.ev-body')).length > 300); }).join(' | '),
+          dt: [...document.querySelectorAll('.hr-what-tiles dt')].map(tx).join(' | '), open: [...document.querySelectorAll('#hr details.hr-what')].some(d => d.open),
+          body: [...document.querySelectorAll('#hr details.hr-what .ev-body')].map(tx).join(' '), hint: tx(document.querySelector('.hr-spec .hint')), empty: tx(document.querySelector('#hrBarsEmpty')),
+          mic: tx(document.querySelector('#breath-mic > .hr-find-txt')), btn: tx(document.querySelector('#mcStart')), micEmpty: !document.querySelector('#mcEmpty').hidden, read: document.querySelector('#hrSpecRead').hidden };
+      });
+      ok(X.list.split(' | ').sort().join(' | ') === 'breath-mic:How it works, and what helps:true | hr-bars:What this shows:true | hr-spec:How to read it:true | resonance-test:What this shows:true | tiles:What these numbers mean:true' && !X.open &&
+        X.dt === 'Heart rate | Swing | RMSSD | Coherence', 'every number and chart on the Heart page has its explanation folded under it: ' + X.list);
+      ok(/a rhythm called respiratory sinus arrhythmia/.test(X.body) && /the root mean square of successive differences/.test(X.body) && /compare it with your own readings/.test(X.body) &&
+        /the strongest peak between 0\.04 and 0\.26 Hz/.test(X.body) && /the baroreflex, which has its own rhythm of about 10 seconds/.test(X.body) && /Hertz times 60 gives breaths a minute: 0\.1 Hz is 6 a minute/.test(X.body) &&
+        /the darker fill under the peak is the 0\.030 Hz window it counts as the peak/.test(X.body) && /The dashed line is your breathing: during a session, the guide's pace; with Breath from the microphone on, the pace it hears/.test(X.body) &&
+        /0\.04 to 0\.15 Hz, low frequency/.test(X.body) && /Each bar is one breath/.test(X.body),
+        'they say what each shows: the swing and respiratory sinus arrhythmia, RMSSD, coherence, the resonance test and the baroreflex, how to read the spectrum and its dashed line');
+      ok(/The coherence score doesn't use it: it stays HeartMath's, from your heartbeat alone/.test(X.body) && /Bluetooth earbuds switch to their call mode while their own microphone is in use, which plays sound in mono/.test(X.body) &&
+        /Nothing is recorded or sent: the sound becomes one loudness number every tenth of a second on this device/.test(X.body) && /When in-breath and out-breath sound alike, the pace could read double/.test(X.body) &&
+        X.hint === 'Pink: your heart rhythm · dashed: your breathing' && /or turn on Breath from the microphone/.test(X.empty) && /Nothing is recorded or sent anywhere\./.test(X.mic) &&
+        X.btn === 'Listen for my breathing' && X.micEmpty && X.read,
+        'the microphone\'s box says what it does, what helps, why the coherence score stays the heart\'s own, the Bluetooth catch and that nothing is recorded');
+      await p.context().close();
+
+      // the microphone refused or missing; a Bluetooth one, and choosing another
+      p = await page(OPT(), null, null, false, { fail: 'NotAllowedError' });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      await p.click('#mcStart'); await p.waitForTimeout(400);
+      const den = await E(p, () => ({ r: document.querySelector('#mcRead').textContent, b: document.querySelector('#mcStart').textContent, on: window.__entrain.MIC.on }));
+      ok(/^The microphone wasn't allowed\. To use it, allow it for this page in the browser's site settings/.test(den.r) && den.b === 'Listen for my breathing' && !den.on, 'refused: it says how to allow it, and the button is ready again');
+      await p.context().close();
+      p = await page(OPT(), null, null, false, { fail: 'NotFoundError' });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      await p.click('#mcStart'); await p.waitForTimeout(400);
+      ok(/^No microphone was found\./.test(await t(p, '#mcRead')), 'no microphone: it says so');
+      await p.context().close();
+      p = await page(OPT(), null, null, false, { label: 'AirPods Pro', devices: [{ deviceId: 'default', label: 'AirPods Pro' }, { deviceId: 'phone', label: 'Phone microphone' }] });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      await p.click('#mcStart'); await p.waitForTimeout(700);
+      const bt = await E(p, () => ({ warn: document.querySelector('#mcWarn').hidden ? '' : document.querySelector('#mcWarn').textContent, pick: !document.querySelector('#mcPickL').hidden,
+        opts: [...document.querySelectorAll('#mcPick option')].map(o => (o.selected ? '*' : '') + o.textContent).join(' | ') }));
+      ok(/^This looks like a Bluetooth microphone \(AirPods Pro\)\. While it's in use, Bluetooth earbuds switch to their call mode, which plays sound in mono: a binaural beat stops working/.test(bt.warn) &&
+        bt.pick && bt.opts === '*AirPods Pro | Phone microphone', 'a Bluetooth microphone: a warning that the beat turns mono, and a choice of microphone: ' + bt.opts);
+      await p.selectOption('#mcPick', 'phone'); await p.waitForTimeout(900);
+      const sw2 = await E(p, () => ({ calls: window.__mic.calls, stopped: window.__mic.stopped, id: window.__mic.opts[1] && window.__mic.opts[1].audio.deviceId, warn: document.querySelector('#mcWarn').hidden,
+        on: window.__entrain.MIC.on, kept: localStorage.getItem('entrain.micDev') }));
+      ok(sw2.calls === 2 && sw2.stopped === 1 && sw2.id && sw2.id.exact === 'phone' && sw2.warn && sw2.on && sw2.kept === 'phone', 'choosing the phone\'s own microphone switches to it, keeps the choice and drops the warning: ' + JSON.stringify(sw2));
+      await p.click('#mcStart'); await p.waitForTimeout(300);
+      const off = await E(p, () => ({ stopped: window.__mic.stopped, on: window.__entrain.MIC.on, btn: document.querySelector('#mcStart').textContent, read: document.querySelector('#mcRead').textContent, busy: window.__entrain.appBusy() }));
+      ok(off.stopped === 2 && !off.on && off.btn === 'Listen for my breathing' && off.read === '' && !off.busy, 'Stop listening lets the microphone go: ' + JSON.stringify(off));
+      // the pace finder itself, on made-up loudness: one sound a breath, in and out unlike or alike, noise, silence
+      const F = await E(p, () => {
+        const X = window.__entrain;
+        let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+        const gs = () => { let u = 0; while (!u) u = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rnd()); };
+        // a breath's in- and out-sound (each 80% of its part, the out-sound aEx dB above the floor), with jitter cv
+        const make = (bpm, aEx, aIn, inFrac, cv) => { const n = 600, pw = new Float64Array(n); let t = 0;
+          while (t < 60) { const T = 60 / bpm * (1 + cv * gs()), ti = T * inFrac, te = T - ti;
+            const burst = (s, d, a) => { for (let i = Math.floor(s * 10); i < Math.min(n, (s + d) * 10); i++) { const x = (i / 10 - s) / d; if (x >= 0 && x <= 1) pw[i] += Math.pow(10, a / 10) * Math.pow(Math.sin(Math.PI * x), 2); } };
+            if (aIn) burst(t + 0.1 * ti, 0.8 * ti, aIn); burst(t + ti + 0.1 * te, 0.8 * te, aEx); t += T; }
+          return [...pw].map(v => -50 + 10 * Math.log10(1 + v) + 0.8 * gs()); };
+        const r = (env, prior, guided) => { const x = X.micRate(env, 10, prior || 0, !!guided); return { q: x.q, rate: x.rate ? Math.round(x.rate * 10) / 10 : 0 }; };
+        return { one: [4.5, 6, 10, 15].map(b => r(make(b, 12, 0, 0.4, 0.05))), unlike: r(make(6, 12, 6, 0.4, 0.05)), slow: r(make(6, 10, 10, 0.5, 0.05)), slowGuided: r(make(6, 10, 10, 0.5, 0.05), 6, true),
+          fast: r(make(14, 10, 10, 0.5, 0.05)), noise: r([...Array(600)].map(() => -50 + 0.8 * gs())), silent: r([...Array(600)].map(() => -120)) };
+      });
+      const near = (x, b) => x.rate && Math.abs(x.rate / b - 1) < 0.06;
+      ok(F.one.every((x, i) => near(x, [4.5, 6, 10, 15][i]) && /^(ok|clear)$/.test(x.q)) && near(F.unlike, 6) && near(F.slow, 12) && near(F.slowGuided, 6) && near(F.fast, 14) &&
+        /^(quiet|unsteady)$/.test(F.noise.q) && F.silent.q === 'silent',
+        'the pace finder reads 4.5 to 15 a minute, takes a quieter in-breath as part of the same breath, reads slow breathing whose in and out sound alike as double until the guide\'s pace settles it, halves a rhythm too fast for breathing at rest, and gives no pace for noise or silence: ' + JSON.stringify(F));
+      await p.context().close();
+
+      // the spectrum's dashed line from the guide, and what it says without one
+      p = await page(OPT(), null, { speed: 4, rr: true });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      await p.click('#hrConnect');
+      await p.waitForFunction(() => window.__entrain.H.coh, null, { timeout: 40000 }).catch(() => {});
+      await p.waitForTimeout(300);
+      const s0 = await E(p, () => ({ read: document.querySelector('#hrSpecRead').hidden ? '' : document.querySelector('#hrSpecRead').textContent, mark: document.querySelector('#hrSpec').dataset.breath }));
+      ok(/^Your heart's rhythm peaks at [\d.]+ a minute \(0\.\d{3} Hz\)\. To see your breathing pace here as a dashed line, start a session on Breathe, or turn on Breath from the microphone\.$/.test(s0.read) && s0.mark === '',
+        'with no breathing pace to show, the spectrum says where the heart\'s rhythm peaks and how to add your breathing: ' + s0.read);
+      await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
+      await p.click('#bStart');
+      await E(p, () => location.hash = 'heart');
+      await p.waitForFunction(() => /^guide:/.test(document.querySelector('#hrSpec').dataset.breath || ''), null, { timeout: 30000 }).catch(() => {});
+      await p.waitForTimeout(6000);                       // the heart's rhythm settles on the guide's pace
+      const s1 = await E(p, () => {
+        const cv = document.querySelector('#hrSpec'), r = cv.getBoundingClientRect(), dpr = cv.width / r.width, c = cv.getContext('2d');
+        const rate = parseFloat(cv.dataset.breath.split(':')[1]), x = Math.round((6 + rate / 60 / 0.4 * (r.width - 16)) * dpr);
+        const col = getComputedStyle(document.documentElement).getPropertyValue('--b-in').trim().replace('#', ''), n = parseInt(col, 16), rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+        const d = c.getImageData(x - 2, 0, 5, cv.height).data; let hit = 0;
+        for (let i = 0; i < d.length; i += 4) if (Math.abs(d[i] - rgb[0]) + Math.abs(d[i + 1] - rgb[1]) + Math.abs(d[i + 2] - rgb[2]) < 90 && d[i + 3] > 150) hit++;
+        return { mark: cv.dataset.breath, hit, read: document.querySelector('#hrSpecRead').textContent };
+      });
+      ok(/^guide:/.test(s1.mark) && Math.abs(parseFloat(s1.mark.slice(6)) - 5.5) < 0.1 && s1.hit > 10 && /The guide is at 5\.5 a minute\. They match: your breathing is setting your heart's rhythm\.$/.test(s1.read),
+        'during a breathing session the dashed line marks the guide\'s pace, drawn on the chart, and the line under it says the two match: ' + s1.read + ' (' + s1.hit + ' px)');
+      await p.context().close();
+
+      // back to the microphone, end to end
+      const waitFor = async (f, ms) => { await live.waitForFunction(f, null, { timeout: ms }).catch(() => {}); };
+      await waitFor(() => /^(ok|clear)$/.test((window.__entrain.MIC.est || {}).q || ''), Math.max(1000, 45000 - (Date.now() - started)));
+      const m1 = await E(live, () => ({ est: window.__entrain.MIC.est, read: document.querySelector('#mcRead').textContent, hint: document.querySelector('#mcHint').textContent,
+        stat: document.querySelector('#bMicStat').hidden ? '' : document.querySelector('#bMicStat').textContent.replace(/\s+/g, ' ').trim() }));
+      ok(m1.est && Math.abs(m1.est.rate - pace) < 0.4 && /^Breathing about [\d.]+ a minute/.test(m1.read) && /a minute$/.test(m1.hint) && /^heard [\d.]+ \/min$/.test(m1.stat),
+        'within about half a minute it hears the pace (' + pace + ' a minute): ' + m1.read + ' · Breathe shows "' + m1.stat + '"');
+      await waitFor(() => window.__entrain.MIC.sw.length >= 2, 30000);
+      const m2 = await E(live, () => {
+        const X = window.__entrain, cv = document.querySelector('#mcTrace'), d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; let ink = 0;
+        for (let i = 3; i < d.length; i += 4) if (d[i] > 0) ink++;
+        return { sw: X.MIC.sw.length, list: X.swingList() === X.MIC.sw, amp: X.MIC.sw.map(s => s.amp), bars: document.querySelector('#hrBarsEmpty').hidden, avgS: document.querySelector('#hrSwAvgS').textContent,
+          ink: ink / (cv.width * cv.height), empty: document.querySelector('#mcEmpty').hidden, marks: X.MIC.marks.length };
+      });
+      ok(m2.sw >= 2 && m2.list && m2.amp.every(a => a > 4) && m2.bars && /^Average of \d+ breaths heard$/.test(m2.avgS) && m2.ink > 0.05 && m2.empty && m2.marks >= 3,
+        'each breath it hears adds a bar of its heart-rate swing, without a breathing session, and the trace draws the breath sound over the heart rate: ' + JSON.stringify({ sw: m2.sw, avgS: m2.avgS, ink: m2.ink.toFixed(2) }));
+      await waitFor(() => /^mic:/.test(document.querySelector('#hrSpec').dataset.breath || ''), Math.max(1000, 100000 - (Date.now() - started)));
+      const m3 = await E(live, () => ({ mark: document.querySelector('#hrSpec').dataset.breath, read: document.querySelector('#hrSpecRead').textContent, coh: document.querySelector('#hrCohS').textContent }));
+      ok(/^mic:/.test(m3.mark) && Math.abs(parseFloat(m3.mark.slice(4)) - pace) < 0.4 && /You're breathing about [\d.]+ a minute, as the microphone hears it\. They match: your breathing is setting your heart's rhythm\.$/.test(m3.read) &&
+        /; breathing [\d.]+$/.test(m3.coh), 'with a minute of heartbeats, the dashed line marks the pace the microphone hears, and the line under the spectrum and the coherence tile set it beside the heart\'s rhythm: ' + m3.read);
+      await live.context().close();
     }
   } catch (e) {
     log.push('ERROR ' + (e && e.stack || e));

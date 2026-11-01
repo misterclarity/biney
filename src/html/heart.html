@@ -170,6 +170,18 @@
           <div class="s" id="hrCohS">Needs a heart-rate sensor</div>
         </div>
       </div>
+      <details class="ev hr-what hr-what-tiles">
+        <summary>What these numbers mean</summary>
+        <div class="ev-body">
+          <dl class="hr-dl">
+            <div><dt>Heart rate</dt><dd>Beats a minute. With a sensor that sends the time between beats, an ear clip or a chest strap, it's worked out beat by beat, so you can watch it rise as you breathe in and fall as you breathe out. A watch sends a rate it has averaged over a few seconds, so it moves more slowly.</dd></div>
+            <div><dt>Swing</dt><dd>How far your heart rate rises and falls within one breath: its highest minus its lowest. Breathing in speeds the heart and breathing out slows it, a rhythm called respiratory sinus arrhythmia. The swing grows as you breathe more slowly and evenly, and is usually largest near your resonance pace, about 4.5 to 6.5 breaths a minute. <i>Last breath</i> is the newest; <i>this session</i> averages them. Breaths count during a breathing session, on Breathe or in a practice, or whenever Breath from the microphone hears them.</dd></div>
+            <div><dt>RMSSD</dt><dd>How much each gap between heartbeats differs from the one before, in milliseconds (the root mean square of successive differences). It's the main short-term measure of the variability your vagus nerve, the brake of your rest-and-digest system, puts into your heartbeat: higher generally means more relaxed and recovered. It varies a lot between people and with age, so compare it with your own readings, taken the same way at the same time of day, rather than with anyone else's. Studies usually record five minutes; here it's the last 60 seconds, which needs beat-to-beat data.</dd></div>
+            <div><dt>Coherence</dt><dd>How much of your heart rhythm's variation falls into one smooth wave: the strongest peak between 0.04 and 0.26&nbsp;Hz, against everything else, scored as HeartMath publishes it, usually from 0 to 8. Slow, even breathing raises it most reliably, and so does a warm feeling such as appreciation. It updates every 5 seconds from the last 64 seconds of heartbeats, so it takes up to a minute to show a change. The spectrum below shows what it measures.</dd></div>
+          </dl>
+          <p><a href="#l-mic">More in Learn</a>, with the research behind these measures and the microphone.</p>
+        </div>
+      </details>
 
       <!-- the order of these, and of the guide, follows the sensor: see hrLayout() in heart.js -->
       <div class="hr-body">
@@ -177,9 +189,16 @@
           <div class="hr-box-head"><b>Breath by breath</b><span class="hint">Each bar is one breath's heart-rate swing, in bpm</span></div>
           <div class="hr-chart">
             <canvas id="hrBars" aria-hidden="true"></canvas>
-            <p class="hr-empty" id="hrBarsEmpty">Connect a sensor and start a breathing session. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
+            <p class="hr-empty" id="hrBarsEmpty">Connect a sensor, then start a breathing session or turn on Breath from the microphone. Each breath adds a bar; taller, steadier bars mean you are breathing closer to your resonance rate.</p>
           </div>
           <p class="hr-summary" id="hrSummary" hidden></p>
+          <details class="ev hr-what">
+            <summary>What this shows</summary>
+            <div class="ev-body">
+              <p>Each bar is one breath: how far your heart rate rose and fell within it, the newest brightest on the right. Bars come during a breathing session on Breathe or in a practice, timed by the guide; with Breath from the microphone on, every breath it hears adds one too, at any time.</p>
+              <p>Taller bars mean your heart is following your breath more strongly, and bars of an even height mean a steady rhythm. They usually grow as you slow down towards about six breaths a minute, and shrink when breathing is fast, shallow or uneven, or when you move or talk. A watch smooths its heart rate over a few seconds, so its bars come out shorter than a chest strap's or an ear clip's.</p>
+            </div>
+          </details>
         </div>
         <div class="hr-box hr-find" id="resonance-test">
           <div class="hr-box-head"><b>Resonance test</b><span class="hint" id="hrFindWhen">Connect a sensor first</span></div>
@@ -193,13 +212,53 @@
             <button class="btn" id="hrFindStart" disabled>Start resonance test</button>
             <button class="btn primary" id="hrFindUse" hidden>Breathe at this pace</button>
           </div>
+          <details class="ev hr-what">
+            <summary>What this shows</summary>
+            <div class="ev-body">
+              <p>Your resonance pace is the breathing rate at which your heart rate swings the most. Each breath's swing then falls in step with your blood-pressure reflex, the baroreflex, which has its own rhythm of about 10 seconds, so the two add up. In adults it usually lies between 4.5 and 6.5 breaths a minute, and breathing there is the core of heart rate variability biofeedback.</p>
+              <p>The test follows the steps of the published protocol, without its rests between paces: two minutes at each of five paces, slowing from 6.5 to 4.5, then the average swing at each, leaving out the first breath at each pace while your heart settles. Each bar is one pace; the tallest is your result. Sit still, breathe gently through your nose rather than deeply, and keep the sensor still. Differences under about 1&nbsp;bpm are within the noise, so between two close paces pick the one that feels easier.</p>
+            </div>
+          </details>
         </div>
         <div class="hr-box hr-spec">
-          <div class="hr-box-head"><b>Heart rhythm spectrum</b><span class="hint">Pink: your heart rhythm · dashed: your breathing pace</span></div>
+          <div class="hr-box-head"><b>Heart rhythm spectrum</b><span class="hint">Pink: your heart rhythm · dashed: your breathing</span></div>
           <div class="hr-chart sm">
             <canvas id="hrSpec" aria-hidden="true"></canvas>
             <p class="hr-empty" id="hrSpecEmpty">After 64 seconds of heart data, this shows which rhythms your heart rate is moving in. Coherence is high when one smooth peak stands out, usually right on your breathing pace.</p>
           </div>
+          <p class="hr-spec-read" id="hrSpecRead" aria-live="polite" hidden></p>
+          <details class="ev hr-what">
+            <summary>How to read it</summary>
+            <div class="ev-body">
+              <p>The chart splits the last 64 seconds of your heart rate into its rhythms, the way a prism splits light into colours. Left to right is how fast each rhythm is, in hertz, cycles a second; the height is how strongly your heart rate moves in it. Hertz times 60 gives breaths a minute: 0.1&nbsp;Hz is 6 a minute, 0.2&nbsp;Hz is 12.</p>
+              <p>The shaded band, 0.04 to 0.26&nbsp;Hz, is where the coherence score looks for its peak, and the darker fill under the peak is the 0.030&nbsp;Hz window it counts as the peak. One tall, narrow peak means a coherent rhythm; low, scattered bumps mean your heart rate wanders with no rhythm leading.</p>
+              <p>The dashed line is your breathing: during a session, the guide's pace; with Breath from the microphone on, the pace it hears. Your breathing usually makes the biggest peak, so when the two line up, your breathing is setting your heart's rhythm. A peak near 0.1&nbsp;Hz with your breathing elsewhere comes from the blood-pressure reflex, whose rhythm is about 10 seconds. Researchers name two bands: 0.04 to 0.15&nbsp;Hz, low frequency, mostly that reflex at rest and slow breathing below about 8.5 a minute; and 0.15 to 0.4&nbsp;Hz, high frequency, the rhythm of breathing at ordinary paces.</p>
+            </div>
+          </details>
+        </div>
+        <div class="hr-box hr-mic" id="breath-mic">
+          <div class="hr-box-head"><b>Breath from the microphone</b><span class="hint" id="mcHint">Off</span></div>
+          <p class="hr-find-txt">Your headset's or phone's microphone can hear you breathe: your breathing pace shows here and as the dashed line on the spectrum, and each breath it hears adds a bar to Breath by breath, without a breathing session. Nothing is recorded or sent anywhere.</p>
+          <div class="hr-chart mc-chart">
+            <canvas id="mcTrace" aria-hidden="true"></canvas>
+            <p class="hr-empty" id="mcEmpty">Turn it on and breathe as you normally would. The sound of your breath shows here as it rises and falls, with your heart rate under it when a sensor is on.</p>
+          </div>
+          <p class="mc-read" id="mcRead" role="status"></p>
+          <p class="mc-warn" id="mcWarn" hidden></p>
+          <div class="hr-find-foot">
+            <button class="btn" id="mcStart" aria-pressed="false">Listen for my breathing</button>
+            <label class="mc-pick" id="mcPickL" hidden><span>Microphone</span><select id="mcPick"></select></label>
+          </div>
+          <details class="ev hr-what">
+            <summary>How it works, and what helps</summary>
+            <div class="ev-body">
+              <p>Breathing is a soft rushing sound. The page keeps the part of the microphone's sound where breath noise lies, 0.5 to 5&nbsp;kHz, above the beat's tones and a room's hum, measures how loud it is ten times a second, and finds the rhythm in that, the method a published study tested with a headset microphone under the nose. It needs about 25 seconds to find your pace, then updates every second, from the last minute. When in-breath and out-breath sound alike, the pace could read double; the guide's pace or your heart's rhythm settles which it is.</p>
+              <p>What helps: the microphone close to your nose or mouth, a headset's, wired earphones' clipped near your chin, or the phone propped up 10 to 20&nbsp;cm from your face. Gentle breathing through the nose is very quiet; a slightly longer, audible out-breath, through the nose or pursed lips, is far easier to hear. Slow breathing at about six a minute is the hardest pace to read, so give it time. Listen to any sound through headphones, since the beat or rain from a speaker drowns your breathing; talking and music get in the way too.</p>
+              <p>Bluetooth earbuds switch to their call mode while their own microphone is in use, which plays sound in mono, and a binaural beat needs a different tone in each ear. To keep the beat, choose the phone's or computer's own microphone below, or use wired earphones.</p>
+              <p>The coherence score doesn't use it: it stays HeartMath's, from your heartbeat alone, so it stays comparable with their published figures. The microphone adds what your heartbeat can't tell: your actual breathing pace, to set beside your heart's rhythm, and when each breath happens, for the swing of every breath.</p>
+              <p>Nothing is recorded or sent: the sound becomes one loudness number every tenth of a second on this device, and only the last two minutes of those are kept, for the chart. The microphone stays on until you press Stop listening or close the page.</p>
+            </div>
+          </details>
         </div>
       </div>
     </div>

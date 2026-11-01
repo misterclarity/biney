@@ -18,8 +18,8 @@
 
   function routineById(id) { for (var i = 0; i < ROUTINES.length; i++) if (ROUTINES[i].id === id) return ROUTINES[i]; return null; }
   function recipeById(id) { for (var i = 0; i < RECIPES.length; i++) if (RECIPES[i].id === id) return RECIPES[i]; return null; }
-  function suppById(id) {                  // a supplement's card, or a light's
-    var all = SUPPS.concat(SUPPS_MORE, LIGHTS);
+  function suppById(id) {                  // a supplement's card, a light's, or coffee's
+    var all = SUPPS.concat(SUPPS_MORE, LIGHTS, [COFFEE]);
     for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i];
     return null;
   }
@@ -81,6 +81,39 @@
       return "<li>" + esc(r[0]) + ' <a href="' + esc(r[1]) + '" rel="noopener">' + esc(r[2] || "Link") + "</a></li>";
     }).join("") + "</ol></details>";
   }
+  /* How much of a cup's caffeine is still in the body, hour by hour: taken up with a peak at about
+     45 minutes, then cleared with the average half-life of 4 hours (the line) or anything from 2 to 8
+     (the band), the range EFSA gives for healthy adults. A one-compartment model, drawn to show what a
+     half-life means; real levels vary with the person and the cup. */
+  function lvCaffeineSvg() {
+    var W = 340, Hh = 176, L = 38, R = 12, T = 14, B = 40, pw = W - L - R, ph = Hh - T - B, TM = 24, KA = 4.5;
+    var X = function (t) { return (L + t / TM * pw).toFixed(1); }, Y = function (f) { return (T + (1 - f) * ph).toFixed(1); };
+    var amt = function (half, t) { var ke = Math.LN2 / half; return KA / (KA - ke) * (Math.exp(-ke * t) - Math.exp(-KA * t)); };
+    var pts = function (half) { var a = []; for (var i = 0; i <= TM * 4; i++) a.push([i / 4, amt(half, i / 4)]); return a; };
+    var line = function (a) { return a.map(function (p, i) { return (i ? "L" : "M") + X(p[0]) + " " + Y(p[1]); }).join(""); };
+    var band = line(pts(8)) + pts(2).reverse().map(function (p) { return "L" + X(p[0]) + " " + Y(p[1]); }).join("") + "Z";
+    var g = "";
+    [0, 0.5, 1].forEach(function (f) {
+      g += '<line class="lv-cv-grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(f) + '" y2="' + Y(f) + '"/>' +
+        '<text class="lv-cv-t" x="' + (L - 7) + '" y="' + Y(f) + '" text-anchor="end" dominant-baseline="middle">' + (f ? f * 100 + "%" : "0") + "</text>";
+    });
+    [0, 4, 8, 12, 16, 20, 24].forEach(function (t) {
+      g += '<text class="lv-cv-t" x="' + X(t) + '" y="' + (T + ph + 15) + '" text-anchor="middle">' + t + "</text>";
+    });
+    g += '<text class="lv-cv-t" x="' + (L + pw / 2) + '" y="' + (T + ph + 32) + '" text-anchor="middle">hours after the cup</text>';
+    var dot = function (t, lab) {
+      var f = amt(4, t);
+      return '<circle class="lv-cv-dot" cx="' + X(t) + '" cy="' + Y(f) + '" r="4.5"/>' +
+        '<text class="lv-cv-lab" x="' + (+X(t) + 9) + '" y="' + (+Y(f) - 7) + '">' + lab + "</text>";
+    };
+    return '<figure class="lv-curve"><svg viewBox="0 0 ' + W + " " + Hh + '" role="img" aria-labelledby="lvCvT">' +
+      '<title id="lvCvT">How much of a cup\'s caffeine is still in your body, hour by hour</title>' + g +
+      '<path class="lv-cv-band" d="' + band + '"/><path class="lv-cv-line" d="' + line(pts(4)) + '"/>' +
+      dot(4, "half at 4 h") + dot(8, "a quarter at 8 h") + "</svg>" +
+      "<figcaption>How much of a cup's caffeine is still in your body, hour by hour. The line is the average, a half-life of 4 hours: " +
+        "a coffee at 2 pm still has a quarter of its caffeine in you at 10 pm. The band is the usual range between people, half-lives from 2 to 8 hours: " +
+        "someone who clears it slowly still has half of it at 10 pm.</figcaption></figure>";
+  }
   function lvSupCard(s) {
     var b = lvBest(s), brief = !s.uses;
     var h = '<details class="lv-sup' + (brief ? " lv-brief" : "") + '" id="lv-' + s.id + '">' +
@@ -93,18 +126,32 @@
       h += "<p>" + esc(lvNb(s.text)) + "</p>" +
         '<p class="lv-care1"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span>' + esc(lvNb(s.care)) + "</span></p>";
     } else {
-      h += "<h3>What it may help</h3><ul class=\"lv-uses\">" + s.uses.map(function (u) {
+      if (s.body) h += "<h3>What it does in your body</h3><ul class=\"lv-fx\">" + s.body.map(function (x) {
+          return "<li><b>" + esc(x[0]) + "</b><p>" + esc(lvNb(x[1])) + "</p>" + (x[2] === "curve" ? lvCaffeineSvg() : "") + "</li>";
+        }).join("") + "</ul><h3 class=\"lv-h3-gap\">What it may help</h3>";
+      else h += "<h3>What it may help</h3>";
+      h += "<ul class=\"lv-uses\">" + s.uses.map(function (u) {
           return '<li><span class="lv-use-h"><b>' + esc(u[1]) + "</b>" + dots(u[0]) + "</span><p>" + esc(lvNb(u[2])) + "</p></li>";
         }).join("") + "</ul>" +
-        '<dl class="lv-facts"><div><dt>' + (s.light ? "Doses studied" : "Amounts studied") + "</dt><dd>" + esc(lvNb(s.amount)) + "</dd></div>" +
-          "<div><dt>" + (s.light ? "How to use it" : "How to take it") + "</dt><dd>" + esc(lvNb(s.how)) + "</dd></div>" +
-          "<div><dt>" + (s.food ? "In food" : "What to buy") + "</dt><dd>" + esc(lvNb(s.food || s.buy)) + "</dd></div></dl>" +
+        '<dl class="lv-facts">' + (s.facts || [[s.light ? "Doses studied" : "Amounts studied", s.amount], [s.light ? "How to use it" : "How to take it", s.how],
+          [s.food ? "In food" : "What to buy", s.food || s.buy]]).map(function (f) { return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(lvNb(f[1])) + "</dd></div>"; }).join("") + "</dl>" +
         '<div class="lv-care"><h3><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg>Check first</h3><ul>' +
           s.care.map(function (c) { return "<li>" + esc(lvNb(c)) + "</li>"; }).join("") + "</ul></div>";
     }
     return h + lvRefs(s.refs) + "</div></details>";
   }
-  // a routine: its steps, each with when (if it has a time), what and why, and the practices that fit
+  /* What a step's links lead to, named on the button that shows them: practices, recipes, both,
+     or other pages (another routine, a light or coffee card). */
+  function lvGoLabel(go) {
+    var pr = 0, rc = 0, ot = 0;
+    go.forEach(function (g) {
+      if (/^#(practice|breathe)\//.test(g[0])) pr++;
+      else if (recipeById(g[0].replace(/^#living\//, ""))) rc++;
+      else ot++;
+    });
+    return ot ? "See also" : rc && pr ? "Suggested recipes and practices" : rc ? "Suggested recipes" : "Suggested practices";
+  }
+  // a routine: its steps, each with when (if it has a time), what and why, and the practices that fit behind a button
   function lvRoutine(r) {
     var timed = r.steps.some(function (x) { return x.w; });
     return '<section class="lv-rt" id="lv-' + r.id + '" aria-labelledby="lvh-' + r.id + '">' +
@@ -112,7 +159,9 @@
       '<p class="lv-rt-lede">' + esc(lvNb(r.lead)) + "</p>" +
       '<ol class="lv-rsteps' + (timed ? " lv-timed" : "") + '">' + r.steps.map(function (x) {
         return "<li>" + (x.w ? '<span class="lv-when">' + esc(x.w) + "</span>" : "") + "<b>" + esc(x.t) + "</b><p>" + esc(lvNb(x.p)) + "</p>" +
-          (x.go ? '<p class="lv-go">' + x.go.map(function (g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + "</a>"; }).join("") + "</p>" : "") + "</li>";
+          (x.go ? '<details class="lv-sugg"><summary>' + esc(lvGoLabel(x.go)) + '<span class="lv-sugg-n" aria-hidden="true">' + x.go.length + "</span>" +
+            '<svg class="i lv-chev" aria-hidden="true"><use href="#i-up"/></svg></summary>' +
+            '<p class="lv-go">' + x.go.map(function (g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + "</a>"; }).join("") + "</p></details>" : "") + "</li>";
       }).join("") + "</ol>" + lvRefs(r.refs) + "</section>";
   }
   var LV_LEGEND = '<p class="pr-legend">Evidence' +
@@ -127,13 +176,15 @@
       '<p class="lv-lede">Simple, nourishing food, most of it from one pot. Each recipe scales to the number you\'re cooking for, and keeps the screen on while you cook.</p>' +
       '<ul class="pr-list lv-rlist">' + RECIPES.map(function (r) { return libRow(libRecipe(r)); }).join("") + "</ul></div>";
     var sup = '<div class="lv-panel" role="tabpanel" id="lvp-supplements" aria-labelledby="lvt-supplements" hidden>' +
-      '<p class="lv-lede">What the research says about the supplements people ask about most: what each may help and how strong the evidence is, the amounts studied, and what to check before you start. Food comes first; these fill gaps.</p>' +
+      '<p class="lv-lede">What the research says about the supplements people ask about most, and about coffee: what each may help and how strong the evidence is, the amounts studied, and what to check before you start. Food comes first; supplements fill gaps.</p>' +
       safeBox([SAFE_SUPPS]) + LV_LEGEND +
       '<div class="lv-sups">' + SUPPS.map(lvSupCard).join("") + "</div>" +
+      '<h2 class="lv-h2">Coffee</h2>' +
+      '<div class="lv-sups">' + lvSupCard(COFFEE) + "</div>" +
       '<h2 class="lv-h2">Also asked about</h2>' +
       '<div class="lv-sups">' + SUPPS_MORE.map(lvSupCard).join("") + "</div>" +
       '<p class="pr-note">Not medical advice, and no substitute for a blood test where one would tell you more: vitamin D, B12 and iron are better tested than guessed. ' +
-        'Choose products tested by a third party. The sources were checked in October 2026, and each card lists its own.</p></div>';
+        'Choose products tested by a third party. The sources were checked in October 2026, coffee\'s in November, and each card lists its own.</p></div>';
     var rtn = '<div class="lv-panel" role="tabpanel" id="lvp-routines" aria-labelledby="lvt-routines" hidden>' +
       '<p class="lv-lede">Healthy sleep habits, and a morning, a day and an evening built around them: suggestions to make your own, with the research behind each and the practices that fit.</p>' +
       '<nav class="lv-jump" aria-label="Routines">' + ROUTINES.map(function (r) { return '<a class="lv-chip" href="#living/' + r.id + '">' + esc(LV_SHORT[r.id] || r.name) + "</a>"; }).join("") + "</nav>" +
@@ -270,6 +321,10 @@
         [r.sub, r.why, r.ing.concat(r.serve || []).map(function (it) { return Array.isArray(it[2]) ? it[2][0] : it[2]; }).join(", ")], "#living/" + r.id,
         { ic: "bowl", col: "var(--food)", w: 1.1, alias: r.also, tags: "recipe cook food " + r.tags.join(" ") }));
     });
+    out.push(fdEntry("living", COFFEE.name, "Healthy living · what a cup does in your body",
+      [COFFEE.lead].concat(COFFEE.body.map(function (x) { return x[0] + ": " + x[1]; }), COFFEE.uses.map(function (u) { return u[1] + ": " + u[2]; }),
+        COFFEE.facts.map(function (f) { return f[0] + ": " + f[1]; }), [COFFEE.care.join(" ")]), "#living/coffee",
+      { ic: "cup", col: "var(--food)", w: 1.2, alias: COFFEE.alias, tags: COFFEE.tags }));
     SUPPS.concat(SUPPS_MORE).forEach(function (s) {
       var b = lvBest(s);
       out.push(fdEntry("living", s.name, "Supplement · " + (s.uses ? "best evidence: " + b[1].toLowerCase() : b[1]),

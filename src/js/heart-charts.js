@@ -13,7 +13,7 @@
   function niceMax(v) { return Math.max(4, Math.ceil(v / 4) * 4); }
 
   function drawSwings() {
-    var cv = $("#hrBars"), f = fitCanvas(cv), sw = B.swings;
+    var cv = $("#hrBars"), f = fitCanvas(cv), sw = swingList();
     $("#hrBarsEmpty").hidden = sw.length > 0;
     if (!f || !sw.length) return;
     var c = f.c, W = f.w, Hh = f.h, padL = 30, padT = 8, padB = 6, ph = Hh - padT - padB;
@@ -320,7 +320,7 @@
       var left = H.since ? Math.ceil(COH_WIN - (bNow() - H.since)) : COH_WIN;
       s = left > 0 ? "Collecting: " + left + " s to go" : "Waiting for steady data";
     } else {
-      s = "Peak at " + c.f.toFixed(3) + " Hz, " + (c.f * 60).toFixed(1) + " a minute";
+      s = "Peak at " + c.f.toFixed(3) + " Hz, " + (c.f * 60).toFixed(1) + " a minute" + (micOk() ? "; breathing " + micFmt(MIC.est.rate) : "");
     }
     bSetT("#hrCohS", s);
     finderNote();
@@ -328,12 +328,38 @@
     bSetT("#bCoh", on ? c.cs.toFixed(1) : "—");
   }
 
+  /* The breathing pace to set beside the heart's rhythm: what the microphone hears, when it's sure
+     enough, or else the guide's pace while a session runs. */
+  function breathPace() {
+    if (micOk()) return { rate: MIC.est.rate, src: "mic" };
+    if ((B.state === "running" || B.state === "paused") && B.ph) return { rate: 60 / B.ph.cycle, src: "guide" };
+    return null;
+  }
+  // under the spectrum: where the heart's rhythm peaks, your breathing pace, and whether they match
+  function specRead() {
+    var co = H.coh && hrLive() ? H.coh : null, bp = breathPace(), s = "";
+    if (co) {
+      var hm = co.f * 60;
+      s = "Your heart's rhythm peaks at " + micFmt(hm) + " a minute (" + co.f.toFixed(3) + " Hz).";
+      if (bp) {
+        s += bp.src === "mic" ? " You're breathing about " + micFmt(bp.rate) + " a minute, as the microphone hears it." : " The guide is at " + micFmt(bp.rate) + " a minute.";
+        s += Math.abs(hm - bp.rate) <= Math.max(0.4, 0.08 * bp.rate) ? " They match: your breathing is setting your heart's rhythm."
+          : " They differ, so this peak isn't your breathing. Slow, even breathing brings them together.";
+      } else {
+        s += MIC.on ? " Listening for your breathing pace…" : " To see your breathing pace here as a dashed line, start a session on Breathe, or turn on Breath from the microphone.";
+      }
+    }
+    bSetT("#hrSpecRead", s);
+    $("#hrSpecRead").hidden = !s;
+  }
   /* The spectrum behind the score: heart-rate power by frequency, the peak
-     window filled, the 0.04-0.26 Hz search band shaded, and the breathing
-     pace as a dashed line while a session runs. */
+     window filled, the 0.04-0.26 Hz search band shaded, and your breathing
+     pace as a dashed line: as the microphone hears it, or the guide's. */
   var SPEC_EMPTY = null;     // what the empty chart says, until a sensor that sends heart rate only is on
   function drawSpectrum() {
-    var f = fitCanvas($("#hrSpec")), co = H.coh && hrLive() ? H.coh : null, em = $("#hrSpecEmpty");
+    var f = fitCanvas($("#hrSpec")), co = H.coh && hrLive() ? H.coh : null, em = $("#hrSpecEmpty"), bp = breathPace();
+    specRead();
+    $("#hrSpec").dataset.breath = co && bp ? bp.src + ":" + bp.rate.toFixed(2) : "";        // what the dashed line marks, for the tests
     if (SPEC_EMPTY === null) SPEC_EMPTY = em.textContent;
     bSetT("#hrSpecEmpty", hrOnly() ? "This sensor sends heart rate only. The spectrum needs the time between heartbeats, which an ear-clip sensor or a chest strap sends." : SPEC_EMPTY);
     em.hidden = !!co;
@@ -371,8 +397,8 @@
     for (k = 0; k <= kMax; k++) { var px = X(k * COH_DF), py = Y(P[k]); if (k) c.lineTo(px, py); else c.moveTo(px, py); }
     c.strokeStyle = rgba(BCOL.hr, 0.95); c.lineWidth = 1.5; c.stroke();
 
-    if ((B.state === "running" || B.state === "paused") && B.ph) {
-      var fb = 1 / B.ph.cycle;
+    if (bp && bp.rate / 60 < FMAX) {
+      var fb = bp.rate / 60;
       c.setLineDash([3, 4]); c.strokeStyle = BCOL["b-in"]; c.lineWidth = 1.5;
       c.beginPath(); c.moveTo(X(fb), padT - 6); c.lineTo(X(fb), base); c.stroke();
       c.setLineDash([]);

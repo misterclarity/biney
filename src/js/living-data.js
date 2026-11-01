@@ -478,7 +478,7 @@
       steps: [
         { t: "Keep regular hours", p: "Go to bed and get up at about the same times every day, weekends included. In 60,977 people who wore activity trackers, those whose sleep was more regular had a 20 to 48% lower risk of dying over about six years than the least regular, and regularity predicted it better than how long they slept." },
         { t: "Bright days, dim evenings, dark nights", p: "Get daylight in the day, above all in the morning, keep the last three hours before bed dim, and sleep in the dark. Sleep and light researchers recommend at least 250 lux at the eye by day (outdoors, even on a cloudy day, there's far more), no more than 10 lux in the three hours before bed and no more than 1 while you sleep, counting the light the body clock responds to." },
-        { t: "Caffeine before the afternoon", p: "Caffeine shortened sleep by about 45 minutes, and added about 9 to the time it took to fall asleep, in a 2023 meta-analysis. To spare your sleep, have the last coffee at least 9 hours before bed, and a strong pre-workout drink at least 13." },
+        { t: "Caffeine before the afternoon", p: "Caffeine shortened sleep by about 45 minutes, and added about 9 to the time it took to fall asleep, in a 2023 meta-analysis. To spare your sleep, have the last coffee at least 9 hours before bed, and a strong pre-workout drink at least 13.", go: [["#living/coffee", "Coffee and caffeine"]] },
         { t: "Alcohol early, if at all", p: "It can make you drowsy, but it breaks up the second half of the night and cuts dream (REM) sleep." },
         { t: "Move in the day", p: "Regular exercise improves sleep. Exercise in the evening is fine for most people too, apart from a hard session that ends within an hour of bedtime.", go: [["#practice/sport", "Sports Performance"]] },
         { t: "A bed for sleep", p: "Keep the bedroom cool, dark and quiet, and the bed for sleep and sex, so your body links it with sleep. If you're still awake after about 20 minutes, get up, do something calm in dim light, and go back when you feel sleepy. This is stimulus control, a part of CBT-I that sleep guidelines also recommend on its own." },
@@ -514,7 +514,7 @@
     { id: "evening", name: "An evening routine", icon: "moon", tags: "evening routine bedtime wind down night screens bath shower to-do list relax sleep",
       lead: "A wind-down to make your own, counted back from bedtime. For an 11 pm bedtime, the last coffee is around 2 pm and the lights go down at 8.",
       steps: [
-        { w: "9 hours before", t: "Last coffee", p: "And the last cola, black or green tea, or energy drink." },
+        { w: "9 hours before", t: "Last coffee", p: "And the last cola, black or green tea, or energy drink.", go: [["#living/coffee", "Coffee and caffeine"]] },
         { w: "3 hours before", t: "Lights down", p: "Lamps instead of ceiling lights, warm and low. Finish the last big meal around now, eaten slowly, and go easy on alcohol.", go: [["#practice/meal", "Mindful Meal"]] },
         { w: "1 to 2 hours before", t: "A warm shower or bath", p: "About 10 minutes in water at 40 to 42.5 °C. As your body cools down afterwards, sleep comes sooner: by about 10 minutes, across 13 studies, and it was rated better too." },
         { w: "1 hour before", t: "Screens away", p: "Put the phone away for the night, outside the bedroom if you can, or turn on night mode and dim it. Reading on a tablet for four hours before bed, rather than a printed book, delayed sleep by about 10 minutes, cut dream sleep and left people less alert the next morning." },
@@ -584,3 +584,66 @@
         ["Ostrin, L. A., & Schill, A. W. (2026). Safety evaluation of 4 red light therapy devices for myopia. JAMA Ophthalmology.", "https://doi.org/10.1001/jamaophthalmol.2025.5660", "DOI"]
       ] }
   ];
+
+  /* ----- coffee and caffeine: what a cup does in the body, hour by hour and over the years -----
+     A card like the supplements', with a section on the body and a chart of how long a cup's caffeine
+     stays (living.js lvCaffeineSvg). Sources checked in November 2026. */
+  var COFFEE = { id: "coffee", name: "Coffee and caffeine", alias: "caffeine espresso", icon: "cup",
+    tags: "coffee caffeine espresso filter instant decaf decaffeinated tea cola energy drink pre-workout adenosine half-life sleep heart blood pressure palpitations withdrawal headache cholesterol cafetiere french press",
+    lead: "Caffeine is the most widely used stimulant in the world. Here is what a cup does in your body, hour by hour, and what's known about drinking it for years.",
+    body: [
+      ["How it works", "Adenosine builds up in your brain the longer you're awake, and it makes you sleepy. Caffeine has a similar shape: it sits in adenosine's receptors without setting them off, so the sleepiness eases. It hides tiredness rather than making energy, and the need for sleep is still there when it wears off."],
+      ["Hour by hour", "It starts working 15 to 30 minutes after a cup, and its level in your blood peaks within about an hour. Half of it has gone after about 4 hours on average, but that ranges from 2 to 8 hours between people. It stays longer with the contraceptive pill and in pregnancy, its half-life reaching about 10 hours by the fourth month and up to 18 by the end, and clears faster in smokers.", "curve"],
+      ["Your brain", "From about 40 to 300 mg, people are more alert, react faster and keep their attention better, above all when they're tired; memory and complex decisions change less. Large amounts bring jitters and anxiety: in trials, 400 to 750 mg set off a panic attack in about half of people with panic disorder, against 2% of others. In a 2025 trial, 150 mg, a cup or two, didn't raise anxiety on average, in people with panic disorder or without."],
+      ["Your sleep", "Caffeine costs sleep even when you don't feel it: about 45 minutes less, and 9 more to fall asleep, in a 2023 meta-analysis. In a trial that randomised 100 people's days to coffee or none, they slept 36 minutes less on coffee days."],
+      ["Your heart and blood pressure", "In people with high blood pressure, 200 to 300 mg raised it by about 8 mmHg (systolic) and 6 (diastolic) within the hour, for 3 hours or more. After two weeks of drinking coffee it was no higher than without, and people who drank coffee for years had no more heart disease. In the same 100 people, coffee days brought no more extra beats from the heart's upper chambers, but about half as many again from its lower chambers (154 a day against 102), and about 1,000 more steps."],
+      ["Your heart readings", "In 30 men who drank coffee every day, 100 or 200 mg didn't change their heart rate variability over the next 90 minutes. Still, for readings you can compare from day to day, take them at the same time and in the same way each day, for example always before your coffee."],
+      ["Your stomach and bowel", "Coffee raises stomach acid and gets bile and the bowel moving. In a lab study, caffeinated coffee set the colon working as strongly as a 1,000-calorie meal: 60% more than water and 23% more than decaf. Whether it worsens heartburn is still unclear."],
+      ["Fluids", "Coffee counts towards what you drink. In 50 men who drank it daily, four cups a day kept them as well hydrated as the same amount of water."],
+      ["Cholesterol", "Coffee beans carry two fat-like compounds, cafestol and kahweol, that raise LDL cholesterol. A paper filter holds them back; boiled coffee, a cafetière (French press) and Turkish coffee let them through. In Norway, people who drank 3 to 5 espressos a day had slightly higher cholesterol than those who drank none."],
+      ["Iron", "Coffee with a meal cut the iron absorbed from it by 39%. Drunk an hour before the meal it made no difference, but an hour after it still did."],
+      ["Every day, and stopping", "Taken every day, some of its effects fade. Stopping suddenly brings a headache to about half of people in trials, with tiredness, low mood and poor concentration, 12 to 24 hours after the last cup. It's worst after one to two days and gone within 2 to 9, even from 100 mg a day."]
+    ],
+    uses: [
+      [3, "Alertness, attention and reaction time", "From about 40 to 300 mg, above all when you're tired or short of sleep."],
+      [3, "Endurance, strength and power", "3 to 6 mg per kg of body weight, about an hour before, improved performance in trials, most consistently in endurance sports. Very high doses (9 mg per kg) mostly added side effects. For someone of 70 kg, 3 mg per kg is 210 mg, about two cups of filter coffee."],
+      [1, "A longer, healthier life", "In observational studies, people who drank 3 to 4 cups a day had a 17% lower risk of death from any cause, and less heart disease, type 2 diabetes, liver disease and Parkinson's, than people who drank none. Studies like these can't show that coffee is the cause."]
+    ],
+    facts: [
+      ["How much is safe", "Up to 400 mg a day for healthy adults, and up to 200 mg at a time, about 3 mg per kg of body weight, says the European Food Safety Authority. Up to 200 mg a day in pregnancy and while breastfeeding, and for children and teenagers up to 3 mg per kg a day."],
+      ["Caffeine in a drink", "Filter coffee (200 ml) about 90 mg; espresso (60 ml) 80 mg; black tea (220 ml) 50 mg; an energy drink (250 ml) 80 mg; cola (355 ml) 40 mg; dark chocolate (50 g) 25 mg. A large mug or a double shot holds more, and decaf very little."],
+      ["When", "For your sleep, the last coffee at least 9 hours before bed, and a strong pre-workout drink at least 13. Thyroid tablets (levothyroxine) with water, and coffee an hour later. If your iron is low, coffee at least an hour before a meal, rather than with it or soon after."]
+    ],
+    care: [
+      "In pregnancy, up to 200 mg a day: caffeine stays far longer, and higher intakes go with more low birth weight, preterm birth and pregnancy loss in observational studies.",
+      "If you have an irregular heartbeat, palpitations, high blood pressure or panic attacks, ask your doctor how much suits you: less, or decaf, may.",
+      "Some medicines slow the clearing of caffeine, so the same cup acts stronger and longer: the antidepressant fluvoxamine, the antipsychotic clozapine, the asthma medicine theophylline and some quinolone antibiotics. Some painkillers and cold remedies contain caffeine too: check the label.",
+      "If your LDL cholesterol is high, use a paper filter.",
+      "Women at high risk of fractures: observational studies link more coffee with more fractures."
+    ],
+    refs: [
+      ["Fredholm, B. B., Bättig, K., Holmén, J., Nehlig, A., & Zvartau, E. E. (1999). Actions of caffeine in the brain with special reference to factors that contribute to its widespread use. Pharmacological Reviews, 51(1), 83–133.", "https://pubmed.ncbi.nlm.nih.gov/10049999/", "PubMed"],
+      ["European Food Safety Authority (2015). EFSA explains risk assessment: caffeine (with how long caffeine stays in the body).", "https://www.efsa.europa.eu/sites/default/files/corporate_publications/files/efsaexplainscaffeine150527.pdf", "EFSA"],
+      ["EFSA Panel on Dietetic Products, Nutrition and Allergies (2015). Scientific opinion on the safety of caffeine. EFSA Journal, 13(5), 4102.", "https://doi.org/10.2903/j.efsa.2015.4102", "DOI"],
+      ["European Food Information Council (2015). EFSA opinion on the safety of caffeine (with the caffeine in common drinks).", "https://eufic.org/en/whats-in-food/article/efsa-opinion-on-the-safety-of-caffeine", "EUFIC"],
+      ["Food Standards Australia New Zealand (2025). P1056 caffeine review, supporting document 1: safety assessment of caffeine (absorption, and the half-life in pregnancy).", "https://www.foodstandards.gov.au/food-standards-code/proposals/p1056", "FSANZ"],
+      ["Grzegorzewski, J., Bartsch, F., Köller, A., & König, M. (2022). Pharmacokinetics of caffeine: a systematic analysis of reported data for application in metabolic phenotyping and liver function testing. Frontiers in Pharmacology, 12, 752826.", "https://doi.org/10.3389/fphar.2021.752826", "DOI"],
+      ["McLellan, T. M., Caldwell, J. A., & Lieberman, H. R. (2016). A review of caffeine's effects on cognitive, physical and occupational performance. Neuroscience & Biobehavioral Reviews, 71, 294–312.", "https://doi.org/10.1016/j.neubiorev.2016.09.001", "DOI"],
+      ["Klevebrant, L., & Frick, A. (2022). Effects of caffeine on anxiety and panic attacks in patients with panic disorder: a systematic review and meta-analysis. General Hospital Psychiatry, 74, 22–31.", "https://doi.org/10.1016/j.genhosppsych.2021.11.005", "DOI"],
+      ["Hoppe, J. M., Björkstrand, J., Vegelius, J., Klevebrant, L., Gingnell, M., & Frick, A. (2025). Acute effects of 150 mg caffeine on subjective, physiological, and behavioral components of anxiety in panic disorder and healthy controls: a randomized placebo-controlled crossover trial. Journal of Psychopharmacology, 39(8), 836–846.", "https://doi.org/10.1177/02698811251344692", "DOI"],
+      R_REF.gardiner,
+      ["Marcus, G. M., Rosenthal, D. G., Nah, G., et al. (2023). Acute effects of coffee consumption on health among ambulatory adults (CRAVE). New England Journal of Medicine, 388(12), 1092–1100.", "https://doi.org/10.1056/NEJMoa2204737", "DOI"],
+      ["Mesas, A. E., Leon-Muñoz, L. M., Rodriguez-Artalejo, F., & Lopez-Garcia, E. (2011). The effect of coffee on blood pressure and cardiovascular disease in hypertensive individuals: a systematic review and meta-analysis. American Journal of Clinical Nutrition, 94(4), 1113–1126.", "https://doi.org/10.3945/ajcn.111.016667", "DOI"],
+      ["Rauh, R., Burkert, M., Siepmann, M., & Mueck-Weymann, M. (2006). Acute effects of caffeine on heart rate variability in habitual caffeine consumers. Clinical Physiology and Functional Imaging, 26(3), 163–166.", "https://pubmed.ncbi.nlm.nih.gov/16640511/", "PubMed"],
+      ["Nehlig, A. (2022). Effects of coffee on the gastro-intestinal tract: a narrative review and literature update. Nutrients, 14(2), 399.", "https://doi.org/10.3390/nu14020399", "DOI"],
+      ["Rao, S. S. C., Welcher, K., Zimmerman, B., & Stumbo, P. (1998). Is coffee a colonic stimulant? European Journal of Gastroenterology & Hepatology, 10(2), 113–118.", "https://doi.org/10.1097/00042737-199802000-00003", "DOI"],
+      ["Killer, S. C., Blannin, A. K., & Jeukendrup, A. E. (2014). No evidence of dehydration with moderate daily coffee intake: a counterbalanced cross-over study in a free-living population. PLOS ONE, 9(1), e84154.", "https://doi.org/10.1371/journal.pone.0084154", "DOI"],
+      ["Urgert, R., & Katan, M. B. (1997). The cholesterol-raising factor from coffee beans. Annual Review of Nutrition, 17, 305–324.", "https://doi.org/10.1146/annurev.nutr.17.1.305", "DOI"],
+      ["Svatun, Å. L., Løchen, M.-L., Thelle, D. S., & Wilsgaard, T. (2022). Association between espresso coffee and serum total cholesterol: the Tromsø Study 2015–2016. Open Heart, 9(1), e001946.", "https://doi.org/10.1136/openhrt-2021-001946", "DOI"],
+      ["Morck, T. A., Lynch, S. R., & Cook, J. D. (1983). Inhibition of food iron absorption by coffee. American Journal of Clinical Nutrition, 37(3), 416–420.", "https://doi.org/10.1093/ajcn/37.3.416", "DOI"],
+      ["Juliano, L. M., & Griffiths, R. R. (2004). A critical review of caffeine withdrawal: empirical validation of symptoms and signs, incidence, severity, and associated features. Psychopharmacology, 176(1), 1–29.", "https://doi.org/10.1007/s00213-004-2000-x", "DOI"],
+      ["Guest, N. S., VanDusseldorp, T. A., Nelson, M. T., et al. (2021). International Society of Sports Nutrition position stand: caffeine and exercise performance. Journal of the International Society of Sports Nutrition, 18, 1.", "https://doi.org/10.1186/s12970-020-00383-4", "DOI"],
+      ["Poole, R., Kennedy, O. J., Roderick, P., Fallowfield, J. A., Hayes, P. C., & Parkes, J. (2017). Coffee consumption and health: umbrella review of meta-analyses of multiple health outcomes. BMJ, 359, j5024.", "https://doi.org/10.1136/bmj.j5024", "DOI"],
+      ["Benvenga, S., Bartolone, L., Pappalardo, M. A., et al. (2008). Altered intestinal absorption of L-thyroxine caused by coffee. Thyroid, 18(3), 293–301.", "https://doi.org/10.1089/thy.2007.0222", "DOI"],
+      ["Carrillo, J. A., & Benitez, J. (2000). Clinically significant pharmacokinetic interactions between dietary caffeine and medications. Clinical Pharmacokinetics, 39(2), 127–153.", "https://doi.org/10.2165/00003088-200039020-00004", "DOI"]
+    ] };

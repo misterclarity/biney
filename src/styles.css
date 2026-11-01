@@ -300,6 +300,8 @@
   .b-stat b{color:var(--text);font-weight:780}
   .b-stat.b-hr{color:var(--hr);background:color-mix(in srgb,var(--hr) 12%,transparent)}
   .b-stat.b-hr b{color:var(--hr)}
+  .b-stat.b-mic{color:var(--b-in);background:color-mix(in srgb,var(--b-in) 12%,transparent)}
+  .b-stat.b-mic b{color:var(--b-in)}
   .b-stat.b-hr .hr-dot{width:7px;height:7px;margin:0 6px 0 0;vertical-align:1px;opacity:.5}
   .b-view{
     position:relative;height:clamp(300px,50vh,560px);border-radius:18px;overflow:hidden;
@@ -478,10 +480,11 @@
   .hr-meter span{position:absolute;top:9px;font-size:10.5px;color:var(--text-faint);line-height:1}
   .hr-meter span:first-of-type{left:0}
   .hr-meter span:last-of-type{right:0}
-  .hr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-rows:auto 1fr;gap:12px}
+  .hr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-rows:auto 1fr auto;gap:12px}
   .hr-bars{grid-column:1;grid-row:1;align-self:start}
   .hr-spec{grid-column:1;grid-row:2;align-self:start}
   .hr-body > .hr-find{grid-column:2;grid-row:1 / span 2}
+  .hr-mic{grid-column:1 / -1;grid-row:3}
   #resonance-test,#connect,.st-card[id]{scroll-margin-top:84px}
   /* once a sensor is on, the page is about your numbers: the introduction steps aside */
   .hr[data-state="on"] .hr-intro > p:not(.hr-msg),.hr[data-state="lost"] .hr-intro > p:not(.hr-msg){display:none}
@@ -498,11 +501,29 @@
   .hr-find-txt{margin:0;font-size:13.5px;color:var(--text-dim)}
   .hr-find-txt.hr-find-note{color:var(--b-hold);font-size:13px}
   .hr-find-foot{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  /* what each number and chart shows, folded under it */
+  details.ev.hr-what{margin-top:2px}
+  .hr-what .ev-body{max-width:72ch}
+  .hr-what .ev-body p{margin:0 0 8px;line-height:1.55}
+  .hr-what .ev-body p:last-child{margin-bottom:0}
+  .hr-what-tiles{background:var(--panel);border-radius:16px;padding:12px 16px;border-top:0;margin-top:-4px}
+  .hr-dl{margin:0 0 8px;display:grid;gap:10px}
+  .hr-dl dt{font-weight:750;color:var(--text);font-size:13.5px}
+  .hr-dl dd{margin:2px 0 0;line-height:1.55}
+  .hr-spec-read{margin:0;font-size:13px;color:var(--text-dim);line-height:1.5}
+  /* breath from the microphone: its trace, what it hears, and a microphone to choose */
+  .hr-chart.mc-chart{height:150px}
+  .mc-read{margin:0;font-size:13.5px;color:var(--text-dim);line-height:1.5}
+  .mc-read:empty{display:none}
+  .mc-warn{margin:0;font-size:13px;color:var(--b-hold);line-height:1.5}
+  .mc-pick{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);min-width:0;max-width:100%}
+  .mc-pick select{min-width:0;max-width:100%;min-height:40px;background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font:inherit;font-size:13.5px}
+  .hr-mic[data-on="1"] #mcStart{border-color:color-mix(in srgb,var(--b-in) 45%,transparent)}
   @media (max-width:1100px){
     .hr-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
     .hr-tile.coh{grid-column:span 2}
   }
-  @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr);grid-template-rows:none} .hr-bars,.hr-spec,.hr-body > .hr-find{grid-column:auto;grid-row:auto} }
+  @media (max-width:880px){ .hr-body{grid-template-columns:minmax(0,1fr);grid-template-rows:none} .hr-bars,.hr-spec,.hr-body > .hr-find,.hr-mic{grid-column:auto;grid-row:auto} }
   @media (max-width:640px){
     .hr-top{padding:18px}
     .hr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -1551,7 +1572,7 @@
   .lv-promo-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1;line-height:1.45}
   .lv-promo-t b{font-size:15.5px;font-weight:750;color:var(--text)}
   .lv-promo-t span{font-size:13.5px;color:var(--text-dim)}
-  .lv-go{transform:rotate(90deg);color:var(--text-faint)}
+  .lv-promo-go{transform:rotate(90deg);color:var(--text-faint)}
   .lv-page{--c1:var(--pcol)}
   .lv-intro{margin-bottom:14px}
   .lv-tabs{margin:0 0 16px}
@@ -1581,6 +1602,20 @@
   .lv-use-h .strength{margin-left:0}
   .lv-uses p{margin:3px 0 0;font-size:13.5px;color:var(--text-dim);line-height:1.55}
   .lv-facts{margin:16px 0 0;display:grid;gap:12px;max-width:70ch}
+  /* coffee: what it does in the body, with a chart of how long a cup's caffeine stays */
+  .lv-fx{list-style:none;margin:0;padding:0;display:grid;gap:12px;max-width:70ch}
+  .lv-fx b{font-size:14px;font-weight:720;color:var(--text)}
+  .lv-fx p{margin:3px 0 0;font-size:13.5px;color:var(--text-dim);line-height:1.55}
+  .lv-body h3.lv-h3-gap{margin-top:20px}
+  .lv-curve{margin:12px 0 4px;max-width:440px}
+  .lv-curve svg{display:block;width:100%;height:auto;overflow:visible}
+  .lv-cv-grid{stroke:var(--line);stroke-width:1}
+  .lv-cv-t{fill:var(--text-faint);font-size:10.5px;font-weight:600}
+  .lv-cv-band{fill:var(--pcol);opacity:.17}
+  .lv-cv-line{fill:none;stroke:var(--pcol);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+  .lv-cv-dot{fill:var(--pcol);stroke:var(--panel);stroke-width:2}
+  .lv-cv-lab{fill:var(--text-dim);font-size:11px;font-weight:650}
+  .lv-curve figcaption{margin-top:6px;font-size:12.5px;color:var(--text-faint);line-height:1.5}
   .lv-facts dt{font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint)}
   .lv-facts dd{margin:3px 0 0;font-size:13.5px;color:var(--text-dim);line-height:1.55}
   .lv-care{margin-top:16px;padding:12px 14px;border-radius:12px;background:rgba(251,191,36,.09);color:#fcd34d;max-width:70ch}
@@ -1608,7 +1643,18 @@
   .lv-rsteps b{font-size:14.5px;font-weight:720;color:var(--text)}
   .lv-rsteps p{margin:3px 0 0;font-size:13.5px;color:var(--text-dim);line-height:1.55}
   .lv-when{display:block;font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--pcol);margin-bottom:1px}
-  .lv-rsteps .lv-go{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  /* a step's practices and pages, behind a button that shows them */
+  .lv-sugg{margin-top:9px}
+  .lv-sugg > summary{display:inline-flex;align-items:center;gap:8px;min-height:36px;box-sizing:border-box;padding:6px 12px 6px 14px;border-radius:999px;cursor:pointer;list-style:none;user-select:none;
+    background:var(--panel-2);border:1px solid var(--line);color:var(--text);font-size:13px;font-weight:680}
+  .lv-sugg > summary::-webkit-details-marker{display:none}
+  .lv-sugg > summary:hover{background:color-mix(in srgb,var(--pcol) 12%,var(--panel-2));border-color:color-mix(in srgb,var(--pcol) 40%,transparent)}
+  .lv-sugg[open] > summary{border-color:color-mix(in srgb,var(--pcol) 40%,transparent)}
+  .lv-sugg-n{min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:999px;display:inline-grid;place-items:center;font-size:11.5px;font-weight:750;
+    background:color-mix(in srgb,var(--pcol) 18%,transparent);color:var(--pcol)}
+  .lv-sugg .lv-chev{margin:0;width:15px;height:15px}
+  .lv-sugg[open] > summary .lv-chev{transform:none}
+  .lv-rsteps .lv-go{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0 2px}
   .lv-rt .lv-refs{margin-top:14px}
   .lv-tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0}
   .lv-tags span{font-size:11.5px;font-weight:650;color:var(--text-dim);background:var(--panel-2);border-radius:7px;padding:3px 8px}
