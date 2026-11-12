@@ -426,7 +426,7 @@
       { id: "tree", hold: 40 }, { id: "mountain", hold: 40 }] },
     { id: "standing-reset", name: "Standing Reset", items: [
       { id: "mountain", hold: 30 }, { id: "salute", hold: 25 }, { id: "sidebend", hold: 25 }, { id: "fold", hold: 40 }, { id: "chair", hold: 25 }, { id: "mountain", hold: 30 }] },
-    { id: "morning-yoga", name: "Morning Wake-Up", items: [
+    { id: "morning-yoga", name: "Morning Tonic", items: [
       { id: "mountain", hold: 30 }, { id: "salute", hold: 25 }, { id: "sidebend", hold: 25 }, { id: "fold", hold: 35 }, { id: "halflift", hold: 20 },
       { id: "plank", hold: 20 }, { id: "downdog", hold: 35 }, { id: "lowlunge", hold: 30 }, { id: "downdog", hold: 25 },
       { id: "warrior2", hold: 30 }, { id: "goddess", hold: 30 }, { id: "mountain", hold: 30 }] },

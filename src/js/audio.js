@@ -428,6 +428,7 @@
     wlKick();
     trSync();
     msSync();
+    micBeatGuard();                      // a beat while a Bluetooth microphone listens: the phone's own instead
   }
 
   /* ----- the mini player's own controls ----- */

@@ -172,7 +172,7 @@ async function untilStep(p, re, max = 120000) { const t0 = Date.now(); while (Da
     // a copy of a built-in sequence
     await p.evaluate(() => location.hash = 'practice/morning-yoga'); await p.waitForTimeout(250);
     await p.click('.si-edit'); await p.waitForTimeout(250);
-    ok(await p.$eval('#ybName', i => i.value) === 'Morning Wake-Up (mine)' && await p.$$eval('#ybList .yb-row', r => r.length) === 12, 'Customise a copy loads the built-in sequence');
+    ok(await p.$eval('#ybName', i => i.value) === 'Morning Tonic (mine)' && await p.$$eval('#ybList .yb-row', r => r.length) === 12, 'Customise a copy loads the built-in sequence');
     await p.click('[data-tpl=evening-floor]'); await p.waitForTimeout(150);
     ok(await p.$$eval('#ybList .yb-row', r => r.length) === 12 && /Legs Up the Wall/.test(await t(p, '#ybList')), 'templates load into the builder');
     await p.screenshot({ path: OUT + 'yb-template.png', fullPage: true });

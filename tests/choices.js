@@ -15,7 +15,7 @@
 //   V  the full consistency check: citations and references, British spelling, page names on a phone, tapping's timing,
 //      a long feedback message, Edge on an iPhone, the tinnitus and gamma evidence
 //   E  a mindful meal: its choices and plans, the meal itself, hunger before and after, the recipes and routines
-//   S  four programmes: Morning Tonic, Sports Performance, Creative Flow and Mindful Sex
+//   S  four programmes: Morning Wake-Up, Sports Performance, Creative Flow and Mindful Sex
 //   J  the Heart page explained, breath from the microphone and the spectrum's dashed line, coffee, and the
 //      routines' suggestions behind a button
 const { chromium, APP, OUT } = require('./pw');
@@ -1880,7 +1880,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await p.context().close();
     }
 
-    /* S. four programmes. Morning Tonic: Sleep Descent the other way round. Sports Performance: each sport with its own
+    /* S. four programmes. Morning Wake-Up: Sleep Descent the other way round. Sports Performance: each sport with its own
        settings, before a session and during it, with a cadence tick or timed rests between sets. Creative Flow: ease,
        play, then let it brew. Mindful Sex: slow and present under theta, or building intensity under alpha. Every
        combination's plan and beat; choices that follow a sport, and others that come and go; the library, search,
@@ -1927,13 +1927,13 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         OscillatorNode.prototype.start = function () { try { window.__osc.push(this.type); } catch (e) {} return st.apply(this, arguments); };
       };
 
-      // Morning Tonic: its page, every plan, and a run
+      // Morning Wake-Up: its page, every plan, and a run
       let p = await page(Object.assign(OPT({ audio: true, ana: 180 }), { optsOpen: '1' }));
       let i = await go(p, 'morning-tonic');
       ok(i.kind === 'Energy · Programme · 15 min' && i.lens === '10 min | 15 min* | 20 min' && i.go === 'Start 15 min' &&
         i.choices === 'start=In bed*/Sitting up ; breath=Rising breath*/And breath of fire ; move=Stretch, then stand*/Breathing only' &&
         /^Waking0\d:\d\d \| First breaths0\d:\d\d \| Rising breath0\d:\d\d \| Knees to Chest00:30 \| Supine Twist, right00:35 \| Supine Twist, left00:35 \| Up you get00:10 \| Upward Salute00:25 \| .* \| Mountain00:25 \| Light and intention0\d:\d\d \| Ready00:\d\d$/.test(i.steps),
-        'Morning Tonic: a stretch in bed, breathing that quickens, stretches and standing poses, then daylight: ' + i.steps);
+        'Morning Wake-Up: a stretch in bed, breathing that quickens, stretches and standing poses, then daylight: ' + i.steps);
       ok(i.beat === 'Off | Theta to beta* | Theta to alpha' && /^Rises from 6 Hz, where you are on waking, through 10 Hz alpha with the breath to 16 Hz beta as you move/.test(i.beatNote) && i.ana === 'Off* | 2 min | 3 min | 5 min' && !i.tap &&
         /^Breath of fire isn't for everyone: leave it out if you're pregnant/.test(i.caution) && /Space to stand/.test(i.needs), 'its beat rises from theta to beta; Anapana off and no tapping; a caution for breath of fire');
       let W = await sweep(p, 'morning-tonic', function (x) {
@@ -2093,15 +2093,16 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const lib = await E(p, () => window.__entrain.libAll().filter(x => /^#practice\/(morning-tonic|sport|creative|mindful-sex)$/.test(x.href))
         .map(x => x.href.replace('#practice/', '') + ' ' + x.goal + '+' + (x.also || []).join('+') + ' ' + x.method + ' ' + x.posture.join('+')).sort().join(' | '));
       ok(lib === 'creative focus+ program sit | mindful-sex calm+reflect program lie+sit | morning-tonic energy+ program lie+sit+stand | sport energy+focus program sit+stand',
-        'in the library: Morning Tonic and Sports Performance under Energy, Creative Flow under Focus, Mindful Sex under Calm: ' + lib);
+        'in the library: Morning Wake-Up and Sports Performance under Energy, Creative Flow under Focus, Mindful Sex under Calm: ' + lib);
       await p.click('#tbFind');
       const all = async q => { await p.fill('#fdIn', q); await p.waitForTimeout(250); return E(p, () => [...document.querySelectorAll('#fdRes .fd-it')].map(a => a.getAttribute('href'))); };
       const find = async q => (await all(q))[0];
-      const f = [await find('morning tonic'), await find('wake up'), await find('rowing'), await find('weight training'), (await all('cycling')).filter(h => /^#practice\//.test(h))[0],
+      const f = [await find('morning wake-up'), await find('wake up'), await find('rowing'), await find('weight training'), (await all('cycling')).filter(h => /^#practice\//.test(h))[0],
         await find('creativity'), await find('brainstorm'), await find('mindful sex'), await find('intimacy'), await find('sensate focus')];
+      const yt = await find('morning tonic');
       await p.keyboard.press('Escape');
-      ok(f.join() === '#practice/morning-tonic,#practice/morning-tonic,#practice/sport,#practice/sport,#practice/sport,#practice/creative,#practice/creative,#practice/mindful-sex,#practice/mindful-sex,#practice/mindful-sex',
-        'search finds each first (for cycling, the first practice after the cyclic sigh): ' + f.join(', '));
+      ok(f.join() === '#practice/morning-tonic,#practice/morning-tonic,#practice/sport,#practice/sport,#practice/sport,#practice/creative,#practice/creative,#practice/mindful-sex,#practice/mindful-sex,#practice/mindful-sex' && yt === '#practice/morning-yoga',
+        'search finds each first (for cycling, the first practice after the cyclic sigh), and Morning Tonic is now the morning yoga sequence: ' + f.join(', ') + ' · ' + yt);
       await E(p, () => location.hash = 'l-morning'); await p.waitForTimeout(400);
       const lt = await t(p, '#v-learn');
       ok(/Waking up\. The grogginess after waking/.test(lt) && /Sport\. What you say to yourself matters/.test(lt) && /Creative thinking\. Ideas come more freely/.test(lt) && /Mindful sex\. Mindfulness is one of the better-tested tools/.test(lt) &&
@@ -2110,7 +2111,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         'Learn gives the evidence for each, with the references, and answers theta or alpha for sex');
       await E(p, () => location.hash = 'living/routines'); await p.waitForTimeout(500);
       const rl = await E(p, () => ['morning-tonic', 'sport'].map(id => [...document.querySelectorAll('#lvp-routines .lv-rsteps > li')].filter(li => li.querySelector('a[href="#practice/' + id + '"]')).map(li => li.querySelector('b').textContent).join()));
-      ok(rl.join(' | ') === 'Up at your usual time | Move in the day', 'the routines lead to Morning Tonic on waking, and to Sports Performance for exercise');
+      ok(rl.join(' | ') === 'Up at your usual time | Move in the day', 'the routines lead to Morning Wake-Up on waking, and to Sports Performance for exercise');
       await p.context().close();
     }
 
@@ -2131,7 +2132,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const asked = await E(live, () => ({ a: window.__mic.opts[0] && window.__mic.opts[0].audio, btn: document.querySelector('#mcStart').textContent, pressed: document.querySelector('#mcStart').getAttribute('aria-pressed'),
         read: document.querySelector('#mcRead').textContent, busy: window.__entrain.appBusy() }));
       ok(asked.a && asked.a.echoCancellation === false && asked.a.noiseSuppression === false && asked.a.autoGainControl === false && asked.btn === 'Stop listening' && asked.pressed === 'true' &&
-        /^Listening… your breathing pace appears in about \d+ s\.$/.test(asked.read) && asked.busy,
+        /^Listening… your breathing pace appears in about \d+ s\.$/.test(asked.read) && asked.busy,
         'Listen for my breathing asks for the microphone with echo cancelling, noise suppression and automatic gain off, says it\'s listening, and holds back an automatic update: ' + asked.read);
 
       // the routines: each step's links behind a button, nothing turned on its side
@@ -2150,7 +2151,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await p.click('#lv-morning .lv-sugg > summary'); await p.waitForTimeout(250);
       const op = await E(p, () => { const d = document.querySelector('#lv-morning .lv-sugg'), a = d.querySelector('.lv-chip'), r = a.getBoundingClientRect(), t = d.closest('li').querySelector('p').getBoundingClientRect();
         return { open: d.open, txt: a.textContent, w: Math.round(r.width), h: Math.round(r.height), below: r.top >= t.bottom - 1, left: r.left >= t.left - 1 }; });
-      ok(op.open && op.txt === 'Morning Tonic' && op.w > op.h && op.h < 48 && op.below && op.left, 'pressed, it opens to the practices, lying flat under the step\'s text: ' + JSON.stringify(op));
+      ok(op.open && op.txt === 'Morning Wake-Up' && op.w > op.h && op.h < 48 && op.below && op.left, 'pressed, it opens to the practices, lying flat under the step\'s text: ' + JSON.stringify(op));
       await E(p, () => location.hash = 'learn'); await p.waitForTimeout(400);
       const pr = await E(p, () => { const m = /^matrix\(([^,]+), ([^,]+)/.exec(getComputedStyle(document.querySelector('.lv-promo-go')).transform); return m ? [+m[1], +m[2]] : null; });
       ok(pr && Math.abs(pr[0]) < 0.01 && Math.abs(pr[1] - 1) < 0.01 && /and about coffee/.test(await t(p, '#v-learn .lv-promo')), 'Learn\'s link to Healthy living keeps its arrow turned to point on, and names coffee');
@@ -2211,7 +2212,8 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         /the darker fill under the peak is the 0\.030 Hz window it counts as the peak/.test(X.body) && /The dashed line is your breathing: during a session, the guide's pace; with Breath from the microphone on, the pace it hears/.test(X.body) &&
         /0\.04 to 0\.15 Hz, low frequency/.test(X.body) && /Each bar is one breath/.test(X.body),
         'they say what each shows: the swing and respiratory sinus arrhythmia, RMSSD, coherence, the resonance test and the baroreflex, how to read the spectrum and its dashed line');
-      ok(/The coherence score doesn't use it: it stays HeartMath's, from your heartbeat alone/.test(X.body) && /Bluetooth earbuds switch to their call mode while their own microphone is in use, which plays sound in mono/.test(X.body) &&
+      ok(/The coherence score doesn't use it: it stays HeartMath's, from your heartbeat alone/.test(X.body) && /Bluetooth earbuds and headsets switch to their call mode while their own microphone is in use, which plays sound in mono/.test(X.body) &&
+        /So the page listens through the phone's or computer's own microphone, and through a Bluetooth one only if you choose it and no beat is playing/.test(X.body) &&
         /Nothing is recorded or sent: the sound becomes one loudness number every tenth of a second on this device/.test(X.body) && /When in-breath and out-breath sound alike, the pace could read double/.test(X.body) &&
         X.hint === 'Pink: your heart rhythm · dashed: your breathing' && /or turn on Breath from the microphone/.test(X.empty) && /Nothing is recorded or sent anywhere\./.test(X.mic) &&
         X.btn === 'Listen for my breathing' && X.micEmpty && X.read,
@@ -2230,20 +2232,58 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await p.click('#mcStart'); await p.waitForTimeout(400);
       ok(/^No microphone was found\./.test(await t(p, '#mcRead')), 'no microphone: it says so');
       await p.context().close();
-      p = await page(OPT(), null, null, false, { label: 'AirPods Pro', devices: [{ deviceId: 'default', label: 'AirPods Pro' }, { deviceId: 'phone', label: 'Phone microphone' }] });
+      // which microphone: the phone's own, never the earbuds' while a beat plays
+      const TWO = [{ deviceId: 'bt', label: 'AirPods Pro' }, { deviceId: 'phone', label: 'Phone microphone' }];
+      const micState = q => E(q, () => ({ calls: window.__mic.calls, stopped: window.__mic.stopped, ids: window.__mic.opts.map(o => o.audio.deviceId ? o.audio.deviceId.exact : 'usual').join(','),
+        on: window.__entrain.MIC.on, bt: window.__entrain.MIC.bt, note: document.querySelector('#mcNote').hidden ? '' : document.querySelector('#mcNote').textContent,
+        warn: document.querySelector('#mcWarn').hidden ? '' : document.querySelector('#mcWarn').textContent, read: document.querySelector('#mcRead').textContent,
+        opts: [...document.querySelectorAll('#mcPick option')].map(o => (o.selected ? '*' : '') + o.textContent).join(' | '), pick: !document.querySelector('#mcPickL').hidden }));
+      const beat = async q => { await E(q, () => location.hash = 'track/theta-meditation'); await q.waitForTimeout(250); await q.click('#trGo'); await q.waitForTimeout(400); await E(q, () => location.hash = 'heart'); await q.waitForTimeout(900); };
+      p = await page(OPT(), null, null, false, { label: 'AirPods Pro', devices: TWO });
       await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
-      await p.click('#mcStart'); await p.waitForTimeout(700);
-      const bt = await E(p, () => ({ warn: document.querySelector('#mcWarn').hidden ? '' : document.querySelector('#mcWarn').textContent, pick: !document.querySelector('#mcPickL').hidden,
-        opts: [...document.querySelectorAll('#mcPick option')].map(o => (o.selected ? '*' : '') + o.textContent).join(' | ') }));
-      ok(/^This looks like a Bluetooth microphone \(AirPods Pro\)\. While it's in use, Bluetooth earbuds switch to their call mode, which plays sound in mono: a binaural beat stops working/.test(bt.warn) &&
-        bt.pick && bt.opts === '*AirPods Pro | Phone microphone', 'a Bluetooth microphone: a warning that the beat turns mono, and a choice of microphone: ' + bt.opts);
-      await p.selectOption('#mcPick', 'phone'); await p.waitForTimeout(900);
-      const sw2 = await E(p, () => ({ calls: window.__mic.calls, stopped: window.__mic.stopped, id: window.__mic.opts[1] && window.__mic.opts[1].audio.deviceId, warn: document.querySelector('#mcWarn').hidden,
-        on: window.__entrain.MIC.on, kept: localStorage.getItem('entrain.micDev') }));
-      ok(sw2.calls === 2 && sw2.stopped === 1 && sw2.id && sw2.id.exact === 'phone' && sw2.warn && sw2.on && sw2.kept === 'phone', 'choosing the phone\'s own microphone switches to it, keeps the choice and drops the warning: ' + JSON.stringify(sw2));
+      await p.click('#mcStart'); await p.waitForTimeout(900);
+      let ms = await micState(p);
+      ok(ms.calls === 1 && ms.ids === 'phone' && ms.on && !ms.bt && !ms.warn && /^Listening through Phone microphone rather than your earbuds', so they stay in stereo for the beat\./.test(ms.note) && ms.pick && ms.opts === 'AirPods Pro | *Phone microphone',
+        'with Bluetooth earbuds about, it listens through the phone\'s own microphone and says why: ' + JSON.stringify(ms));
+      await p.selectOption('#mcPick', 'bt'); await p.waitForTimeout(900);
+      ms = await micState(p);
+      ok(ms.calls === 2 && ms.ids === 'phone,bt' && ms.on && ms.bt && /^Listening through a Bluetooth microphone \(AirPods Pro\)\. While it's on, Bluetooth earbuds and headsets play in mono at call quality, so the page won't use it while a beat plays/.test(ms.warn) &&
+        await E(p, () => localStorage.getItem('entrain.micDev')) === 'bt', 'you can still choose the earbuds\' microphone with no beat playing, kept, with a warning: ' + ms.warn.slice(0, 60) + '…');
+      await beat(p);
+      ms = await micState(p);
+      ok(ms.calls === 3 && ms.ids === 'phone,bt,phone' && ms.stopped === 2 && ms.on && !ms.bt && /^A beat began, so the page moved from your earbuds' microphone to Phone microphone: the earbuds stay in stereo\.$/.test(ms.note),
+        'when a beat begins, it moves from the earbuds\' microphone to the phone\'s own: ' + JSON.stringify({ ids: ms.ids, note: ms.note }));
+      await p.selectOption('#mcPick', 'bt'); await p.waitForTimeout(500);
+      ms = await micState(p);
+      ok(ms.calls === 3 && ms.opts === 'AirPods Pro | *Phone microphone' && /^Not while a beat is playing: Bluetooth earbuds and headsets play in mono while their microphone is on/.test(ms.warn),
+        'and while the beat plays, choosing the earbuds\' microphone is refused, with the reason: ' + ms.warn.slice(0, 50) + '…');
       await p.click('#mcStart'); await p.waitForTimeout(300);
-      const off = await E(p, () => ({ stopped: window.__mic.stopped, on: window.__entrain.MIC.on, btn: document.querySelector('#mcStart').textContent, read: document.querySelector('#mcRead').textContent, busy: window.__entrain.appBusy() }));
-      ok(off.stopped === 2 && !off.on && off.btn === 'Listen for my breathing' && off.read === '' && !off.busy, 'Stop listening lets the microphone go: ' + JSON.stringify(off));
+      const off = await E(p, () => ({ stopped: window.__mic.stopped, on: window.__entrain.MIC.on, btn: document.querySelector('#mcStart').textContent, read: document.querySelector('#mcRead').textContent, busy: window.__entrain.appBusy(), tracks: window.__entrain.A.playing }));
+      ok(off.stopped === 3 && !off.on && off.btn === 'Listen for my breathing' && off.read === '' && off.tracks, 'Stop listening lets the microphone go, and the beat plays on: ' + JSON.stringify(off));
+      await p.context().close();
+      // the first time, before the browser names its microphones: the usual one opens, and if it's Bluetooth, the phone's at once
+      p = await page(OPT(), null, null, false, { label: 'AirPods Pro', devices: TWO, named: false });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      await p.click('#mcStart'); await p.waitForTimeout(1000);
+      ms = await micState(p);
+      ok(ms.calls === 2 && ms.ids === 'usual,phone' && ms.stopped === 1 && ms.on && !ms.bt && /^Listening through Phone microphone/.test(ms.note),
+        'the first time, the earbuds\' microphone the browser opens is swapped for the phone\'s straight away: ' + JSON.stringify({ ids: ms.ids, stopped: ms.stopped }));
+      await p.context().close();
+      // only Bluetooth microphones: with no beat, a warning; when a beat starts, it stops; with a beat already playing, it doesn't start
+      p = await page(OPT(), null, null, false, { label: 'AirPods Pro', devices: [TWO[0]] });
+      await E(p, () => location.hash = 'heart'); await p.waitForTimeout(300);
+      await p.click('#mcStart'); await p.waitForTimeout(900);
+      ms = await micState(p);
+      ok(ms.calls === 1 && ms.on && ms.bt && /^Listening through a Bluetooth microphone \(AirPods Pro\)/.test(ms.warn), 'with only the earbuds\' microphone and no beat, it listens, with the warning');
+      await beat(p);
+      ms = await micState(p);
+      ok(!ms.on && ms.stopped === 1 && /^The only microphone here is your Bluetooth earbuds' or headset's, and while it's in use they play in mono, so the beat would stop working\./.test(ms.read),
+        'when a beat starts, it stops listening and says why: ' + ms.read.slice(0, 70) + '…');
+      await p.click('#mcStart'); await p.waitForTimeout(700);
+      ms = await micState(p);
+      ok(!ms.on && ms.calls === 1 && /^The only microphone here is your Bluetooth earbuds'/.test(ms.read), 'and with the beat still playing, it won\'t open the earbuds\' microphone at all');
+      await p.context().close();
+      p = await page(OPT(), null, null, false, { bpm: 6 });
       // the pace finder itself, on made-up loudness: one sound a breath, in and out unlike or alike, noise, silence
       const F = await E(p, () => {
         const X = window.__entrain;

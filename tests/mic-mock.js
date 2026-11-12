@@ -3,17 +3,20 @@
 // sets it before the microphone starts, wins). inFrac: the in-breath's share of each breath; aEx and aIn: how loud
 // the out- and in-breath are; floor: the room's noise. label names the microphone, and devices lists the ones to
 // choose from (each with deviceId and label); fail: the error getUserMedia gives instead, such as 'NotAllowedError'.
-// window.__mic counts calls and stopped tracks and keeps the constraints asked for.
+// named: false keeps the microphones' names and ids hidden until the page has been allowed one, as browsers do the
+// first time. window.__mic counts calls and stopped tracks and keeps the constraints asked for.
 function micMock(o) {
-  o = Object.assign({ bpm: 6, inFrac: 0.4, aEx: 1, aIn: 0.3, floor: 0.02, label: 'Built-in microphone', fail: '', silent: false }, o || {});
-  window.__mic = { calls: 0, stopped: 0, opts: [] };
+  o = Object.assign({ bpm: 6, inFrac: 0.4, aEx: 1, aIn: 0.3, floor: 0.02, label: 'Built-in microphone', fail: '', silent: false, named: true }, o || {});
+  window.__mic = { calls: 0, stopped: 0, opts: [], allowed: false };
   const devs = o.devices || [{ kind: 'audioinput', deviceId: 'default', label: o.label, groupId: 'a' }];
   const md = navigator.mediaDevices || {};
   if (!navigator.mediaDevices) Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: md });
-  md.enumerateDevices = () => Promise.resolve(devs.map(d => Object.assign({ kind: 'audioinput', groupId: 'a' }, d)));
+  md.enumerateDevices = () => Promise.resolve(devs.map(d => Object.assign({ kind: 'audioinput', groupId: 'a' }, d,
+    o.named || window.__mic.allowed ? {} : { deviceId: '', label: '' })));
   md.getUserMedia = c => {
     window.__mic.calls++; window.__mic.opts.push(JSON.parse(JSON.stringify(c)));
     if (o.fail) return Promise.reject(Object.assign(new Error('mock'), { name: o.fail }));
+    window.__mic.allowed = true;
     const ctx = new AudioContext(), sr = ctx.sampleRate, buf = ctx.createBuffer(1, sr * 2, sr), d = buf.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;

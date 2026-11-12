@@ -568,7 +568,7 @@
   // a line a fraction of the way through a step
   function frac(secs, f) { return Math.round(secs * f); }
 
-  /* ----- Morning Tonic: Sleep Descent the other way round -----
+  /* ----- Morning Wake-Up: Sleep Descent the other way round -----
      On waking, in bed or sitting up: a long stretch, then breathing that starts slow with the longer out-breath,
      evens out and quickens with the in-breath leading, while the beat rises from 6 Hz theta through 10 Hz alpha
      towards 16 Hz beta; stretches in bed, breath of fire sitting up if you choose it, a few standing poses;
@@ -1120,7 +1120,7 @@
       caution: "This is about enjoying and noticing a meal, not about eating less. If you have or have had an eating disorder, follow your care team's advice about mindful eating, and leave the hunger check out if it doesn't help."
     },
     {
-      id: "morning-tonic", name: "Morning Tonic", lengths: [10, 15, 20], min: 15, strength: 1,
+      id: "morning-tonic", name: "Morning Wake-Up", lengths: [10, 15, 20], min: 15, strength: 1,
       tone: "stim", sensor: "optional", noTap: true,
       opt: { ana: 0 },                           // the breath changes pace as it goes: Anapana's reminders would talk over it
       needs: [["sounds", "Headphones", "for the beat, at a low volume"], ["pulse", "Heart sensor", "optional: your heart rate as it rises with the breath"],
@@ -1129,7 +1129,7 @@
       words: "morning wake up waking energy energise alert alertness grogginess sleep inertia sunrise daylight kapalabhati breath of fire stretch reverse",
       blurb: "Sleep Descent the other way round: a long stretch on waking, breathing that quickens with the in-breath leading, and a beat rising from theta to beta, then stretches, a few standing poses and daylight.",
       parts: "Stretch · breathing that quickens · breath of fire if you like · stretches and standing poses · daylight · 6 → 16 Hz binaural",
-      audio: { name: "Morning Tonic", band: "Theta → Beta", carrier: 300, fade: 6, cat: "stim" },
+      audio: { name: "Morning Wake-Up", band: "Theta → Beta", carrier: 300, fade: 6, cat: "stim" },
       beats: [                                   // the first is the usual one
         { id: "beta", label: "Theta to beta", band: "Theta → Beta", pts: morningPts(16), note: "Rises from 6 Hz, where you are on waking, through 10 Hz alpha with the breath to 16 Hz beta as you move: the beta beat that sharpened watch-keeping in a vigilance trial." },
         { id: "alpha", label: "Theta to alpha", band: "Theta → Alpha", pts: morningPts(10), note: "A gentler rise, from 6 Hz to 10 Hz alpha, for slower mornings." }

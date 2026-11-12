@@ -516,6 +516,7 @@
   .mc-read{margin:0;font-size:13.5px;color:var(--text-dim);line-height:1.5}
   .mc-read:empty{display:none}
   .mc-warn{margin:0;font-size:13px;color:var(--b-hold);line-height:1.5}
+  .mc-note{margin:0;font-size:13px;color:var(--text-dim);line-height:1.5}
   .mc-pick{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);min-width:0;max-width:100%}
   .mc-pick select{min-width:0;max-width:100%;min-height:40px;background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font:inherit;font-size:13.5px}
   .hr-mic[data-on="1"] #mcStart{border-color:color-mix(in srgb,var(--b-in) 45%,transparent)}

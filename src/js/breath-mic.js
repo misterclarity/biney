@@ -20,7 +20,9 @@
     marks: [],                // when each breath was loudest (s, on the page's clock), the last five minutes
     sw: [],                   // { t, amp, cyc }: how far heart rate rose and fell across each breath heard
     swAt: 0,                  // the mark the swings have been worked out up to
-    label: "", devId: "", cur: "", err: "", n: 0, t0: 0, prior: "", wasOk: false
+    label: "", devId: "", cur: "", err: "", n: 0, t0: 0, prior: "", wasOk: false,
+    bt: false,                // listening through a Bluetooth microphone
+    note: ""                  // why the page chose the microphone it did: "own" (the phone's, not the earbuds'), "beat" (moved there when a beat began)
   };
   var MIC_FS = 10, MIC_WIN = 60, MIC_MIN = 25, MIC_KEEP = 120;
   // the audio thread's part: the mean square of each tenth of a second, sent to the page
@@ -173,35 +175,103 @@
     if (!document.hidden && $("#mcTrace").offsetParent !== null) micDraw();
   }
 
-  /* Start listening. The audio context is made at once, in the tap, so the browser lets it run;
-     the microphone comes with its own processing off (echo cancelling, noise suppression and
-     automatic gain would take the breath sounds out or flatten them). */
-  function micStart() {
+  /* Which microphone. Bluetooth earbuds and headsets switch to their call mode while their own
+     microphone is in use, which plays sound in mono at call quality, and a binaural beat needs a
+     different tone in each ear. So the page listens through the phone's or computer's own microphone
+     when there is one, and through a Bluetooth one only when you choose it yourself and no beat is
+     playing. Browsers name the microphones only once the page may use one (Chrome on Android calls
+     them Speakerphone, Headset earpiece, Wired headset and Bluetooth headset), so the first time the
+     usual one opens, and if it turns out to be Bluetooth the page moves to the phone's own at once. */
+  function micIsBt(label) { return /bluetooth|hands-?free|airpods|\bbuds\b|\bbt\b/i.test(label || ""); }
+  // a binaural beat is sounding: a track's, a practice's or a session's, with its tones on
+  function beatPlaying() { return !!(A.playing && A.track && !A.voicesOff); }
+  function micInputs() {
+    var md = navigator.mediaDevices;
+    if (!md || !md.enumerateDevices) return Promise.resolve([]);
+    return md.enumerateDevices().then(function (ds) { return ds.filter(function (d) { return d.kind === "audioinput"; }); }, function () { return []; });
+  }
+  // the phone's or computer's own microphone among them: a named one that isn't Bluetooth, the earpiece's first on Android
+  function micOwn(ins) {
+    var own = ins.filter(function (d) { return d.label && !micIsBt(d.label) && d.deviceId !== "default" && d.deviceId !== "communications"; });
+    var rank = function (d) { return /headset earpiece/i.test(d.label) ? 0 : /built-?in|internal|array|phone|mac/i.test(d.label) ? 1 : /speakerphone/i.test(d.label) ? 2 : 3; };
+    own.sort(function (a, b) { return rank(a) - rank(b); });
+    return own[0] || null;
+  }
+  // before opening: the choice you made, unless it's Bluetooth while a beat plays; else the phone's own
+  function micChoose(ins, forceId) {
+    if (forceId) return forceId;
+    if (!ins.some(function (d) { return d.label; })) return MIC.devId || "";      // names come once the page may use one
+    var pick = MIC.devId ? ins.filter(function (d) { return d.deviceId === MIC.devId; })[0] : null, own = micOwn(ins);
+    if (pick && !(micIsBt(pick.label) && beatPlaying())) return pick.deviceId;
+    if (own && (pick || ins.some(function (d) { return micIsBt(d.label); }))) MIC.note = "own";
+    return own ? own.deviceId : pick ? pick.deviceId : "";
+  }
+  function micTracksOff(stream) { stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} }); }
+  function micTrackId(tr) { try { return tr && tr.getSettings ? tr.getSettings().deviceId || "" : ""; } catch (e) { return ""; } }
+
+  /* Start listening, on the microphone chosen as above (or forceId). The audio context is made at
+     once, in the tap, so the browser lets it run; the microphone comes with its own processing off
+     (echo cancelling, noise suppression and automatic gain would take the breath sounds out or
+     flatten them). */
+  function micStart(forceId) {
     if (MIC.on || MIC.busy) return;
     var md = navigator.mediaDevices, AC = window.AudioContext || window.webkitAudioContext;
     MIC.err = "";
+    if (!forceId) MIC.note = "";
     if (!md || !md.getUserMedia || !AC) { micFail({ name: "NotSupportedError" }); return; }
     var ctx;
     try { ctx = new AC(); if (ctx.resume) ctx.resume().catch(function () {}); } catch (e) { micFail(e); return; }
     MIC.busy = true; MIC.ctx = ctx;
     micUI();
-    var audio = { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 };
-    if (MIC.devId) audio.deviceId = { exact: MIC.devId };
-    md.getUserMedia({ audio: audio }).catch(function (e) {
-      if (!MIC.devId || !e || !/^(OverconstrainedError|NotFoundError)$/.test(e.name)) throw e;
-      MIC.devId = ""; store.set("micDev", "");                                // the one picked before is gone: the usual one
-      delete audio.deviceId;
+    var live = function () { return MIC.busy && MIC.ctx === ctx; };
+    var open = function (id) {
+      var audio = { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 };
+      if (id) audio.deviceId = { exact: id };
       return md.getUserMedia({ audio: audio });
+    };
+    micInputs().then(function (ins) {
+      var named = ins.some(function (d) { return d.label; });                  // only Bluetooth ones, and a beat playing: none to open
+      if (!forceId && named && !micOwn(ins) && ins.every(function (d) { return micIsBt(d.label); }) && beatPlaying()) throw { name: "BluetoothOnly" };
+      return open(micChoose(ins, forceId)).catch(function (e) {
+        if (!e || !/^(OverconstrainedError|NotFoundError)$/.test(e.name) || !(forceId || MIC.devId)) throw e;
+        if (MIC.devId) { MIC.devId = ""; store.set("micDev", ""); }              // the one picked before is gone: the usual one
+        return open("");
+      });
     }).then(function (stream) {
-      if (!MIC.busy || MIC.ctx !== ctx) { stream.getTracks().forEach(function (t) { t.stop(); }); return; }   // turned off meanwhile
+      if (!live()) { micTracksOff(stream); return null; }                     // turned off meanwhile
+      var tr = stream.getAudioTracks()[0];
+      if (!micIsBt(tr && tr.label)) return stream;
+      var id = micTrackId(tr), chosen = (forceId || MIC.devId) && (forceId || MIC.devId) === id;
+      if (chosen && !beatPlaying()) return stream;                            // your choice, with no beat playing
+      return micInputs().then(function (ins) {                                // the names are known now: the phone's own
+        var own = micOwn(ins);
+        if (own && own.deviceId !== id) { micTracksOff(stream); MIC.note = forceId ? MIC.note || "own" : "own"; return live() ? open(own.deviceId) : null; }
+        if (beatPlaying()) { micTracksOff(stream); throw { name: "BluetoothOnly" }; }
+        return stream;                                                        // the only microphone there is, and no beat
+      });
+    }).then(function (stream) {
+      if (!stream) return;
+      if (!live()) { micTracksOff(stream); return; }
       return micGraph(ctx, stream);
     }).catch(micFail);
+  }
+  // a beat has begun while a Bluetooth microphone listens: move to the phone's own, or stop listening
+  function micBeatGuard() {
+    if (!MIC.on || MIC.busy || !MIC.bt || !beatPlaying()) return;
+    micInputs().then(function (ins) {
+      if (!MIC.on || !MIC.bt || !beatPlaying()) return;
+      var own = micOwn(ins);
+      micStop();
+      if (own) { MIC.note = "beat"; micStart(own.deviceId); }
+      else { MIC.err = "btbeat"; micUI(); }
+    });
   }
   function micGraph(ctx, stream) {
     MIC.stream = stream;
     var tr = stream.getAudioTracks()[0];
     MIC.label = tr && tr.label || "";
-    try { MIC.cur = tr && tr.getSettings ? tr.getSettings().deviceId || "" : ""; } catch (e) { MIC.cur = ""; }
+    MIC.cur = micTrackId(tr);
+    MIC.bt = micIsBt(MIC.label);
     if (tr) tr.addEventListener("ended", function () { if (MIC.on && MIC.stream === stream) { micStop(); MIC.err = "ended"; micUI(); } });
     var src = ctx.createMediaStreamSource(stream), f1 = ctx.createBiquadFilter(), f2 = ctx.createBiquadFilter(), f3 = ctx.createBiquadFilter();
     f1.type = f2.type = "highpass"; f1.frequency.value = f2.frequency.value = 500;
@@ -246,7 +316,7 @@
     if (MIC.node && MIC.node.port) MIC.node.port.onmessage = null;
     if (MIC.ctx && MIC.ctx.close) MIC.ctx.close().catch(function () {});
     MIC.stream = null; MIC.ctx = null; MIC.node = null;
-    MIC.on = false; MIC.busy = false; MIC.est = null; MIC.wasOk = false;
+    MIC.on = false; MIC.busy = false; MIC.est = null; MIC.wasOk = false; MIC.bt = false;
     micUI(); micDraw(); specRead(); drawSpectrum();
   }
   function micFail(e) {
@@ -257,7 +327,7 @@
     MIC.err = n === "NotAllowedError" || n === "SecurityError" ? (embedded ? "embedded" : "denied")
       : n === "NotFoundError" || n === "OverconstrainedError" ? "none"
       : n === "NotReadableError" || n === "AbortError" ? "busy"
-      : n === "NotSupportedError" ? "unsupported" : "other:" + n;
+      : n === "NotSupportedError" ? "unsupported" : n === "BluetoothOnly" ? "btbeat" : "other:" + n;
     micUI();
   }
 
@@ -271,16 +341,21 @@
       sel.innerHTML = "";
       ins.forEach(function (d) {
         var o = document.createElement("option");
-        o.value = d.deviceId; o.textContent = d.label;
-        if (d.deviceId === (MIC.devId || MIC.cur) || (!MIC.devId && d.label === MIC.label)) o.selected = true;
+        o.value = d.deviceId; o.textContent = micLabel(d.label); o.dataset.label = d.label;
+        if (MIC.cur ? d.deviceId === MIC.cur : d.label === MIC.label) o.selected = true;
         sel.appendChild(o);
       });
     }).catch(function () {});
   }
 
-  /* Bluetooth earbuds and headsets switch to their call mode while their microphone is in use: sound
-     comes back in mono and at call quality, and a binaural beat needs a different tone in each ear. */
-  function micBluetooth() { return /bluetooth|hands-?free|airpods|buds|\bbt\b|headset/i.test(MIC.label); }
+  // a microphone's name for a sentence: Chrome on Android's names for the phone's own say little
+  function micName(label) { return /^(speakerphone|headset earpiece)$/i.test(label) ? "the phone's own microphone" : label || "the phone's own microphone"; }
+  // and for the list to choose from, Chrome on Android's names in plain words
+  function micLabel(label) {
+    return /^headset earpiece$/i.test(label) ? "Phone's microphone" : /^speakerphone$/i.test(label) ? "Phone's microphone, speaker mode"
+      : /^bluetooth headset$/i.test(label) ? "Bluetooth earbuds or headset" : /^wired headset$/i.test(label) ? "Wired earphones' microphone"
+      : /^usb audio$/i.test(label) ? "USB microphone" : label;
+  }
   function micFmt(r) { var x = Math.round(r * 10) / 10; return String(x % 1 ? x.toFixed(1) : x); }
 
   function micUI() {
@@ -296,9 +371,10 @@
         : MIC.err === "busy" ? "The microphone is busy or couldn't start: close any app that's using it, such as a call, and try again."
         : MIC.err === "unsupported" ? "This browser can't use the microphone here."
         : MIC.err === "ended" ? "The microphone stopped, perhaps because it was unplugged. Press Listen for my breathing to start again."
+        : MIC.err === "btbeat" ? "The only microphone here is your Bluetooth earbuds' or headset's, and while it's in use they play in mono, so the beat would stop working. To listen for your breathing, pause the beat, or use wired earphones with a microphone."
         : MIC.err ? "The microphone didn't start (" + MIC.err.slice(6) + "). Try again, or choose another browser." : "";
     } else if (!e || e.q === "listening") {
-      s = "Listening… your breathing pace appears in about " + ((e && e.left) || MIC_MIN) + " s.";
+      s = "Listening… your breathing pace appears in about " + ((e && e.left) || MIC_MIN) + "\u00a0s.";
       hint = "Listening";
     } else if (e.q === "silent") {
       s = "The microphone is sending silence. Is it muted, or is another app using it?";
@@ -317,10 +393,16 @@
     }
     bSetT("#mcRead", s);
     bSetT("#mcHint", hint);
-    var warn = MIC.on && micBluetooth()
-      ? "This looks like a Bluetooth microphone (" + MIC.label + "). While it's in use, Bluetooth earbuds switch to their call mode, which plays sound in mono: a binaural beat stops working. To keep the beat, choose the phone's or computer's own microphone, or use wired earphones." : "";
+    var warn = MIC.on && MIC.bt
+      ? "Listening through a Bluetooth microphone (" + micLabel(MIC.label) + "). While it's on, Bluetooth earbuds and headsets play in mono at call quality, so the page won't use it while a beat plays: when one starts, it moves to the phone's own microphone, or stops listening if there's none."
+      : MIC.note === "refused" ? "Not while a beat is playing: Bluetooth earbuds and headsets play in mono while their microphone is on, and the beat would stop working. Pause the beat first to choose it." : "";
+    var note = !MIC.on || MIC.bt ? "" : MIC.note === "own"
+      ? "Listening through " + micName(MIC.label) + " rather than your earbuds', so they stay in stereo for the beat. Prop the phone 10 to 20 cm from your face."
+      : MIC.note === "beat" ? "A beat began, so the page moved from your earbuds' microphone to " + micName(MIC.label) + ": the earbuds stay in stereo." : "";
     bSetT("#mcWarn", warn);
     $("#mcWarn").hidden = !warn;
+    bSetT("#mcNote", note);
+    $("#mcNote").hidden = !note;
     if (!MIC.on) $("#mcPickL").hidden = true;
     var ok = micOk();
     $("#bMicStat").hidden = !ok;
@@ -379,9 +461,17 @@
     MIC.devId = store.get("micDev") || "";
     $("#mcStart").addEventListener("click", function () { if (MIC.on || MIC.busy) { micStop(); MIC.err = ""; micUI(); } else micStart(); });
     $("#mcPick").addEventListener("change", function () {
+      var o = this.options[this.selectedIndex];
+      if (micIsBt(o && o.dataset.label) && beatPlaying()) {                       // not while a beat plays: it would turn mono
+        this.value = MIC.cur;
+        MIC.note = "refused";
+        micUI();
+        return;
+      }
       MIC.devId = this.value;
       store.set("micDev", MIC.devId);
-      if (MIC.on) { micStop(); micStart(); }
+      MIC.note = "";
+      if (MIC.on) { micStop(); micStart(MIC.devId); }
     });
     if (window.ResizeObserver) new ResizeObserver(function () { micDraw(); }).observe($("#mcTrace"));
     window.addEventListener("pagehide", function () { if (MIC.on || MIC.busy) micStop(); });
