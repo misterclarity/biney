@@ -93,7 +93,7 @@
     if (h === "feedback" || h.indexOf("st-") === 0) {     // a section of Settings, which is drawn as it opens
       showView("settings");
       var sec = document.getElementById(h === "feedback" ? "st-feedback" : h);
-      if (sec) setTimeout(function () { try { sec.scrollIntoView({ block: "start", behavior: RM ? "auto" : "smooth" }); } catch (e) { sec.scrollIntoView(); } }, 30);
+      if (sec) setTimeout(function () { jumpTo(sec); }, 30);
       return;
     }
     var el = document.getElementById(h), v = el && viewOf(el);
@@ -101,7 +101,7 @@
     showView(v);
     if (el.tagName === "DETAILS") el.open = true;
     setTimeout(function () {
-      try { el.scrollIntoView({ block: "start", behavior: RM ? "auto" : "smooth" }); } catch (e) { el.scrollIntoView(); }
+      jumpTo(el);
     }, 30);
   }
 

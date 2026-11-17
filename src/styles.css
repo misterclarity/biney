@@ -54,7 +54,7 @@
   *{box-sizing:border-box}
   [hidden]{display:none!important}
   html{-webkit-text-size-adjust:100%}
-  .topbar h1,.brand-name,.home-hero h2,.b-phase-name,.hr-intro h3,.prose h2,.prose h3,.refs-sec h3,
+  .topbar h1,.brand-name,.home-hero h2,.b-phase-name,.hr-intro h2,.prose h2,.prose h3,.refs-sec h3,
   .modal-card h2,.sheet-head h2,.note-card h3,.qk b,.hr-guide-sum b{
     font-family:var(--display);font-weight:700;font-synthesis:none;
   }
@@ -180,7 +180,7 @@
   .btn.quiet{background:transparent;border-color:transparent;color:var(--text-dim)}
   .btn.quiet:hover{background:var(--panel-2);color:var(--text)}
   .btn.small{min-height:34px;padding:6px 12px;font-size:13px;border-radius:10px}
-  .btn.link{background:none;border:0;min-height:0;color:var(--text-faint);padding:6px 0;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+  .btn.link{background:none;border:0;min-height:24px;color:var(--text-faint);padding:6px 0;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
   .btn.link:hover{color:var(--text-dim);background:none}
 
   .chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -423,7 +423,7 @@
   details.ev{border-top:1px solid var(--line-soft);padding-top:11px}
   details.ev summary{
     cursor:pointer;font-size:12.5px;font-weight:650;color:var(--text-faint);list-style:none;
-    display:flex;align-items:center;gap:8px;user-select:none;
+    display:flex;align-items:center;gap:8px;user-select:none;min-height:24px;
   }
   details.ev summary::-webkit-details-marker{display:none}
   details.ev summary::after{content:"›";transition:transform .2s;font-size:16px;line-height:1}
@@ -449,7 +449,7 @@
     background:var(--panel);border-radius:22px;padding:20px 22px;
   }
   .hr-intro{min-width:0;flex:1 1 340px}
-  .hr-intro h3{font-size:21px;font-weight:800;letter-spacing:-.025em}
+  .hr-intro h2{font-size:21px;font-weight:800;letter-spacing:-.025em}
   .hr-intro p{margin:6px 0 0;font-size:14px;color:var(--text-dim);max-width:62ch}
   .hr-intro .hr-msg{color:var(--b-hold)}
   .hr-intro .hr-msg:empty{display:none}
@@ -889,7 +889,7 @@
 
   /* ---------- practice: session intro ---------- */
   .ses{--pcol:var(--relax)}
-  .si-back{display:inline-flex;align-items:center;gap:4px;color:var(--text-faint);text-decoration:none;font-size:13.5px;font-weight:650;margin-bottom:12px}
+  .si-back{display:inline-flex;align-items:center;min-height:24px;gap:4px;color:var(--text-faint);text-decoration:none;font-size:13.5px;font-weight:650;margin-bottom:12px}
   .si-back:hover{color:var(--text)}
   .si-back svg.i{width:17px;height:17px}
   .si-head{padding:22px 24px;border-radius:22px;background:linear-gradient(150deg,color-mix(in srgb,var(--pcol) 15%,var(--panel)),var(--panel) 65%)}
@@ -1440,7 +1440,7 @@
   .td-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
   .td-h h2{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:780;letter-spacing:-.015em}
   .td-h h2 svg.i{width:19px;height:19px;color:var(--stim);fill:currentColor}
-  .td-more{font-size:13.5px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap}
+  .td-more{display:inline-flex;align-items:center;min-height:24px;font-size:13.5px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap}
   .td-more:hover{text-decoration:underline}
   .td-empty{margin:0;padding:14px 16px;border-radius:14px;background:var(--panel);color:var(--text-dim);font-size:14px;line-height:1.5}
   .td-goals{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}

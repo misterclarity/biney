@@ -601,7 +601,7 @@
       });
     });
     var saved = store.get("guideDev");
-    if (saved && $("#gp-" + saved)) pick(saved);
+    if (tabs.some(function (t) { return t.dataset.dev === saved; })) pick(saved);     // only a sensor the guide has a tab for
     $("#gConnect").addEventListener("click", function () { hrConnect(false); });
     guideRenderEnv();
     guideCheck();

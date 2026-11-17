@@ -178,7 +178,7 @@
     var sup = '<div class="lv-panel" role="tabpanel" id="lvp-supplements" aria-labelledby="lvt-supplements" hidden>' +
       '<p class="lv-lede">What the research says about the supplements people ask about most, and about coffee: what each may help and how strong the evidence is, the amounts studied, and what to check before you start. Food comes first; supplements fill gaps.</p>' +
       safeBox([SAFE_SUPPS]) + LV_LEGEND +
-      '<div class="lv-sups">' + SUPPS.map(lvSupCard).join("") + "</div>" +
+      '<h2 class="visually-hidden">The supplements asked about most</h2><div class="lv-sups">' + SUPPS.map(lvSupCard).join("") + "</div>" +
       '<h2 class="lv-h2">Coffee</h2>' +
       '<div class="lv-sups">' + lvSupCard(COFFEE) + "</div>" +
       '<h2 class="lv-h2">Also asked about</h2>' +
@@ -290,7 +290,7 @@
     if (card) {                            // a card opens; a routine is scrolled to
       if (s) card.open = true;
       setTimeout(function () {
-        try { card.scrollIntoView({ block: "start", behavior: RM ? "auto" : "smooth" }); } catch (e) { card.scrollIntoView(); }
+        jumpTo(card);
         fdHit(card);
       }, 40);
     }

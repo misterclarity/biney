@@ -52,7 +52,7 @@
     if (find) setTimeout(function () {
       var b = document.querySelector('#ybLib [data-add="' + find.id + '"]');
       if (!b) return;
-      try { b.scrollIntoView({ block: "center", behavior: RM ? "auto" : "smooth" }); } catch (e) { b.scrollIntoView(); }
+      jumpTo(b, "center");
       try { b.focus({ preventScroll: true }); } catch (e) {}
       fdHit(b);
     }, 60);

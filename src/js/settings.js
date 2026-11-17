@@ -88,7 +88,8 @@
   // what the button adds when asked to: the build, the browser, installed or not, and the window's size
   function fbDevice() {
     var inst = !!(window.matchMedia && matchMedia("(display-mode: standalone)").matches);
-    return "Entrain build " + BUILD + " · " + (hrBrowser() || "an unknown browser") + (inst ? " · installed" : " · in the browser") + " · " + innerWidth + "×" + innerHeight;
+    return "Entrain build " + BUILD + " · " + (hrBrowser() || "an unknown browser") + (inst ? " · installed" : " · in the browser") + " · " + innerWidth + "×" + innerHeight +
+      (BOOT_FAILED.length ? " · didn't start: " + BOOT_FAILED.join("; ") : "");
   }
   function fbForm() {
     var d = fbDraft();

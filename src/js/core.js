@@ -27,6 +27,12 @@
     return true;
   }
 
+  /* Scroll el into view: smoothly when it's near, at once when it's far, so a link to the end of
+     Learn doesn't spend seconds sliding through it (and with reduced motion, always at once). */
+  function jumpTo(el, block) {
+    var r = el.getBoundingClientRect(), far = Math.abs(r.top) > 1.5 * (window.innerHeight || 800);
+    try { el.scrollIntoView({ block: block || "start", behavior: RM || far ? "auto" : "smooth" }); } catch (e) { el.scrollIntoView(); }
+  }
   // the session clock, in seconds
   function bNow() { return (window.performance && performance.now ? performance.now() : Date.now()) / 1000; }
   // seconds as mm:ss

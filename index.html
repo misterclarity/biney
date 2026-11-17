@@ -137,7 +137,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   *{box-sizing:border-box}
   [hidden]{display:none!important}
   html{-webkit-text-size-adjust:100%}
-  .topbar h1,.brand-name,.home-hero h2,.b-phase-name,.hr-intro h3,.prose h2,.prose h3,.refs-sec h3,
+  .topbar h1,.brand-name,.home-hero h2,.b-phase-name,.hr-intro h2,.prose h2,.prose h3,.refs-sec h3,
   .modal-card h2,.sheet-head h2,.note-card h3,.qk b,.hr-guide-sum b{
     font-family:var(--display);font-weight:700;font-synthesis:none;
   }
@@ -263,7 +263,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .btn.quiet{background:transparent;border-color:transparent;color:var(--text-dim)}
   .btn.quiet:hover{background:var(--panel-2);color:var(--text)}
   .btn.small{min-height:34px;padding:6px 12px;font-size:13px;border-radius:10px}
-  .btn.link{background:none;border:0;min-height:0;color:var(--text-faint);padding:6px 0;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+  .btn.link{background:none;border:0;min-height:24px;color:var(--text-faint);padding:6px 0;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
   .btn.link:hover{color:var(--text-dim);background:none}
 
   .chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -506,7 +506,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   details.ev{border-top:1px solid var(--line-soft);padding-top:11px}
   details.ev summary{
     cursor:pointer;font-size:12.5px;font-weight:650;color:var(--text-faint);list-style:none;
-    display:flex;align-items:center;gap:8px;user-select:none;
+    display:flex;align-items:center;gap:8px;user-select:none;min-height:24px;
   }
   details.ev summary::-webkit-details-marker{display:none}
   details.ev summary::after{content:"›";transition:transform .2s;font-size:16px;line-height:1}
@@ -532,7 +532,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     background:var(--panel);border-radius:22px;padding:20px 22px;
   }
   .hr-intro{min-width:0;flex:1 1 340px}
-  .hr-intro h3{font-size:21px;font-weight:800;letter-spacing:-.025em}
+  .hr-intro h2{font-size:21px;font-weight:800;letter-spacing:-.025em}
   .hr-intro p{margin:6px 0 0;font-size:14px;color:var(--text-dim);max-width:62ch}
   .hr-intro .hr-msg{color:var(--b-hold)}
   .hr-intro .hr-msg:empty{display:none}
@@ -972,7 +972,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   /* ---------- practice: session intro ---------- */
   .ses{--pcol:var(--relax)}
-  .si-back{display:inline-flex;align-items:center;gap:4px;color:var(--text-faint);text-decoration:none;font-size:13.5px;font-weight:650;margin-bottom:12px}
+  .si-back{display:inline-flex;align-items:center;min-height:24px;gap:4px;color:var(--text-faint);text-decoration:none;font-size:13.5px;font-weight:650;margin-bottom:12px}
   .si-back:hover{color:var(--text)}
   .si-back svg.i{width:17px;height:17px}
   .si-head{padding:22px 24px;border-radius:22px;background:linear-gradient(150deg,color-mix(in srgb,var(--pcol) 15%,var(--panel)),var(--panel) 65%)}
@@ -1523,7 +1523,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .td-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
   .td-h h2{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:780;letter-spacing:-.015em}
   .td-h h2 svg.i{width:19px;height:19px;color:var(--stim);fill:currentColor}
-  .td-more{font-size:13.5px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap}
+  .td-more{display:inline-flex;align-items:center;min-height:24px;font-size:13.5px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap}
   .td-more:hover{text-decoration:underline}
   .td-empty{margin:0;padding:14px 16px;border-radius:14px;background:var(--panel);color:var(--text-dim);font-size:14px;line-height:1.5}
   .td-goals{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
@@ -2337,7 +2337,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <div class="hr-top">
         <div class="hr-intro">
           <div class="prime-label">Live heart data</div>
-          <h3 id="hrTitle">Pair a heart-rate sensor</h3>
+          <h2 id="hrTitle">Pair a heart-rate sensor</h2>
           <p>
             Watch your heart rate rise as you breathe in and fall as you breathe out. Any Bluetooth heart-rate
             sensor works. An ear-clip sensor or a chest strap gives the full picture, coherence included; a watch
@@ -3420,6 +3420,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     return true;
   }
 
+  /* Scroll el into view: smoothly when it's near, at once when it's far, so a link to the end of
+     Learn doesn't spend seconds sliding through it (and with reduced motion, always at once). */
+  function jumpTo(el, block) {
+    var r = el.getBoundingClientRect(), far = Math.abs(r.top) > 1.5 * (window.innerHeight || 800);
+    try { el.scrollIntoView({ block: block || "start", behavior: RM || far ? "auto" : "smooth" }); } catch (e) { el.scrollIntoView(); }
+  }
   // the session clock, in seconds
   function bNow() { return (window.performance && performance.now ? performance.now() : Date.now()) / 1000; }
   // seconds as mm:ss
@@ -6587,7 +6593,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       });
     });
     var saved = store.get("guideDev");
-    if (saved && $("#gp-" + saved)) pick(saved);
+    if (tabs.some(function (t) { return t.dataset.dev === saved; })) pick(saved);     // only a sensor the guide has a tab for
     $("#gConnect").addEventListener("click", function () { hrConnect(false); });
     guideRenderEnv();
     guideCheck();
@@ -7679,7 +7685,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (h === "feedback" || h.indexOf("st-") === 0) {     // a section of Settings, which is drawn as it opens
       showView("settings");
       var sec = document.getElementById(h === "feedback" ? "st-feedback" : h);
-      if (sec) setTimeout(function () { try { sec.scrollIntoView({ block: "start", behavior: RM ? "auto" : "smooth" }); } catch (e) { sec.scrollIntoView(); } }, 30);
+      if (sec) setTimeout(function () { jumpTo(sec); }, 30);
       return;
     }
     var el = document.getElementById(h), v = el && viewOf(el);
@@ -7687,7 +7693,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     showView(v);
     if (el.tagName === "DETAILS") el.open = true;
     setTimeout(function () {
-      try { el.scrollIntoView({ block: "start", behavior: RM ? "auto" : "smooth" }); } catch (e) { el.scrollIntoView(); }
+      jumpTo(el);
     }, 30);
   }
 
@@ -7773,7 +7779,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "3ed99ce3";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "fe6dbbc8";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -13458,7 +13464,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   // what the button adds when asked to: the build, the browser, installed or not, and the window's size
   function fbDevice() {
     var inst = !!(window.matchMedia && matchMedia("(display-mode: standalone)").matches);
-    return "Entrain build " + BUILD + " · " + (hrBrowser() || "an unknown browser") + (inst ? " · installed" : " · in the browser") + " · " + innerWidth + "×" + innerHeight;
+    return "Entrain build " + BUILD + " · " + (hrBrowser() || "an unknown browser") + (inst ? " · installed" : " · in the browser") + " · " + innerWidth + "×" + innerHeight +
+      (BOOT_FAILED.length ? " · didn't start: " + BOOT_FAILED.join("; ") : "");
   }
   function fbForm() {
     var d = fbDraft();
@@ -14448,7 +14455,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (find) setTimeout(function () {
       var b = document.querySelector('#ybLib [data-add="' + find.id + '"]');
       if (!b) return;
-      try { b.scrollIntoView({ block: "center", behavior: RM ? "auto" : "smooth" }); } catch (e) { b.scrollIntoView(); }
+      jumpTo(b, "center");
       try { b.focus({ preventScroll: true }); } catch (e) {}
       fdHit(b);
     }, 60);
@@ -15814,7 +15821,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var sup = '<div class="lv-panel" role="tabpanel" id="lvp-supplements" aria-labelledby="lvt-supplements" hidden>' +
       '<p class="lv-lede">What the research says about the supplements people ask about most, and about coffee: what each may help and how strong the evidence is, the amounts studied, and what to check before you start. Food comes first; supplements fill gaps.</p>' +
       safeBox([SAFE_SUPPS]) + LV_LEGEND +
-      '<div class="lv-sups">' + SUPPS.map(lvSupCard).join("") + "</div>" +
+      '<h2 class="visually-hidden">The supplements asked about most</h2><div class="lv-sups">' + SUPPS.map(lvSupCard).join("") + "</div>" +
       '<h2 class="lv-h2">Coffee</h2>' +
       '<div class="lv-sups">' + lvSupCard(COFFEE) + "</div>" +
       '<h2 class="lv-h2">Also asked about</h2>' +
@@ -15926,7 +15933,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (card) {                            // a card opens; a routine is scrolled to
       if (s) card.open = true;
       setTimeout(function () {
-        try { card.scrollIntoView({ block: "start", behavior: RM ? "auto" : "smooth" }); } catch (e) { card.scrollIntoView(); }
+        jumpTo(card);
         fdHit(card);
       }, 40);
     }
@@ -16905,31 +16912,26 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      for the same key on the whole document, the one wired first runs first.
   ---------------------------------------------------------------------------- */
 
-  playerInit();
-  msInit();
-  builderInit();
-  primeInit();
-  dialogsInit();
-  safeInit();
-  initBreath();
-  hrInit();
-  shellInit();
-  appInit();
-  ambInit();
-  qInit();
-  todayInit();
-  hInit();
-  favInit();
-  trInit();
-  pInit();
-  libInit();
-  yInit();
-  nvcInit();
-  lvInit();
-  fdInit();
-  bkInit();
-  route();                               // the library is built when it's first shown, not here
-  libWarm();                             // its practices' lengths are worked out once the phone is idle
+  /* Each part starts on its own. If one can't (a stored value it can't read, a browser that lacks
+     something it needs), the rest of the app still works; what failed is said once, shown on the
+     console and kept for the feedback form. */
+  var BOOT_FAILED = [];
+  function start(name, fn) {
+    try { fn(); } catch (e) {
+      BOOT_FAILED.push(name + ": " + String(e && e.message || e).slice(0, 120));
+      if (window.console && console.error) console.error("Entrain: " + name + " didn't start", e);
+    }
+  }
+  [["the player", playerInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
+    ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
+    ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit], ["the library", libInit],
+    ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["search", fdInit], ["backups", bkInit],
+    ["the first page", route]                              // the library is built when it's first shown, not here
+  ].forEach(function (x) { start(x[0], x[1]); });
+  start("the library's lengths", libWarm);                 // its practices' lengths are worked out once the phone is idle
+  if (BOOT_FAILED.length) setTimeout(function () {
+    try { toast("Part of Entrain didn't start: " + BOOT_FAILED.map(function (f) { return f.split(":")[0]; }).join(", ") + ". The rest works; Settings has a feedback form to report it."); } catch (e) {}
+  }, 800);
   window.addEventListener("pagehide", function () {
     if (A.playing) hardStop(true);
     else hTrack();                       // a paused track counts too

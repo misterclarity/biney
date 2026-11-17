@@ -2115,6 +2115,17 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await p.context().close();
     }
 
+    /* K2 (with J). Start-up survives a stored value it can't use, and a far anchor is reached at once. */
+    if (!only || only === 'J') {
+      const p = await page(Object.assign(OPT(), { guideDev: '"><b>x</b>' }));
+      const st = await E(p, () => ({ up: !!window.__entrain, toast: (document.querySelector('#toast') || {}).hidden !== false ? '' : document.querySelector('#toast').textContent, heart: !!document.querySelector('.g-tab[aria-selected="true"]') }));
+      ok(st.up && st.heart && !/didn't start/.test(st.toast), 'a stored sensor choice the guide has no tab for no longer stops the app from starting');
+      await E(p, () => location.hash = 'settings'); await p.waitForTimeout(300);
+      await p.click('.st-about a[href="#l-impressum"]'); await p.waitForTimeout(250);
+      const r = await E(p, () => { const b = document.querySelector('#l-impressum').getBoundingClientRect(); return b.top >= 0 && b.bottom <= innerHeight; });
+      ok(r, 'a link to the far end of Learn lands there at once, rather than sliding through the whole page');
+      await p.context().close();
+    }
     /* J. the Heart page explained, breath from the microphone and the spectrum's dashed line, coffee, and the routines'
        suggestions behind a button. The microphone's end-to-end check runs in real time, so it starts first and the
        rest runs while it listens. */
