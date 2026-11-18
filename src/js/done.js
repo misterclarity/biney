@@ -10,8 +10,9 @@
     var d = P.def, tiles = [], c = SD.c = sdCompare(r, d);
     tiles.push(["Time", fmt(r.secs), early ? "Ended early" : "Complete", "time", r.at ? (c.n === 1 ? "Your first time" : "Your " + sdNth(c.n) + " time") : ""]);
     var napHR = r.nap && r.nap.base && r.nap.low;        // a nap has its own baseline-to-lowest tile
-    if (r.hr0 && !napHR) tiles.push(["Heart rate", r.hr0 + " → " + r.hr1, "bpm, start to end", "hr", sdCmpTxt(c.hr, function (v) { v = Math.round(v); return v ? sdSigned(v) : "steady"; })]);
-    else if (r.hrAvg && !napHR) tiles.push(["Heart rate", String(r.hrAvg), "bpm average", "hravg"]);
+    if (r.stress) stressTiles(r, tiles);                 // a stress check: its level, RMSSD and resting heart rate instead of the change
+    if (r.hr0 && !napHR && !r.stress) tiles.push(["Heart rate", r.hr0 + " → " + r.hr1, "bpm, start to end", "hr", sdCmpTxt(c.hr, function (v) { v = Math.round(v); return v ? sdSigned(v) : "steady"; })]);
+    else if (r.hrAvg && !napHR && !r.stress) tiles.push(["Heart rate", String(r.hrAvg), "bpm average", "hravg"]);
     if (r.coh && !r.nap) tiles.push(["Coherence", r.coh.toFixed(1), "average, peak " + r.cohMax.toFixed(1), "coh", sdCmpTxt(c.coh, sdFix1, r.coh)]);
     if (r.swing) tiles.push(["Swing", r.swing.toFixed(1), "bpm per breath", "swing", sdCmpTxt(c.swing, sdFix1, r.swing)]);
     if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath", "wander"]);
@@ -33,13 +34,14 @@
           (t[4] ? '<em class="sd-cmp">' + esc(t[4]) + "</em>" : "") + "</button>";
       }).join("") + "</div>" +
       '<div class="sd-ex" id="sdEx" role="region" aria-label="What this number means" hidden></div>' +
+      (r.stress ? stressCard(r) : "") +                    // a stress check's advice comes first, before the chart
       (chart ? '<div class="sd-chart"><span>Heart rate across the session, in bpm' + (r.beatLog ? ", with the beat in violet" : "") + "</span>" +
         '<canvas id="sdChart" tabindex="0" role="slider" aria-label="Read the heart-rate chart" aria-valuemin="0" aria-valuemax="' + r.secs + '" aria-valuenow="0" aria-valuetext="Tap or use the arrow keys to read a point"></canvas>' +
         '<p class="sd-read" id="sdRead">Tap or drag on the chart to read any point.</p>' +
         '<button class="btn link sd-how" id="sdHow" aria-expanded="false" aria-controls="sdHowT">How to read this chart</button>' +
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
       (r.nvc ? nvcCard(r.nvc) : "") +
-      sdNext(d) +
+      (r.stress ? "" : sdNext(d)) +
       qCard(d.reflect ? ROGERS : qPick()) +
       '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>' +
       '<div class="note-card donate-card sd-donate"><p><b>Entrain is free and has no ads.</b> If it helps you, a donation keeps it going.</p>' +
@@ -49,6 +51,7 @@
     $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
     $("#ses").dataset.state = "done";
     $("#sdAgain").addEventListener("click", function () { pIntro(d.id); });
+    if (r.stress) stressWire(r);
     var cg = $("#sdChain");
     if (cg) cg.addEventListener("click", function () {     // on to the practice this one began
       var nx = P.chain && pDef(P.chain.then);
@@ -80,6 +83,8 @@
 
   // what each number means, with your own value read back
   function sdExplain(k) {
+    var sx = scExplain(k);
+    if (sx) return sx;                               // a stress check's own tiles
     var r = SD.r, d = SD.d, n, p = [];
     var plural = function (x, one, many) { return x + " " + (x === 1 ? one : many); };
     if (k === "time") {

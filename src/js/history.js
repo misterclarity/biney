@@ -42,7 +42,7 @@
   // What each field of a session may hold. Anything else, from a damaged store or a restored file,
   // is dropped as it loads, and a session without its kind, time and length is dropped whole.
   var H_FIELDS = { k: "string", id: "string", n: "string", band: "string", note: "string", at: "number", secs: "number",
-    rate: "number", beat: "number", hr0: "number", hr1: "number", hrAvg: "number", swing: "number", coh: "number", best: "number",
+    rate: "number", beat: "number", hr0: "number", hr1: "number", hrAvg: "number", swing: "number", coh: "number", best: "number", rm: "number", felt: "number",
     full: "boolean", est: "boolean" };
   var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {

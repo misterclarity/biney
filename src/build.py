@@ -27,7 +27,7 @@ JS = [
     "breathe.js", "breathe-draw.js", "mypatterns.js", "heart.js", "heart-charts.js", "breath-mic.js",
     "shell.js",
     "asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "taxonomy.js", "practice.js", "done.js",
-    "library.js", "settings.js", "adapt.js", "nvc.js", "yoga.js", "search.js", "living-data.js", "living.js",
+    "library.js", "settings.js", "adapt.js", "stress.js", "nvc.js", "yoga.js", "search.js", "living-data.js", "living.js",
     "history.js", "trends.js", "favs.js", "today.js", "backup.js",
     "boot.js",
 ]

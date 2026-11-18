@@ -16,7 +16,7 @@
   // each goal's colour, on Today's tiles and in History
   var GOAL_COL = { sleep: "#a78bfa", calm: "#5eead4", focus: "#fbbf24", energy: "#fb923c", recover: "#7dd3fc", reflect: "#f9a8d4" };
   var METHODS = [["breath", "Breathing", "breathe"], ["meditate", "Meditation", "practice"], ["move", "Movement", "move"],
-    ["relax", "Relaxation", "moon"], ["sound", "Sound", "sounds"], ["write", "Writing", "nvc"], ["program", "Programme", "spark"]];
+    ["relax", "Relaxation", "moon"], ["sound", "Sound", "sounds"], ["write", "Writing", "nvc"], ["program", "Programme", "spark"], ["measure", "Measurement", "pulse"]];
   var POSTURES = [["sit", "Sitting"], ["lie", "Lying"], ["stand", "Standing"], ["walk", "Walking"]];
   var NEEDS = [["none", "Just the phone"], ["phones", "Headphones"], ["sensor", "Heart sensor"], ["space", "Room to move"]];
 
@@ -24,7 +24,7 @@
   var CATS = {
     sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
       ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
-    calm: [["calm-reset", "program", "sit walk"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
+    calm: [["stress-check", "measure", "sit lie"], ["calm-reset", "program", "sit walk"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
       ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["meal", "program", "sit"], ["mindful-sex", "program", "lie sit"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],

@@ -629,6 +629,7 @@
     pRhythm(s, T);
     if (s.k === "tap") { pTapPoint(s, st); pTapTick(s, st); }
     else if (s.k === "adapt") pAdaptTick(s, st, T);
+    else if (s.k === "measure") scTick(s);
     else if (s.k === "nap") pNapTick(s, st, T);
     else if (s.k === "wake") pWakeTick(s, st);
     if (s.k === "breath") pBreathTick(s, st);
@@ -805,6 +806,8 @@
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
         : AD.src === "script" ? "No heart data: a gentle scripted descent" : "";
+    } else if (s.k === "measure") {
+      sub = scCaption();
     } else if (s.k === "nap") {
       cap = NP.onset ? "Asleep (estimated)" : "Resting";
       sub = NP.onset ? "Dozed off at " + fmt(NP.onset - s.at) + " · waking at " + fmt(NP.wake - s.at)
@@ -1047,7 +1050,7 @@
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
-      pAdaptReset(); napReset(); P.nvc = nvcNew(); P.draftLive = false;
+      pAdaptReset(); napReset(); scReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
       if (d.audio && P.opt.audio && !P.beatOff) {
@@ -1181,6 +1184,7 @@
     var bl = AD.log.filter(function (x) { return x.src !== "base"; });
     if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatLog = AD.log.slice(); }
     napSummary(r, T);
+    stressSummary(r, T);
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(nvcKindOf(d));
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -1194,10 +1198,12 @@
     if (r.holds) notes.push("holds " + r.holds.map(fmt).join(", "));
     if (r.suds) notes.push((d.rate ? d.rate.what : "intensity") + " " + r.suds.join(" → ") + " of 10");
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
+    if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
     if (T >= 60) r.at = Date.now();                    // the end screen tells this one from the earlier ones by it
     if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
-      coh: r.coh ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,
+      coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
+      rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
       note: notes.join(", ") || undefined });
     return r;
   }
@@ -1738,5 +1744,5 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList };   // for automated tests only
   }

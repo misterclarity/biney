@@ -274,7 +274,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const items = s => [].concat(...s.rows.map(r => r.items));
       const goalOf = await E(p, () => { const o = {}; window.__entrain.libAll().forEach(it => { o[it.href] = [it.goal].concat(it.also); }); return o; });
       let s = await st();
-      ok(s.goals[0].v === 'all' && s.goals[0].on && s.goals[0].n === null && s.goals.slice(1).every(c => !c.on && c.n > 0) && s.meth[0].v === 'all' && s.meth[0].on && s.meth.length === 8 && s.sum === null,
+      ok(s.goals[0].v === 'all' && s.goals[0].on && s.goals[0].n === null && s.goals.slice(1).every(c => !c.on && c.n > 0) && s.meth[0].v === 'all' && s.meth[0].on && s.meth.length === 9 && s.sum === null,
         'two rows of chips, goals and techniques, each with how many it holds: ' + s.goals.slice(1).map(c => c.v + ' ' + c.n).join(', '));
       await p.click('#prFilt [data-f=calm]'); await p.waitForTimeout(150);
       await p.click('#prMeth [data-m=breath]'); await p.waitForTimeout(150);

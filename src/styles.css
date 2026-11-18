@@ -1257,6 +1257,20 @@
   .sd-next p{margin:0;flex:1 1 240px;color:var(--text-dim);line-height:1.5}
   .sd-next b{color:var(--text);font-weight:700}
   .sd-next .btn{text-decoration:none}
+  /* a stress check: what changed since the last one, and the advice */
+  .sc-card,.sc-since{margin-top:12px}
+  .sc-card h3{margin:0 0 8px;font-size:16px}
+  .sc-card p,.sc-since p{margin:0 0 10px;color:var(--text-dim);line-height:1.5}
+  .sc-since p:last-child{margin-bottom:0}
+  .sc-card b,.sc-since b{color:var(--text);font-weight:700}
+  .sc-set{margin:12px 0;display:grid;gap:10px}
+  .sc-set div{display:grid;grid-template-columns:7.5em 1fr;gap:4px 14px}
+  .sc-set dt{color:var(--text-faint);font-size:13px;font-weight:600}
+  .sc-set dd{margin:0;line-height:1.45}
+  .sc-why,.sc-just{font-size:13.5px}
+  .sc-card .sc-alt{margin:0 0 12px}
+  .sc-card .btn{margin:2px 0 12px}
+  @media (max-width:420px){.sc-set div{grid-template-columns:1fr}}
   /* reflection: writing steps */
   .ses[data-write="1"] .ses-cap,.ses[data-write="1"] .ses-live{display:none}
   .ses[data-write="1"] .ses-stage{min-height:0}

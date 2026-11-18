@@ -849,6 +849,20 @@
       cite: "Tsai et al. 2015 · Van Diest et al. 2014 · Edinger et al. 2021 (AASM) · Jirakittayakorn & Wongsawat 2018"
     },
     {
+      id: "stress-check", name: "Stress Check", lengths: [3, 6], min: 3, strength: 2, stress: true,
+      tone: "relax", sensor: "best", sensorWhy: "needed to read your heart; without one, the advice follows your own rating",
+      opt: { ana: 0 }, noTap: true,              // nothing to interrupt the reading, and no tapping round after it
+      rate: { name: "Felt stress", what: "felt stress" },
+      end: "Check complete",
+      words: "stress level measure measurement test hrv heart rate variability rmssd resting baseline heartmath advice which practice",
+      blurb: "How stressed are you right now? Rate it, then rest while your heart sensor reads your resting heart rate and its variability against your own usual, and get advice on which practice, beat and breathing will bring it down.",
+      parts: "Your rating · resting heart rate and RMSSD · advice: a practice, its beat and its breathing",
+      build: function (min) { return stressCheck(min || 3); },
+      how: "First you rate how stressed you feel, from 0 to 10. After 45 seconds to settle, two minutes (or five) measure your resting heart rate and, from a sensor that sends the time between beats, such as the HeartMath ear clip or a chest strap, RMSSD, leaving out beats that jump more than 25%. No sound plays, so nothing nudges the reading. Your first three checks set your baseline; from the fourth, RMSSD below 90%, 75% or 55% of your usual, or a resting heart rate more than 5 or 10 bpm above it, raises the level. The level is the higher of your heart's and your rating's, and the end screen names a practice for it, with its beat and its breathing. A check within half an hour of another session shows what that session changed and isn't added to your baseline.",
+      ev: "Stress lowers heart-rate variability, above all its vagal, beat-to-beat part, which RMSSD measures (Kim et al. 2018). Two minutes are enough for RMSSD: in 3,387 adults, two-minute readings agreed closely with five-minute ones, more closely than SDNN did (Muñoz et al. 2015). RMSSD differs a lot between people and falls with age, so each reading is set against your own (Shaffer & Ginsberg 2017). How the readings become a level is Entrain's own rule, not a validated stress scale.",
+      cite: "Kim et al. 2018 · Muñoz et al. 2015 · Shaffer & Ginsberg 2017 · Entrain's own rule"
+    },
+    {
       id: "calm-reset", name: "Calm Reset", min: 10, strength: 2,
       tone: "relax", sensor: "optional", pace: true,
       blurb: "For a stressful moment: cyclic sighs to bring arousal down fast, then even breathing at your resonance pace, under an alpha-to-theta beat.",

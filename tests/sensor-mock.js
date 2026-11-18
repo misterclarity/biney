@@ -7,7 +7,8 @@
 // refuse: the readings are refused on the first try, as when a pairing request isn't accepted;
 // probeHang: its battery level, the one small thing it has to test-read, never answers;
 // quick: scales the page's connection deadlines and pauses down, so a test needn't wait 15 seconds.
-// Heart rate swings with the breathing pace on screen around 64 bpm, or around window.__hrBase if a test sets it.
+// Heart rate swings with the breathing pace on screen around 64 bpm, or around window.__hrBase if a test sets it,
+// by up to 8 bpm (closest to 5.5 a minute), or by window.__hrAmp; window.__rrJitter shakes each interval by up to half that share.
 function mock({ speed, rr, fail, hang, hangOnce, late, noHR, refuse, probeHang, quick }) {
   const realNow = performance.now.bind(performance), t0 = realNow();
   if (speed !== 1) performance.now = () => t0 + (realNow() - t0) * speed;
@@ -27,10 +28,11 @@ function mock({ speed, rr, fail, hang, hangOnce, late, noHR, refuse, probeHang, 
     return later('read').then(() => { clearInterval(timer); timer = setInterval(() => {
       const t = performance.now() / 1000, el = document.querySelector('#bRateV');
       const rate = el ? parseFloat(el.textContent) : 6;
-      const amp = Math.max(1.5, 8 - 4 * Math.abs(rate - 5.5));
+      const amp = window.__hrAmp !== undefined ? window.__hrAmp : Math.max(1.5, 8 - 4 * Math.abs(rate - 5.5));
       const hr = (window.__hrBase || 64) + amp * Math.sin(2 * Math.PI * t * rate / 60) + (Math.random() - 0.5);
       let dv;
-      if (rr) { dv = new DataView(new ArrayBuffer(4)); dv.setUint8(0, 0x16); dv.setUint8(1, Math.round(hr)); dv.setUint16(2, Math.round(60000 / hr * 1.024), true); }
+      const jit = 1 + (window.__rrJitter || 0) * (Math.random() - 0.5);          // a test can shake the intervals, like a loose clip
+      if (rr) { dv = new DataView(new ArrayBuffer(4)); dv.setUint8(0, 0x16); dv.setUint8(1, Math.round(hr)); dv.setUint16(2, Math.round(60000 / hr * 1.024 * jit), true); }
       else { dv = new DataView(new ArrayBuffer(2)); dv.setUint8(0, 0); dv.setUint8(1, Math.round(hr)); }
       chr.value = dv; chr.dispatchEvent(new Event('characteristicvaluechanged'));
     }, 1000 / speed); });
