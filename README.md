@@ -132,7 +132,7 @@ The new techniques open with an activation code: the device code, a dot and an E
   Send the donor the link (`https://misterclarity.github.io/biney/#unlock/…`, or another with `--base URL`). It unlocks only the device it was made for. `sign` refuses a key whose public half isn't in `SUP_KEYS`, since the app wouldn't accept what it signs.
 - **To check a code** someone sends back: `node src/unlock.js verify <code or link>` says which device it unlocks and whether a trusted key signed it.
 - **To change keys** (planned, or because the private key may have leaked): `node src/unlock.js keygen --add` makes a new private key (never over one that's there; `--out PATH` chooses where) and adds its public half to `SUP_KEYS`, after the old ones. Keep the old public keys there so the codes already sent keep working; take one out only if its private key leaked, and know that the codes it signed stop working too. Then rebuild, commit and publish, and sign with the new key.
-- The suites sign with their own key, `tests/unlock-test-key.pem`, which opens nothing in the real app: its public half is never in `SUP_KEYS`, and they trust it only in a copy of the page they write to `tests/out/`.
+- The suites sign with a key of their own, made when they first run and kept in `tests/out/` (which git ignores), so no private key is ever in the repository. It opens nothing in the real app: its public half is never in `SUP_KEYS`, and they trust it only in a copy of the page they write to `tests/out/`.
 
 ## Publishing
 
