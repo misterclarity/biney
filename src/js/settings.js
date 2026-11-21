@@ -21,7 +21,7 @@
   function stDefault(k, v) {
     var g = pOptDefaults();
     g[k] = v;
-    store.set("pOpt", JSON.stringify(g));
+    pOptKeep(g);
     if (P_OWN.indexOf(k) < 0) P.opt[k] = v;                   // voice choice and keeping reflections: everywhere, now
     else if (!pBusy() && P.optFor) P.opt = pOptsOf(P.optFor);
   }
@@ -50,7 +50,7 @@
           stSeg("stAna", [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]], g.ana) + "</div>" +
         (own.length ? '<div class="st-own"><span>' + esc(list) + (own.length === 1 ? " has" : " have") + " options of " + (own.length === 1 ? "its" : "their") + ' own.</span>' +
           '<button class="btn small" id="stOwnReset">Use the defaults for ' + (own.length === 1 ? "it" : "all of them") + "</button></div>" : "") +
-      "</section>" +
+      "</section>" + bmCard() +
       '<section class="st-card" aria-labelledby="stA"><h2 id="stA">Background sound</h2>' +
         '<p class="st-note">Rain or crickets under practices, breathing sessions and tracks, made on your device.</p>' + ambCtl() +
       "</section>" +

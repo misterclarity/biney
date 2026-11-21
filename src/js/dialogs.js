@@ -25,8 +25,9 @@
 
   var pendingPlay = null;
 
-  function gate(fn) {
-    if (store.get("stereo") || A.checkSkipped) { fn(); return; }
+  // mode: how the beat will play (beatmode.js); monaural and isochronic beats need no headphones, so no check
+  function gate(fn, mode) {
+    if (store.get("stereo") || A.checkSkipped || (mode && mode !== "binaural")) { fn(); return; }
     pendingPlay = fn;
     openCheck();
   }
@@ -105,7 +106,8 @@
       showResult("bad", "No channel separation.",
         " You are on speakers, a mono device, or a Bluetooth connection that has collapsed to one " +
         "channel. The two tones are mixing before they reach you, so there is no binaural beat \u2014 " +
-        "just a hum. Wired stereo headphones are the reliable fix.", "Continue anyway");
+        "just a hum. Wired stereo headphones are the reliable fix. On speakers, a monaural or isochronic beat " +
+        "works instead: choose it under Sound on the beat's page.", "Continue anyway");
       return;
     }
     showResult("bad", "Nothing came through.",

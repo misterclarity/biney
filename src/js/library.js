@@ -45,9 +45,11 @@
     if (m[0] !== m[1]) return m[0] + "–" + m[1] + " min";
     return (d.open ? "up to " : "") + m[0] + " min";
   }
+  // headphones for a beat that plays binaural; a monaural or isochronic one plays on speakers too (beatmode.js)
+  function libPhones(mode) { return bmMode(mode) === "binaural" ? ["phones"] : []; }
   function libNeeds(o) {
     var n = [];
-    if ((o.audio && !(o.opt && o.opt.audio === false)) || o.method === "sound") n.push("phones");     // a beat that starts off needs none
+    if ((o.audio && !(o.opt && o.opt.audio === false)) || o.method === "sound") n = n.concat(libPhones(o.phonesOnly ? "binaural" : pOptsOf(o.id).beatMode));     // a beat that starts off needs none
     if (o.sensor === "best") n.push("sensor");
     if (o.method === "move" || (o.posture || []).join() === "walk") n.push("space");      // walking as an option needs no more than a quiet route
     return n;
@@ -74,13 +76,13 @@
   }
   function libTrack(t) {
     return { key: "t:" + t.id, type: "track", name: t.name, blurb: t.desc, goal: t.goal, also: t.also || [],
-      method: "sound", posture: t.posture, needs: ["phones"], mins: [t.minutes, t.minutes], minsTxt: t.minutes + " min",
+      method: "sound", posture: t.posture, needs: t.notch ? ["phones"] : libPhones(), mins: [t.minutes, t.minutes], minsTxt: t.minutes + " min",
       label: t.band + " track", href: "#track/" + t.id, icon: "sounds", col: LIB_TRACK_COL[t.cat] || "var(--relax)", strength: t.strength, badges: [], sup: !!t.sup };
   }
   function libTool(id) {
     var x = TOOLS[id], c = CAT["x:" + id] || {};
     return { key: "x:" + id, type: "tool", name: x.name, blurb: x.blurb || "", goal: c.goal || "", also: [], method: id === "routine" ? "move" : "sound",
-      posture: c.posture || ["sit"], needs: id === "routine" ? ["space"] : ["phones"], mins: id === "prime" ? [5, 20] : [1, 60],
+      posture: c.posture || ["sit"], needs: id === "routine" ? ["space"] : libPhones(), mins: id === "prime" ? [5, 20] : [1, 60],
       minsTxt: id === "prime" ? "5–20 min" : "your choice", label: id === "prime" ? "Beats before work" : "Tool", nopos: id !== "prime",
       href: x.href, icon: x.icon, col: id === "routine" ? "var(--accent)" : "var(--stim)", strength: id === "prime" ? x.strength : 0, badges: [] };
   }

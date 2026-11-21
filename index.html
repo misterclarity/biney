@@ -1078,6 +1078,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .mini-seg{display:inline-flex;gap:3px;padding:3px;border-radius:10px;background:var(--bg-2);flex-wrap:wrap}
   .mini-seg button{border:0;background:transparent;color:var(--text-dim);font-weight:700;font-size:12.5px;padding:6px 9px;border-radius:8px;cursor:pointer}
   .mini-seg button[aria-pressed="true"]{background:var(--panel-3);color:var(--text)}
+  /* the beat's Sound: binaural, monaural or isochronic, each with what it plays on (beatmode.js) */
+  .bm-seg{flex-wrap:nowrap}
+  .bm-seg button{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:44px;line-height:1.2;padding:5px 9px}
+  .bm-seg button small{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--text-faint)}
+  .bm-seg button[aria-pressed="true"] small{color:var(--text-dim)}
+  .bm-seg .sup-ic{background:none;padding:0;color:var(--stim)}
+  .bm-seg .sup-ic svg.i{width:12px;height:12px}
+  .bm-row{flex-direction:column;align-items:stretch;gap:8px;margin:0 0 18px}
+  .bm-row .mini-seg,.st-card .bm-seg{align-self:flex-start;max-width:100%;overflow-x:auto}
   .so-steps{display:flex;gap:8px 14px;flex-wrap:wrap}
   .so-steps[hidden]{display:none}
   .so-step{display:inline-flex;align-items:center;gap:4px;padding:3px;border-radius:10px;background:var(--bg-2);font-size:12.5px}
@@ -2066,7 +2075,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         <div class="note-card td-safety">
           <h3>Before you start</h3>
           <ul class="safety">
-            <li><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Use headphones for the beats.</b> On speakers the two tones mix in the air and the binaural beat disappears.</span></li>
+            <li><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Use headphones for binaural beats.</b> On speakers the two tones mix in the air and the binaural beat disappears; a monaural or isochronic beat, under Sound, plays on speakers.</span></li>
             <li><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></li>
             <li class="warn"><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Read the safety notes once.</b> Who should ask a doctor before using the beats or the breath holds, and how to wear headphones with a pacemaker. <button type="button" class="sf-link" data-safety="1">Safety notes</button></span></li>
           </ul>
@@ -2253,9 +2262,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               </div>
             </div>
             <ul class="si-need">
-              <li><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
+              <li class="bm-need"><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
               <li><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Low volume</b> a quiet, comfortable level is enough</span></li>
             </ul>
+            <div data-bm-ctl></div>
             <h3>Why before, not during</h3>
             <p>The clearest finding in the meta-analysis is about timing: listening before a task, or before and during it, worked better than listening only while you work. So prime first, get a cue when the block ends, then start.</p>
             <div data-safe="beats"></div>
@@ -2299,12 +2309,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                   <p class="hint">Longer exposures performed better in meta-analysis.</p>
                 </div>
               </div>
-              <div class="band-readout">Left ear <b id="cL">250 Hz</b> · Right ear <b id="cR">260 Hz</b></div>
+              <div class="band-readout" id="cEars">Left ear <b id="cL">250 Hz</b> · Right ear <b id="cR">260 Hz</b></div>
             </div>
             <ul class="si-need">
-              <li><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
+              <li class="bm-need"><svg class="i" aria-hidden="true"><use href="#i-sounds"/></svg><span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
               <li><svg class="i" aria-hidden="true"><use href="#i-volume"/></svg><span><b>Low volume</b> a quiet, comfortable level is enough</span></li>
             </ul>
+            <div data-bm-ctl></div>
             <h3>Choosing the numbers</h3>
             <p>Beats come through most clearly on carriers between about 200 and 500&nbsp;Hz, and the effect breaks down once the two tones are more than 30 to 35&nbsp;Hz apart. <a href="#l-bands">The frequency bands</a> on the Learn page say what each range of beats has been studied for.</p>
             <div data-safe="beats"></div>
@@ -2764,6 +2775,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-children">Children's rhythms</a>
             <a href="#l-glance">At a glance</a>
             <a href="#l-beats">How a beat is made</a>
+            <a href="#l-iso">Beats on speakers</a>
             <a href="#l-dosing">Timing and dose</a>
             <a href="#l-evidence">Strongest evidence</a>
             <a href="#l-tinnitus">The tinnitus track</a>
@@ -2910,7 +2922,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <tr class="ln-row"><th scope="row"><b>Fast-tempo music</b> <small>Energy, focus (beta, gamma)</small></th><td>Moderate</td><td class="ln-lo">Learn only</td></tr>
                 <tr class="ln-row"><th scope="row"><b>Music you choose yourself</b> <small>Stress relief</small></th><td>Strong</td><td class="ln-lo">Learn only</td></tr>
                 <tr class="ln-row"><th scope="row"><b>Pink noise timed to deep sleep</b> <small>Deeper sleep, memory</small></th><td>Promising (needs EEG)</td><td class="ln-lo">Learn only: <a href="#l-leftout">why</a></td></tr>
-                <tr class="ln-row"><th scope="row"><b>Binaural, isochronic or monaural beats</b> <small>Varies with the target</small></th><td>Mixed</td><td><a href="#sounds">Binaural beat tracks</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Binaural, isochronic or monaural beats</b> <small>Varies with the target</small></th><td>Mixed</td><td><a href="#sounds">Beat tracks</a>, <a href="#l-iso">on speakers too</a></td></tr>
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Voice</th></tr>
@@ -2974,6 +2986,26 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         <li><strong>Carrier matters.</strong> The lower of the two tones is the carrier, and lower carriers produce a more robust percept. A 40&nbsp;Hz auditory steady-state response has been evoked with a 400&nbsp;Hz carrier but was undetectable above roughly 3000&nbsp;Hz.</li>
         <li><strong>The beat has a ceiling.</strong> Beyond about a 35&nbsp;Hz difference, the two tones separate perceptually and the beat disappears — which is why gamma tracks sit at the edge of what this method can do.</li>
       </ul>
+
+      <h3 id="l-iso">Monaural beats and isochronic tones</h3>
+      <p>
+        Two other ways of making a beat need no headphones. A <strong>monaural beat</strong> mixes the two tones before
+        they reach you: 250&nbsp;Hz and 260&nbsp;Hz together in both ears, so the sound itself swells and fades ten times
+        a second, in the air as well as in the ear (Oster, 1973). An <strong>isochronic tone</strong> is a single tone
+        switched on and off at the beat; Entrain rounds the edges of each pulse so it doesn't click. Both follow the
+        same beat as the binaural version: the same carrier, the same slide from one frequency to another, the same
+        changes while a practice runs, and the beat that follows your heart.
+      </p>
+      <p>
+        The guide to brain-wave states rates them like binaural beats: the evidence is mixed, and similar. A review of
+        beat stimulation, binaural and monaural, found its results often contradictory (Chaieb et al., 2015), and most
+        of the research on this page tested binaural beats, so it carries over to the other two only roughly. Choose by
+        what you have: binaural with headphones, monaural or isochronic on speakers. A phone's own small speaker plays
+        low tones quietly, so a bigger speaker, or earphones, carries them better. The Sound choice is on every track's
+        page, the beat builder, the custom primer and a practice's Options, with the default in
+        <a href="#st-beats">Settings</a>; the speaker ways are among the new techniques that open with a donation. The
+        tinnitus track stays binaural, as its studies played it.
+      </p>
 
       <h3 id="l-dosing">Dosing: timing beats frequency-picking</h3>
       <p>
@@ -3625,6 +3657,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Lanthier, M., Foti, M. C., Fonseca, K., et al. (2025). Assessing the performance of a portable electroencephalographic sleep monitor against level 1 polysomnography. <em>Sleep Advances</em>, 7(1), zpaf089. <a href="https://doi.org/10.1093/sleepadvances/zpaf089" rel="noopener">DOI</a></li>
       <li>Mikhaylov, D., Saeed, M., Alhosani, M. H., &amp; Al Wahedi, Y. F. (2024). Comparison of EEG signal spectral characteristics obtained with consumer- and research-grade devices. <em>Sensors</em>, 24(24), 8108. <a href="https://doi.org/10.3390/s24248108" rel="noopener">DOI</a></li>
       <li>Oster, G. (1973). Auditory beats in the brain. <em>Scientific American</em>, 229(4), 94–102. <a href="https://ia801406.us.archive.org/27/items/magazine-article-1973-scientific-american-auditory-beats-in-the-brain-gerald-oster/Magazine%20Article%201973%20%28Scientific%20American%29%20-%20Auditory%20Beats%20in%20the%20Brain%20-%20Gerald%20Oster%20_text.pdf" rel="noopener">PDF</a></li>
+      <li>Chaieb, L., Wilpert, E. C., Reber, T. P., &amp; Fell, J. (2015). Auditory beat stimulation and its effects on cognition and mood states. <em>Frontiers in Psychiatry</em>, 6, 70. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4428073/" rel="noopener">PMC</a></li>
       <li>Garcia-Argibay, M., Santed, M. A., &amp; Reales, J. M. (2019). Efficacy of binaural auditory beats in cognition, anxiety, and pain perception: a meta-analysis. <em>Psychological Research</em>, 83, 357–372. <a href="https://link.springer.com/article/10.1007/s00426-018-1066-8" rel="noopener">Springer</a></li>
       <li>Basu, S., &amp; Banerjee, B. (2023). Potential of binaural beats intervention for improving memory and attention: insights from meta-analysis and systematic review. <em>Psychological Research</em>, 87(4). <a href="https://link.springer.com/article/10.1007/s00426-022-01706-7" rel="noopener">Springer</a></li>
       <li>Lane, J. D., Kasian, S. J., Owens, J. E., &amp; Marsh, G. R. (1998). Binaural auditory beats affect vigilance performance and mood. <em>Physiology &amp; Behavior</em>, 63(2), 249–252. <a href="https://www.sciencedirect.com/science/article/abs/pii/S0031938497004368" rel="noopener">ScienceDirect</a></li>
@@ -4016,9 +4049,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       </div>
 
     <div class="ears">
-        <span class="ear">L <b id="pL">—</b></span>
-        <span class="ear">R <b id="pR">—</b></span>
-        <span class="ear beat">beat <b id="pBeat">—</b></span>
+        <span class="ear"><span id="pLk">L</span> <b id="pL">—</b></span>
+        <span class="ear" id="pEarR"><span id="pRk">R</span> <b id="pR">—</b></span>
+        <span class="ear beat"><span id="pBk">beat</span> <b id="pBeat">—</b></span>
         <span class="ear ear-hr" id="pHrChip" title="Heart rate now, and the change since the first minute of this session" hidden>HR <b id="pHr">—</b></span>
       </div>
 
@@ -4226,12 +4259,19 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
 
   /* ------------------------------------------------------------------
-     Audio engine. Two oscillators are merged into discrete left and
-     right channels so there is genuinely no crossfeed between them.
+     Audio engine. A beat plays one of three ways (A.mode, chosen in
+     beatmode.js): binaural, two oscillators merged into discrete left and
+     right channels so there is genuinely no crossfeed between them;
+     monaural, the same two tones mixed into both channels; isochronic,
+     the carrier alone, switched on and off at the beat.
   ------------------------------------------------------------------ */
   var A = {
-    ctx: null, oscL: null, oscR: null, gL: null, gR: null,
-    master: null, merger: null, noiseSrc: null, noiseGain: null,
+    ctx: null, oscL: null, oscR: null, gL: null, gR: null, lfo: null,
+    master: null, noiseSrc: null, noiseGain: null,
+    vbus: null,        // the voices' own level, between them and master: a prime's task phase fades it alone
+    vx: null,          // every node of the voices, to stop and disconnect together
+    bp: null,          // where the beat lives: { p: the frequency it moves, base: what's added to the beat }
+    mode: "binaural",  // how the loaded track's beat plays: "binaural" | "monaural" | "isochronic"
     track: null, startedAt: 0, elapsed: 0, playing: false, clock: 0, endTimer: 0,
     phase: "single",   // "single" | "prime" | "task"
     gainMul: 1,        // phase-level attenuation, independent of the volume slider
@@ -4360,71 +4400,125 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     return track.rampFrom + (track.beat - track.rampFrom) * p;
   }
 
-  function buildVoices(track, offsetSeconds) {
-    var ctx = A.ctx, now = ctx.currentTime;
-    A.merger = ctx.createChannelMerger(2);
-    A.merger.connect(A.master);
-
-    A.oscL = ctx.createOscillator();
-    A.oscR = ctx.createOscillator();
-    A.oscL.type = "sine";
-    A.oscR.type = "sine";
-    A.gL = ctx.createGain();
-    A.gR = ctx.createGain();
-    A.gL.gain.value = 0.5;
-    A.gR.gain.value = 0.5;
-
-    A.oscL.connect(A.gL); A.gL.connect(A.merger, 0, 0);
-    A.oscR.connect(A.gR); A.gR.connect(A.merger, 0, 1);
-
-    A.oscL.frequency.setValueAtTime(track.carrier, now);
-
-    var startBeat = beatAt(track, offsetSeconds);
-    A.oscR.frequency.setValueAtTime(track.carrier + startBeat, now);
-
+  /* The voices for one beat, built in any audio context (the page's own, or an offline one a test renders) and
+     connected to `out`, starting at `now`, `offset` seconds into the track:
+     - binaural: the carrier in the left ear only, the carrier plus the beat in the right ear only. Neither ear hears
+       the beat; it forms inside the head, so it needs headphones.
+     - monaural: the same two tones mixed into both ears, so the sound itself swells and fades at the beat, on
+       speakers as well as headphones.
+     - isochronic: the carrier alone in both ears, switched on and off at the beat by a square wave with rounded
+       edges (a sine through a tanh curve), so it doesn't click.
+     The beat lives on one frequency: the right-hand tone's (carrier + beat) or the switching's (the beat itself).
+     Every schedule moves that one (a slide, a practice's points, a change while it runs, a beat that follows the
+     heart), so each way follows the same beat. */
+  var BEAT_PEAK = { binaural: 0.5, monaural: 0.3, isochronic: 0.6 };      // each tone's level: every way peaks at 0.5 to 0.6 an ear
+  var A_PULSE = null;
+  // the rounded square: tanh(4x), scaled to reach ±1, so each edge takes about a tenth of a cycle (2 ms at 40 Hz)
+  function aPulse() {
+    if (A_PULSE) return A_PULSE;
+    var n = 1025, c = new Float32Array(n), k = Math.tanh(4);
+    for (var i = 0; i < n; i++) c[i] = Math.tanh(4 * (2 * i / (n - 1) - 1)) / k;
+    return (A_PULSE = c);
+  }
+  function aVoices(ctx, out, track, offset, mode, now) {
+    var v = { mode: mode, nodes: [] }, peak = BEAT_PEAK[mode] || 0.5;
+    var add = function (n) { v.nodes.push(n); return n; };
+    var tone = function (hz) { var o = add(ctx.createOscillator()); o.type = "sine"; o.frequency.setValueAtTime(hz, now); return o; };
+    var level = function (g) { var n = add(ctx.createGain()); n.gain.value = g; return n; };
+    var m = add(ctx.createChannelMerger(2));
+    m.connect(out);
+    v.oscL = tone(track.carrier);
+    if (mode === "isochronic") {
+      v.lfo = add(ctx.createOscillator());
+      v.lfo.type = "sine";
+      var shape = add(ctx.createWaveShaper()), depth = level(0.5), lvl = level(peak);
+      shape.curve = aPulse();
+      v.gL = level(0.5);                   // the switch: its gain is 0.5 plus 0.5 times the rounded square, so 0 to 1
+      v.lfo.connect(shape); shape.connect(depth); depth.connect(v.gL.gain);
+      v.oscL.connect(v.gL); v.gL.connect(lvl);
+      lvl.connect(m, 0, 0); lvl.connect(m, 0, 1);
+      v.beat = { p: v.lfo.frequency, base: 0 };
+    } else {
+      v.oscR = tone(track.carrier);
+      v.gL = level(peak); v.gR = level(peak);
+      v.oscL.connect(v.gL); v.gL.connect(m, 0, 0);
+      v.oscR.connect(v.gR); v.gR.connect(m, 0, 1);
+      if (mode === "monaural") { v.gL.connect(m, 0, 1); v.gR.connect(m, 0, 0); }    // each tone in both ears
+      v.beat = { p: v.oscR.frequency, base: track.carrier };
+    }
+    var bt = v.beat;
+    bt.p.setValueAtTime(bt.base + beatAt(track, offset), now);
     if (track.pts) {
       track.pts.forEach(function (p) {
-        if (p[0] > offsetSeconds) A.oscR.frequency.linearRampToValueAtTime(track.carrier + p[1], now + (p[0] - offsetSeconds));
+        if (p[0] > offset) bt.p.linearRampToValueAtTime(bt.base + p[1], now + (p[0] - offset));
       });
     } else if (typeof track.rampFrom === "number") {
-      var remaining = Math.max(0, track.minutes * 60 - offsetSeconds);
-      if (remaining > 0) {
-        A.oscR.frequency.linearRampToValueAtTime(track.carrier + track.beat, now + remaining);
-      }
+      var remaining = Math.max(0, track.minutes * 60 - offset);
+      if (remaining > 0) bt.p.linearRampToValueAtTime(bt.base + track.beat, now + remaining);
     }
-
-    A.oscL.start(now);
-    A.oscR.start(now);
+    v.oscL.start(now);
+    if (v.oscR) v.oscR.start(now);
+    if (v.lfo) v.lfo.start(now);
+    return v;
   }
+  // where the playing beat lives, for whatever moves it while it plays; null with no voices
+  function aBeatParam() { return A.vx ? A.bp : null; }
+
+  function buildVoices(track, offsetSeconds) {
+    var ctx = A.ctx, now = ctx.currentTime;
+    A.vbus = ctx.createGain();
+    A.vbus.connect(A.master);
+    var v = aVoices(ctx, A.vbus, track, offsetSeconds, A.mode, now);
+    v.nodes.push(A.vbus);
+    A.vx = v.nodes; A.bp = v.beat;
+    A.oscL = v.oscL; A.oscR = v.oscR || null; A.gL = v.gL; A.gR = v.gR || null; A.lfo = v.lfo || null;
+  }
+  // stop and disconnect a set of voices once they've faded
+  function aVoicesEnd(nodes, secs) {
+    setTimeout(function () {
+      nodes.forEach(function (n) {
+        try { if (n.stop) n.stop(); } catch (e) {}
+        try { n.disconnect(); } catch (e) {}
+      });
+    }, secs * 1000);
+  }
+  function aVoicesForget() { A.oscL = A.oscR = A.gL = A.gR = A.lfo = A.vbus = A.vx = A.bp = null; }
 
   function teardownVoices(fadeSeconds) {
-    if (!A.oscL) return;
+    if (!A.vx) return;
     var ctx = A.ctx, t = ctx.currentTime, f = fadeSeconds || 0.15;
-    var l = A.oscL, r = A.oscR, gl = A.gL, gr = A.gR, m = A.merger;
     A.master.gain.cancelScheduledValues(t);
     A.master.gain.setValueAtTime(A.master.gain.value, t);
     A.master.gain.linearRampToValueAtTime(0, t + f);
-    setTimeout(function () {
-      try { l.stop(); r.stop(); l.disconnect(); r.disconnect(); gl.disconnect(); gr.disconnect(); m.disconnect(); } catch (e) {}
-    }, (f + 0.25) * 1000);
-    A.oscL = A.oscR = A.gL = A.gR = A.merger = null;
+    aVoicesEnd(A.vx, f + 0.25);
+    aVoicesForget();
   }
 
-  /* Fade out only the two carriers, leaving master — and therefore the pink
+  /* Fade out only the voices, leaving master — and therefore the pink
      noise bed — running. Used when a prime hands over to a noise-only task phase. */
   function fadeOutVoicesOnly(seconds) {
-    if (!A.oscL) return;
-    var t = A.ctx.currentTime;
-    var l = A.oscL, r = A.oscR, gl = A.gL, gr = A.gR, m = A.merger;
-    [gl, gr].forEach(function (g) {
-      g.gain.cancelScheduledValues(t);
-      g.gain.setValueAtTime(g.gain.value, t);
-      g.gain.linearRampToValueAtTime(0, t + seconds);
-    });
-    setTimeout(function () {
-      try { l.stop(); r.stop(); l.disconnect(); r.disconnect(); gl.disconnect(); gr.disconnect(); m.disconnect(); } catch (e) {}
-    }, (seconds + 0.3) * 1000);
-    A.oscL = A.oscR = A.gL = A.gR = A.merger = null;
+    if (!A.vx) return;
+    var t = A.ctx.currentTime, g = A.vbus.gain;
+    g.cancelScheduledValues(t);
+    g.setValueAtTime(g.value, t);
+    g.linearRampToValueAtTime(0, t + seconds);
+    aVoicesEnd(A.vx, seconds + 0.3);
+    aVoicesForget();
+  }
+
+  /* The beat's sound changed while it plays (beatmode.js): the new voices take over in a quarter of a
+     second, from where the track is, and everything else (the volume, the noise bed, the clock) plays on. */
+  function aSwapVoices() {
+    if (!A.playing || A.voicesOff || !A.vx) return;
+    var t = A.ctx.currentTime, old = A.vx, g = A.vbus.gain;
+    g.cancelScheduledValues(t);
+    g.setValueAtTime(g.value, t);
+    g.linearRampToValueAtTime(0, t + 0.25);
+    aVoicesEnd(old, 0.5);
+    aVoicesForget();
+    buildVoices(A.track, t - A.startedAt);
+    A.vbus.gain.setValueAtTime(0, t);
+    A.vbus.gain.linearRampToValueAtTime(1, t + 0.25);
   }
 
   /* ---------------------------- transport ---------------------------- */
@@ -4440,6 +4534,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     A.elapsed = 0;
     A.phase = track.then ? "prime" : "single";
     A.gainMul = track.gain || 1;                      // a practice's quieter beat (During the Call: half)
+    A.mode = bmTrackMode(track);                      // binaural, monaural or isochronic (beatmode.js)
     A.noisePref = $("#noise").checked;
     $("#noise").disabled = !!track.notch;
     $("#noiseLab").classList.toggle("off", !!track.notch);
@@ -4454,14 +4549,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     paint();
     play();
   }
-  // the player's second line: band, beat (or where it goes), carrier and length
+  // the player's second line: band, beat (or where it goes), how it plays unless binaural, carrier and length
   function trackSub(track) {
     var beatTxt = track.pts
       ? (track.pts[0][1] === track.beat ? track.beat.toFixed(1) : track.pts[0][1].toFixed(1) + " → " + track.beat.toFixed(1)) + " Hz"
       : typeof track.rampFrom === "number"
       ? track.rampFrom.toFixed(1) + " → " + track.beat.toFixed(1) + " Hz"
       : track.beat.toFixed(1) + " Hz";
-    return (track.then ? "Prime · " : "") + track.band + " · " + beatTxt + " · " + track.carrier + " Hz carrier · " + Math.round(track.minutes) + " min";
+    var m = track === A.track ? A.mode : bmTrackMode(track);
+    return (track.then ? "Prime · " : "") + track.band + " · " + beatTxt + (m === "binaural" ? "" : " " + m) + " · " + track.carrier + " Hz carrier · " + Math.round(track.minutes) + " min";
   }
 
   function play() {
@@ -4634,6 +4730,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var countUp = A.phase === "task" || ($("#openEnded").checked && !t.practice);
     var beat = beatAt(t, A.elapsed);
 
+    // the ears: binaural, left and right; monaural, the low and the high tone, both in each ear; isochronic, the one tone and its pulse
+    var m = A.mode, iso = m === "isochronic";
+    setText("#pLk", m === "binaural" ? "L" : m === "monaural" ? "Low" : "Tone");
+    setText("#pRk", m === "binaural" ? "R" : "High");
+    setText("#pBk", iso ? "pulse" : "beat");
+    if (paintCache.iso !== iso) { paintCache.iso = iso; $("#pEarR").hidden = iso; }
+    if (paintCache.bin !== m) { paintCache.bin = m; $("#scOpen").hidden = m !== "binaural"; }    // the headphone check matters only for binaural
     setText("#pL", t.carrier.toFixed(0) + " Hz");
     setText("#pR", (t.carrier + beat).toFixed(1) + " Hz");
     setText("#pBeat", beat.toFixed(1) + " Hz");
@@ -4704,6 +4807,121 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (A.playing) pause(); else play();
     });
   }
+  /* ------------------------------ the beat's sound ------------------------------
+     A beat can play three ways, each built by audio.js (aVoices): binaural, a tone in each ear, which needs
+     headphones; monaural, both tones mixed into both ears; and isochronic, one tone switched on and off at the
+     beat. The last two come through speakers too. They are new techniques from the brain-wave guide, so
+     picking one opens with a donation (supporter.js), and until this device is unlocked every beat plays
+     binaural, whatever was kept. The choice is this device's own (store "beatMode"): Settings, a track's page,
+     the beat builder and the custom primer show it and change it, and a practice follows it unless it keeps one
+     of its own under Options (P.opt.beatMode). The notched tinnitus track always plays binaural, as its
+     studies did.
+  ------------------------------------------------------------------------------ */
+
+  var BM_MODES = [["binaural", "Binaural", "headphones"], ["monaural", "Monaural", "speakers"], ["isochronic", "Isochronic", "speakers"]];
+  var BM_NAME = { monaural: "The monaural beat", isochronic: "The isochronic tone" };      // the unlock dialog: "… is one of the new techniques."
+  var BM_NOTE = "Binaural needs headphones; monaural and isochronic play on speakers too.";
+
+  function bmOk(m) { return m === "binaural" || m === "monaural" || m === "isochronic"; }
+  // this device's choice, as kept
+  function bmStored() { var m = store.get("beatMode"); return bmOk(m) ? m : "binaural"; }
+  // what will play: a kept choice (a practice's own, or else this device's), binaural until this device is unlocked
+  function bmMode(m) {
+    m = bmOk(m) ? m : bmStored();
+    return m !== "binaural" && !supOn() ? "binaural" : m;
+  }
+  // a track as it will play: a practice's beat carries its own choice; the notched track is binaural
+  function bmTrackMode(t) { return t && t.notch ? "binaural" : bmMode(t && t.beatMode); }
+
+  /* Picking one, at the moment of use: binaural at once, a speaker way once this device is unlocked; if the
+     dialog unlocks it, the pick goes ahead as it closes. */
+  function bmPick(m, then) {
+    if (!bmOk(m)) return;
+    if (m === "binaural" || supOn()) { then(m); return; }
+    supGate(BM_NAME[m], function () { then(m); }, function (ok) { if (ok) then(m); });
+  }
+  // this device's choice: kept, shown wherever it is, and taken up by a track that's playing
+  function bmSet(m) {
+    store.set("beatMode", m);
+    if (!pBusy() && P.optFor) P.opt = pOptsOf(P.optFor);      // an open practice page with no choice of its own follows it
+    bmSync();
+    bmLive();
+  }
+  // the track in the player follows a new choice at once (not a practice's beat, which keeps its own, nor the notched track)
+  function bmLive() {
+    if (!A.track || A.track.practice || A.track.notch) return;
+    var m = bmMode();
+    if (m === A.mode) return;
+    A.mode = m;
+    paintCache = {};
+    if (A.phase !== "task") $("#pSub").textContent = trackSub(A.track);
+    aSwapVoices();
+    paint();
+    msSync();
+    micBeatGuard();
+  }
+
+  /* ----- what it looks like ----- */
+  // three buttons, each with what it plays on; the cup on the two that open with a donation while this device is locked.
+  // scope: "dev" for this device's choice (handled here), "prac" for a practice's own (practice.js)
+  function bmSeg(id, cur, scope) {
+    return '<div class="mini-seg bm-seg"' + (id ? ' id="' + id + '"' : "") + ' data-bm-for="' + scope + '" role="group" aria-label="Sound">' +
+      BM_MODES.map(function (o) {
+        return '<button type="button" data-bm="' + o[0] + '" aria-pressed="' + (o[0] === cur) + '"><b>' + o[1] + "</b><small>" + o[2] +
+          (o[0] !== "binaural" ? supTag(true) : "") + "</small></button>";
+      }).join("") + "</div>";
+  }
+  // the row on a track's page, the beat builder and the primer
+  function bmRow() {
+    return '<div class="so-row so-seg bm-row"><span class="so-l">Sound<small>' + BM_NOTE + " Your choice for every beat; a practice can keep its own.</small></span>" +
+      bmSeg("", bmMode(), "dev") + "</div>";
+  }
+  // Settings: the default for every beat
+  function bmCard() {
+    return '<section class="st-card" id="st-beats" aria-labelledby="stB"><h2 id="stB">Beats</h2>' +
+      '<p class="st-note">How every beat plays. Binaural puts a tone in each ear and needs headphones. Monaural mixes the two tones in both ears, ' +
+      "and isochronic switches one tone on and off at the beat, so both play on speakers too. Tracks, the beat builder and the custom primer play it this way, " +
+      'and so does every practice unless it keeps its own under Options. <a href="#l-iso">What the research says</a></p>' +
+      '<div class="so-row so-seg"><span class="so-l">Sound</span>' + bmSeg("stBeat", bmMode(), "dev") + "</div>" +
+      "</section>";
+  }
+  // what a beat needs, for the needs list: its icon, its name, why, and whether to offer the headphone check
+  function bmNeed(m) {
+    if (m === "monaural") return ["sounds", "Speakers or headphones", "both tones play in both ears, so the beat comes through either; a phone's own small speaker plays low tones quietly"];
+    if (m === "isochronic") return ["sounds", "Speakers or headphones", "one tone pulses at the beat, so it comes through either; a phone's own small speaker plays low tones quietly"];
+    return ["sounds", "Headphones", "each ear gets its own tone; on speakers they mix and the beat disappears", true];
+  }
+  function bmNeedHtml(m) {
+    var n = bmNeed(m);
+    return '<svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] +
+      (n[3] ? ' <button class="btn link si-check" data-check="1">Check yours</button>' : "") + "</span>";
+  }
+  // everything that shows the choice follows it: the buttons and their cups, the needs lists, the builder's ears, a track's page
+  function bmSync() {
+    var dev = bmMode();
+    document.querySelectorAll(".bm-seg").forEach(function (g) {
+      var cur = g.getAttribute("data-bm-for") === "prac" && P.view ? bmMode(pOptsOf(P.view.id).beatMode) : dev;
+      g.querySelectorAll("button[data-bm]").forEach(function (b) {
+        var m = b.getAttribute("data-bm"), tag = b.querySelector(".sup-tag"), lock = m !== "binaural" && !supOn();
+        b.setAttribute("aria-pressed", m === cur ? "true" : "false");
+        if (tag && !lock) tag.parentNode.removeChild(tag);
+        else if (!tag && lock) b.querySelector("small").insertAdjacentHTML("beforeend", supTag(true));
+      });
+    });
+    document.querySelectorAll("li.bm-need").forEach(function (li) { li.innerHTML = bmNeedHtml(dev); });
+    syncBuilder();
+    trBmSync();
+  }
+
+  function bmInit() {
+    SUP_EXTRA.push({ name: "Monaural beats and isochronic tones", href: "#st-beats" });     // Settings' list of what the donation unlocks
+    document.querySelectorAll("[data-bm-ctl]").forEach(function (el) { el.innerHTML = bmRow(); });    // the builder and the primer
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest('.bm-seg[data-bm-for="dev"] button[data-bm]') : null;
+      if (b) bmPick(b.getAttribute("data-bm"), bmSet);
+    });
+    bmSync();
+  }
   /* ------------------------------- track pages -------------------------------
      Each track has a page of its own, like a practice: what it's for, how it runs, the
      evidence and the cautions, with Play in reach. It plays in the mini player, so the rest
@@ -4718,20 +4936,21 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var a = t.pts ? t.pts[0][1] : typeof t.rampFrom === "number" ? t.rampFrom : t.beat;
     return a === t.beat ? t.beat + " Hz" : a + " → " + t.beat + " Hz";
   }
-  // how it runs, from the track's own numbers
+  // how it runs, from the track's own numbers and the way its beat plays (beatmode.js)
   function trHow(t) {
-    var a = t.pts ? t.pts[0][1] : typeof t.rampFrom === "number" ? t.rampFrom : t.beat;
+    var a = t.pts ? t.pts[0][1] : typeof t.rampFrom === "number" ? t.rampFrom : t.beat, m = bmTrackMode(t);
     var s = Math.round(t.minutes) + " minutes" + (a === t.beat
       ? " of a steady " + t.beat + " Hz " + bandFor(t.beat).name.toLowerCase() + " beat"
       : ", the beat sliding from " + a + " Hz " + bandFor(a).name.toLowerCase() + " down to " + t.beat + " Hz " + bandFor(t.beat).name.toLowerCase()) +
-      ", one tone of " + t.carrier + " Hz in your left ear and one a little higher in your right. It fades out at the end.";
+      (m === "monaural" ? ", two tones, " + t.carrier + " Hz and one a little higher, both in each ear, so the sound itself swells and fades at the beat."
+        : m === "isochronic" ? ", one tone of " + t.carrier + " Hz in both ears, switched on and off at the beat, with soft edges."
+        : ", one tone of " + t.carrier + " Hz in your left ear and one a little higher in your right.") + " It fades out at the end.";
     if (t.notch) s += " Underneath, pink noise with a one-octave gap centred on your own tinnitus pitch.";
     else s += " The player can add a pink-noise bed, rain or crickets underneath.";
     return s;
   }
   function trNeeds(t) {
-    var n = [["sounds", "Headphones", "each ear gets its own tone; on speakers they mix and the beat disappears", true],
-             ["volume", "Low volume", "a quiet, comfortable level is enough"]];
+    var n = [bmNeed(bmTrackMode(t)), ["volume", "Low volume", "a quiet, comfortable level is enough"]];
     if ((t.posture || []).indexOf("lie") >= 0) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
     return n;
   }
@@ -4750,12 +4969,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         '<p class="si-parts">' + esc(t.band + " · beat " + trBeatTxt(t) + " · carrier " + t.carrier + " Hz") + "</p>" +
       "</div>" +
       '<div class="si-grid"><div class="si-main">' +
-        '<ul class="si-need">' + trNeeds(t).map(function (n) {
-          return '<li><svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] +
-            (n[3] ? ' <button class="btn link si-check" data-check="1">Check yours</button>' : "") + "</span></li>";
-        }).join("") + "</ul>" +
-        (t.notch ? '<div class="tr-notch" id="trNotch"></div>' : "") +
-        "<h3>How it runs</h3><p>" + esc(trHow(t)) + "</p>" +
+        '<ul class="si-need" id="trNeeds">' + trNeedsHtml(t) + "</ul>" +
+        (t.notch ? '<div class="tr-notch" id="trNotch"></div>' : bmRow()) +      // the notched track is binaural only
+        '<h3>How it runs</h3><p id="trHow">' + esc(trHow(t)) + "</p>" +
         '<details class="ev si-ev"><summary>Evidence ' + dots(t.strength) + '</summary><div class="ev-body">' + esc(t.ev) + "<cite>" + esc(t.cite) + "</cite></div></details>" +
         safeBox([SAFE_BEATS]) +
       "</div>" +
@@ -4770,6 +4986,19 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     bSetT("#viewTitle", t.name);
     document.title = t.name + " | Entrain";
     trSync();
+  }
+  function trNeedsHtml(t) {
+    return trNeeds(t).map(function (n) {
+      return '<li><svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] +
+        (n[3] ? ' <button class="btn link si-check" data-check="1">Check yours</button>' : "") + "</span></li>";
+    }).join("");
+  }
+  // a new choice of how beats play: the page says what it needs and how it runs now
+  function trBmSync() {
+    var t = trackById(TR.id), n = $("#trNeeds");
+    if (!t || !n || t.notch) return;
+    n.innerHTML = trNeedsHtml(t);
+    bSetT("#trHow", trHow(t));
   }
   // the page follows the player: Play, Pause or Resume, and the notch
   function trSync() {
@@ -4800,7 +5029,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         return;
       }
       load(t);
-    });
+    }, bmTrackMode(t));                        // on speakers (monaural, isochronic) there's no headphone check
   }
   function trInit() {
     $("#trBody").addEventListener("click", function (e) {
@@ -4828,7 +5057,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     el: null, url: "",
     want: "off",      // "play", "pause" or "off": what the app last asked of the element
     sys: false,       // the phone paused the track (a call, another app), so it may resume it too
-    track: null       // the track the lock screen is showing
+    track: null,      // the track the lock screen is showing
+    bm: ""            // and how its beat plays (beatmode.js)
   };
   var MS_ART = [{ src: "icons/icon-192.png", sizes: "192x192", type: "image/png" }, { src: "icons/icon-512.png", sizes: "512x512", type: "image/png" }];
 
@@ -4867,9 +5097,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var want = msWanted(), ms = navigator.mediaSession;
     if (want === "off") { msOff(); return; }
     var t = A.track, el = msEl();
-    if (MS.track !== t) {
-      MS.track = t;
-      ms.metadata = new MediaMetadata({ title: t.name, artist: "Entrain", album: t.band + " · " + trBeatTxt(t), artwork: MS_ART });
+    if (MS.track !== t || MS.bm !== A.mode) {        // a new track, or the same one played another way (beatmode.js)
+      MS.track = t; MS.bm = A.mode;
+      ms.metadata = new MediaMetadata({ title: t.name, artist: "Entrain", album: t.band + " · " + trBeatTxt(t) + (A.mode === "binaural" ? "" : " · " + A.mode), artwork: MS_ART });
     }
     ms.playbackState = want === "play" ? "playing" : "paused";
     msPosition();
@@ -4919,8 +5149,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     $("#cCarV").textContent = car + " Hz";
     $("#cMinV").textContent = min + " min";
     $("#cBand").textContent = b.name + " — " + b.note;
+    // what each ear hears, the way the beat plays (beatmode.js)
+    var m = bmMode(), ears = m === "monaural" ? 'Both ears <b id="cL"></b> and <b id="cR"></b>'
+      : m === "isochronic" ? 'Both ears <b id="cL"></b>, on and off <b id="cR"></b> times a second'
+      : 'Left ear <b id="cL"></b> · Right ear <b id="cR"></b>';
+    if ($("#cEars").dataset.m !== m) { $("#cEars").dataset.m = m; $("#cEars").innerHTML = ears; }
     $("#cL").textContent = car + " Hz";
-    $("#cR").textContent = (car + beat).toFixed(1) + " Hz";
+    $("#cR").textContent = m === "isochronic" ? beat.toFixed(1) : (car + beat).toFixed(1) + " Hz";
     $("#cPlay").innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Play ' + min + " min";
   }
 
@@ -4941,7 +5176,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           carrier: car, beat: beat, minutes: min, strength: 0,
           desc: "", ev: "", cite: ""
         });
-      });
+      }, bmMode());                            // on speakers (monaural, isochronic) there's no headphone check
     });
     syncBuilder();
     $("#beatsFav").innerHTML = favBtn("x:beats", "Beat builder");
@@ -4997,7 +5232,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           desc: "", ev: "", cite: "",
           then: { mode: c.then }
         });
-      });
+      }, bmMode());                            // on speakers (monaural, isochronic) there's no headphone check
     });
     syncPrime();
     $("#primeFav").innerHTML = favBtn("x:prime", "Custom primer");
@@ -5029,8 +5264,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   var pendingPlay = null;
 
-  function gate(fn) {
-    if (store.get("stereo") || A.checkSkipped) { fn(); return; }
+  // mode: how the beat will play (beatmode.js); monaural and isochronic beats need no headphones, so no check
+  function gate(fn, mode) {
+    if (store.get("stereo") || A.checkSkipped || (mode && mode !== "binaural")) { fn(); return; }
     pendingPlay = fn;
     openCheck();
   }
@@ -5109,7 +5345,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       showResult("bad", "No channel separation.",
         " You are on speakers, a mono device, or a Bluetooth connection that has collapsed to one " +
         "channel. The two tones are mixing before they reach you, so there is no binaural beat \u2014 " +
-        "just a hum. Wired stereo headphones are the reliable fix.", "Continue anyway");
+        "just a hum. Wired stereo headphones are the reliable fix. On speakers, a monaural or isochronic beat " +
+        "works instead: choose it under Sound on the beat's page.", "Continue anyway");
       return;
     }
     showResult("bad", "Nothing came through.",
@@ -8417,8 +8654,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      them Speakerphone, Headset earpiece, Wired headset and Bluetooth headset), so the first time the
      usual one opens, and if it turns out to be Bluetooth the page moves to the phone's own at once. */
   function micIsBt(label) { return /bluetooth|hands-?free|airpods|\bbuds\b|\bbt\b/i.test(label || ""); }
-  // a binaural beat is sounding: a track's, a practice's or a session's, with its tones on
-  function beatPlaying() { return !!(A.playing && A.track && !A.voicesOff); }
+  // a binaural beat is sounding: a track's, a practice's or a session's, with its tones on (a monaural or
+  // isochronic beat is the same in both ears, so mono earbuds play it as it is)
+  function beatPlaying() { return !!(A.playing && A.track && !A.voicesOff && A.mode === "binaural"); }
   function micInputs() {
     var md = navigator.mediaDevices;
     if (!md || !md.enumerateDevices) return Promise.resolve([]);
@@ -8903,7 +9141,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "a40f7232";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "20037b74";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -9175,7 +9413,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      For every new feature: give the practice, breathing pattern or track `sup: true`, and call
      supGate(name, go) at the moment of use (Start, Play, picking it); its page stays free to read.
      supTag() is the badge for its row, card or chip while it's locked, and supOn() says whether
-     this device is unlocked.
+     this device is unlocked. Anything else it unlocks goes into SUP_EXTRA, for Settings' list.
   ------------------------------------------------------------------------------ */
 
   // the public keys that sign activation codes: several, so a key can be replaced without breaking codes already sent
@@ -9192,6 +9430,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      public keys. Then the open dialog: the item it names and what to tell when it closes; and the last
      activation's result, with where it shows (the dialog, Settings, or a link, shown in Settings). */
   var SUP = { ok: false, state: "none", waits: [], mem: "", keys: null, name: "", done: [], res: null };
+  // what else the donation unlocks that isn't a practice, a breathing pattern or a track (a sound mode, a soundscape,
+  // a tool): each feature adds { name, href } as it starts, and Settings lists it with the rest
+  var SUP_EXTRA = [];
 
   function supOn() { return SUP.ok; }
   // an item that needs the gate before it's used: flagged, and this device not unlocked (yet)
@@ -9376,6 +9617,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     PRACTICES.forEach(function (d) { if (d.sup) out.push({ name: d.name, href: "#practice/" + d.id }); });
     BREATHS.forEach(function (b) { if (b.sup) out.push({ name: patName(b), href: "#breathe/" + b.id }); });
     TRACKS.forEach(function (t) { if (t.sup) out.push({ name: t.name, href: "#track/" + t.id }); });
+    SUP_EXTRA.forEach(function (x) { out.push({ name: x.name, href: x.href }); });
     return out;
   }
   function supCard() {
@@ -9446,6 +9688,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else if (curView === "session" && P.view && !$("#sIntro").hidden) pIntroReplan(P.view);
     else if (curView === "track") trSync();
     lnMark();                                                 // Learn's links to new techniques (learn.js)
+    bmSync();                                                 // the beat's Sound buttons and their cups (beatmode.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }
@@ -11752,6 +11995,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       tone: "relax", sensor: "optional", pace: true, paceSplit: 0.4,
       opt: { voice: false, bells: false, cues: "off", buzz: false, ana: 0 },
       optNote: "It starts silent: captions only, with no voice, bells or breath sounds, only the beat.",
+      phonesOnly: true,                          // in any way it plays, a beat from a speaker would go into the call
       needs: [["sounds", "Headphones", "the beat plays under the call's audio, at half your usual volume"],
         ["pulse", "Heart sensor", "optional: your heart rate and coherence while you talk"],
         ["phone", "This screen in view", "beside the call, on this phone or in a window next to it, to glance at the pacer while you listen"]],
@@ -12426,8 +12670,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true },
-    paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0     // changes made while it runs, and what a restart needs
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural" },
+    paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
+    bm: ""                                          // how its beat played (beatmode.js), for the history
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
 
@@ -12542,16 +12787,25 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   function pMinutes(d, len) { return Math.max(1, Math.round(pPlan(d, pLenOf(d, len)).total / 60)); }
   /* ----- options: defaults for every practice (in Settings), and each practice's own changes on top.
-     Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself. ----- */
+     Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself.
+     The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
       var g = JSON.parse(store.get("pOpt") || "null");
       if (g && typeof g === "object") for (var k in o) if (typeof g[k] === typeof o[k]) o[k] = g[k];
     } catch (e) {}
+    o.beatMode = bmStored();
     return o;
+  }
+  // the defaults for every practice, kept: the beat's sound goes to this device's own choice, which every page then shows
+  function pOptKeep(g) {
+    var m = g.beatMode;
+    delete g.beatMode;
+    store.set("pOpt", JSON.stringify(g));
+    if (bmOk(m) && m !== bmStored()) bmSet(m);
   }
   function pOptOwn(id) {
     try { var v = JSON.parse(store.get("pOpt." + id) || "null"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; }
@@ -12572,16 +12826,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var g = pOptDefaults(), b = pOptBase(id), own = {}, n = 0;
     P_OWN.forEach(function (k) { if (o[k] !== b[k]) { own[k] = o[k]; n++; } });
     for (var k in g) if (P_OWN.indexOf(k) < 0) g[k] = o[k];
-    store.set("pOpt", JSON.stringify(g));
+    pOptKeep(g);
     if (n) store.set("pOpt." + id, JSON.stringify(own)); else storeDel("pOpt." + id);
   }
   function pOptMakeDefault(id, o) {
     var g = pOptDefaults();
     P_OWN.forEach(function (k) { g[k] = o[k]; });
-    store.set("pOpt", JSON.stringify(g));
+    pOptKeep(g);
     storeDel("pOpt." + id);
   }
-  function pSaveOpt() { if (P.optFor) pOptSave(P.optFor, P.opt); else store.set("pOpt", JSON.stringify(P.opt)); }
+  function pSaveOpt() { if (P.optFor) pOptSave(P.optFor, P.opt); else pOptKeep(JSON.parse(JSON.stringify(P.opt))); }
   // the options an intro shows and edits: the running practice's own stay as they are
   function pIntroOpts(d) {
     if (pBusy() && P.def !== d) return pOptsOf(d.id);
@@ -12816,7 +13070,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var a = pAudio(d, P.base), adj = P.beatAdj || 0, pts = a.dyn ? null : a.pts.map(function (p) { return [p[0], p[1] + adj]; });
     return { id: "prac-" + d.id, pid: d.id, practice: true, cat: a.cat, band: adj && pts ? pBandTxt(pts) : a.band, name: a.name, carrier: a.carrier, gain: a.gain,
       beat: a.dyn ? a.start : pts[pts.length - 1][1], pts: pts, dyn: !!a.dyn, cur: a.start || 0,
-      minutes: P.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "" };
+      minutes: P.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "", beatMode: P.opt.beatMode };     // its own sound, or this device's (beatmode.js)
   }
   function pBandTxt(pts) {
     var a = bandFor(pts[0][1]).name, b = bandFor(pts[pts.length - 1][1]).name;
@@ -12864,11 +13118,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     P.beatAdj = Math.round(adj * 10) / 10;
     var nt = pBeatTrack(P.def);
     tr.pts = nt.pts; tr.beat = nt.beat; tr.band = nt.band;
-    if (A.playing && A.oscR && A.ctx) {             // glide to the new schedule over a second and a half
-      var now = A.ctx.currentTime, T = now - A.startedAt, f = A.oscR.frequency;
+    var bp = aBeatParam();                          // the right-hand tone, or an isochronic tone's pulse (audio.js)
+    if (A.playing && bp && A.ctx) {                 // glide to the new schedule over a second and a half
+      var now = A.ctx.currentTime, T = now - A.startedAt, f = bp.p;
       if (f.cancelAndHoldAtTime) f.cancelAndHoldAtTime(now); else { f.cancelScheduledValues(now); f.setValueAtTime(f.value, now); }
-      f.linearRampToValueAtTime(tr.carrier + beatAt(tr, T + 1.5), now + 1.5);
-      tr.pts.forEach(function (p) { if (p[0] > T + 1.5) f.linearRampToValueAtTime(tr.carrier + p[1], now + (p[0] - T)); });
+      f.linearRampToValueAtTime(bp.base + beatAt(tr, T + 1.5), now + 1.5);
+      tr.pts.forEach(function (p) { if (p[0] > T + 1.5) f.linearRampToValueAtTime(bp.base + p[1], now + (p[0] - T)); });
     }
     $("#pSub").textContent = trackSub(tr);
     bSetT("#sLine", "The beat moves to " + beatAt(tr, pTrackT() + 1.5).toFixed(1) + " Hz, " + bandFor(beatAt(tr, pTrackT() + 1.5)).name.toLowerCase() + ".");
@@ -12891,10 +13146,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         if (!pBusy() || P.def !== d) return;
         P.audioOn = true; P.beatOff = false;
         load(pBeatTrack(d));
+        P.bm = A.mode;
         aSeek(pT());
         if (P.state === "paused") { pause(); P.audioHeld = true; }
         pQuickSync(); P.chipsHtml = null; pUI();
-      });
+      }, bmMode(P.opt.beatMode));                 // on speakers (monaural, isochronic) there's no headphone check
     }
     pQuickSync(); P.chipsHtml = null; pUI();
   }
@@ -13483,6 +13739,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         load(pBeatTrack(d));
         P.audioOn = true;
       } else P.audioOn = false;
+      P.bm = P.audioOn ? A.mode : "";
       P.audioHeld = false;
       $("#ses").dataset.state = "run";
       $("#sIntro").hidden = true; $("#sDone").hidden = true; $("#sRun").hidden = false;
@@ -13503,7 +13760,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       pLoop();
       ambSync();
     };
-    if (d.audio && P.opt.audio) gate(go); else go();
+    if (d.audio && P.opt.audio) gate(go, bmMode(pOptsOf(d.id).beatMode)); else go();    // on speakers there's no headphone check
   }
   function pPause() {
     if (P.state !== "running") return;
@@ -13609,6 +13866,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (P.suds.length) r.suds = P.suds.slice();
     var bl = AD.log.filter(function (x) { return x.src !== "base"; });
     if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatLog = AD.log.slice(); }
+    if (P.bm && P.bm !== "binaural") r.bm = P.bm;     // its beat played monaural or isochronic (beatmode.js)
     napSummary(r, T);
     stressSummary(r, T);
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
@@ -13633,14 +13891,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg, ib: r.ib, wh: d.id === "wim-hof" && ib ? ib : undefined,
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
-      note: notes.join(", ") || undefined });
+      bm: r.bm, note: notes.join(", ") || undefined });
     return r;
   }
   /* ----- the session screen: intro ----- */
   function pNeeds(d) {
-    if (d.needs) return d.needs;
+    // a monaural or isochronic beat plays on speakers too (beatmode.js), unless the practice needs headphones anyway (phonesOnly: a call)
+    var bin = !d.audio || bmMode(pOptsOf(d.id).beatMode) === "binaural", spk = function (s) { return s.replace(/binaural /g, ""); };
+    if (d.needs) return bin || d.phonesOnly ? d.needs : d.needs.map(function (x) { return x[0] === "sounds" && x[1] === "Headphones" ? [x[0], "Speakers or headphones", spk(x[2])] : x; });
     var n = [];
-    if (d.audio) n.push(["sounds", "Headphones", d.phonesWhy || (d.opt && d.opt.audio === false ? "only if you add a binaural beat" : "for the binaural layer")]);
+    if (d.audio) n.push(["sounds", bin ? "Headphones" : "Speakers or headphones", d.phonesWhy ? (bin ? d.phonesWhy : spk(d.phonesWhy))
+      : d.opt && d.opt.audio === false ? "only if you add a " + (bin ? "binaural " : "") + "beat" : bin ? "for the binaural layer" : "for the beat"]);
     if (d.sensor === "best") n.push(["pulse", "Heart sensor", d.sensorWhy || "recommended: live heart rate and coherence"]);
     else if (d.sensor === "optional" || pHasBreath(d)) n.push(["pulse", "Heart sensor", d.sensor === "optional" && d.sensorWhy || "optional: adds heart rate and coherence"]);
     if (d.lie) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
@@ -13723,6 +13984,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         [["off", "Off"]].concat(d.beats.map(function (b) { return [b.id, b.label]; })).map(function (o) {
           return '<button data-v="' + o[0] + '" aria-pressed="' + (o[0] === "off" ? !O.audio : O.audio && bt.id === o[0]) + '">' + esc(o[1]) + "</button>";
         }).join("") + "</div></div>");
+      opts.push(pBmRow(O));
     }
     if (d.pace) {
       var pc = pPace(d), step = function (k, label, what) {
@@ -13735,7 +13997,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
     opts.push(pToggle("sOptVoice", "Spoken guidance", O.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
     opts.push(pToggle("sOptBells", "Bells between steps", O.bells, ""));
-    if (d.audio && !d.beats) opts.push(pToggle("sOptAudio", "Binaural layer", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
+    if (d.audio && !d.beats) {
+      opts.push(pToggle("sOptAudio", bmMode(O.beatMode) === "binaural" ? "Binaural layer" : "Beat", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. " + pBmNeed(O)));
+      opts.push(pBmRow(O));
+    }
     if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesised berimbau keeps time for the capoeira moves."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
@@ -13789,7 +14054,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         '<ol class="si-steps">' + pStepsHtml(d, plan) + "</ol>" +
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
-        (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its binaural beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
+        (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its " + (bmMode(O.beatMode) === "binaural" ? "binaural " : "") + "beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
         '<div class="hc-slot">' + hcBox(hcKindsOf(d)) + "</div>" +
       "</div>" +
       '<div class="si-side">' +                     // Start first: above the options on a computer, last on a phone (order)
@@ -13829,7 +14094,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   // what the chosen beat is, or that there's none
   function pBeatNote(d, O) {
-    return O.audio ? pFn(pBeat(d).note, d) + " " + d.audio.carrier + " Hz carrier. Headphones needed." : "No beat: the guidance and breath cues only.";
+    return O.audio ? pFn(pBeat(d).note, d) + " " + d.audio.carrier + " Hz carrier. " + pBmNeed(O) : "No beat: the guidance and breath cues only.";
+  }
+  // what the beat needs, the way it plays (beatmode.js)
+  function pBmNeed(O) {
+    var m = bmMode(O.beatMode);
+    return m === "binaural" ? "Headphones needed." : m === "monaural" ? "Monaural: speakers or headphones." : "Isochronic: speakers or headphones.";
+  }
+  // the Sound row under a practice's beat: binaural, monaural or isochronic, kept for this practice
+  function pBmRow(O) {
+    return '<div class="so-row so-seg so-bm"><span class="so-l">Sound<small>' + BM_NOTE + "</small></span>" + bmSeg("sOptMode", bmMode(O.beatMode), "prac") + "</div>";
   }
   // the optimal default is your own resonance rate: the test's answer, or 5.5 a minute, the usual one, until you take it
   function pPaceNote(pc) {
@@ -13847,6 +14121,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     s.push(O.voice && window.speechSynthesis ? "Voice" : "No voice");
     if (O.bells) s.push("Bells");
     if (d.audio) s.push(O.audio ? (d.beats ? pBeat(d).label : "Binaural") : "No beats");
+    if (d.audio && O.audio && bmMode(O.beatMode) !== "binaural") s.push(bmMode(O.beatMode) === "monaural" ? "Monaural" : "Isochronic");
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -13908,6 +14183,19 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (O.audio) pChoiceSet(d, "beat", b.dataset.v);
       save(); press(bg, b);
       bSetT("#sBeatNote", pBeatNote(d, O));
+    });
+    // the beat's sound, kept for this practice: a speaker way opens with a donation (beatmode.js); the page then says
+    // what it needs, its beat note and its caution for the way it plays
+    var mg = $("#sOptMode");
+    if (mg) mg.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-bm]"); if (!b) return;
+      bmPick(b.getAttribute("data-bm"), function (m) {
+        if (P.view !== d) return;
+        O.beatMode = m; save();
+        pIntro(d.id);
+        var nb = document.querySelector('#sOptMode button[data-bm="' + m + '"]');
+        if (nb) nb.focus();
+      });
     });
     var pg = $("#sOptPace");
     if (pg) {
@@ -14044,6 +14332,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ambUI();
     $("#sqVolRow").hidden = !P.audioOn;
     $("#sqVol").value = $("#vol").value;
+    var bin = bmMode(P.opt.beatMode) === "binaural";     // names for screen readers that match the way the beat plays
+    pAttr($("#sqVol"), "aria-label", bin ? "Binaural volume" : "Beat volume");
+    pAttr($("#sAdjBt"), "aria-label", bin ? "Binaural beat" : "Beat");
+    pAttr($("#sAdjBtOn"), "aria-label", bin ? "Binaural beat" : "Beat");
     $("#sqRestart").hidden = !!(P.def && P.def.reflect);       // a reflection would lose what you've written
     pAdjUI();
   }
@@ -14196,7 +14488,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
     if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList,
-      SUP: SUP, supOn: supOn, supKept: supKept, supRefresh: supRefresh, supDevice: supDevice, FD: FD };   // for automated tests only
+      SUP: SUP, supOn: supOn, supKept: supKept, supRefresh: supRefresh, supDevice: supDevice, FD: FD,
+      aVoices: aVoices, bmMode: bmMode, bmStored: bmStored, aBeat: aBeat, pBeatStep: pBeatStep, enterTask: enterTask, beatPlaying: beatPlaying, SUP_EXTRA: SUP_EXTRA };   // for automated tests only
   }
   /* ------------------------------- the end screen -------------------------------
      What a practice measured, as tiles you can tap for what each number means, with your own
@@ -14354,7 +14647,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       return ["Intensity", p];
     }
     if (k === "beat") {
-      p.push("Where the binaural beat started and where it finished: " + r.beat0.toFixed(1) + " Hz, then " + r.beat1.toFixed(1) + " Hz.");
+      p.push("Where the " + (r.bm || "binaural") + " beat started and where it finished: " + r.beat0.toFixed(1) + " Hz, then " + r.beat1.toFixed(1) + " Hz.");
       p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) towards 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
         : "There was no heart data, so the beat followed a fixed, gentle descent instead.");
       p.push("This is an experiment: the rule is Entrain's own, so the chart is the honest test of what it did for you.");
@@ -14452,7 +14745,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var r = SD.r, t = [];
     t.push("Your heart rate from the start (left) to the end (right), averaged over 10 seconds so the line is easy to follow. The numbers on the left are the top and bottom of its scale, in beats a minute, and the times along the bottom are minutes into the session.");
     t.push("The thin vertical lines mark where each step began." +
-      (r.beatLog ? " The violet line is the binaural beat, on its own scale from 11 Hz at the top to 3 Hz at the bottom." : "") +
+      (r.beatLog ? " The violet line is the " + (r.bm || "binaural") + " beat, on its own scale from 11 Hz at the top to 3 Hz at the bottom." : "") +
       (r.nap && r.nap.onsetT ? " The dashed line marks when you fell asleep (estimated)." : ""));
     t.push("A line that drifts down means your body settled. The ripples are your breaths: heart rate rises as you breathe in and falls as you breathe out. Tap or drag on the chart to read the time, your heart rate and the step at any point.");
     return t.map(esc);
@@ -14752,9 +15045,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (m[0] !== m[1]) return m[0] + "–" + m[1] + " min";
     return (d.open ? "up to " : "") + m[0] + " min";
   }
+  // headphones for a beat that plays binaural; a monaural or isochronic one plays on speakers too (beatmode.js)
+  function libPhones(mode) { return bmMode(mode) === "binaural" ? ["phones"] : []; }
   function libNeeds(o) {
     var n = [];
-    if ((o.audio && !(o.opt && o.opt.audio === false)) || o.method === "sound") n.push("phones");     // a beat that starts off needs none
+    if ((o.audio && !(o.opt && o.opt.audio === false)) || o.method === "sound") n = n.concat(libPhones(o.phonesOnly ? "binaural" : pOptsOf(o.id).beatMode));     // a beat that starts off needs none
     if (o.sensor === "best") n.push("sensor");
     if (o.method === "move" || (o.posture || []).join() === "walk") n.push("space");      // walking as an option needs no more than a quiet route
     return n;
@@ -14781,13 +15076,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   function libTrack(t) {
     return { key: "t:" + t.id, type: "track", name: t.name, blurb: t.desc, goal: t.goal, also: t.also || [],
-      method: "sound", posture: t.posture, needs: ["phones"], mins: [t.minutes, t.minutes], minsTxt: t.minutes + " min",
+      method: "sound", posture: t.posture, needs: t.notch ? ["phones"] : libPhones(), mins: [t.minutes, t.minutes], minsTxt: t.minutes + " min",
       label: t.band + " track", href: "#track/" + t.id, icon: "sounds", col: LIB_TRACK_COL[t.cat] || "var(--relax)", strength: t.strength, badges: [], sup: !!t.sup };
   }
   function libTool(id) {
     var x = TOOLS[id], c = CAT["x:" + id] || {};
     return { key: "x:" + id, type: "tool", name: x.name, blurb: x.blurb || "", goal: c.goal || "", also: [], method: id === "routine" ? "move" : "sound",
-      posture: c.posture || ["sit"], needs: id === "routine" ? ["space"] : ["phones"], mins: id === "prime" ? [5, 20] : [1, 60],
+      posture: c.posture || ["sit"], needs: id === "routine" ? ["space"] : libPhones(), mins: id === "prime" ? [5, 20] : [1, 60],
       minsTxt: id === "prime" ? "5–20 min" : "your choice", label: id === "prime" ? "Beats before work" : "Tool", nopos: id !== "prime",
       href: x.href, icon: x.icon, col: id === "routine" ? "var(--accent)" : "var(--stim)", strength: id === "prime" ? x.strength : 0, badges: [] };
   }
@@ -15044,7 +15339,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function stDefault(k, v) {
     var g = pOptDefaults();
     g[k] = v;
-    store.set("pOpt", JSON.stringify(g));
+    pOptKeep(g);
     if (P_OWN.indexOf(k) < 0) P.opt[k] = v;                   // voice choice and keeping reflections: everywhere, now
     else if (!pBusy() && P.optFor) P.opt = pOptsOf(P.optFor);
   }
@@ -15073,7 +15368,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           stSeg("stAna", [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]], g.ana) + "</div>" +
         (own.length ? '<div class="st-own"><span>' + esc(list) + (own.length === 1 ? " has" : " have") + " options of " + (own.length === 1 ? "its" : "their") + ' own.</span>' +
           '<button class="btn small" id="stOwnReset">Use the defaults for ' + (own.length === 1 ? "it" : "all of them") + "</button></div>" : "") +
-      "</section>" +
+      "</section>" + bmCard() +
       '<section class="st-card" aria-labelledby="stA"><h2 id="stA">Background sound</h2>' +
         '<p class="st-note">Rain or crickets under practices, breathing sessions and tracks, made on your device.</p>' + ambCtl() +
       "</section>" +
@@ -15236,7 +15531,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var tr = pTrack();
     if (!tr || !tr.dyn) return;
     tr.cur = hz;
-    if (A.oscR && A.ctx) A.oscR.frequency.setTargetAtTime(tr.carrier + hz, A.ctx.currentTime, tau || 1.5);
+    var bp = aBeatParam();                         // the right-hand tone, or an isochronic tone's pulse (audio.js)
+    if (bp && A.ctx) bp.p.setTargetAtTime(bp.base + hz, A.ctx.currentTime, tau || 1.5);
   }
   function adClamp(x) { return Math.max(0, Math.min(1, x)); }
   function adHR(T, win) { return P.hr.filter(function (x) { return x.t > T - win && x.t <= T; }).map(function (x) { return x.hr; }); }
@@ -16698,6 +16994,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("sound", "Beat builder", "Make your own · any beat and carrier",
       ["Pick the beat frequency, the carrier tone and the session length, then play it."], "#builder",
       { ic: "sliders", col: "var(--relax)", w: 1, tags: "binaural custom builder carrier frequency" }));
+    out.push(fdEntry("sound", "Beat sound", "Settings · binaural, monaural or isochronic",
+      ["Binaural beats need headphones; monaural beats and isochronic tones play on speakers too. Choose how every beat plays here, or for one practice under its Options."], "#st-beats",
+      { ic: "sounds", col: "var(--relax)", w: 1, tags: "isochronic monaural binaural speaker speakers headphones tone tones pulse pulsing mode sound", sup: true }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
       ["Pair a HeartMath ear-clip sensor, a chest strap or a Garmin watch set to broadcast, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
       { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));
@@ -18059,7 +18358,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   // is dropped as it loads, and a session without its kind, time and length is dropped whole.
   var H_FIELDS = { k: "string", id: "string", n: "string", band: "string", note: "string", at: "number", secs: "number",
     rate: "number", beat: "number", hr0: "number", hr1: "number", hrAvg: "number", swing: "number", coh: "number", best: "number", rm: "number", felt: "number",
-    full: "boolean", est: "boolean", ib: "boolean", wh: "number" };      // ib: a block of intense breathing; wh: Wim Hof's rounds (care.js)
+    full: "boolean", est: "boolean", ib: "boolean", wh: "number",        // ib: a block of intense breathing; wh: Wim Hof's rounds (care.js)
+    bm: "string" };                                                      // bm: a beat played monaural or isochronic (beatmode.js)
   var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
     for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
@@ -18110,6 +18410,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     A.hAt = el;                                  // a paused track logged as the page goes away isn't logged twice
     var e = { k: "track", id: t.id, secs: secs, full: !t.then && el >= t.minutes * 60 - 10 };
     if (t.id === "prime" || t.id === "custom") { e.beat = +t.beat.toFixed(1); e.band = t.band; }
+    if (A.mode !== "binaural") e.bm = A.mode;     // how it played, when not binaural (beatmode.js)
     hAdd(e);
   }
   function hTest(secs, best) { hAdd({ k: "test", id: "resonance", secs: secs, full: true, best: best }); }
@@ -18138,6 +18439,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else p.push(hMins(e.secs) + (e.full === false && e.k !== "track" ? ", ended early" : ""));
     if (e.k === "breath" && e.rate) p.push(e.rate + " a minute");
     if (e.beat) p.push(e.beat + " Hz " + (e.band || "").toLowerCase());
+    if (e.bm === "monaural" || e.bm === "isochronic") p.push(e.bm);
     if (e.hr0 && e.hr1) p.push("heart rate " + e.hr0 + " → " + e.hr1);
     else if (e.hrAvg) p.push("heart rate " + e.hrAvg);
     if (e.coh) p.push("coherence " + e.coh.toFixed(1) + (e.est ? " (est.)" : ""));
@@ -18939,7 +19241,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
   }
   [["the new techniques", supInit],                         // first: whether this device is unlocked decides how Breathe opens
-    ["the player", playerInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
+    ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
     ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the library", libInit],

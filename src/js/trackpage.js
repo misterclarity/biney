@@ -12,20 +12,21 @@
     var a = t.pts ? t.pts[0][1] : typeof t.rampFrom === "number" ? t.rampFrom : t.beat;
     return a === t.beat ? t.beat + " Hz" : a + " → " + t.beat + " Hz";
   }
-  // how it runs, from the track's own numbers
+  // how it runs, from the track's own numbers and the way its beat plays (beatmode.js)
   function trHow(t) {
-    var a = t.pts ? t.pts[0][1] : typeof t.rampFrom === "number" ? t.rampFrom : t.beat;
+    var a = t.pts ? t.pts[0][1] : typeof t.rampFrom === "number" ? t.rampFrom : t.beat, m = bmTrackMode(t);
     var s = Math.round(t.minutes) + " minutes" + (a === t.beat
       ? " of a steady " + t.beat + " Hz " + bandFor(t.beat).name.toLowerCase() + " beat"
       : ", the beat sliding from " + a + " Hz " + bandFor(a).name.toLowerCase() + " down to " + t.beat + " Hz " + bandFor(t.beat).name.toLowerCase()) +
-      ", one tone of " + t.carrier + " Hz in your left ear and one a little higher in your right. It fades out at the end.";
+      (m === "monaural" ? ", two tones, " + t.carrier + " Hz and one a little higher, both in each ear, so the sound itself swells and fades at the beat."
+        : m === "isochronic" ? ", one tone of " + t.carrier + " Hz in both ears, switched on and off at the beat, with soft edges."
+        : ", one tone of " + t.carrier + " Hz in your left ear and one a little higher in your right.") + " It fades out at the end.";
     if (t.notch) s += " Underneath, pink noise with a one-octave gap centred on your own tinnitus pitch.";
     else s += " The player can add a pink-noise bed, rain or crickets underneath.";
     return s;
   }
   function trNeeds(t) {
-    var n = [["sounds", "Headphones", "each ear gets its own tone; on speakers they mix and the beat disappears", true],
-             ["volume", "Low volume", "a quiet, comfortable level is enough"]];
+    var n = [bmNeed(bmTrackMode(t)), ["volume", "Low volume", "a quiet, comfortable level is enough"]];
     if ((t.posture || []).indexOf("lie") >= 0) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
     return n;
   }
@@ -44,12 +45,9 @@
         '<p class="si-parts">' + esc(t.band + " · beat " + trBeatTxt(t) + " · carrier " + t.carrier + " Hz") + "</p>" +
       "</div>" +
       '<div class="si-grid"><div class="si-main">' +
-        '<ul class="si-need">' + trNeeds(t).map(function (n) {
-          return '<li><svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] +
-            (n[3] ? ' <button class="btn link si-check" data-check="1">Check yours</button>' : "") + "</span></li>";
-        }).join("") + "</ul>" +
-        (t.notch ? '<div class="tr-notch" id="trNotch"></div>' : "") +
-        "<h3>How it runs</h3><p>" + esc(trHow(t)) + "</p>" +
+        '<ul class="si-need" id="trNeeds">' + trNeedsHtml(t) + "</ul>" +
+        (t.notch ? '<div class="tr-notch" id="trNotch"></div>' : bmRow()) +      // the notched track is binaural only
+        '<h3>How it runs</h3><p id="trHow">' + esc(trHow(t)) + "</p>" +
         '<details class="ev si-ev"><summary>Evidence ' + dots(t.strength) + '</summary><div class="ev-body">' + esc(t.ev) + "<cite>" + esc(t.cite) + "</cite></div></details>" +
         safeBox([SAFE_BEATS]) +
       "</div>" +
@@ -64,6 +62,19 @@
     bSetT("#viewTitle", t.name);
     document.title = t.name + " | Entrain";
     trSync();
+  }
+  function trNeedsHtml(t) {
+    return trNeeds(t).map(function (n) {
+      return '<li><svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] +
+        (n[3] ? ' <button class="btn link si-check" data-check="1">Check yours</button>' : "") + "</span></li>";
+    }).join("");
+  }
+  // a new choice of how beats play: the page says what it needs and how it runs now
+  function trBmSync() {
+    var t = trackById(TR.id), n = $("#trNeeds");
+    if (!t || !n || t.notch) return;
+    n.innerHTML = trNeedsHtml(t);
+    bSetT("#trHow", trHow(t));
   }
   // the page follows the player: Play, Pause or Resume, and the notch
   function trSync() {
@@ -94,7 +105,7 @@
         return;
       }
       load(t);
-    });
+    }, bmTrackMode(t));                        // on speakers (monaural, isochronic) there's no headphone check
   }
   function trInit() {
     $("#trBody").addEventListener("click", function (e) {

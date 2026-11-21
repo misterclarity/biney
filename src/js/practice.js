@@ -17,8 +17,9 @@
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true },
-    paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0     // changes made while it runs, and what a restart needs
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural" },
+    paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
+    bm: ""                                          // how its beat played (beatmode.js), for the history
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
 
@@ -133,16 +134,25 @@
 
   function pMinutes(d, len) { return Math.max(1, Math.round(pPlan(d, pLenOf(d, len)).total / 60)); }
   /* ----- options: defaults for every practice (in Settings), and each practice's own changes on top.
-     Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself. ----- */
+     Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself.
+     The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
       var g = JSON.parse(store.get("pOpt") || "null");
       if (g && typeof g === "object") for (var k in o) if (typeof g[k] === typeof o[k]) o[k] = g[k];
     } catch (e) {}
+    o.beatMode = bmStored();
     return o;
+  }
+  // the defaults for every practice, kept: the beat's sound goes to this device's own choice, which every page then shows
+  function pOptKeep(g) {
+    var m = g.beatMode;
+    delete g.beatMode;
+    store.set("pOpt", JSON.stringify(g));
+    if (bmOk(m) && m !== bmStored()) bmSet(m);
   }
   function pOptOwn(id) {
     try { var v = JSON.parse(store.get("pOpt." + id) || "null"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; }
@@ -163,16 +173,16 @@
     var g = pOptDefaults(), b = pOptBase(id), own = {}, n = 0;
     P_OWN.forEach(function (k) { if (o[k] !== b[k]) { own[k] = o[k]; n++; } });
     for (var k in g) if (P_OWN.indexOf(k) < 0) g[k] = o[k];
-    store.set("pOpt", JSON.stringify(g));
+    pOptKeep(g);
     if (n) store.set("pOpt." + id, JSON.stringify(own)); else storeDel("pOpt." + id);
   }
   function pOptMakeDefault(id, o) {
     var g = pOptDefaults();
     P_OWN.forEach(function (k) { g[k] = o[k]; });
-    store.set("pOpt", JSON.stringify(g));
+    pOptKeep(g);
     storeDel("pOpt." + id);
   }
-  function pSaveOpt() { if (P.optFor) pOptSave(P.optFor, P.opt); else store.set("pOpt", JSON.stringify(P.opt)); }
+  function pSaveOpt() { if (P.optFor) pOptSave(P.optFor, P.opt); else pOptKeep(JSON.parse(JSON.stringify(P.opt))); }
   // the options an intro shows and edits: the running practice's own stay as they are
   function pIntroOpts(d) {
     if (pBusy() && P.def !== d) return pOptsOf(d.id);
@@ -407,7 +417,7 @@
     var a = pAudio(d, P.base), adj = P.beatAdj || 0, pts = a.dyn ? null : a.pts.map(function (p) { return [p[0], p[1] + adj]; });
     return { id: "prac-" + d.id, pid: d.id, practice: true, cat: a.cat, band: adj && pts ? pBandTxt(pts) : a.band, name: a.name, carrier: a.carrier, gain: a.gain,
       beat: a.dyn ? a.start : pts[pts.length - 1][1], pts: pts, dyn: !!a.dyn, cur: a.start || 0,
-      minutes: P.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "" };
+      minutes: P.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "", beatMode: P.opt.beatMode };     // its own sound, or this device's (beatmode.js)
   }
   function pBandTxt(pts) {
     var a = bandFor(pts[0][1]).name, b = bandFor(pts[pts.length - 1][1]).name;
@@ -455,11 +465,12 @@
     P.beatAdj = Math.round(adj * 10) / 10;
     var nt = pBeatTrack(P.def);
     tr.pts = nt.pts; tr.beat = nt.beat; tr.band = nt.band;
-    if (A.playing && A.oscR && A.ctx) {             // glide to the new schedule over a second and a half
-      var now = A.ctx.currentTime, T = now - A.startedAt, f = A.oscR.frequency;
+    var bp = aBeatParam();                          // the right-hand tone, or an isochronic tone's pulse (audio.js)
+    if (A.playing && bp && A.ctx) {                 // glide to the new schedule over a second and a half
+      var now = A.ctx.currentTime, T = now - A.startedAt, f = bp.p;
       if (f.cancelAndHoldAtTime) f.cancelAndHoldAtTime(now); else { f.cancelScheduledValues(now); f.setValueAtTime(f.value, now); }
-      f.linearRampToValueAtTime(tr.carrier + beatAt(tr, T + 1.5), now + 1.5);
-      tr.pts.forEach(function (p) { if (p[0] > T + 1.5) f.linearRampToValueAtTime(tr.carrier + p[1], now + (p[0] - T)); });
+      f.linearRampToValueAtTime(bp.base + beatAt(tr, T + 1.5), now + 1.5);
+      tr.pts.forEach(function (p) { if (p[0] > T + 1.5) f.linearRampToValueAtTime(bp.base + p[1], now + (p[0] - T)); });
     }
     $("#pSub").textContent = trackSub(tr);
     bSetT("#sLine", "The beat moves to " + beatAt(tr, pTrackT() + 1.5).toFixed(1) + " Hz, " + bandFor(beatAt(tr, pTrackT() + 1.5)).name.toLowerCase() + ".");
@@ -482,10 +493,11 @@
         if (!pBusy() || P.def !== d) return;
         P.audioOn = true; P.beatOff = false;
         load(pBeatTrack(d));
+        P.bm = A.mode;
         aSeek(pT());
         if (P.state === "paused") { pause(); P.audioHeld = true; }
         pQuickSync(); P.chipsHtml = null; pUI();
-      });
+      }, bmMode(P.opt.beatMode));                 // on speakers (monaural, isochronic) there's no headphone check
     }
     pQuickSync(); P.chipsHtml = null; pUI();
   }
@@ -1074,6 +1086,7 @@
         load(pBeatTrack(d));
         P.audioOn = true;
       } else P.audioOn = false;
+      P.bm = P.audioOn ? A.mode : "";
       P.audioHeld = false;
       $("#ses").dataset.state = "run";
       $("#sIntro").hidden = true; $("#sDone").hidden = true; $("#sRun").hidden = false;
@@ -1094,7 +1107,7 @@
       pLoop();
       ambSync();
     };
-    if (d.audio && P.opt.audio) gate(go); else go();
+    if (d.audio && P.opt.audio) gate(go, bmMode(pOptsOf(d.id).beatMode)); else go();    // on speakers there's no headphone check
   }
   function pPause() {
     if (P.state !== "running") return;
@@ -1200,6 +1213,7 @@
     if (P.suds.length) r.suds = P.suds.slice();
     var bl = AD.log.filter(function (x) { return x.src !== "base"; });
     if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatLog = AD.log.slice(); }
+    if (P.bm && P.bm !== "binaural") r.bm = P.bm;     // its beat played monaural or isochronic (beatmode.js)
     napSummary(r, T);
     stressSummary(r, T);
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
@@ -1224,14 +1238,17 @@
     if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg, ib: r.ib, wh: d.id === "wim-hof" && ib ? ib : undefined,
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
-      note: notes.join(", ") || undefined });
+      bm: r.bm, note: notes.join(", ") || undefined });
     return r;
   }
   /* ----- the session screen: intro ----- */
   function pNeeds(d) {
-    if (d.needs) return d.needs;
+    // a monaural or isochronic beat plays on speakers too (beatmode.js), unless the practice needs headphones anyway (phonesOnly: a call)
+    var bin = !d.audio || bmMode(pOptsOf(d.id).beatMode) === "binaural", spk = function (s) { return s.replace(/binaural /g, ""); };
+    if (d.needs) return bin || d.phonesOnly ? d.needs : d.needs.map(function (x) { return x[0] === "sounds" && x[1] === "Headphones" ? [x[0], "Speakers or headphones", spk(x[2])] : x; });
     var n = [];
-    if (d.audio) n.push(["sounds", "Headphones", d.phonesWhy || (d.opt && d.opt.audio === false ? "only if you add a binaural beat" : "for the binaural layer")]);
+    if (d.audio) n.push(["sounds", bin ? "Headphones" : "Speakers or headphones", d.phonesWhy ? (bin ? d.phonesWhy : spk(d.phonesWhy))
+      : d.opt && d.opt.audio === false ? "only if you add a " + (bin ? "binaural " : "") + "beat" : bin ? "for the binaural layer" : "for the beat"]);
     if (d.sensor === "best") n.push(["pulse", "Heart sensor", d.sensorWhy || "recommended: live heart rate and coherence"]);
     else if (d.sensor === "optional" || pHasBreath(d)) n.push(["pulse", "Heart sensor", d.sensor === "optional" && d.sensorWhy || "optional: adds heart rate and coherence"]);
     if (d.lie) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
@@ -1314,6 +1331,7 @@
         [["off", "Off"]].concat(d.beats.map(function (b) { return [b.id, b.label]; })).map(function (o) {
           return '<button data-v="' + o[0] + '" aria-pressed="' + (o[0] === "off" ? !O.audio : O.audio && bt.id === o[0]) + '">' + esc(o[1]) + "</button>";
         }).join("") + "</div></div>");
+      opts.push(pBmRow(O));
     }
     if (d.pace) {
       var pc = pPace(d), step = function (k, label, what) {
@@ -1326,7 +1344,10 @@
     }
     opts.push(pToggle("sOptVoice", "Spoken guidance", O.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
     opts.push(pToggle("sOptBells", "Bells between steps", O.bells, ""));
-    if (d.audio && !d.beats) opts.push(pToggle("sOptAudio", "Binaural layer", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
+    if (d.audio && !d.beats) {
+      opts.push(pToggle("sOptAudio", bmMode(O.beatMode) === "binaural" ? "Binaural layer" : "Beat", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. " + pBmNeed(O)));
+      opts.push(pBmRow(O));
+    }
     if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesised berimbau keeps time for the capoeira moves."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
@@ -1380,7 +1401,7 @@
         '<ol class="si-steps">' + pStepsHtml(d, plan) + "</ol>" +
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
-        (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its binaural beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
+        (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its " + (bmMode(O.beatMode) === "binaural" ? "binaural " : "") + "beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
         '<div class="hc-slot">' + hcBox(hcKindsOf(d)) + "</div>" +
       "</div>" +
       '<div class="si-side">' +                     // Start first: above the options on a computer, last on a phone (order)
@@ -1420,7 +1441,16 @@
   }
   // what the chosen beat is, or that there's none
   function pBeatNote(d, O) {
-    return O.audio ? pFn(pBeat(d).note, d) + " " + d.audio.carrier + " Hz carrier. Headphones needed." : "No beat: the guidance and breath cues only.";
+    return O.audio ? pFn(pBeat(d).note, d) + " " + d.audio.carrier + " Hz carrier. " + pBmNeed(O) : "No beat: the guidance and breath cues only.";
+  }
+  // what the beat needs, the way it plays (beatmode.js)
+  function pBmNeed(O) {
+    var m = bmMode(O.beatMode);
+    return m === "binaural" ? "Headphones needed." : m === "monaural" ? "Monaural: speakers or headphones." : "Isochronic: speakers or headphones.";
+  }
+  // the Sound row under a practice's beat: binaural, monaural or isochronic, kept for this practice
+  function pBmRow(O) {
+    return '<div class="so-row so-seg so-bm"><span class="so-l">Sound<small>' + BM_NOTE + "</small></span>" + bmSeg("sOptMode", bmMode(O.beatMode), "prac") + "</div>";
   }
   // the optimal default is your own resonance rate: the test's answer, or 5.5 a minute, the usual one, until you take it
   function pPaceNote(pc) {
@@ -1438,6 +1468,7 @@
     s.push(O.voice && window.speechSynthesis ? "Voice" : "No voice");
     if (O.bells) s.push("Bells");
     if (d.audio) s.push(O.audio ? (d.beats ? pBeat(d).label : "Binaural") : "No beats");
+    if (d.audio && O.audio && bmMode(O.beatMode) !== "binaural") s.push(bmMode(O.beatMode) === "monaural" ? "Monaural" : "Isochronic");
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -1499,6 +1530,19 @@
       if (O.audio) pChoiceSet(d, "beat", b.dataset.v);
       save(); press(bg, b);
       bSetT("#sBeatNote", pBeatNote(d, O));
+    });
+    // the beat's sound, kept for this practice: a speaker way opens with a donation (beatmode.js); the page then says
+    // what it needs, its beat note and its caution for the way it plays
+    var mg = $("#sOptMode");
+    if (mg) mg.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-bm]"); if (!b) return;
+      bmPick(b.getAttribute("data-bm"), function (m) {
+        if (P.view !== d) return;
+        O.beatMode = m; save();
+        pIntro(d.id);
+        var nb = document.querySelector('#sOptMode button[data-bm="' + m + '"]');
+        if (nb) nb.focus();
+      });
     });
     var pg = $("#sOptPace");
     if (pg) {
@@ -1635,6 +1679,10 @@
     ambUI();
     $("#sqVolRow").hidden = !P.audioOn;
     $("#sqVol").value = $("#vol").value;
+    var bin = bmMode(P.opt.beatMode) === "binaural";     // names for screen readers that match the way the beat plays
+    pAttr($("#sqVol"), "aria-label", bin ? "Binaural volume" : "Beat volume");
+    pAttr($("#sAdjBt"), "aria-label", bin ? "Binaural beat" : "Beat");
+    pAttr($("#sAdjBtOn"), "aria-label", bin ? "Binaural beat" : "Beat");
     $("#sqRestart").hidden = !!(P.def && P.def.reflect);       // a reflection would lose what you've written
     pAdjUI();
   }
@@ -1787,5 +1835,6 @@
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
     if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList,
-      SUP: SUP, supOn: supOn, supKept: supKept, supRefresh: supRefresh, supDevice: supDevice, FD: FD };   // for automated tests only
+      SUP: SUP, supOn: supOn, supKept: supKept, supRefresh: supRefresh, supDevice: supDevice, FD: FD,
+      aVoices: aVoices, bmMode: bmMode, bmStored: bmStored, aBeat: aBeat, pBeatStep: pBeatStep, enterTask: enterTask, beatPlaying: beatPlaying, SUP_EXTRA: SUP_EXTRA };   // for automated tests only
   }

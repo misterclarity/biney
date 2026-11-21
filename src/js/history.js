@@ -43,7 +43,8 @@
   // is dropped as it loads, and a session without its kind, time and length is dropped whole.
   var H_FIELDS = { k: "string", id: "string", n: "string", band: "string", note: "string", at: "number", secs: "number",
     rate: "number", beat: "number", hr0: "number", hr1: "number", hrAvg: "number", swing: "number", coh: "number", best: "number", rm: "number", felt: "number",
-    full: "boolean", est: "boolean", ib: "boolean", wh: "number" };      // ib: a block of intense breathing; wh: Wim Hof's rounds (care.js)
+    full: "boolean", est: "boolean", ib: "boolean", wh: "number",        // ib: a block of intense breathing; wh: Wim Hof's rounds (care.js)
+    bm: "string" };                                                      // bm: a beat played monaural or isochronic (beatmode.js)
   var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
     for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
@@ -94,6 +95,7 @@
     A.hAt = el;                                  // a paused track logged as the page goes away isn't logged twice
     var e = { k: "track", id: t.id, secs: secs, full: !t.then && el >= t.minutes * 60 - 10 };
     if (t.id === "prime" || t.id === "custom") { e.beat = +t.beat.toFixed(1); e.band = t.band; }
+    if (A.mode !== "binaural") e.bm = A.mode;     // how it played, when not binaural (beatmode.js)
     hAdd(e);
   }
   function hTest(secs, best) { hAdd({ k: "test", id: "resonance", secs: secs, full: true, best: best }); }
@@ -122,6 +124,7 @@
     else p.push(hMins(e.secs) + (e.full === false && e.k !== "track" ? ", ended early" : ""));
     if (e.k === "breath" && e.rate) p.push(e.rate + " a minute");
     if (e.beat) p.push(e.beat + " Hz " + (e.band || "").toLowerCase());
+    if (e.bm === "monaural" || e.bm === "isochronic") p.push(e.bm);
     if (e.hr0 && e.hr1) p.push("heart rate " + e.hr0 + " → " + e.hr1);
     else if (e.hrAvg) p.push("heart rate " + e.hrAvg);
     if (e.coh) p.push("coherence " + e.coh.toFixed(1) + (e.est ? " (est.)" : ""));

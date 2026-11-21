@@ -12,7 +12,8 @@
     el: null, url: "",
     want: "off",      // "play", "pause" or "off": what the app last asked of the element
     sys: false,       // the phone paused the track (a call, another app), so it may resume it too
-    track: null       // the track the lock screen is showing
+    track: null,      // the track the lock screen is showing
+    bm: ""            // and how its beat plays (beatmode.js)
   };
   var MS_ART = [{ src: "icons/icon-192.png", sizes: "192x192", type: "image/png" }, { src: "icons/icon-512.png", sizes: "512x512", type: "image/png" }];
 
@@ -51,9 +52,9 @@
     var want = msWanted(), ms = navigator.mediaSession;
     if (want === "off") { msOff(); return; }
     var t = A.track, el = msEl();
-    if (MS.track !== t) {
-      MS.track = t;
-      ms.metadata = new MediaMetadata({ title: t.name, artist: "Entrain", album: t.band + " · " + trBeatTxt(t), artwork: MS_ART });
+    if (MS.track !== t || MS.bm !== A.mode) {        // a new track, or the same one played another way (beatmode.js)
+      MS.track = t; MS.bm = A.mode;
+      ms.metadata = new MediaMetadata({ title: t.name, artist: "Entrain", album: t.band + " · " + trBeatTxt(t) + (A.mode === "binaural" ? "" : " · " + A.mode), artwork: MS_ART });
     }
     ms.playbackState = want === "play" ? "playing" : "paused";
     msPosition();

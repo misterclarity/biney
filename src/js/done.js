@@ -154,7 +154,7 @@
       return ["Intensity", p];
     }
     if (k === "beat") {
-      p.push("Where the binaural beat started and where it finished: " + r.beat0.toFixed(1) + " Hz, then " + r.beat1.toFixed(1) + " Hz.");
+      p.push("Where the " + (r.bm || "binaural") + " beat started and where it finished: " + r.beat0.toFixed(1) + " Hz, then " + r.beat1.toFixed(1) + " Hz.");
       p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) towards 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
         : "There was no heart data, so the beat followed a fixed, gentle descent instead.");
       p.push("This is an experiment: the rule is Entrain's own, so the chart is the honest test of what it did for you.");
@@ -252,7 +252,7 @@
     var r = SD.r, t = [];
     t.push("Your heart rate from the start (left) to the end (right), averaged over 10 seconds so the line is easy to follow. The numbers on the left are the top and bottom of its scale, in beats a minute, and the times along the bottom are minutes into the session.");
     t.push("The thin vertical lines mark where each step began." +
-      (r.beatLog ? " The violet line is the binaural beat, on its own scale from 11 Hz at the top to 3 Hz at the bottom." : "") +
+      (r.beatLog ? " The violet line is the " + (r.bm || "binaural") + " beat, on its own scale from 11 Hz at the top to 3 Hz at the bottom." : "") +
       (r.nap && r.nap.onsetT ? " The dashed line marks when you fell asleep (estimated)." : ""));
     t.push("A line that drifts down means your body settled. The ripples are your breaths: heart rate rises as you breathe in and falls as you breathe out. Tap or drag on the chart to read the time, your heart rate and the step at any point.");
     return t.map(esc);

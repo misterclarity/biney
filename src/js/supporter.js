@@ -9,7 +9,7 @@
      For every new feature: give the practice, breathing pattern or track `sup: true`, and call
      supGate(name, go) at the moment of use (Start, Play, picking it); its page stays free to read.
      supTag() is the badge for its row, card or chip while it's locked, and supOn() says whether
-     this device is unlocked.
+     this device is unlocked. Anything else it unlocks goes into SUP_EXTRA, for Settings' list.
   ------------------------------------------------------------------------------ */
 
   // the public keys that sign activation codes: several, so a key can be replaced without breaking codes already sent
@@ -26,6 +26,9 @@
      public keys. Then the open dialog: the item it names and what to tell when it closes; and the last
      activation's result, with where it shows (the dialog, Settings, or a link, shown in Settings). */
   var SUP = { ok: false, state: "none", waits: [], mem: "", keys: null, name: "", done: [], res: null };
+  // what else the donation unlocks that isn't a practice, a breathing pattern or a track (a sound mode, a soundscape,
+  // a tool): each feature adds { name, href } as it starts, and Settings lists it with the rest
+  var SUP_EXTRA = [];
 
   function supOn() { return SUP.ok; }
   // an item that needs the gate before it's used: flagged, and this device not unlocked (yet)
@@ -210,6 +213,7 @@
     PRACTICES.forEach(function (d) { if (d.sup) out.push({ name: d.name, href: "#practice/" + d.id }); });
     BREATHS.forEach(function (b) { if (b.sup) out.push({ name: patName(b), href: "#breathe/" + b.id }); });
     TRACKS.forEach(function (t) { if (t.sup) out.push({ name: t.name, href: "#track/" + t.id }); });
+    SUP_EXTRA.forEach(function (x) { out.push({ name: x.name, href: x.href }); });
     return out;
   }
   function supCard() {
@@ -280,6 +284,7 @@
     else if (curView === "session" && P.view && !$("#sIntro").hidden) pIntroReplan(P.view);
     else if (curView === "track") trSync();
     lnMark();                                                 // Learn's links to new techniques (learn.js)
+    bmSync();                                                 // the beat's Sound buttons and their cups (beatmode.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }

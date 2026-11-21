@@ -1065,6 +1065,7 @@
       tone: "relax", sensor: "optional", pace: true, paceSplit: 0.4,
       opt: { voice: false, bells: false, cues: "off", buzz: false, ana: 0 },
       optNote: "It starts silent: captions only, with no voice, bells or breath sounds, only the beat.",
+      phonesOnly: true,                          // in any way it plays, a beat from a speaker would go into the call
       needs: [["sounds", "Headphones", "the beat plays under the call's audio, at half your usual volume"],
         ["pulse", "Heart sensor", "optional: your heart rate and coherence while you talk"],
         ["phone", "This screen in view", "beside the call, on this phone or in a window next to it, to glance at the pacer while you listen"]],

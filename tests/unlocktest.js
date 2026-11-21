@@ -233,9 +233,14 @@ const until = async (p, f, ms) => { try { await p.waitForFunction(f, null, { tim
       });
       ok(st.view && st.top < 200 && st.h2 === 'New techniques' && st.state === 'Locked on this device.' && st.dev === d.dev && st.kofi === 'https://ko-fi.com/misterclarity' && st.kt === 'Donate on Ko-fi' && st.field && st.note.includes(EACH) && !st.small.length,
         '#st-supporter opens Settings at New techniques: locked, the device code with Copy, Donate on Ko-fi, the paste field and the note: ' + st.state);
-      ok(st.list === 'Anapana>#practice/anapana, Box 4-4-4-4>#breathe/box', 'it lists what the donation unlocks, from the flagged items: ' + st.list);
+      ok(st.list === 'Anapana>#practice/anapana, Box 4-4-4-4>#breathe/box, Monaural beats and isochronic tones>#st-beats',
+        'it lists what the donation unlocks, from the flagged items, then what else opens with it (SUP_EXTRA: the beat\'s speaker ways): ' + st.list);
       await flag(p, ['anapana', 'b:box'], false);
-      ok(/^None yet/.test(await t(p, '#supList')), 'with none flagged, none yet: ' + await t(p, '#supList'));
+      const extra = await E(p, () => [...document.querySelectorAll('#supList a')].map(a => a.textContent + '>' + a.getAttribute('href')).join(', '));
+      await E(p, () => { const X = window.__entrain; window.__extra = X.SUP_EXTRA.splice(0); X.supRefresh(); });
+      const none = await t(p, '#supList');
+      await E(p, () => { const X = window.__entrain; X.SUP_EXTRA.push(...window.__extra); X.supRefresh(); });
+      ok(extra === 'Monaural beats and isochronic tones>#st-beats' && /^None yet/.test(none), 'with none flagged, the others stay; with nothing at all, none yet: ' + extra + ' / ' + none);
       await p.fill('#supStIn', 'not a code'); await p.click('#supStGo'); await p.waitForTimeout(200);
       ok(/^That isn't a valid activation code\./.test(await t(p, '#supStRes')), 'its paste field says so too');
       for (const w of ['unlock', 'donation', 'supporter']) {

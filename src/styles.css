@@ -995,6 +995,15 @@
   .mini-seg{display:inline-flex;gap:3px;padding:3px;border-radius:10px;background:var(--bg-2);flex-wrap:wrap}
   .mini-seg button{border:0;background:transparent;color:var(--text-dim);font-weight:700;font-size:12.5px;padding:6px 9px;border-radius:8px;cursor:pointer}
   .mini-seg button[aria-pressed="true"]{background:var(--panel-3);color:var(--text)}
+  /* the beat's Sound: binaural, monaural or isochronic, each with what it plays on (beatmode.js) */
+  .bm-seg{flex-wrap:nowrap}
+  .bm-seg button{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:44px;line-height:1.2;padding:5px 9px}
+  .bm-seg button small{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--text-faint)}
+  .bm-seg button[aria-pressed="true"] small{color:var(--text-dim)}
+  .bm-seg .sup-ic{background:none;padding:0;color:var(--stim)}
+  .bm-seg .sup-ic svg.i{width:12px;height:12px}
+  .bm-row{flex-direction:column;align-items:stretch;gap:8px;margin:0 0 18px}
+  .bm-row .mini-seg,.st-card .bm-seg{align-self:flex-start;max-width:100%;overflow-x:auto}
   .so-steps{display:flex;gap:8px 14px;flex-wrap:wrap}
   .so-steps[hidden]{display:none}
   .so-step{display:inline-flex;align-items:center;gap:4px;padding:3px;border-radius:10px;background:var(--bg-2);font-size:12.5px}
