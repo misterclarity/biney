@@ -499,7 +499,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const L = rd('LICENSE'), idx = rd('index.html'), prev = fs.existsSync(path.join(root, 'entrain-page.html')) ? rd('entrain-page.html') : '';
       const note = /^<!DOCTYPE html>\n<!--\n  Entrain: [^\n]+\n  Copyright \(C\) 2026 misterclarity\n[\s\S]*?GNU Affero General Public License as published by the Free Software Foundation, version 3\.[\s\S]*?Source: https:\/\/github\.com\/misterclarity\/biney\n[\s\S]*?-->\n<html lang="en">/;
       ok(/^\s+GNU AFFERO GENERAL PUBLIC LICENSE\n\s+Version 3, 19 November 2007\n/.test(L) && /END OF TERMS AND CONDITIONS/.test(L) && L.length > 34000 &&
-        note.test(idx) && /<link rel="license" href="https:\/\/www\.gnu\.org\/licenses\/agpl-3\.0\.html">/.test(idx) && (!prev || /^<!--\n  Entrain: /.test(prev)),
+        note.test(idx) && /<link rel="license" href="https:\/\/www\.gnu\.org\/licenses\/agpl-3\.0\.html">/.test(idx) && (!prev || note.test(prev)),
         'LICENSE holds the GNU AGPL, version 3, and every copy of the page opens with its notice and a licence link');
     }
 

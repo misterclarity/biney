@@ -194,8 +194,10 @@ assert "__" not in sw.replace("__proto__", "")
 open(os.path.join(ROOT, "sw.js"), "w", encoding="utf-8").write(sw)
 print("wrote sw.js, version", ver, "-", len(files), "files")
 
-# ---- the preview page for Claude: no manifest or worker, just the app ----
-art = (NOTICE + '\n<title>Entrain</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<style>\n' + css + '</style>\n'
-       + body + "\n<script>" + script + "</script>\n")
+# ---- the preview page for Claude: no manifest or worker, just the app, as a whole document ----
+art = ("<!DOCTYPE html>\n" + NOTICE + '\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+       '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'   # the app pads for the safe areas
+       '<link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html">\n<title>Entrain</title>\n<style>\n' + css + '</style>\n</head>\n<body>\n'
+       + body + "\n<script>" + script + "</script>\n</body>\n</html>\n")
 open(os.path.join(ROOT, "entrain-page.html"), "w", encoding="utf-8").write(art)
 print("wrote entrain-page.html", len(art), "bytes")
