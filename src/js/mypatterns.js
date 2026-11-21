@@ -11,13 +11,13 @@
   var MP = { list: null, from: "", shown: null };   // from: the saved pattern your timings were changed from
 
   function mpName(s) { return typeof s === "string" ? s.replace(/\s+/g, " ").trim().slice(0, 40) : ""; }
-  // the five timings, only if every one is inside its slider's range and on its half-second steps
+  // the five timings, only if every one is inside its slider's range (Swim & dive's, at most) and on its half-second steps
   function mpTimes(t) {
     if (!t || typeof t !== "object") return null;
     var o = {};
     for (var i = 0; i < B_FIELDS.length; i++) {
       var f = B_FIELDS[i], v = +t[f.k];
-      if (!isFinite(v) || v < f.min || v > f.max || v * 2 !== Math.round(v * 2)) return null;
+      if (!isFinite(v) || v < f.min || v > f.xmax || v * 2 !== Math.round(v * 2)) return null;
       o[f.k] = v;
     }
     return o;
@@ -30,7 +30,9 @@
       var t = q && mpTimes(q.t), name = q && mpName(q.name);
       if (!t || !name || typeof q.uid !== "string" || !/^[a-z0-9]{1,16}$/.test(q.uid) || seen[q.uid]) return null;
       seen[q.uid] = true;
-      return { uid: q.uid, name: name, t: t, at: +q.at || 0 };
+      var o = { uid: q.uid, name: name, t: t, at: +q.at || 0 };
+      if (q.long === true || bLongT(t)) o.long = true;              // made in the Swim & dive range: it opens there
+      return o;
     }).filter(Boolean).slice(0, MP_MAX);
     return MP.list;
   }
@@ -55,7 +57,7 @@
   }
   // a saved pattern in the shape of a preset, for the guide, the library, search and favourites
   function mpPattern(q) {
-    return { id: "my-" + q.uid, mine: true, name: q.name, t: q.t, desc: mpSteps(q.t) + ".", goal: "", also: [], posture: ["sit", "lie"], strength: 0 };
+    return { id: "my-" + q.uid, mine: true, long: !!q.long, name: q.name, t: q.t, desc: mpSteps(q.t) + ".", goal: "", also: [], posture: ["sit", "lie"], strength: 0 };
   }
   function mpGet(id) { var q = typeof id === "string" ? mpQ(id) : null; return q ? mpPattern(q) : null; }
   function mpAll() { return mpLoad().map(mpPattern); }
@@ -144,6 +146,7 @@
     name = name || mpFreeName();
     if ((clash = mpTaken(name))) { bSetT("#bMyHint", "There's already a pattern called “" + clash + "”. Pick another name."); return; }
     q = { uid: mpUid(), name: name, t: mpCopy(BC), at: Date.now() };
+    if (BC.long) q.long = true;
     l.push(q);
     mpStore();
     BC.pattern = "my-" + q.uid; MP.from = "";
@@ -155,6 +158,7 @@
     var q = mpQ(MP.from);
     if (!q || B.finder || P.usesB || BC.pattern !== "custom" || matchPreset() !== "custom") return;
     q.t = mpCopy(BC); q.at = Date.now();
+    if (BC.long) q.long = true; else delete q.long;
     mpStore();
     BC.pattern = "my-" + q.uid; MP.from = "";
     mpRefresh();

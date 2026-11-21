@@ -418,6 +418,21 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   .b-sensor svg.i{color:var(--hr)}
   .b-sensor .btn{margin-left:auto}
+  .b-dive{
+    display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;font-size:13.5px;color:#fcd34d;
+    padding:11px 14px;border-radius:14px;background:rgba(251,191,36,.09);
+  }
+  .b-dive[hidden]{display:none}
+  .b-dive svg.i{width:18px;height:18px;flex:none}
+  .b-dive span{flex:1 1 220px}
+  .b-dive b{color:#fde68a}
+  .b-fields:not(.long) .b-longnote{display:none}
+  .b-longnote{margin:6px 0 0}
+  .b-note .si-caution{margin-top:12px}
+  .dv-list{margin:0 0 12px;padding-left:1.15em;display:grid;gap:6px;font-size:13.5px;line-height:1.45;color:var(--text-dim)}
+  .dv-card .hint{margin:0}
+  .dv-card .pm-actions{margin-top:14px}
+  .dv-list li:first-child{color:#fcd34d;font-weight:700}
 
   .b-controls{
     background:var(--panel);border-radius:22px;padding:20px;min-width:0;display:grid;gap:20px;
@@ -467,7 +482,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     padding-right:max(20px,env(safe-area-inset-right,0px));
   }
   .b-stage.focus .b-view{flex:1;height:auto;min-height:0}
-  .b-stage.focus .b-patrow,.b-stage.focus .b-adjust,.b-stage.focus .b-sensor{display:none!important}
+  .b-stage.focus .b-patrow,.b-stage.focus .b-adjust,.b-stage.focus .b-sensor,.b-stage.focus .b-dive{display:none!important}
   .b-stage.focus .b-phase-name{font-size:clamp(34px,5vw,56px)}
   body.b-lock{overflow:hidden}
 
@@ -2198,6 +2213,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <label class="chip"><input type="radio" name="bpat" value="exhale"> Long exhale</label>
             <label class="chip"><input type="radio" name="bpat" value="box"> Box 4-4-4-4</label>
             <label class="chip"><input type="radio" name="bpat" value="478"> 4-7-8</label>
+            <label class="chip"><input type="radio" name="bpat" value="dive"> Swim &amp; dive</label>
             <label class="chip"><input type="radio" name="bpat" value="custom"> Custom</label>
           </div>
             <div class="b-head">
@@ -2231,6 +2247,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               <button class="btn" id="bFocus">Focus view</button>
               <span class="b-msg" id="bMsg" role="status"></span>
             </div>
+            <div class="b-dive" id="bDiveRow" hidden>
+              <svg class="i" aria-hidden="true"><use href="#i-warn"/></svg>
+              <span><b>At your own risk.</b> Breath holds on dry land only, sitting or lying down, and breathe whenever you need to.</span>
+              <button type="button" class="btn small" id="bDiveInfo">Read the cautions</button>
+            </div>
             <div class="b-sensor" id="bSensorRow">
               <svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg>
               <span id="bSensorTxt">Connect a heart sensor to watch your heart rate follow your breath.</span>
@@ -2247,9 +2268,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <summary id="bEvSum">Evidence <span class="strength" title="Strength of supporting evidence: 3 of 3" aria-label="Evidence strength 3 of 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></summary>
             <div class="ev-body"><span id="bEvTxt"></span><cite id="bCite"></cite></div>
           </details>
+          <div id="bDiveSafe" hidden></div>
         </div>
 
-        <div class="b-fields">
+        <div class="b-fields" id="bFields">
           <div class="field">
             <label for="bInh">Inhale <b id="bInhV">5.5 s</b></label>
             <input type="range" id="bInh" min="1" max="10" step="0.5" value="5.5">
@@ -2274,6 +2296,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <b id="bRateV">5.5 breaths/min</b>
             <span id="bRateS">0.091 Hz · 11.0 s a breath</span>
           </div>
+          <p class="hint b-longnote">The Swim &amp; dive range, in whole seconds: up to 60 for the in-breath, each hold and the
+            out-breath, and up to 30 for the top-up. Any other preset brings back the usual range.</p>
         </div>
 
         <div class="b-mine quiet" id="bMine">
@@ -2621,6 +2645,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-evidence">Strongest evidence</a>
             <a href="#l-tinnitus">The tinnitus track</a>
             <a href="#l-breathing">Breathing and heart</a>
+            <a href="#l-dive">Swimming and diving</a>
             <a href="#l-bands">Frequency bands</a>
             <a href="#l-practices">Guided practices</a>
             <a href="#l-safety">Safety</a>
@@ -2768,6 +2793,65 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         cyclic sighing, which lifted mood and slowed resting breathing the most in a month-long trial (Balban et al., 2023).
         Its beats follow the binaural-beat evidence, where theta and delta beats eased anxiety the most (Garcia-Argibay et
         al., 2019).
+      </p>
+
+      <h3 id="l-dive">Breath training for swimming and diving</h3>
+      <p>
+        Breathing capacity has three parts, and they train very differently: how big your lungs are, how strong the
+        muscles that fill them are, and how long you can go without a breath. Lung size changes least. Elite swimmers do
+        have big lungs, with total lung capacity at 128% and vital capacity at 124% of the values predicted for adult men
+        (Armour et al., 1993), but how they got them is unsettled. Girls aged 11 to 14 who swam competitively already had
+        larger lungs than their peers before a season began, and a seven-month season didn't widen the gap (Bovard et al.,
+        2018); a review concluded that years of training while the lungs grow may explain it, but that genetics and
+        selection into the sport can't be ruled out (Rochat et al., 2022). Training the breathing muscles doesn't enlarge
+        the lungs either: across 13 studies of swimmers, inspiratory muscle training raised inspiratory strength while
+        forced vital capacity and FEV1 stayed the same (Carvajal-Tello et al., 2024).
+      </p>
+      <p>
+        The breathing muscles respond well, and hard swimming tires them: after a 200&nbsp;m front-crawl swim at 90% of
+        race pace, inspiratory strength had fallen by 21% when swimmers breathed every fourth stroke and by 11% when they
+        breathed every second (Jakovljevic &amp; McConnell, 2009). In club swimmers, six weeks of inspiratory muscle
+        training, 30 breaths twice a day through a handheld spring-loaded valve set at half their maximum, cut 100&nbsp;m
+        times by 1.7% and 200&nbsp;m times by 1.5% against a sham device, with no gain at 400&nbsp;m (Kilding et al., 2010).
+        Pooled across ten trials, respiratory muscle training improved swimming performance by a small to moderate amount
+        (Liu et al., 2025), but an analysis of 14 trials in 375 competitive swimmers found stronger breathing muscles and better FEV1
+        with no significant change in 50, 100 or 200&nbsp;m times (Chen et al., 2026). This kind of training needs the
+        device; an app can only count the breaths.
+      </p>
+      <p>
+        Breath-hold time is the most trainable part, and the <a href="#breathe/dive">Swim &amp; dive</a> pattern on
+        Breathe paces this kind of dry training. Within one session, a series of maximal holds can stretch, helped, it seems, by the spleen squeezing
+        stored red blood cells into the circulation: over five holds two minutes apart, with the face in cold water,
+        haematocrit rose 6.4% in people with a spleen, and only in them did the urge to breathe come later as the series
+        went on (Schagatay et al., 2001). With training, holds lengthen mainly because the first involuntary breathing
+        movements, the body's push to breathe, come later, a point set mainly by carbon dioxide, and because the diving
+        response, the reflex slowing of the heart that saves oxygen, grows stronger (Schagatay et al., 2000). In ten untrained people, two weeks of ten maximal holds a day lengthened the
+        longest hold by 44 seconds; the diving response began 3 seconds sooner, and the longest holds took oxygen
+        saturation down to 72%, from 84% before training (Engan et al., 2013). How far this carries into sport is less
+        clear: across seven studies, breath-hold training raised peak blood lactate but gave no evidence of an effect on
+        aerobic markers such as VO<sub>2</sub>max (de As&iacute;s-Fern&aacute;ndez et al., 2022).
+      </p>
+      <p>
+        In the pool, the methods with the clearest results limit breathing during hard swimming, under a coach.
+        Triathletes who twice a week swam a set of 12 to 20 &times; 25&nbsp;m sprints with short holds after breathing out,
+        at low lung volume, improved their 100, 200 and 400&nbsp;m times by 3.5 to 4.4% in five weeks, while those who swam
+        the same set breathing normally didn't change (Woorons et al., 2016). In a trial with 16 competitive swimmers, six
+        sessions of repeated sprints with the same method raised the number of all-out 25&nbsp;m sprints they could repeat
+        from 7.1 to 9.6, while those who breathed normally didn't improve significantly (Trincat et al., 2017). Breathing only every 7 to 10 strokes kept college swimmers' breathing muscles from tiring in a race but
+        didn't make them faster (Burtch et al., 2017).
+      </p>
+      <p>
+        What makes a hold longer is also what makes it dangerous. Breathing fast and deep beforehand blows off carbon
+        dioxide, which delays the urge to breathe while oxygen keeps falling, so a swimmer can black out underwater
+        without warning. A review of drownings and near-drownings in New York State found 16 people harmed by dangerous
+        breath-holding; the four who died were advanced or expert swimmers aged 17 to 22 who had hyperventilated first
+        (Boyd et al., 2015). In a laboratory, 15 seconds of hyperventilation before each of five holds made them longer,
+        133 against 111 seconds, but took oxygen saturation lower, and lower with each hold, from 94.0% in the first to
+        86.7% in the last, which the authors warn could heighten the risk of a blackout (Pernett et al., 2023). Lung
+        packing, gulping extra air on top of a full breath, impairs the return of blood to the heart and can make you
+        faint (Schipke et al., 2019). So Swim &amp; dive is for dry land only, sitting or lying down, with normal breathing
+        before each hold, and it's done entirely at your own risk. In the water, breath holds belong under a coach or a
+        trained buddy watching the whole time.
       </p>
 
       <h3 id="l-bands">Frequency bands at a glance</h3>
@@ -3086,6 +3170,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                   Leave out the breath holds and the fast breathing (Wim Hof, Kapalabhati, Morning Wake-Up's breath of fire, the power breaths before sport) if you are pregnant or have a heart,
                   lung or blood-pressure condition or epilepsy, and never do the fast breathing in or near water, standing up or
                   while driving.</li>
+                <li><b>Breath holds.</b> Swim &amp; dive's long holds are done entirely at your own risk. A breath hold can
+                  make you black out without warning, so practise them only on dry land, sitting or lying down, never in or
+                  near water, in the bath or while driving. Breathe normally before each hold, never fast and deep to
+                  stretch it, breathe whenever you need to, and keep the second inhale a gentle top-up rather than forcing in
+                  extra air. In the water, train breath holds only with a coach or a trained buddy watching you.</li>
                 <li><b>Moving.</b> Go only as far as is comfortable, stop anything that hurts, and keep clear space around
                   you.</li>
                 <li><b>Feelings.</b> A body scan, tapping or a reflection can bring up strong feelings. If one does, stop, look
@@ -3136,6 +3225,24 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Shaffer, F., &amp; Ginsberg, J. P. (2017). An overview of heart rate variability metrics and norms. <em>Frontiers in Public Health</em>, 5, 258. <a href="https://doi.org/10.3389/fpubh.2017.00258" rel="noopener">DOI</a></li>
       <li>Nam, Y., Reyes, B. A., &amp; Chon, K. H. (2016). Estimation of respiratory rates using the built-in microphone of a smartphone or headset. <em>IEEE Journal of Biomedical and Health Informatics</em>, 20(6), 1493–1501. <a href="https://doi.org/10.1109/JBHI.2015.2480838" rel="noopener">DOI</a></li>
       <li>Vierra, J., Boonla, O., &amp; Prasertsri, P. (2022). Effects of sleep deprivation and 4-7-8 breathing control on heart rate variability, blood pressure, blood glucose, and endothelial function in healthy young adults. <em>Physiological Reports</em>, 10, e15389. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9277512/" rel="noopener">PMC</a></li>
+      <li>Armour, J., Donnelly, P. M., &amp; Bye, P. T. P. (1993). The large lungs of elite swimmers: an increased alveolar number? <em>European Respiratory Journal</em>, 6(2), 237–247. <a href="https://doi.org/10.1183/09031936.93.06020237" rel="noopener">DOI</a></li>
+      <li>Bovard, J. M., Welch, J. F., Houghton, K. M., McKenzie, D. C., Potts, J. E., &amp; Sheel, A. W. (2018). Does competitive swimming affect lung growth? <em>Physiological Reports</em>, 6(15), e13816. <a href="https://doi.org/10.14814/phy2.13816" rel="noopener">DOI</a></li>
+      <li>Rochat, I., Côté, A., &amp; Boulet, L.-P. (2022). Determinants of lung function changes in athletic swimmers. A review. <em>Acta Paediatrica</em>, 111(2), 259–264. <a href="https://doi.org/10.1111/apa.16095" rel="noopener">DOI</a></li>
+      <li>Carvajal-Tello, N., Ortega, J. G., Caballero-Lozada, A. F., et al. (2024). Effects of inspiratory muscle training on lung function parameter in swimmers: a systematic review and meta-analysis. <em>Frontiers in Sports and Active Living</em>, 6, 1429902. <a href="https://doi.org/10.3389/fspor.2024.1429902" rel="noopener">DOI</a></li>
+      <li>Jakovljevic, D. G., &amp; McConnell, A. K. (2009). Influence of different breathing frequencies on the severity of inspiratory muscle fatigue induced by high-intensity front crawl swimming. <em>Journal of Strength and Conditioning Research</em>, 23(4), 1169–1174. <a href="https://doi.org/10.1519/JSC.0b013e318199d707" rel="noopener">DOI</a></li>
+      <li>Kilding, A. E., Brown, S., &amp; McConnell, A. K. (2010). Inspiratory muscle training improves 100 and 200 m swimming performance. <em>European Journal of Applied Physiology</em>, 108(3), 505–511. <a href="https://doi.org/10.1007/s00421-009-1228-x" rel="noopener">DOI</a></li>
+      <li>Liu, S., Gou, P., &amp; Lin, M. (2025). The effect of respiratory muscle training on swimming performance: a systematic review and meta-analysis. <em>Frontiers in Physiology</em>, 16, 1638739. <a href="https://doi.org/10.3389/fphys.2025.1638739" rel="noopener">DOI</a></li>
+      <li>Chen, Y., Yi, Q., Meng, K., et al. (2026). Effects of respiratory muscle training on swimming performance, respiratory muscle function, and pulmonary function of competitive swimmers: a systematic review and meta-analysis. <em>Frontiers in Physiology</em>, 17, 1770925. <a href="https://doi.org/10.3389/fphys.2026.1770925" rel="noopener">DOI</a></li>
+      <li>Schagatay, E., Andersson, J. P. A., Hallén, M., &amp; Pålsson, B. (2001). Selected contribution: role of spleen emptying in prolonging apneas in humans. <em>Journal of Applied Physiology</em>, 90(4), 1623–1629. <a href="https://doi.org/10.1152/jappl.2001.90.4.1623" rel="noopener">DOI</a></li>
+      <li>Schagatay, E., van Kampen, M., Emanuelsson, S., &amp; Holm, B. (2000). Effects of physical and apnea training on apneic time and the diving response in humans. <em>European Journal of Applied Physiology</em>, 82, 161–169. <a href="https://doi.org/10.1007/s004210050668" rel="noopener">DOI</a></li>
+      <li>Engan, H., Richardson, M. X., Lodin-Sundström, A., van Beekvelt, M., &amp; Schagatay, E. (2013). Effects of two weeks of daily apnea training on diving response, spleen contraction, and erythropoiesis in novel subjects. <em>Scandinavian Journal of Medicine &amp; Science in Sports</em>, 23(3), 340–348. <a href="https://doi.org/10.1111/j.1600-0838.2011.01391.x" rel="noopener">DOI</a></li>
+      <li>de As&iacute;s-Fern&aacute;ndez, F., Sereno, D., Turner, A. P., Gonz&aacute;lez-Moh&iacute;no, F., &amp; Gonz&aacute;lez-Rav&eacute;, J. M. (2022). Effects of apnoea training on aerobic and anaerobic performance: a systematic review and meta-analysis. <em>Frontiers in Physiology</em>, 13, 964144. <a href="https://doi.org/10.3389/fphys.2022.964144" rel="noopener">DOI</a></li>
+      <li>Woorons, X., Mucci, P., Richalet, J. P., &amp; Pichon, A. (2016). Hypoventilation training at supramaximal intensity improves swimming performance. <em>Medicine &amp; Science in Sports &amp; Exercise</em>, 48(6), 1119–1128. <a href="https://doi.org/10.1249/MSS.0000000000000863" rel="noopener">DOI</a></li>
+      <li>Trincat, L., Woorons, X., &amp; Millet, G. P. (2017). Repeated-sprint training in hypoxia induced by voluntary hypoventilation in swimming. <em>International Journal of Sports Physiology and Performance</em>, 12(3), 329–335. <a href="https://doi.org/10.1123/ijspp.2015-0674" rel="noopener">DOI</a></li>
+      <li>Burtch, A. R., Ogle, B. T., Sims, P. A., et al. (2017). Controlled frequency breathing reduces inspiratory muscle fatigue. <em>Journal of Strength and Conditioning Research</em>, 31(5), 1273–1281. <a href="https://doi.org/10.1519/JSC.0000000000001589" rel="noopener">DOI</a></li>
+      <li>Boyd, C., Levy, A., McProud, T., et al. (2015). Fatal and nonfatal drowning outcomes related to dangerous underwater breath-holding behaviors — New York State, 1988–2011. <em>Morbidity and Mortality Weekly Report</em>, 64(19), 518–521. <a href="https://www.cdc.gov/mmwr/preview/mmwrhtml/mm6419a3.htm" rel="noopener">CDC</a></li>
+      <li>Pernett, F., Bergenhed, P., Holmström, P., Mulder, E., &amp; Schagatay, E. (2023). Effects of hyperventilation on oxygenation, apnea breaking points, diving response, and spleen contraction during serial static apneas. <em>European Journal of Applied Physiology</em>, 123(8), 1809–1824. <a href="https://doi.org/10.1007/s00421-023-05202-7" rel="noopener">DOI</a></li>
+      <li>Schipke, J. D., Lemaitre, F., Cleveland, S., &amp; Tetzlaff, K. (2019). Effects of breath-hold deep diving on the pulmonary system. <em>Respiration</em>, 97(5), 476–483. <a href="https://doi.org/10.1159/000495757" rel="noopener">DOI</a></li>
     
       <li>Goyal, M., Singh, S., Sibinga, E. M. S., et al. (2014). Meditation programs for psychological stress and well-being: a systematic review and meta-analysis. <em>JAMA Internal Medicine</em>, 174(3), 357–368. <a href="https://pubmed.ncbi.nlm.nih.gov/24395196/" rel="noopener">PubMed</a></li>
       <li>Szekeres, R. A., &amp; Wertheim, E. H. (2015). Evaluation of Vipassana meditation course effects on subjective stress, well-being, self-kindness and mindfulness in a community sample: post-course and 6-month outcomes. <em>Stress and Health</em>. <a href="https://doi.org/10.1002/smi.2562" rel="noopener">DOI</a></li>
@@ -3305,6 +3412,20 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     <h2 id="sfTitle">Safety notes</h2>
     <div class="sf-note" id="sfBody"></div>
     <div class="modal-foot"><button class="btn primary small" id="sfClose">Close</button></div>
+  </div>
+</div>
+
+
+<!-- ============ SWIM & DIVE: its cautions, read once before its first session ============ -->
+<div class="modal" id="dvModal" hidden>
+  <div class="modal-card dv-card" role="dialog" aria-modal="true" aria-labelledby="dvTitle">
+    <h2 id="dvTitle">Swim &amp; dive: read this first</h2>
+    <ul class="dv-list" id="dvList"></ul>
+    <p class="hint">The research behind it is in Learn, under Breath training for swimming and diving.</p>
+    <div class="pm-actions">
+      <button class="btn primary" id="dvGo">I understand, start</button>
+      <button class="btn" id="dvClose">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -4621,6 +4742,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   -------------------------------------------------------------------------------- */
 
   var SAFE_BEATS = "Ask your doctor first if you have epilepsy or another seizure disorder, keep headphones at least 15 cm (6 in) from a pacemaker or implanted defibrillator, and never listen while driving.";
+  // Swim & dive's long breath holds: read once before its first session, the first four on Breathe while its range is on
+  var SAFE_DIVE = [
+    "Swim & dive is done entirely at your own risk.",
+    "A breath hold can make you black out without warning, so practise only on dry land, sitting or lying down: never in or near water, in the bath, standing at a height or while driving.",
+    "Breathe normally before each hold. Fast or deep breathing beforehand delays the urge to breathe while your oxygen keeps falling, a major cause of blackouts in the water.",
+    "Breathe whenever you need to: the timer is a guide, not a target. Stop and breathe normally if you feel dizzy, tingly or confused, or your vision narrows.",
+    "Keep the second inhale a gentle top-up. Forcing in extra air on top of a full breath, called lung packing, can make you faint.",
+    "Ask a doctor first if you have a heart, lung or blood-pressure condition, epilepsy or a history of fainting, or are pregnant.",
+    "In the water, train breath holds only under a coach or a trained buddy watching you the whole time."
+  ];
 
   function safeLink(txt) { return '<button type="button" class="sf-link" data-safety="1">' + esc(txt || "Safety notes") + "</button>"; }
   // a caution box: its lines in order, then the link to the whole note
@@ -4698,6 +4829,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       desc: "A popular wind-down before sleep: in for 4, hold for 7, out for 8.",
       ev: "In a small study of 44 young adults, a session of 4-7-8 breathing lowered heart rate and blood pressure immediately afterwards and shifted heart-rate variability towards parasympathetic activity, whether or not they had slept the night before. Beyond that the evidence is thin. The long hold is demanding, so scale all three numbers down together if it strains.",
       cite: "Vierra et al. 2022, Physiol. Rep."
+    },
+    {
+      // long: the Swim & dive range on the sliders (B_FIELDS' xmax), and its cautions on screen
+      id: "dive", strength: 1, long: true,
+      t: { inh: 5, sip: 2, hold: 15, exh: 10, rest: 5 },
+      desc: "Breath-hold training for swimmers and freedivers, on dry land: a slow, full breath in, a gentle top-up, a relaxed hold, a long breath out and a short hold with your lungs empty. Its range goes further than the other patterns: the in-breath, both holds and the out-breath up to 60 seconds each, the top-up up to 30. Start here and lengthen the holds a few seconds at a time, over weeks, only while they stay comfortable.",
+      ev: "Breath holds get longer with practice. In ten untrained people, two weeks of ten maximal holds a day lengthened their longest hold by 44 seconds, and the diving response, the reflex slowing of the heart that saves oxygen, began 3 seconds sooner. The longer holds also took blood oxygen lower, to 72% saturation from 84% before training: practice mainly delays the urge to breathe, which carbon dioxide sets more than oxygen does. How far dry holds carry over into the water is unclear, and these timings are a starting point rather than a protocol from a study.",
+      cite: "Engan et al. 2013, Scand. J. Med. Sci. Sports · Schagatay et al. 2000, Eur. J. Appl. Physiol."
     }
   ];
 
@@ -4717,12 +4856,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     column: "The column fills like your lungs and drains as you breathe out."
   };
 
+  // max: the sliders' usual range, in half seconds; xmax: the Swim & dive range, in whole seconds
   var B_FIELDS = [
-    { k: "inh",  id: "#bInh",  min: 1, max: 10, opt: false },
-    { k: "sip",  id: "#bSip",  min: 0, max: 2,  opt: true },
-    { k: "hold", id: "#bHold", min: 0, max: 10, opt: true },
-    { k: "exh",  id: "#bExh",  min: 1, max: 12, opt: false },
-    { k: "rest", id: "#bRest", min: 0, max: 10, opt: true }
+    { k: "inh",  id: "#bInh",  min: 1, max: 10, xmax: 60, opt: false },
+    { k: "sip",  id: "#bSip",  min: 0, max: 2,  xmax: 30, opt: true },
+    { k: "hold", id: "#bHold", min: 0, max: 10, xmax: 60, opt: true },
+    { k: "exh",  id: "#bExh",  min: 1, max: 12, xmax: 60, opt: false },
+    { k: "rest", id: "#bRest", min: 0, max: 10, xmax: 60, opt: true }
   ];
 
   var B_LEAD = 3;           // seconds of "get ready" before the first inhale
@@ -4734,7 +4874,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var B_MONO = '"Entrain Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';   // the big countdown digits
 
   var BC = {
-    pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0,
+    pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0, long: false,
     visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false
   };
 
@@ -4871,18 +5011,31 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }).join("");
     B.segOn = -1;
   }
+  /* Swim & dive's range: the sliders reach a minute in whole seconds, and its cautions show.
+     It comes on with that pattern (or a saved one made in it) and goes off with any other
+     preset; Custom and the sliders keep whichever range is on, so it never shifts mid-drag. */
+  function bLongT(t) { return B_FIELDS.some(function (f) { return t[f.k] > f.max; }); }
   function syncFields() {
+    var lg = !!BC.long;
     B_FIELDS.forEach(function (f) {
-      $(f.id).value = BC[f.k];
-      bSetT(f.id + "V", (f.opt && !BC[f.k]) ? "Off" : BC[f.k].toFixed(1) + " s");
+      var el = $(f.id), v = BC[f.k];
+      el.max = lg ? f.xmax : f.max;                 // the range first, so the value isn't clipped to the old one
+      el.step = lg ? 1 : 0.5;
+      el.value = v;
+      bSetT(f.id + "V", (f.opt && !v) ? "Off" : (lg && v % 1 === 0 ? String(v) : v.toFixed(1)) + " s");
     });
+    $("#bFields").classList.toggle("long", lg);
+    $("#bDiveRow").hidden = !lg;
+    $("#bDiveSafe").hidden = !lg;
   }
   function sameT(a, b) { return a.inh === b.inh && a.sip === b.sip && a.hold === b.hold && a.exh === b.exh && a.rest === b.rest; }
-  // the preset with these timings, else your own saved pattern with them, else "custom"
+  // the preset with these timings, else your own saved pattern with them, else "custom";
+  // only those of the range that's on, so Swim & dive's sliders never land on Box by chance
   function matchPreset() {
-    for (var i = 0; i < BREATHS.length; i++) if (sameT(BREATHS[i].t, BC)) return BREATHS[i].id;
+    var lg = !!BC.long;
+    for (var i = 0; i < BREATHS.length; i++) if (!!BREATHS[i].long === lg && sameT(BREATHS[i].t, BC)) return BREATHS[i].id;
     var l = mpLoad();
-    for (var j = 0; j < l.length; j++) if (sameT(l[j].t, BC)) return "my-" + l[j].uid;
+    for (var j = 0; j < l.length; j++) if (!!l[j].long === lg && sameT(l[j].t, BC)) return "my-" + l[j].uid;
     return "custom";
   }
   function renderNote() {
@@ -4897,11 +5050,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       $("#bEv").hidden = false;
       return;
     }
-    var rate = 60 / cycleOf(BC);
-    var s = (p ? "Your own pattern, saved on this device: " : "Your own timings: ") + rate.toFixed(1) + " breaths a minute. " + (rate <= 10
-      ? "That is inside the under-10-a-minute range most slow-breathing studies used."
-      : "That is faster than the under-10-a-minute range most slow-breathing studies used.");
-    if (BC.exh > BC.inh + BC.sip) s += " The exhale is longer than the inhale, the ratio rated more relaxing at slow rates.";
+    var rate = 60 / cycleOf(BC), s;
+    if (BC.long) {
+      s = (p ? "Your own pattern, saved on this device, in the Swim & dive range: " : "Your own timings, in the Swim & dive range: ") +
+        rate.toFixed(1) + " breaths a minute, " + (BC.hold + BC.rest ? "holding for " + (BC.hold + BC.rest) + " seconds of every " + Math.round(cycleOf(BC)) + "." : "with no holds.") +
+        " Lengthen the holds a few seconds at a time, only while they stay comfortable.";
+    } else {
+      s = (p ? "Your own pattern, saved on this device: " : "Your own timings: ") + rate.toFixed(1) + " breaths a minute. " + (rate <= 10
+        ? "That is inside the under-10-a-minute range most slow-breathing studies used."
+        : "That is faster than the under-10-a-minute range most slow-breathing studies used.");
+      if (BC.exh > BC.inh + BC.sip) s += " The exhale is longer than the inhale, the ratio rated more relaxing at slow rates.";
+    }
     bSetT("#bDesc", s);
     $("#bEv").hidden = true;
   }
@@ -4931,6 +5090,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     $("#bReset").disabled = st === "idle";
   }
   function kindHint(k) {
+    if (BC.long) return {
+      "in": "Fill from the belly up, slowly, through your nose.",
+      sip: "A gentle top-up into the chest, well short of a strain.",
+      hold: "Lungs full, shoulders and jaw soft. Breathe whenever you need to.",
+      out: "Slow and complete, through your mouth.",
+      rest: "Lungs empty. Breathe in whenever you need to."
+    }[k];
     if (k === "in") return BC.sip > 0 ? "Slowly, through your nose." : "Slow and smooth, through your nose.";
     if (k === "sip") return "A short second sip to fill your lungs.";
     if (k === "hold") return "Lungs full. Keep your shoulders soft.";
@@ -4985,8 +5151,43 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function bToggle() {
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();
-    else if (B.state === "paused") bResume();
-    else { bFresh(); bResume(); }
+    else if (B.state === "paused") { if (!dvGate("resume")) bResume(); }
+    else if (!dvGate("start")) { bFresh(); bResume(); }
+  }
+
+  /* ----- Swim & dive's cautions: read once, before its first session, and any time from the stage ----- */
+  var DV = { then: "" };                  // what "I understand" goes on to do: start, resume, or nothing
+  function dvGate(then) {
+    if (!BC.long || store.get("diveOk")) return false;
+    dvOpen(then);
+    return true;
+  }
+  function dvOpen(then) {
+    DV.then = then || "";
+    if ($("#bStage").classList.contains("focus")) setFocus(false);    // a full-screen stage would hide the dialog
+    $("#dvList").innerHTML = SAFE_DIVE.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("");
+    $("#dvGo").hidden = !DV.then;
+    bSetT("#dvGo", DV.then === "resume" ? "I understand, carry on" : "I understand, start");
+    bSetT("#dvClose", DV.then ? "Cancel" : "Close");
+    openDialog("#dvModal");
+    $("#dvModal .modal-card").scrollTop = 0;
+    setTimeout(function () { try { $(DV.then ? "#dvGo" : "#dvClose").focus({ preventScroll: true }); } catch (e) {} }, 30);
+  }
+  function dvClose() { DV.then = ""; if (!$("#dvModal").hidden) closeDialog("#dvModal"); }
+  function dvGo() {
+    var then = DV.then;
+    store.set("diveOk", "1");
+    dvClose();
+    if (then === "resume" && B.state === "paused") bResume();
+    else if (then === "start" && (B.state === "idle" || B.state === "done")) { bFresh(); bResume(); }
+  }
+  function dvInit() {
+    $("#bDiveSafe").innerHTML = safeBox(SAFE_DIVE.slice(0, 4));          // the four that matter most; the dialog has them all
+    $("#bDiveInfo").addEventListener("click", function () { dvOpen(""); });
+    $("#dvGo").addEventListener("click", dvGo);
+    $("#dvClose").addEventListener("click", dvClose);
+    $("#dvModal").addEventListener("click", function (e) { if (e.target === this) dvClose(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#dvModal").hidden) dvClose(); });
   }
   function bResume() {
     B.t0 = bNow() - B.st;
@@ -5050,7 +5251,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   function bFinish() {
     var secs = endBt(), n = B.total;
-    bEnd(n, secs, n + " breaths in " + fmt(secs) + ". Breathe normally for a minute before you get up.");
+    bEnd(n, secs, n + " breaths in " + fmt(secs) + ". Breathe normally for " + (BC.long ? "a couple of minutes" : "a minute") + " before you get up.");
     hBreath(secs, true);
     syncTransport(); updateHead(); draw();
     bSetT("#bLive", "Session complete.");
@@ -5238,8 +5439,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (saved && typeof saved === "object") {
         B_FIELDS.forEach(function (f) {
           var v = parseFloat(saved[f.k]);
-          if (isFinite(v) && v >= f.min && v <= f.max) BC[f.k] = Math.round(v * 2) / 2;
+          if (isFinite(v) && v >= f.min && v <= f.xmax) BC[f.k] = Math.round(v * 2) / 2;
         });
+        BC.long = saved.long === true || bLongT(BC);
         if (BVIS[saved.visual]) BC.visual = saved.visual;
         if (["off", "tones", "chimes"].indexOf(saved.sound) >= 0) BC.sound = saved.sound;
         if ([0, 2, 5, 10, 15].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;
@@ -5252,6 +5454,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
     readColors();
     mpInit();
+    dvInit();
     checkRadio("bpat", BC.pattern);
     checkRadio("bvis", BC.visual);
     checkRadio("blen", String(BC.minutes));
@@ -5273,10 +5476,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       BC.pattern = e.target.value;
       var p = preset(BC.pattern);
       if (p) {
+        BC.long = !!p.long || bLongT(p.t);              // Custom keeps the range that's on
         BC.inh = p.t.inh; BC.sip = p.t.sip; BC.hold = p.t.hold; BC.exh = p.t.exh; BC.rest = p.t.rest;
         syncFields();
       }
       renderNote(); syncVisHint(); applyTimings(); saveBreath();
+      if (B.state === "running" && dvGate("resume")) bPause();      // switched to Swim & dive mid-session: its cautions first
     });
     B_FIELDS.forEach(function (f) {
       $(f.id).addEventListener("input", function () {
@@ -5840,13 +6045,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var MP = { list: null, from: "", shown: null };   // from: the saved pattern your timings were changed from
 
   function mpName(s) { return typeof s === "string" ? s.replace(/\s+/g, " ").trim().slice(0, 40) : ""; }
-  // the five timings, only if every one is inside its slider's range and on its half-second steps
+  // the five timings, only if every one is inside its slider's range (Swim & dive's, at most) and on its half-second steps
   function mpTimes(t) {
     if (!t || typeof t !== "object") return null;
     var o = {};
     for (var i = 0; i < B_FIELDS.length; i++) {
       var f = B_FIELDS[i], v = +t[f.k];
-      if (!isFinite(v) || v < f.min || v > f.max || v * 2 !== Math.round(v * 2)) return null;
+      if (!isFinite(v) || v < f.min || v > f.xmax || v * 2 !== Math.round(v * 2)) return null;
       o[f.k] = v;
     }
     return o;
@@ -5859,7 +6064,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       var t = q && mpTimes(q.t), name = q && mpName(q.name);
       if (!t || !name || typeof q.uid !== "string" || !/^[a-z0-9]{1,16}$/.test(q.uid) || seen[q.uid]) return null;
       seen[q.uid] = true;
-      return { uid: q.uid, name: name, t: t, at: +q.at || 0 };
+      var o = { uid: q.uid, name: name, t: t, at: +q.at || 0 };
+      if (q.long === true || bLongT(t)) o.long = true;              // made in the Swim & dive range: it opens there
+      return o;
     }).filter(Boolean).slice(0, MP_MAX);
     return MP.list;
   }
@@ -5884,7 +6091,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   // a saved pattern in the shape of a preset, for the guide, the library, search and favourites
   function mpPattern(q) {
-    return { id: "my-" + q.uid, mine: true, name: q.name, t: q.t, desc: mpSteps(q.t) + ".", goal: "", also: [], posture: ["sit", "lie"], strength: 0 };
+    return { id: "my-" + q.uid, mine: true, long: !!q.long, name: q.name, t: q.t, desc: mpSteps(q.t) + ".", goal: "", also: [], posture: ["sit", "lie"], strength: 0 };
   }
   function mpGet(id) { var q = typeof id === "string" ? mpQ(id) : null; return q ? mpPattern(q) : null; }
   function mpAll() { return mpLoad().map(mpPattern); }
@@ -5973,6 +6180,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     name = name || mpFreeName();
     if ((clash = mpTaken(name))) { bSetT("#bMyHint", "There's already a pattern called “" + clash + "”. Pick another name."); return; }
     q = { uid: mpUid(), name: name, t: mpCopy(BC), at: Date.now() };
+    if (BC.long) q.long = true;
     l.push(q);
     mpStore();
     BC.pattern = "my-" + q.uid; MP.from = "";
@@ -5984,6 +6192,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var q = mpQ(MP.from);
     if (!q || B.finder || P.usesB || BC.pattern !== "custom" || matchPreset() !== "custom") return;
     q.t = mpCopy(BC); q.at = Date.now();
+    if (BC.long) q.long = true; else delete q.long;
     mpStore();
     BC.pattern = "my-" + q.uid; MP.from = "";
     mpRefresh();
@@ -6853,6 +7062,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     B.finder = { saved: saved, idx: 0, stepAt: 0 };
     setTimings(findTimings(FIND_RATES[0]));
     BC.pattern = "custom";
+    BC.long = false;                       // the test's paces on the usual sliders; your range comes back after
     BC.minutes = 0;
     syncBreathControls();
     bSetT("#bDesc", "Resonance test running. Follow the guide; the pace slows a little every two minutes. Sit still and breathe gently, not deeply.");
@@ -6913,6 +7123,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!H.find || !H.find.best) return;
     if (B.finder) finderCancel();
     setTimings(findTimings(H.find.best));
+    BC.long = false;
     BC.pattern = matchPreset();
     syncBreathControls();
     applyTimings();
@@ -7812,7 +8023,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "9f9bca32";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "5284d994";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -10962,7 +11173,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ["x:prime", "sound", "sit"], ["t:deep-work", "sound", "sit"], ["t:sustained-24", "sound", "sit"],
       ["t:vigilance-16", "sound", "sit"], ["t:gamma-40", "sound", "sit"], ["t:gamma-memory", "sound", "sit"],
       ["t:creative-reverie", "sound", "sit"]],
-    energy: [["morning-tonic", "program", "lie sit stand"], ["sport", "program", "sit stand"], ["morning-yoga", "move", "stand"], ["standing-flow", "move", "stand"], ["morning-stretch", "move", "stand"],
+    energy: [["morning-tonic", "program", "lie sit stand"], ["sport", "program", "sit stand"], ["b:dive", "breath", "sit lie"], ["morning-yoga", "move", "stand"], ["standing-flow", "move", "stand"], ["morning-stretch", "move", "stand"],
       ["standing-reset", "move", "stand"], ["balance-yoga", "move", "stand"], ["kapalabhati", "breath", "sit"],
       ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"]],
     recover: [["recovery", "program", "sit walk"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
@@ -10976,7 +11187,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], gratitude: ["calm"], "back-hips": ["calm"],
     "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"], meal: ["reflect"], "mindful-sex": ["reflect"], sport: ["focus"]
   };
-  var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8" };
+  var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8", dive: "Swim & dive" };
   var TOOLS = {
     prime: { name: "Custom primer", href: "#prime", icon: "bolt", strength: 2,
       blurb: "Pick a beat and 5 to 20 minutes of priming. When the bell rings, start work with the beat quieter, pink noise, or silence." },
@@ -11298,10 +11509,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function pBreathOn(s, st) {
     if (!P.saved) {
       P.saved = {};
-      ["inh", "sip", "hold", "exh", "rest", "minutes", "sound", "cue", "buzz", "visual"].forEach(function (k) { P.saved[k] = BC[k]; });
+      ["inh", "sip", "hold", "exh", "rest", "long", "minutes", "sound", "cue", "buzz", "visual"].forEach(function (k) { P.saved[k] = BC[k]; });
     }
     var c = pCfgAt(s, st || 0);
     B_KEYS.forEach(function (k) { BC[k] = c[k]; });
+    BC.long = false;                     // a practice's breathing keeps the usual guidance, whatever range Breathe was on
     BC.minutes = 0;
     BC.visual = P.opt.visual;
     var snd = P.opt.cues;

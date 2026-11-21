@@ -18,7 +18,7 @@ const SUITES = [   // name, what it covers, and about how long it takes on its o
   ['findtest', 'Resonance test with a sensor (about two minutes)', 110],
   ['stresstest', 'Stress Check: the reading, your own baseline, each level\'s advice', 250],
   ['cuetrend', 'Lock screen, vibration, comparisons, trends, start-up, Heart', 70],
-  ['choices', 'Saved patterns, safety note, filters, Heart Coherence, live changes, Restart, Healthy living, Gratitude, Calm Reset, donations, connecting, difficult conversations, autogenic training, walking, feedback, routines and light, the consistency check, a mindful meal, four more programmes, the Heart page explained, breath from the microphone, coffee', 290]
+  ['choices', 'Saved patterns, safety note, filters, Heart Coherence, live changes, Restart, Healthy living, Gratitude, Calm Reset, donations, connecting, difficult conversations, autogenic training, walking, feedback, routines and light, the consistency check, a mindful meal, four more programmes, the Heart page explained, breath from the microphone, coffee, Swim & dive', 290]
 ];
 const MAX = 15 * 60 * 1000;                 // a suite that runs longer than this has hung
 

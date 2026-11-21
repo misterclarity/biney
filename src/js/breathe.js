@@ -47,6 +47,14 @@
       desc: "A popular wind-down before sleep: in for 4, hold for 7, out for 8.",
       ev: "In a small study of 44 young adults, a session of 4-7-8 breathing lowered heart rate and blood pressure immediately afterwards and shifted heart-rate variability towards parasympathetic activity, whether or not they had slept the night before. Beyond that the evidence is thin. The long hold is demanding, so scale all three numbers down together if it strains.",
       cite: "Vierra et al. 2022, Physiol. Rep."
+    },
+    {
+      // long: the Swim & dive range on the sliders (B_FIELDS' xmax), and its cautions on screen
+      id: "dive", strength: 1, long: true,
+      t: { inh: 5, sip: 2, hold: 15, exh: 10, rest: 5 },
+      desc: "Breath-hold training for swimmers and freedivers, on dry land: a slow, full breath in, a gentle top-up, a relaxed hold, a long breath out and a short hold with your lungs empty. Its range goes further than the other patterns: the in-breath, both holds and the out-breath up to 60 seconds each, the top-up up to 30. Start here and lengthen the holds a few seconds at a time, over weeks, only while they stay comfortable.",
+      ev: "Breath holds get longer with practice. In ten untrained people, two weeks of ten maximal holds a day lengthened their longest hold by 44 seconds, and the diving response, the reflex slowing of the heart that saves oxygen, began 3 seconds sooner. The longer holds also took blood oxygen lower, to 72% saturation from 84% before training: practice mainly delays the urge to breathe, which carbon dioxide sets more than oxygen does. How far dry holds carry over into the water is unclear, and these timings are a starting point rather than a protocol from a study.",
+      cite: "Engan et al. 2013, Scand. J. Med. Sci. Sports · Schagatay et al. 2000, Eur. J. Appl. Physiol."
     }
   ];
 
@@ -66,12 +74,13 @@
     column: "The column fills like your lungs and drains as you breathe out."
   };
 
+  // max: the sliders' usual range, in half seconds; xmax: the Swim & dive range, in whole seconds
   var B_FIELDS = [
-    { k: "inh",  id: "#bInh",  min: 1, max: 10, opt: false },
-    { k: "sip",  id: "#bSip",  min: 0, max: 2,  opt: true },
-    { k: "hold", id: "#bHold", min: 0, max: 10, opt: true },
-    { k: "exh",  id: "#bExh",  min: 1, max: 12, opt: false },
-    { k: "rest", id: "#bRest", min: 0, max: 10, opt: true }
+    { k: "inh",  id: "#bInh",  min: 1, max: 10, xmax: 60, opt: false },
+    { k: "sip",  id: "#bSip",  min: 0, max: 2,  xmax: 30, opt: true },
+    { k: "hold", id: "#bHold", min: 0, max: 10, xmax: 60, opt: true },
+    { k: "exh",  id: "#bExh",  min: 1, max: 12, xmax: 60, opt: false },
+    { k: "rest", id: "#bRest", min: 0, max: 10, xmax: 60, opt: true }
   ];
 
   var B_LEAD = 3;           // seconds of "get ready" before the first inhale
@@ -83,7 +92,7 @@
   var B_MONO = '"Entrain Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';   // the big countdown digits
 
   var BC = {
-    pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0,
+    pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0, long: false,
     visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false
   };
 
@@ -220,18 +229,31 @@
     }).join("");
     B.segOn = -1;
   }
+  /* Swim & dive's range: the sliders reach a minute in whole seconds, and its cautions show.
+     It comes on with that pattern (or a saved one made in it) and goes off with any other
+     preset; Custom and the sliders keep whichever range is on, so it never shifts mid-drag. */
+  function bLongT(t) { return B_FIELDS.some(function (f) { return t[f.k] > f.max; }); }
   function syncFields() {
+    var lg = !!BC.long;
     B_FIELDS.forEach(function (f) {
-      $(f.id).value = BC[f.k];
-      bSetT(f.id + "V", (f.opt && !BC[f.k]) ? "Off" : BC[f.k].toFixed(1) + " s");
+      var el = $(f.id), v = BC[f.k];
+      el.max = lg ? f.xmax : f.max;                 // the range first, so the value isn't clipped to the old one
+      el.step = lg ? 1 : 0.5;
+      el.value = v;
+      bSetT(f.id + "V", (f.opt && !v) ? "Off" : (lg && v % 1 === 0 ? String(v) : v.toFixed(1)) + " s");
     });
+    $("#bFields").classList.toggle("long", lg);
+    $("#bDiveRow").hidden = !lg;
+    $("#bDiveSafe").hidden = !lg;
   }
   function sameT(a, b) { return a.inh === b.inh && a.sip === b.sip && a.hold === b.hold && a.exh === b.exh && a.rest === b.rest; }
-  // the preset with these timings, else your own saved pattern with them, else "custom"
+  // the preset with these timings, else your own saved pattern with them, else "custom";
+  // only those of the range that's on, so Swim & dive's sliders never land on Box by chance
   function matchPreset() {
-    for (var i = 0; i < BREATHS.length; i++) if (sameT(BREATHS[i].t, BC)) return BREATHS[i].id;
+    var lg = !!BC.long;
+    for (var i = 0; i < BREATHS.length; i++) if (!!BREATHS[i].long === lg && sameT(BREATHS[i].t, BC)) return BREATHS[i].id;
     var l = mpLoad();
-    for (var j = 0; j < l.length; j++) if (sameT(l[j].t, BC)) return "my-" + l[j].uid;
+    for (var j = 0; j < l.length; j++) if (!!l[j].long === lg && sameT(l[j].t, BC)) return "my-" + l[j].uid;
     return "custom";
   }
   function renderNote() {
@@ -246,11 +268,17 @@
       $("#bEv").hidden = false;
       return;
     }
-    var rate = 60 / cycleOf(BC);
-    var s = (p ? "Your own pattern, saved on this device: " : "Your own timings: ") + rate.toFixed(1) + " breaths a minute. " + (rate <= 10
-      ? "That is inside the under-10-a-minute range most slow-breathing studies used."
-      : "That is faster than the under-10-a-minute range most slow-breathing studies used.");
-    if (BC.exh > BC.inh + BC.sip) s += " The exhale is longer than the inhale, the ratio rated more relaxing at slow rates.";
+    var rate = 60 / cycleOf(BC), s;
+    if (BC.long) {
+      s = (p ? "Your own pattern, saved on this device, in the Swim & dive range: " : "Your own timings, in the Swim & dive range: ") +
+        rate.toFixed(1) + " breaths a minute, " + (BC.hold + BC.rest ? "holding for " + (BC.hold + BC.rest) + " seconds of every " + Math.round(cycleOf(BC)) + "." : "with no holds.") +
+        " Lengthen the holds a few seconds at a time, only while they stay comfortable.";
+    } else {
+      s = (p ? "Your own pattern, saved on this device: " : "Your own timings: ") + rate.toFixed(1) + " breaths a minute. " + (rate <= 10
+        ? "That is inside the under-10-a-minute range most slow-breathing studies used."
+        : "That is faster than the under-10-a-minute range most slow-breathing studies used.");
+      if (BC.exh > BC.inh + BC.sip) s += " The exhale is longer than the inhale, the ratio rated more relaxing at slow rates.";
+    }
     bSetT("#bDesc", s);
     $("#bEv").hidden = true;
   }
@@ -280,6 +308,13 @@
     $("#bReset").disabled = st === "idle";
   }
   function kindHint(k) {
+    if (BC.long) return {
+      "in": "Fill from the belly up, slowly, through your nose.",
+      sip: "A gentle top-up into the chest, well short of a strain.",
+      hold: "Lungs full, shoulders and jaw soft. Breathe whenever you need to.",
+      out: "Slow and complete, through your mouth.",
+      rest: "Lungs empty. Breathe in whenever you need to."
+    }[k];
     if (k === "in") return BC.sip > 0 ? "Slowly, through your nose." : "Slow and smooth, through your nose.";
     if (k === "sip") return "A short second sip to fill your lungs.";
     if (k === "hold") return "Lungs full. Keep your shoulders soft.";
@@ -334,8 +369,43 @@
   function bToggle() {
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();
-    else if (B.state === "paused") bResume();
-    else { bFresh(); bResume(); }
+    else if (B.state === "paused") { if (!dvGate("resume")) bResume(); }
+    else if (!dvGate("start")) { bFresh(); bResume(); }
+  }
+
+  /* ----- Swim & dive's cautions: read once, before its first session, and any time from the stage ----- */
+  var DV = { then: "" };                  // what "I understand" goes on to do: start, resume, or nothing
+  function dvGate(then) {
+    if (!BC.long || store.get("diveOk")) return false;
+    dvOpen(then);
+    return true;
+  }
+  function dvOpen(then) {
+    DV.then = then || "";
+    if ($("#bStage").classList.contains("focus")) setFocus(false);    // a full-screen stage would hide the dialog
+    $("#dvList").innerHTML = SAFE_DIVE.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("");
+    $("#dvGo").hidden = !DV.then;
+    bSetT("#dvGo", DV.then === "resume" ? "I understand, carry on" : "I understand, start");
+    bSetT("#dvClose", DV.then ? "Cancel" : "Close");
+    openDialog("#dvModal");
+    $("#dvModal .modal-card").scrollTop = 0;
+    setTimeout(function () { try { $(DV.then ? "#dvGo" : "#dvClose").focus({ preventScroll: true }); } catch (e) {} }, 30);
+  }
+  function dvClose() { DV.then = ""; if (!$("#dvModal").hidden) closeDialog("#dvModal"); }
+  function dvGo() {
+    var then = DV.then;
+    store.set("diveOk", "1");
+    dvClose();
+    if (then === "resume" && B.state === "paused") bResume();
+    else if (then === "start" && (B.state === "idle" || B.state === "done")) { bFresh(); bResume(); }
+  }
+  function dvInit() {
+    $("#bDiveSafe").innerHTML = safeBox(SAFE_DIVE.slice(0, 4));          // the four that matter most; the dialog has them all
+    $("#bDiveInfo").addEventListener("click", function () { dvOpen(""); });
+    $("#dvGo").addEventListener("click", dvGo);
+    $("#dvClose").addEventListener("click", dvClose);
+    $("#dvModal").addEventListener("click", function (e) { if (e.target === this) dvClose(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#dvModal").hidden) dvClose(); });
   }
   function bResume() {
     B.t0 = bNow() - B.st;
@@ -399,7 +469,7 @@
   }
   function bFinish() {
     var secs = endBt(), n = B.total;
-    bEnd(n, secs, n + " breaths in " + fmt(secs) + ". Breathe normally for a minute before you get up.");
+    bEnd(n, secs, n + " breaths in " + fmt(secs) + ". Breathe normally for " + (BC.long ? "a couple of minutes" : "a minute") + " before you get up.");
     hBreath(secs, true);
     syncTransport(); updateHead(); draw();
     bSetT("#bLive", "Session complete.");
@@ -587,8 +657,9 @@
       if (saved && typeof saved === "object") {
         B_FIELDS.forEach(function (f) {
           var v = parseFloat(saved[f.k]);
-          if (isFinite(v) && v >= f.min && v <= f.max) BC[f.k] = Math.round(v * 2) / 2;
+          if (isFinite(v) && v >= f.min && v <= f.xmax) BC[f.k] = Math.round(v * 2) / 2;
         });
+        BC.long = saved.long === true || bLongT(BC);
         if (BVIS[saved.visual]) BC.visual = saved.visual;
         if (["off", "tones", "chimes"].indexOf(saved.sound) >= 0) BC.sound = saved.sound;
         if ([0, 2, 5, 10, 15].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;
@@ -601,6 +672,7 @@
 
     readColors();
     mpInit();
+    dvInit();
     checkRadio("bpat", BC.pattern);
     checkRadio("bvis", BC.visual);
     checkRadio("blen", String(BC.minutes));
@@ -622,10 +694,12 @@
       BC.pattern = e.target.value;
       var p = preset(BC.pattern);
       if (p) {
+        BC.long = !!p.long || bLongT(p.t);              // Custom keeps the range that's on
         BC.inh = p.t.inh; BC.sip = p.t.sip; BC.hold = p.t.hold; BC.exh = p.t.exh; BC.rest = p.t.rest;
         syncFields();
       }
       renderNote(); syncVisHint(); applyTimings(); saveBreath();
+      if (B.state === "running" && dvGate("resume")) bPause();      // switched to Swim & dive mid-session: its cautions first
     });
     B_FIELDS.forEach(function (f) {
       $(f.id).addEventListener("input", function () {

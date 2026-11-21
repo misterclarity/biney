@@ -9,6 +9,7 @@
             <label class="chip"><input type="radio" name="bpat" value="exhale"> Long exhale</label>
             <label class="chip"><input type="radio" name="bpat" value="box"> Box 4-4-4-4</label>
             <label class="chip"><input type="radio" name="bpat" value="478"> 4-7-8</label>
+            <label class="chip"><input type="radio" name="bpat" value="dive"> Swim &amp; dive</label>
             <label class="chip"><input type="radio" name="bpat" value="custom"> Custom</label>
           </div>
             <div class="b-head">
@@ -42,6 +43,11 @@
               <button class="btn" id="bFocus">Focus view</button>
               <span class="b-msg" id="bMsg" role="status"></span>
             </div>
+            <div class="b-dive" id="bDiveRow" hidden>
+              {i:warn}
+              <span><b>At your own risk.</b> Breath holds on dry land only, sitting or lying down, and breathe whenever you need to.</span>
+              <button type="button" class="btn small" id="bDiveInfo">Read the cautions</button>
+            </div>
             <div class="b-sensor" id="bSensorRow">
               {i:pulse}
               <span id="bSensorTxt">Connect a heart sensor to watch your heart rate follow your breath.</span>
@@ -58,9 +64,10 @@
             <summary id="bEvSum">Evidence <span class="strength" title="Strength of supporting evidence: 3 of 3" aria-label="Evidence strength 3 of 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></summary>
             <div class="ev-body"><span id="bEvTxt"></span><cite id="bCite"></cite></div>
           </details>
+          <div id="bDiveSafe" hidden></div>
         </div>
 
-        <div class="b-fields">
+        <div class="b-fields" id="bFields">
           <div class="field">
             <label for="bInh">Inhale <b id="bInhV">5.5 s</b></label>
             <input type="range" id="bInh" min="1" max="10" step="0.5" value="5.5">
@@ -85,6 +92,8 @@
             <b id="bRateV">5.5 breaths/min</b>
             <span id="bRateS">0.091 Hz · 11.0 s a breath</span>
           </div>
+          <p class="hint b-longnote">The Swim &amp; dive range, in whole seconds: up to 60 for the in-breath, each hold and the
+            out-breath, and up to 30 for the top-up. Any other preset brings back the usual range.</p>
         </div>
 
         <div class="b-mine quiet" id="bMine">

@@ -118,6 +118,7 @@
     B.finder = { saved: saved, idx: 0, stepAt: 0 };
     setTimings(findTimings(FIND_RATES[0]));
     BC.pattern = "custom";
+    BC.long = false;                       // the test's paces on the usual sliders; your range comes back after
     BC.minutes = 0;
     syncBreathControls();
     bSetT("#bDesc", "Resonance test running. Follow the guide; the pace slows a little every two minutes. Sit still and breathe gently, not deeply.");
@@ -178,6 +179,7 @@
     if (!H.find || !H.find.best) return;
     if (B.finder) finderCancel();
     setTimings(findTimings(H.find.best));
+    BC.long = false;
     BC.pattern = matchPreset();
     syncBreathControls();
     applyTimings();

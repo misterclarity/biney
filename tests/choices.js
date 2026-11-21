@@ -18,6 +18,7 @@
 //   S  four programmes: Morning Wake-Up, Sports Performance, Creative Flow and Mindful Sex
 //   J  the Heart page explained, breath from the microphone and the spectrum's dashed line, coffee, and the
 //      routines' suggestions behind a button
+//   O  Swim & dive: breath holds on a longer range, at your own risk, its cautions first, and the research in Learn
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -80,7 +81,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const id = b.pattern, uid = id.slice(3);
       ok(/^my-[a-z0-9]+$/.test(id) && l.length === 1 && l[0].name === 'Evening 4-6' && JSON.stringify(l[0].t) === JSON.stringify({ inh: 4, sip: 0, hold: 0, exh: 6, rest: 0 }),
         'Save keeps the name, tidied, and the five timings on this device: ' + JSON.stringify(l[0]));
-      ok(c.join('|') === 'Resonance 5.5|Cyclic sigh|Long exhale|Box 4-4-4-4|4-7-8|*Evening 4-6|Custom', 'it becomes a chip beside the presets, chosen: ' + c.join(' | '));
+      ok(c.join('|') === 'Resonance 5.5|Cyclic sigh|Long exhale|Box 4-4-4-4|4-7-8|Swim & dive|*Evening 4-6|Custom', 'it becomes a chip beside the presets, chosen: ' + c.join(' | '));
       ok(/^Saved “Evening 4-6”\. It's beside the presets, and in Practice under Yours\.$/.test(await toastTxt(p)), 'and says where it went: ' + await toastTxt(p));
       ok(/^Your own pattern, saved on this device: 6\.0 breaths a minute\./.test(await t(p, '#bDesc')) && await p.$eval('#bEv', e => e.hidden), 'its note gives the pace and no evidence: ' + await t(p, '#bDesc'));
       r = await row(p);
@@ -153,7 +154,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await p.click('#bAdjust'); await p.waitForTimeout(400);
       await p.click('#bMyDel'); await p.waitForTimeout(250);
       b = await BC(p); c = await chips(p);
-      ok((await saved(p)).length === 0 && b.pattern === 'custom' && b.exh === 7 && c.join('|') === 'Resonance 5.5|Cyclic sigh|Long exhale|Box 4-4-4-4|4-7-8|*Custom' && await E(p, () => localStorage.getItem('entrain.favs')) === '[]',
+      ok((await saved(p)).length === 0 && b.pattern === 'custom' && b.exh === 7 && c.join('|') === 'Resonance 5.5|Cyclic sigh|Long exhale|Box 4-4-4-4|4-7-8|Swim & dive|*Custom' && await E(p, () => localStorage.getItem('entrain.favs')) === '[]',
         'Delete takes it out at once, and its star; the timings stay, as Custom');
       ok((await toastTxt(p)) === 'Deleted “Evening slow”.' && await p.$eval('#toastAct', e => !e.hidden && e.textContent) === 'Undo', 'with an Undo');
       const over = await E(p, () => { const t = document.querySelector('#toast').getBoundingClientRect(), s = document.querySelector('#bPanel'), x = document.elementFromPoint(t.left + t.width / 2, t.top + t.height / 2);
@@ -180,7 +181,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
 
       // twelve already: no room; damaged entries are dropped
       const twelve = Array.from({ length: 12 }, (_, i) => ({ uid: 'p' + i, name: 'Pattern ' + i, t: { inh: 4, sip: 0, hold: 0, exh: 5 + i * 0.5, rest: 0 }, at: i }));
-      const junk = [{ uid: 'p0', name: 'Again', t: twelve[0].t }, { uid: 'BAD!', name: 'x', t: twelve[0].t }, { uid: 'zz', name: '', t: twelve[0].t }, { uid: 'zy', name: 'Odd', t: { inh: 4.3, sip: 0, hold: 0, exh: 6, rest: 0 } }, { uid: 'zx', name: 'Big', t: { inh: 40, sip: 0, hold: 0, exh: 6, rest: 0 } }, null, 7];
+      const junk = [{ uid: 'p0', name: 'Again', t: twelve[0].t }, { uid: 'BAD!', name: 'x', t: twelve[0].t }, { uid: 'zz', name: '', t: twelve[0].t }, { uid: 'zy', name: 'Odd', t: { inh: 4.3, sip: 0, hold: 0, exh: 6, rest: 0 } }, { uid: 'zx', name: 'Big', t: { inh: 70, sip: 0, hold: 0, exh: 6, rest: 0 } }, null, 7];
       const q = await page(Object.assign(OPT(), { myBreaths: JSON.stringify(twelve.slice(0, 3).concat(junk, twelve.slice(3))), breath: JSON.stringify({ pattern: 'custom', inh: 3.5, sip: 0, hold: 0, exh: 9, rest: 0, minutes: 5, visual: 'circle', sound: 'off', cue: 40 }) }));
       await E(q, () => location.hash = 'breathe'); await q.waitForTimeout(300);
       ok(await E(q, () => window.__entrain.MP.list.map(x => x.uid).join(' ')) === twelve.map(x => x.uid).join(' '), 'stored entries that are damaged or doubled are left out, and the twelve good ones kept in order');
@@ -217,7 +218,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(!/Not for everyone/.test(await E(p, () => document.documentElement.innerHTML)), 'the paragraph repeated on five pages is gone');
       const learn = await E(p, () => ({ toc: !!document.querySelector('.toc a[href="#l-safety"]'), h: document.querySelector('#l-safety').textContent,
         items: [...document.querySelectorAll('#sfNote .sf-list li b')].map(b => b.textContent) }));
-      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Moving. | Feelings. | Food and supplements. | Light.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
+      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Breath holds. | Moving. | Feelings. | Food and supplements. | Light.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
       const opened = async (from) => {
         await p.click(from); await p.waitForTimeout(250);
         return E(p, () => { const m = document.querySelector('#sfModal'), b = document.querySelector('#sfBody');
@@ -1553,7 +1554,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const C = await E(p, () => {
         const X = window.__entrain, refs = [...document.querySelectorAll('#references li')].map(li => li.textContent.replace(/\s+/g, ' ').trim());
         const body = [...document.querySelectorAll('#science > *:not(.refs-sec)')].map(e => e.textContent).join(' ').replace(/\s+/g, ' ');
-        const found = [], who = "([A-ZÀ-Ž][\\w'’À-ž-]+(?: [A-Z][\\w-]+)?)";
+        const found = [], who = "((?:de |van |von )?[A-ZÀ-Ž][\\w'’À-ž-]+(?: [A-ZÀ-Ž][\\w'’À-ž-]+)?)";   // "de Asís-Fernández" as well as "Van Diest"
         // in Learn: (Author, 2014), (Author & Author, 2014), (Author et al., 2014), several in one pair of brackets
         (body.match(/\(([^()]*\d{4})\)/g) || []).forEach(g => g.slice(1, -1).split(';').forEach(c => {
           const m = new RegExp('^' + who + '[^;]*?,? (\\d{4})$').exec(c.trim()); if (m) found.push([m[1], m[2], c.trim()]);
@@ -2363,6 +2364,165 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(/^mic:/.test(m3.mark) && Math.abs(parseFloat(m3.mark.slice(4)) - pace) < 0.4 && /You're breathing about [\d.]+ a minute, as the microphone hears it\. They match: your breathing is setting your heart's rhythm\.$/.test(m3.read) &&
         /; breathing [\d.]+$/.test(m3.coh), 'with a minute of heartbeats, the dashed line marks the pace the microphone hears, and the line under the spectrum and the coherence tile set it beside the heart\'s rhythm: ' + m3.read);
       await live.context().close();
+    }
+
+    /* O. Swim & dive: breath holds for swimmers and divers on the longer range (the in-breath, both holds and the
+       out-breath up to 60 s, the top-up up to 30), at your own risk, its cautions read once before the first
+       session, your own patterns made in it, and the research in Learn */
+    if (!only || only === 'O') {
+      let p = await page(OPT());
+      await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
+      const vis = (p, s) => E(p, s => { const e = document.querySelector(s); return !!e && !e.hidden && !e.closest('[hidden]') && getComputedStyle(e).display !== 'none'; }, s);
+      const range = p => E(p, () => ['#bInh', '#bSip', '#bHold', '#bExh', '#bRest'].map(id => { const e = document.querySelector(id); return e.max + '/' + e.step; }).join(' '));
+      const LONG = '60/1 30/1 60/1 60/1 60/1', USUAL = '10/0.5 2/0.5 10/0.5 12/0.5 10/0.5';
+      const all = p => E(p, () => Object.assign({}, window.__entrain.BC));
+      const dlg = p => E(p, () => ({ open: !document.querySelector('#dvModal').hidden, st: window.__entrain.B.state, items: [...document.querySelectorAll('#dvList li')].map(l => l.textContent),
+        go: document.querySelector('#dvGo').hidden ? '' : document.querySelector('#dvGo').textContent, close: document.querySelector('#dvClose').textContent, focus: document.activeElement.id }));
+      ok(await range(p) === USUAL && !(await vis(p, '#bDiveRow')), 'the usual patterns keep the usual range, without the breath-hold cautions');
+      await pick(p, 'dive'); await p.waitForTimeout(250);
+      let b = await all(p);
+      ok(b.pattern === 'dive' && b.long === true && b.inh === 5 && b.sip === 2 && b.hold === 15 && b.exh === 10 && b.rest === 5 && (await chips(p)).includes('*Swim & dive'),
+        'Swim & dive, beside 4-7-8: in 5 s, a 2 s top-up, hold 15 s, out 10 s, hold 5 s');
+      ok(await range(p) === LONG, 'its sliders reach 60 s for the in-breath, both holds and the out-breath, and 30 s for the second inhale, in whole seconds: ' + await range(p));
+      const labs = await E(p, () => ['#bInhV', '#bSipV', '#bHoldV', '#bExhV', '#bRestV'].map(id => document.querySelector(id).textContent).join(' | '));
+      ok(labs === '5 s | 2 s | 15 s | 10 s | 5 s' && await t(p, '#bOf') === '/ 8', 'whole seconds on the labels, and 8 breaths in 5 minutes: ' + labs);
+      await p.click('#bAdjust'); await p.waitForTimeout(400);
+      const note = await E(p, () => ({ desc: document.querySelector('#bDesc').textContent, ev: document.querySelector('#bEvTxt').textContent, cite: document.querySelector('#bCite').textContent,
+        dots: document.querySelectorAll('#bEvSum .strength i.on').length, box: (document.querySelector('#bDiveSafe .si-caution') || { textContent: '' }).textContent.replace(/\s+/g, ' ').trim(),
+        stage: document.querySelector('#bDiveRow').textContent.replace(/\s+/g, ' ').trim() }));
+      ok(/^Breath-hold training for swimmers and freedivers, on dry land/.test(note.desc) && /up to 60 seconds each, the top-up up to 30\./.test(note.desc) && note.dots === 1 &&
+        /lengthened their longest hold by 44 seconds/.test(note.ev) && /to 72% saturation from 84%/.test(note.ev) && note.cite === 'Engan et al. 2013, Scand. J. Med. Sci. Sports · Schagatay et al. 2000, Eur. J. Appl. Physiol.',
+        'it says who it is for and how far its range goes, with the evidence as the trials found it, one of three');
+      ok(/^Swim & dive is done entirely at your own risk\. A breath hold can make you black out without warning, so practise only on dry land, sitting or lying down/.test(note.box) &&
+        /Breathe normally before each hold\./.test(note.box) && /the timer is a guide, not a target/.test(note.box) && !/lung packing/.test(note.box) && /Safety notes$/.test(note.box) &&
+        await vis(p, '#bDiveSafe') && await vis(p, '.b-longnote'), 'the settings say it is done at your own risk, with the four cautions that matter most: ' + note.box.slice(0, 64) + '…');
+      ok(/^At your own risk\. Breath holds on dry land only, sitting or lying down, and breathe whenever you need to\. Read the cautions$/.test(note.stage) && await vis(p, '#bDiveRow'),
+        'and so does the stage, under the start button: ' + note.stage);
+      await p.click('#bPanelDone'); await p.waitForTimeout(400);
+
+      // the first session: its cautions first, once
+      await p.click('#bStart'); await p.waitForTimeout(250);
+      let m = await dlg(p);
+      ok(m.open && m.st === 'idle' && m.items.length === 7 && m.items[0] === 'Swim & dive is done entirely at your own risk.' && m.go === 'I understand, start' && m.close === 'Cancel' && m.focus === 'dvGo' &&
+        m.items.some(l => /never in or near water, in the bath, standing at a height or while driving/.test(l)) && m.items.some(l => /Fast or deep breathing beforehand delays the urge to breathe/.test(l)) &&
+        m.items.some(l => /called lung packing, can make you faint/.test(l)) && m.items.some(l => /^Ask a doctor first/.test(l)) && m.items.some(l => /coach or a trained buddy watching you/.test(l)),
+        'Start shows its seven cautions first, and nothing starts yet');
+      await p.screenshot({ path: OUT + 'choices-o-cautions.png' });
+      await p.click('#dvClose'); await p.waitForTimeout(200);
+      ok(await E(p, () => document.querySelector('#dvModal').hidden && window.__entrain.B.state === 'idle' && !localStorage.getItem('entrain.diveOk')), 'Cancel leaves it unstarted, and unread');
+      await p.click('#bStart'); await p.waitForTimeout(250);
+      await p.click('#dvGo'); await p.waitForTimeout(150);
+      await E(p, () => { window.__entrain.B.t0 -= 3.5; }); await p.waitForTimeout(250);
+      m = await E(p, () => ({ st: window.__entrain.B.state, ok: localStorage.getItem('entrain.diveOk'), ph: document.querySelector('#bPhase').textContent, hint: document.querySelector('#bHint').textContent }));
+      ok(m.st === 'running' && m.ok === '1' && m.ph === 'Breathe in' && m.hint === 'Fill from the belly up, slowly, through your nose.', '"I understand, start" starts it, and its guidance fits: ' + m.hint);
+      await E(p, () => { window.__entrain.B.t0 -= 7; }); await p.waitForTimeout(250);       // past the in-breath and the top-up, into the hold
+      m = await E(p, () => ({ ph: document.querySelector('#bPhase').textContent, hint: document.querySelector('#bHint').textContent }));
+      ok(m.ph === 'Hold' && m.hint === 'Lungs full, shoulders and jaw soft. Breathe whenever you need to.', 'the hold says to breathe whenever you need to: ' + m.hint);
+      await E(p, () => { window.__entrain.B.t0 -= 400; }); await p.waitForTimeout(400);
+      m = await E(p, () => ({ st: window.__entrain.B.state, hint: document.querySelector('#bHint').textContent, h: JSON.parse(localStorage.getItem('entrain.history') || '[]').slice(-1)[0] || {} }));
+      ok(m.st === 'done' && m.hint === '8 breaths in 04:56. Breathe normally for a couple of minutes before you get up.' && m.h.id === 'dive' && m.h.full === true && m.h.rate === 1.6,
+        'it ends after 8 breaths with a couple of minutes of normal breathing, and the history has it: ' + m.hint);
+
+      // past the usual range, your own timings and patterns keep it
+      await slide(p, '#bHold', 45); await slide(p, '#bRest', 20); await p.waitForTimeout(150);
+      b = await all(p);
+      ok(b.pattern === 'custom' && b.long && b.hold === 45 && b.rest === 20 && await range(p) === LONG && (await chips(p)).includes('*Custom') && await t(p, '#bHoldV') === '45 s',
+        'a 45 s hold and a 20 s empty hold, as your own timings, on the same range');
+      ok(/^Your own timings, in the Swim & dive range: 0\.7 breaths a minute, holding for 65 seconds of every 82\. Lengthen the holds a few seconds at a time, only while they stay comfortable\.$/.test(await t(p, '#bDesc')),
+        'and says how long you hold for: ' + await t(p, '#bDesc'));
+      for (const [id, v] of [['#bInh', 4], ['#bSip', 0], ['#bHold', 4], ['#bExh', 4], ['#bRest', 4]]) await slide(p, id, v);
+      await p.waitForTimeout(150);
+      ok((await all(p)).pattern === 'custom' && (await chips(p)).includes('*Custom') && await range(p) === LONG, "Box's timings on Swim & dive's sliders stay your own, so the range never shifts under your finger");
+      for (const [id, v] of [['#bInh', 5], ['#bSip', 2], ['#bHold', 45], ['#bExh', 10], ['#bRest', 20]]) await slide(p, id, v);
+      await p.click('#bAdjust'); await p.waitForTimeout(400);
+      await p.fill('#bMyName', 'Dive 45'); await p.click('#bMySave'); await p.waitForTimeout(250);
+      const sv = await saved(p);
+      ok(sv.length === 1 && sv[0].name === 'Dive 45' && sv[0].long === true && sv[0].t.hold === 45 && sv[0].t.rest === 20 && (await all(p)).pattern === 'my-' + sv[0].uid,
+        'saved as your own, it keeps the range it was made in');
+      await p.reload(); await p.waitForTimeout(600);
+      await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
+      b = await all(p);
+      ok(b.long && b.hold === 45 && b.pattern === 'my-' + sv[0].uid && await E(p, () => document.querySelector('#bHold').value) === '45' && await range(p) === LONG && await vis(p, '#bDiveRow'),
+        'a reload keeps the 45 s hold on the longer range, with its cautions');
+      await pick(p, 'box'); await p.waitForTimeout(200);
+      ok(await range(p) === USUAL && !(await vis(p, '#bDiveRow')) && (await all(p)).long === false && await t(p, '#bHoldV') === '4.0 s', 'any other preset brings back the usual range, and the cautions go');
+      await pick(p, 'my-' + sv[0].uid); await p.waitForTimeout(200);
+      b = await all(p);
+      ok(b.long && b.hold === 45 && await range(p) === LONG && await vis(p, '#bDiveRow'), 'your own Swim & dive pattern opens on its range again');
+      await p.click('#bStart'); await p.waitForTimeout(250);
+      ok(await E(p, () => document.querySelector('#dvModal').hidden && window.__entrain.B.state === 'running'), 'once read, the cautions no longer stop a start');
+      await p.click('#bDiveInfo'); await p.waitForTimeout(200);
+      m = await dlg(p);
+      ok(m.open && !m.go && m.close === 'Close' && m.items.length === 7 && m.st === 'running', 'the stage\'s button opens them again, just to read');
+      await p.keyboard.press('Escape'); await p.waitForTimeout(150);
+      ok(await E(p, () => document.querySelector('#dvModal').hidden), 'and Escape closes them');
+
+      // a practice that runs the guide keeps the usual guidance, and hands Swim & dive back after
+      await p.click('#bReset'); await p.waitForTimeout(150);
+      await E(p, () => location.hash = 'practice/coherence'); await p.waitForTimeout(400);
+      await p.click('#sGo'); await p.waitForTimeout(700);
+      await p.click('#sNext'); await p.waitForTimeout(500);                  // on to its breathing
+      await E(p, () => { window.__entrain.B.t0 -= 3.5; }); await p.waitForTimeout(250);
+      m = await E(p, () => ({ usesB: window.__entrain.P.usesB, long: window.__entrain.BC.long, hint: document.querySelector('#bHint').textContent, dlg: !document.querySelector('#dvModal').hidden }));
+      ok(m.usesB && m.long === false && m.hint === 'Slow and smooth, through your nose.' && !m.dlg, 'Heart Coherence\'s breathing keeps its own guidance: ' + m.hint);
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
+      await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
+      b = await all(p);
+      ok(b.long && b.hold === 45 && b.pattern === 'my-' + sv[0].uid && await range(p) === LONG, 'and afterwards Breathe is back on your Swim & dive pattern');
+      await p.context().close();
+
+      // switched to mid-session, or started from the focus view, it still shows them first
+      p = await page(OPT());
+      await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
+      await p.click('#bStart'); await p.waitForTimeout(300);
+      await pick(p, 'dive'); await p.waitForTimeout(300);
+      m = await dlg(p);
+      ok(m.open && m.st === 'paused' && m.go === 'I understand, carry on', 'switched to in the middle of a session, it pauses for its cautions');
+      await p.click('#dvGo'); await p.waitForTimeout(200);
+      ok(await E(p, () => window.__entrain.B.state === 'running' && window.__entrain.BC.pattern === 'dive'), '"I understand, carry on" carries on with it');
+      await E(p, () => { document.querySelector('#bReset').click(); localStorage.removeItem('entrain.diveOk'); });
+      await p.click('#bFocus'); await p.waitForTimeout(250);
+      await p.keyboard.press('Space'); await p.waitForTimeout(300);
+      m = await dlg(p);
+      ok(m.open && m.st === 'idle' && !(await E(p, () => document.querySelector('#bStage').classList.contains('focus'))), 'from the full-screen focus view, the view steps back so the cautions can be seen');
+      await p.context().close();
+
+      // a stored hold past the usual range opens on the longer one; past the longer one it's refused
+      p = await page(Object.assign(OPT(), { breath: JSON.stringify({ pattern: 'custom', inh: 5, sip: 0, hold: 30, exh: 10, rest: 0 }) }));
+      await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
+      b = await all(p);
+      ok(b.long && b.hold === 30 && await range(p) === LONG, 'a stored 30 s hold opens on the longer range');
+      await p.context().close();
+      p = await page(Object.assign(OPT(), { breath: JSON.stringify({ pattern: 'custom', inh: 5, sip: 0, hold: 75, exh: 10, rest: 0 }), myBreaths: JSON.stringify([{ uid: 'a1', name: 'Too long', t: { inh: 5, sip: 0, hold: 61, exh: 10, rest: 0 } }]) }));
+      await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
+      b = await all(p);
+      ok(!b.long && b.hold === 0 && b.inh === 5 && (await saved(p)).length === 1 && !(await E(p, () => document.querySelector('#bPats input[value="my-a1"]'))), 'a 75 s hold, or a saved pattern with a 61 s one, is past even Swim & dive and left out');
+
+      // in Learn, the library, the safety note and search
+      await E(p, () => location.hash = 'learn'); await p.waitForTimeout(400);
+      const L = await E(p, () => {
+        const h = document.querySelector('#l-dive'), ps = [];
+        for (let e = h.nextElementSibling; e && e.tagName === 'P'; e = e.nextElementSibling) ps.push(e.textContent.replace(/\s+/g, ' '));
+        return { toc: !!document.querySelector('.toc a[href="#l-dive"]'), h: h.textContent, ps, link: !!h.parentNode.querySelector('a[href="#breathe/dive"]'),
+          safe: [...document.querySelectorAll('#sfNote .sf-list li')].map(l => l.textContent.replace(/\s+/g, ' ')).find(l => /^Breath holds\./.test(l)) || '' };
+      });
+      const all5 = L.ps.join(' ');
+      ok(L.toc && L.h === 'Breath training for swimming and diving' && L.ps.length === 5 && L.link, 'Learn has a section on breath training for swimming and diving, in its contents, linked to the pattern');
+      ok(/total lung capacity at 128% and vital capacity at 124%/.test(all5) && /a seven-month season didn't widen the gap/.test(all5) && /forced vital capacity and FEV1 stayed the same/.test(all5),
+        'lung size: large in swimmers, but not shown to grow with training');
+      ok(/cut 100 m times by 1\.7% and 200 m times by 1\.5% against a sham device, with no gain at 400 m/.test(all5) && /no significant change in 50, 100 or 200 m times \(Chen et al\., 2026\)/.test(all5),
+        'the breathing muscles: stronger with a trainer, with mixed effects on swim times');
+      ok(/lengthened the longest hold by 44 seconds/.test(all5) && /no evidence of an effect on aerobic markers such as VO2max/.test(all5) && /3\.5 to 4\.4% in five weeks/.test(all5) &&
+        /didn't make them faster \(Burtch et al\., 2017\)/.test(all5), 'breath holds, dry and in the pool, as the studies found them');
+      ok(/the four who died were advanced or expert swimmers aged 17 to 22 who had hyperventilated first/.test(all5) && /from 94\.0% in the first to 86\.7% in the last/.test(all5) &&
+        /it's done entirely at your own risk/.test(all5), 'and why it is dry land only, at your own risk');
+      ok(/^Breath holds\. Swim & dive's long holds are done entirely at your own risk\./.test(L.safe) && /never in or near water, in the bath or while driving/.test(L.safe), 'the safety note has a line on breath holds: ' + L.safe.slice(0, 70) + '…');
+      await E(p, () => location.hash = 'practice'); await p.waitForTimeout(400);
+      ok(await E(p, () => !!document.querySelector('.pr-grp[data-g=energy] a[href="#breathe/dive"]')), 'the library has it under Energy');
+      await p.click('#tbFind'); await p.waitForTimeout(150); await p.fill('#fdIn', 'swim dive'); await p.waitForTimeout(250);
+      const hit = await E(p, () => [...document.querySelectorAll('.fd-it')].map(a => a.querySelector('b').textContent + ' ' + a.getAttribute('href')));
+      ok(hit.some(h => h === 'Swim & dive #breathe/dive') && hit.some(h => /^Breath training for swimming and diving #/.test(h)), 'search finds the pattern and the section: ' + hit.slice(0, 3).join(' · '));
+      await p.context().close();
     }
   } catch (e) {
     log.push('ERROR ' + (e && e.stack || e));
