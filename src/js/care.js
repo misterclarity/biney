@@ -8,7 +8,7 @@
        hcFlags()          which conditions are ticked: { heart, bpHigh, bpLow, epilepsy, pregnant,
                           panic, trauma, psychosis, asthma }, all false until it's answered
        hcCaution(kinds)   the caution for those kinds ("fast-breath", "hold", "cold", "heat", "flicker",
-                          "scent", "imagery", "body"), or "" when nothing ticked bears on them
+                          "scent", "imagery", "body", "strain"), or "" when nothing ticked bears on them
        hcBox(kinds)       the same in a box with a link to the answers, for a page
        hcAnswered()       whether it's been answered, for a feature that offers it first (#st-health)
      A practice names its kinds in `hc` (a list, or a function of the practice for one that depends on
@@ -39,7 +39,8 @@
      shock is a danger with a heart condition or high blood pressure (start gradually, never alone in
      open water, never with breath holds in water); heat: stay hydrated, and saunas only with a
      doctor's approval with a heart condition, low blood pressure or pregnancy, or after alcohol;
-     flashing light can set off a seizure; some people react to essential oils. */
+     flashing light can set off a seizure; some people react to essential oils. Laughing hard and shouting
+     (Laughter Break, Let It Out) raise the heart rate and blood pressure for a while and press on the belly. */
   var HC_KINDS = {
     "fast-breath": { who: ["heart", "bpHigh", "bpLow", "epilepsy", "pregnant", "asthma"],
       txt: "Fast breathing can make you dizzy or faint. With {who}, leave it out unless your doctor says it's fine for you; if you go ahead, keep it short and gentle, sitting or lying down, never in or near water, in the bath or while driving, and stop as soon as you feel dizzy, tingly or unwell.",
@@ -57,6 +58,8 @@
       txt: "Some people react to essential oils, and a strong scent can tighten the airways. With {who}, check with your doctor or midwife before you use them; if you go ahead, a drop or two in an aired room, and stop if your chest tightens." },
     imagery: { who: ["psychosis", "trauma"],
       txt: "Guided imagery and deep relaxation can bring up memories, or leave you feeling detached or unreal. With {who}, ask your therapist or care team whether it suits you now; if you go ahead, keep it short, open your eyes whenever you like, and tap I need to stop if it gets too much." },
+    strain: { who: ["heart", "bpHigh", "pregnant", "asthma"],
+      txt: "Laughing hard and shouting raise your heart rate and blood pressure for a while, press on your belly, and can leave you short of breath. With {who}, keep it gentle: smiles and soft laughter rather than belly laughs, a steady speaking voice rather than big shouts, and rest as soon as you feel breathless, dizzy or unwell." },
     body: { who: ["trauma", "psychosis", "panic"],
       txt: "Close attention to the body and the breath can bring up strong feelings, memories or panic. With {who}, go gently: keep your eyes open if you like, move your attention away from any part that feels difficult, and tap I need to stop whenever you want to. If you're in treatment, ask your therapist whether it suits you now." }
   };

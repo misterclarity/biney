@@ -1001,6 +1001,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   [data-k="pump"]{--kc:var(--danger)}
   [data-k="observe"],[data-k="shuffle"],[data-k="count"]{--kc:var(--ther)}
   [data-k="drift"]{--kc:#3b4a78}
+  [data-k="sing"]{--kc:var(--food)}
   .si-tl i{background:color-mix(in srgb,var(--kc) 75%,var(--panel-3))}
 
   /* ---------- practice: session intro ---------- */
@@ -1157,6 +1158,25 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .ses-dots[hidden]{display:none}
   .ses-dots i{width:34px;height:34px;border-radius:50%;border:2px solid color-mix(in srgb,var(--pcol) 55%,transparent);transition:background .3s,transform .3s}
   .ses-dots i.on{background:var(--pcol);transform:scale(1.08)}
+  /* a song: the words with the syllable to sing marked, a row for each part of a round, or the warm-up's vowel */
+  .ses-sing{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:4px 2px;text-align:center;overflow:hidden}
+  .ses-sing[hidden]{display:none}
+  .vx-h{margin:0 0 2px;font-size:12px;font-weight:750;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint)}
+  .vx-l{margin:0;font-size:17px;line-height:1.4;font-weight:650;color:var(--text-faint);overflow-wrap:anywhere}
+  .vx-l.on{color:var(--text-dim)}
+  .vx-l span.past{color:var(--text)}
+  .vx-l span.now{color:var(--pcol);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:5px}
+  .vx-p{display:flex;flex-direction:column;gap:1px;padding:4px 0}
+  .vx-p b{font-size:12.5px;font-weight:750;color:var(--text-faint)}
+  .vx-p.on b{color:var(--pcol)}
+  .vx-p.wait .vx-l,.vx-p.done .vx-l{opacity:.55}
+  .ses-sing[data-n="3"] .vx-p,.ses-sing[data-n="4"] .vx-p{display:block;padding:2px 0}
+  .ses-sing[data-n="3"] .vx-p b,.ses-sing[data-n="4"] .vx-p b{margin-right:6px}
+  .ses-sing[data-n="3"] .vx-l,.ses-sing[data-n="4"] .vx-l{display:inline;font-size:15px;line-height:1.35}
+  .vx-vow{margin:0;font-family:var(--display);font-size:clamp(40px,11vw,64px);line-height:1.1;color:var(--text)}
+  .vx-dots{display:flex;justify-content:center;align-items:flex-end;gap:10px;height:76px;padding-top:24px}
+  .vx-dots i{width:14px;height:14px;border-radius:50%;background:var(--panel-3);transform:translateY(calc(var(--y) * -1))}
+  .vx-dots i.now{background:var(--pcol)}
   .ses-cap{text-align:center;min-height:118px;padding:6px 4px 0}
   .ses-cap h2{font-size:clamp(24px,5.6vw,34px);font-weight:800;letter-spacing:-.025em;line-height:1.15;min-height:1.15em}
   .ses-sub{color:var(--text-dim);font-size:14.5px;margin:6px 0 0;min-height:1.4em;font-variant-numeric:tabular-nums}
@@ -2168,6 +2188,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               <div class="ses-nose" id="sNose" hidden aria-hidden="true"><span data-s="left">Left</span><span data-s="right">Right</span></div>
               <div class="ses-dots" id="sDots" hidden aria-hidden="true"></div>
               <div class="ses-write" id="sWrite" hidden></div>
+              <div class="ses-sing" id="sSing" role="group" aria-label="The words to sing" hidden></div>
               <div class="ses-rate" id="sRate" hidden>
                 <div class="rate-g" id="sRateG" role="group" aria-label="Rate it from 0 to 10"></div>
                 <div class="rate-ends" aria-hidden="true"><span id="sRateLo">Not at all</span><span id="sRateHi">As strong as it gets</span></div>
@@ -2783,6 +2804,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-dive">Swimming and diving</a>
             <a href="#l-bands">Frequency bands</a>
             <a href="#l-practices">Guided practices</a>
+            <a href="#l-voice">Your voice</a>
             <a href="#l-expect">Placebo and side effects</a>
             <a href="#l-dose">How often</a>
             <a href="#l-measure">What to measure</a>
@@ -2926,11 +2948,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Voice</th></tr>
-                <tr class="ln-row"><th scope="row"><b>Simulated laughter</b> <small>Better mood, less stress</small></th><td>Moderate (low study quality)</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Shouting, vocal release</b> <small>Pain tolerance, strength</small></th><td>Moderate</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Group singing</b> <small>Bonding, endorphins</small></th><td>Moderate</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Om chanting</b> <small>Calm</small></th><td>Early</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Imitating animal sounds</b> <small>Playful release</small></th><td>Not studied</td><td class="ln-lo">Learn only</td></tr>
+                <tr class="ln-row"><th scope="row"><b>Simulated laughter</b> <small>Better mood, less stress</small></th><td>Moderate (low study quality)</td><td><a href="#practice/laughter">Laughter Break</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Shouting, vocal release</b> <small>Pain tolerance, strength</small></th><td>Moderate</td><td><a href="#practice/let-it-out">Let It Out</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Group singing</b> <small>Bonding, endorphins</small></th><td>Moderate</td><td><a href="#practice/sing">Sing Together</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Om chanting</b> <small>Calm</small></th><td>Early</td><td><a href="#practice/om">Om Chanting</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Imitating animal sounds</b> <small>Playful release</small></th><td>Not studied</td><td>Roar it out, in <a href="#practice/let-it-out">Let It Out</a></td></tr>
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Vision</th></tr>
@@ -3492,6 +3514,55 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               a paraphrase, since his book is still in copyright, and the lines signed Entrain are its own.
             </p>
 
+            <h3 id="l-voice">Your voice: chanting, laughing, letting it out and singing</h3>
+            <p id="l-om">
+              <b>Om chanting.</b> The evidence for sounds you make yourself is thinner than for breathing, and for chanting
+              it is small and early. In a pilot brain scan of 12 healthy volunteers, chanting Om aloud quietened the amygdala,
+              the hippocampus, the anterior cingulate and other parts of the limbic system compared with rest, while saying
+              &ldquo;ssss&rdquo; changed nothing there; the authors likened the pattern to vagus nerve stimulation and linked it
+              to the vibration felt around the ears (Kalyani et al., 2011). A 2022 review linked Om chanting with calm, with
+              delta and theta brain waves and with activity in the frontal lobes, and most of its studies reported less anxiety
+              and stress, but their designs allow no firm conclusions yet (Thanneeru et al., 2022). The closing Mmm is
+              closed-mouth humming, which raised nasal nitric oxide about 15-fold (Weitzberg &amp; Lundberg, 2002), and any
+              sound made on the breath out lengthens it. <a href="#practice/om">Om Chanting</a> goes from aloud to softer to
+              silent repetition, then silence, an order taken from practice rather than from a trial.
+            </p>
+            <p id="l-laugh">
+              <b>Laughter on purpose.</b> Laughter you start on purpose, without a joke, as in laughter yoga, is the closest
+              studied cousin of the playful sounds here. A 2019 review and meta-analysis found this simulated laughter more
+              effective than laughter at something funny, and laughter-inducing therapies improved depression, though the
+              studies were of low quality and their results varied a lot (van der Wal &amp; Kok, 2019). Across randomised trials
+              in people with physical or mental health problems, laughter-inducing interventions helped depression, anxiety,
+              mood, stress and pain, anxiety most (Stiwi &amp; Rosendahl, 2022). Laughing hard can leave you breathless, with a
+              raised heart rate and a dry mouth, so the <a href="#practice/laughter">Laughter Break</a> keeps its bouts short,
+              with slow breaths between, and asks your mood before and after, so you can see what it does for you.
+            </p>
+            <p id="l-letout">
+              <b>Letting it out.</b> Making a sound when it hurts seems to help. In a cold-water test, saying &ldquo;ow&rdquo;
+              let people keep a hand in the water longer than staying silent, though pressing a button worked about as well
+              (Swee &amp; Schirmer, 2015). Repeating a swear word at a steady, normal volume raised pain threshold and
+              tolerance by about a third, while two made-up words, &ldquo;fouch&rdquo; and &ldquo;twizpipe&rdquo;, were found
+              funnier and more emotional than a neutral word but left pain unchanged (Stephens &amp; Robertson, 2020). Swearing
+              also raised power on an exercise bike and grip strength (Stephens, Spierer &amp; Katehis, 2018), and a shout as
+              people squeezed raised their strongest grip in a study of 19 adults (Takarada &amp; Nozaki, 2021). The
+              researchers proposed that swearing works by letting go of holding back; in their later test, humour explained
+              more of the effect, a finding they call exploratory (Stephens et al., 2023). <a href="#practice/let-it-out">Let It
+              Out</a> uses a steady, clear voice every three seconds, as the swearing studies did, with long breaths out after
+              each round. Its Roar it out choice, a lion's breath, a wolf's howl and an owl's hoots, is play: no study has
+              tested what imitating animals does to mood or brain waves, so it borrows from the laughter and vocal-release
+              research, and from long breaths out, and claims nothing of its own.
+            </p>
+            <p id="l-sing">
+              <b>Singing together.</b> In a community choir, 90 minutes of singing raised closeness, positive mood and pain
+              thresholds, a stand-in for the release of endorphins, by a similar amount in small groups and in a choir of 232
+              (Weinstein et al., 2016). In new adult education classes followed for seven months, singers felt close to each
+              other sooner than people in craft or creative-writing classes, who caught up later: the ice-breaker effect
+              (Pearce et al., 2015). Moving in time together and endorphins may both be at work, in music as in laughter, dance
+              and sport done together (Tarr et al., 2014). <a href="#practice/sing">Sing Together</a> uses two traditional
+              rounds, so everyone sings at once and each group still has a part of its own; on your own, the phone takes the
+              other part. No study has tested singing along with a phone.
+            </p>
+
             <h3 id="l-expect">Expectation, placebo and side effects</h3>
             <p>
               Recent breathwork trials compare a real technique with a convincing fake that people expect just as much from. In
@@ -3794,6 +3865,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Lachowicz, A. M., Houben, M., Ottaviani, C., et al. (2026). Efficacy of slow-paced breathing as a just-in-time adaptive intervention for anxiety: a randomized controlled study. <em>Applied Psychophysiology and Biofeedback</em>, 51(3), 579–595. <a href="https://research.utwente.nl/en/publications/efficacy-of-slow-paced-breathing-as-a-just-in-time-adaptive-inter/" rel="noopener">Record</a></li>
       <li>Blackie, R. A., &amp; Kocovski, N. L. (2018). Forgive and let go: effect of self-compassion on post-event processing in social anxiety. <em>Mindfulness</em>, 9(3), 654–663. <a href="https://doi.org/10.1007/s12671-017-0808-9" rel="noopener">DOI</a></li>
       <li>Ryan, R. M., &amp; Deci, E. L. (2000). Self-determination theory and the facilitation of intrinsic motivation, social development, and well-being. <em>American Psychologist</em>, 55(1), 68–78. <a href="https://doi.org/10.1037/0003-066X.55.1.68" rel="noopener">DOI</a></li>
+      <li>Kalyani, B. G., Venkatasubramanian, G., Arasappa, R., Rao, N. P., Kalmady, S. V., Behere, R. V., Rao, H., Vasudev, M. K., &amp; Gangadhar, B. N. (2011). Neurohemodynamic correlates of &lsquo;OM&rsquo; chanting: a pilot functional magnetic resonance imaging study. <em>International Journal of Yoga</em>, 4(1), 3–6. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3099099/" rel="noopener">PMC</a></li>
+      <li>Thanneeru, S. K., Sutar, R. F., Singh, V., Kushwah, A., Das, S., Atlani, M., Mittal, M., &amp; Agrawal, A. (2022). &ldquo;Om&rdquo; chanting and its impact on selected neuropsychological functions: a literature overview. <em>Manipal Journal of Medical Sciences</em>, 7(2), 5. <a href="https://doi.org/10.55889/2582-5984.1149" rel="noopener">DOI</a></li>
+      <li>van der Wal, C. N., &amp; Kok, R. N. (2019). Laughter-inducing therapies: systematic review and meta-analysis. <em>Social Science &amp; Medicine</em>, 232, 473–488. <a href="https://doi.org/10.1016/j.socscimed.2019.02.018" rel="noopener">DOI</a></li>
+      <li>Stiwi, K., &amp; Rosendahl, J. (2022). Efficacy of laughter-inducing interventions in patients with somatic or mental health problems: a systematic review and meta-analysis of randomized-controlled trials. <em>Complementary Therapies in Clinical Practice</em>, 47, 101552. <a href="https://doi.org/10.1016/j.ctcp.2022.101552" rel="noopener">DOI</a></li>
+      <li>Swee, G., &amp; Schirmer, A. (2015). On the importance of being vocal: saying &ldquo;ow&rdquo; improves pain tolerance. <em>The Journal of Pain</em>, 16(4), 326–334. <a href="https://doi.org/10.1016/j.jpain.2015.01.002" rel="noopener">DOI</a></li>
+      <li>Stephens, R., &amp; Robertson, O. (2020). Swearing as a response to pain: assessing hypoalgesic effects of novel &ldquo;swear&rdquo; words. <em>Frontiers in Psychology</em>, 11, 723. <a href="https://doi.org/10.3389/fpsyg.2020.00723" rel="noopener">DOI</a></li>
+      <li>Stephens, R., Spierer, D. K., &amp; Katehis, E. (2018). Effect of swearing on strength and power performance. <em>Psychology of Sport and Exercise</em>, 35, 111–117. <a href="https://doi.org/10.1016/j.psychsport.2017.11.014" rel="noopener">DOI</a></li>
+      <li>Stephens, R., Dowber, H., Barrie, A., Almeida, S., &amp; Atkins, K. (2023). Effect of swearing on strength: disinhibition as a potential mediator. <em>Quarterly Journal of Experimental Psychology</em>, 76(2), 305–318. <a href="https://pubmed.ncbi.nlm.nih.gov/35135411/" rel="noopener">PubMed</a></li>
+      <li>Takarada, Y., &amp; Nozaki, D. (2021). Shouting strengthens maximal voluntary force and is associated with augmented pupillary dilation. <em>Scientific Reports</em>, 11, 18419. <a href="https://doi.org/10.1038/s41598-021-97949-2" rel="noopener">DOI</a></li>
+      <li>Weinstein, D., Launay, J., Pearce, E., Dunbar, R. I. M., &amp; Stewart, L. (2016). Singing and social bonding: changes in connectivity and pain threshold as a function of group size. <em>Evolution and Human Behavior</em>, 37(2), 152–158. <a href="https://doi.org/10.1016/j.evolhumbehav.2015.10.002" rel="noopener">DOI</a></li>
+      <li>Pearce, E., Launay, J., &amp; Dunbar, R. I. M. (2015). The ice-breaker effect: singing mediates fast social bonding. <em>Royal Society Open Science</em>, 2(10), 150221. <a href="https://doi.org/10.1098/rsos.150221" rel="noopener">DOI</a></li>
+      <li>Tarr, B., Launay, J., &amp; Dunbar, R. I. M. (2014). Music and social bonding: &ldquo;self-other&rdquo; merging and neurohormonal mechanisms. <em>Frontiers in Psychology</em>, 5, 1096. <a href="https://doi.org/10.3389/fpsyg.2014.01096" rel="noopener">DOI</a></li>
       <li>American Heart Association. Devices that may interfere with ICDs and pacemakers. <a href="https://www.heart.org/en/health-topics/arrhythmia/prevention--treatment-of-arrhythmia/devices-that-may-interfere-with-icds-and-pacemakers" rel="noopener">heart.org</a></li>
       <li>Fincham, G. W., Strauss, C., &amp; Cavanagh, K. (2023). Effect of coherent breathing on mental health and wellbeing: a randomised placebo-controlled trial. <em>Scientific Reports</em>, 13. <a href="https://doaj.org/article/21a326834cdb4a7fbd35bc10ec8509f0" rel="noopener">DOAJ</a></li>
       <li>Fincham, G. W., Epel, E., Colasanti, A., Strauss, C., &amp; Cavanagh, K. (2024). Effects of brief remote high ventilation breathwork with retention on mental health and wellbeing: a randomised placebo-controlled trial. <em>Scientific Reports</em>, 14, 16893. <a href="https://doi.org/10.1038/s41598-024-64254-7" rel="noopener">DOI</a></li>
@@ -5544,7 +5627,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
        hcFlags()          which conditions are ticked: { heart, bpHigh, bpLow, epilepsy, pregnant,
                           panic, trauma, psychosis, asthma }, all false until it's answered
        hcCaution(kinds)   the caution for those kinds ("fast-breath", "hold", "cold", "heat", "flicker",
-                          "scent", "imagery", "body"), or "" when nothing ticked bears on them
+                          "scent", "imagery", "body", "strain"), or "" when nothing ticked bears on them
        hcBox(kinds)       the same in a box with a link to the answers, for a page
        hcAnswered()       whether it's been answered, for a feature that offers it first (#st-health)
      A practice names its kinds in `hc` (a list, or a function of the practice for one that depends on
@@ -5575,7 +5658,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      shock is a danger with a heart condition or high blood pressure (start gradually, never alone in
      open water, never with breath holds in water); heat: stay hydrated, and saunas only with a
      doctor's approval with a heart condition, low blood pressure or pregnancy, or after alcohol;
-     flashing light can set off a seizure; some people react to essential oils. */
+     flashing light can set off a seizure; some people react to essential oils. Laughing hard and shouting
+     (Laughter Break, Let It Out) raise the heart rate and blood pressure for a while and press on the belly. */
   var HC_KINDS = {
     "fast-breath": { who: ["heart", "bpHigh", "bpLow", "epilepsy", "pregnant", "asthma"],
       txt: "Fast breathing can make you dizzy or faint. With {who}, leave it out unless your doctor says it's fine for you; if you go ahead, keep it short and gentle, sitting or lying down, never in or near water, in the bath or while driving, and stop as soon as you feel dizzy, tingly or unwell.",
@@ -5593,6 +5677,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       txt: "Some people react to essential oils, and a strong scent can tighten the airways. With {who}, check with your doctor or midwife before you use them; if you go ahead, a drop or two in an aired room, and stop if your chest tightens." },
     imagery: { who: ["psychosis", "trauma"],
       txt: "Guided imagery and deep relaxation can bring up memories, or leave you feeling detached or unreal. With {who}, ask your therapist or care team whether it suits you now; if you go ahead, keep it short, open your eyes whenever you like, and tap I need to stop if it gets too much." },
+    strain: { who: ["heart", "bpHigh", "pregnant", "asthma"],
+      txt: "Laughing hard and shouting raise your heart rate and blood pressure for a while, press on your belly, and can leave you short of breath. With {who}, keep it gentle: smiles and soft laughter rather than belly laughs, a steady speaking voice rather than big shouts, and rest as soon as you feel breathless, dizzy or unwell." },
     body: { who: ["trauma", "psychosis", "panic"],
       txt: "Close attention to the body and the breath can bring up strong feelings, memories or panic. With {who}, go gently: keep your eyes open if you like, move your attention away from any part that feels difficult, and tap I need to stop whenever you want to. If you're in treatment, ask your therapist whether it suits you now." }
   };
@@ -9141,7 +9227,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "20037b74";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "555186a8";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -12146,7 +12232,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           note: "Slow breathing with a longer out-breath while you rest, then a few seconds' warning before the next set.",
           opts: [["60", "1 min"], ["90", "1½ min"], ["120", "2 min"], ["180", "3 min"]] }
       ],
-      next: { id: "recovery", txt: "After your session, Exercise Recovery brings your heart rate down with slow breathing over a theta beat." },
+      next: function (d) {                       // before lifting: your voice, to let go of holding back (vocal.js); after a session: recovery
+        return pChoice(d, "sport") === "weights" && pChoice(d, "when") === "before" ? { id: "let-it-out", txt: "Before your first heavy set, Let It Out: a few rounds of your voice, from the belly, to let go of holding back." }
+          : { id: "recovery", txt: "After your session, Exercise Recovery brings your heart rate down with slow breathing over a theta beat." };
+      },
       build: function (min) { return sportSteps(this, min || 10); },
       how: "Pick your sport, and its settings come with it, then change any of them. Before: five or ten minutes to get ready, then your warm-up. Slow breathing at your resonance pace settles nerves while keeping you alert (for weight training: power breaths, then the bracing breath you'll use under a heavy weight), then you rehearse your session in your mind, and choose a few words of your own for when it gets hard, while a binaural beat rises from 10 Hz alpha to 15 Hz beta. During, if you choose it: the beat carries on, a cue comes every five minutes or so (technique, breathing and your words), and a soft tick can set your cadence until you tap Session over (cycling on an indoor trainer, running and rowing indoors or away from traffic); for weight training, tap Set done after each set and rest with slow breathing until the next.",
       ev: "Motivational self-talk, practised for two weeks, lengthened cycling time to exhaustion by about 18% and made the effort feel easier; across 32 studies, self-talk improved performance, motivational words most for strength and endurance. Imagery improved sports performance with a medium effect across studies. Runners kept going longer with a metronome or music matched to their cadence than in silence. Psyching up before lifting may raise strength, though the evidence is tentative. Binaural beats in sport are barely studied: 15 Hz beta beats with music in the rests between rounds helped kickboxers strike faster, but the trial couldn't be blinded, and a 10 Hz beat with music changed nothing measurable for recreational runners. Music itself helps a little.",
@@ -12539,6 +12628,106 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       cite: "Brooks & Lack 2006 · Burgess et al. 1999"
     },
 
+    /* ===== the voice (vocal.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "om", name: "Om Chanting", lengths: [5, 10, 15], min: 10, strength: 1, sup: true,
+      tone: "relax", sensor: "optional", noTap: true,
+      opt: { cues: "chimes" },                   // a chime at each turn of the breath sits lightly over your voice
+      optNote: "The drone and the length of each chant are kept for it.",
+      alias: "Aum", words: "om aum chant chanting mantra hum humming vibration drone voice sound meditation calm",
+      blurb: "Chant Om on a long breath out: an open Aaa, a rounded Uuu and a long, humming Mmm that buzzes in your face and head. Then softer, then silently, then sit in the silence after it.",
+      parts: "How to chant · Om aloud · softer · in your mind · silence · an optional low drone",
+      choices: [
+        { key: "drone", label: "Drone", def: "on", note: "A soft, low drone on D, made on your device, to chant with while you learn and while you chant aloud. It fades as you go silent.",
+          opts: [["on", "On"], ["off", "Leave it out"]] },
+        { key: "breath", label: "Each chant", def: "10", note: "How long each breath out lasts, after four seconds in. Start shorter, and lengthen it as your breath allows.",
+          opts: [["8", "8 s"], ["10", "10 s"], ["12", "12 s"], ["15", "15 s"]] }
+      ],
+      next: { id: "bhramari", txt: "Liked the hum? Bhramari, the humming bee breath, is the Mmm on its own, on a long breath out." },
+      build: function (min) { return omSteps(this, min || 10); },
+      end: "Sit for a moment in the stillness, and carry it with you.",
+      how: "A minute to learn the chant, then Om on every breath out: four seconds in through the nose, then a long Aaa, Uuu and Mmm (ten seconds unless you choose otherwise), the Mmm a hum with the lips closed that takes about half the breath. You chant aloud, then (from ten minutes) softer, then silently in your mind, and end by sitting in the silence after it. A soft, low drone on D can play while you chant aloud, and the breath cues are chimes, so they sit lightly over your voice.",
+      ev: "The evidence is early, from small pilot studies. In a brain scan of 12 people, chanting Om aloud quietened the amygdala, the hippocampus and other parts of the limbic system, a pattern like that of vagus nerve stimulation, while saying “ssss” changed nothing there. A 2022 review linked Om chanting with calm, with delta and theta brain waves and with activity in the frontal lobes, but found the studies too weak for firm conclusions. The Mmm is a hum, and humming raised nasal nitric oxide about 15-fold; any sound made on the breath out also lengthens it.",
+      cite: "Kalyani et al. 2011 · Thanneeru et al. 2022 · Weitzberg & Lundberg 2002"
+    },
+    {
+      id: "laughter", name: "Laughter Break", lengths: [5, 10], min: 10, strength: 2, sup: true,
+      tone: "stim", noTap: true, hc: ["strain"],
+      rate: { name: "Mood", what: "mood" },     // its 0 to 10 ratings are of your mood, before and after
+      optNote: "Your choices are kept for it.",
+      alias: "Laughter yoga", words: "laugh laughing laughter yoga giggle humour fun play playful mood happy cheer stress clap clapping ho ha",
+      blurb: "Laughter on purpose, which works even when the joke is missing: a clapping warm-up, short bouts of playful laughter with slow breaths between, and your mood before and after.",
+      parts: "Mood check · clapping warm-up · bouts of laughter · slow breaths · mood again",
+      choices: [
+        { key: "who", label: "With", def: "solo", note: "On your own, a mirror helps; with others, eye contact does, and laughter spreads.",
+          opts: [["solo", "On your own"], ["group", "With others"]] },
+        { key: "mood", label: "Mood check", def: "on", note: "Rate your mood from 0 to 10 before and after. The end screen sets them side by side, and so does your history.",
+          opts: [["on", "Before and after"], ["off", "Leave it out"]] }
+      ],
+      build: function (min) { return lghSteps(this, min || 10); },
+      end: "Well laughed. Take the lightness with you.",
+      how: "A moment to arrive and rate your mood from 0 to 10, then a clapping warm-up to a tick: one, two, one, two, three, “ho, ho, ha ha ha”. Then short bouts of laughter on purpose (greeting laughter, a smile growing into a giggle, milkshake laughter, silent laughter, laughing at an imaginary phone call and hearty laughter; three of them in five minutes), each with a few slow breaths after it. It ends with slow breathing and your mood again, set beside the first at the end and in your history. Laughter here is an exercise: fake it, and it often turns real.",
+      ev: "Laughter on purpose, without a joke, worked better than laughter at something funny in a 2019 review and meta-analysis, and laughter-inducing therapies improved depression. A 2022 meta-analysis of randomised trials in people with physical or mental health problems found benefits for depression, anxiety, mood, stress and pain, the largest for anxiety. The studies were of low quality overall, and their results varied a lot.",
+      cite: "van der Wal & Kok 2019 · Stiwi & Rosendahl 2022",
+      caution: "Laughing hard for a few minutes can leave you breathless, raise your heart rate and dry your mouth: rest between bouts, and keep some water near. Skip the belly laughs, or the whole break, with a hernia, after recent surgery (especially on your belly or chest), with high blood pressure that isn't under control, or late in pregnancy. If you feel dizzy, stop and breathe slowly."
+    },
+    {
+      id: "let-it-out", name: "Let It Out", lengths: [3, 5], min: 5, strength: 2, sup: true,
+      tone: "stim", noTap: true, hc: ["strain"],
+      optNote: "Your sound and when you do it are kept for it.",
+      alias: "Vocal release", words: "shout shouting yell scream ow ouch swear swearing word fouch twizpipe roar lion wolf howl owl hoot animal sounds vocal voice release vent workout gym strength pain stress",
+      blurb: "Let your voice out in short rounds, each followed by long breaths out: “ow”, a shout, a word of your own, or animal sounds just for fun. For energy before a workout, or to release a stressful moment.",
+      parts: "Get set · rounds of “ow”, a shout, your word or animal sounds · long breaths out",
+      choices: [
+        { key: "when", label: "For", def: "before", note: "Before a workout: to raise your energy and let go of holding back. After a stressful moment: to let it out, then settle.",
+          opts: [["before", "Before a workout"], ["after", "After stress"]] },
+        { key: "sound", label: "Your sound", def: "shout",
+          note: function (d) {
+            return {
+              ow: "“Ow” on each tick: saying it helped people bear the pain of icy water for longer (and so did pressing a button).",
+              shout: "A short shout from the belly, “Ha!”, on each tick: shouting as you squeezed raised grip strength in a small study.",
+              word: "Any word that lets it out, a swear word if you like: a real swear word, repeated in a steady voice, raised pain tolerance and strength in studies.",
+              made: "The made-up words from a swearing study, “fouch” and “twizpipe”: people found them funny, though they left pain tolerance where it was.",
+              roar: "Playful and untested: a lion's breath, a wolf's howl and an owl's hoots, each on a long, forceful breath out. Nobody has studied animal sounds; this borrows from the laughter and vocal-release research, and from long breaths out."
+            }[pChoice(d, "sound")];
+          },
+          opts: [["ow", "“Ow”"], ["shout", "A shout"], ["word", "Your word"], ["made", "Made-up words"], ["roar", "Roar it out"]] }
+      ],
+      next: function (d) { return pChoice(d, "when") === "after" ? { id: "calm-reset", txt: "Still wound up? Calm Reset brings it down with long breaths out over a slowing beat." } : null; },
+      build: function (min) { return lioSteps(this, min || 5); },
+      end: "Well done. Let your breath settle at its own pace.",
+      how: "Choose your sound, and whether it's before a workout or after a stressful moment. A short start, then three rounds (four in five minutes): on a soft tick every three seconds, your sound, “ow”, a short shout, a word of your own or the made-up words from a swearing study, said steady and clear, from the belly; after each round, long, slow breaths out. Roar it out swaps the words for animal sounds made on long, forceful breaths out, paced on the screen: a lion's breath, a wolf's howl and an owl's hoots. Before a workout it ends with energy for your warm-up; after a stressful moment, with your breath settling.",
+      ev: "Saying “ow” let people keep a hand in painfully cold water longer than staying silent, and pressing a button did too, so doing something helped. Repeating a swear word at a steady, normal volume raised pain tolerance by about a third, and raised grip strength and power on an exercise bike; the made-up words “fouch” and “twizpipe” were found funny but left pain tolerance unchanged. Shouting as people squeezed raised their strongest grip in a small study. The researchers think swearing works by letting go of holding back, though in their own test humour explained more of it. Roar it out is play: no study has tested animal sounds.",
+      cite: "Swee & Schirmer 2015 · Stephens & Robertson 2020 · Stephens, Spierer & Katehis 2018 · Takarada & Nozaki 2021 · Stephens et al. 2023",
+      caution: "Look after your voice: keep each shout short and from the belly rather than the throat, and use a steady speaking voice if your throat hurts or goes hoarse. Think of the people around you: a sudden shout can alarm them, so choose a place where your voice is welcome, or tell them first. Skip the big shouts with high blood pressure, a heart condition, a hernia or late in pregnancy, and stop if you feel dizzy."
+    },
+    {
+      id: "sing", name: "Sing Together", lengths: [10, 15], min: 10, strength: 2, sup: true,
+      tone: "accent", noTap: true, noAna: true,
+      optNote: "Your choices are kept for it.",
+      alias: "Sing-along", words: "sing singing song songs round rounds choir group together sing-along music hum humming voice frere jacques brother john bonding friends family party",
+      blurb: "Sing rounds together, Frère Jacques and Row, Row, Row Your Boat, with the words on the screen and a soft tune and drone to lead you. For a group in one room, or on your own, with the phone as your partner.",
+      parts: "Humming warm-up · vowels · listen · together · as a round · two traditional rounds",
+      choices: [
+        { key: "who", label: "Singing", def: "group", redraw: true, note: "Together: everyone in one room, around the phone. On your own: the phone sings the first part of each round and you come in after it.",
+          opts: [["group", "Together"], ["solo", "On your own"]] },
+        { key: "parts", label: "Parts in the round", def: "2", show: function (d) { return pChoice(d, "who") !== "solo"; },
+          note: "How many groups: each comes in a line after the one before. Two is easiest; four needs at least four singers.",
+          opts: [["2", "Two"], ["3", "Three"], ["4", "Four"]] },
+        { key: "song", label: "Songs", def: "both", note: "Traditional rounds, free for anyone to sing.",
+          opts: [["both", "Both"], ["frere", "Frère Jacques"], ["row", "Row Your Boat"]] },
+        { key: "guide", label: "Guide sound", def: "both", note: "A soft synthesised tune sings the melody (in a round, the first part, then each part still singing) over a low drone; the tune alone; or the words and a count-in alone, once you know the songs. On your own, the phone still sings its part of each round.",
+          opts: [["both", "Tune and drone"], ["tune", "Tune"], ["words", "Words only"]] },
+        { key: "tempo", label: "Tempo", def: "usual", note: "Slower is easier while you learn.",
+          opts: [["slow", "Slower"], ["usual", "Usual"]] }
+      ],
+      build: function (min) { return sngSteps(this, min || 10); },
+      end: "Well sung. Thank you for singing.",
+      how: "For people in the same room, or on your own. A humming warm-up over a soft drone, five notes up and down on each vowel, then each round three ways: listen once, sing it together twice through, then sing it as a round, each group coming in a line after the one before (on your own, the phone sings first and you come in after it). The words are on the screen, a soft synthesised tune leads at a steady tempo after a count-in, and in a round the screen shows where each part is. Any time left goes to more rounds and a soft hum of the tune. It ends with a moment to notice how you feel. Frère Jacques and Row, Row, Row Your Boat are traditional, free for anyone to sing.",
+      ev: "Singing together raised feelings of closeness and positive mood, and raised pain thresholds, a stand-in for the release of endorphins, in small choirs and in a choir of 232 alike. In new adult classes, singers bonded faster than people doing crafts or creative writing, though the others caught up within months: the ice-breaker effect. Music, like laughter, dance and synchronised sport, may bond people both through moving in time together and through endorphins. No study has tested singing along with a phone.",
+      cite: "Weinstein et al. 2016 · Pearce et al. 2015 · Tarr et al. 2014"
+    },
+
     /* ===== movement ===== */
     yogaPractice("standing-flow", { stand: true,
       blurb: "Nine standing poses, held for a few breaths each: mountain, reach, side bends, forward fold, chair, the warriors, triangle and tree." }),
@@ -12606,14 +12795,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
-      ["t:preop-calm", "sound", "lie"]],
+      ["t:preop-calm", "sound", "lie"], ["om", "breath", "sit"]],
     focus: [["focus-primer", "program", "sit"], ["creative", "program", "sit"], ["anapana", "meditate", "sit"], ["b:box", "breath", "sit"],
       ["x:prime", "sound", "sit"], ["t:deep-work", "sound", "sit"], ["t:sustained-24", "sound", "sit"],
       ["t:vigilance-16", "sound", "sit"], ["t:gamma-40", "sound", "sit"], ["t:gamma-memory", "sound", "sit"],
       ["t:creative-reverie", "sound", "sit"]],
     energy: [["morning-tonic", "program", "lie sit stand"], ["sport", "program", "sit stand"], ["b:dive", "breath", "sit lie"], ["morning-yoga", "move", "stand"], ["standing-flow", "move", "stand"], ["morning-stretch", "move", "stand"],
       ["standing-reset", "move", "stand"], ["balance-yoga", "move", "stand"], ["kapalabhati", "breath", "sit"],
-      ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"]],
+      ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"], ["laughter", "move", "stand sit"], ["let-it-out", "breath", "stand sit"],
+      ["sing", "program", "stand sit"]],
     recover: [["recovery", "program", "sit walk"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
       ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"]],
     reflect: [["nvc-self", "write", "sit"], ["nvc-prep", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
@@ -12623,7 +12813,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var ALSO = {
     "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],
     anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], gratitude: ["calm"], "back-hips": ["calm"],
-    "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"], meal: ["reflect"], "mindful-sex": ["reflect"], sport: ["focus"]
+    "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"], meal: ["reflect"], "mindful-sex": ["reflect"], sport: ["focus"],
+    laughter: ["calm"], "let-it-out": ["calm"], sing: ["reflect"]
   };
   var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8", dive: "Swim & dive" };
   var TOOLS = {
@@ -12740,7 +12931,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function pPlan(d, len) {
     var steps = d.build(len, pVar(d)), at = 0;
     steps.forEach(function (s) { s.at = at; at += s.secs; });
-    if (d.method === "program" && P.opt.ana) pAna(d, steps, at, P.opt.ana);
+    if (d.method === "program" && P.opt.ana && !d.noAna) pAna(d, steps, at, P.opt.ana);
     var base = at;                                   // a programme's sound covers the practice, not the tapping after it
     if (tapOn(d)) tapShort().forEach(function (s) { s.at = at; at += s.secs; s.extra = true; steps.push(s); });
     return { steps: steps, total: at, base: base };
@@ -13195,6 +13386,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (s.k === "pump") return "pump";
     if (s.k === "shuffle") return "word";
     if (s.k === "count") return "count";
+    if (s.k === "sing") return "sing";               // the words to sing, and where each part is (vocal.js)
     if (ST.sleepDim && pSleepyStep(s)) return s.k === "shuffle" ? "word" : "dark";   // dimmed for sleep (Settings)
     if (s.k === "drift") return "glow";
     if (s.k === "hold") return "hold";
@@ -13213,6 +13405,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var prev = P.steps[P.idx], s = P.steps[i];
     P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1; P.metroNext = 0;
     napWakeStop();                                   // wake-up chimes belong to their own step
+    vxEnter(s);                                      // and a song's notes to its own (vocal.js)
     if (s.k === "wake") { NP.rung = 0; NP.vibs = 0; }
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
@@ -13244,6 +13437,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else if (vis === "face") fig.innerHTML = pFaceSVG(s.zone || 0);
     else if (vis === "tap") { fig.innerHTML = tapSVG(null, []); pTapPoint(s, pT() - s.at); }
     $("#sRate").hidden = vis !== "rate";
+    $("#sSing").hidden = vis !== "sing";
+    if (vis === "sing") vxShow(s, pT() - s.at);
     var wr = $("#sWrite");
     wr.hidden = vis !== "write";
     $("#ses").dataset.write = vis === "write" ? "1" : "";
@@ -13304,6 +13499,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else if (s.k === "shuffle") pShuffleTick(s, st);
     else if (s.k === "pmr") pPmrTick(s, st);
     if (s.metro) pMetroTick(s, st);
+    vxTick(s, st);                                   // the drone, and a song's tune and count-in (vocal.js)
     pAudioSync(T);
     pUI();
   }
@@ -13404,13 +13600,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       P.pumpNext++;
     }
   }
-  /* ----- a cadence tick: a soft click s.metro times a minute, to move in time with (a sports session) ----- */
+  /* ----- a cadence tick: a soft click s.metro times a minute, to move in time with (a sports session), from
+     s.metroAt seconds into the step (3 unless it says); s.metroPat picks the ticks that sound, "x" a click and "." a
+     rest, round and round (Laughter Break's ho, ho, ha ha ha), the first of each round a little louder ----- */
   function pMetroTick(s, st) {
-    if (!A.ctx || !pBusOn() || st < 3) return;
-    var gap = 60 / s.metro, horizon = st + (document.hidden ? 2 : 0.6);
-    if (!P.metroNext) P.metroNext = Math.max(3, Math.ceil(st / gap) * gap);
+    var at = s.metroAt || 3, own = !!s.metroAt, gap = 60 / s.metro, horizon = st + (document.hidden ? 2 : 0.6), pat = s.metroPat;
+    if (!A.ctx || (own ? horizon < at : st < 3) || !pBusOn()) return;      // a start of its own is scheduled ahead, so its first tick is on time
+    if (!P.metroNext) P.metroNext = own ? at + Math.max(0, Math.ceil((st - 0.05 - at) / gap)) * gap : Math.max(3, Math.ceil(st / gap) * gap);
     while (P.metroNext < Math.min(horizon, s.secs - 0.5)) {
-      if (P.metroNext >= st - 0.05) pClick(A.ctx.currentTime + (P.metroNext - st), 0.07);
+      var j = Math.round((P.metroNext - at) / gap), on = !pat || pat.charAt(j % pat.length) === "x";
+      if (on && P.metroNext >= st - 0.05) pClick(A.ctx.currentTime + (P.metroNext - st), pat && j % pat.length === 0 ? 0.1 : 0.07);
       P.metroNext += gap;
     }
   }
@@ -13469,6 +13668,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       sub = s.pts.length === 1 ? "Tap gently while you say the set-up" : (st < (s.lead || 0) ? "Get ready: " + Math.ceil(s.lead - st) + "…" : "Point " + (ti + 1) + " of " + s.pts.length + " · " + tp.where);
     } else if (s.k === "rate") {
       sub = s.sub || "0 is not at all, 10 is as strong as it gets";
+    } else if (s.k === "sing") {
+      sub = vxSub(s, st);
     } else if (s.k === "adapt") {
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
@@ -13535,7 +13736,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1 };   // the visuals drawn on the canvas
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -13556,6 +13757,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         else if (vis === "pump") pPump(c, W, Hh, s, st, col);
         else if (vis === "hold") pHold(c, W, Hh, s, st, col);
         else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
+        else if (vis === "beat") vxBeat(c, W, Hh, s, st, col);
+        else if (vis === "sing") vxShow(s, st);
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -13771,6 +13974,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (pTrack() && A.playing) { pause(); P.audioHeld = true; }
     rhyStop(0.3);
     napWakeStop();
+    vxHush();
     pHush();
     pUnlock();
     pUI();
@@ -13820,6 +14024,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     pHush();
     rhyStop();
     napWakeStop();
+    vxHush();
     P.mv = null;
     if (pTrack()) {
       var trk = A.track;
@@ -14011,7 +14216,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
     if (d.variant) opts.push('<div class="so-row so-seg"><span class="so-l">' + d.variant.label + '</span><div class="mini-seg" id="sOptVar">' +
       d.variant.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (pVar(d) === o[0]) + '">' + o[1] + "</button>"; }).join("") + "</div></div>");
-    if (d.method === "program") opts.push('<div class="so-row so-seg so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
+    if (d.method === "program" && !d.noAna) opts.push('<div class="so-row so-seg so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
       [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]].map(function (o) {
         return '<button data-v="' + o[0] + '" aria-pressed="' + (O.ana === o[0]) + '">' + o[1] + "</button>";
       }).join("") + "</div></div>");
@@ -14571,8 +14776,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var ch = P.chain && P.chain.then !== d.id ? pDef(P.chain.then) : null;
     if (ch) return '<div class="note-card sd-next"><p><b>Next: ' + esc(ch.name) + ".</b> " + esc(ch.chainTxt || "") + "</p>" +
       '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + (ch.sup ? supTag() : "") + "</button></div>";
-    var nx = d.next && pDef(d.next.id);
-    return nx ? '<div class="note-card sd-next"><p>' + esc(d.next.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + (nx.sup ? supTag() : "") + "</a></div>" : "";
+    var nt = pFn(d.next, d), nx = nt && pDef(nt.id);     // a suggestion can follow the choices made (Sports Performance's)
+    return nx ? '<div class="note-card sd-next"><p>' + esc(nt.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + (nx.sup ? supTag() : "") + "</a></div>" : "";
   }
 
   // what each number means, with your own value read back
@@ -14626,6 +14831,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       p.push("How long you held your breath after the power breaths, round by round: " + r.holds.map(fmt).join(", ") + ". The longest was " + fmt(Math.max.apply(null, r.holds)) + ".");
       p.push("Holds often lengthen in later rounds: the fast breathing lowers carbon dioxide, so the urge to breathe comes later. That's also why this practice is done only sitting or lying down, with each hold ending as soon as you need to breathe.");
       return ["Breath holds", p];
+    }
+    if (k === "suds" && d.rate && d.rate.what === "mood") {           // higher is better, unlike a feeling's strength
+      p.push("How your mood was each time you rated it, from 0 (very low) to 10 (as good as it gets): " + r.suds.join(", then ") + ".");
+      if (r.suds.length > 1) {
+        n = r.suds[r.suds.length - 1] - r.suds[0];
+        p.push(n > 0 ? "Your mood rose " + plural(n, "point", "points") + "." : n < 0 ? "Your mood dipped. That happens; a gentler practice may suit you better today." : "Your mood stayed where it was.");
+        p.push("A rating straight afterwards is partly what you expected to feel, so the pattern over several sessions in your history tells you more than one.");
+      } else p.push("Rate it before and after to see how it changes.");
+      return [d.rate.name, p];
     }
     if (k === "suds" && d.rate && d.rate.what === "hunger") {
       p.push("How hungry you were each time you rated it, from 0 (not hungry at all) to 10 (as hungry as you get): " + r.suds.join(", then ") + ".");
@@ -14997,6 +15211,434 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     window.addEventListener("hashchange", seen);
     seen();
     settleSync();
+  }
+  /* ------------------------------- the voice -------------------------------
+     Four practices for your own voice, from the brain-wave guide (practice-data.js holds their entries;
+     each is a new technique, sup: true):
+       Om Chanting     A-U-M on a long breath out, the M a closed-mouth hum; aloud, then softer, then
+                       in your mind, then silence; an optional low drone to chant with
+       Laughter Break  laughter on purpose: a clapping warm-up to a ho-ho-ha-ha-ha tick, short bouts of
+                       playful laughter with slow breaths between, your mood before and after
+       Let It Out      rounds of "ow", a shout, a word of your own or the made-up words from a swearing
+                       study, said on a tick every three seconds in a steady, clear voice, each round
+                       followed by long breaths out; or Roar it out, animal sounds just for fun
+       Sing Together   a humming warm-up and vowels, then two traditional rounds (Frère Jacques and Row,
+                       Row, Row Your Boat): listened to, sung together, then sung as a round, with the
+                       words on the screen and a soft synthesised tune and drone at a steady tempo
+     This file holds their steps, the songs, and the sound and screen of a "sing" step: the tune and its
+     count-in are scheduled ahead on the audio clock (like the cadence tick), through a gain of their
+     own that a pause, a skip or I need to stop silences at once; the drone is a low D with its fifth,
+     made on the device. The tune leads the first part of a round, and when that part has sung its last,
+     the part still singing, so the last group is never left on its own.
+  ------------------------------------------------------------------------------ */
+
+  /* Songs: phrases of notes [MIDI note (69 = A4, 440 Hz; 0 a rest), length in beats, the syllable sung].
+     A round's parts come in one phrase (two bars) apart. Both rounds are in D major, over the same
+     drone. Frère Jacques is in 4/4, a beat a crotchet; Row, Row, Row Your Boat in 6/8, a beat a quaver,
+     with the count-in on each dotted crotchet. Both are traditional, and free for anyone to sing. */
+  var VX_SONGS = {
+    frere: { name: "Frère Jacques", short: "Frère Jacques", bpm: 88, cb: 1, count: 4, ph: [
+      [[62, 1, "Are"], [64, 1, "you"], [66, 1, "sleep-"], [62, 1, "ing,"], [62, 1, "are"], [64, 1, "you"], [66, 1, "sleep-"], [62, 1, "ing,"]],
+      [[66, 1, "Bro-"], [67, 1, "ther"], [69, 2, "John?"], [66, 1, "Bro-"], [67, 1, "ther"], [69, 2, "John?"]],
+      [[69, 0.5, "Mor-"], [71, 0.5, "ning"], [69, 0.5, "bells"], [67, 0.5, "are"], [66, 1, "ring-"], [62, 1, "ing,"],
+        [69, 0.5, "mor-"], [71, 0.5, "ning"], [69, 0.5, "bells"], [67, 0.5, "are"], [66, 1, "ring-"], [62, 1, "ing:"]],
+      [[62, 1, "ding,"], [57, 1, "dang,"], [62, 2, "dong."], [62, 1, "Ding,"], [57, 1, "dang,"], [62, 2, "dong."]]
+    ] },
+    row: { name: "Row, Row, Row Your Boat", short: "Row Your Boat", bpm: 160, cb: 3, count: 4, ph: [
+      [[62, 3, "Row,"], [62, 3, "row,"], [62, 2, "row"], [64, 1, "your"], [66, 3, "boat,"]],
+      [[66, 2, "gent-"], [64, 1, "ly"], [66, 2, "down"], [67, 1, "the"], [69, 6, "stream."]],
+      [[74, 1, "Mer-"], [74, 1, "ri-"], [74, 1, "ly,"], [69, 1, "mer-"], [69, 1, "ri-"], [69, 1, "ly,"],
+        [66, 1, "mer-"], [66, 1, "ri-"], [66, 1, "ly,"], [62, 1, "mer-"], [62, 1, "ri-"], [62, 1, "ly,"]],
+      [[69, 2, "life"], [67, 1, "is"], [66, 2, "but"], [64, 1, "a"], [62, 6, "dream."]]
+    ] },
+    // the warm-up: five notes up and down on each vowel, then a breath
+    scale: { name: "Vowels", short: "Vowels", bpm: 88, cb: 1, count: 4, ph: ["Mah", "May", "Mee", "Moh", "Moo"].map(function (v) {
+      return [62, 64, 66, 67, 69, 67, 66, 64].map(function (m) { return [m, 1, v]; }).concat([[62, 2, v], [0, 2, ""]]);
+    }) }
+  };
+  var VX_TEMPO = { slow: 0.82, usual: 1 };       // Slower, for learning a song
+  var VX_DRONE = [[73.42, 0.05], [146.83, 0.07], [220, 0.045]];   // D2, D3 and A3, triangle waves under a soft low-pass
+
+  /* The sound and the screen of the voice practices: the bus, the gain the tune's notes go through (made
+     fresh after each hush), the drone while it plays, the next event to schedule in the step, and what the
+     words on the screen last showed. */
+  var VX = { bus: null, g: null, dr: null, next: 0, ev: null, evFor: null, shown: "" };
+
+  /* ----- the songs, worked out once ----- */
+  function vxHz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+  // the song's notes in one list, each with its phrase, its place in the phrase and its first beat
+  function vxSong(id) {
+    var S = VX_SONGS[id];
+    if (!S.notes) {
+      var b = 0;
+      S.notes = [];
+      S.ph.forEach(function (ph, p) { ph.forEach(function (n, i) { S.notes.push({ p: p, i: i, b0: b, b: n[1], m: n[0] }); b += n[1]; }); });
+      S.len = b;
+      S.entry = S.ph[0].reduce(function (a, n) { return a + n[1]; }, 0);      // a round's parts come in a phrase apart
+    }
+    return S;
+  }
+  function vxBl(s) { return 60 / s.bpm; }                                       // seconds a beat
+  function vxT0(s) { return s.lead + s.count * VX_SONGS[s.song].cb * vxBl(s); }   // when the song starts, after the words and the count-in
+  function vxPartAt(s, p) { return vxT0(s) + p * vxSong(s.song).entry * vxBl(s); }
+  function vxEnd(s) { var S = vxSong(s.song); return vxT0(s) + ((s.parts - 1) * S.entry + s.reps * S.len) * vxBl(s); }
+  // where part p is at st seconds into the step: waiting (b beats to go), singing (phrase, note, time through) or done
+  function vxPos(s, st, p) {
+    var S = vxSong(s.song), x = (st - vxPartAt(s, p)) / vxBl(s);
+    if (x < 0) return { st: "wait", b: -x };
+    if (x >= s.reps * S.len) return { st: "done" };
+    var r = Math.floor(x / S.len), y = x - r * S.len, n = S.notes[0];
+    for (var i = S.notes.length - 1; i >= 0; i--) if (y >= S.notes[i].b0 - 1e-9) { n = S.notes[i]; break; }
+    return { st: "on", r: r, p: n.p, i: n.i };
+  }
+
+  /* A step that sings: the words said first (lead), a count-in, then the song reps times through, in
+     unison, or as a round of `parts` parts. o: reps, parts, tempo, guide ("both" tune and drone, "tune",
+     "words" only), who ("group", or "solo": the phone sings the first part and you the second). */
+  function vxSing(song, mode, title, line, o) {
+    var S = vxSong(song);
+    var s = { k: "sing", song: song, mode: mode, title: title, reps: o.reps || 1, parts: o.parts || 1, lead: o.lead || 6, count: S.count,
+      bpm: Math.round(S.bpm * (VX_TEMPO[o.tempo] || 1)), tune: o.guide !== "words", drone: o.guide === "both", who: o.who || "group", lines: [[0, line]] };
+    s.secs = Math.ceil(vxEnd(s) + 1.5);
+    return s;
+  }
+
+  /* ----- Om Chanting ----- */
+  // the breath out (E seconds) after four seconds in; whole breaths, so each part begins on a breath in
+  function omSteps(d, min) {
+    min = min || 10;
+    var E = +pChoice(d, "breath") || 10, cyc = 4 + E, T = min * 60, drone = pChoice(d, "drone") === "on";
+    var intro = min <= 5 ? 45 : 60, quiet0 = min <= 5 ? 35 : min <= 10 ? 50 : 70;
+    var n = Math.floor((T - intro - quiet0 - 3) / cyc), w = min <= 5 ? [0.65, 0] : [0.5, 0.25];
+    var n1 = Math.max(2, Math.round(n * w[0])), n2 = w[1] ? Math.max(2, Math.round(n * w[1])) : 0, n3 = n - n1 - n2;
+    var quiet = T - intro - 3 - n * cyc, t = { inh: 4, sip: 0, hold: 0, exh: E, rest: 0 }, a1 = 3 + n1 * cyc;
+    var within = function (secs, lines) { return lines.filter(function (l) { return l[0] < secs - 1; }); };
+    var st = [G(intro, "How to chant", ["Sit tall and comfortable, and close your eyes if you like.",
+      "Om is three sounds on one breath out: an open Aaa, a rounded Uuu, then Mmm, a hum with the lips closed.",
+      "Give the Mmm about half the breath. Chant low and easy, at a pitch that feels natural.",
+      drone ? "A soft drone plays: chant on its note, or any note that sits easily with it." : "Any comfortable note will do."], { drone: drone, vis: "glow" })];
+    st.push(Br(a1, "Om, aloud", t, { drone: drone, labels: { "in": "Breathe in", out: "Aaa-uuu-mmm" },
+      hints: { "in": "Quietly, through the nose.", out: "Open Aaa, round Uuu, then a long Mmm with the lips closed." },
+      lines: within(a1, [[0, "Breathe in through the nose, then chant on the long breath out: Aaa, uuu, mmm."],
+        [3 + 2 * cyc, "Give the Mmm the longest part, and feel it buzz in your lips, nose and head."],
+        [3 + 5 * cyc, "Let each chant fill the whole breath out, and the next breath in come by itself."]]) }));
+    if (n2) st.push(Br(n2 * cyc, "Om, softer", t, { drone: drone, labels: { "in": "Breathe in", out: "Aum, softly" },
+      hints: { "in": "Quietly, through the nose.", out: "Half as loud, the hum still buzzing." },
+      lines: [[0, "Now softer, about half as loud, the hum still buzzing."]] }));
+    st.push(Br(n3 * cyc, "Om in your mind", t, { labels: { "in": "Breathe in", out: "Om, silently" },
+      hints: { "in": "Quietly, through the nose.", out: "Hear it inside you, on the long breath out." },
+      lines: within(n3 * cyc, [[0, "Now silently: hear Om in your mind on each long breath out."],
+        [2 * cyc, "If your mind wanders, come back to the sound you hear inside."]]) }));
+    st.push(G(quiet, "Silence", [[0, "Let the sound go, and sit in the silence after it."],
+      [frac(quiet, 0.35), "Notice the stillness, and any buzz that lingers in your face and head."], [quiet - 10, "When you're ready, open your eyes."]], { vis: "still" }));
+    return st;
+  }
+
+  /* ----- Laughter Break ----- */
+  // the bouts: a title, and its lines on your own and with others
+  var LGH_BOUTS = [
+    ["Greeting laughter", ["Greet the room, or yourself in a mirror, with a laugh instead of a hello: wave, and laugh.", "Let the laugh grow a little with each wave."],
+      ["Greet each other with a laugh instead of a hello: shake hands, wave, and laugh.", "Look each other in the eye, and let the laughter spread."]],
+    ["Smile to a giggle", ["Start with a big smile. Let it grow into a giggle, then a chuckle.", "Let your shoulders bounce with it.", "Very good, very good, yay!"]],
+    ["Milkshake laughter", ["Hold two imaginary glasses. Pour from one into the other with a long eee…", "…then drink it down in one go, and burst out laughing.", "Once more: pour, eee, drink, and laugh."]],
+    ["Silent laughter", ["Laugh with your mouth wide open and no sound at all.", "Shake with it: shoulders, belly, the whole body.", "Then let the sound come back in, as loud as you like."]],
+    ["Phone laughter", ["Hold an imaginary phone to your ear: someone has told you the funniest thing.", "Laugh at it, walk about, and nod along.", "Tell the room what they said, and laugh again."],
+      ["Hold an imaginary phone to your ear: someone has told you the funniest thing.", "Laugh at it, walk about, and nod along.", "Show each other what they said, and laugh together."]],
+    ["Hearty laughter", ["Arms up to the sky, head back a little, and laugh from the heart.", "Let it come from deep in the belly: ha ha ha.", "Very good, very good, yay!"]]
+  ];
+  function lghSteps(d, min) {
+    min = min || 10;
+    var T = min * 60, mood = pChoice(d, "mood") === "on", grp = pChoice(d, "who") === "group", short = min <= 5;
+    var arrive = short ? 15 : 20, rate = short ? 25 : 30, clap = short ? 30 : 45, brk = 20, slow = short ? 40 : 70;
+    var bouts = short ? [LGH_BOUTS[0], LGH_BOUTS[2], LGH_BOUTS[5]] : LGH_BOUTS, nb = bouts.length;
+    var fixed = arrive + clap + (nb - 1) * brk + slow + (mood ? 2 * rate : 0);
+    var bout = Math.floor((T - fixed - 30) / nb / 5) * 5, close = T - fixed - nb * bout;
+    var t46 = { inh: 4, sip: 0, hold: 0, exh: 6, rest: 0 };
+    var mr = function (title, line) {               // the same 0 to 10 scale before and after, set side by side at the end
+      return TRate(title, line, { cap: rate, ends: ["Very low", "As good as it gets"], sub: "0 is very low, 10 is as good as it gets" });
+    };
+    var st = [G(arrive, "Arrive", ["Stand or sit tall, with a little room around you.",
+      grp ? "Face each other, so you can see each other laugh." : "If there's a mirror nearby, face it: laughing at yourself works too.",
+      "Laughter here is an exercise: fake it, and it often turns real."], { vis: "glow" })];
+    if (mood) st.push(mr("How's your mood?", "Before you start: how is your mood right now, from zero to ten? Tap a number."));
+    st.push(G(clap, "Clap and chant", [[0, "Clap with the tick: one, two, one, two, three. Ho, ho, ha ha ha."],
+      [frac(clap, 0.4), "Keep clapping, and chant it with the claps: ho, ho, ha ha ha."], [frac(clap, 0.75), "Bigger now, and smile as you clap."]],
+      { metro: 200, metroPat: "x.x.xxx.", metroAt: 6, vis: "beat", sub: "Ho, ho, ha ha ha" }));
+    bouts.forEach(function (b, i) {
+      st.push(G(bout, b[0], grp && b[2] ? b[2] : b[1], { vis: "glow" }));
+      if (i < nb - 1) st.push(Br(brk, "Breathe", t46, { lines: [[0, "Breathe in through the nose, and out slowly through the mouth."]] }));
+    });
+    st.push(Br(slow, "Slow breaths", t46, { lines: [[0, "Now let the laughter settle. Slow breaths: in through the nose, and a long breath out."],
+      [frac(slow, 0.55), "Notice your face, your chest and your belly."]] }));
+    if (mood) st.push(mr("And now?", "And now: how is your mood, from zero to ten?"));
+    st.push(G(close, "Closing", [[0, "Notice how you feel now: your face, your chest, your breath."], [frac(close, 0.5), "Take that lightness with you."]], { vis: "glow" }));
+    return st;
+  }
+
+  /* ----- Let It Out ----- */
+  // what's said on each tick: the first round, then the others
+  var LIO_SAY = {
+    ow: ["Ow", "On each tick, say “ow”: steady and clear, from the belly.", "Again: “ow” on each tick, and let a little more go each time."],
+    shout: ["Shout", "On each tick, one short, strong shout from the belly: “Ha!”", "Again: “Ha!” on each tick, from the belly."],
+    word: ["Your word", "Choose a word that lets it out, a swear word if you like, and say it on each tick: steady and clear.", "Again: your word on each tick, steady and clear."]
+  };
+  // Roar it out: animal sounds on long, forceful breaths out (title, the timings, what to do, the breath out's word and hint)
+  var LIO_ROAR = [
+    ["Lion's breath", { inh: 4, sip: 0, hold: 0, exh: 5, rest: 1 }, "Lion's breath: breathe in through the nose, then open your mouth wide, stick out your tongue, and breathe out a long, forceful haaa.",
+      "Haaa", "Mouth wide, tongue out, eyes wide: a long, forceful haaa."],
+    ["Wolf howl", { inh: 4, sip: 0, hold: 0, exh: 6, rest: 2 }, "Wolf howl: tip your head back and howl on the breath out, a long aaa-ooo that rises and falls.",
+      "Aaa-ooo", "Head back: a long howl that rises and falls."],
+    ["Owl hoots", { inh: 3, sip: 0, hold: 0, exh: 5, rest: 2 }, "Owl hoots: soft and round, hoo, hoo-hoo, one after another on the breath out.",
+      "Hoo, hoo-hoo", "Soft and round, one after another."]
+  ];
+  function lioSteps(d, min) {
+    min = min || 5;
+    var snd = pChoice(d, "sound"), after = pChoice(d, "when") === "after", short = min <= 3, T = min * 60;
+    var n = short ? 3 : 4, set = short ? 15 : 25, rnd = short ? 20 : 25, out = short ? 30 : 35, close = T - set - n * (rnd + out);
+    var st = [G(set, "Get set", [after ? "Stand or sit tall, somewhere your voice is welcome." : "Stand tall, feet planted, somewhere your voice is welcome.",
+      snd === "roar" ? "This one is play: animal sounds on long, forceful breaths out, just for fun." : "A few short rounds of your voice, each followed by long breaths out. Steady and clear; loud is optional.",
+      after ? "Let the stress of the moment move out through your voice." : "This is about letting go of holding back, ready for your workout."].slice(0, short ? 2 : 3), { vis: "glow" })];
+    for (var i = 0; i < n; i++) {
+      if (snd === "roar") {
+        var R = LIO_ROAR[i % LIO_ROAR.length];
+        st.push(Br(rnd, R[0], R[1], { labels: { "in": "Breathe in", out: R[3], rest: "Rest" }, hints: { "in": "Through the nose.", out: R[4] }, lines: [[0, R[2]]] }));
+      } else if (snd === "made") {
+        var tw = i % 2 === 1;
+        st.push(G(rnd, tw ? "Twizpipe" : "Fouch", [[0, i === 0 ? "On each tick, say the made-up word “fouch!”: steady and clear." : tw ? "Now the other made-up word, “twizpipe!”, on each tick." : "“Fouch!” again on each tick."]],
+          { metro: 20, metroAt: 5, vis: "beat", sub: "On each tick" }));
+      } else {
+        var W = LIO_SAY[snd] || LIO_SAY.shout;
+        st.push(G(rnd, W[0], [[0, i === 0 ? W[1] : W[2]]], { metro: 20, metroAt: 5, vis: "beat", sub: "On each tick" }));
+      }
+      st.push(Br(out, "Long breaths out", { inh: 4, sip: 0, hold: 0, exh: 8, rest: 0 }, { labels: { out: "Long breath out" },
+        lines: [[0, i ? "Long breaths out again." : after ? "Now long, slow breaths out. Let a little more go with each one." : "Now long breaths out. Let your shoulders drop, and stay switched on."]] }));
+    }
+    st.push(G(close, after ? "Settle" : "Ready", after ? ["Notice how you feel now.", "Let your breath settle at its own pace."]
+      : ["Shake out your arms and legs.", "Take that energy into your warm-up."], { vis: "glow" }));
+    return st;
+  }
+
+  /* ----- Sing Together ----- */
+  function sngSteps(d, min) {
+    min = min || 10;
+    var T = min * 60, grp = pChoice(d, "who") !== "solo", parts = grp ? +pChoice(d, "parts") || 2 : 2, guide = pChoice(d, "guide");
+    var o = { tempo: pChoice(d, "tempo"), guide: guide, who: grp ? "group" : "solo" }, songs = pChoice(d, "song") === "both" ? ["frere", "row"] : [pChoice(d, "song")];
+    var x = function (more) { var r = {}; ext(r, o); return ext(r, more); };
+    var groups = ["", "", "two", "three", "four"][parts], words = guide === "words";
+    var roundLine = grp ? "Split into " + groups + " groups. Group one starts with the phone; each group comes in as the one before reaches its second line."
+      : "The phone sings first. Come in when it reaches the second line, and keep going to the end.";
+    var round = function (id, reps, again) {
+      // on your own, the phone sings its part of the round even with the words alone: it's your partner
+      return vxSing(id, "round", VX_SONGS[id].short + (again ? ": once more" : ", a round"), again ? "Once more as a round: the same groups, the same order." : roundLine,
+        x({ reps: reps, parts: parts, guide: !grp && words ? "tune" : guide }));
+    };
+    var st = [G(25, "Gather", [grp ? "Gather round, close enough to hear each other, with the phone in the middle and its volume up." : "Stand or sit tall, with the phone in front of you and its volume up.",
+      grp ? "You'll warm up with a hum, then learn each round and sing it together." : "You'll warm up with a hum, then learn each round and sing it with the phone as your partner."], { vis: "glow" })];
+    st.push(Br(60, "Humming warm-up", { inh: 3, sip: 0, hold: 0, exh: 7, rest: 0 }, { drone: guide === "both", labels: { "in": "Breathe in", out: "Hum" },
+      hints: { "in": "Through the nose.", out: "Lips closed, a soft, steady hum." },
+      lines: [[0, "First, a hum to warm up: breathe in, then hum on the long breath out, lips closed."],
+        [23, guide === "both" ? "Find a note that sits easily with the drone, and let the hum buzz in your face." : "Find a comfortable note, and let the hum buzz in your face."],
+        [43, "Let each hum use the whole breath out."]] }));
+    st.push(vxSing("scale", "scale", "Vowels", words ? "Now sing five notes up and down after the count-in, on each vowel: mah, may, mee, moh, moo."
+      : "Now five notes up and down with the tune, on each vowel: mah, may, mee, moh, moo.", x({})));
+    var rounds = [];
+    songs.forEach(function (id) {
+      var nm = VX_SONGS[id].short;
+      if (!words) st.push(vxSing(id, "listen", nm + ": listen", grp ? "Listen to the tune once. Join in quietly if you know it." : "Listen to the tune once. Hum along if you know it.", x({})));
+      st.push(vxSing(id, "unison", nm + ", together", grp ? "Now everyone together, twice through." : words ? "Now sing it, twice through." : "Now sing it with the phone, twice through.", x({ reps: 2 })));
+      rounds.push(st.length);
+      st.push(round(id, 2));
+    });
+    // the time left: each round sung three times, then four; a quiet hum of the first song; more rounds; the rest to close
+    var left = function () { return T - secsOf(st) - 30; };
+    [3, 4].forEach(function (reps) {
+      rounds.forEach(function (k) {
+        var s = st[k], bigger = round(s.song, reps);
+        if (bigger.secs - s.secs <= left()) st[k] = bigger;
+      });
+    });
+    var hum = vxSing(songs[0], "hum", "Hum it softly", "Now hum the tune together, softly, lips closed.", x({ lead: 5 }));
+    if (hum.secs <= left()) st.push(hum);
+    for (var k = 0; k < 6; k++) {
+      var more = round(songs[k % songs.length], 2, true);
+      if (more.secs > left()) break;
+      st.push(more);
+    }
+    var close = T - secsOf(st), lines = [[0, "Take a breath, and notice how you feel: your breath, your face, your chest."],
+      [15, grp ? "Look around at each other. Well sung, everyone." : "Well sung."]];
+    if (close >= 55) lines.push([40, "Sit quietly for a moment before you carry on."]);
+    st.push(G(close, "Afterwards", lines, { vis: "glow" }));
+    return st;
+  }
+
+  /* ----- sound: the tune, the count-in and the drone ----- */
+  function vxOut() {
+    if (!ensureCtx()) return false;
+    if (!VX.bus) { VX.bus = A.ctx.createGain(); VX.bus.gain.value = 0.9; VX.bus.connect(A.ctx.destination); }
+    if (!VX.g) { VX.g = A.ctx.createGain(); VX.g.gain.value = 1; VX.g.connect(VX.bus); }
+    return true;
+  }
+  // one note of the tune: a soft triangle with a touch of its octave, a gentle start, a short gap before the next
+  function vxNote(m, when, dur) {
+    if (!vxOut()) return;
+    var ctx = A.ctx, f = vxHz(m), end = when + Math.max(0.12, dur * 0.92), r = Math.min(0.14, dur * 0.3);
+    [["triangle", 1, 0.16], ["sine", 2, 0.04]].forEach(function (h) {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = h[0]; o.frequency.value = f * h[1];
+      g.gain.setValueAtTime(0, when);
+      g.gain.linearRampToValueAtTime(h[2], when + 0.03);
+      g.gain.linearRampToValueAtTime(h[2] * 0.8, end - r);
+      g.gain.linearRampToValueAtTime(0, end);
+      o.connect(g); g.connect(VX.g);
+      o.start(when); o.stop(end + 0.05);
+      o.onended = function () { try { o.disconnect(); g.disconnect(); } catch (e) {} };
+    });
+  }
+  // the drone, in over two seconds and out over fade
+  function vxDrone(on, fade) {
+    if (!!VX.dr === on) return;
+    if (on) {
+      if (!vxOut()) return;
+      var ctx = A.ctx, now = ctx.currentTime, g = ctx.createGain(), lp = ctx.createBiquadFilter();
+      lp.type = "lowpass"; lp.frequency.value = 900;
+      g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(1, now + 2);
+      lp.connect(g); g.connect(VX.bus);
+      VX.dr = { g: g, lp: lp, os: VX_DRONE.map(function (x) {
+        var o = ctx.createOscillator(), og = ctx.createGain();
+        o.type = "triangle"; o.frequency.value = x[0]; og.gain.value = x[1];
+        o.connect(og); og.connect(lp); o.start(now);
+        o.onended = function () { try { o.disconnect(); og.disconnect(); } catch (e) {} };
+        return o;
+      }) };
+    } else {
+      var dr = VX.dr, t = A.ctx.currentTime, f = fade === undefined ? 1 : fade;
+      VX.dr = null;
+      try {
+        dr.g.gain.cancelScheduledValues(t); dr.g.gain.setValueAtTime(dr.g.gain.value, t); dr.g.gain.linearRampToValueAtTime(0, t + f);
+        dr.os.forEach(function (o) { o.stop(t + f + 0.1); });
+      } catch (e) {}
+      setTimeout(function () { try { dr.lp.disconnect(); dr.g.disconnect(); } catch (e) {} }, (f + 0.4) * 1000);
+    }
+  }
+  // the notes already queued, silenced at once (a pause, a skip, the end)
+  function vxCut(fade) {
+    var g = VX.g;
+    VX.g = null;
+    if (!g || !A.ctx) return;
+    var t = A.ctx.currentTime, f = fade || 0.06;
+    try { g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + f); } catch (e) {}
+    setTimeout(function () { try { g.disconnect(); } catch (e) {} }, (f + 0.3) * 1000);
+  }
+  function vxHush(fade) { vxCut(fade); vxDrone(false, fade === undefined ? 0.4 : fade); }
+
+  // a sing step's events, in time order: the count-in's clicks and the tune's notes
+  function vxEvents(s) {
+    if (VX.evFor === s) return VX.ev;
+    var S = vxSong(s.song), bl = vxBl(s), ev = [];
+    for (var k = 0; k < s.count; k++) ev.push({ t: s.lead + k * S.cb * bl, c: true, acc: k === 0 });
+    if (s.tune) for (var p = 0; p < s.parts; p++) {
+      var ps = vxPartAt(s, p), from = p ? vxPartAt(s, p - 1) + s.reps * S.len * bl - 1e-6 : -1;   // each part from where the one before ended
+      for (var r = 0; r < s.reps; r++) S.notes.forEach(function (n) {
+        var t = ps + (r * S.len + n.b0) * bl;
+        if (n.m && t >= from) ev.push({ t: t, m: n.m, d: n.b * bl });
+      });
+    }
+    ev.sort(function (a, b) { return a.t - b.t; });
+    VX.ev = ev; VX.evFor = s;
+    return ev;
+  }
+  // a new step: its events from the start
+  function vxEnter(s) {
+    VX.next = 0; VX.shown = "";
+    vxCut();
+  }
+  // every tick of a running practice: the drone where a step asks for it, and a sing step's notes up to just ahead
+  function vxTick(s, st) {
+    vxDrone(P.state === "running" && !!s.drone);
+    if (s.k !== "sing" || !A.ctx || P.state !== "running") return;
+    var ev = vxEvents(s), horizon = st + (document.hidden ? 2 : 0.6);
+    while (VX.next < ev.length && ev[VX.next].t < horizon) {
+      var e = ev[VX.next++];
+      if (e.t < st - 0.05) continue;
+      var when = A.ctx.currentTime + (e.t - st);
+      if (e.c) pClick(when, e.acc ? 0.14 : 0.09); else vxNote(e.m, when, e.d);
+    }
+  }
+
+  /* ----- the screen: the words, where each part is, and the warm-up's vowel ----- */
+  function vxModeTxt(s) {
+    if (s.mode === "listen") return "Listen first";
+    if (s.mode === "unison") return s.who === "solo" ? "Sing along" : "Everyone together";
+    if (s.mode === "hum") return "Hum along";
+    if (s.mode === "scale") return "Five notes up and down";
+    return s.who === "solo" ? "A round: the phone, then you" : "A round in " + ["", "", "two", "three", "four"][s.parts] + " parts";
+  }
+  // a phrase's syllables, those sung so far and the one now marked (cur: the note's place, or -1)
+  function vxPhrase(ph, cur, on) {
+    return '<p class="vx-l' + (on ? " on" : "") + '">' + ph.filter(function (n) { return n[0]; }).map(function (n, i) {
+      var t = n[2], join = /-$/.test(t);
+      return '<span class="' + (i === cur ? "now" : on && i < cur ? "past" : "") + '">' + esc(join ? t.slice(0, -1) : t) + "</span>" + (join ? "" : " ");
+    }).join("") + "</p>";
+  }
+  function vxHtml(s, st) {
+    var S = vxSong(s.song), h = '<p class="vx-h">' + esc(S.name) + " · " + esc(vxModeTxt(s)) + "</p>";
+    if (s.mode === "scale") {
+      var q = vxPos(s, st, 0), ph = q.st === "on" ? S.ph[q.p] : q.st === "done" ? S.ph[S.ph.length - 1] : S.ph[0];
+      return h + '<p class="vx-vow">' + esc(ph[0][2]) + '</p><div class="vx-dots" aria-hidden="true">' + ph.filter(function (n) { return n[0]; }).map(function (n, i) {
+        return '<i class="' + (q.st === "on" && i === q.i ? "now" : "") + '" style="--y:' + (n[0] - 62) * 6 + 'px"></i>';
+      }).join("") + "</div>";
+    }
+    if (s.parts < 2) {
+      var u = vxPos(s, st, 0);
+      return h + S.ph.map(function (ph, i) { return vxPhrase(ph, u.st === "on" && u.p === i ? u.i : -1, u.st === "on" && u.p === i); }).join("");
+    }
+    var who = function (p) { return s.who === "solo" ? (p ? "You" : "Phone") : "Group " + (p + 1); };
+    for (var p = 0; p < s.parts; p++) {
+      var x = vxPos(s, st, p), beats = x.st === "wait" ? Math.ceil(x.b) : 0;
+      h += '<div class="vx-p ' + x.st + '"><b>' + who(p) + (x.st === "done" ? " · done" : x.st === "wait" ? (beats <= 4 ? " · in " + beats + (beats === 1 ? " beat" : " beats") : " · waiting") : "") + "</b>" +
+        vxPhrase(S.ph[x.st === "on" ? x.p : x.st === "done" ? S.ph.length - 1 : 0], x.st === "on" ? x.i : -1, x.st === "on") + "</div>";
+    }
+    return h;
+  }
+  // redrawn only when something on it changes: a new syllable, a part coming in, a beat of the countdown
+  function vxShow(s, st) {
+    var el = $("#sSing");
+    if (!el || el.hidden) return;
+    var key = s.at + ":";
+    for (var p = 0; p < s.parts; p++) { var x = vxPos(s, st, p); key += x.st + (x.st === "on" ? x.p + "." + x.i : x.st === "wait" ? Math.min(5, Math.ceil(x.b)) : "") + ","; }
+    if (key === VX.shown) return;
+    VX.shown = key;
+    el.dataset.n = s.parts;                         // three or four parts: each row's name beside its words, to fit a phone
+    el.innerHTML = vxHtml(s, st);
+  }
+  // the line under the step's name: getting ready, the count-in, then what to do
+  function vxSub(s, st) {
+    if (st < s.lead) return "Get ready";
+    var t0 = vxT0(s);
+    if (st < t0) return "Count-in: " + Math.min(s.count, Math.floor((st - s.lead) / (vxBl(s) * VX_SONGS[s.song].cb)) + 1) + " of " + s.count;
+    if (st >= vxEnd(s)) return "";
+    var u = vxPos(s, st, 0), of = s.reps > 1 && s.parts < 2 && u.st === "on" ? ", " + (u.r + 1) + " of " + s.reps : "";
+    return (s.mode === "listen" ? "Listen" : s.mode === "hum" ? "Hum, lips closed" : s.mode === "round" ? "Sing your part" : "Sing") + of;
+  }
+
+  /* ----- a tick to keep time with: a ring that pulses on each one (Laughter Break's claps, Let It Out's words) ----- */
+  function vxBeat(c, W, Hh, s, st, col) {
+    var cx = W / 2, cy = Hh / 2, R = Math.min(W, Hh) * 0.3, k = 0, at = s.metroAt || 3, gap = 60 / (s.metro || 60);
+    if (!RM && st >= at) {                          // the time since the last tick that sounded
+      var j = Math.floor((st - at) / gap), pat = s.metroPat;
+      if (pat) while (j > 0 && pat.charAt(j % pat.length) !== "x") j--;
+      k = Math.exp(-((st - at) - j * gap) * 7);
+    }
+    var r = R * (0.9 + 0.1 * k), g = c.createRadialGradient(cx, cy, r * 0.2, cx, cy, r * 1.4);
+    g.addColorStop(0, rgba(col, 0.1 + 0.3 * k)); g.addColorStop(1, rgba(col, 0));
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, r * 1.4, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = rgba(col, 0.3 + 0.55 * k); c.lineWidth = 2 + 3 * k;
+    c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.stroke();
+  }
+
+  function vxInit() {
+    SETTLE_HUSH.push(function (secs) { vxHush(secs); });     // I need to stop: the tune and the drone fade with everything else
+    if (window.__entrain) { window.__entrain.VX = VX; window.__entrain.VX_SONGS = VX_SONGS; window.__entrain.vxEvents = vxEvents; window.__entrain.vxPos = vxPos; }
   }
   /* ------------------------------- the library -------------------------------
      Goal sections (Sleep, Calm, Focus, Energy, Recover, Reflect) holding practices, breathing
@@ -19244,7 +19886,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

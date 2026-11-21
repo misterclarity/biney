@@ -87,7 +87,7 @@
   function pPlan(d, len) {
     var steps = d.build(len, pVar(d)), at = 0;
     steps.forEach(function (s) { s.at = at; at += s.secs; });
-    if (d.method === "program" && P.opt.ana) pAna(d, steps, at, P.opt.ana);
+    if (d.method === "program" && P.opt.ana && !d.noAna) pAna(d, steps, at, P.opt.ana);
     var base = at;                                   // a programme's sound covers the practice, not the tapping after it
     if (tapOn(d)) tapShort().forEach(function (s) { s.at = at; at += s.secs; s.extra = true; steps.push(s); });
     return { steps: steps, total: at, base: base };
@@ -542,6 +542,7 @@
     if (s.k === "pump") return "pump";
     if (s.k === "shuffle") return "word";
     if (s.k === "count") return "count";
+    if (s.k === "sing") return "sing";               // the words to sing, and where each part is (vocal.js)
     if (ST.sleepDim && pSleepyStep(s)) return s.k === "shuffle" ? "word" : "dark";   // dimmed for sleep (Settings)
     if (s.k === "drift") return "glow";
     if (s.k === "hold") return "hold";
@@ -560,6 +561,7 @@
     var prev = P.steps[P.idx], s = P.steps[i];
     P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1; P.metroNext = 0;
     napWakeStop();                                   // wake-up chimes belong to their own step
+    vxEnter(s);                                      // and a song's notes to its own (vocal.js)
     if (s.k === "wake") { NP.rung = 0; NP.vibs = 0; }
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
@@ -591,6 +593,8 @@
     else if (vis === "face") fig.innerHTML = pFaceSVG(s.zone || 0);
     else if (vis === "tap") { fig.innerHTML = tapSVG(null, []); pTapPoint(s, pT() - s.at); }
     $("#sRate").hidden = vis !== "rate";
+    $("#sSing").hidden = vis !== "sing";
+    if (vis === "sing") vxShow(s, pT() - s.at);
     var wr = $("#sWrite");
     wr.hidden = vis !== "write";
     $("#ses").dataset.write = vis === "write" ? "1" : "";
@@ -651,6 +655,7 @@
     else if (s.k === "shuffle") pShuffleTick(s, st);
     else if (s.k === "pmr") pPmrTick(s, st);
     if (s.metro) pMetroTick(s, st);
+    vxTick(s, st);                                   // the drone, and a song's tune and count-in (vocal.js)
     pAudioSync(T);
     pUI();
   }
@@ -751,13 +756,16 @@
       P.pumpNext++;
     }
   }
-  /* ----- a cadence tick: a soft click s.metro times a minute, to move in time with (a sports session) ----- */
+  /* ----- a cadence tick: a soft click s.metro times a minute, to move in time with (a sports session), from
+     s.metroAt seconds into the step (3 unless it says); s.metroPat picks the ticks that sound, "x" a click and "." a
+     rest, round and round (Laughter Break's ho, ho, ha ha ha), the first of each round a little louder ----- */
   function pMetroTick(s, st) {
-    if (!A.ctx || !pBusOn() || st < 3) return;
-    var gap = 60 / s.metro, horizon = st + (document.hidden ? 2 : 0.6);
-    if (!P.metroNext) P.metroNext = Math.max(3, Math.ceil(st / gap) * gap);
+    var at = s.metroAt || 3, own = !!s.metroAt, gap = 60 / s.metro, horizon = st + (document.hidden ? 2 : 0.6), pat = s.metroPat;
+    if (!A.ctx || (own ? horizon < at : st < 3) || !pBusOn()) return;      // a start of its own is scheduled ahead, so its first tick is on time
+    if (!P.metroNext) P.metroNext = own ? at + Math.max(0, Math.ceil((st - 0.05 - at) / gap)) * gap : Math.max(3, Math.ceil(st / gap) * gap);
     while (P.metroNext < Math.min(horizon, s.secs - 0.5)) {
-      if (P.metroNext >= st - 0.05) pClick(A.ctx.currentTime + (P.metroNext - st), 0.07);
+      var j = Math.round((P.metroNext - at) / gap), on = !pat || pat.charAt(j % pat.length) === "x";
+      if (on && P.metroNext >= st - 0.05) pClick(A.ctx.currentTime + (P.metroNext - st), pat && j % pat.length === 0 ? 0.1 : 0.07);
       P.metroNext += gap;
     }
   }
@@ -816,6 +824,8 @@
       sub = s.pts.length === 1 ? "Tap gently while you say the set-up" : (st < (s.lead || 0) ? "Get ready: " + Math.ceil(s.lead - st) + "…" : "Point " + (ti + 1) + " of " + s.pts.length + " · " + tp.where);
     } else if (s.k === "rate") {
       sub = s.sub || "0 is not at all, 10 is as strong as it gets";
+    } else if (s.k === "sing") {
+      sub = vxSub(s, st);
     } else if (s.k === "adapt") {
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
@@ -882,7 +892,7 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1 };   // the visuals drawn on the canvas
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -903,6 +913,8 @@
         else if (vis === "pump") pPump(c, W, Hh, s, st, col);
         else if (vis === "hold") pHold(c, W, Hh, s, st, col);
         else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
+        else if (vis === "beat") vxBeat(c, W, Hh, s, st, col);
+        else if (vis === "sing") vxShow(s, st);
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -1118,6 +1130,7 @@
     if (pTrack() && A.playing) { pause(); P.audioHeld = true; }
     rhyStop(0.3);
     napWakeStop();
+    vxHush();
     pHush();
     pUnlock();
     pUI();
@@ -1167,6 +1180,7 @@
     pHush();
     rhyStop();
     napWakeStop();
+    vxHush();
     P.mv = null;
     if (pTrack()) {
       var trk = A.track;
@@ -1358,7 +1372,7 @@
     }
     if (d.variant) opts.push('<div class="so-row so-seg"><span class="so-l">' + d.variant.label + '</span><div class="mini-seg" id="sOptVar">' +
       d.variant.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (pVar(d) === o[0]) + '">' + o[1] + "</button>"; }).join("") + "</div></div>");
-    if (d.method === "program") opts.push('<div class="so-row so-seg so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
+    if (d.method === "program" && !d.noAna) opts.push('<div class="so-row so-seg so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
       [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]].map(function (o) {
         return '<button data-v="' + o[0] + '" aria-pressed="' + (O.ana === o[0]) + '">' + o[1] + "</button>";
       }).join("") + "</div></div>");

@@ -203,7 +203,7 @@ const UK = /\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!R
       const C = await E(p, () => {
         const X = window.__entrain, refs = [...document.querySelectorAll('#references li')].map(li => li.textContent.replace(/\s+/g, ' ').trim());
         const body = [...document.querySelectorAll('#science > *:not(.refs-sec)')].map(e => e.textContent).join(' ').replace(/\s+/g, ' ');
-        const found = [], who = "((?:de |van |von )?[A-ZÀ-Ž][\\w'’À-ž-]+(?: [A-ZÀ-Ž][\\w'’À-ž-]+)?)";
+        const found = [], who = "((?:de |van der |van |von )?[A-ZÀ-Ž][\\w'’À-ž-]+(?: [A-ZÀ-Ž][\\w'’À-ž-]+)?)";
         (body.match(/\(([^()]*\d{4})\)/g) || []).forEach(g => g.slice(1, -1).split(';').forEach(c => {
           const m = new RegExp('^' + who + '[^;]*?,? (\\d{4})$').exec(c.trim()); if (m) found.push([m[1], m[2], c.trim()]);
         }));
@@ -311,13 +311,13 @@ const UK = /\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!R
         const cup = s => { const a = document.querySelector('#lnGlance a[href="' + s + '"]'), n = a && a.nextElementSibling; return !!n && n.classList.contains('sup-tag') && n.classList.contains('sup-ic') && n.getAttribute('aria-label') === 'Opens with a donation'; };
         return { bh: cup('#practice/bhramari'), sigh: cup('#breathe/sigh'), wim: cup('#practice/wim-hof'), calm: cup('#practice/calm-reset'), n: document.querySelectorAll('#science .sup-tag').length };
       });
-      ok(F.bh && F.sigh && !F.wim && !F.calm && F.n === 2, 'flag Bhramari and the cyclic sigh as new techniques, and their links in the table get the cup, the others none: ' + JSON.stringify(F));
+      ok(F.bh && F.sigh && !F.wim && !F.calm && F.n === cups.have + 2, 'flag Bhramari and the cyclic sigh as new techniques, and their links in the table get the cup too, the others none (beside the ' + cups.have + ' the build flags): ' + JSON.stringify(F));
       await p.screenshot({ path: OUT + 'wavestest-f-cups.png' });
       await p.click('#lnGlance a[href="#practice/bhramari"]'); await p.waitForTimeout(400);
       ok(await t(p, '#viewTitle') === 'Bhramari' && await t(p, '#sGo') === 'Unlock to start' && await E(p, () => document.querySelector('#supModal').hidden),
         'its link still opens the practice\'s page to read, whose Start asks for the donation: ' + await t(p, '#sGo'));
       await flag(p, ['bhramari', 'b:sigh'], false);
-      ok(await E(p, () => document.querySelectorAll('#science .sup-tag').length) === 0, 'unflagged, the cups go at once');
+      ok(await E(p, () => document.querySelectorAll('#science .sup-tag').length) === cups.have, 'unflagged, their cups go at once');
       await p.context().close();
       // the unlocked test copy: flagged links carry no cup, and unlocking with a link clears them at once
       const URL = testApp();

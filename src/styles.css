@@ -918,6 +918,7 @@
   [data-k="pump"]{--kc:var(--danger)}
   [data-k="observe"],[data-k="shuffle"],[data-k="count"]{--kc:var(--ther)}
   [data-k="drift"]{--kc:#3b4a78}
+  [data-k="sing"]{--kc:var(--food)}
   .si-tl i{background:color-mix(in srgb,var(--kc) 75%,var(--panel-3))}
 
   /* ---------- practice: session intro ---------- */
@@ -1074,6 +1075,25 @@
   .ses-dots[hidden]{display:none}
   .ses-dots i{width:34px;height:34px;border-radius:50%;border:2px solid color-mix(in srgb,var(--pcol) 55%,transparent);transition:background .3s,transform .3s}
   .ses-dots i.on{background:var(--pcol);transform:scale(1.08)}
+  /* a song: the words with the syllable to sing marked, a row for each part of a round, or the warm-up's vowel */
+  .ses-sing{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:4px 2px;text-align:center;overflow:hidden}
+  .ses-sing[hidden]{display:none}
+  .vx-h{margin:0 0 2px;font-size:12px;font-weight:750;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint)}
+  .vx-l{margin:0;font-size:17px;line-height:1.4;font-weight:650;color:var(--text-faint);overflow-wrap:anywhere}
+  .vx-l.on{color:var(--text-dim)}
+  .vx-l span.past{color:var(--text)}
+  .vx-l span.now{color:var(--pcol);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:5px}
+  .vx-p{display:flex;flex-direction:column;gap:1px;padding:4px 0}
+  .vx-p b{font-size:12.5px;font-weight:750;color:var(--text-faint)}
+  .vx-p.on b{color:var(--pcol)}
+  .vx-p.wait .vx-l,.vx-p.done .vx-l{opacity:.55}
+  .ses-sing[data-n="3"] .vx-p,.ses-sing[data-n="4"] .vx-p{display:block;padding:2px 0}
+  .ses-sing[data-n="3"] .vx-p b,.ses-sing[data-n="4"] .vx-p b{margin-right:6px}
+  .ses-sing[data-n="3"] .vx-l,.ses-sing[data-n="4"] .vx-l{display:inline;font-size:15px;line-height:1.35}
+  .vx-vow{margin:0;font-family:var(--display);font-size:clamp(40px,11vw,64px);line-height:1.1;color:var(--text)}
+  .vx-dots{display:flex;justify-content:center;align-items:flex-end;gap:10px;height:76px;padding-top:24px}
+  .vx-dots i{width:14px;height:14px;border-radius:50%;background:var(--panel-3);transform:translateY(calc(var(--y) * -1))}
+  .vx-dots i.now{background:var(--pcol)}
   .ses-cap{text-align:center;min-height:118px;padding:6px 4px 0}
   .ses-cap h2{font-size:clamp(24px,5.6vw,34px);font-weight:800;letter-spacing:-.025em;line-height:1.15;min-height:1.15em}
   .ses-sub{color:var(--text-dim);font-size:14.5px;margin:6px 0 0;min-height:1.4em;font-variant-numeric:tabular-nums}

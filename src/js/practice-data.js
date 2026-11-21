@@ -1216,7 +1216,10 @@
           note: "Slow breathing with a longer out-breath while you rest, then a few seconds' warning before the next set.",
           opts: [["60", "1 min"], ["90", "1½ min"], ["120", "2 min"], ["180", "3 min"]] }
       ],
-      next: { id: "recovery", txt: "After your session, Exercise Recovery brings your heart rate down with slow breathing over a theta beat." },
+      next: function (d) {                       // before lifting: your voice, to let go of holding back (vocal.js); after a session: recovery
+        return pChoice(d, "sport") === "weights" && pChoice(d, "when") === "before" ? { id: "let-it-out", txt: "Before your first heavy set, Let It Out: a few rounds of your voice, from the belly, to let go of holding back." }
+          : { id: "recovery", txt: "After your session, Exercise Recovery brings your heart rate down with slow breathing over a theta beat." };
+      },
       build: function (min) { return sportSteps(this, min || 10); },
       how: "Pick your sport, and its settings come with it, then change any of them. Before: five or ten minutes to get ready, then your warm-up. Slow breathing at your resonance pace settles nerves while keeping you alert (for weight training: power breaths, then the bracing breath you'll use under a heavy weight), then you rehearse your session in your mind, and choose a few words of your own for when it gets hard, while a binaural beat rises from 10 Hz alpha to 15 Hz beta. During, if you choose it: the beat carries on, a cue comes every five minutes or so (technique, breathing and your words), and a soft tick can set your cadence until you tap Session over (cycling on an indoor trainer, running and rowing indoors or away from traffic); for weight training, tap Set done after each set and rest with slow breathing until the next.",
       ev: "Motivational self-talk, practised for two weeks, lengthened cycling time to exhaustion by about 18% and made the effort feel easier; across 32 studies, self-talk improved performance, motivational words most for strength and endurance. Imagery improved sports performance with a medium effect across studies. Runners kept going longer with a metronome or music matched to their cadence than in silence. Psyching up before lifting may raise strength, though the evidence is tentative. Binaural beats in sport are barely studied: 15 Hz beta beats with music in the rests between rounds helped kickboxers strike faster, but the trial couldn't be blinded, and a 10 Hz beat with music changed nothing measurable for recreational runners. Music itself helps a little.",
@@ -1607,6 +1610,106 @@
       how: "Lie down and rest. Over the first two and a half minutes your resting heart rate is measured. When the one-minute average then stays at least 3 bpm (or 4%) lower for three minutes, you've probably drifted into light sleep, and you'll be woken that many minutes later. With no sign of sleep after 20 minutes you're woken anyway; with no sensor, after the nap length plus five minutes. You wake to rising chimes, a vibration and a beat that climbs back to alpha. The beat during the nap slides from 6 Hz to 3 Hz.",
       ev: "After a short night, a 10-minute afternoon nap improved alertness and performance straight away, with some gains lasting about two and a half hours; 20 minutes helped from about half an hour after waking, and 30 minutes brought grogginess first. Heart rate drops at each transition from waking into light sleep, which is what the estimate relies on, though that was measured in only six sleepers.",
       cite: "Brooks & Lack 2006 · Burgess et al. 1999"
+    },
+
+    /* ===== the voice (vocal.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "om", name: "Om Chanting", lengths: [5, 10, 15], min: 10, strength: 1, sup: true,
+      tone: "relax", sensor: "optional", noTap: true,
+      opt: { cues: "chimes" },                   // a chime at each turn of the breath sits lightly over your voice
+      optNote: "The drone and the length of each chant are kept for it.",
+      alias: "Aum", words: "om aum chant chanting mantra hum humming vibration drone voice sound meditation calm",
+      blurb: "Chant Om on a long breath out: an open Aaa, a rounded Uuu and a long, humming Mmm that buzzes in your face and head. Then softer, then silently, then sit in the silence after it.",
+      parts: "How to chant · Om aloud · softer · in your mind · silence · an optional low drone",
+      choices: [
+        { key: "drone", label: "Drone", def: "on", note: "A soft, low drone on D, made on your device, to chant with while you learn and while you chant aloud. It fades as you go silent.",
+          opts: [["on", "On"], ["off", "Leave it out"]] },
+        { key: "breath", label: "Each chant", def: "10", note: "How long each breath out lasts, after four seconds in. Start shorter, and lengthen it as your breath allows.",
+          opts: [["8", "8 s"], ["10", "10 s"], ["12", "12 s"], ["15", "15 s"]] }
+      ],
+      next: { id: "bhramari", txt: "Liked the hum? Bhramari, the humming bee breath, is the Mmm on its own, on a long breath out." },
+      build: function (min) { return omSteps(this, min || 10); },
+      end: "Sit for a moment in the stillness, and carry it with you.",
+      how: "A minute to learn the chant, then Om on every breath out: four seconds in through the nose, then a long Aaa, Uuu and Mmm (ten seconds unless you choose otherwise), the Mmm a hum with the lips closed that takes about half the breath. You chant aloud, then (from ten minutes) softer, then silently in your mind, and end by sitting in the silence after it. A soft, low drone on D can play while you chant aloud, and the breath cues are chimes, so they sit lightly over your voice.",
+      ev: "The evidence is early, from small pilot studies. In a brain scan of 12 people, chanting Om aloud quietened the amygdala, the hippocampus and other parts of the limbic system, a pattern like that of vagus nerve stimulation, while saying “ssss” changed nothing there. A 2022 review linked Om chanting with calm, with delta and theta brain waves and with activity in the frontal lobes, but found the studies too weak for firm conclusions. The Mmm is a hum, and humming raised nasal nitric oxide about 15-fold; any sound made on the breath out also lengthens it.",
+      cite: "Kalyani et al. 2011 · Thanneeru et al. 2022 · Weitzberg & Lundberg 2002"
+    },
+    {
+      id: "laughter", name: "Laughter Break", lengths: [5, 10], min: 10, strength: 2, sup: true,
+      tone: "stim", noTap: true, hc: ["strain"],
+      rate: { name: "Mood", what: "mood" },     // its 0 to 10 ratings are of your mood, before and after
+      optNote: "Your choices are kept for it.",
+      alias: "Laughter yoga", words: "laugh laughing laughter yoga giggle humour fun play playful mood happy cheer stress clap clapping ho ha",
+      blurb: "Laughter on purpose, which works even when the joke is missing: a clapping warm-up, short bouts of playful laughter with slow breaths between, and your mood before and after.",
+      parts: "Mood check · clapping warm-up · bouts of laughter · slow breaths · mood again",
+      choices: [
+        { key: "who", label: "With", def: "solo", note: "On your own, a mirror helps; with others, eye contact does, and laughter spreads.",
+          opts: [["solo", "On your own"], ["group", "With others"]] },
+        { key: "mood", label: "Mood check", def: "on", note: "Rate your mood from 0 to 10 before and after. The end screen sets them side by side, and so does your history.",
+          opts: [["on", "Before and after"], ["off", "Leave it out"]] }
+      ],
+      build: function (min) { return lghSteps(this, min || 10); },
+      end: "Well laughed. Take the lightness with you.",
+      how: "A moment to arrive and rate your mood from 0 to 10, then a clapping warm-up to a tick: one, two, one, two, three, “ho, ho, ha ha ha”. Then short bouts of laughter on purpose (greeting laughter, a smile growing into a giggle, milkshake laughter, silent laughter, laughing at an imaginary phone call and hearty laughter; three of them in five minutes), each with a few slow breaths after it. It ends with slow breathing and your mood again, set beside the first at the end and in your history. Laughter here is an exercise: fake it, and it often turns real.",
+      ev: "Laughter on purpose, without a joke, worked better than laughter at something funny in a 2019 review and meta-analysis, and laughter-inducing therapies improved depression. A 2022 meta-analysis of randomised trials in people with physical or mental health problems found benefits for depression, anxiety, mood, stress and pain, the largest for anxiety. The studies were of low quality overall, and their results varied a lot.",
+      cite: "van der Wal & Kok 2019 · Stiwi & Rosendahl 2022",
+      caution: "Laughing hard for a few minutes can leave you breathless, raise your heart rate and dry your mouth: rest between bouts, and keep some water near. Skip the belly laughs, or the whole break, with a hernia, after recent surgery (especially on your belly or chest), with high blood pressure that isn't under control, or late in pregnancy. If you feel dizzy, stop and breathe slowly."
+    },
+    {
+      id: "let-it-out", name: "Let It Out", lengths: [3, 5], min: 5, strength: 2, sup: true,
+      tone: "stim", noTap: true, hc: ["strain"],
+      optNote: "Your sound and when you do it are kept for it.",
+      alias: "Vocal release", words: "shout shouting yell scream ow ouch swear swearing word fouch twizpipe roar lion wolf howl owl hoot animal sounds vocal voice release vent workout gym strength pain stress",
+      blurb: "Let your voice out in short rounds, each followed by long breaths out: “ow”, a shout, a word of your own, or animal sounds just for fun. For energy before a workout, or to release a stressful moment.",
+      parts: "Get set · rounds of “ow”, a shout, your word or animal sounds · long breaths out",
+      choices: [
+        { key: "when", label: "For", def: "before", note: "Before a workout: to raise your energy and let go of holding back. After a stressful moment: to let it out, then settle.",
+          opts: [["before", "Before a workout"], ["after", "After stress"]] },
+        { key: "sound", label: "Your sound", def: "shout",
+          note: function (d) {
+            return {
+              ow: "“Ow” on each tick: saying it helped people bear the pain of icy water for longer (and so did pressing a button).",
+              shout: "A short shout from the belly, “Ha!”, on each tick: shouting as you squeezed raised grip strength in a small study.",
+              word: "Any word that lets it out, a swear word if you like: a real swear word, repeated in a steady voice, raised pain tolerance and strength in studies.",
+              made: "The made-up words from a swearing study, “fouch” and “twizpipe”: people found them funny, though they left pain tolerance where it was.",
+              roar: "Playful and untested: a lion's breath, a wolf's howl and an owl's hoots, each on a long, forceful breath out. Nobody has studied animal sounds; this borrows from the laughter and vocal-release research, and from long breaths out."
+            }[pChoice(d, "sound")];
+          },
+          opts: [["ow", "“Ow”"], ["shout", "A shout"], ["word", "Your word"], ["made", "Made-up words"], ["roar", "Roar it out"]] }
+      ],
+      next: function (d) { return pChoice(d, "when") === "after" ? { id: "calm-reset", txt: "Still wound up? Calm Reset brings it down with long breaths out over a slowing beat." } : null; },
+      build: function (min) { return lioSteps(this, min || 5); },
+      end: "Well done. Let your breath settle at its own pace.",
+      how: "Choose your sound, and whether it's before a workout or after a stressful moment. A short start, then three rounds (four in five minutes): on a soft tick every three seconds, your sound, “ow”, a short shout, a word of your own or the made-up words from a swearing study, said steady and clear, from the belly; after each round, long, slow breaths out. Roar it out swaps the words for animal sounds made on long, forceful breaths out, paced on the screen: a lion's breath, a wolf's howl and an owl's hoots. Before a workout it ends with energy for your warm-up; after a stressful moment, with your breath settling.",
+      ev: "Saying “ow” let people keep a hand in painfully cold water longer than staying silent, and pressing a button did too, so doing something helped. Repeating a swear word at a steady, normal volume raised pain tolerance by about a third, and raised grip strength and power on an exercise bike; the made-up words “fouch” and “twizpipe” were found funny but left pain tolerance unchanged. Shouting as people squeezed raised their strongest grip in a small study. The researchers think swearing works by letting go of holding back, though in their own test humour explained more of it. Roar it out is play: no study has tested animal sounds.",
+      cite: "Swee & Schirmer 2015 · Stephens & Robertson 2020 · Stephens, Spierer & Katehis 2018 · Takarada & Nozaki 2021 · Stephens et al. 2023",
+      caution: "Look after your voice: keep each shout short and from the belly rather than the throat, and use a steady speaking voice if your throat hurts or goes hoarse. Think of the people around you: a sudden shout can alarm them, so choose a place where your voice is welcome, or tell them first. Skip the big shouts with high blood pressure, a heart condition, a hernia or late in pregnancy, and stop if you feel dizzy."
+    },
+    {
+      id: "sing", name: "Sing Together", lengths: [10, 15], min: 10, strength: 2, sup: true,
+      tone: "accent", noTap: true, noAna: true,
+      optNote: "Your choices are kept for it.",
+      alias: "Sing-along", words: "sing singing song songs round rounds choir group together sing-along music hum humming voice frere jacques brother john bonding friends family party",
+      blurb: "Sing rounds together, Frère Jacques and Row, Row, Row Your Boat, with the words on the screen and a soft tune and drone to lead you. For a group in one room, or on your own, with the phone as your partner.",
+      parts: "Humming warm-up · vowels · listen · together · as a round · two traditional rounds",
+      choices: [
+        { key: "who", label: "Singing", def: "group", redraw: true, note: "Together: everyone in one room, around the phone. On your own: the phone sings the first part of each round and you come in after it.",
+          opts: [["group", "Together"], ["solo", "On your own"]] },
+        { key: "parts", label: "Parts in the round", def: "2", show: function (d) { return pChoice(d, "who") !== "solo"; },
+          note: "How many groups: each comes in a line after the one before. Two is easiest; four needs at least four singers.",
+          opts: [["2", "Two"], ["3", "Three"], ["4", "Four"]] },
+        { key: "song", label: "Songs", def: "both", note: "Traditional rounds, free for anyone to sing.",
+          opts: [["both", "Both"], ["frere", "Frère Jacques"], ["row", "Row Your Boat"]] },
+        { key: "guide", label: "Guide sound", def: "both", note: "A soft synthesised tune sings the melody (in a round, the first part, then each part still singing) over a low drone; the tune alone; or the words and a count-in alone, once you know the songs. On your own, the phone still sings its part of each round.",
+          opts: [["both", "Tune and drone"], ["tune", "Tune"], ["words", "Words only"]] },
+        { key: "tempo", label: "Tempo", def: "usual", note: "Slower is easier while you learn.",
+          opts: [["slow", "Slower"], ["usual", "Usual"]] }
+      ],
+      build: function (min) { return sngSteps(this, min || 10); },
+      end: "Well sung. Thank you for singing.",
+      how: "For people in the same room, or on your own. A humming warm-up over a soft drone, five notes up and down on each vowel, then each round three ways: listen once, sing it together twice through, then sing it as a round, each group coming in a line after the one before (on your own, the phone sings first and you come in after it). The words are on the screen, a soft synthesised tune leads at a steady tempo after a count-in, and in a round the screen shows where each part is. Any time left goes to more rounds and a soft hum of the tune. It ends with a moment to notice how you feel. Frère Jacques and Row, Row, Row Your Boat are traditional, free for anyone to sing.",
+      ev: "Singing together raised feelings of closeness and positive mood, and raised pain thresholds, a stand-in for the release of endorphins, in small choirs and in a choir of 232 alike. In new adult classes, singers bonded faster than people doing crafts or creative writing, though the others caught up within months: the ice-breaker effect. Music, like laughter, dance and synchronised sport, may bond people both through moving in time together and through endorphins. No study has tested singing along with a phone.",
+      cite: "Weinstein et al. 2016 · Pearce et al. 2015 · Tarr et al. 2014"
     },
 
     /* ===== movement ===== */

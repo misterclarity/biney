@@ -78,8 +78,8 @@
     var ch = P.chain && P.chain.then !== d.id ? pDef(P.chain.then) : null;
     if (ch) return '<div class="note-card sd-next"><p><b>Next: ' + esc(ch.name) + ".</b> " + esc(ch.chainTxt || "") + "</p>" +
       '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + (ch.sup ? supTag() : "") + "</button></div>";
-    var nx = d.next && pDef(d.next.id);
-    return nx ? '<div class="note-card sd-next"><p>' + esc(d.next.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + (nx.sup ? supTag() : "") + "</a></div>" : "";
+    var nt = pFn(d.next, d), nx = nt && pDef(nt.id);     // a suggestion can follow the choices made (Sports Performance's)
+    return nx ? '<div class="note-card sd-next"><p>' + esc(nt.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + (nx.sup ? supTag() : "") + "</a></div>" : "";
   }
 
   // what each number means, with your own value read back
@@ -133,6 +133,15 @@
       p.push("How long you held your breath after the power breaths, round by round: " + r.holds.map(fmt).join(", ") + ". The longest was " + fmt(Math.max.apply(null, r.holds)) + ".");
       p.push("Holds often lengthen in later rounds: the fast breathing lowers carbon dioxide, so the urge to breathe comes later. That's also why this practice is done only sitting or lying down, with each hold ending as soon as you need to breathe.");
       return ["Breath holds", p];
+    }
+    if (k === "suds" && d.rate && d.rate.what === "mood") {           // higher is better, unlike a feeling's strength
+      p.push("How your mood was each time you rated it, from 0 (very low) to 10 (as good as it gets): " + r.suds.join(", then ") + ".");
+      if (r.suds.length > 1) {
+        n = r.suds[r.suds.length - 1] - r.suds[0];
+        p.push(n > 0 ? "Your mood rose " + plural(n, "point", "points") + "." : n < 0 ? "Your mood dipped. That happens; a gentler practice may suit you better today." : "Your mood stayed where it was.");
+        p.push("A rating straight afterwards is partly what you expected to feel, so the pattern over several sessions in your history tells you more than one.");
+      } else p.push("Rate it before and after to see how it changes.");
+      return [d.rate.name, p];
     }
     if (k === "suds" && d.rate && d.rate.what === "hunger") {
       p.push("How hungry you were each time you rated it, from 0 (not hungry at all) to 10 (as hungry as you get): " + r.suds.join(", then ") + ".");

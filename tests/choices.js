@@ -1558,7 +1558,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const C = await E(p, () => {
         const X = window.__entrain, refs = [...document.querySelectorAll('#references li')].map(li => li.textContent.replace(/\s+/g, ' ').trim());
         const body = [...document.querySelectorAll('#science > *:not(.refs-sec)')].map(e => e.textContent).join(' ').replace(/\s+/g, ' ');
-        const found = [], who = "((?:de |van |von )?[A-ZÀ-Ž][\\w'’À-ž-]+(?: [A-ZÀ-Ž][\\w'’À-ž-]+)?)";   // "de Asís-Fernández" as well as "Van Diest"
+        const found = [], who = "((?:de |van der |van |von )?[A-ZÀ-Ž][\\w'’À-ž-]+(?: [A-ZÀ-Ž][\\w'’À-ž-]+)?)";   // "de Asís-Fernández" and "van der Wal" as well as "Van Diest"
         // in Learn: (Author, 2014), (Author & Author, 2014), (Author et al., 2014), several in one pair of brackets
         (body.match(/\(([^()]*\d{4})\)/g) || []).forEach(g => g.slice(1, -1).split(';').forEach(c => {
           const m = new RegExp('^' + who + '[^;]*?,? (\\d{4})$').exec(c.trim()); if (m) found.push([m[1], m[2], c.trim()]);

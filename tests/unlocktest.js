@@ -233,14 +233,24 @@ const until = async (p, f, ms) => { try { await p.waitForFunction(f, null, { tim
       });
       ok(st.view && st.top < 200 && st.h2 === 'New techniques' && st.state === 'Locked on this device.' && st.dev === d.dev && st.kofi === 'https://ko-fi.com/misterclarity' && st.kt === 'Donate on Ko-fi' && st.field && st.note.includes(EACH) && !st.small.length,
         '#st-supporter opens Settings at New techniques: locked, the device code with Copy, Donate on Ko-fi, the paste field and the note: ' + st.state);
-      ok(st.list === 'Anapana>#practice/anapana, Box 4-4-4-4>#breathe/box, Monaural beats and isochronic tones>#st-beats',
-        'it lists what the donation unlocks, from the flagged items, then what else opens with it (SUP_EXTRA: the beat\'s speaker ways): ' + st.list);
-      await flag(p, ['anapana', 'b:box'], false);
+      // the new techniques the build flags itself (the voice practices and those after them), in the library's data order, with the two flagged here,
+      // then what else opens with a donation (SUP_EXTRA: the beat's speaker ways)
+      const real = await E(p, () => { const X = window.__entrain, out = [];
+        X.PRACTICES.forEach(d => { if (d.sup && d.id !== 'anapana') out.push(['practice/' + d.id, d.id]); });
+        X.BREATHS.forEach(b => { if (b.sup && b.id !== 'box') out.push(['breathe/' + b.id, 'b:' + b.id]); });
+        X.TRACKS.forEach(t => { if (t.sup) out.push(['track/' + t.id, 't:' + t.id]); });
+        return out; });
+      const hrefs = st.list.split(', ').map(x => x.split('>')[1]), wantH = ['#practice/anapana', '#breathe/box'].concat(real.map(r => '#' + r[0]));
+      ok(st.list.includes('Anapana>#practice/anapana') && st.list.includes('Box 4-4-4-4>#breathe/box') && hrefs.length === wantH.length + 1 && wantH.every(h => hrefs.includes(h)) &&
+        hrefs.indexOf('#breathe/box') > hrefs.indexOf('#practice/anapana') && real.length >= 4 && /, Monaural beats and isochronic tones>#st-beats$/.test(st.list),
+        'it lists what the donation unlocks, from the flagged items (these two and the ' + real.length + ' the build flags), then what else opens with it (SUP_EXTRA: the beat\'s speaker ways): ' + st.list);
+      await flag(p, ['anapana', 'b:box'].concat(real.map(r => r[1])), false);
       const extra = await E(p, () => [...document.querySelectorAll('#supList a')].map(a => a.textContent + '>' + a.getAttribute('href')).join(', '));
       await E(p, () => { const X = window.__entrain; window.__extra = X.SUP_EXTRA.splice(0); X.supRefresh(); });
       const none = await t(p, '#supList');
       await E(p, () => { const X = window.__entrain; X.SUP_EXTRA.push(...window.__extra); X.supRefresh(); });
       ok(extra === 'Monaural beats and isochronic tones>#st-beats' && /^None yet/.test(none), 'with none flagged, the others stay; with nothing at all, none yet: ' + extra + ' / ' + none);
+      await flag(p, real.map(r => r[1]));
       await p.fill('#supStIn', 'not a code'); await p.click('#supStGo'); await p.waitForTimeout(200);
       ok(/^That isn't a valid activation code\./.test(await t(p, '#supStRes')), 'its paste field says so too');
       for (const w of ['unlock', 'donation', 'supporter']) {
