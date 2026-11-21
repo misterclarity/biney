@@ -1795,3 +1795,52 @@
   .sup-h{font-size:14.5px;font-weight:750;margin:2px 0 -6px}
   .sup-list{margin:0;padding-left:1.15em;display:grid;gap:4px;font-size:14px;color:var(--text-dim)}
   .sup-list a{color:var(--text)}
+
+  /* ---------- care: your health check, rest between blocks, I need to stop and Settle (care.js, settle.js) ---------- */
+  .hc-note{display:flex;gap:10px;margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(251,113,133,.1);color:#fecdd3;font-size:13.5px;line-height:1.5}
+  .hc-note svg.i{width:18px;height:18px;flex:none;margin-top:1px;color:var(--danger)}
+  .hc-note b{color:#fda4af;font-weight:720}
+  .hc-edit{color:inherit;font-weight:650;text-decoration:underline;text-underline-offset:3px;display:inline-block;padding:3px 0}
+  .hc-slot:empty{display:none}
+  .dv-card #dvHc .hc-note{margin:0 0 12px}
+  .b-note #bDiveHc .hc-note{margin-top:12px}
+  .si-ib{margin:0;font-size:13px;line-height:1.45;color:#fcd34d;background:rgba(251,191,36,.09);border-radius:12px;padding:10px 12px}
+  .hc-list{display:flex;flex-direction:column;gap:6px}
+  .hc-list .so-row{min-height:44px}
+  .hc-st{margin:0;font-size:13px;color:var(--text-dim);line-height:1.45}
+  .hc-acts .btn,.hc-offer .btn{min-height:44px}
+  .hc-offer .inst-ic{color:var(--danger)}
+  .ses-out{
+    display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:8px 13px;min-height:44px;flex:none;
+    font:inherit;font-weight:700;font-size:13px;white-space:nowrap;cursor:pointer;background:rgba(251,113,133,.16);color:#fda4af;transition:background .15s
+  }
+  .ses-out:hover{background:rgba(251,113,133,.26)}
+  .ses[data-dim="1"] .ses-out{background:#1c1522;color:#a87884}
+  /* End and I need to stop stay in sight when the session is scrolled (a short phone, or started from low on its page) */
+  body.immersive .ses-top{position:sticky;top:0;z-index:5;background:var(--sesbg,var(--bg));padding:6px 0;margin-top:-6px;
+    box-shadow:-16px 0 0 var(--sesbg,var(--bg)),16px 0 0 var(--sesbg,var(--bg))}
+  .ses[data-dim="1"]{--sesbg:#04060c}
+  @media (max-width:560px){       /* on a phone, End and I need to stop share the first line; the title and time the next */
+    .ses-top{flex-wrap:wrap;row-gap:8px}
+    .ses-x{order:1}
+    .ses-out{order:2;margin-left:auto}
+    .ses-ttl{order:3;flex:1 1 calc(100% - 90px)}
+    .ses-left{order:4}
+  }
+  .b-transport .b-out{background:rgba(251,113,133,.14);border-color:rgba(251,113,133,.35);color:#fda4af}
+  .b-transport .b-out:hover{background:rgba(251,113,133,.24)}
+  @media (max-width:560px){ .b-transport .btn.b-out{flex:1 1 100%} }
+  .b-ib span{flex:1;min-width:0}
+  .stl-card{text-align:center;max-width:460px}
+  .stl-card h2{margin-bottom:8px}
+  .modal-card .stl-lead{margin-bottom:6px}
+  #stlCanvas{display:block;width:100%;height:clamp(150px,26vh,220px);margin:4px 0 2px}
+  .modal-card .stl-cue{color:var(--text);font-size:18px;font-weight:720;margin:0;min-height:1.5em}
+  .modal-card .stl-n{color:var(--text-faint);font-size:13px;margin:2px 0 14px;font-variant-numeric:tabular-nums}
+  .stl-card .pm-actions{justify-content:center}
+  .stl-card .hint{text-align:left;margin-top:16px}
+  @media (max-width:560px){
+    .stl{padding:0}
+    .stl-card{max-width:none;min-height:100%;max-height:none;border-radius:0;display:flex;flex-direction:column;justify-content:center;
+      padding:max(20px,env(safe-area-inset-top,0px)) 18px max(20px,env(safe-area-inset-bottom,0px))}
+  }

@@ -23,10 +23,10 @@ def rd(name): return open(os.path.join(HERE, name), encoding="utf-8").read()
 
 # the script, in order: what runs at load time runs in this order, and boot.js starts the app
 JS = [
-    "core.js", "tracks.js", "audio.js", "trackpage.js", "lockscreen.js", "builder.js", "prime.js", "dialogs.js", "safety.js",
+    "core.js", "tracks.js", "audio.js", "trackpage.js", "lockscreen.js", "builder.js", "prime.js", "dialogs.js", "safety.js", "care.js",
     "breathe.js", "breathe-draw.js", "mypatterns.js", "heart.js", "heart-charts.js", "breath-mic.js",
     "shell.js", "supporter.js",
-    "asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "taxonomy.js", "practice.js", "done.js",
+    "asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "taxonomy.js", "practice.js", "done.js", "settle.js",
     "library.js", "settings.js", "adapt.js", "stress.js", "nvc.js", "yoga.js", "search.js", "learn.js", "living-data.js", "living.js",
     "history.js", "trends.js", "favs.js", "today.js", "backup.js",
     "boot.js",

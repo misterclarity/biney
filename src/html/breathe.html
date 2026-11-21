@@ -41,6 +41,7 @@
               <button class="btn b-adjust" id="bAdjust" aria-controls="bPanel" aria-expanded="false">{i:sliders}Adjust</button>
               <button class="btn" id="bReset" disabled>Reset</button>
               <button class="btn" id="bFocus">Focus view</button>
+              <button class="btn b-out" id="bOut" hidden>I need to stop</button>
               <span class="b-msg" id="bMsg" role="status"></span>
             </div>
             <div class="b-dive" id="bDiveRow" hidden>
@@ -48,6 +49,7 @@
               <span><b>At your own risk.</b> Breath holds on dry land only, sitting or lying down, and breathe whenever you need to.</span>
               <button type="button" class="btn small" id="bDiveInfo">Read the cautions</button>
             </div>
+            <div class="b-dive b-ib" id="bIbRow" hidden>{i:warn}<span id="bIbTxt"></span></div>
             <div class="b-sensor" id="bSensorRow">
               {i:pulse}
               <span id="bSensorTxt">Connect a heart sensor to watch your heart rate follow your breath.</span>
@@ -65,6 +67,7 @@
             <div class="ev-body"><span id="bEvTxt"></span><cite id="bCite"></cite></div>
           </details>
           <div id="bDiveSafe" hidden></div>
+          <div id="bDiveHc"></div>
         </div>
 
         <div class="b-fields" id="bFields">

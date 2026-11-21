@@ -232,7 +232,7 @@
     // they're all blocking, so Tab has to stay inside them
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return;
-      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal", "#supModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
+      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal", "#supModal", "#ibModal", "#stlModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
       if (!box) return;
       var all = box.querySelectorAll("button, input, a[href], select, textarea");
       var list = [], i;

@@ -245,6 +245,7 @@
     $("#bFields").classList.toggle("long", lg);
     $("#bDiveRow").hidden = !lg;
     $("#bDiveSafe").hidden = !lg;
+    ibBreatheSync();                                // a block of intense breathing within the hour; your health check (care.js)
   }
   function sameT(a, b) { return a.inh === b.inh && a.sip === b.sip && a.hold === b.hold && a.exh === b.exh && a.rest === b.rest; }
   // the preset with these timings, else your own saved pattern with them, else "custom";
@@ -311,6 +312,7 @@
     var st = B.state;
     bSetT("#bStart", st === "running" ? "Pause" : st === "paused" ? "Resume" : st === "done" ? "Start again" : "Start breathing");
     $("#bReset").disabled = st === "idle";
+    settleSync(); ibBreatheSync();                  // I need to stop, while it runs (settle.js); rest between blocks (care.js)
   }
   function kindHint(k) {
     if (BC.long) return {
@@ -375,7 +377,7 @@
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();
     else if (B.state === "paused") { if (!bSupGate("resume") && !dvGate("resume")) bResume(); }
-    else if (!bSupGate("start") && !dvGate("start")) { bFresh(); bResume(); }
+    else if (!bSupGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) { bFresh(); bResume(); }   // Start again: rest first? (care.js)
   }
 
   /* ----- a new technique's pattern (sup: true; supporter.js), not yet unlocked on this device: picking it,
@@ -437,6 +439,7 @@
     if (!gate) { DV.then = ""; DV.back = null; DV.paused = false; }
     if ($("#bStage").classList.contains("focus")) setFocus(false);    // a full-screen stage would hide the dialog
     $("#dvList").innerHTML = SAFE_DIVE.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("");
+    $("#dvHc").innerHTML = hcBox(["hold"], true);                             // your health check's caution (care.js)
     $("#dvGo").hidden = !gate;
     bSetT("#dvClose", gate ? "Not now" : "Close");
     if ($("#dvModal").hidden) { openDialog("#dvModal"); $("#dvModal .modal-card").scrollTop = 0; }

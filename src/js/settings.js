@@ -34,7 +34,7 @@
     var g = pOptDefaults(), own = stOwn(), speech = !!window.speechSynthesis;
     var names = own.map(function (d) { return d.name; });
     var list = names.length > 1 ? names.slice(0, -1).join(", ") + " and " + names[names.length - 1] : names[0];
-    $("#stBody").innerHTML =
+    $("#stBody").innerHTML = hcCard() +
       '<section class="st-card" aria-labelledby="stP"><h2 id="stP">Practices</h2>' +
         '<p class="st-note">What every practice starts with. A practice can change these for itself under Options on its own page.</p>' +
         pToggle("stVoice", "Spoken guidance", g.voice, speech ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !speech) +
@@ -73,6 +73,7 @@
     stWire();
     fbWire();
     supStWire();
+    hcStWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }

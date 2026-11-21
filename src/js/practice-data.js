@@ -237,7 +237,7 @@
     for (var r = 1; r <= rounds; r++) {
       var secs = 3 + breaths * cyc;
       st.push(Br(secs, "Round " + r + ": power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1, rest: 0 }, {
-        count: breaths, labels: { "in": "Breathe in fully", out: "Let go" },
+        count: breaths, ib: true, labels: { "in": "Breathe in fully", out: "Let go" },
         hints: { "in": "Belly, then chest.", out: "Let it fall out by itself." },
         lines: [[0, "Round " + num[r - 1] + ". " + breaths + " deep breaths. Fully in, and let go."],
           [Math.round(secs / 2), "Keep going. Fully in, let it go."], [Math.round(secs - 9), "Last few breaths."]] }));
@@ -671,7 +671,7 @@
         [frac(s[0], 0.4), "You'll set your breathing, see your session, and choose your words. Then you're ready" + (during ? " to start." : " to warm up.")]], { vis: "glow" }));
       if (pChoice(d, "breath") === "power") {
         var power = function (secs, first) {
-          return Br(secs, "Power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1.5, rest: 0 }, { lines: [[0, first ? "Quick, full breaths: in through the nose, out through the mouth, strong and rhythmic." : "Once more: quick, full breaths."],
+          return Br(secs, "Power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1.5, rest: 0 }, { ib: true, lines: [[0, first ? "Quick, full breaths: in through the nose, out through the mouth, strong and rhythmic." : "Once more: quick, full breaths."],
             [Math.round(secs / 2), "Keep it going. Feel the energy rise."]] });
         };
         var brace = { inh: 3, sip: 0, hold: 3, exh: 3, rest: 3 };
@@ -997,7 +997,7 @@
     },
     {
       id: "nsdr", name: "Body Scan + Theta", min: 20, strength: 2,
-      tone: "relax", lie: true, sensor: "optional",
+      tone: "relax", lie: true, sensor: "optional", hc: ["body"],
       blurb: "A 20-minute guided body scan over a 6 Hz theta beat: a deep rest in the daytime (sometimes called NSDR), or a way into sleep.",
       parts: "Guided body scan · 6 Hz binaural",
       audio: { name: "Body Scan + Theta", band: "Theta", carrier: 250, pts: [[0, 6], [1200, 6]], fade: 20, cat: "relax" },
@@ -1139,6 +1139,7 @@
     {
       id: "morning-tonic", name: "Morning Wake-Up", lengths: [10, 15, 20], min: 15, strength: 1,
       tone: "stim", sensor: "optional", noTap: true,
+      hc: function (d) { return pChoice(d, "breath") === "fire" ? ["fast-breath"] : []; },   // breath of fire, if chosen (care.js)
       opt: { ana: 0 },                           // the breath changes pace as it goes: Anapana's reminders would talk over it
       needs: [["sounds", "Headphones", "for the beat, at a low volume"], ["pulse", "Heart sensor", "optional: your heart rate as it rises with the breath"],
         ["move", "Space to stand", "an arm's length all around, for the stretches"]],
@@ -1164,11 +1165,12 @@
       how: "Sleep Descent the other way round. Start in bed as you wake, or sitting up: a big yawn and a long, cat-like stretch, then breathing that begins slow, with the out-breath longer, evens out, and quickens, the in-breath leading, while a binaural beat rises from 6 Hz theta through 10 Hz alpha to 16 Hz beta. If you choose breath of fire, two rounds of 30 short, sharp breaths out follow, sitting up. Then stretches in bed (or seated), a few standing poses with drawings to follow, and to finish, daylight, a glass of water and one thing you'd like from today. 10, 15 or 20 minutes.",
       ev: "The grogginess after waking (sleep inertia) usually fades within 15 to 30 minutes, and a 2019 review found no wake-up routine with clear evidence of speeding that up: sound looked promising, light made people feel more alert, and movement hadn't been tested. Beta binaural beats (16 and 24 Hz) improved vigilance and mood compared with theta and delta beats. Fast yoga breathing shifts the heart rhythm towards arousal, the opposite of slow breathing, and a session of it improved attention in 11- and 12-year-olds. Morning daylight is the body clock's strongest signal that the day has begun. This sequence itself hasn't been tested.",
       cite: "Hilditch & McHill 2019 · Lane et al. 1998 · Raghuraj et al. 1998 · Telles et al. 2019 · Brown et al. 2022",
-      caution: "Breath of fire isn't for everyone: leave it out if you're pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks, and go back to easy breathing if you feel dizzy or tingly. Sit up and stand slowly if you tend to feel faint when you get up."
+      caution: "Breath of fire isn't for everyone: leave it out if you're pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks, and go back to easy breathing if you feel dizzy or tingly. Never do it in or near water, in the bath or while driving, and stop if you feel dizzy: fast breathing can make you faint. Sit up and stand slowly if you tend to feel faint when you get up."
     },
     {
       id: "sport", name: "Sports Performance", lengths: [5, 10], min: 10, strength: 2,
       tone: "stim", sensor: "optional", sensorWhy: "optional: your heart rate as you get ready and through the session", pace: true, paceSplit: 0.4, noTap: true,
+      hc: function (d) { return pChoice(d, "when") !== "during" && pChoice(d, "breath") === "power" ? ["fast-breath"] : []; },   // the power breaths, if chosen (care.js)
       opt: { ana: 0 },                           // the cues while you train take the place of Anapana's
       optNote: "Each sport brings its own settings; change any of them, and pick the sport again to bring them back.",
       phonesWhy: "for the beat and the cues: during a session, indoors (an indoor trainer for cycling) or away from traffic, with the volume low enough to hear what's around you",
@@ -1218,7 +1220,7 @@
       how: "Pick your sport, and its settings come with it, then change any of them. Before: five or ten minutes to get ready, then your warm-up. Slow breathing at your resonance pace settles nerves while keeping you alert (for weight training: power breaths, then the bracing breath you'll use under a heavy weight), then you rehearse your session in your mind, and choose a few words of your own for when it gets hard, while a binaural beat rises from 10 Hz alpha to 15 Hz beta. During, if you choose it: the beat carries on, a cue comes every five minutes or so (technique, breathing and your words), and a soft tick can set your cadence until you tap Session over (cycling on an indoor trainer, running and rowing indoors or away from traffic); for weight training, tap Set done after each set and rest with slow breathing until the next.",
       ev: "Motivational self-talk, practised for two weeks, lengthened cycling time to exhaustion by about 18% and made the effort feel easier; across 32 studies, self-talk improved performance, motivational words most for strength and endurance. Imagery improved sports performance with a medium effect across studies. Runners kept going longer with a metronome or music matched to their cadence than in silence. Psyching up before lifting may raise strength, though the evidence is tentative. Binaural beats in sport are barely studied: 15 Hz beta beats with music in the rests between rounds helped kickboxers strike faster, but the trial couldn't be blinded, and a 10 Hz beat with music changed nothing measurable for recreational runners. Music itself helps a little.",
       cite: "Blanchfield et al. 2014 · Hatzigeorgiadis et al. 2011 · Simonsmeier et al. 2021 · Bood et al. 2013 · Tod et al. 2003 · Jebabli et al. 2025 · Park et al. 2026 · Terry et al. 2020",
-      caution: "Power breaths can make you light-headed: do them sitting or standing still, and go back to easy breathing if you feel dizzy. Holding your breath to brace raises blood pressure sharply: with high blood pressure, heart disease or an eye condition such as glaucoma, breathe out through the effort instead. During a session, keep the volume low enough to hear what's around you, and use headphones only where it's safe: for cycling, on an indoor trainer, never on the road."
+      caution: "Power breaths can make you light-headed: do them sitting or standing still, never in or near water, in the bath or while driving, and stop and go back to easy breathing if you feel dizzy. Holding your breath to brace raises blood pressure sharply: with high blood pressure, heart disease or an eye condition such as glaucoma, breathe out through the effort instead. During a session, keep the volume low enough to hear what's around you, and use headphones only where it's safe: for cycling, on an indoor trainer, never on the road."
     },
     {
       id: "creative", name: "Creative Flow", lengths: [15, 20, 30], min: 20, strength: 1,
@@ -1251,7 +1253,7 @@
     },
     {
       id: "mindful-sex", name: "Mindful Sex", lengths: [20, 30, 45], min: 30, open: true, strength: 2,
-      tone: "hr", sensor: "optional", sensorWhy: "optional: your heart rate as it rises and settles", pace: true, paceSplit: 0.4, noTap: true,
+      tone: "hr", sensor: "optional", sensorWhy: "optional: your heart rate as it rises and settles", pace: true, paceSplit: 0.4, noTap: true, hc: ["body"],
       opt: { ana: 0 },                           // its reminders take the place of Anapana's
       optNote: "Each part is a choice of its own, kept for it.",
       phonesWhy: "for the beat: for two of you, a splitter or your phone's dual audio sends it to both pairs; or turn it off under Options",
@@ -1290,7 +1292,7 @@
     /* ===== meditation and mindfulness ===== */
     {
       id: "body-scan", name: "Body Scan", lengths: [10, 20, 30], min: 10, strength: 1,
-      tone: "relax", lie: true, voice: true,
+      tone: "relax", lie: true, voice: true, hc: ["body"],
       blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation as it is.",
       build: function (min) { return bodyScan(min, "wake"); },
       how: "Sixteen stops, from the feet up, each with a few spoken cues. The body map shows where you are. Choose 10, 20 or 30 minutes.",
@@ -1410,7 +1412,7 @@
     /* ===== relaxation and sleep ===== */
     {
       id: "pmr", name: "Progressive Muscle Relaxation", min: 12, strength: 2,
-      tone: "relax", lie: true, voice: true,
+      tone: "relax", lie: true, voice: true, hc: ["body"],
       blurb: "Tense each muscle group for a few seconds, then let go and feel the difference. Fourteen groups, hands to feet.",
       build: function () {
         var s = [G(50, "Get comfortable", ["Lie down or sit with your back supported.",
@@ -1428,7 +1430,7 @@
     {
       id: "autogenic", name: "Autogenic Training", lengths: [5, 10, 15, 20], min: 10, strength: 2,
       tone: "relax", voice: true, sensor: "optional", sensorWhy: "optional: your heart rate and coherence as feedback, as in NASA's autogenic-feedback training",
-      pace: true, paceSplit: 0.4, opt: { audio: false },
+      pace: true, paceSplit: 0.4, opt: { audio: false }, hc: ["body"],
       blurb: "Schultz's standard autogenic training, the method NASA adapted for astronauts: short phrases said silently, for heaviness, warmth, a calm heartbeat, the breath, a warm solar plexus and a cool forehead, until your body follows. All six at once, or week by week as in the classic course.",
       parts: "Paced breathing · heaviness · warmth · heartbeat · breath · solar plexus · cool forehead · coming back · heart feedback",
       audio: { name: "Autogenic Training", band: "Theta", carrier: 200, fade: 8, cat: "relax" },
@@ -1548,9 +1550,9 @@
     },
     {
       id: "kapalabhati", name: "Kapalabhati", min: 6, strength: 1,
-      tone: "stim", confirm: true,
+      tone: "stim", confirm: true, hc: ["fast-breath"],
       blurb: "Skull-shining breath: short, sharp exhales from the belly with passive inhales, in three rounds. An energising breath, for a lift in alertness.",
-      caution: "Skip this one if you are pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks. Do it seated, on an empty stomach, and stop if you feel dizzy or tingly.",
+      caution: "Skip this one if you are pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks. Do it seated, on an empty stomach, and stop if you feel dizzy or tingly. Never do it in or near water, in the bath or while driving: fast breathing can make you faint.",
       build: function () {
         var rec = function (n) {
           return G(40, "Recover " + n, ["Breathe slowly and naturally.", "Notice the tingling and the energy. Let the breath settle."], { vis: "glow" });
@@ -1572,18 +1574,18 @@
     },
     {
       id: "wim-hof", name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1,
-      tone: "stim", confirm: true, sensor: "optional", open: true,
+      tone: "stim", confirm: true, sensor: "optional", open: true, hc: ["fast-breath", "hold"],
       variant: { key: "breaths", label: "Breaths per round", opts: [[30, "30"], [40, "40"]], def: 30 },
       blurb: "Rounds of deep, full breaths, then a relaxed hold on empty lungs for as long as is comfortable, then one recovery breath held for 15 seconds.",
       caution: "Never do this in or near water, in a bath, while driving or standing: the breathing can make you faint without warning, and people have drowned combining it with water. Sit or lie down. Skip it if you are pregnant, or have epilepsy, heart disease, high blood pressure, or a history of fainting or panic attacks. Tingling and light-headedness are common; stop if you feel unwell.",
-      build: function (rounds, breaths) { return wimHof(rounds, breaths); },
-      how: "Each round is 30 (or 40) deep breaths, fully in through the belly and chest and let go, about 2.5 seconds each. Then breathe out and hold with empty lungs, and tap Breathe in when you feel the urge; the hold ends by itself at 3 minutes. A full recovery breath held for 15 seconds closes the round. Your hold times are shown at the end.",
+      build: function (rounds, breaths) { return wimHof(ibWimRounds(rounds), breaths); },    // eight rounds a day at most (care.js)
+      how: "Each round is 30 (or 40) deep breaths, fully in through the belly and chest and let go, about 2.5 seconds each. Then breathe out and hold with empty lungs, and tap Breathe in when you feel the urge; the hold ends by itself at 3 minutes. A full recovery breath held for 15 seconds closes the round. Your hold times are shown at the end. Entrain runs at most eight rounds a day, and Restart and Do it again ask first within an hour of a block.",
       ev: "Men trained in the method (breathing, cold exposure and meditation) released more adrenaline and had a weaker inflammatory response and fewer flu-like symptoms after an endotoxin injection than untrained controls. A follow-up found the breathing alone produced the anti-inflammatory effect. A 2024 systematic review of eight small trials judged the risk of bias high and the evidence not yet strong enough to recommend the method. It is activating, raising adrenaline, rather than calming.",
       cite: "Kox et al. 2014 · Zwaag et al. 2022 · Almahayni & Hammond 2024"
     },
 
     {
-      id: "tapping", name: "Tapping", tapping: true, open: true, min: 7, strength: 1, tone: "ther",
+      id: "tapping", name: "Tapping", tapping: true, open: true, min: 7, strength: 1, tone: "ther", hc: ["body"],
       variant: { key: "rounds", label: "Rounds", opts: [[2, "2"], [3, "3"]], def: 2 },
       blurb: "Rate what's bothering you, then tap nine acupressure points with your fingertips while saying a short phrase. Two or three rounds, then rate it again.",
       caution: "Tapping isn't a treatment for trauma or a mental-health condition. If strong feelings or memories come up, stop, breathe slowly and look around the room, and talk to a professional if it keeps happening. Tap gently.",

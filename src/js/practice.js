@@ -513,6 +513,7 @@
   // start this practice again from the top, at the length it was started with
   function pRestart() {
     if (!pBusy() || !P.def) return;
+    if (ibAsk("restart")) return;                      // fast breathing again from the top: rest first? (care.js)
     P.view = P.def; P.len = P.runLen;
     pStart(true);
     toast("Started again from the top.", { over: true, ms: 2500 });
@@ -1042,6 +1043,7 @@
       return;
     }
     if (d.confirm && again !== true && !$("#sOk").checked) { $("#sOk").focus(); return; }
+    if (ibCapStop(d, again)) return;                   // today's Wim Hof rounds are done (care.js)
     /* A practice can begin with another, chosen on its page ("Begin with", choice "pre"): that one runs
        first, and its end screen leads on to this one (P.chain). Carrying on (P.chainGo) or a restart skips it. */
     var cont = P.chainGo, pre = again !== true && !cont && !resume ? pChoice(d, "pre") : "";
@@ -1215,8 +1217,11 @@
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
     if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
+    // fast breathing that ran: an hour's rest before the next block, and Wim Hof's rounds for the day (care.js)
+    var ib = P.steps.filter(function (s) { return ibStep(s) && s.at < T; }).length;
+    if (ib) { r.ib = true; ibEnded(d.name); }
     if (T >= 60) r.at = Date.now();                    // the end screen tells this one from the earlier ones by it
-    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
+    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg, ib: r.ib, wh: d.id === "wim-hof" && ib ? ib : undefined,
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
       note: notes.join(", ") || undefined });
@@ -1278,6 +1283,13 @@
     el.querySelector(".si-steps").innerHTML = pStepsHtml(d, plan);
     pGoSync(d, plan);
     pPreRow(d);
+    pCareSync(d, plan);
+  }
+  // your health check's caution, and a block of fast breathing within the hour or today's rounds (care.js)
+  function pCareSync(d, plan) {
+    var hs = $("#sIntro .hc-slot"), nt = $("#sIbNote"), t = ibNote(d, plan), h = hcBox(hcKindsOf(d));
+    if (hs && hs.innerHTML !== h) hs.innerHTML = h;
+    if (nt) { nt.hidden = !t; bSetT("#sIbNote", t); }
   }
   function pIntro(id) {
     var d = pDef(id);
@@ -1369,11 +1381,13 @@
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its binaural beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
+        '<div class="hc-slot">' + hcBox(hcKindsOf(d)) + "</div>" +
       "</div>" +
       '<div class="si-side">' +                     // Start first: above the options on a computer, last on a phone (order)
       '<div class="si-bar">' +
-        (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
+        (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> ' + (hcCaution(hcKindsOf(d)) ? "I've read the cautions, and I choose to go ahead" : "None of the cautions apply to me") + "</label>" : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
+        '<p class="si-ib" id="sIbNote"' + (ibNote(d, plan) ? "" : " hidden") + ">" + esc(ibNote(d, plan)) + "</p>" +
         '<button class="btn primary si-go" id="sGo"' + (d.confirm && !pSupWho(d) ? " disabled" : "") + ">" + pGoHtml(d, plan) + "</button>" +
         '<p class="si-bar-note" id="sSupNote"' + (pSupWho(d) ? "" : " hidden") + ">" + SUP_NOTE + "</p>" +
       "</div>" +

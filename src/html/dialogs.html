@@ -52,11 +52,44 @@
   <div class="modal-card dv-card" role="dialog" aria-modal="true" aria-labelledby="dvTitle">
     <h2 id="dvTitle">Swim &amp; dive: read this first</h2>
     <ul class="dv-list" id="dvList"></ul>
+    <div id="dvHc"></div>
     <p class="hint">The research behind it is in Learn, under Breath training for swimming and diving.</p>
     <div class="pm-actions">
       <button class="btn primary" id="dvGo">I understand the risks</button>
       <button class="btn" id="dvClose">Not now</button>
     </div>
+  </div>
+</div>
+
+
+<!-- ============ INTENSE BREATHWORK: rest between blocks, and Wim Hof's rounds for the day (care.js) ============ -->
+<div class="modal" id="ibModal" hidden>
+  <div class="modal-card ib-card" role="dialog" aria-modal="true" aria-labelledby="ibTitle">
+    <h2 id="ibTitle">Rest first?</h2>
+    <p id="ibTxt"></p>
+    <p class="hint">Entrain's own rule, following the advice to cap rounds of intense breathing and leave out back-to-back blocks.</p>
+    <div class="pm-actions">
+      <button class="btn primary" id="ibRest">Rest first</button>
+      <button class="btn" id="ibGo">Start anyway</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============ SETTLE: after I need to stop (settle.js) ============ -->
+<div class="modal stl" id="stlModal" hidden>
+  <div class="modal-card stl-card" role="dialog" aria-modal="true" aria-labelledby="stlTitle">
+    <h2 id="stlTitle">Settle</h2>
+    <p class="stl-lead">The session has ended and the sound is off. Keep your eyes open, and feel your feet on the floor and the seat under you.</p>
+    <canvas id="stlCanvas" aria-hidden="true"></canvas>
+    <p class="stl-cue" id="stlCue" aria-live="polite"></p>
+    <p class="stl-n" id="stlN"></p>
+    <p>Then look around you: name five things you can see, four you can touch, three you can hear, two you can smell and one you can taste.</p>
+    <div class="pm-actions">
+      <button class="btn primary" id="stlDone">Done</button>
+      <button class="btn" id="stlGround">{i:leaf}5-4-3-2-1 Grounding</button>
+    </div>
+    <p class="hint">If this keeps happening, or a practice often leaves you upset, talk to your doctor or a mental-health professional before you carry on with it. If you feel unsafe right now, call your local emergency number.</p>
   </div>
 </div>
 

@@ -157,6 +157,12 @@
     out.push(fdEntry("app", "New techniques", "Settings · a donation of €1 or more unlocks them on this device",
       ["The techniques from the brain-wave guide open with a donation of €1 or more on Ko-fi, once on each device: your device code, the activation code from the email, and what it unlocks."], "#st-supporter",
       { ic: "cup", col: "var(--stim)", w: 1, tags: "unlock donation donate supporter support kofi ko fi activation code device brain wave guide" }));
+    out.push(fdEntry("app", "Health check", "Settings · optional, nine questions, kept on this device",
+      ["Tick what applies to you, such as a heart condition, high or low blood pressure, epilepsy, pregnancy, panic attacks, trauma, psychosis or asthma, and the practices it affects show a caution written for you."], "#st-health",
+      { ic: "heart", col: "var(--danger)", w: 1.1, tags: "health safety screening screen medical condition heart blood pressure epilepsy seizure pregnant pregnancy panic trauma ptsd psychosis dissociation asthma doctor" }));
+    out.push(fdEntry("app", "I need to stop", "Settle · ends what's running and calms you down",
+      ["One tap ends a practice or a breathing session, fades the sound in half a second and opens Settle: eyes open, five slow breaths out, and the 5-4-3-2-1 grounding."], "#settle",
+      { ic: "leaf", col: "var(--relax)", w: 1.1, tags: "settle stop end panic overwhelmed overwhelm distress distressed upset anxious anxiety dizzy calm down grounding help quit exit" }));
     out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
       ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
       { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));

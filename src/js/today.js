@@ -28,6 +28,7 @@
       bSetT("#qkFind", "Last result: " + H.find.best + " breaths a minute, " + d);
     } else bSetT("#qkFind", "A 10-minute test with a heart sensor");
     shellSensor();
+    hcOfferSync();                      // the health check, until it's answered or put off (care.js)
     pSuggest();
     todayRender();
     drawHomeWave();

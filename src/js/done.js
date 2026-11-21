@@ -50,7 +50,7 @@
     el.innerHTML = h;
     $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
     $("#ses").dataset.state = "done";
-    $("#sdAgain").addEventListener("click", function () { pIntro(d.id); });
+    $("#sdAgain").addEventListener("click", function () { if (!ibAsk("again", d)) pIntro(d.id); });   // fast breathing again: rest first? (care.js)
     if (r.stress) stressWire(r);
     var cg = $("#sdChain");
     if (cg) cg.addEventListener("click", function () {     // on to the practice this one began

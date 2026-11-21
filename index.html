@@ -1878,6 +1878,55 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .sup-h{font-size:14.5px;font-weight:750;margin:2px 0 -6px}
   .sup-list{margin:0;padding-left:1.15em;display:grid;gap:4px;font-size:14px;color:var(--text-dim)}
   .sup-list a{color:var(--text)}
+
+  /* ---------- care: your health check, rest between blocks, I need to stop and Settle (care.js, settle.js) ---------- */
+  .hc-note{display:flex;gap:10px;margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(251,113,133,.1);color:#fecdd3;font-size:13.5px;line-height:1.5}
+  .hc-note svg.i{width:18px;height:18px;flex:none;margin-top:1px;color:var(--danger)}
+  .hc-note b{color:#fda4af;font-weight:720}
+  .hc-edit{color:inherit;font-weight:650;text-decoration:underline;text-underline-offset:3px;display:inline-block;padding:3px 0}
+  .hc-slot:empty{display:none}
+  .dv-card #dvHc .hc-note{margin:0 0 12px}
+  .b-note #bDiveHc .hc-note{margin-top:12px}
+  .si-ib{margin:0;font-size:13px;line-height:1.45;color:#fcd34d;background:rgba(251,191,36,.09);border-radius:12px;padding:10px 12px}
+  .hc-list{display:flex;flex-direction:column;gap:6px}
+  .hc-list .so-row{min-height:44px}
+  .hc-st{margin:0;font-size:13px;color:var(--text-dim);line-height:1.45}
+  .hc-acts .btn,.hc-offer .btn{min-height:44px}
+  .hc-offer .inst-ic{color:var(--danger)}
+  .ses-out{
+    display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:8px 13px;min-height:44px;flex:none;
+    font:inherit;font-weight:700;font-size:13px;white-space:nowrap;cursor:pointer;background:rgba(251,113,133,.16);color:#fda4af;transition:background .15s
+  }
+  .ses-out:hover{background:rgba(251,113,133,.26)}
+  .ses[data-dim="1"] .ses-out{background:#1c1522;color:#a87884}
+  /* End and I need to stop stay in sight when the session is scrolled (a short phone, or started from low on its page) */
+  body.immersive .ses-top{position:sticky;top:0;z-index:5;background:var(--sesbg,var(--bg));padding:6px 0;margin-top:-6px;
+    box-shadow:-16px 0 0 var(--sesbg,var(--bg)),16px 0 0 var(--sesbg,var(--bg))}
+  .ses[data-dim="1"]{--sesbg:#04060c}
+  @media (max-width:560px){       /* on a phone, End and I need to stop share the first line; the title and time the next */
+    .ses-top{flex-wrap:wrap;row-gap:8px}
+    .ses-x{order:1}
+    .ses-out{order:2;margin-left:auto}
+    .ses-ttl{order:3;flex:1 1 calc(100% - 90px)}
+    .ses-left{order:4}
+  }
+  .b-transport .b-out{background:rgba(251,113,133,.14);border-color:rgba(251,113,133,.35);color:#fda4af}
+  .b-transport .b-out:hover{background:rgba(251,113,133,.24)}
+  @media (max-width:560px){ .b-transport .btn.b-out{flex:1 1 100%} }
+  .b-ib span{flex:1;min-width:0}
+  .stl-card{text-align:center;max-width:460px}
+  .stl-card h2{margin-bottom:8px}
+  .modal-card .stl-lead{margin-bottom:6px}
+  #stlCanvas{display:block;width:100%;height:clamp(150px,26vh,220px);margin:4px 0 2px}
+  .modal-card .stl-cue{color:var(--text);font-size:18px;font-weight:720;margin:0;min-height:1.5em}
+  .modal-card .stl-n{color:var(--text-faint);font-size:13px;margin:2px 0 14px;font-variant-numeric:tabular-nums}
+  .stl-card .pm-actions{justify-content:center}
+  .stl-card .hint{text-align:left;margin-top:16px}
+  @media (max-width:560px){
+    .stl{padding:0}
+    .stl-card{max-width:none;min-height:100%;max-height:none;border-radius:0;display:flex;flex-direction:column;justify-content:center;
+      padding:max(20px,env(safe-area-inset-top,0px)) 18px max(20px,env(safe-area-inset-bottom,0px))}
+  }
 </style>
 </head>
 <body>
@@ -1967,6 +2016,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             </div>
           </div>
           <div class="home-wave" aria-hidden="true"><canvas id="homeWave"></canvas></div>
+        </div>
+
+        <div class="install hc-offer" id="tdHealth" hidden>
+          <span class="inst-ic"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg></span>
+          <div class="inst-txt"><b>A short health check</b><span>Nine yes-or-no questions, so the practices that could affect you show a caution written for you. Optional, and kept on this device.</span></div>
+          <div class="inst-act"><a class="btn primary small" id="tdHealthGo" href="#st-health">Take it</a><button class="btn small" id="tdHealthLater">Not now</button></div>
         </div>
 
         <section class="td-sec" id="tdFav" aria-labelledby="tdFavH">
@@ -2094,6 +2149,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               <button class="ses-x" id="sEnd"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg><span id="sEndTxt">End</span></button>
               <div class="ses-ttl"><b id="sTitle"></b><span id="sStepTxt"></span><span class="ses-then" id="sThen" hidden></span></div>
               <span class="ses-left" id="sLeft"></span>
+              <button class="ses-out" id="sOut">I need to stop</button>
             </div>
             <div class="ses-bar" aria-hidden="true"><div class="ses-segs" id="sSegs"></div><div class="ses-fill" id="sFill"></div></div>
             <div class="ses-stage" id="sStage">
@@ -2306,6 +2362,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               <button class="btn b-adjust" id="bAdjust" aria-controls="bPanel" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg>Adjust</button>
               <button class="btn" id="bReset" disabled>Reset</button>
               <button class="btn" id="bFocus">Focus view</button>
+              <button class="btn b-out" id="bOut" hidden>I need to stop</button>
               <span class="b-msg" id="bMsg" role="status"></span>
             </div>
             <div class="b-dive" id="bDiveRow" hidden>
@@ -2313,6 +2370,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               <span><b>At your own risk.</b> Breath holds on dry land only, sitting or lying down, and breathe whenever you need to.</span>
               <button type="button" class="btn small" id="bDiveInfo">Read the cautions</button>
             </div>
+            <div class="b-dive b-ib" id="bIbRow" hidden><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span id="bIbTxt"></span></div>
             <div class="b-sensor" id="bSensorRow">
               <svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg>
               <span id="bSensorTxt">Connect a heart sensor to watch your heart rate follow your breath.</span>
@@ -2330,6 +2388,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <div class="ev-body"><span id="bEvTxt"></span><cite id="bCite"></cite></div>
           </details>
           <div id="bDiveSafe" hidden></div>
+          <div id="bDiveHc"></div>
         </div>
 
         <div class="b-fields" id="bFields">
@@ -3529,8 +3588,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                   breast pocket (American Heart Association).</li>
                 <li><b>Breathing.</b> Breathe gently, and stop to breathe normally if you feel light-headed, dizzy or tingly.
                   Leave out the breath holds and the fast breathing (Wim Hof, Kapalabhati, Morning Wake-Up's breath of fire, the power breaths before sport) if you are pregnant or have a heart,
-                  lung or blood-pressure condition or epilepsy, and never do the fast breathing in or near water, standing up or
-                  while driving.</li>
+                  lung or blood-pressure condition or epilepsy, and never do the fast breathing in or near water, in the bath,
+                  standing up or while driving. Rest for an hour between blocks of fast breathing or long holds: back to back,
+                  they make fainting more likely, so Restart and Do it again ask first, and Wim Hof stops at eight rounds a
+                  day.</li>
                 <li><b>Breath holds.</b> Swim &amp; dive's long holds are done entirely at your own risk. A breath hold can
                   make you black out without warning, so practise them only on dry land, sitting or lying down, never in or
                   near water, in the bath or while driving. Breathe normally before each hold, never fast and deep to
@@ -3540,7 +3601,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                   you.</li>
                 <li><b>Feelings.</b> A body scan, tapping or a reflection can bring up strong feelings. If one does, stop, look
                   around the room and breathe slowly, and talk to someone you trust or a professional if it keeps
-                  happening.</li>
+                  happening. While a practice or the breathing guide runs, I need to stop ends it in one tap, fades the sound
+                  and opens Settle: slow breaths out with your eyes open, and the 5-4-3-2-1 grounding.</li>
                 <li><b>Food and supplements.</b> Supplements aren't checked like medicines, and some interact with them: ask a
                   doctor or pharmacist before you start one if you take medicines (blood thinners above all), are pregnant or
                   breastfeeding, have kidney or liver disease, or have an operation coming up. The amounts in Healthy living are
@@ -3551,7 +3613,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               </ul>
               <p>Check with a clinician before you start if you have a heart, lung or seizure condition, are pregnant, or are
                 in treatment for anxiety, trauma or depression. Practices with cautions of their own give them in their
-                introduction.</p>
+                introduction. The <a href="#st-health">health check</a> in Settings, optional and kept on your device, adds a
+                caution written for you to the practices it affects; it never stops you starting one.</p>
             </div>
             <section class="refs-sec" id="references">
               <h3>References</h3>
@@ -3803,11 +3866,44 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   <div class="modal-card dv-card" role="dialog" aria-modal="true" aria-labelledby="dvTitle">
     <h2 id="dvTitle">Swim &amp; dive: read this first</h2>
     <ul class="dv-list" id="dvList"></ul>
+    <div id="dvHc"></div>
     <p class="hint">The research behind it is in Learn, under Breath training for swimming and diving.</p>
     <div class="pm-actions">
       <button class="btn primary" id="dvGo">I understand the risks</button>
       <button class="btn" id="dvClose">Not now</button>
     </div>
+  </div>
+</div>
+
+
+<!-- ============ INTENSE BREATHWORK: rest between blocks, and Wim Hof's rounds for the day (care.js) ============ -->
+<div class="modal" id="ibModal" hidden>
+  <div class="modal-card ib-card" role="dialog" aria-modal="true" aria-labelledby="ibTitle">
+    <h2 id="ibTitle">Rest first?</h2>
+    <p id="ibTxt"></p>
+    <p class="hint">Entrain's own rule, following the advice to cap rounds of intense breathing and leave out back-to-back blocks.</p>
+    <div class="pm-actions">
+      <button class="btn primary" id="ibRest">Rest first</button>
+      <button class="btn" id="ibGo">Start anyway</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============ SETTLE: after I need to stop (settle.js) ============ -->
+<div class="modal stl" id="stlModal" hidden>
+  <div class="modal-card stl-card" role="dialog" aria-modal="true" aria-labelledby="stlTitle">
+    <h2 id="stlTitle">Settle</h2>
+    <p class="stl-lead">The session has ended and the sound is off. Keep your eyes open, and feel your feet on the floor and the seat under you.</p>
+    <canvas id="stlCanvas" aria-hidden="true"></canvas>
+    <p class="stl-cue" id="stlCue" aria-live="polite"></p>
+    <p class="stl-n" id="stlN"></p>
+    <p>Then look around you: name five things you can see, four you can touch, three you can hear, two you can smell and one you can taste.</p>
+    <div class="pm-actions">
+      <button class="btn primary" id="stlDone">Done</button>
+      <button class="btn" id="stlGround"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg>5-4-3-2-1 Grounding</button>
+    </div>
+    <p class="hint">If this keeps happening, or a practice often leaves you upset, talk to your doctor or a mental-health professional before you carry on with it. If you feel unsafe right now, call your local emergency number.</p>
   </div>
 </div>
 
@@ -5140,7 +5236,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     // they're all blocking, so Tab has to stay inside them
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return;
-      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal", "#supModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
+      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal", "#supModal", "#ibModal", "#stlModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
       if (!box) return;
       var all = box.querySelectorAll("button, input, a[href], select, textarea");
       var list = [], i;
@@ -5197,8 +5293,295 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       safeOpen();
     });
     $("#sfClose").addEventListener("click", safeClose);
+    $("#sfBody").addEventListener("click", function (e) { if (e.target.closest("a[href^='#']")) safeClose(); });   // a link in the note leaves it
     $("#sfModal").addEventListener("click", function (e) { if (e.target === this) safeClose(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") safeClose(); });
+  }
+  /* ------------------------------- care: who you are -------------------------------
+     Two safety pieces that are free for everyone, since safety never waits on a donation.
+
+     Your health check: an optional, one-time list of nine conditions that change what's safe to try,
+     offered once on Today and kept in Settings. It's stored on this device, and travels in backups
+     like your settings. It never stops you starting anything: what it affects shows a stronger
+     caution, written for what you ticked. Features name the kinds of risk they carry, and ask
+       hcFlags()          which conditions are ticked: { heart, bpHigh, bpLow, epilepsy, pregnant,
+                          panic, trauma, psychosis, asthma }, all false until it's answered
+       hcCaution(kinds)   the caution for those kinds ("fast-breath", "hold", "cold", "heat", "flicker",
+                          "scent", "imagery", "body"), or "" when nothing ticked bears on them
+       hcBox(kinds)       the same in a box with a link to the answers, for a page
+       hcAnswered()       whether it's been answered, for a feature that offers it first (#st-health)
+     A practice names its kinds in `hc` (a list, or a function of the practice for one that depends on
+     its choices).
+
+     Limits on intense breathwork: Wim Hof, Kapalabhati, Morning Wake-Up's breath of fire, the power
+     breaths before sport and Swim & dive's long holds. Back to back they make fainting more likely,
+     so a page notes when one ended within the hour (from the history), Restart and Do it again ask
+     before stacking another block, and Wim Hof stops at eight rounds a day.
+  -------------------------------------------------------------------------------- */
+
+  // key, what Settings asks, a note under it, and how a caution names it
+  var HC_ITEMS = [
+    ["heart", "A heart condition", "Heart disease, or a problem with your heart's rhythm.", "a heart condition"],
+    ["bpHigh", "High blood pressure", "", "high blood pressure"],
+    ["bpLow", "Low blood pressure, or you faint easily", "", "low blood pressure or fainting"],
+    ["epilepsy", "Epilepsy, or seizures set off by flashing light", "", "epilepsy"],
+    ["pregnant", "Pregnancy", "", "pregnancy"],
+    ["panic", "Panic attacks", "", "panic attacks"],
+    ["trauma", "Trauma or PTSD", "", "trauma or PTSD"],
+    ["psychosis", "Psychosis or dissociation", "Times of losing touch with what's real, or of feeling unreal or detached from yourself.", "psychosis or dissociation"],
+    ["asthma", "Asthma", "", "asthma"]
+  ];
+  var HC_KEYS = HC_ITEMS.map(function (x) { return x[0]; });
+  /* Each kind of risk: who it matters most for, what to say ({who} is what you ticked of them), and a
+     line of its own for a condition it affects differently. As the guide puts it: fast breathing and
+     holds can make you faint (stop if dizzy, never in or near water or while driving); cold water's
+     shock is a danger with a heart condition or high blood pressure (start gradually, never alone in
+     open water, never with breath holds in water); heat: stay hydrated, and saunas only with a
+     doctor's approval with a heart condition, low blood pressure or pregnancy, or after alcohol;
+     flashing light can set off a seizure; some people react to essential oils. */
+  var HC_KINDS = {
+    "fast-breath": { who: ["heart", "bpHigh", "bpLow", "epilepsy", "pregnant", "asthma"],
+      txt: "Fast breathing can make you dizzy or faint. With {who}, leave it out unless your doctor says it's fine for you; if you go ahead, keep it short and gentle, sitting or lying down, never in or near water, in the bath or while driving, and stop as soon as you feel dizzy, tingly or unwell.",
+      also: { panic: "Fast breathing can also bring on the feelings of a panic attack: if it starts to, slow down with long breaths out, or tap I need to stop." } },
+    hold: { who: ["heart", "bpHigh", "bpLow", "epilepsy", "pregnant", "asthma"],
+      txt: "A breath hold can make you black out without warning. With {who}, ask your doctor before you try long holds; if you go ahead, keep them short and easy, on dry land, sitting or lying down, and breathe whenever you need to.",
+      also: { panic: "The urge to breathe during a hold can feel like panic rising: breathe as soon as you want to." } },
+    cold: { who: ["heart", "bpHigh", "pregnant", "asthma"],
+      txt: "Cold water sets off a shock response: a gasp, fast breathing and a sudden rise in heart rate and blood pressure. With {who}, ask your doctor before you try cold exposure; if you go ahead, start gently, with the end of a shower turned cool, never alone in open water, and never with breath holds in water." },
+    heat: { who: ["heart", "bpLow", "pregnant"],
+      txt: "Heat lowers your blood pressure and can make you faint. With {who}, leave out saunas and very hot baths unless your doctor approves; drink water, and skip them after alcohol." },
+    flicker: { who: ["epilepsy"],
+      txt: "Flashing light can set off a seizure in people with photosensitive epilepsy. With {who}, leave the light pulse off unless your doctor says it's safe for you." },
+    scent: { who: ["asthma", "pregnant"],
+      txt: "Some people react to essential oils, and a strong scent can tighten the airways. With {who}, check with your doctor or midwife before you use them; if you go ahead, a drop or two in an aired room, and stop if your chest tightens." },
+    imagery: { who: ["psychosis", "trauma"],
+      txt: "Guided imagery and deep relaxation can bring up memories, or leave you feeling detached or unreal. With {who}, ask your therapist or care team whether it suits you now; if you go ahead, keep it short, open your eyes whenever you like, and tap I need to stop if it gets too much." },
+    body: { who: ["trauma", "psychosis", "panic"],
+      txt: "Close attention to the body and the breath can bring up strong feelings, memories or panic. With {who}, go gently: keep your eyes open if you like, move your attention away from any part that feels difficult, and tap I need to stop whenever you want to. If you're in treatment, ask your therapist whether it suits you now." }
+  };
+
+  // what's stored: when you answered, and what you ticked ("health": { at, on: [keys] }); null until then
+  function hcLoad() {
+    var r = null;
+    try { r = JSON.parse(store.get("health") || "null"); } catch (e) {}
+    if (!r || typeof r !== "object" || !(r.at > 0)) return null;
+    return { at: r.at, on: Array.isArray(r.on) ? r.on.filter(function (k) { return HC_KEYS.indexOf(k) >= 0; }) : [] };
+  }
+  function hcAnswered() { return !!hcLoad(); }
+  function hcFlags() {
+    var r = hcLoad(), f = {};
+    HC_KEYS.forEach(function (k) { f[k] = !!r && r.on.indexOf(k) >= 0; });
+    return f;
+  }
+  function hcSave(on) { store.set("health", JSON.stringify({ at: Date.now(), on: on })); }
+  function hcAnd(l) { return l.length > 1 ? l.slice(0, -1).join(", ") + " or " + l[l.length - 1] : l[0]; }
+  function hcName(k) { for (var i = 0; i < HC_ITEMS.length; i++) if (HC_ITEMS[i][0] === k) return HC_ITEMS[i][3]; return k; }
+  function hcCaution(kinds) {
+    var f = hcFlags(), out = [], seen = {};
+    (kinds || []).forEach(function (kind) {
+      var K = HC_KINDS[kind];
+      if (!K || seen[kind]) return;
+      seen[kind] = true;
+      var who = K.who.filter(function (k) { return f[k]; }).map(hcName);
+      if (who.length) out.push(K.txt.replace("{who}", hcAnd(who)));
+      Object.keys(K.also || {}).forEach(function (k) { if (f[k] && out.indexOf(K.also[k]) < 0) out.push(K.also[k]); });
+    });
+    return out.join(" ");
+  }
+  // noLink: inside a dialog, where a link away would leave the dialog open over another page
+  function hcBox(kinds, noLink) {
+    var t = hcCaution(kinds);
+    return t ? '<div class="hc-note" role="note"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg><span><b>From your health check.</b> ' + esc(t) +
+      (noLink ? "" : ' <a class="hc-edit" href="#st-health">Your answers</a>') + "</span></div>" : "";
+  }
+  // a practice's kinds of risk, which can follow its choices (breath of fire, power breaths)
+  function hcKindsOf(d) { var k = d && pFn(d.hc, d); return Array.isArray(k) ? k : []; }
+
+  /* ----- in Settings, and offered once on Today ----- */
+  function hcStTxt() {
+    var r = hcLoad();
+    if (!r) return "Not answered yet.";
+    var when = new Date(r.at).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
+    return (r.on.length ? "You ticked " + r.on.length + (r.on.length === 1 ? " item" : " items") + ": the practices they affect show a caution written for you." : "Nothing ticked: the usual cautions apply.") + " Last changed " + when + ".";
+  }
+  function hcCard() {
+    var r = hcLoad(), on = r ? r.on : [];
+    return '<section class="st-card" id="st-health" aria-labelledby="stH"><h2 id="stH">Health check</h2>' +
+      '<p class="st-note">Optional, and kept on this device (and in your backups). Tick anything that applies to you, and the practices it affects show a caution written for you. It never stops you starting anything: the choice stays yours. Most people have no trouble, but across 83 meditation studies, reviewed in 2020, about one person in twelve had an unwanted effect, most often anxiety or depression.</p>' +
+      '<div class="hc-list" role="group" aria-label="What applies to you">' +
+        HC_ITEMS.map(function (x) { return pToggle("hc-" + x[0], x[1], on.indexOf(x[0]) >= 0, x[2]); }).join("") + "</div>" +
+      '<p class="hc-st" id="hcSt" aria-live="polite">' + esc(hcStTxt()) + "</p>" +
+      '<div class="st-data-act hc-acts"><button class="btn small" id="hcNone">None of these</button><button class="btn small" id="hcClear"' + (r ? "" : " disabled") + ">Clear my answers</button></div>" +
+      '<p class="st-note">Whatever you tick, a caution is a guide, not a diagnosis: if you\'re unsure, ask your doctor. <button type="button" class="sf-link" data-safety="1">Safety notes</button></p>' +
+      "</section>";
+  }
+  function hcStSync() {
+    var r = hcLoad(), on = r ? r.on : [];
+    HC_KEYS.forEach(function (k) { var b = $("#hc-" + k); if (b) b.checked = on.indexOf(k) >= 0; });
+    if ($("#hcSt")) bSetT("#hcSt", hcStTxt());
+    if ($("#hcClear")) $("#hcClear").disabled = !r;
+    hcOfferSync();
+  }
+  function hcStWire() {
+    var sec = $("#st-health");
+    if (!sec) return;
+    sec.addEventListener("change", function (e) {
+      if (!e.target.id || e.target.id.indexOf("hc-") !== 0) return;
+      hcSave(HC_KEYS.filter(function (k) { var b = $("#hc-" + k); return b && b.checked; }));
+      hcStSync();
+    });
+    $("#hcNone").addEventListener("click", function () { hcSave([]); hcStSync(); });
+    $("#hcClear").addEventListener("click", function () {
+      storeDel("health");
+      hcStSync();
+      toast("Your health check is cleared.", { ms: 3000 });
+    });
+  }
+  // Today: offered until it's answered, or put off once with Not now
+  function hcOfferSync() {
+    var el = $("#tdHealth");
+    if (el) el.hidden = hcAnswered() || store.get("hcLater") === "1";
+  }
+  function hcInit() {
+    $("#tdHealthLater").addEventListener("click", function () {
+      store.set("hcLater", "1");
+      hcOfferSync();
+      toast("The health check is in Settings whenever you'd like it.", { ms: 4000 });
+    });
+    hcOfferSync();
+    if (store.get("debug") && window.__entrain) {          // for automated tests only
+      window.__entrain.hcFlags = hcFlags; window.__entrain.hcCaution = hcCaution; window.__entrain.hcKindsOf = hcKindsOf;
+      window.__entrain.IB = IB; window.__entrain.ibRoundsToday = ibRoundsToday; window.__entrain.ibRecent = ibRecent; window.__entrain.SETTLE = SETTLE;
+      window.__entrain.hLoad = hLoad; window.__entrain.bkKeys = bkKeys;
+    }
+  }
+
+  /* ----- intense breathwork: rest between blocks, and no more than eight Wim Hof rounds a day ----- */
+  // last: an intense block that ended this visit, logged or not; the rest is the question that's open
+  var IB = { last: null, ask: "", d: null, paused: false, pass: false };
+  var IB_REST = 36e5;                    // an hour between blocks
+  var IB_CAP = 8;                        // Wim Hof rounds a day
+  // a step of fast breathing: kapalabhati and breath of fire's pumps, Wim Hof's and the sports power breaths (ib)
+  function ibStep(s) { return s.k === "pump" || !!s.ib; }
+  function ibPlan(steps) { return steps.some(ibStep); }
+  function ibIntense(e) { return (e.k === "practice" || e.k === "breath") && e.ib === true; }
+  // the latest intense block that ended within the hour: { at, name }, or null
+  function ibRecent() {
+    var now = Date.now(), l = hLoad(), got = null;
+    for (var i = l.length - 1; i >= 0; i--) {
+      if (ibIntense(l[i]) && now - l[i].at < IB_REST) { got = { at: l[i].at, name: ibName(l[i]) }; break; }
+    }
+    if (IB.last && now - IB.last.at < IB_REST && (!got || IB.last.at > got.at)) got = IB.last;
+    return got;
+  }
+  function ibName(e) {
+    var d = e.k === "practice" && pDef(e.id), b = e.k === "breath" && preset(e.id);
+    return d ? d.name : b ? patName(b) : e.n || (e.k === "breath" ? "long breath holds" : "a block of fast breathing");
+  }
+  function ibEnded(name) { IB.last = { at: Date.now(), name: name }; }
+  function ibAgo(r) {
+    var m = Math.round((Date.now() - r.at) / 6e4);
+    return m < 1 ? "just now" : m === 1 ? "a minute ago" : m + " minutes ago";
+  }
+  function ibRestTxt(r) {
+    return "You did " + r.name + " " + ibAgo(r) + ". Rest for an hour between blocks of fast breathing or long breath holds: back to back, they make fainting more likely.";
+  }
+  function ibDayStart() { var d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); }
+  function ibRoundsToday() {
+    var since = ibDayStart(), n = 0;
+    hLoad().forEach(function (e) { if (e.k === "practice" && e.id === "wim-hof" && e.at >= since && e.wh > 0) n += e.wh; });
+    return n;
+  }
+  // the intense steps begun in the running practice (for Wim Hof, its rounds)
+  function ibRun() {
+    if (!pBusy()) return 0;
+    var T = pT();
+    return P.steps.filter(function (s) { return ibStep(s) && s.at < T; }).length;
+  }
+  // Wim Hof's rounds: as many as chosen, while today's eight last (at least one, so its page still reads)
+  function ibWimRounds(r) { return Math.max(1, Math.min(r || 3, IB_CAP - ibRoundsToday())); }
+  function ibCapTxt() { return "You've done " + IB_CAP + " rounds of Wim Hof breathing today, the most Entrain runs in a day. Rest, and come back tomorrow."; }
+  // what a practice's page says above Start: today's rounds, and a block that ended within the hour
+  function ibNote(d, plan) {
+    if (!d || !ibPlan(plan.steps)) return "";
+    var out = [], r = ibRecent();
+    if (d.id === "wim-hof") {
+      var done = ibRoundsToday(), want = pLenOf(d, P.len) || 3;
+      if (done >= IB_CAP) return ibCapTxt();
+      if (IB_CAP - done < want) out.push("You've done " + done + " of today's " + IB_CAP + " rounds, so this session runs " + (IB_CAP - done) + ".");
+    }
+    if (r) out.push(ibRestTxt(r));
+    return out.join(" ");
+  }
+  // a practice's Start refused once today's Wim Hof rounds are done (a restart counts the rounds running now)
+  function ibCapStop(d, again) {
+    if (!d || d.id !== "wim-hof" || ibRoundsToday() + (again === true ? ibRun() : 0) < IB_CAP) return false;
+    ibOpen("cap", d);
+    return true;
+  }
+  /* Ask before another block: what: "restart" (a practice running now), "again" (its end screen's Do it
+     again) or "breathe" (Swim & dive's Start again). True when it asked; the answer carries on from there. */
+  function ibAsk(what, d) {
+    if (IB.pass) { IB.pass = false; return false; }
+    if (what === "restart") {
+      if (!pBusy() || !ibPlan(P.steps)) return false;
+      if (P.def.id === "wim-hof" && ibRoundsToday() + ibRun() >= IB_CAP) { ibOpen("cap", P.def, true); return true; }
+      if (!ibRun() && !ibRecent()) return false;
+    } else if (what === "again") {
+      if (!ibPlan(P.steps) || !ibRecent()) return false;
+    } else if (what === "breathe") {
+      if (!BC.long || B.finder || !ibRecent()) return false;
+    }
+    ibOpen(what, d);
+    return true;
+  }
+  function ibOpen(what, d, running) {
+    IB.ask = what; IB.d = d || null; IB.paused = false;
+    if (what === "restart" || (what === "cap" && running)) {
+      if (P.state === "running") { pPause(); IB.paused = true; }
+    }
+    var r = ibRecent(), name = what === "restart" ? P.def.name : r ? r.name : d ? d.name : "Swim & dive";
+    var gap = " Back-to-back blocks of fast breathing or long breath holds make fainting more likely: rest for an hour, breathing normally, before the next one.";
+    var T = {
+      restart: ["Start again from the top?", (ibRun() ? "You're partway through " + name + "." : "You did " + name + " " + ibAgo(r) + ".") + gap, "Carry on with this one", "Start again anyway"],
+      again: ["Rest first?", "You've just done " + name + "." + gap, "Rest first", "Open it anyway"],
+      breathe: ["Rest first?", "You did " + name + " " + (r ? ibAgo(r) : "just now") + "." + gap, "Rest first", "Start anyway"],
+      cap: ["That's today's rounds", ibCapTxt(), running ? "Carry on with this one" : "OK", ""]
+    }[what];
+    bSetT("#ibTitle", T[0]);
+    bSetT("#ibTxt", T[1]);
+    bSetT("#ibRest", T[2]);
+    bSetT("#ibGo", T[3]);
+    $("#ibGo").hidden = !T[3];
+    if ($("#bStage").classList.contains("focus")) setFocus(false);       // a full-screen stage would hide the question
+    openDialog("#ibModal");
+    setTimeout(function () { try { $("#ibRest").focus({ preventScroll: true }); } catch (e) {} }, 30);
+  }
+  function ibClose(go) {
+    if ($("#ibModal").hidden) return;
+    var what = IB.ask, d = IB.d, paused = IB.paused;
+    IB.ask = ""; IB.d = null; IB.paused = false;
+    closeDialog("#ibModal");
+    if (go && what === "restart") { IB.pass = true; pRestart(); return; }
+    if (go && what === "again" && d) { pIntro(d.id); return; }
+    if (go && what === "breathe") { if (B.state === "idle" || B.state === "done") { bFresh(); bResume(); } return; }
+    if (paused && P.state === "paused") pResume();                    // the session it interrupted carries on
+  }
+  // Breathe: Swim & dive's row says when an intense block ended within the hour
+  function ibBreatheSync() {
+    var row = $("#bIbRow");
+    if (!row) return;
+    var r = BC.long && !(P.usesB && pBusy()) ? ibRecent() : null;
+    row.hidden = !r;
+    if (r) bSetT("#bIbTxt", ibRestTxt(r));
+    var hc = $("#bDiveHc");
+    if (hc) { var h = BC.long ? hcBox(["hold"]) : ""; if (hc.innerHTML !== h) hc.innerHTML = h; }
+  }
+  function ibInit() {
+    $("#ibRest").addEventListener("click", function () { ibClose(false); });
+    $("#ibGo").addEventListener("click", function () { ibClose(true); });
+    $("#ibModal").addEventListener("click", function (e) { if (e.target === this) ibClose(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#ibModal").hidden) ibClose(false); });
   }
   /* ------------------------- breathing guide -------------------------
      A breath is modelled as a lung "level" from 0 (empty) to 1 (full)
@@ -5447,6 +5830,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     $("#bFields").classList.toggle("long", lg);
     $("#bDiveRow").hidden = !lg;
     $("#bDiveSafe").hidden = !lg;
+    ibBreatheSync();                                // a block of intense breathing within the hour; your health check (care.js)
   }
   function sameT(a, b) { return a.inh === b.inh && a.sip === b.sip && a.hold === b.hold && a.exh === b.exh && a.rest === b.rest; }
   // the preset with these timings, else your own saved pattern with them, else "custom";
@@ -5513,6 +5897,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var st = B.state;
     bSetT("#bStart", st === "running" ? "Pause" : st === "paused" ? "Resume" : st === "done" ? "Start again" : "Start breathing");
     $("#bReset").disabled = st === "idle";
+    settleSync(); ibBreatheSync();                  // I need to stop, while it runs (settle.js); rest between blocks (care.js)
   }
   function kindHint(k) {
     if (BC.long) return {
@@ -5577,7 +5962,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();
     else if (B.state === "paused") { if (!bSupGate("resume") && !dvGate("resume")) bResume(); }
-    else if (!bSupGate("start") && !dvGate("start")) { bFresh(); bResume(); }
+    else if (!bSupGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) { bFresh(); bResume(); }   // Start again: rest first? (care.js)
   }
 
   /* ----- a new technique's pattern (sup: true; supporter.js), not yet unlocked on this device: picking it,
@@ -5639,6 +6024,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!gate) { DV.then = ""; DV.back = null; DV.paused = false; }
     if ($("#bStage").classList.contains("focus")) setFocus(false);    // a full-screen stage would hide the dialog
     $("#dvList").innerHTML = SAFE_DIVE.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("");
+    $("#dvHc").innerHTML = hcBox(["hold"], true);                             // your health check's caution (care.js)
     $("#dvGo").hidden = !gate;
     bSetT("#dvClose", gate ? "Not now" : "Close");
     if ($("#dvModal").hidden) { openDialog("#dvModal"); $("#dvModal .modal-card").scrollTop = 0; }
@@ -8411,6 +8797,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (ALIAS[h]) h = ALIAS[h];
     if (h === "unlock" || h.indexOf("unlock/") === 0) { supRoute(h.slice(7), e && e.oldURL); return; }   // the new techniques (supporter.js)
     if (h === "session") { location.replace("#practice"); return; }
+    if (h === "settle") { settleRoute(e && e.oldURL); return; }                // I need to stop, from search (settle.js)
     if (h.indexOf("practice/") === 0) { showView("session"); pIntro(h.slice(9)); return; }
     if (h.indexOf("track/") === 0) { showView("track"); trOpen(h.slice(6)); return; }
     if (h.indexOf("goal/") === 0) { libShow(h.slice(5), ""); return; }
@@ -8516,7 +8903,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "b272250b";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "a40f7232";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -8593,7 +8980,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       A.playing || (!!A.track && A.elapsed > 0) ||                            // a track, playing or paused partway through
       H.state === "on" || H.state === "busy" || H.state === "lost" ||         // a heart sensor, which would have to be paired again
       MIC.on || MIC.busy ||                                                   // the microphone listening for your breathing
-      FD.open || (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
+      FD.open || !$("#stlModal").hidden ||                                    // search, or settling after I need to stop
+      (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
       (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together
       (!!LV.rid && (LV.cook || !!document.querySelector(".lv-ing input:checked, .lv-steps input:checked")));   // a recipe being cooked
   }
@@ -10536,7 +10924,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     for (var r = 1; r <= rounds; r++) {
       var secs = 3 + breaths * cyc;
       st.push(Br(secs, "Round " + r + ": power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1, rest: 0 }, {
-        count: breaths, labels: { "in": "Breathe in fully", out: "Let go" },
+        count: breaths, ib: true, labels: { "in": "Breathe in fully", out: "Let go" },
         hints: { "in": "Belly, then chest.", out: "Let it fall out by itself." },
         lines: [[0, "Round " + num[r - 1] + ". " + breaths + " deep breaths. Fully in, and let go."],
           [Math.round(secs / 2), "Keep going. Fully in, let it go."], [Math.round(secs - 9), "Last few breaths."]] }));
@@ -10970,7 +11358,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         [frac(s[0], 0.4), "You'll set your breathing, see your session, and choose your words. Then you're ready" + (during ? " to start." : " to warm up.")]], { vis: "glow" }));
       if (pChoice(d, "breath") === "power") {
         var power = function (secs, first) {
-          return Br(secs, "Power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1.5, rest: 0 }, { lines: [[0, first ? "Quick, full breaths: in through the nose, out through the mouth, strong and rhythmic." : "Once more: quick, full breaths."],
+          return Br(secs, "Power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1.5, rest: 0 }, { ib: true, lines: [[0, first ? "Quick, full breaths: in through the nose, out through the mouth, strong and rhythmic." : "Once more: quick, full breaths."],
             [Math.round(secs / 2), "Keep it going. Feel the energy rise."]] });
         };
         var brace = { inh: 3, sip: 0, hold: 3, exh: 3, rest: 3 };
@@ -11296,7 +11684,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     },
     {
       id: "nsdr", name: "Body Scan + Theta", min: 20, strength: 2,
-      tone: "relax", lie: true, sensor: "optional",
+      tone: "relax", lie: true, sensor: "optional", hc: ["body"],
       blurb: "A 20-minute guided body scan over a 6 Hz theta beat: a deep rest in the daytime (sometimes called NSDR), or a way into sleep.",
       parts: "Guided body scan · 6 Hz binaural",
       audio: { name: "Body Scan + Theta", band: "Theta", carrier: 250, pts: [[0, 6], [1200, 6]], fade: 20, cat: "relax" },
@@ -11438,6 +11826,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     {
       id: "morning-tonic", name: "Morning Wake-Up", lengths: [10, 15, 20], min: 15, strength: 1,
       tone: "stim", sensor: "optional", noTap: true,
+      hc: function (d) { return pChoice(d, "breath") === "fire" ? ["fast-breath"] : []; },   // breath of fire, if chosen (care.js)
       opt: { ana: 0 },                           // the breath changes pace as it goes: Anapana's reminders would talk over it
       needs: [["sounds", "Headphones", "for the beat, at a low volume"], ["pulse", "Heart sensor", "optional: your heart rate as it rises with the breath"],
         ["move", "Space to stand", "an arm's length all around, for the stretches"]],
@@ -11463,11 +11852,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       how: "Sleep Descent the other way round. Start in bed as you wake, or sitting up: a big yawn and a long, cat-like stretch, then breathing that begins slow, with the out-breath longer, evens out, and quickens, the in-breath leading, while a binaural beat rises from 6 Hz theta through 10 Hz alpha to 16 Hz beta. If you choose breath of fire, two rounds of 30 short, sharp breaths out follow, sitting up. Then stretches in bed (or seated), a few standing poses with drawings to follow, and to finish, daylight, a glass of water and one thing you'd like from today. 10, 15 or 20 minutes.",
       ev: "The grogginess after waking (sleep inertia) usually fades within 15 to 30 minutes, and a 2019 review found no wake-up routine with clear evidence of speeding that up: sound looked promising, light made people feel more alert, and movement hadn't been tested. Beta binaural beats (16 and 24 Hz) improved vigilance and mood compared with theta and delta beats. Fast yoga breathing shifts the heart rhythm towards arousal, the opposite of slow breathing, and a session of it improved attention in 11- and 12-year-olds. Morning daylight is the body clock's strongest signal that the day has begun. This sequence itself hasn't been tested.",
       cite: "Hilditch & McHill 2019 · Lane et al. 1998 · Raghuraj et al. 1998 · Telles et al. 2019 · Brown et al. 2022",
-      caution: "Breath of fire isn't for everyone: leave it out if you're pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks, and go back to easy breathing if you feel dizzy or tingly. Sit up and stand slowly if you tend to feel faint when you get up."
+      caution: "Breath of fire isn't for everyone: leave it out if you're pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks, and go back to easy breathing if you feel dizzy or tingly. Never do it in or near water, in the bath or while driving, and stop if you feel dizzy: fast breathing can make you faint. Sit up and stand slowly if you tend to feel faint when you get up."
     },
     {
       id: "sport", name: "Sports Performance", lengths: [5, 10], min: 10, strength: 2,
       tone: "stim", sensor: "optional", sensorWhy: "optional: your heart rate as you get ready and through the session", pace: true, paceSplit: 0.4, noTap: true,
+      hc: function (d) { return pChoice(d, "when") !== "during" && pChoice(d, "breath") === "power" ? ["fast-breath"] : []; },   // the power breaths, if chosen (care.js)
       opt: { ana: 0 },                           // the cues while you train take the place of Anapana's
       optNote: "Each sport brings its own settings; change any of them, and pick the sport again to bring them back.",
       phonesWhy: "for the beat and the cues: during a session, indoors (an indoor trainer for cycling) or away from traffic, with the volume low enough to hear what's around you",
@@ -11517,7 +11907,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       how: "Pick your sport, and its settings come with it, then change any of them. Before: five or ten minutes to get ready, then your warm-up. Slow breathing at your resonance pace settles nerves while keeping you alert (for weight training: power breaths, then the bracing breath you'll use under a heavy weight), then you rehearse your session in your mind, and choose a few words of your own for when it gets hard, while a binaural beat rises from 10 Hz alpha to 15 Hz beta. During, if you choose it: the beat carries on, a cue comes every five minutes or so (technique, breathing and your words), and a soft tick can set your cadence until you tap Session over (cycling on an indoor trainer, running and rowing indoors or away from traffic); for weight training, tap Set done after each set and rest with slow breathing until the next.",
       ev: "Motivational self-talk, practised for two weeks, lengthened cycling time to exhaustion by about 18% and made the effort feel easier; across 32 studies, self-talk improved performance, motivational words most for strength and endurance. Imagery improved sports performance with a medium effect across studies. Runners kept going longer with a metronome or music matched to their cadence than in silence. Psyching up before lifting may raise strength, though the evidence is tentative. Binaural beats in sport are barely studied: 15 Hz beta beats with music in the rests between rounds helped kickboxers strike faster, but the trial couldn't be blinded, and a 10 Hz beat with music changed nothing measurable for recreational runners. Music itself helps a little.",
       cite: "Blanchfield et al. 2014 · Hatzigeorgiadis et al. 2011 · Simonsmeier et al. 2021 · Bood et al. 2013 · Tod et al. 2003 · Jebabli et al. 2025 · Park et al. 2026 · Terry et al. 2020",
-      caution: "Power breaths can make you light-headed: do them sitting or standing still, and go back to easy breathing if you feel dizzy. Holding your breath to brace raises blood pressure sharply: with high blood pressure, heart disease or an eye condition such as glaucoma, breathe out through the effort instead. During a session, keep the volume low enough to hear what's around you, and use headphones only where it's safe: for cycling, on an indoor trainer, never on the road."
+      caution: "Power breaths can make you light-headed: do them sitting or standing still, never in or near water, in the bath or while driving, and stop and go back to easy breathing if you feel dizzy. Holding your breath to brace raises blood pressure sharply: with high blood pressure, heart disease or an eye condition such as glaucoma, breathe out through the effort instead. During a session, keep the volume low enough to hear what's around you, and use headphones only where it's safe: for cycling, on an indoor trainer, never on the road."
     },
     {
       id: "creative", name: "Creative Flow", lengths: [15, 20, 30], min: 20, strength: 1,
@@ -11550,7 +11940,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     },
     {
       id: "mindful-sex", name: "Mindful Sex", lengths: [20, 30, 45], min: 30, open: true, strength: 2,
-      tone: "hr", sensor: "optional", sensorWhy: "optional: your heart rate as it rises and settles", pace: true, paceSplit: 0.4, noTap: true,
+      tone: "hr", sensor: "optional", sensorWhy: "optional: your heart rate as it rises and settles", pace: true, paceSplit: 0.4, noTap: true, hc: ["body"],
       opt: { ana: 0 },                           // its reminders take the place of Anapana's
       optNote: "Each part is a choice of its own, kept for it.",
       phonesWhy: "for the beat: for two of you, a splitter or your phone's dual audio sends it to both pairs; or turn it off under Options",
@@ -11589,7 +11979,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     /* ===== meditation and mindfulness ===== */
     {
       id: "body-scan", name: "Body Scan", lengths: [10, 20, 30], min: 10, strength: 1,
-      tone: "relax", lie: true, voice: true,
+      tone: "relax", lie: true, voice: true, hc: ["body"],
       blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation as it is.",
       build: function (min) { return bodyScan(min, "wake"); },
       how: "Sixteen stops, from the feet up, each with a few spoken cues. The body map shows where you are. Choose 10, 20 or 30 minutes.",
@@ -11709,7 +12099,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     /* ===== relaxation and sleep ===== */
     {
       id: "pmr", name: "Progressive Muscle Relaxation", min: 12, strength: 2,
-      tone: "relax", lie: true, voice: true,
+      tone: "relax", lie: true, voice: true, hc: ["body"],
       blurb: "Tense each muscle group for a few seconds, then let go and feel the difference. Fourteen groups, hands to feet.",
       build: function () {
         var s = [G(50, "Get comfortable", ["Lie down or sit with your back supported.",
@@ -11727,7 +12117,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     {
       id: "autogenic", name: "Autogenic Training", lengths: [5, 10, 15, 20], min: 10, strength: 2,
       tone: "relax", voice: true, sensor: "optional", sensorWhy: "optional: your heart rate and coherence as feedback, as in NASA's autogenic-feedback training",
-      pace: true, paceSplit: 0.4, opt: { audio: false },
+      pace: true, paceSplit: 0.4, opt: { audio: false }, hc: ["body"],
       blurb: "Schultz's standard autogenic training, the method NASA adapted for astronauts: short phrases said silently, for heaviness, warmth, a calm heartbeat, the breath, a warm solar plexus and a cool forehead, until your body follows. All six at once, or week by week as in the classic course.",
       parts: "Paced breathing · heaviness · warmth · heartbeat · breath · solar plexus · cool forehead · coming back · heart feedback",
       audio: { name: "Autogenic Training", band: "Theta", carrier: 200, fade: 8, cat: "relax" },
@@ -11847,9 +12237,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     },
     {
       id: "kapalabhati", name: "Kapalabhati", min: 6, strength: 1,
-      tone: "stim", confirm: true,
+      tone: "stim", confirm: true, hc: ["fast-breath"],
       blurb: "Skull-shining breath: short, sharp exhales from the belly with passive inhales, in three rounds. An energising breath, for a lift in alertness.",
-      caution: "Skip this one if you are pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks. Do it seated, on an empty stomach, and stop if you feel dizzy or tingly.",
+      caution: "Skip this one if you are pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks. Do it seated, on an empty stomach, and stop if you feel dizzy or tingly. Never do it in or near water, in the bath or while driving: fast breathing can make you faint.",
       build: function () {
         var rec = function (n) {
           return G(40, "Recover " + n, ["Breathe slowly and naturally.", "Notice the tingling and the energy. Let the breath settle."], { vis: "glow" });
@@ -11871,18 +12261,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     },
     {
       id: "wim-hof", name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1,
-      tone: "stim", confirm: true, sensor: "optional", open: true,
+      tone: "stim", confirm: true, sensor: "optional", open: true, hc: ["fast-breath", "hold"],
       variant: { key: "breaths", label: "Breaths per round", opts: [[30, "30"], [40, "40"]], def: 30 },
       blurb: "Rounds of deep, full breaths, then a relaxed hold on empty lungs for as long as is comfortable, then one recovery breath held for 15 seconds.",
       caution: "Never do this in or near water, in a bath, while driving or standing: the breathing can make you faint without warning, and people have drowned combining it with water. Sit or lie down. Skip it if you are pregnant, or have epilepsy, heart disease, high blood pressure, or a history of fainting or panic attacks. Tingling and light-headedness are common; stop if you feel unwell.",
-      build: function (rounds, breaths) { return wimHof(rounds, breaths); },
-      how: "Each round is 30 (or 40) deep breaths, fully in through the belly and chest and let go, about 2.5 seconds each. Then breathe out and hold with empty lungs, and tap Breathe in when you feel the urge; the hold ends by itself at 3 minutes. A full recovery breath held for 15 seconds closes the round. Your hold times are shown at the end.",
+      build: function (rounds, breaths) { return wimHof(ibWimRounds(rounds), breaths); },    // eight rounds a day at most (care.js)
+      how: "Each round is 30 (or 40) deep breaths, fully in through the belly and chest and let go, about 2.5 seconds each. Then breathe out and hold with empty lungs, and tap Breathe in when you feel the urge; the hold ends by itself at 3 minutes. A full recovery breath held for 15 seconds closes the round. Your hold times are shown at the end. Entrain runs at most eight rounds a day, and Restart and Do it again ask first within an hour of a block.",
       ev: "Men trained in the method (breathing, cold exposure and meditation) released more adrenaline and had a weaker inflammatory response and fewer flu-like symptoms after an endotoxin injection than untrained controls. A follow-up found the breathing alone produced the anti-inflammatory effect. A 2024 systematic review of eight small trials judged the risk of bias high and the evidence not yet strong enough to recommend the method. It is activating, raising adrenaline, rather than calming.",
       cite: "Kox et al. 2014 · Zwaag et al. 2022 · Almahayni & Hammond 2024"
     },
 
     {
-      id: "tapping", name: "Tapping", tapping: true, open: true, min: 7, strength: 1, tone: "ther",
+      id: "tapping", name: "Tapping", tapping: true, open: true, min: 7, strength: 1, tone: "ther", hc: ["body"],
       variant: { key: "rounds", label: "Rounds", opts: [[2, "2"], [3, "3"]], def: 2 },
       blurb: "Rate what's bothering you, then tap nine acupressure points with your fingertips while saying a short phrase. Two or three rounds, then rate it again.",
       caution: "Tapping isn't a treatment for trauma or a mental-health condition. If strong feelings or memories come up, stop, breathe slowly and look around the room, and talk to a professional if it keeps happening. Tap gently.",
@@ -12532,6 +12922,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   // start this practice again from the top, at the length it was started with
   function pRestart() {
     if (!pBusy() || !P.def) return;
+    if (ibAsk("restart")) return;                      // fast breathing again from the top: rest first? (care.js)
     P.view = P.def; P.len = P.runLen;
     pStart(true);
     toast("Started again from the top.", { over: true, ms: 2500 });
@@ -13061,6 +13452,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       return;
     }
     if (d.confirm && again !== true && !$("#sOk").checked) { $("#sOk").focus(); return; }
+    if (ibCapStop(d, again)) return;                   // today's Wim Hof rounds are done (care.js)
     /* A practice can begin with another, chosen on its page ("Begin with", choice "pre"): that one runs
        first, and its end screen leads on to this one (P.chain). Carrying on (P.chainGo) or a restart skips it. */
     var cont = P.chainGo, pre = again !== true && !cont && !resume ? pChoice(d, "pre") : "";
@@ -13234,8 +13626,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
     if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
+    // fast breathing that ran: an hour's rest before the next block, and Wim Hof's rounds for the day (care.js)
+    var ib = P.steps.filter(function (s) { return ibStep(s) && s.at < T; }).length;
+    if (ib) { r.ib = true; ibEnded(d.name); }
     if (T >= 60) r.at = Date.now();                    // the end screen tells this one from the earlier ones by it
-    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
+    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg, ib: r.ib, wh: d.id === "wim-hof" && ib ? ib : undefined,
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
       note: notes.join(", ") || undefined });
@@ -13297,6 +13692,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     el.querySelector(".si-steps").innerHTML = pStepsHtml(d, plan);
     pGoSync(d, plan);
     pPreRow(d);
+    pCareSync(d, plan);
+  }
+  // your health check's caution, and a block of fast breathing within the hour or today's rounds (care.js)
+  function pCareSync(d, plan) {
+    var hs = $("#sIntro .hc-slot"), nt = $("#sIbNote"), t = ibNote(d, plan), h = hcBox(hcKindsOf(d));
+    if (hs && hs.innerHTML !== h) hs.innerHTML = h;
+    if (nt) { nt.hidden = !t; bSetT("#sIbNote", t); }
   }
   function pIntro(id) {
     var d = pDef(id);
@@ -13388,11 +13790,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its binaural beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
+        '<div class="hc-slot">' + hcBox(hcKindsOf(d)) + "</div>" +
       "</div>" +
       '<div class="si-side">' +                     // Start first: above the options on a computer, last on a phone (order)
       '<div class="si-bar">' +
-        (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
+        (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> ' + (hcCaution(hcKindsOf(d)) ? "I've read the cautions, and I choose to go ahead" : "None of the cautions apply to me") + "</label>" : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
+        '<p class="si-ib" id="sIbNote"' + (ibNote(d, plan) ? "" : " hidden") + ">" + esc(ibNote(d, plan)) + "</p>" +
         '<button class="btn primary si-go" id="sGo"' + (d.confirm && !pSupWho(d) ? " disabled" : "") + ">" + pGoHtml(d, plan) + "</button>" +
         '<p class="si-bar-note" id="sSupNote"' + (pSupWho(d) ? "" : " hidden") + ">" + SUP_NOTE + "</p>" +
       "</div>" +
@@ -13846,7 +14250,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     el.innerHTML = h;
     $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
     $("#ses").dataset.state = "done";
-    $("#sdAgain").addEventListener("click", function () { pIntro(d.id); });
+    $("#sdAgain").addEventListener("click", function () { if (!ibAsk("again", d)) pIntro(d.id); });   // fast breathing again: rest first? (care.js)
     if (r.stress) stressWire(r);
     var cg = $("#sdChain");
     if (cg) cg.addEventListener("click", function () {     // on to the practice this one began
@@ -14160,6 +14564,146 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     $("#sdHow").addEventListener("click", function () { sdHow(this.getAttribute("aria-expanded") !== "true"); });
     if (SD.ro) SD.ro.disconnect();
     if (window.ResizeObserver) { SD.ro = new ResizeObserver(function () { sdDraw(); }); SD.ro.observe(cv); }
+  }
+  /* ------------------------------ I need to stop ------------------------------
+     Always in reach while a practice or the breathing guide runs: one tap fades every sound out in
+     half a second, ends the session (into the history, as an ended one, when it was long enough) and
+     opens Settle: eyes open, five slow breaths with a long breath out paced on the screen, the
+     5-4-3-2-1 grounding a tap away, and a line on talking to someone if it keeps happening. Free, like
+     every caution. Search finds it too (#settle).
+     A feature that plays through a sound bus of its own adds a quick fade to SETTLE_HUSH.
+  -------------------------------------------------------------------------------- */
+
+  var SETTLE = { raf: 0, frameAt: 0, t0: 0, n: 5, inh: 4, exh: 6, c: null, w: 0, h: 0, key: "", from: "" };
+  var SETTLE_FADE = 0.5;                  // seconds: every sound gone in half a second
+  var SETTLE_HUSH = [];                   // function (secs) for sounds of their own: each fades its own out
+
+  // every sound out at once: speech now, and the rest faded over secs
+  function settleHush(secs) {
+    pHush();
+    if (A.playing) fadeOutAndStop("Stopped.", secs);                // a track, or a practice's beat
+    var ctx = A.ctx;
+    if (ctx) {
+      var now = ctx.currentTime;
+      [AMB.out, RHY.gain, P.bus, B.bus].forEach(function (g) {       // background sound, the berimbau, bells and ticks, breath cues
+        if (!g) return;
+        try { g.gain.cancelScheduledValues(now); g.gain.setValueAtTime(g.gain.value, now); g.gain.linearRampToValueAtTime(0, now + secs); } catch (e) {}
+      });
+      // the bells come back for the next practice once any tick already queued has passed
+      if (P.bus) try { P.bus.gain.setValueAtTime(0.55, now + secs + 2.5); } catch (e) {}
+    }
+    SETTLE_HUSH.forEach(function (f) { try { f(secs); } catch (e) {} });
+  }
+  // end whatever runs, quiet everything, and settle
+  function settleNow() {
+    var d = pBusy() ? P.def : null;
+    if (d) {
+      pFinish(true, true);                       // ended: no bells, no end screen
+      if (curView === "session") pIntro(d.id);   // its own page waits underneath
+    }
+    if (B.state === "running" || B.state === "paused") bStop();      // the breathing guide, or the resonance test
+    settleHush(SETTLE_FADE);
+    settleOpen();
+  }
+  function settleOpen() {
+    if ($("#bStage").classList.contains("focus")) setFocus(false);   // a full-screen stage would hide it
+    SETTLE.t0 = bNow() + 1; SETTLE.key = ""; SETTLE.frameAt = 0;
+    if ($("#stlModal").hidden) openDialog("#stlModal");
+    $("#stlModal .modal-card").scrollTop = 0;
+    settleSize();
+    cancelAnimationFrame(SETTLE.raf);
+    SETTLE.raf = requestAnimationFrame(settleLoop);
+    setTimeout(function () { try { $("#stlDone").focus({ preventScroll: true }); } catch (e) {} }, 30);
+  }
+  function settleClose() {
+    cancelAnimationFrame(SETTLE.raf); SETTLE.raf = 0;
+    if (!$("#stlModal").hidden) closeDialog("#stlModal");
+  }
+  // where the breath is: { n: breath 1 to 5 (0 before the first), in, lv: 0 to 1, done }
+  function settleAt() {
+    var t = bNow() - SETTLE.t0, cyc = SETTLE.inh + SETTLE.exh;
+    if (t < 0) return { n: 0, in: false, lv: 0, done: false };
+    var n = Math.floor(t / cyc);
+    if (n >= SETTLE.n) return { n: SETTLE.n, in: false, lv: 0, done: true };
+    var ct = t - n * cyc, inn = ct < SETTLE.inh;
+    return { n: n + 1, in: inn, lv: inn ? bEase(ct / SETTLE.inh) : 1 - bEase((ct - SETTLE.inh) / SETTLE.exh), done: false };
+  }
+  function settleWords(s) {
+    var key = s.done ? "done" : s.n + (s.in ? "i" : "o");
+    if (key === SETTLE.key) return;
+    SETTLE.key = key;
+    bSetT("#stlCue", s.done ? "Breathe at your own pace now" : !s.n ? "With the circle: in through your nose…" : s.in ? "Breathe in…" : "And a long, slow breath out…");
+    bSetT("#stlN", s.done ? "Five slow breaths. Well done." : s.n ? "Breath " + s.n + " of " + SETTLE.n : "Five slow breaths");
+  }
+  function settleSize() {
+    var cv = $("#stlCanvas");
+    if (!cv || !cv.getContext) return;
+    var r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+    SETTLE.w = r.width; SETTLE.h = r.height;
+    cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+    SETTLE.c = cv.getContext("2d");
+    SETTLE.c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  // a circle that swells as you breathe in and slowly shrinks as you breathe out; still with reduced motion
+  function settleDraw(s) {
+    var c = SETTLE.c, W = SETTLE.w, Hh = SETTLE.h;
+    if (!c || !W || !Hh) return;
+    c.clearRect(0, 0, W, Hh);
+    var cx = W / 2, cy = Hh / 2, R = Math.min(W, Hh) / 2 - 6, lv = RM ? 0.5 : s.lv;
+    var r = R * (0.42 + 0.5 * lv), col = s.in ? BCOL["b-in"] || "#5eead4" : BCOL["b-out"] || "#a78bfa";
+    var g = c.createRadialGradient(cx, cy, r * 0.2, cx, cy, Math.min(R + 4, r * 1.25));
+    g.addColorStop(0, rgba(col, 0.34)); g.addColorStop(0.78, rgba(col, 0.16)); g.addColorStop(1, rgba(col, 0));
+    c.fillStyle = g;
+    c.beginPath(); c.arc(cx, cy, Math.min(R + 4, r * 1.25), 0, Math.PI * 2); c.fill();
+    c.strokeStyle = rgba(col, 0.75); c.lineWidth = 2.5;
+    c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.stroke();
+    c.strokeStyle = rgba(BCOL.line || "#28334f", 1); c.lineWidth = 1; c.setLineDash([3, 5]);
+    c.beginPath(); c.arc(cx, cy, R * 0.92, 0, Math.PI * 2); c.stroke();
+    c.setLineDash([]);
+  }
+  function settleLoop(ts) {
+    SETTLE.raf = 0;
+    if ($("#stlModal").hidden) return;
+    var s = settleAt();
+    settleWords(s);
+    if (frameDue(SETTLE, ts)) settleDraw(s);
+    if (!s.done) SETTLE.raf = requestAnimationFrame(settleLoop);
+    else settleDraw(s);
+  }
+  // the 5-4-3-2-1 grounding, started straight away
+  function settleGround() {
+    settleClose();
+    var d = pDef("grounding");
+    if (!d) return;
+    try { history.pushState(null, "", "#practice/grounding"); } catch (e) {}
+    showView("session");
+    pIntro("grounding");
+    if (!pBusy()) pStart();
+  }
+  // #settle, from search: over the page you were on, which keeps its address (search's result takes the
+  // panel's place in the history, so there's no address before it to read: the last one seen is kept)
+  function settleRoute(from) {
+    var back = from && from.indexOf("#") >= 0 ? from.slice(from.indexOf("#")) : SETTLE.from;
+    if (!curView) showView("home");
+    try { history.replaceState(null, "", back && back !== "#settle" ? back : location.pathname + location.search); } catch (e) {}
+    settleNow();
+  }
+  // the control on a running practice and on the breathing guide
+  function settleSync() {
+    var b = $("#bOut");
+    if (b) b.hidden = !(B.state === "running" || B.state === "paused") || (P.usesB && pBusy());
+  }
+  function settleInit() {
+    $("#sOut").addEventListener("click", settleNow);
+    $("#bOut").addEventListener("click", settleNow);
+    $("#stlDone").addEventListener("click", settleClose);
+    $("#stlGround").addEventListener("click", settleGround);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#stlModal").hidden) settleClose(); });
+    window.addEventListener("resize", function () { if (!$("#stlModal").hidden) { settleSize(); settleDraw(settleAt()); } });
+    var seen = function () { if (location.hash !== "#settle") SETTLE.from = location.hash; };
+    window.addEventListener("hashchange", seen);
+    seen();
+    settleSync();
   }
   /* ------------------------------- the library -------------------------------
      Goal sections (Sleep, Calm, Focus, Energy, Recover, Reflect) holding practices, breathing
@@ -14513,7 +15057,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var g = pOptDefaults(), own = stOwn(), speech = !!window.speechSynthesis;
     var names = own.map(function (d) { return d.name; });
     var list = names.length > 1 ? names.slice(0, -1).join(", ") + " and " + names[names.length - 1] : names[0];
-    $("#stBody").innerHTML =
+    $("#stBody").innerHTML = hcCard() +
       '<section class="st-card" aria-labelledby="stP"><h2 id="stP">Practices</h2>' +
         '<p class="st-note">What every practice starts with. A practice can change these for itself under Options on its own page.</p>' +
         pToggle("stVoice", "Spoken guidance", g.voice, speech ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !speech) +
@@ -14552,6 +15096,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     stWire();
     fbWire();
     supStWire();
+    hcStWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }
@@ -16174,6 +16719,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("app", "New techniques", "Settings · a donation of €1 or more unlocks them on this device",
       ["The techniques from the brain-wave guide open with a donation of €1 or more on Ko-fi, once on each device: your device code, the activation code from the email, and what it unlocks."], "#st-supporter",
       { ic: "cup", col: "var(--stim)", w: 1, tags: "unlock donation donate supporter support kofi ko fi activation code device brain wave guide" }));
+    out.push(fdEntry("app", "Health check", "Settings · optional, nine questions, kept on this device",
+      ["Tick what applies to you, such as a heart condition, high or low blood pressure, epilepsy, pregnancy, panic attacks, trauma, psychosis or asthma, and the practices it affects show a caution written for you."], "#st-health",
+      { ic: "heart", col: "var(--danger)", w: 1.1, tags: "health safety screening screen medical condition heart blood pressure epilepsy seizure pregnant pregnancy panic trauma ptsd psychosis dissociation asthma doctor" }));
+    out.push(fdEntry("app", "I need to stop", "Settle · ends what's running and calms you down",
+      ["One tap ends a practice or a breathing session, fades the sound in half a second and opens Settle: eyes open, five slow breaths out, and the 5-4-3-2-1 grounding."], "#settle",
+      { ic: "leaf", col: "var(--relax)", w: 1.1, tags: "settle stop end panic overwhelmed overwhelm distress distressed upset anxious anxiety dizzy calm down grounding help quit exit" }));
     out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
       ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
       { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));
@@ -17508,7 +18059,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   // is dropped as it loads, and a session without its kind, time and length is dropped whole.
   var H_FIELDS = { k: "string", id: "string", n: "string", band: "string", note: "string", at: "number", secs: "number",
     rate: "number", beat: "number", hr0: "number", hr1: "number", hrAvg: "number", swing: "number", coh: "number", best: "number", rm: "number", felt: "number",
-    full: "boolean", est: "boolean" };
+    full: "boolean", est: "boolean", ib: "boolean", wh: "number" };      // ib: a block of intense breathing; wh: Wim Hof's rounds (care.js)
   var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
     for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
@@ -17533,8 +18084,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* ----- what each kind of session logs ----- */
   // a breathing session on the guide (not one a practice is running, and not the resonance test)
   function hBreath(secs, full) {
+    if (BC.long && !P.usesB && !B.finder && secs > 0) ibEnded(preset(BC.pattern) ? patName(preset(BC.pattern)) : "long breath holds");   // rest before the next (care.js)
     if (P.usesB || B.finder || secs < 60) return;
-    var e = { k: "breath", id: BC.pattern, secs: secs, full: full, rate: +(60 / cycleOf(BC)).toFixed(1) }, mine = mpGet(BC.pattern);
+    var e = { k: "breath", id: BC.pattern, secs: secs, full: full, rate: +(60 / cycleOf(BC)).toFixed(1), ib: BC.long || undefined }, mine = mpGet(BC.pattern);
     if (mine) e.n = mine.name;                   // your own pattern keeps its name here even once it's deleted
     var s = B.hr;
     if (s.length >= 10) {
@@ -18074,6 +18626,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       bSetT("#qkFind", "Last result: " + H.find.best + " breaths a minute, " + d);
     } else bSetT("#qkFind", "A 10-minute test with a heart sensor");
     shellSensor();
+    hcOfferSync();                      // the health check, until it's answered or put off (care.js)
     pSuggest();
     todayRender();
     drawHomeWave();
@@ -18157,7 +18710,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock"];
   // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
   var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
-  var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+)$/;
+  var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+|health)$/;
   var BK_MAX = 5e6;                       // bytes: more than a browser's whole storage for one site
   var BK = { pending: null, persisted: null, asked: false };
 
@@ -18324,7 +18877,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* ----- the card in Settings ----- */
   function bkCard() {
     return '<section class="st-card" id="st-data" aria-labelledby="stD"><h2 id="stD">Your data</h2>' +
-      '<p class="st-note">Your history, favourites, routines, breathing patterns, settings and any reflections you keep are stored in this browser, on this device, and never sent anywhere. A backup is one file of all of it, to keep safe or to move to another phone.</p>' +
+      '<p class="st-note">Your history, favourites, routines, breathing patterns, settings, health check and any reflections you keep are stored in this browser, on this device, and never sent anywhere. A backup is one file of all of it, to keep safe or to move to another phone.</p>' +
       '<p class="st-note" id="stKeepTxt" hidden></p>' +
       '<div class="st-data-act"><button class="btn primary small" id="stSave">Save a backup</button><button class="btn small" id="stLoadBtn">Restore from a backup</button></div>' +
       '<input type="file" id="stLoad" accept=".json,application/json" hidden>' +
@@ -18388,7 +18941,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   [["the new techniques", supInit],                         // first: whether this device is unlocked decides how Breathe opens
     ["the player", playerInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
-    ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit], ["the library", libInit],
+    ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

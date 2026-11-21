@@ -84,6 +84,7 @@
     if (ALIAS[h]) h = ALIAS[h];
     if (h === "unlock" || h.indexOf("unlock/") === 0) { supRoute(h.slice(7), e && e.oldURL); return; }   // the new techniques (supporter.js)
     if (h === "session") { location.replace("#practice"); return; }
+    if (h === "settle") { settleRoute(e && e.oldURL); return; }                // I need to stop, from search (settle.js)
     if (h.indexOf("practice/") === 0) { showView("session"); pIntro(h.slice(9)); return; }
     if (h.indexOf("track/") === 0) { showView("track"); trOpen(h.slice(6)); return; }
     if (h.indexOf("goal/") === 0) { libShow(h.slice(5), ""); return; }
@@ -266,7 +267,8 @@
       A.playing || (!!A.track && A.elapsed > 0) ||                            // a track, playing or paused partway through
       H.state === "on" || H.state === "busy" || H.state === "lost" ||         // a heart sensor, which would have to be paired again
       MIC.on || MIC.busy ||                                                   // the microphone listening for your breathing
-      FD.open || (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
+      FD.open || !$("#stlModal").hidden ||                                    // search, or settling after I need to stop
+      (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
       (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together
       (!!LV.rid && (LV.cook || !!document.querySelector(".lv-ing input:checked, .lv-steps input:checked")));   // a recipe being cooked
   }
