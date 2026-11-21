@@ -164,14 +164,21 @@
     fdLearn(out);
     return out;
   }
-  // Learn: headings, paragraphs, list items and references (fdInit gives each an id to land on)
-  var FD_LEARN = "#v-learn h2, #v-learn h3, #v-learn .prose p, #v-learn .prose li, #v-learn .refs li";
+  // Learn: headings, paragraphs, list items, the rows of its techniques at a glance, and references (fdInit gives each an id to land on)
+  var FD_LEARN = "#v-learn h2, #v-learn h3, #v-learn .prose p, #v-learn .prose li, #v-learn tr.ln-row, #v-learn .refs li";
   function fdLearn(out) {
     var head = "Learn";
     document.querySelectorAll(FD_LEARN).forEach(function (el) {
       if (el.closest(".toc") || !el.id) return;
       var tag = el.tagName, txt = fdTxt(el);
       if (!txt) return;
+      if (tag === "TR") {                  // a technique: its name, then its aim, evidence and where Entrain has it
+        var name = fdTxt(el.querySelector("th b")), sense = fdTxt(el.parentNode.querySelector(".ln-sense")),
+          cells = [fdTxt(el.querySelector("th small"))].concat([].slice.call(el.querySelectorAll("td")).map(fdTxt));
+        out.push(fdEntry("learn", name, "Learn · " + head + (sense ? " · " + sense : ""), [cells.filter(Boolean).join(" · ")], "#" + el.id,
+          { ic: "learn", w: 0.12 }));     // low: a practice that only mentions the word still comes first ("chewing" finds the Mindful Meal)
+        return;
+      }
       if (tag === "H2" || tag === "H3") {
         if (txt === "References") { head = txt; return; }
         head = txt;

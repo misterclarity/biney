@@ -279,6 +279,7 @@
     else if (curView === "practice") pRenderLib();
     else if (curView === "session" && P.view && !$("#sIntro").hidden) pIntroReplan(P.view);
     else if (curView === "track") trSync();
+    lnMark();                                                 // Learn's links to new techniques (learn.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }

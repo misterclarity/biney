@@ -607,7 +607,7 @@
 
   /* ---------- learn ---------- */
   .learn{display:grid;grid-template-columns:200px minmax(0,1fr);gap:40px;align-items:start}
-  .toc{position:sticky;top:96px;display:grid;gap:2px}
+  .toc{position:sticky;top:96px;display:grid;gap:2px;max-height:calc(100vh - 112px);overflow-y:auto;scrollbar-width:thin}   /* a short window scrolls the list */
   .toc a{display:block;padding:7px 12px;border-radius:9px;font-size:13.5px;font-weight:650;color:var(--text-dim)}
   .toc a:hover{background:var(--panel);color:var(--text)}
   .prose{color:var(--text-dim);font-size:15.5px;max-width:70ch;line-height:1.7}
@@ -626,6 +626,24 @@
   th{font-size:12.5px;color:var(--text-faint);font-weight:750;border-bottom-color:var(--line)}
   td:first-child{color:var(--text);font-weight:700;white-space:nowrap}
   .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  /* Learn's own tables (brain-wave bands, techniques by sense, signals): a row's name and its note in the first column */
+  .ln-tbl tbody th{font-size:14px;color:var(--text);font-weight:700;white-space:normal;border-bottom-color:var(--line-soft)}
+  .ln-tbl tbody th small{display:block;margin-top:2px;font-size:12.5px;font-weight:500;color:var(--text-faint);line-height:1.45}
+  .ln-tbl tbody th b{font-weight:700}
+  #lnBands tbody th small{white-space:nowrap}
+  .ln-tbl td{line-height:1.5}
+  .ln-tbl .ln-sense th{padding:20px 12px 8px;font-size:12px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border-bottom-color:var(--line)}
+  .ln-tbl tbody:first-of-type .ln-sense th{padding-top:12px}
+  .ln-lo{color:var(--text-faint)}
+  .ln-tbl .sup-ic{margin-left:5px;vertical-align:-2px}
+  .prose h2[id],.prose p[id],.prose li[id],.prose tr[id]{scroll-margin-top:84px}
+  @media (max-width:560px){
+    .ln-tbl{font-size:13px}
+    .ln-tbl th,.ln-tbl td{padding:9px 7px}
+    .ln-tbl th:first-child,.ln-tbl td:first-child{padding-left:0}
+    .ln-tbl tbody th{font-size:13.5px}
+    .ln-tbl .ln-sense th{padding:16px 7px 6px 0}
+  }
   .refs-sec{margin-top:48px;scroll-margin-top:84px}
   .refs-sec h3{font-size:18px;font-weight:780;color:var(--text);margin-bottom:12px}
   ol.refs{color:var(--text-dim);font-size:13.5px;padding-left:22px;margin:0}
@@ -642,7 +660,7 @@
   @media (max-width:900px){
     .learn{grid-template-columns:minmax(0,1fr);gap:8px}
     .toc{
-      position:static;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+      position:static;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;max-height:none;
       margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(16px,env(safe-area-inset-left,0px)) 6px;
     }
     .toc::-webkit-scrollbar{display:none}
