@@ -110,7 +110,7 @@
     var it = hKey(e) ? libItem(hKey(e)) : null;
     if (e.k === "test") return { name: "Resonance test", href: "#resonance-test", icon: "target", col: "var(--hr)", goal: "" };
     if (e.k === "breath" && e.id === "custom") return { name: "Your own breathing pattern", href: "#breathe", icon: "breathe", col: "var(--b-in)", goal: "" };
-    if (it) return { name: it.name, href: it.href, icon: it.icon, col: it.col, goal: it.goal };
+    if (it) return { name: it.name, href: it.href, icon: it.icon, col: it.col, goal: it.goal, sup: it.sup };
     // a routine you've since deleted, or something renamed
     return { name: e.n || "A session", href: e.k === "practice" ? "#practice" : e.k === "breath" ? "#breathe" : "#home", icon: e.k === "breath" ? "breathe" : e.k === "track" ? "sounds" : "practice", col: "var(--accent)", goal: "" };
   }
@@ -189,7 +189,7 @@
     var it = hItem(e);
     return '<li class="hi-e" style="--pcol:' + it.col + '"><a href="' + esc(it.href) + '">' +
       '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + it.icon + '"/></svg></span>' +
-      '<span class="hi-b"><b>' + esc(it.name) + '</b><span>' + esc(hDetail(e)) + "</span></span>" +
+      '<span class="hi-b"><b>' + esc(it.name) + (it.sup ? supTag() : "") + '</b><span>' + esc(hDetail(e)) + "</span></span>" +
       '<time datetime="' + new Date(e.at).toISOString() + '">' + (when ? hWhen(e.at) : hTime(e.at)) + "</time></a></li>";
   }
   function hDays(w) {

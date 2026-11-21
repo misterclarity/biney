@@ -6,8 +6,10 @@
   ---------------------------------------------------------------------------- */
 
   // about this device rather than about you: the headphone check, the install and offline notes,
-  // whether a heart sensor has ever connected here, and when this device last saved a backup
-  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup"];
+  // whether a heart sensor has ever connected here, when this device last saved a backup, and its
+  // device code and unlock (supporter.js): a donation unlocks one device, so a backup never carries
+  // them to another, and a restore here keeps them
+  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock"];
   // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
   var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
   var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+)$/;

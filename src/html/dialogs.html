@@ -61,6 +61,38 @@
 </div>
 
 
+<!-- ============ NEW TECHNIQUES: unlocked on this device with a donation (supporter.js) ============ -->
+<div class="modal" id="supModal" hidden>
+  <div class="modal-card sup-card" role="dialog" aria-modal="true" aria-labelledby="supTitle">
+    <h2 id="supTitle">Unlock the new techniques</h2>
+    <p class="sup-for" id="supFor" hidden></p>
+    <p>The techniques from the brain-wave guide open with a donation of €1 or more on Ko-fi, once on each device.</p>
+    <ol class="sup-steps" id="supSteps">
+      <li>
+        <p>Your device code:</p>
+        <div class="sup-dev"><code class="mono" id="supDev"></code><button class="btn" id="supCopy">Copy</button></div>
+        <p class="sup-said" id="supSaid" aria-live="polite" hidden></p>
+      </li>
+      <li>
+        <p>Donate €1 or more on Ko-fi and put this code in your message.</p>
+        <a class="btn donate" id="supKofi" href="https://ko-fi.com/misterclarity" target="_blank" rel="noopener">{i:cup}Donate on Ko-fi</a>
+      </li>
+      <li>
+        <p>You'll get an activation link by email. Open it on this device, or paste the code here.</p>
+        <div class="sup-paste">
+          <input id="supIn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Activation code or link" aria-label="Activation code or link">
+          <button class="btn primary" id="supGo">Activate</button>
+        </div>
+      </li>
+    </ol>
+    <p class="sup-res" id="supRes" aria-live="polite" hidden></p>
+    <p class="sup-warn" id="supWarn" hidden></p>
+    <p class="hint">It unlocks this device and this browser only. On another device, or once this browser's data is cleared, a new donation unlocks it there. Backups don't carry it.</p>
+    <div class="pm-actions"><button class="btn" id="supClose">Not now</button></div>
+  </div>
+</div>
+
+
 <!-- ============ TINNITUS PITCH MATCH ============ -->
 <div class="modal" id="pmModal" hidden>
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="pmTitle">

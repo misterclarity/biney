@@ -64,18 +64,18 @@
     if (d.caution) badges.push(["cau", "Cautions"]);
     return { key: d.id, type: "practice", def: d, name: d.name, blurb: d.blurb, goal: d.goal || "", also: d.also || [],
       method: d.method || "move", posture: d.posture || ["stand"], needs: libNeeds(d), mins: m, minsTxt: libMinsTxt(d, m),
-      href: "#practice/" + d.id, icon: pIcon(d), col: pColor(d), strength: d.strength, badges: badges, prog: d.method === "program" };
+      href: "#practice/" + d.id, icon: pIcon(d), col: pColor(d), strength: d.strength, badges: badges, prog: d.method === "program", sup: !!d.sup };
   }
   function libPattern(b) {
     var t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
     return { key: "b:" + b.id, type: "pattern", name: patName(b), blurb: b.desc, goal: b.goal || "", also: b.also || [],
       method: "breath", posture: b.posture || ["sit"], needs: [], mins: [1, 60], minsTxt: (Math.round(600 / per) / 10) + " breaths a minute",
-      label: "Breathing guide", href: "#breathe/" + b.id, icon: "breathe", col: "var(--b-in)", strength: b.strength, badges: b.mine ? [["mine", "Yours"]] : [] };
+      label: "Breathing guide", href: "#breathe/" + b.id, icon: "breathe", col: "var(--b-in)", strength: b.strength, badges: b.mine ? [["mine", "Yours"]] : [], sup: !!b.sup };
   }
   function libTrack(t) {
     return { key: "t:" + t.id, type: "track", name: t.name, blurb: t.desc, goal: t.goal, also: t.also || [],
       method: "sound", posture: t.posture, needs: ["phones"], mins: [t.minutes, t.minutes], minsTxt: t.minutes + " min",
-      label: t.band + " track", href: "#track/" + t.id, icon: "sounds", col: LIB_TRACK_COL[t.cat] || "var(--relax)", strength: t.strength, badges: [] };
+      label: t.band + " track", href: "#track/" + t.id, icon: "sounds", col: LIB_TRACK_COL[t.cat] || "var(--relax)", strength: t.strength, badges: [], sup: !!t.sup };
   }
   function libTool(id) {
     var x = TOOLS[id], c = CAT["x:" + id] || {};
@@ -173,7 +173,7 @@
       '<a href="' + esc(it.href) + '" class="pc-a">' +
         '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + it.icon + '"/></svg></span>' +
         '<span class="pc-b"><span class="pc-top"><b>' + esc(it.name) + "</b>" + (it.strength ? dots(it.strength) : "") + "</span>" +
-          '<span class="pc-meta"><span class="pc-sub">' + esc(sub) + "</span>" +
+          '<span class="pc-meta"><span class="pc-sub">' + esc(sub) + "</span>" + (it.sup ? supTag() : "") +     // a new technique, locked: on Today too
             (o.compact ? "" : it.badges.map(function (b) { return '<span class="' + b[0] + '">' + esc(b[1]) + "</span>"; }).join("")) + "</span>" +
           (it.blurb && !o.compact ? '<span class="pc-blurb">' + esc(it.blurb) + "</span>" : "") + tl +
         "</span></a></li>";

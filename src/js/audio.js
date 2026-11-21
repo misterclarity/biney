@@ -203,6 +203,7 @@
   /* ---------------------------- transport ---------------------------- */
 
   function load(track) {
+    if (supLocked(track)) { supGate(track.name, function () { load(track); }); return; }   // a new technique's track, by any way in
     if (A.playing || A.oscL) hardStop(true);
     else hTrack();                       // a paused track that's being replaced still counts
     A.hAt = 0;

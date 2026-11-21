@@ -16,6 +16,9 @@
      chime that sounds in place of the voice ("chime"). A step can end when you tap a button
      (endTap names it), dim the screen (dim), and put a line of its own under its name (sub). Programmes add `audio`: a binaural layer whose beat follows
      piecewise-linear points [[second, Hz], ...] across the whole programme.
+     A technique from the brain-wave guide carries `sup: true`: it opens with a donation, once on each
+     device (supporter.js), and every way to start it asks for that first; its page stays free to read.
+     Patterns in BREATHS and tracks in TRACKS take the same flag.
   ------------------------------------------------------------------------------ */
 
   function pLines(lines, secs) {

@@ -1022,11 +1022,25 @@
     li.hidden = !x;
     if (x) li.firstChild.textContent = x.name;
   }
+  /* A new technique (sup: true) not yet unlocked on this device: the practice itself, or the one chosen to
+     begin it (noPre: carrying on from that, or from a draft, which skips it). null when it can start. */
+  function pSupWho(d, noPre) {
+    if (supLocked(d)) return d;
+    var pre = noPre ? "" : pChoice(d, "pre"), x = pre && pDef(pre);
+    return x && !x.choices && supLocked(x) ? x : null;
+  }
   // again: a restart, which keeps the pace and beat you set while it ran and skips the cautions you've already confirmed
   function pStart(again) {
     var d = P.view, resume = P.resume;                 // resume: a reflection's draft to carry on from (nvcDraftResume)
     P.resume = null;
     if (!d) return;
+    // every start comes through here: Start, a draft carried on, the end screen's Continue (a restart is already running)
+    var lk = again !== true && pSupWho(d, P.chainGo || !!resume), cg = P.chainGo;
+    if (lk) {
+      P.chainGo = false;
+      supGate(lk.name, function () { if (P.view !== d) return; P.resume = resume; P.chainGo = cg; pStart(again); });
+      return;
+    }
     if (d.confirm && again !== true && !$("#sOk").checked) { $("#sOk").focus(); return; }
     /* A practice can begin with another, chosen on its page ("Begin with", choice "pre"): that one runs
        first, and its end screen leads on to this one (P.chain). Carrying on (P.chainGo) or a restart skips it. */
@@ -1244,13 +1258,25 @@
       return '<li data-k="' + r.k + '"><span>' + esc(r.title) + "</span><time>" + (d.selfPaced && r.k === "write" ? "your pace" : fmt(r.secs)) + "</time></li>";
     }).join("");
   }
+  // the Start button: "Start 10 min", or for a new technique not yet unlocked on this device, the way to unlock it
+  function pGoHtml(d, plan) {
+    return pSupWho(d) ? '<svg class="i ic-stroke" aria-hidden="true"><use href="#i-cup"/></svg>Unlock to start'
+      : '<svg class="i" aria-hidden="true"><use href="#i-play"/></svg>' + pGoTxt(d, plan);
+  }
+  function pGoSync(d, plan) {
+    var go = $("#sGo"), ok = $("#sOk"), note = $("#sSupNote"), lk = !!pSupWho(d);
+    if (!go) return;
+    go.innerHTML = pGoHtml(d, plan);
+    go.disabled = !!d.confirm && !lk && !(ok && ok.checked);      // locked, it opens the way to unlock it, cautions or not
+    if (note) note.hidden = !lk;
+  }
   function pIntroReplan(d) {
     if (P.view !== d) return;
-    var el = $("#sIntro"), plan = pPlan(d, pLenOf(d, P.len)), go = $("#sGo");
+    var el = $("#sIntro"), plan = pPlan(d, pLenOf(d, P.len));
     bSetT("#sIntro .si-kind", pKindTxt(d, plan));
     el.querySelector(".si-tl").innerHTML = pSegsHtml(d, plan);
     el.querySelector(".si-steps").innerHTML = pStepsHtml(d, plan);
-    if (go) go.lastChild.textContent = pGoTxt(d, plan);
+    pGoSync(d, plan);
     pPreRow(d);
   }
   function pIntro(id) {
@@ -1348,7 +1374,8 @@
       '<div class="si-bar">' +
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
-        '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>' + pGoTxt(d, plan) + "</button>" +
+        '<button class="btn primary si-go" id="sGo"' + (d.confirm && !pSupWho(d) ? " disabled" : "") + ">" + pGoHtml(d, plan) + "</button>" +
+        '<p class="si-bar-note" id="sSupNote"' + (pSupWho(d) ? "" : " hidden") + ">" + SUP_NOTE + "</p>" +
       "</div>" +
       '<aside class="si-opts">' + (d.reflect ? nvcDraftStrip(d) : "") +     // first thing on a phone, beside the steps on a computer
         '<button class="so-sum" id="sOptsBtn" aria-expanded="' + openOpts + '" aria-controls="sOpts"><span class="so-sum-t"><b>Options</b>' +
@@ -1502,7 +1529,7 @@
     });
     var ph = $("#sTapPhrase");
     if (ph) ph.addEventListener("input", function () { store.set("tapPhrase", this.value.trim()); });
-    on("#sOk", function () { $("#sGo").disabled = !this.checked; });
+    on("#sOk", function () { $("#sGo").disabled = !this.checked && !pSupWho(d); });
     var dg = $("#sDraftGo"), dd = $("#sDraftDel");
     if (dg) dg.addEventListener("click", function () { P.resume = nvcDraftGet(d.id); pStart(); });
     if (dd) dd.addEventListener("click", function () {     // two taps, like End: a discarded draft is gone
@@ -1745,5 +1772,6 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList,
+      SUP: SUP, supOn: supOn, supKept: supKept, supRefresh: supRefresh, supDevice: supDevice, FD: FD };   // for automated tests only
   }

@@ -1734,3 +1734,46 @@
   .td-donate{margin-top:12px}
   .sd-donate{margin-top:18px}
 
+
+  /* ---------- the new techniques: a donation unlocks them on this device (supporter.js) ---------- */
+  .sup-tag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:650;line-height:1.3;color:var(--stim);
+    background:color-mix(in srgb,var(--stim) 13%,transparent);border-radius:7px;padding:2px 7px;vertical-align:middle;white-space:nowrap}
+  .sup-tag svg.i{width:13px;height:13px;stroke-width:2}
+  .pc-meta span.sup-tag{color:var(--stim);background:color-mix(in srgb,var(--stim) 13%,transparent);padding:3px 8px}
+  .fd-tx .sup-tag{margin-right:6px}
+  .hi-b .sup-tag{margin-left:8px;font-size:11.5px;color:var(--stim)}
+  .btn .sup-tag{font-size:11px}
+  .chip .sup-ic{background:none;padding:0;margin-left:6px}
+  .chip .sup-ic svg.i{width:14px;height:14px;margin:0}
+  .chip.on .sup-ic{color:inherit}
+  .sup-card .sup-for{color:var(--text);font-weight:700}
+  .sup-steps{list-style:none;counter-reset:sups;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+  .sup-steps > li{counter-increment:sups;position:relative;padding-left:32px;display:flex;flex-direction:column;gap:8px;align-items:stretch;min-width:0}
+  .sup-steps .btn.donate,.sup-how .btn.donate{align-self:flex-start}
+  .sup-steps > li::before{content:counter(sups);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;
+    background:color-mix(in srgb,var(--stim) 18%,var(--panel-2));color:var(--stim);font-size:13px;font-weight:800}
+  .modal-card .sup-steps p{margin:0;font-size:14px}
+  .sup-dev{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .sup-dev code{font-family:inherit;font-size:17px;font-weight:800;letter-spacing:.04em;color:var(--text);background:var(--panel-2);border-radius:10px;padding:9px 10px;user-select:all;-webkit-user-select:all;white-space:nowrap}
+  .sup-dev .sup-dl{font-size:14px;font-weight:650;color:var(--text-dim)}
+  .sup-dev .btn{padding:10px 14px}
+  .sup-paste{display:flex;gap:8px;flex-wrap:wrap;align-self:stretch}
+  .sup-paste input{flex:1 1 150px;min-width:0;min-height:44px;box-sizing:border-box;background:var(--panel-2);color:var(--text);border:1px solid var(--line);
+    border-radius:12px;padding:9px 12px;font:inherit;font-size:15px}
+  .sup-paste input:focus{outline:2px solid color-mix(in srgb,var(--accent) 65%,transparent);border-color:transparent}
+  p.sup-said{margin:0;font-size:13px;color:var(--text-faint)}
+  p.sup-res{margin:14px 0 0;border-radius:12px;padding:10px 13px;font-size:14px;line-height:1.45;background:var(--panel-2);color:var(--text-dim);overflow-wrap:anywhere}
+  p.sup-res.ok{background:rgba(94,234,212,.1);color:#99f6e4}
+  p.sup-res.bad{background:rgba(251,113,133,.1);color:#fda4af}
+  p.sup-warn{margin:14px 0 0;background:rgba(251,191,36,.1);color:#fcd34d;border-radius:12px;padding:10px 13px;font-size:13.5px;line-height:1.45}
+  .sup-card .hint{margin:14px 0 0}
+  .sup-card .pm-actions{justify-content:flex-end}
+  .st-card .sup-res,.st-card .sup-warn{margin:0}
+  .sup-st{margin:0;font-size:14.5px;color:var(--text-dim)}
+  .sup-st b{color:var(--text)}
+  .sup-st.on b{color:var(--relax)}
+  .sup-how{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+  .sup-how p{margin:0;font-size:14px;color:var(--text-dim);line-height:1.5}
+  .sup-h{font-size:14.5px;font-weight:750;margin:2px 0 -6px}
+  .sup-list{margin:0;padding-left:1.15em;display:grid;gap:4px;font-size:14px;color:var(--text-dim)}
+  .sup-list a{color:var(--text)}

@@ -13,7 +13,8 @@
       if (window.console && console.error) console.error("Entrain: " + name + " didn't start", e);
     }
   }
-  [["the player", playerInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
+  [["the new techniques", supInit],                         // first: whether this device is unlocked decides how Breathe opens
+    ["the player", playerInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["search", fdInit], ["backups", bkInit],

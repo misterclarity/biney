@@ -1,7 +1,7 @@
   /* ------------------------------- search -------------------------------
      One box for everything: practices and your own routines, the movement library, breathing
      patterns, tracks, the Heart tools, Healthy living's recipes, supplements, routines and light, History, Settings
-     and its feedback form, and every paragraph and reference in Learn.
+     with its feedback form and the new techniques, and every paragraph and reference in Learn.
      Matching ignores case and accents, and each word you type has to match the start of a word
      somewhere in the entry, so "anap" finds Anapana and "bencao" finds Bênção. Results come in
      groups, the group with the best match first. Enter opens the top result; "/" or Ctrl+K opens
@@ -86,7 +86,7 @@
     o = o || {};
     xs = xs.filter(Boolean);
     var bare = !!o.bare;                 // a paragraph shown under its section's name: only its own words count
-    return { k: k, t: t, s: s || "", xs: xs, h: h, ic: o.ic || "spark", col: o.col || "", w: o.w || 1,
+    return { k: k, t: t, s: s || "", xs: xs, h: h, ic: o.ic || "spark", col: o.col || "", w: o.w || 1, sup: !!o.sup,   // sup: a new technique (supporter.js)
       tn: bare ? " " : fdFold(t), ti: bare ? " " : fdFold(t + " " + (o.alias || "")), si: bare ? " " : fdFold(s + " " + (o.tags || "")), xi: fdFold(xs.join(" ")) };
   }
   function fdMins(d) {
@@ -101,7 +101,7 @@
     });
     return fdEntry("practice", d.name, [d.custom ? "Your routine" : "", g ? g.name : "", methodName(d.method), fdMins(d)].filter(Boolean).join(" · "),
       [d.blurb, d.parts, steps.join(" · "), d.how], "#practice/" + d.id,
-      { ic: pIcon(d), col: pColor(d), w: 1.25, alias: d.alias || "", tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") + (d.words ? " " + d.words : "") });
+      { ic: pIcon(d), col: pColor(d), w: 1.25, alias: d.alias || "", tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") + (d.words ? " " + d.words : ""), sup: d.sup });
   }
   function fdBuildBase() {
     var out = [];
@@ -120,7 +120,7 @@
       var lab = document.querySelector('#bPats input[value="' + b.id + '"]'), t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
       var name = lab ? fdTxt(lab.parentNode) : b.id;
       out.push(fdEntry("breath", name, (goalOf(b.goal) ? goalOf(b.goal).name + " · " : "") + "Breathing pattern · " + (Math.round(600 / per) / 10) + " breaths a minute",
-        [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id }));
+        [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id, sup: b.sup }));
     });
     out.push(fdEntry("breath", "Breathing guide", "Breathe · paced breathing",
       ["Paced breathing with five visuals, timed sessions, sound cues and live heart data."], "#breathe",
@@ -128,7 +128,7 @@
     TRACKS.forEach(function (t) {
       var g = goalOf(t.goal), gn = g ? g.name : "Tinnitus";
       out.push(fdEntry("sound", t.name, gn + " · " + t.band + " track · " + t.minutes + " min", [t.desc, t.ev], "#track/" + t.id,
-        { ic: "sounds", col: "var(--relax)", w: 1, alias: t.goal === "tinnitus" ? "tinnitus" : "", tags: "binaural beat track " + (t.also || []).join(" ") }));
+        { ic: "sounds", col: "var(--relax)", w: 1, alias: t.goal === "tinnitus" ? "tinnitus" : "", tags: "binaural beat track " + (t.also || []).join(" "), sup: t.sup }));
     });
     out.push(fdEntry("sound", "Custom primer", "Focus · Sound · 5 to 20 min before a task",
       ["Listen to a beat before you start a task, get a cue when the block ends, then begin working."], "#prime",
@@ -154,6 +154,9 @@
     out.push(fdEntry("app", "Feedback", "Settings · an idea, a problem or something you liked",
       ["Write it in Settings, and it opens as an issue on Entrain's GitHub page, ready to send."], "#feedback",
       { ic: "send", col: "var(--accent)", w: 1, tags: "contact bug report issue github suggestion idea problem praise question" }));
+    out.push(fdEntry("app", "New techniques", "Settings · a donation of €1 or more unlocks them on this device",
+      ["The techniques from the brain-wave guide open with a donation of €1 or more on Ko-fi, once on each device: your device code, the activation code from the email, and what it unlocks."], "#st-supporter",
+      { ic: "cup", col: "var(--stim)", w: 1, tags: "unlock donation donate supporter support kofi ko fi activation code device brain wave guide" }));
     out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
       ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
       { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));
@@ -258,7 +261,7 @@
         var i = FD.items.push(e) - 1;
         h += '<li><a class="fd-it" href="' + esc(e.h) + '" data-i="' + i + '"' + (e.col ? ' style="--pcol:' + e.col + '"' : "") + ">" +
           '<span class="fd-iic"><svg class="i" aria-hidden="true"><use href="#i-' + e.ic + '"/></svg></span>' +
-          '<span class="fd-tx"><b>' + fdMark(e.t, terms) + "</b><small>" + fdMark(e.s, terms) + "</small>" +
+          '<span class="fd-tx"><b>' + fdMark(e.t, terms) + "</b><small>" + (e.sup ? supTag() : "") + fdMark(e.s, terms) + "</small>" +
           '<span class="fd-sn">' + fdLine(e, terms) + "</span></span></a></li>";
       });
       h += "</ul>";

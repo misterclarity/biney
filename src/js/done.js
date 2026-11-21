@@ -44,7 +44,7 @@
       (r.stress ? "" : sdNext(d)) +
       qCard(d.reflect ? ROGERS : qPick()) +
       '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>' +
-      '<div class="note-card donate-card sd-donate"><p><b>Entrain is free and has no ads.</b> If it helps you, a donation keeps it going.</p>' +
+      '<div class="note-card donate-card sd-donate"><p><b>Entrain has no ads, and most of it is free.</b> The new techniques open with a donation of €1 or more on each device, and every donation keeps it going.</p>' +
       '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a></div>';
     var el = $("#sDone");
     el.innerHTML = h;
@@ -56,6 +56,7 @@
     if (cg) cg.addEventListener("click", function () {     // on to the practice this one began
       var nx = P.chain && pDef(P.chain.then);
       if (!nx) return;
+      if (supLocked(nx) && !supGate(nx.name, function () { cg.click(); })) return;    // a new technique, locked: the way to unlock it first
       P.view = nx; P.len = P.chain.len; P.chainGo = true;
       try { history.replaceState(null, "", "#practice/" + nx.id); } catch (e) {}
       pStart();
@@ -76,9 +77,9 @@
   function sdNext(d) {
     var ch = P.chain && P.chain.then !== d.id ? pDef(P.chain.then) : null;
     if (ch) return '<div class="note-card sd-next"><p><b>Next: ' + esc(ch.name) + ".</b> " + esc(ch.chainTxt || "") + "</p>" +
-      '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + "</button></div>";
+      '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + (ch.sup ? supTag() : "") + "</button></div>";
     var nx = d.next && pDef(d.next.id);
-    return nx ? '<div class="note-card sd-next"><p>' + esc(d.next.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + "</a></div>" : "";
+    return nx ? '<div class="note-card sd-next"><p>' + esc(d.next.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + (nx.sup ? supTag() : "") + "</a></div>" : "";
   }
 
   // what each number means, with your own value read back

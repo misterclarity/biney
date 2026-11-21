@@ -248,10 +248,15 @@
   }
   function sameT(a, b) { return a.inh === b.inh && a.sip === b.sip && a.hold === b.hold && a.exh === b.exh && a.rest === b.rest; }
   // the preset with these timings, else your own saved pattern with them, else "custom";
-  // only those of the range that's on, so Swim & dive's sliders never land on Box by chance
+  // only those of the range that's on, so Swim & dive's sliders never land on Box by chance; and a new
+  // technique's pattern only once this device is unlocked (or while its code is being checked, as Entrain
+  // opens): locked, its timings are your own, and only the pattern itself waits for the donation
   function matchPreset() {
     var lg = !!BC.long;
-    for (var i = 0; i < BREATHS.length; i++) if (!!BREATHS[i].long === lg && sameT(BREATHS[i].t, BC)) return BREATHS[i].id;
+    for (var i = 0; i < BREATHS.length; i++) {
+      var b = BREATHS[i];
+      if (!!b.long === lg && sameT(b.t, BC) && !(supLocked(b) && SUP.state !== "checking")) return b.id;
+    }
     var l = mpLoad();
     for (var j = 0; j < l.length; j++) if (!!l[j].long === lg && sameT(l[j].t, BC)) return "my-" + l[j].uid;
     return "custom";
@@ -369,8 +374,45 @@
   function bToggle() {
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();
-    else if (B.state === "paused") { if (!dvGate("resume")) bResume(); }
-    else if (!dvGate("start")) { bFresh(); bResume(); }
+    else if (B.state === "paused") { if (!bSupGate("resume") && !dvGate("resume")) bResume(); }
+    else if (!bSupGate("start") && !dvGate("start")) { bFresh(); bResume(); }
+  }
+
+  /* ----- a new technique's pattern (sup: true; supporter.js), not yet unlocked on this device: picking it,
+     reaching it from a link, starting it, or Breathe opening on it brings up the dialog that unlocks it.
+     Closed still locked, it goes back to the pattern before (or Resonance); unlocked, it stays. Picked
+     mid-session, the session waits for the answer. ----- */
+  function bSupGate(then, back) {
+    var p = preset(BC.pattern), paused = false;
+    if (!p || !supLocked(p)) return false;
+    if (!then && B.state === "running") { bPause(); paused = true; }
+    supGate(patName(p), function () {
+      if (paused && B.state === "paused") bResume();
+      else if (then) bToggle();
+    }, function (open) {
+      if (!open) bSupBack(back);
+      if (paused && B.state === "paused") bResume();
+    });
+    return true;
+  }
+  function bSupBack(b) {
+    var p = preset(BC.pattern), q = b && preset(b.pattern);
+    if (!p || !supLocked(p)) return;                    // another pattern since, or unlocked meanwhile
+    if (!b || (q && supLocked(q))) { var r = preset("resonance").t; b = { pattern: "resonance", inh: r.inh, sip: r.sip, hold: r.hold, exh: r.exh, rest: r.rest, long: false }; }
+    BC.pattern = b.pattern; BC.long = !!b.long;
+    BC.inh = b.inh; BC.sip = b.sip; BC.hold = b.hold; BC.exh = b.exh; BC.rest = b.rest;
+    MP.from = "";
+    checkRadio("bpat", BC.pattern); syncChips("#bPats");
+    syncFields(); renderNote(); syncVisHint(); applyTimings(); saveBreath(); bChipShow();
+  }
+  // a locked pattern's chip carries the cup
+  function bSupChips() {
+    BREATHS.forEach(function (b) {
+      var inp = document.querySelector('#bPats input[value="' + b.id + '"]'), lab = inp && inp.parentNode, tag = lab && lab.querySelector(".sup-tag");
+      if (!lab) return;
+      if (tag && !supLocked(b)) tag.remove();
+      else if (!tag && supLocked(b)) lab.insertAdjacentHTML("beforeend", supTag(true));
+    });
   }
 
   /* ----- Swim & dive's cautions: shown the first time it's opened (picked, linked to, or on Breathe
@@ -704,6 +746,7 @@
     checkRadio("blen", String(BC.minutes));
     checkRadio("bsnd", BC.sound);
     ["#bPats", "#bVis", "#bLen", "#bSnd"].forEach(syncChips);
+    bSupChips();
     $("#bCue").value = BC.cue;
     $("#bVolRow").hidden = BC.sound === "off";
     bBuzzSync();
@@ -726,6 +769,7 @@
         syncFields();
       }
       renderNote(); syncVisHint(); applyTimings(); saveBreath();
+      if (bSupGate("", was)) return;                    // a new technique, locked: the way to unlock it
       if (dvGate("", was) && B.state === "running") { bPause(); DV.paused = true; }   // first opened, even mid-session: its cautions first
     });
     B_FIELDS.forEach(function (f) {

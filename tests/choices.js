@@ -922,19 +922,23 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await ctx.close();
     }
 
-    /* D. donations: a button on Today and in Settings, and a line in the impressum, opening Ko-fi in the browser */
+    /* D. donations: a button on Today and in Settings, and a line in the impressum, opening Ko-fi in the browser; each says
+       honestly what's free: most of it, while the new techniques open with a donation of €1 or more on each device */
     if (!only || only === 'D') {
+      const FREE = /^Entrain has no ads, and most of it is free\. The (new techniques|techniques from the brain-wave guide) open with a donation of €1 or more on each device/;
       const p = await page(OPT());
       await E(p, () => location.hash = 'settings'); await p.waitForTimeout(400);
       const btn = sel => E(p, sel => { const a = document.querySelector(sel), r = a.getBoundingClientRect(); return { href: a.getAttribute('href'), target: a.target, rel: a.rel, txt: a.textContent.trim(), h: r.height, col: getComputedStyle(a).color }; }, sel);
       const b = await btn('.st-about a.btn.donate');
-      ok(b.href === 'https://ko-fi.com/misterclarity' && b.target === '_blank' && /noopener/.test(b.rel) && b.txt === 'Support Entrain on Ko-fi' && b.h >= 44,
-        'Settings has a donations button to Ko-fi, opening in the browser: ' + b.txt);
+      const sa = await E(p, () => [...document.querySelectorAll('.st-about .st-note')].map(x => x.textContent).filter(x => /ads/.test(x))[0] || '');
+      ok(b.href === 'https://ko-fi.com/misterclarity' && b.target === '_blank' && /noopener/.test(b.rel) && b.txt === 'Support Entrain on Ko-fi' && b.h >= 44 && FREE.test(sa),
+        'Settings has a donations button to Ko-fi, opening in the browser: ' + b.txt + ' (' + sa + ')');
       await E(p, () => location.hash = 'l-impressum'); await p.waitForTimeout(400);
-      ok(await E(p, () => !!document.querySelector('.imprint a[href="https://ko-fi.com/misterclarity"][target="_blank"]')), 'and the impressum links to it too');
+      const imp = await E(p, () => [...document.querySelectorAll('.imprint p')].map(x => x.textContent.replace(/\s+/g, ' ').trim()).filter(x => /ads/.test(x))[0] || '');
+      ok(await E(p, () => !!document.querySelector('.imprint a[href="https://ko-fi.com/misterclarity"][target="_blank"]')) && FREE.test(imp), 'and the impressum links to it too: ' + imp);
       await E(p, () => location.hash = 'home'); await p.waitForTimeout(400);
       const h = await btn('.td-donate a.btn.donate');
-      ok(h.href === b.href && h.target === '_blank' && /noopener/.test(h.rel) && h.txt === b.txt && h.h >= 44 && h.col === b.col && /^Entrain is free and has no ads\./.test(await t(p, '.td-donate p')),
+      ok(h.href === b.href && h.target === '_blank' && /noopener/.test(h.rel) && h.txt === b.txt && h.h >= 44 && h.col === b.col && FREE.test(await t(p, '.td-donate p')),
         'Today has the same button, at the end: ' + await t(p, '.td-donate p'));
       // the end screen of any practice, under Done and Do it again, whether it ran to the end or not
       for (const early of [false, true]) {
@@ -943,7 +947,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         await p.waitForTimeout(150);
         const sd = await btn('#sDone .sd-donate a.btn.donate');
         const after = await E(p, () => { const a = document.querySelector('#sDone .sd-act'), d = document.querySelector('#sDone .sd-donate'); return !!(a && d && a.compareDocumentPosition(d) & Node.DOCUMENT_POSITION_FOLLOWING); });
-        ok(sd.href === b.href && sd.target === '_blank' && /noopener/.test(sd.rel) && sd.txt === b.txt && sd.h >= 44 && after && /^Entrain is free and has no ads\./.test(await t(p, '#sDone .sd-donate p')),
+        ok(sd.href === b.href && sd.target === '_blank' && /noopener/.test(sd.rel) && sd.txt === b.txt && sd.h >= 44 && after && FREE.test(await t(p, '#sDone .sd-donate p')),
           'the end screen of a practice ' + (early ? 'ended early' : 'run to the end') + ' has it too, under Done and Do it again');
       }
       await p.context().close();

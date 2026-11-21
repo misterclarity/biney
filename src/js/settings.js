@@ -1,7 +1,7 @@
   /* -------------------------------- settings --------------------------------
      What every practice starts with (a practice can change its own under Options on its page),
-     the background sound, what's kept of reflections, how the screen behaves, your data
-     (backup.js), the feedback form, and About with the build.
+     the background sound, what's kept of reflections, how the screen behaves, the new techniques
+     (supporter.js), your data (backup.js), the feedback form, and About with the build.
   ------------------------------------------------------------------------------ */
 
   var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true };
@@ -62,16 +62,17 @@
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap, Cognitive Shuffle and Autogenic Training's bedtime ending go almost dark. The screen still stays on.") +
-      "</section>" + bkCard() +
+      "</section>" + supCard() + bkCard() +
       '<section class="st-card st-fb" id="st-feedback" aria-labelledby="stF"><h2 id="stF">Feedback</h2>' + fbForm() + "</section>" +
       '<section class="st-card st-about" aria-labelledby="stI"><h2 id="stI">About</h2>' +
         '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project, and free software under the GNU AGPL, version 3. <a href="#l-impressum">Impressum, licence and credits</a></p>' +
         '<p class="st-note">Build <span class="mono" id="stBuild">' + BUILD + '</span></p>' +
-        '<p class="st-note">Entrain is free and has no ads. If it helps you, a donation keeps it going.</p>' +
+        '<p class="st-note">Entrain has no ads, and most of it is free. The techniques from the brain-wave guide open with a donation of €1 or more on each device, and every donation keeps it going.</p>' +
         '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a>' +
       "</section>";
     stWire();
     fbWire();
+    supStWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }

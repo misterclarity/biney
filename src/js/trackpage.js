@@ -55,6 +55,7 @@
       "</div>" +
       '<div class="si-side"><div class="si-bar">' +
         '<button class="btn primary si-go" id="trGo"></button>' +
+        '<p class="si-bar-note" id="trSupNote" hidden>' + SUP_NOTE + "</p>" +
         '<p class="si-bar-note">Plays in the player at the bottom, so you can keep using the app while you listen.</p>' +
       "</div></div></div>";
     var el = $("#trBody");
@@ -68,11 +69,13 @@
   function trSync() {
     var t = trackById(TR.id), b = $("#trGo");
     if (!t || !b) return;
-    var mine = A.track && A.track.id === t.id, ic, txt;
+    var mine = A.track && A.track.id === t.id, ic, txt, lk = !mine && supLocked(t);
     if (mine && A.playing) { ic = "pause"; txt = "Pause"; }
     else if (mine && A.elapsed > 0) { ic = "play"; txt = "Resume at " + fmt(A.elapsed); }
+    else if (lk) { ic = "cup"; txt = "Unlock to play"; }               // a new technique, not yet unlocked on this device
     else { ic = "play"; txt = "Play " + Math.round(t.minutes) + " min"; }
-    b.innerHTML = '<svg class="i' + (ic === "pause" ? " ic-stroke" : "") + '" aria-hidden="true"><use href="#i-' + ic + '"/></svg>' + esc(txt);
+    b.innerHTML = '<svg class="i' + (ic === "play" ? "" : " ic-stroke") + '" aria-hidden="true"><use href="#i-' + ic + '"/></svg>' + esc(txt);
+    $("#trSupNote").hidden = !lk;
     var n = $("#trNotch");
     if (n) n.innerHTML = tinnitusHz()
       ? "<span>Notch centred on <b>" + Math.round(tinnitusHz()) + " Hz</b>, your tinnitus pitch.</span>" + '<button class="btn small" data-rematch="1">Match again</button>'
@@ -83,6 +86,7 @@
     if (!t) return;
     if (A.track && A.track.id === t.id && A.playing) { pause(); return; }
     if (A.track && A.track.id === t.id && !A.playing && A.elapsed > 0) { play(); return; }
+    if (supLocked(t)) { supGate(t.name, trPlay); return; }              // a new technique: unlocked first
     gate(function () {
       if (t.notch && !tinnitusHz()) {          // the notch is useless until it is aimed
         pendingPitch = function () { load(t); };

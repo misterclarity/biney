@@ -4,3 +4,8 @@ entrain-page.html
 tests/out/
 node_modules/
 __pycache__/
+# private keys never go in the repository: the key that signs activation codes lives outside it
+# (~/.entrain/ or $ENTRAIN_UNLOCK_KEY; see src/unlock.js). Only the tests' own key, which opens nothing, is here.
+*.pem
+!tests/unlock-test-key.pem
+.entrain/

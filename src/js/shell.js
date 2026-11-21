@@ -5,7 +5,8 @@
      builder, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
      #living/<tab, recipe, supplement, light or routine>; and #settings from the gear, with #feedback and
      #st-<section> for a section of it. Links and search also
-     use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>. Older
+     use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>; #unlock opens
+     the dialog that unlocks the new techniques, and #unlock/<code> is the activation link from the email. Older
      addresses still work: #sounds and #tracks open the library at its sounds, and in-page anchors
      (#connect, #science, #references and the rest) open the view that holds them.
      Everything inside the views keeps its own ids and logic.
@@ -49,7 +50,7 @@
     backSync();
     var gear = $("#tbSet");
     if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
-    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); dvGate(""); }, 0);   // left on Swim & dive, unaccepted: its cautions
+    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); if (!bSupGate("")) dvGate(""); }, 0);   // left on a locked new pattern, or on Swim & dive unaccepted
     if (v !== "session" && P.state === "done") P.state = "idle";
     pImmersive();
     pPill();
@@ -76,11 +77,12 @@
     });
   }
 
-  function route() {
+  function route(e) {
     var h = "";
-    try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
+    try { h = decodeURIComponent(location.hash.slice(1)); } catch (x) {}
     if (!h) { showView("home"); return; }
     if (ALIAS[h]) h = ALIAS[h];
+    if (h === "unlock" || h.indexOf("unlock/") === 0) { supRoute(h.slice(7), e && e.oldURL); return; }   // the new techniques (supporter.js)
     if (h === "session") { location.replace("#practice"); return; }
     if (h.indexOf("practice/") === 0) { showView("session"); pIntro(h.slice(9)); return; }
     if (h.indexOf("track/") === 0) { showView("track"); trOpen(h.slice(6)); return; }

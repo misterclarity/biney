@@ -1,7 +1,8 @@
   /* -------------------------------- dialogs --------------------------------
      Two blocking dialogs: the headphone check before the first beat, and the tinnitus pitch
      match before the notched track. Focus goes back where it was when one closes, and Tab
-     stays inside while one is open.
+     stays inside while one is open (in the others too: the safety note, Swim & dive's cautions
+     and unlocking the new techniques).
   ---------------------------------------------------------------------------- */
 
   var lastFocus = null;
@@ -231,7 +232,7 @@
     // they're all blocking, so Tab has to stay inside them
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return;
-      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
+      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal", "#supModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
       if (!box) return;
       var all = box.querySelectorAll("button, input, a[href], select, textarea");
       var list = [], i;

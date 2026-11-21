@@ -1817,6 +1817,49 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .td-donate{margin-top:12px}
   .sd-donate{margin-top:18px}
 
+
+  /* ---------- the new techniques: a donation unlocks them on this device (supporter.js) ---------- */
+  .sup-tag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:650;line-height:1.3;color:var(--stim);
+    background:color-mix(in srgb,var(--stim) 13%,transparent);border-radius:7px;padding:2px 7px;vertical-align:middle;white-space:nowrap}
+  .sup-tag svg.i{width:13px;height:13px;stroke-width:2}
+  .pc-meta span.sup-tag{color:var(--stim);background:color-mix(in srgb,var(--stim) 13%,transparent);padding:3px 8px}
+  .fd-tx .sup-tag{margin-right:6px}
+  .hi-b .sup-tag{margin-left:8px;font-size:11.5px;color:var(--stim)}
+  .btn .sup-tag{font-size:11px}
+  .chip .sup-ic{background:none;padding:0;margin-left:6px}
+  .chip .sup-ic svg.i{width:14px;height:14px;margin:0}
+  .chip.on .sup-ic{color:inherit}
+  .sup-card .sup-for{color:var(--text);font-weight:700}
+  .sup-steps{list-style:none;counter-reset:sups;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+  .sup-steps > li{counter-increment:sups;position:relative;padding-left:32px;display:flex;flex-direction:column;gap:8px;align-items:stretch;min-width:0}
+  .sup-steps .btn.donate,.sup-how .btn.donate{align-self:flex-start}
+  .sup-steps > li::before{content:counter(sups);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;
+    background:color-mix(in srgb,var(--stim) 18%,var(--panel-2));color:var(--stim);font-size:13px;font-weight:800}
+  .modal-card .sup-steps p{margin:0;font-size:14px}
+  .sup-dev{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .sup-dev code{font-family:inherit;font-size:17px;font-weight:800;letter-spacing:.04em;color:var(--text);background:var(--panel-2);border-radius:10px;padding:9px 10px;user-select:all;-webkit-user-select:all;white-space:nowrap}
+  .sup-dev .sup-dl{font-size:14px;font-weight:650;color:var(--text-dim)}
+  .sup-dev .btn{padding:10px 14px}
+  .sup-paste{display:flex;gap:8px;flex-wrap:wrap;align-self:stretch}
+  .sup-paste input{flex:1 1 150px;min-width:0;min-height:44px;box-sizing:border-box;background:var(--panel-2);color:var(--text);border:1px solid var(--line);
+    border-radius:12px;padding:9px 12px;font:inherit;font-size:15px}
+  .sup-paste input:focus{outline:2px solid color-mix(in srgb,var(--accent) 65%,transparent);border-color:transparent}
+  p.sup-said{margin:0;font-size:13px;color:var(--text-faint)}
+  p.sup-res{margin:14px 0 0;border-radius:12px;padding:10px 13px;font-size:14px;line-height:1.45;background:var(--panel-2);color:var(--text-dim);overflow-wrap:anywhere}
+  p.sup-res.ok{background:rgba(94,234,212,.1);color:#99f6e4}
+  p.sup-res.bad{background:rgba(251,113,133,.1);color:#fda4af}
+  p.sup-warn{margin:14px 0 0;background:rgba(251,191,36,.1);color:#fcd34d;border-radius:12px;padding:10px 13px;font-size:13.5px;line-height:1.45}
+  .sup-card .hint{margin:14px 0 0}
+  .sup-card .pm-actions{justify-content:flex-end}
+  .st-card .sup-res,.st-card .sup-warn{margin:0}
+  .sup-st{margin:0;font-size:14.5px;color:var(--text-dim)}
+  .sup-st b{color:var(--text)}
+  .sup-st.on b{color:var(--relax)}
+  .sup-how{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+  .sup-how p{margin:0;font-size:14px;color:var(--text-dim);line-height:1.5}
+  .sup-h{font-size:14.5px;font-weight:750;margin:2px 0 -6px}
+  .sup-list{margin:0;padding-left:1.15em;display:grid;gap:4px;font-size:14px;color:var(--text-dim)}
+  .sup-list a{color:var(--text)}
 </style>
 </head>
 <body>
@@ -1957,7 +2000,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         </div>
 
         <div class="note-card donate-card td-donate">
-          <p><b>Entrain is free and has no ads.</b> If it helps you, a donation keeps it going.</p>
+          <p><b>Entrain has no ads, and most of it is free.</b> The new techniques open with a donation of €1 or more on each device, and every donation keeps it going.</p>
           <a class="btn donate" href="https://ko-fi.com/misterclarity" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a>
         </div>
       </section>
@@ -3349,7 +3392,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="license noopener">GNU Affero General Public License, version 3</a>:
                 you may use, study, share and change it. Copies you pass on, and changed versions you put online, have to carry
                 the same licence and their source. It comes with no warranty. The source is on the project page.</p>
-              <p>Entrain is free and has no ads. If you'd like to support it, you can make a donation at
+              <p>Entrain has no ads, and most of it is free. The techniques from the brain-wave guide open with a donation of
+                €1 or more on each device: the activation code is checked on the device, so nothing is sent anywhere
+                (<a href="#st-supporter">New techniques</a> in Settings). To support it, you can make a donation at
                 <a href="https://ko-fi.com/misterclarity" target="_blank" rel="noopener">ko-fi.com/misterclarity</a>.</p>
               <p>The Poppins typeface is Copyright 2020 The Poppins Project Authors, used under the SIL Open Font License 1.1.
                 The quoted translations and Thoreau's <em>Walden</em> are in the public domain, and the research behind each
@@ -3426,6 +3471,38 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <button class="btn primary" id="dvGo">I understand the risks</button>
       <button class="btn" id="dvClose">Not now</button>
     </div>
+  </div>
+</div>
+
+
+<!-- ============ NEW TECHNIQUES: unlocked on this device with a donation (supporter.js) ============ -->
+<div class="modal" id="supModal" hidden>
+  <div class="modal-card sup-card" role="dialog" aria-modal="true" aria-labelledby="supTitle">
+    <h2 id="supTitle">Unlock the new techniques</h2>
+    <p class="sup-for" id="supFor" hidden></p>
+    <p>The techniques from the brain-wave guide open with a donation of €1 or more on Ko-fi, once on each device.</p>
+    <ol class="sup-steps" id="supSteps">
+      <li>
+        <p>Your device code:</p>
+        <div class="sup-dev"><code class="mono" id="supDev"></code><button class="btn" id="supCopy">Copy</button></div>
+        <p class="sup-said" id="supSaid" aria-live="polite" hidden></p>
+      </li>
+      <li>
+        <p>Donate €1 or more on Ko-fi and put this code in your message.</p>
+        <a class="btn donate" id="supKofi" href="https://ko-fi.com/misterclarity" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Donate on Ko-fi</a>
+      </li>
+      <li>
+        <p>You'll get an activation link by email. Open it on this device, or paste the code here.</p>
+        <div class="sup-paste">
+          <input id="supIn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Activation code or link" aria-label="Activation code or link">
+          <button class="btn primary" id="supGo">Activate</button>
+        </div>
+      </li>
+    </ol>
+    <p class="sup-res" id="supRes" aria-live="polite" hidden></p>
+    <p class="sup-warn" id="supWarn" hidden></p>
+    <p class="hint">It unlocks this device and this browser only. On another device, or once this browser's data is cleared, a new donation unlocks it there. Backups don't carry it.</p>
+    <div class="pm-actions"><button class="btn" id="supClose">Not now</button></div>
   </div>
 </div>
 
@@ -3920,6 +3997,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* ---------------------------- transport ---------------------------- */
 
   function load(track) {
+    if (supLocked(track)) { supGate(track.name, function () { load(track); }); return; }   // a new technique's track, by any way in
     if (A.playing || A.oscL) hardStop(true);
     else hTrack();                       // a paused track that's being replaced still counts
     A.hAt = 0;
@@ -4250,6 +4328,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       "</div>" +
       '<div class="si-side"><div class="si-bar">' +
         '<button class="btn primary si-go" id="trGo"></button>' +
+        '<p class="si-bar-note" id="trSupNote" hidden>' + SUP_NOTE + "</p>" +
         '<p class="si-bar-note">Plays in the player at the bottom, so you can keep using the app while you listen.</p>' +
       "</div></div></div>";
     var el = $("#trBody");
@@ -4263,11 +4342,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function trSync() {
     var t = trackById(TR.id), b = $("#trGo");
     if (!t || !b) return;
-    var mine = A.track && A.track.id === t.id, ic, txt;
+    var mine = A.track && A.track.id === t.id, ic, txt, lk = !mine && supLocked(t);
     if (mine && A.playing) { ic = "pause"; txt = "Pause"; }
     else if (mine && A.elapsed > 0) { ic = "play"; txt = "Resume at " + fmt(A.elapsed); }
+    else if (lk) { ic = "cup"; txt = "Unlock to play"; }               // a new technique, not yet unlocked on this device
     else { ic = "play"; txt = "Play " + Math.round(t.minutes) + " min"; }
-    b.innerHTML = '<svg class="i' + (ic === "pause" ? " ic-stroke" : "") + '" aria-hidden="true"><use href="#i-' + ic + '"/></svg>' + esc(txt);
+    b.innerHTML = '<svg class="i' + (ic === "play" ? "" : " ic-stroke") + '" aria-hidden="true"><use href="#i-' + ic + '"/></svg>' + esc(txt);
+    $("#trSupNote").hidden = !lk;
     var n = $("#trNotch");
     if (n) n.innerHTML = tinnitusHz()
       ? "<span>Notch centred on <b>" + Math.round(tinnitusHz()) + " Hz</b>, your tinnitus pitch.</span>" + '<button class="btn small" data-rematch="1">Match again</button>'
@@ -4278,6 +4359,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!t) return;
     if (A.track && A.track.id === t.id && A.playing) { pause(); return; }
     if (A.track && A.track.id === t.id && !A.playing && A.elapsed > 0) { play(); return; }
+    if (supLocked(t)) { supGate(t.name, trPlay); return; }              // a new technique: unlocked first
     gate(function () {
       if (t.notch && !tinnitusHz()) {          // the notch is useless until it is aimed
         pendingPitch = function () { load(t); };
@@ -4490,7 +4572,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* -------------------------------- dialogs --------------------------------
      Two blocking dialogs: the headphone check before the first beat, and the tinnitus pitch
      match before the notched track. Focus goes back where it was when one closes, and Tab
-     stays inside while one is open.
+     stays inside while one is open (in the others too: the safety note, Swim & dive's cautions
+     and unlocking the new techniques).
   ---------------------------------------------------------------------------- */
 
   var lastFocus = null;
@@ -4720,7 +4803,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     // they're all blocking, so Tab has to stay inside them
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return;
-      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
+      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal", "#supModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
       if (!box) return;
       var all = box.querySelectorAll("button, input, a[href], select, textarea");
       var list = [], i;
@@ -5030,10 +5113,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   function sameT(a, b) { return a.inh === b.inh && a.sip === b.sip && a.hold === b.hold && a.exh === b.exh && a.rest === b.rest; }
   // the preset with these timings, else your own saved pattern with them, else "custom";
-  // only those of the range that's on, so Swim & dive's sliders never land on Box by chance
+  // only those of the range that's on, so Swim & dive's sliders never land on Box by chance; and a new
+  // technique's pattern only once this device is unlocked (or while its code is being checked, as Entrain
+  // opens): locked, its timings are your own, and only the pattern itself waits for the donation
   function matchPreset() {
     var lg = !!BC.long;
-    for (var i = 0; i < BREATHS.length; i++) if (!!BREATHS[i].long === lg && sameT(BREATHS[i].t, BC)) return BREATHS[i].id;
+    for (var i = 0; i < BREATHS.length; i++) {
+      var b = BREATHS[i];
+      if (!!b.long === lg && sameT(b.t, BC) && !(supLocked(b) && SUP.state !== "checking")) return b.id;
+    }
     var l = mpLoad();
     for (var j = 0; j < l.length; j++) if (!!l[j].long === lg && sameT(l[j].t, BC)) return "my-" + l[j].uid;
     return "custom";
@@ -5151,8 +5239,45 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function bToggle() {
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();
-    else if (B.state === "paused") { if (!dvGate("resume")) bResume(); }
-    else if (!dvGate("start")) { bFresh(); bResume(); }
+    else if (B.state === "paused") { if (!bSupGate("resume") && !dvGate("resume")) bResume(); }
+    else if (!bSupGate("start") && !dvGate("start")) { bFresh(); bResume(); }
+  }
+
+  /* ----- a new technique's pattern (sup: true; supporter.js), not yet unlocked on this device: picking it,
+     reaching it from a link, starting it, or Breathe opening on it brings up the dialog that unlocks it.
+     Closed still locked, it goes back to the pattern before (or Resonance); unlocked, it stays. Picked
+     mid-session, the session waits for the answer. ----- */
+  function bSupGate(then, back) {
+    var p = preset(BC.pattern), paused = false;
+    if (!p || !supLocked(p)) return false;
+    if (!then && B.state === "running") { bPause(); paused = true; }
+    supGate(patName(p), function () {
+      if (paused && B.state === "paused") bResume();
+      else if (then) bToggle();
+    }, function (open) {
+      if (!open) bSupBack(back);
+      if (paused && B.state === "paused") bResume();
+    });
+    return true;
+  }
+  function bSupBack(b) {
+    var p = preset(BC.pattern), q = b && preset(b.pattern);
+    if (!p || !supLocked(p)) return;                    // another pattern since, or unlocked meanwhile
+    if (!b || (q && supLocked(q))) { var r = preset("resonance").t; b = { pattern: "resonance", inh: r.inh, sip: r.sip, hold: r.hold, exh: r.exh, rest: r.rest, long: false }; }
+    BC.pattern = b.pattern; BC.long = !!b.long;
+    BC.inh = b.inh; BC.sip = b.sip; BC.hold = b.hold; BC.exh = b.exh; BC.rest = b.rest;
+    MP.from = "";
+    checkRadio("bpat", BC.pattern); syncChips("#bPats");
+    syncFields(); renderNote(); syncVisHint(); applyTimings(); saveBreath(); bChipShow();
+  }
+  // a locked pattern's chip carries the cup
+  function bSupChips() {
+    BREATHS.forEach(function (b) {
+      var inp = document.querySelector('#bPats input[value="' + b.id + '"]'), lab = inp && inp.parentNode, tag = lab && lab.querySelector(".sup-tag");
+      if (!lab) return;
+      if (tag && !supLocked(b)) tag.remove();
+      else if (!tag && supLocked(b)) lab.insertAdjacentHTML("beforeend", supTag(true));
+    });
   }
 
   /* ----- Swim & dive's cautions: shown the first time it's opened (picked, linked to, or on Breathe
@@ -5486,6 +5611,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     checkRadio("blen", String(BC.minutes));
     checkRadio("bsnd", BC.sound);
     ["#bPats", "#bVis", "#bLen", "#bSnd"].forEach(syncChips);
+    bSupChips();
     $("#bCue").value = BC.cue;
     $("#bVolRow").hidden = BC.sound === "off";
     bBuzzSync();
@@ -5508,6 +5634,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         syncFields();
       }
       renderNote(); syncVisHint(); applyTimings(); saveBreath();
+      if (bSupGate("", was)) return;                    // a new technique, locked: the way to unlock it
       if (dvGate("", was) && B.state === "running") { bPause(); DV.paused = true; }   // first opened, even mid-session: its cautions first
     });
     B_FIELDS.forEach(function (f) {
@@ -7868,7 +7995,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      builder, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
      #living/<tab, recipe, supplement, light or routine>; and #settings from the gear, with #feedback and
      #st-<section> for a section of it. Links and search also
-     use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>. Older
+     use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>; #unlock opens
+     the dialog that unlocks the new techniques, and #unlock/<code> is the activation link from the email. Older
      addresses still work: #sounds and #tracks open the library at its sounds, and in-page anchors
      (#connect, #science, #references and the rest) open the view that holds them.
      Everything inside the views keeps its own ids and logic.
@@ -7912,7 +8040,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     backSync();
     var gear = $("#tbSet");
     if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
-    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); dvGate(""); }, 0);   // left on Swim & dive, unaccepted: its cautions
+    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); if (!bSupGate("")) dvGate(""); }, 0);   // left on a locked new pattern, or on Swim & dive unaccepted
     if (v !== "session" && P.state === "done") P.state = "idle";
     pImmersive();
     pPill();
@@ -7939,11 +8067,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     });
   }
 
-  function route() {
+  function route(e) {
     var h = "";
-    try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
+    try { h = decodeURIComponent(location.hash.slice(1)); } catch (x) {}
     if (!h) { showView("home"); return; }
     if (ALIAS[h]) h = ALIAS[h];
+    if (h === "unlock" || h.indexOf("unlock/") === 0) { supRoute(h.slice(7), e && e.oldURL); return; }   // the new techniques (supporter.js)
     if (h === "session") { location.replace("#practice"); return; }
     if (h.indexOf("practice/") === 0) { showView("session"); pIntro(h.slice(9)); return; }
     if (h.indexOf("track/") === 0) { showView("track"); trOpen(h.slice(6)); return; }
@@ -8050,7 +8179,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "4466597f";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "2a41e1cb";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -8309,6 +8438,313 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
     var fadeT = 0;
     window.addEventListener("resize", function () { clearTimeout(fadeT); fadeT = setTimeout(edgeFadeAll, 150); });
+  }
+  /* ------------------------------ new techniques ------------------------------
+     The techniques from the brain-wave guide open with a donation of €1 or more on Ko-fi, once on
+     each device. Entrain has no server and sends nothing anywhere, so the check happens here: this
+     device gets a random code; the developer signs it with a private key (src/unlock.js) and sends
+     the activation code back by email; the page checks the signature against the public keys below
+     with the browser's own cryptography (ECDSA P-256 with SHA-256). A code opens only the device it
+     was made for, and backups never carry it (both keys are in backup.js's BK_SKIP).
+
+     For every new feature: give the practice, breathing pattern or track `sup: true`, and call
+     supGate(name, go) at the moment of use (Start, Play, picking it); its page stays free to read.
+     supTag() is the badge for its row, card or chip while it's locked, and supOn() says whether
+     this device is unlocked.
+  ------------------------------------------------------------------------------ */
+
+  // the public keys that sign activation codes: several, so a key can be replaced without breaking codes already sent
+  var SUP_KEYS = [{"kty":"EC","crv":"P-256","x":"x7VHEChKqEpO9I-LcD_e_nSFgbTr33QoZV1CsGGYQD0","y":"9wadtgrOJmDJAiAz4IQqZzR6gIa1_fbRnHOL5jDb4rc"}];
+  var SUP_ABC = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";      // Crockford's base 32: no I, L, O or U to misread
+  var SUP_MSG = "entrain-unlock-v1:";                    // what's signed: this, then the device's ten characters
+  var SUP_RE = /([0-9A-Z]{5}-?[0-9A-Z]{5})\.([A-Za-z0-9_-]{86})/i;
+  var SUP_NOTE = "One of the new techniques: it opens with a donation of €1 or more, once on each device.";
+  var SUP_EACH = "It unlocks this device and this browser only. On another device, or once this browser's data is cleared, a new donation unlocks it there. Backups don't carry it.";
+  /* state: none (no code kept), checking (a kept code being checked), ok, wrong-device, bad (not signed by
+     a key here), no-crypto (a page the browser gives no cryptography, such as plain http).
+     waits: gates waiting for a check to finish. mem: the device code for this visit only, when the browser
+     keeps nothing (an unlock then lasts as long as ok does, until the page closes). keys: the imported
+     public keys. Then the open dialog: the item it names and what to tell when it closes; and the last
+     activation's result, with where it shows (the dialog, Settings, or a link, shown in Settings). */
+  var SUP = { ok: false, state: "none", waits: [], mem: "", keys: null, name: "", done: [], res: null };
+
+  function supOn() { return SUP.ok; }
+  // an item that needs the gate before it's used: flagged, and this device not unlocked (yet)
+  function supLocked(x) { return !!(x && x.sup) && !SUP.ok; }
+  // the badge for a locked item's row, card or chip ("" once unlocked); icon: the cup alone, for a chip
+  function supTag(icon) {
+    if (SUP.ok) return "";
+    var cup = '<svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>';
+    return icon ? '<span class="sup-tag sup-ic" role="img" aria-label="Opens with a donation" title="Opens with a donation">' + cup + "</span>"
+      : '<span class="sup-tag">' + cup + "Donation</span>";
+  }
+  // whether this page can check a code: the browser keeps its cryptography for https and files on the device
+  function supCan() { return !!(window.crypto && crypto.subtle && crypto.subtle.verify && window.TextEncoder); }
+
+  /* ----- the device code ----- */
+  // what was typed or pasted: capitals, no spaces or dashes, and O, I and L read as the digits they look like
+  function supNorm(s) { return String(s || "").toUpperCase().replace(/[\s-]+/g, "").replace(/O/g, "0").replace(/[IL]/g, "1"); }
+  function supValid(d) { return d.length === 10 && d.split("").every(function (c) { return SUP_ABC.indexOf(c) >= 0; }); }
+  function supFmt(d) { return d.slice(0, 5) + "-" + d.slice(5); }
+  // this device's code, made the first time it's needed and kept; a browser that keeps nothing gets one for this visit
+  function supDevice() {
+    var d = supNorm(store.get("device"));
+    if (supValid(d)) return d;
+    if (SUP.mem) return SUP.mem;
+    var a = new Uint8Array(10);
+    try { crypto.getRandomValues(a); } catch (e) { for (var j = 0; j < 10; j++) a[j] = Math.floor(Math.random() * 256); }
+    d = "";
+    for (var i = 0; i < 10; i++) d += SUP_ABC.charAt(a[i] & 31);    // 256 is a multiple of 32: every character as likely
+    store.set("device", d);
+    if (store.get("device") !== d) SUP.mem = d;
+    return d;
+  }
+
+  /* ----- activation codes ----- */
+  // { device, sig, code } from a code or a link, wherever it is in the text (an email may have wrapped it), or null
+  function supParse(text) {
+    var m = String(text || "").replace(/\s+/g, "").match(SUP_RE);
+    if (!m) return null;
+    var dev = supNorm(m[1]);
+    return supValid(dev) ? { device: dev, sig: m[2], code: dev + "." + m[2] } : null;
+  }
+  function supBytes(b64) {
+    var s = b64.replace(/-/g, "+").replace(/_/g, "/");
+    while (s.length % 4) s += "=";
+    var bin = atob(s), out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  // a promise: did one of SUP_KEYS sign this device's code?
+  function supSigned(a) {
+    var sub = crypto.subtle, sig, data;
+    try { sig = supBytes(a.sig); data = new TextEncoder().encode(SUP_MSG + a.device); } catch (e) { return Promise.resolve(false); }
+    if (sig.length !== 64) return Promise.resolve(false);
+    if (!SUP.keys) SUP.keys = SUP_KEYS.map(function (k) {
+      return sub.importKey("jwk", { kty: "EC", crv: "P-256", x: k.x, y: k.y, ext: true }, { name: "ECDSA", namedCurve: "P-256" }, false, ["verify"])
+        .catch(function () { return null; });
+    });
+    return Promise.all(SUP.keys.map(function (kp) {
+      return kp.then(function (key) { return key ? sub.verify({ name: "ECDSA", hash: "SHA-256" }, key, sig, data) : false; }).catch(function () { return false; });
+    })).then(function (r) { return r.indexOf(true) >= 0; });
+  }
+  // a promise of what a code is: ok (for this device), wrong-device (signed, for another), bad, or no-crypto
+  function supCheck(a) {
+    if (!supCan()) return Promise.resolve("no-crypto");
+    return supSigned(a).then(function (y) { return !y ? "bad" : a.device === supDevice() ? "ok" : "wrong-device"; }, function () { return "bad"; });
+  }
+  // what a result means, in a sentence
+  function supSay(r, a) {
+    if (r === "ok") return "Unlocked on this device. Thank you for your donation.";
+    if (r === "wrong-device") return "That code is for another device, " + supFmt(a.device) + ". This device's code is " + supFmt(supDevice()) +
+      ": a donation with it unlocks this one.";
+    if (r === "no-crypto") return "This page can't check codes. Open Entrain from its web address (https) or as a file on this device, then try again.";
+    if (r === "empty") return "Paste the activation code or link from the email first.";
+    if (r === "busy") return "Checking…";
+    return "That isn't a valid activation code. Check that you copied all of it.";
+  }
+  function supSettle() {
+    var w = SUP.waits;
+    SUP.waits = [];
+    w.forEach(function (x) { try { x.fn(); } catch (e) {} });
+  }
+  // a code from the paste field (where: "dlg" or "st") or a link ("link"); then(result) once it's decided
+  function supActivate(text, where, then) {
+    var a = supParse(text), show = function (r) {
+      SUP.res = { r: r, txt: supSay(r, a), where: where };
+      supResult();
+      if (then) then(r);
+    };
+    if (!a) { show(String(text || "").trim() ? "bad" : "empty"); return; }
+    show("busy");
+    supCheck(a).then(function (r) {
+      if (r === "ok") {
+        store.set("unlock", a.code);                  // kept; a browser that keeps nothing still has it for this visit
+        SUP.ok = true; SUP.state = "ok";
+        supSettle();
+      }
+      show(r);
+      if (r === "ok") supRefresh();
+    });
+  }
+
+  /* ----- the gate ----- */
+  /* Called at the moment of use. Unlocked: go() runs, and it returns true. While a kept code is being
+     checked (a moment after the app opens), it waits for the answer, then decides. Otherwise the dialog
+     opens, naming what was tapped, and go isn't called; done(unlocked), if given, runs when it closes. */
+  function supGate(name, go, done) {
+    if (SUP.ok) { go(); return true; }
+    if (SUP.state === "checking") {
+      SUP.waits = SUP.waits.filter(function (x) { return x.name !== name; });     // tapped twice while waiting: once
+      SUP.waits.push({ name: name, fn: function () { if (SUP.ok) go(); else supOpen(name, done); } });
+      return false;
+    }
+    supOpen(name, done);
+    return false;
+  }
+
+  /* ----- the dialog ----- */
+  function supOpen(name, done) {
+    if ($("#bStage").classList.contains("focus")) setFocus(false);    // Breathe's full-screen stage would hide it
+    if ($("#supModal").hidden) SUP.done = [];
+    SUP.name = name || "";
+    if (done) SUP.done.push(done);                   // asked for again while open (a link and Breathe opening, say): each hears when it closes
+    if (SUP.res && SUP.res.where === "dlg") SUP.res = null;
+    $("#supIn").value = "";
+    $("#supSaid").hidden = true;
+    supDlgSync();
+    if ($("#supModal").hidden) { openDialog("#supModal"); $("#supModal .modal-card").scrollTop = 0; }
+    setTimeout(function () { try { $(SUP.ok ? "#supClose" : "#supCopy").focus({ preventScroll: true }); } catch (e) {} }, 30);
+  }
+  function supClose() {
+    if ($("#supModal").hidden) return;
+    var done = SUP.done;
+    SUP.done = [];
+    closeDialog("#supModal");
+    done.forEach(function (f) { try { f(SUP.ok); } catch (e) {} });
+  }
+  // the warning a browser may need: one that can't check codes, or keeps nothing
+  function supWarn() {
+    supDevice();
+    if (!supCan()) return "Unlocking needs Entrain opened from its web address (https) or as a file on this device: this page can't check a code.";
+    if (SUP.mem) return "This browser isn't keeping Entrain's data, so an unlock would last only until this page closes.";
+    return "";
+  }
+  function supDlgSync() {
+    var w = supWarn();
+    $("#supFor").hidden = !SUP.name;
+    if (SUP.name) bSetT("#supFor", SUP.name + " is one of the new techniques.");
+    bSetT("#supDev", supFmt(supDevice()));
+    $("#supWarn").hidden = !w;
+    bSetT("#supWarn", w);
+    $("#supSteps").hidden = SUP.ok;
+    bSetT("#supClose", SUP.ok ? "Close" : "Not now");
+    supResult();
+  }
+  // the result line, in the dialog or in Settings
+  function supResult() {
+    var r = SUP.res;
+    [["dlg", "#supRes"], ["st", "#supStRes"]].forEach(function (x) {
+      var el = $(x[1]), on = !!r && (r.where === x[0] || (x[0] === "st" && r.where === "link"));
+      if (!el) return;
+      el.textContent = on ? r.txt : "";
+      el.hidden = !on;
+      el.className = "sup-res" + (on ? " " + (r.r === "ok" ? "ok" : r.r === "busy" ? "" : "bad") : "");
+    });
+  }
+  // Copy: to the clipboard, or, where the browser won't, the code selected to copy by hand
+  function supCopy(codeSel, saidSel) {
+    var txt = supFmt(supDevice());
+    copyText(txt, function (ok) {
+      if (!ok) {
+        try { var r = document.createRange(), s = window.getSelection(); r.selectNodeContents($(codeSel)); s.removeAllRanges(); s.addRange(r); } catch (e) {}
+      }
+      bSetT(saidSel, ok ? "Copied: " + txt : "It's selected: copy it from your browser's menu.");
+      $(saidSel).hidden = false;
+    });
+  }
+
+  /* ----- Settings: New techniques ----- */
+  // what the donation unlocks, from the items flagged sup, so it stays current
+  function supItems() {
+    var out = [];
+    PRACTICES.forEach(function (d) { if (d.sup) out.push({ name: d.name, href: "#practice/" + d.id }); });
+    BREATHS.forEach(function (b) { if (b.sup) out.push({ name: patName(b), href: "#breathe/" + b.id }); });
+    TRACKS.forEach(function (t) { if (t.sup) out.push({ name: t.name, href: "#track/" + t.id }); });
+    return out;
+  }
+  function supCard() {
+    return '<section class="st-card" id="st-supporter" aria-labelledby="stU"><h2 id="stU">New techniques</h2>' +
+      '<p class="st-note">The techniques from the brain-wave guide open with a donation of €1 or more on Ko-fi, once on each device.</p>' +
+      '<p class="sup-st" id="supSt"></p>' +
+      '<div class="sup-dev"><span class="sup-dl">Your device code</span><code class="mono" id="supStDev"></code><button class="btn" id="supStCopy">Copy</button></div>' +
+      '<p class="sup-said" id="supStSaid" aria-live="polite" hidden></p>' +
+      '<div class="sup-how" id="supStHow"><p>Donate €1 or more on Ko-fi and put your device code in the message. You\'ll get an activation link by email: open it on this device, or paste the code here.</p>' +
+        '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Donate on Ko-fi</a>' +
+        '<div class="sup-paste"><input id="supStIn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Activation code or link" aria-label="Activation code or link">' +
+        '<button class="btn primary" id="supStGo">Activate</button></div></div>' +
+      '<p class="sup-res" id="supStRes" aria-live="polite" hidden></p>' +
+      '<p class="sup-warn" id="supStWarn" hidden></p>' +
+      '<p class="st-note">' + SUP_EACH + "</p>" +
+      '<h3 class="sup-h">What it unlocks</h3><ul class="sup-list" id="supList"></ul>' +
+      "</section>";
+  }
+  function supStSync() {
+    var st = $("#supSt");
+    if (!st) return;
+    var w = supWarn(), items = supItems();
+    st.innerHTML = SUP.ok ? "<b>Unlocked on this device.</b> Thank you for your donation." : SUP.state === "checking" ? "Checking this device's code…" : "<b>Locked</b> on this device.";
+    st.classList.toggle("on", SUP.ok);
+    bSetT("#supStDev", supFmt(supDevice()));
+    $("#supStHow").hidden = SUP.ok;
+    $("#supStWarn").hidden = !w;
+    bSetT("#supStWarn", w);
+    $("#supList").innerHTML = items.length ? items.map(function (x) { return '<li><a href="' + esc(x.href) + '">' + esc(x.name) + "</a></li>"; }).join("")
+      : "<li>None yet: they come in an update, and open here once this device is unlocked.</li>";
+    supResult();
+  }
+  function supStWire() {
+    var go = $("#supStGo");
+    if (!go) return;
+    $("#supStCopy").addEventListener("click", function () { supCopy("#supStDev", "#supStSaid"); });
+    go.addEventListener("click", function () { supActivate($("#supStIn").value, "st"); });
+    $("#supStIn").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); supActivate(this.value, "st"); } });
+    $("#supStIn").addEventListener("input", function () { if (SUP.res && SUP.res.where !== "dlg") { SUP.res = null; supResult(); } });
+    supStSync();
+  }
+
+  /* ----- links: #unlock opens the dialog; #unlock/<code> unlocks from the email ----- */
+  function supRoute(code, from) {
+    if (code) {
+      location.replace("#st-supporter");                       // the code doesn't stay in the history
+      supActivate(code, "link", function (r) {
+        if (r === "ok") toast("Unlocked on this device. Thank you for your donation.");
+        if (r !== "busy" && curView === "settings") { var sec = $("#st-supporter"); if (sec) setTimeout(function () { jumpTo(sec); }, 30); }
+      });
+      return;
+    }
+    if (SUP.ok) { location.replace("#st-supporter"); return; }
+    var back = from && from.indexOf("#") >= 0 ? from.slice(from.indexOf("#")) : "";
+    if (curView && !/^#unlock/.test(back)) {                   // over the page you were on, which keeps its address
+      try { history.replaceState(null, "", back || location.pathname + location.search); } catch (e) {}
+    } else location.replace("#st-supporter");                  // opened at #unlock: over Settings' section
+    supOpen("");
+  }
+
+  /* ----- whatever shows a lock: redrawn once the answer is known ----- */
+  function supRefresh() {
+    FD.base = null;                                           // search builds its index again, with or without the badges
+    if (FD.open) fdRender();
+    bSupChips();
+    if (curView === "home") todayRender();
+    else if (curView === "practice") pRenderLib();
+    else if (curView === "session" && P.view && !$("#sIntro").hidden) pIntroReplan(P.view);
+    else if (curView === "track") trSync();
+    supStSync();
+    if (!$("#supModal").hidden) supDlgSync();
+  }
+
+  // the kept code, checked as Entrain opens
+  function supKept() {
+    var kept = store.get("unlock"), a = kept ? supParse(kept) : null;
+    SUP.ok = false;
+    SUP.state = !kept ? "none" : !a ? "bad" : "checking";
+    if (a) supCheck(a).then(function (r) {
+      if (SUP.state === "checking") { SUP.state = r; SUP.ok = r === "ok"; }    // unless a code pasted meanwhile has decided it
+      supSettle();
+      supRefresh();
+    });
+  }
+  function supInit() {
+    supKept();
+    $("#supKofi").href = DONATE;
+    $("#supCopy").addEventListener("click", function () { supCopy("#supDev", "#supSaid"); });
+    $("#supGo").addEventListener("click", function () { supActivate($("#supIn").value, "dlg"); });
+    $("#supIn").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); supActivate(this.value, "dlg"); } });
+    $("#supIn").addEventListener("input", function () { if (SUP.res && SUP.res.where === "dlg") { SUP.res = null; supResult(); } });
+    $("#supClose").addEventListener("click", supClose);
+    $("#supModal").addEventListener("click", function (e) { if (e.target === this) supClose(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#supModal").hidden) { e.preventDefault(); supClose(); } });
   }
 
   /* ------------------------------- asana library -------------------------------
@@ -9541,6 +9977,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      chime that sounds in place of the voice ("chime"). A step can end when you tap a button
      (endTap names it), dim the screen (dim), and put a line of its own under its name (sub). Programmes add `audio`: a binaural layer whose beat follows
      piecewise-linear points [[second, Hz], ...] across the whole programme.
+     A technique from the brain-wave guide carries `sup: true`: it opens with a donation, once on each
+     device (supporter.js), and every way to start it asks for that first; its page stays free to read.
+     Patterns in BREATHS and tracks in TRACKS take the same flag.
   ------------------------------------------------------------------------------ */
 
   function pLines(lines, secs) {
@@ -12264,11 +12703,25 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     li.hidden = !x;
     if (x) li.firstChild.textContent = x.name;
   }
+  /* A new technique (sup: true) not yet unlocked on this device: the practice itself, or the one chosen to
+     begin it (noPre: carrying on from that, or from a draft, which skips it). null when it can start. */
+  function pSupWho(d, noPre) {
+    if (supLocked(d)) return d;
+    var pre = noPre ? "" : pChoice(d, "pre"), x = pre && pDef(pre);
+    return x && !x.choices && supLocked(x) ? x : null;
+  }
   // again: a restart, which keeps the pace and beat you set while it ran and skips the cautions you've already confirmed
   function pStart(again) {
     var d = P.view, resume = P.resume;                 // resume: a reflection's draft to carry on from (nvcDraftResume)
     P.resume = null;
     if (!d) return;
+    // every start comes through here: Start, a draft carried on, the end screen's Continue (a restart is already running)
+    var lk = again !== true && pSupWho(d, P.chainGo || !!resume), cg = P.chainGo;
+    if (lk) {
+      P.chainGo = false;
+      supGate(lk.name, function () { if (P.view !== d) return; P.resume = resume; P.chainGo = cg; pStart(again); });
+      return;
+    }
     if (d.confirm && again !== true && !$("#sOk").checked) { $("#sOk").focus(); return; }
     /* A practice can begin with another, chosen on its page ("Begin with", choice "pre"): that one runs
        first, and its end screen leads on to this one (P.chain). Carrying on (P.chainGo) or a restart skips it. */
@@ -12486,13 +12939,25 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       return '<li data-k="' + r.k + '"><span>' + esc(r.title) + "</span><time>" + (d.selfPaced && r.k === "write" ? "your pace" : fmt(r.secs)) + "</time></li>";
     }).join("");
   }
+  // the Start button: "Start 10 min", or for a new technique not yet unlocked on this device, the way to unlock it
+  function pGoHtml(d, plan) {
+    return pSupWho(d) ? '<svg class="i ic-stroke" aria-hidden="true"><use href="#i-cup"/></svg>Unlock to start'
+      : '<svg class="i" aria-hidden="true"><use href="#i-play"/></svg>' + pGoTxt(d, plan);
+  }
+  function pGoSync(d, plan) {
+    var go = $("#sGo"), ok = $("#sOk"), note = $("#sSupNote"), lk = !!pSupWho(d);
+    if (!go) return;
+    go.innerHTML = pGoHtml(d, plan);
+    go.disabled = !!d.confirm && !lk && !(ok && ok.checked);      // locked, it opens the way to unlock it, cautions or not
+    if (note) note.hidden = !lk;
+  }
   function pIntroReplan(d) {
     if (P.view !== d) return;
-    var el = $("#sIntro"), plan = pPlan(d, pLenOf(d, P.len)), go = $("#sGo");
+    var el = $("#sIntro"), plan = pPlan(d, pLenOf(d, P.len));
     bSetT("#sIntro .si-kind", pKindTxt(d, plan));
     el.querySelector(".si-tl").innerHTML = pSegsHtml(d, plan);
     el.querySelector(".si-steps").innerHTML = pStepsHtml(d, plan);
-    if (go) go.lastChild.textContent = pGoTxt(d, plan);
+    pGoSync(d, plan);
     pPreRow(d);
   }
   function pIntro(id) {
@@ -12590,7 +13055,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       '<div class="si-bar">' +
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
-        '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>' + pGoTxt(d, plan) + "</button>" +
+        '<button class="btn primary si-go" id="sGo"' + (d.confirm && !pSupWho(d) ? " disabled" : "") + ">" + pGoHtml(d, plan) + "</button>" +
+        '<p class="si-bar-note" id="sSupNote"' + (pSupWho(d) ? "" : " hidden") + ">" + SUP_NOTE + "</p>" +
       "</div>" +
       '<aside class="si-opts">' + (d.reflect ? nvcDraftStrip(d) : "") +     // first thing on a phone, beside the steps on a computer
         '<button class="so-sum" id="sOptsBtn" aria-expanded="' + openOpts + '" aria-controls="sOpts"><span class="so-sum-t"><b>Options</b>' +
@@ -12744,7 +13210,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     });
     var ph = $("#sTapPhrase");
     if (ph) ph.addEventListener("input", function () { store.set("tapPhrase", this.value.trim()); });
-    on("#sOk", function () { $("#sGo").disabled = !this.checked; });
+    on("#sOk", function () { $("#sGo").disabled = !this.checked && !pSupWho(d); });
     var dg = $("#sDraftGo"), dd = $("#sDraftDel");
     if (dg) dg.addEventListener("click", function () { P.resume = nvcDraftGet(d.id); pStart(); });
     if (dd) dd.addEventListener("click", function () {     // two taps, like End: a discarded draft is gone
@@ -12987,7 +13453,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList,
+      SUP: SUP, supOn: supOn, supKept: supKept, supRefresh: supRefresh, supDevice: supDevice, FD: FD };   // for automated tests only
   }
   /* ------------------------------- the end screen -------------------------------
      What a practice measured, as tiles you can tap for what each number means, with your own
@@ -13035,7 +13502,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       (r.stress ? "" : sdNext(d)) +
       qCard(d.reflect ? ROGERS : qPick()) +
       '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>' +
-      '<div class="note-card donate-card sd-donate"><p><b>Entrain is free and has no ads.</b> If it helps you, a donation keeps it going.</p>' +
+      '<div class="note-card donate-card sd-donate"><p><b>Entrain has no ads, and most of it is free.</b> The new techniques open with a donation of €1 or more on each device, and every donation keeps it going.</p>' +
       '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a></div>';
     var el = $("#sDone");
     el.innerHTML = h;
@@ -13047,6 +13514,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (cg) cg.addEventListener("click", function () {     // on to the practice this one began
       var nx = P.chain && pDef(P.chain.then);
       if (!nx) return;
+      if (supLocked(nx) && !supGate(nx.name, function () { cg.click(); })) return;    // a new technique, locked: the way to unlock it first
       P.view = nx; P.len = P.chain.len; P.chainGo = true;
       try { history.replaceState(null, "", "#practice/" + nx.id); } catch (e) {}
       pStart();
@@ -13067,9 +13535,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function sdNext(d) {
     var ch = P.chain && P.chain.then !== d.id ? pDef(P.chain.then) : null;
     if (ch) return '<div class="note-card sd-next"><p><b>Next: ' + esc(ch.name) + ".</b> " + esc(ch.chainTxt || "") + "</p>" +
-      '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + "</button></div>";
+      '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + (ch.sup ? supTag() : "") + "</button></div>";
     var nx = d.next && pDef(d.next.id);
-    return nx ? '<div class="note-card sd-next"><p>' + esc(d.next.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + "</a></div>" : "";
+    return nx ? '<div class="note-card sd-next"><p>' + esc(d.next.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + (nx.sup ? supTag() : "") + "</a></div>" : "";
   }
 
   // what each number means, with your own value read back
@@ -13421,18 +13889,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (d.caution) badges.push(["cau", "Cautions"]);
     return { key: d.id, type: "practice", def: d, name: d.name, blurb: d.blurb, goal: d.goal || "", also: d.also || [],
       method: d.method || "move", posture: d.posture || ["stand"], needs: libNeeds(d), mins: m, minsTxt: libMinsTxt(d, m),
-      href: "#practice/" + d.id, icon: pIcon(d), col: pColor(d), strength: d.strength, badges: badges, prog: d.method === "program" };
+      href: "#practice/" + d.id, icon: pIcon(d), col: pColor(d), strength: d.strength, badges: badges, prog: d.method === "program", sup: !!d.sup };
   }
   function libPattern(b) {
     var t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
     return { key: "b:" + b.id, type: "pattern", name: patName(b), blurb: b.desc, goal: b.goal || "", also: b.also || [],
       method: "breath", posture: b.posture || ["sit"], needs: [], mins: [1, 60], minsTxt: (Math.round(600 / per) / 10) + " breaths a minute",
-      label: "Breathing guide", href: "#breathe/" + b.id, icon: "breathe", col: "var(--b-in)", strength: b.strength, badges: b.mine ? [["mine", "Yours"]] : [] };
+      label: "Breathing guide", href: "#breathe/" + b.id, icon: "breathe", col: "var(--b-in)", strength: b.strength, badges: b.mine ? [["mine", "Yours"]] : [], sup: !!b.sup };
   }
   function libTrack(t) {
     return { key: "t:" + t.id, type: "track", name: t.name, blurb: t.desc, goal: t.goal, also: t.also || [],
       method: "sound", posture: t.posture, needs: ["phones"], mins: [t.minutes, t.minutes], minsTxt: t.minutes + " min",
-      label: t.band + " track", href: "#track/" + t.id, icon: "sounds", col: LIB_TRACK_COL[t.cat] || "var(--relax)", strength: t.strength, badges: [] };
+      label: t.band + " track", href: "#track/" + t.id, icon: "sounds", col: LIB_TRACK_COL[t.cat] || "var(--relax)", strength: t.strength, badges: [], sup: !!t.sup };
   }
   function libTool(id) {
     var x = TOOLS[id], c = CAT["x:" + id] || {};
@@ -13530,7 +13998,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       '<a href="' + esc(it.href) + '" class="pc-a">' +
         '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + it.icon + '"/></svg></span>' +
         '<span class="pc-b"><span class="pc-top"><b>' + esc(it.name) + "</b>" + (it.strength ? dots(it.strength) : "") + "</span>" +
-          '<span class="pc-meta"><span class="pc-sub">' + esc(sub) + "</span>" +
+          '<span class="pc-meta"><span class="pc-sub">' + esc(sub) + "</span>" + (it.sup ? supTag() : "") +     // a new technique, locked: on Today too
             (o.compact ? "" : it.badges.map(function (b) { return '<span class="' + b[0] + '">' + esc(b[1]) + "</span>"; }).join("")) + "</span>" +
           (it.blurb && !o.compact ? '<span class="pc-blurb">' + esc(it.blurb) + "</span>" : "") + tl +
         "</span></a></li>";
@@ -13673,8 +14141,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   /* -------------------------------- settings --------------------------------
      What every practice starts with (a practice can change its own under Options on its page),
-     the background sound, what's kept of reflections, how the screen behaves, your data
-     (backup.js), the feedback form, and About with the build.
+     the background sound, what's kept of reflections, how the screen behaves, the new techniques
+     (supporter.js), your data (backup.js), the feedback form, and About with the build.
   ------------------------------------------------------------------------------ */
 
   var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true };
@@ -13735,16 +14203,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap, Cognitive Shuffle and Autogenic Training's bedtime ending go almost dark. The screen still stays on.") +
-      "</section>" + bkCard() +
+      "</section>" + supCard() + bkCard() +
       '<section class="st-card st-fb" id="st-feedback" aria-labelledby="stF"><h2 id="stF">Feedback</h2>' + fbForm() + "</section>" +
       '<section class="st-card st-about" aria-labelledby="stI"><h2 id="stI">About</h2>' +
         '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project, and free software under the GNU AGPL, version 3. <a href="#l-impressum">Impressum, licence and credits</a></p>' +
         '<p class="st-note">Build <span class="mono" id="stBuild">' + BUILD + '</span></p>' +
-        '<p class="st-note">Entrain is free and has no ads. If it helps you, a donation keeps it going.</p>' +
+        '<p class="st-note">Entrain has no ads, and most of it is free. The techniques from the brain-wave guide open with a donation of €1 or more on each device, and every donation keeps it going.</p>' +
         '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a>' +
       "</section>";
     stWire();
     fbWire();
+    supStWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }
@@ -15211,7 +15680,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* ------------------------------- search -------------------------------
      One box for everything: practices and your own routines, the movement library, breathing
      patterns, tracks, the Heart tools, Healthy living's recipes, supplements, routines and light, History, Settings
-     and its feedback form, and every paragraph and reference in Learn.
+     with its feedback form and the new techniques, and every paragraph and reference in Learn.
      Matching ignores case and accents, and each word you type has to match the start of a word
      somewhere in the entry, so "anap" finds Anapana and "bencao" finds Bênção. Results come in
      groups, the group with the best match first. Enter opens the top result; "/" or Ctrl+K opens
@@ -15296,7 +15765,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     o = o || {};
     xs = xs.filter(Boolean);
     var bare = !!o.bare;                 // a paragraph shown under its section's name: only its own words count
-    return { k: k, t: t, s: s || "", xs: xs, h: h, ic: o.ic || "spark", col: o.col || "", w: o.w || 1,
+    return { k: k, t: t, s: s || "", xs: xs, h: h, ic: o.ic || "spark", col: o.col || "", w: o.w || 1, sup: !!o.sup,   // sup: a new technique (supporter.js)
       tn: bare ? " " : fdFold(t), ti: bare ? " " : fdFold(t + " " + (o.alias || "")), si: bare ? " " : fdFold(s + " " + (o.tags || "")), xi: fdFold(xs.join(" ")) };
   }
   function fdMins(d) {
@@ -15311,7 +15780,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     });
     return fdEntry("practice", d.name, [d.custom ? "Your routine" : "", g ? g.name : "", methodName(d.method), fdMins(d)].filter(Boolean).join(" · "),
       [d.blurb, d.parts, steps.join(" · "), d.how], "#practice/" + d.id,
-      { ic: pIcon(d), col: pColor(d), w: 1.25, alias: d.alias || "", tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") + (d.words ? " " + d.words : "") });
+      { ic: pIcon(d), col: pColor(d), w: 1.25, alias: d.alias || "", tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") + (d.words ? " " + d.words : ""), sup: d.sup });
   }
   function fdBuildBase() {
     var out = [];
@@ -15330,7 +15799,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       var lab = document.querySelector('#bPats input[value="' + b.id + '"]'), t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
       var name = lab ? fdTxt(lab.parentNode) : b.id;
       out.push(fdEntry("breath", name, (goalOf(b.goal) ? goalOf(b.goal).name + " · " : "") + "Breathing pattern · " + (Math.round(600 / per) / 10) + " breaths a minute",
-        [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id }));
+        [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id, sup: b.sup }));
     });
     out.push(fdEntry("breath", "Breathing guide", "Breathe · paced breathing",
       ["Paced breathing with five visuals, timed sessions, sound cues and live heart data."], "#breathe",
@@ -15338,7 +15807,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     TRACKS.forEach(function (t) {
       var g = goalOf(t.goal), gn = g ? g.name : "Tinnitus";
       out.push(fdEntry("sound", t.name, gn + " · " + t.band + " track · " + t.minutes + " min", [t.desc, t.ev], "#track/" + t.id,
-        { ic: "sounds", col: "var(--relax)", w: 1, alias: t.goal === "tinnitus" ? "tinnitus" : "", tags: "binaural beat track " + (t.also || []).join(" ") }));
+        { ic: "sounds", col: "var(--relax)", w: 1, alias: t.goal === "tinnitus" ? "tinnitus" : "", tags: "binaural beat track " + (t.also || []).join(" "), sup: t.sup }));
     });
     out.push(fdEntry("sound", "Custom primer", "Focus · Sound · 5 to 20 min before a task",
       ["Listen to a beat before you start a task, get a cue when the block ends, then begin working."], "#prime",
@@ -15364,6 +15833,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("app", "Feedback", "Settings · an idea, a problem or something you liked",
       ["Write it in Settings, and it opens as an issue on Entrain's GitHub page, ready to send."], "#feedback",
       { ic: "send", col: "var(--accent)", w: 1, tags: "contact bug report issue github suggestion idea problem praise question" }));
+    out.push(fdEntry("app", "New techniques", "Settings · a donation of €1 or more unlocks them on this device",
+      ["The techniques from the brain-wave guide open with a donation of €1 or more on Ko-fi, once on each device: your device code, the activation code from the email, and what it unlocks."], "#st-supporter",
+      { ic: "cup", col: "var(--stim)", w: 1, tags: "unlock donation donate supporter support kofi ko fi activation code device brain wave guide" }));
     out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
       ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
       { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));
@@ -15468,7 +15940,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         var i = FD.items.push(e) - 1;
         h += '<li><a class="fd-it" href="' + esc(e.h) + '" data-i="' + i + '"' + (e.col ? ' style="--pcol:' + e.col + '"' : "") + ">" +
           '<span class="fd-iic"><svg class="i" aria-hidden="true"><use href="#i-' + e.ic + '"/></svg></span>' +
-          '<span class="fd-tx"><b>' + fdMark(e.t, terms) + "</b><small>" + fdMark(e.s, terms) + "</small>" +
+          '<span class="fd-tx"><b>' + fdMark(e.t, terms) + "</b><small>" + (e.sup ? supTag() : "") + fdMark(e.s, terms) + "</small>" +
           '<span class="fd-sn">' + fdLine(e, terms) + "</span></span></a></li>";
       });
       h += "</ul>";
@@ -16730,7 +17202,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var it = hKey(e) ? libItem(hKey(e)) : null;
     if (e.k === "test") return { name: "Resonance test", href: "#resonance-test", icon: "target", col: "var(--hr)", goal: "" };
     if (e.k === "breath" && e.id === "custom") return { name: "Your own breathing pattern", href: "#breathe", icon: "breathe", col: "var(--b-in)", goal: "" };
-    if (it) return { name: it.name, href: it.href, icon: it.icon, col: it.col, goal: it.goal };
+    if (it) return { name: it.name, href: it.href, icon: it.icon, col: it.col, goal: it.goal, sup: it.sup };
     // a routine you've since deleted, or something renamed
     return { name: e.n || "A session", href: e.k === "practice" ? "#practice" : e.k === "breath" ? "#breathe" : "#home", icon: e.k === "breath" ? "breathe" : e.k === "track" ? "sounds" : "practice", col: "var(--accent)", goal: "" };
   }
@@ -16809,7 +17281,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var it = hItem(e);
     return '<li class="hi-e" style="--pcol:' + it.col + '"><a href="' + esc(it.href) + '">' +
       '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + it.icon + '"/></svg></span>' +
-      '<span class="hi-b"><b>' + esc(it.name) + '</b><span>' + esc(hDetail(e)) + "</span></span>" +
+      '<span class="hi-b"><b>' + esc(it.name) + (it.sup ? supTag() : "") + '</b><span>' + esc(hDetail(e)) + "</span></span>" +
       '<time datetime="' + new Date(e.at).toISOString() + '">' + (when ? hWhen(e.at) : hTime(e.at)) + "</time></a></li>";
   }
   function hDays(w) {
@@ -17306,8 +17778,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   ---------------------------------------------------------------------------- */
 
   // about this device rather than about you: the headphone check, the install and offline notes,
-  // whether a heart sensor has ever connected here, and when this device last saved a backup
-  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup"];
+  // whether a heart sensor has ever connected here, when this device last saved a backup, and its
+  // device code and unlock (supporter.js): a donation unlocks one device, so a backup never carries
+  // them to another, and a restore here keeps them
+  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock"];
   // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
   var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
   var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+)$/;
@@ -17538,7 +18012,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (window.console && console.error) console.error("Entrain: " + name + " didn't start", e);
     }
   }
-  [["the player", playerInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
+  [["the new techniques", supInit],                         // first: whether this device is unlocked decides how Breathe opens
+    ["the player", playerInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["search", fdInit], ["backups", bkInit],
