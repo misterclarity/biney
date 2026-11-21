@@ -373,39 +373,65 @@
     else if (!dvGate("start")) { bFresh(); bResume(); }
   }
 
-  /* ----- Swim & dive's cautions: read once, before its first session, and any time from the stage ----- */
-  var DV = { then: "" };                  // what "I understand" goes on to do: start, resume, or nothing
-  function dvGate(then) {
-    if (!BC.long || store.get("diveOk")) return false;
-    dvOpen(then);
+  /* ----- Swim & dive's cautions: shown the first time it's opened (picked, linked to, or on Breathe
+     when it was left chosen) until "I understand the risks"; after that it starts like any other
+     pattern, and the stage's button shows them again just to read. "Not now", Escape or a tap
+     outside go back to the pattern before, so it can't be used unaccepted. ----- */
+  var DV = { gate: false, then: "", paused: false, back: null };
+  function dvAcked() { return store.get("diveAck") === "1"; }
+  // the timings to go back to if the cautions are declined
+  function dvSnap() { return { pattern: BC.pattern, inh: BC.inh, sip: BC.sip, hold: BC.hold, exh: BC.exh, rest: BC.rest, long: BC.long }; }
+  // Swim & dive's range is on and its cautions aren't accepted yet: show them (once open, a later
+  // call only adds what to do after, such as starting), and say they're showing
+  function dvGate(then, back) {
+    if (!BC.long || dvAcked()) return false;
+    if (!DV.gate) { DV.back = back || null; DV.then = ""; DV.paused = false; }
+    if (then) DV.then = then;
+    dvOpen(true);
     return true;
   }
-  function dvOpen(then) {
-    DV.then = then || "";
+  function dvOpen(gate) {
+    DV.gate = !!gate;
+    if (!gate) { DV.then = ""; DV.back = null; DV.paused = false; }
     if ($("#bStage").classList.contains("focus")) setFocus(false);    // a full-screen stage would hide the dialog
     $("#dvList").innerHTML = SAFE_DIVE.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("");
-    $("#dvGo").hidden = !DV.then;
-    bSetT("#dvGo", DV.then === "resume" ? "I understand, carry on" : "I understand, start");
-    bSetT("#dvClose", DV.then ? "Cancel" : "Close");
-    openDialog("#dvModal");
-    $("#dvModal .modal-card").scrollTop = 0;
-    setTimeout(function () { try { $(DV.then ? "#dvGo" : "#dvClose").focus({ preventScroll: true }); } catch (e) {} }, 30);
+    $("#dvGo").hidden = !gate;
+    bSetT("#dvClose", gate ? "Not now" : "Close");
+    if ($("#dvModal").hidden) { openDialog("#dvModal"); $("#dvModal .modal-card").scrollTop = 0; }
+    setTimeout(function () { try { $(gate ? "#dvGo" : "#dvClose").focus({ preventScroll: true }); } catch (e) {} }, 30);
   }
-  function dvClose() { DV.then = ""; if (!$("#dvModal").hidden) closeDialog("#dvModal"); }
-  function dvGo() {
-    var then = DV.then;
-    store.set("diveOk", "1");
-    dvClose();
-    if (then === "resume" && B.state === "paused") bResume();
-    else if (then === "start" && (B.state === "idle" || B.state === "done")) { bFresh(); bResume(); }
+  function dvHide() {
+    DV.gate = false; DV.then = ""; DV.back = null; DV.paused = false;
+    if (!$("#dvModal").hidden) closeDialog("#dvModal");
+  }
+  function dvAccept() {
+    var then = DV.then, paused = DV.paused;
+    store.set("diveAck", "1");
+    dvHide();
+    if (then === "start" && (B.state === "idle" || B.state === "done")) { bFresh(); bResume(); }
+    else if ((then === "resume" || paused) && B.state === "paused") bResume();
+  }
+  // declined: back to the pattern before (or Resonance, if Breathe opened on Swim & dive)
+  function dvDecline() {
+    var b = DV.back, paused = DV.paused, gate = DV.gate;
+    dvHide();
+    if (!gate || !BC.long || dvAcked()) return;
+    if (!b || b.long) { var r = preset("resonance").t; b = { pattern: "resonance", inh: r.inh, sip: r.sip, hold: r.hold, exh: r.exh, rest: r.rest }; }
+    BC.pattern = b.pattern; BC.long = false;
+    BC.inh = b.inh; BC.sip = b.sip; BC.hold = b.hold; BC.exh = b.exh; BC.rest = b.rest;
+    MP.from = "";
+    checkRadio("bpat", BC.pattern); syncChips("#bPats");
+    syncFields(); renderNote(); syncVisHint(); applyTimings(); saveBreath(); bChipShow();
+    if (paused && B.state === "paused") bResume();
   }
   function dvInit() {
+    storeDel("diveOk");                                                // accepted under the earlier wording: asked again, once
     $("#bDiveSafe").innerHTML = safeBox(SAFE_DIVE.slice(0, 4));          // the four that matter most; the dialog has them all
-    $("#bDiveInfo").addEventListener("click", function () { dvOpen(""); });
-    $("#dvGo").addEventListener("click", dvGo);
-    $("#dvClose").addEventListener("click", dvClose);
-    $("#dvModal").addEventListener("click", function (e) { if (e.target === this) dvClose(); });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#dvModal").hidden) dvClose(); });
+    $("#bDiveInfo").addEventListener("click", function () { if (!dvGate("")) dvOpen(false); });
+    $("#dvGo").addEventListener("click", dvAccept);
+    $("#dvClose").addEventListener("click", dvDecline);
+    $("#dvModal").addEventListener("click", function (e) { if (e.target === this) dvDecline(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#dvModal").hidden) dvDecline(); });
   }
   function bResume() {
     B.t0 = bNow() - B.st;
@@ -688,6 +714,7 @@
 
     $("#bPats").addEventListener("change", function (e) {
       if (B.finder) finderCancel();
+      var was = dvSnap();                                 // to go back to if Swim & dive's cautions are declined
       checkRadio("bpat", e.target.value);
       syncChips("#bPats");
       MP.from = e.target.value === "custom" && mpQ(BC.pattern) ? BC.pattern : "";   // Custom from a saved pattern can update it
@@ -699,7 +726,7 @@
         syncFields();
       }
       renderNote(); syncVisHint(); applyTimings(); saveBreath();
-      if (B.state === "running" && dvGate("resume")) bPause();      // switched to Swim & dive mid-session: its cautions first
+      if (dvGate("", was) && B.state === "running") { bPause(); DV.paused = true; }   // first opened, even mid-session: its cautions first
     });
     B_FIELDS.forEach(function (f) {
       $(f.id).addEventListener("input", function () {

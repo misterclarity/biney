@@ -3416,15 +3416,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 </div>
 
 
-<!-- ============ SWIM & DIVE: its cautions, read once before its first session ============ -->
+<!-- ============ SWIM & DIVE: its cautions, the first time it's opened, until they're accepted ============ -->
 <div class="modal" id="dvModal" hidden>
   <div class="modal-card dv-card" role="dialog" aria-modal="true" aria-labelledby="dvTitle">
     <h2 id="dvTitle">Swim &amp; dive: read this first</h2>
     <ul class="dv-list" id="dvList"></ul>
     <p class="hint">The research behind it is in Learn, under Breath training for swimming and diving.</p>
     <div class="pm-actions">
-      <button class="btn primary" id="dvGo">I understand, start</button>
-      <button class="btn" id="dvClose">Cancel</button>
+      <button class="btn primary" id="dvGo">I understand the risks</button>
+      <button class="btn" id="dvClose">Not now</button>
     </div>
   </div>
 </div>
@@ -4720,7 +4720,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     // they're all blocking, so Tab has to stay inside them
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return;
-      var box = ["#sfModal", "#scModal", "#pmModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
+      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
       if (!box) return;
       var all = box.querySelectorAll("button, input, a[href], select, textarea");
       var list = [], i;
@@ -4742,7 +4742,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   -------------------------------------------------------------------------------- */
 
   var SAFE_BEATS = "Ask your doctor first if you have epilepsy or another seizure disorder, keep headphones at least 15 cm (6 in) from a pacemaker or implanted defibrillator, and never listen while driving.";
-  // Swim & dive's long breath holds: read once before its first session, the first four on Breathe while its range is on
+  // Swim & dive's long breath holds: shown when it's first opened, until accepted; the first four on Breathe while its range is on
   var SAFE_DIVE = [
     "Swim & dive is done entirely at your own risk.",
     "A breath hold can make you black out without warning, so practise only on dry land, sitting or lying down: never in or near water, in the bath, standing at a height or while driving.",
@@ -5155,39 +5155,65 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else if (!dvGate("start")) { bFresh(); bResume(); }
   }
 
-  /* ----- Swim & dive's cautions: read once, before its first session, and any time from the stage ----- */
-  var DV = { then: "" };                  // what "I understand" goes on to do: start, resume, or nothing
-  function dvGate(then) {
-    if (!BC.long || store.get("diveOk")) return false;
-    dvOpen(then);
+  /* ----- Swim & dive's cautions: shown the first time it's opened (picked, linked to, or on Breathe
+     when it was left chosen) until "I understand the risks"; after that it starts like any other
+     pattern, and the stage's button shows them again just to read. "Not now", Escape or a tap
+     outside go back to the pattern before, so it can't be used unaccepted. ----- */
+  var DV = { gate: false, then: "", paused: false, back: null };
+  function dvAcked() { return store.get("diveAck") === "1"; }
+  // the timings to go back to if the cautions are declined
+  function dvSnap() { return { pattern: BC.pattern, inh: BC.inh, sip: BC.sip, hold: BC.hold, exh: BC.exh, rest: BC.rest, long: BC.long }; }
+  // Swim & dive's range is on and its cautions aren't accepted yet: show them (once open, a later
+  // call only adds what to do after, such as starting), and say they're showing
+  function dvGate(then, back) {
+    if (!BC.long || dvAcked()) return false;
+    if (!DV.gate) { DV.back = back || null; DV.then = ""; DV.paused = false; }
+    if (then) DV.then = then;
+    dvOpen(true);
     return true;
   }
-  function dvOpen(then) {
-    DV.then = then || "";
+  function dvOpen(gate) {
+    DV.gate = !!gate;
+    if (!gate) { DV.then = ""; DV.back = null; DV.paused = false; }
     if ($("#bStage").classList.contains("focus")) setFocus(false);    // a full-screen stage would hide the dialog
     $("#dvList").innerHTML = SAFE_DIVE.map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("");
-    $("#dvGo").hidden = !DV.then;
-    bSetT("#dvGo", DV.then === "resume" ? "I understand, carry on" : "I understand, start");
-    bSetT("#dvClose", DV.then ? "Cancel" : "Close");
-    openDialog("#dvModal");
-    $("#dvModal .modal-card").scrollTop = 0;
-    setTimeout(function () { try { $(DV.then ? "#dvGo" : "#dvClose").focus({ preventScroll: true }); } catch (e) {} }, 30);
+    $("#dvGo").hidden = !gate;
+    bSetT("#dvClose", gate ? "Not now" : "Close");
+    if ($("#dvModal").hidden) { openDialog("#dvModal"); $("#dvModal .modal-card").scrollTop = 0; }
+    setTimeout(function () { try { $(gate ? "#dvGo" : "#dvClose").focus({ preventScroll: true }); } catch (e) {} }, 30);
   }
-  function dvClose() { DV.then = ""; if (!$("#dvModal").hidden) closeDialog("#dvModal"); }
-  function dvGo() {
-    var then = DV.then;
-    store.set("diveOk", "1");
-    dvClose();
-    if (then === "resume" && B.state === "paused") bResume();
-    else if (then === "start" && (B.state === "idle" || B.state === "done")) { bFresh(); bResume(); }
+  function dvHide() {
+    DV.gate = false; DV.then = ""; DV.back = null; DV.paused = false;
+    if (!$("#dvModal").hidden) closeDialog("#dvModal");
+  }
+  function dvAccept() {
+    var then = DV.then, paused = DV.paused;
+    store.set("diveAck", "1");
+    dvHide();
+    if (then === "start" && (B.state === "idle" || B.state === "done")) { bFresh(); bResume(); }
+    else if ((then === "resume" || paused) && B.state === "paused") bResume();
+  }
+  // declined: back to the pattern before (or Resonance, if Breathe opened on Swim & dive)
+  function dvDecline() {
+    var b = DV.back, paused = DV.paused, gate = DV.gate;
+    dvHide();
+    if (!gate || !BC.long || dvAcked()) return;
+    if (!b || b.long) { var r = preset("resonance").t; b = { pattern: "resonance", inh: r.inh, sip: r.sip, hold: r.hold, exh: r.exh, rest: r.rest }; }
+    BC.pattern = b.pattern; BC.long = false;
+    BC.inh = b.inh; BC.sip = b.sip; BC.hold = b.hold; BC.exh = b.exh; BC.rest = b.rest;
+    MP.from = "";
+    checkRadio("bpat", BC.pattern); syncChips("#bPats");
+    syncFields(); renderNote(); syncVisHint(); applyTimings(); saveBreath(); bChipShow();
+    if (paused && B.state === "paused") bResume();
   }
   function dvInit() {
+    storeDel("diveOk");                                                // accepted under the earlier wording: asked again, once
     $("#bDiveSafe").innerHTML = safeBox(SAFE_DIVE.slice(0, 4));          // the four that matter most; the dialog has them all
-    $("#bDiveInfo").addEventListener("click", function () { dvOpen(""); });
-    $("#dvGo").addEventListener("click", dvGo);
-    $("#dvClose").addEventListener("click", dvClose);
-    $("#dvModal").addEventListener("click", function (e) { if (e.target === this) dvClose(); });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#dvModal").hidden) dvClose(); });
+    $("#bDiveInfo").addEventListener("click", function () { if (!dvGate("")) dvOpen(false); });
+    $("#dvGo").addEventListener("click", dvAccept);
+    $("#dvClose").addEventListener("click", dvDecline);
+    $("#dvModal").addEventListener("click", function (e) { if (e.target === this) dvDecline(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#dvModal").hidden) dvDecline(); });
   }
   function bResume() {
     B.t0 = bNow() - B.st;
@@ -5470,6 +5496,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
     $("#bPats").addEventListener("change", function (e) {
       if (B.finder) finderCancel();
+      var was = dvSnap();                                 // to go back to if Swim & dive's cautions are declined
       checkRadio("bpat", e.target.value);
       syncChips("#bPats");
       MP.from = e.target.value === "custom" && mpQ(BC.pattern) ? BC.pattern : "";   // Custom from a saved pattern can update it
@@ -5481,7 +5508,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         syncFields();
       }
       renderNote(); syncVisHint(); applyTimings(); saveBreath();
-      if (B.state === "running" && dvGate("resume")) bPause();      // switched to Swim & dive mid-session: its cautions first
+      if (dvGate("", was) && B.state === "running") { bPause(); DV.paused = true; }   // first opened, even mid-session: its cautions first
     });
     B_FIELDS.forEach(function (f) {
       $(f.id).addEventListener("input", function () {
@@ -7885,7 +7912,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     backSync();
     var gear = $("#tbSet");
     if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
-    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); }, 0);
+    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); dvGate(""); }, 0);   // left on Swim & dive, unaccepted: its cautions
     if (v !== "session" && P.state === "done") P.state = "idle";
     pImmersive();
     pPill();
@@ -8023,7 +8050,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "5284d994";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "4466597f";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {

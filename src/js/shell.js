@@ -49,7 +49,7 @@
     backSync();
     var gear = $("#tbSet");
     if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
-    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); }, 0);
+    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); dvGate(""); }, 0);   // left on Swim & dive, unaccepted: its cautions
     if (v !== "session" && P.state === "done") P.state = "idle";
     pImmersive();
     pPill();

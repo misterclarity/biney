@@ -18,7 +18,7 @@
 //   S  four programmes: Morning Wake-Up, Sports Performance, Creative Flow and Mindful Sex
 //   J  the Heart page explained, breath from the microphone and the spectrum's dashed line, coffee, and the
 //      routines' suggestions behind a button
-//   O  Swim & dive: breath holds on a longer range, at your own risk, its cautions first, and the research in Learn
+//   O  Swim & dive: breath holds on a longer range, at your own risk, its cautions when first opened, and the research in Learn
 const { chromium, APP, OUT } = require('./pw');
 const fs = require('fs'), os = require('os'), path = require('path');
 const S20 = 'Mozilla/5.0 (Linux; Android 13; SM-G988B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
@@ -2367,8 +2367,9 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
     }
 
     /* O. Swim & dive: breath holds for swimmers and divers on the longer range (the in-breath, both holds and the
-       out-breath up to 60 s, the top-up up to 30), at your own risk, its cautions read once before the first
-       session, your own patterns made in it, and the research in Learn */
+       out-breath up to 60 s, the top-up up to 30), at your own risk, its cautions shown the first time it's opened
+       until "I understand the risks" (declined, back to the pattern before), then started freely, your own patterns
+       made in it, and the research in Learn */
     if (!only || only === 'O') {
       let p = await page(OPT());
       await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
@@ -2378,11 +2379,36 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const all = p => E(p, () => Object.assign({}, window.__entrain.BC));
       const dlg = p => E(p, () => ({ open: !document.querySelector('#dvModal').hidden, st: window.__entrain.B.state, items: [...document.querySelectorAll('#dvList li')].map(l => l.textContent),
         go: document.querySelector('#dvGo').hidden ? '' : document.querySelector('#dvGo').textContent, close: document.querySelector('#dvClose').textContent, focus: document.activeElement.id }));
-      ok(await range(p) === USUAL && !(await vis(p, '#bDiveRow')), 'the usual patterns keep the usual range, without the breath-hold cautions');
+      ok(await range(p) === USUAL && !(await vis(p, '#bDiveRow')) && !(await dlg(p)).open, 'the usual patterns keep the usual range, without the breath-hold cautions');
+
+      // opened for the first time: its cautions at once, until "I understand the risks"
       await pick(p, 'dive'); await p.waitForTimeout(250);
+      let m = await dlg(p);
+      ok(m.open && m.st === 'idle' && m.items.length === 7 && m.items[0] === 'Swim & dive is done entirely at your own risk.' && m.go === 'I understand the risks' && m.close === 'Not now' && m.focus === 'dvGo' &&
+        m.items.some(l => /never in or near water, in the bath, standing at a height or while driving/.test(l)) && m.items.some(l => /Fast or deep breathing beforehand delays the urge to breathe/.test(l)) &&
+        m.items.some(l => /called lung packing, can make you faint/.test(l)) && m.items.some(l => /^Ask a doctor first/.test(l)) && m.items.some(l => /coach or a trained buddy watching you/.test(l)),
+        'opened for the first time, it shows its seven cautions at once, with "I understand the risks"');
+      await p.screenshot({ path: OUT + 'choices-o-cautions.png' });
+      for (let i = 0; i < 3; i++) await p.keyboard.press('Tab');
+      ok(await E(p, () => !!document.activeElement.closest('#dvModal')), 'Tab stays inside them');
+      await p.click('#dvClose'); await p.waitForTimeout(200);
       let b = await all(p);
-      ok(b.pattern === 'dive' && b.long === true && b.inh === 5 && b.sip === 2 && b.hold === 15 && b.exh === 10 && b.rest === 5 && (await chips(p)).includes('*Swim & dive'),
-        'Swim & dive, beside 4-7-8: in 5 s, a 2 s top-up, hold 15 s, out 10 s, hold 5 s');
+      ok(!(await dlg(p)).open && b.pattern === 'resonance' && b.long === false && b.inh === 5.5 && await range(p) === USUAL && (await chips(p)).includes('*Resonance 5.5') &&
+        !(await E(p, () => localStorage.getItem('entrain.diveAck'))), '"Not now" goes back to the pattern before, so it can\'t be used unaccepted');
+      await pick(p, 'dive'); await p.waitForTimeout(250);
+      ok((await dlg(p)).open, 'opened again, the cautions come back');
+      await p.keyboard.press('Escape'); await p.waitForTimeout(200);
+      ok(!(await dlg(p)).open && (await all(p)).pattern === 'resonance', 'and Escape declines them too');
+      await pick(p, 'box'); await p.waitForTimeout(150); await pick(p, 'dive'); await p.waitForTimeout(250);
+      await p.click('#dvModal', { position: { x: 5, y: 5 } }); await p.waitForTimeout(200);
+      b = await all(p);
+      ok(!(await dlg(p)).open && b.pattern === 'box' && b.hold === 4 && !b.long, 'as does a tap outside them, back to Box');
+      await pick(p, 'dive'); await p.waitForTimeout(250);
+      await p.click('#dvGo'); await p.waitForTimeout(200);
+      b = await all(p); m = await dlg(p);
+      ok(!m.open && m.st === 'idle' && b.pattern === 'dive' && b.long === true && b.inh === 5 && b.sip === 2 && b.hold === 15 && b.exh === 10 && b.rest === 5 &&
+        (await chips(p)).includes('*Swim & dive') && await E(p, () => localStorage.getItem('entrain.diveAck')) === '1',
+        '"I understand the risks" opens it, ready to start: in 5 s, a 2 s top-up, hold 15 s, out 10 s, hold 5 s');
       ok(await range(p) === LONG, 'its sliders reach 60 s for the in-breath, both holds and the out-breath, and 30 s for the second inhale, in whole seconds: ' + await range(p));
       const labs = await E(p, () => ['#bInhV', '#bSipV', '#bHoldV', '#bExhV', '#bRestV'].map(id => document.querySelector(id).textContent).join(' | '));
       ok(labs === '5 s | 2 s | 15 s | 10 s | 5 s' && await t(p, '#bOf') === '/ 8', 'whole seconds on the labels, and 8 breaths in 5 minutes: ' + labs);
@@ -2400,21 +2426,13 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         'and so does the stage, under the start button: ' + note.stage);
       await p.click('#bPanelDone'); await p.waitForTimeout(400);
 
-      // the first session: its cautions first, once
-      await p.click('#bStart'); await p.waitForTimeout(250);
-      let m = await dlg(p);
-      ok(m.open && m.st === 'idle' && m.items.length === 7 && m.items[0] === 'Swim & dive is done entirely at your own risk.' && m.go === 'I understand, start' && m.close === 'Cancel' && m.focus === 'dvGo' &&
-        m.items.some(l => /never in or near water, in the bath, standing at a height or while driving/.test(l)) && m.items.some(l => /Fast or deep breathing beforehand delays the urge to breathe/.test(l)) &&
-        m.items.some(l => /called lung packing, can make you faint/.test(l)) && m.items.some(l => /^Ask a doctor first/.test(l)) && m.items.some(l => /coach or a trained buddy watching you/.test(l)),
-        'Start shows its seven cautions first, and nothing starts yet');
-      await p.screenshot({ path: OUT + 'choices-o-cautions.png' });
-      await p.click('#dvClose'); await p.waitForTimeout(200);
-      ok(await E(p, () => document.querySelector('#dvModal').hidden && window.__entrain.B.state === 'idle' && !localStorage.getItem('entrain.diveOk')), 'Cancel leaves it unstarted, and unread');
-      await p.click('#bStart'); await p.waitForTimeout(250);
-      await p.click('#dvGo'); await p.waitForTimeout(150);
+      // accepted, it starts at once from now on
+      await pick(p, 'box'); await p.waitForTimeout(150); await pick(p, 'dive'); await p.waitForTimeout(250);
+      ok(!(await dlg(p)).open, 'opened again after that, no cautions');
+      await p.click('#bStart'); await p.waitForTimeout(150);
       await E(p, () => { window.__entrain.B.t0 -= 3.5; }); await p.waitForTimeout(250);
-      m = await E(p, () => ({ st: window.__entrain.B.state, ok: localStorage.getItem('entrain.diveOk'), ph: document.querySelector('#bPhase').textContent, hint: document.querySelector('#bHint').textContent }));
-      ok(m.st === 'running' && m.ok === '1' && m.ph === 'Breathe in' && m.hint === 'Fill from the belly up, slowly, through your nose.', '"I understand, start" starts it, and its guidance fits: ' + m.hint);
+      m = await E(p, () => ({ open: !document.querySelector('#dvModal').hidden, st: window.__entrain.B.state, ph: document.querySelector('#bPhase').textContent, hint: document.querySelector('#bHint').textContent }));
+      ok(!m.open && m.st === 'running' && m.ph === 'Breathe in' && m.hint === 'Fill from the belly up, slowly, through your nose.', 'and Start starts it straight away, with guidance that fits: ' + m.hint);
       await E(p, () => { window.__entrain.B.t0 -= 7; }); await p.waitForTimeout(250);       // past the in-breath and the top-up, into the hold
       m = await E(p, () => ({ ph: document.querySelector('#bPhase').textContent, hint: document.querySelector('#bHint').textContent }));
       ok(m.ph === 'Hold' && m.hint === 'Lungs full, shoulders and jaw soft. Breathe whenever you need to.', 'the hold says to breathe whenever you need to: ' + m.hint);
@@ -2471,27 +2489,46 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(b.long && b.hold === 45 && b.pattern === 'my-' + sv[0].uid && await range(p) === LONG, 'and afterwards Breathe is back on your Swim & dive pattern');
       await p.context().close();
 
-      // switched to mid-session, or started from the focus view, it still shows them first
+      // first opened mid-session: paused for its cautions; declined, the session carries on as it was
       p = await page(OPT());
       await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
       await p.click('#bStart'); await p.waitForTimeout(300);
       await pick(p, 'dive'); await p.waitForTimeout(300);
       m = await dlg(p);
-      ok(m.open && m.st === 'paused' && m.go === 'I understand, carry on', 'switched to in the middle of a session, it pauses for its cautions');
+      ok(m.open && m.st === 'paused' && m.go === 'I understand the risks', 'opened in the middle of a session, it pauses for its cautions');
+      await p.click('#dvClose'); await p.waitForTimeout(200);
+      b = await all(p);
+      ok(await E(p, () => window.__entrain.B.state === 'running' && !window.__entrain.B.pending) && b.pattern === 'resonance' && !b.long && b.inh === 5.5, '"Not now" carries on with the session as it was');
+      await pick(p, 'dive'); await p.waitForTimeout(300);
       await p.click('#dvGo'); await p.waitForTimeout(200);
-      ok(await E(p, () => window.__entrain.B.state === 'running' && window.__entrain.BC.pattern === 'dive'), '"I understand, carry on" carries on with it');
-      await E(p, () => { document.querySelector('#bReset').click(); localStorage.removeItem('entrain.diveOk'); });
+      ok(await E(p, () => window.__entrain.B.state === 'running' && window.__entrain.BC.pattern === 'dive'), '"I understand the risks" carries on with Swim & dive');
+      await E(p, () => { document.querySelector('#bReset').click(); localStorage.removeItem('entrain.diveAck'); });
       await p.click('#bFocus'); await p.waitForTimeout(250);
       await p.keyboard.press('Space'); await p.waitForTimeout(300);
       m = await dlg(p);
-      ok(m.open && m.st === 'idle' && !(await E(p, () => document.querySelector('#bStage').classList.contains('focus'))), 'from the full-screen focus view, the view steps back so the cautions can be seen');
+      ok(m.open && m.st === 'idle' && !(await E(p, () => document.querySelector('#bStage').classList.contains('focus'))), 'unaccepted, Start shows them first, even from the full-screen focus view, which steps back');
+      await p.click('#dvGo'); await p.waitForTimeout(200);
+      ok(await E(p, () => window.__entrain.B.state === 'running'), 'and accepting them there starts the session asked for');
       await p.context().close();
 
-      // a stored hold past the usual range opens on the longer one; past the longer one it's refused
+      // left on Swim & dive unaccepted, or accepted under the earlier wording: Today's Start and Breathe show the cautions first
+      p = await page(Object.assign(OPT(), { diveOk: '1', breath: JSON.stringify({ pattern: 'dive', inh: 5, sip: 2, hold: 15, exh: 10, rest: 5, long: true, minutes: 5 }) }));
+      await p.waitForTimeout(300);
+      ok(!(await dlg(p)).open && await E(p, () => localStorage.getItem('entrain.diveOk')) === null, 'Today shows nothing, and the earlier acceptance is cleared');
+      await p.click('#homeStart'); await p.waitForTimeout(400);
+      m = await dlg(p);
+      ok(m.open && m.st === 'idle' && m.go === 'I understand the risks', "Today's Start on it shows the cautions first");
+      await p.click('#dvGo'); await p.waitForTimeout(250);
+      ok(await E(p, () => window.__entrain.B.state === 'running' && window.__entrain.BC.pattern === 'dive' && location.hash === '#breathe'), 'and accepting them starts the session asked for');
+      await p.context().close();
       p = await page(Object.assign(OPT(), { breath: JSON.stringify({ pattern: 'custom', inh: 5, sip: 0, hold: 30, exh: 10, rest: 0 }) }));
       await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);
+      b = await all(p); m = await dlg(p);
+      ok(b.long && b.hold === 30 && await range(p) === LONG && m.open, 'a stored 30 s hold opens on the longer range, so Breathe shows the cautions first');
+      await p.click('#dvClose'); await p.waitForTimeout(200);
       b = await all(p);
-      ok(b.long && b.hold === 30 && await range(p) === LONG, 'a stored 30 s hold opens on the longer range');
+      ok(b.pattern === 'resonance' && !b.long && b.inh === 5.5 && b.hold === 0 && await range(p) === USUAL && JSON.parse(await E(p, () => localStorage.getItem('entrain.breath'))).pattern === 'resonance',
+        'declined with no pattern before it, Breathe goes to Resonance, and remembers that');
       await p.context().close();
       p = await page(Object.assign(OPT(), { breath: JSON.stringify({ pattern: 'custom', inh: 5, sip: 0, hold: 75, exh: 10, rest: 0 }), myBreaths: JSON.stringify([{ uid: 'a1', name: 'Too long', t: { inh: 5, sip: 0, hold: 61, exh: 10, rest: 0 } }]) }));
       await E(p, () => location.hash = 'breathe'); await p.waitForTimeout(300);

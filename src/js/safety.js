@@ -6,7 +6,7 @@
   -------------------------------------------------------------------------------- */
 
   var SAFE_BEATS = "Ask your doctor first if you have epilepsy or another seizure disorder, keep headphones at least 15 cm (6 in) from a pacemaker or implanted defibrillator, and never listen while driving.";
-  // Swim & dive's long breath holds: read once before its first session, the first four on Breathe while its range is on
+  // Swim & dive's long breath holds: shown when it's first opened, until accepted; the first four on Breathe while its range is on
   var SAFE_DIVE = [
     "Swim & dive is done entirely at your own risk.",
     "A breath hold can make you black out without warning, so practise only on dry land, sitting or lying down: never in or near water, in the bath, standing at a height or while driving.",
