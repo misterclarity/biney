@@ -328,8 +328,9 @@ const QG_EN = ['Holding Up the Sky', 'Drawing the Bow', 'Separating Heaven and E
       // I need to stop silences the music at once
       await go(p, 'practice'); await go(p, 'practice/dance'); await p.click('#sGo');
       await until(p, () => window.__entrain.MUS.on, 4000);
-      await p.click('#sOut'); await p.waitForTimeout(800);
-      ok(await E(p, () => !window.__entrain.MUS.on && window.__entrain.P.state !== 'running'), 'I need to stop ends it and the music with it');
+      await p.click('#sOut'); await p.waitForTimeout(650);
+      const mo = await E(p, () => { const X = window.__entrain; return { on: X.MUS.on, st: X.P.state, n: X.MUS.going.length, g: Math.max(...X.MUS.going.map(x => x[0].gain.value)) }; });
+      ok(!mo.on && mo.st !== 'running' && mo.n > 0 && mo.g < 0.001, 'I need to stop ends it, and the music is gone in the same half second, though the practice\'s end had begun a slower fade: ' + JSON.stringify(mo));
       await p.context().close();
     }
 

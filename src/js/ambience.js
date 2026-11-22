@@ -555,8 +555,9 @@
   }
 
   /* ----- playback -----
-     The background is rain, crickets or both (or neither), with any of the nature sounds added on top. */
-  var AMB = { kind: "off", add: [], vol: 40, out: null, srcs: [], playing: null, until: 0, tick: 0 };
+     The background is rain, crickets or both (or neither), with any of the nature sounds added on top.
+     until: a short taste plays till then; hush: nothing plays till then (I need to stop). */
+  var AMB = { kind: "off", add: [], vol: 40, out: null, srcs: [], playing: null, until: 0, hush: 0, tick: 0 };
   var AMB_KINDS = [["off", "Off"], ["rain", "Summer rain"], ["crickets", "Crickets"], ["night", "Rain and crickets"]];
   var AMB_SHORT = { off: "Off", rain: "Rain", crickets: "Crickets", night: "Rain + crickets" };
   // the nature sounds: [id, its button, its name (also in the player's list and the unlock dialog), its loops and their levels]
@@ -609,7 +610,14 @@
      practice (a short preview too). It follows them in and out, so there's nothing to manage.
      Sleep sounds is a sound of its own, so the background stays out of it. */
   function ambActive() {
+    if (bNow() < AMB.hush) return false;
     return !!((A.playing && !(A.track && A.track.sleep)) || B.state === "running" || (typeof P !== "undefined" && P.state === "running") || bNow() < AMB.until);
+  }
+  // I need to stop (settle.js): out over secs, and nothing brings it or the music back meanwhile (a track fading out
+  // still counts as playing until it has gone)
+  function ambHush(secs) {
+    AMB.until = 0; AMB.hush = bNow() + secs + 1;
+    ambStop(secs);
   }
   function ambSync() {
     musSync();                                     // the music made on the device follows the same sessions (music.js)

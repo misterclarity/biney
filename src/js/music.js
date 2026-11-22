@@ -49,9 +49,9 @@
      plan: the first beat not yet worked out; q: notes worked out, not yet on the clock; st: the generator; fix:
      a feel kept whatever the tempo; the gains (bus: volume, lvl: a session's level, run: this run's fade in and
      out, pad: the chords' swell); swell and lv: their levels; log: the last notes put on the clock (for tests);
-     nz: the shaker's noise, for one audio context. */
+     nz: the shaker's noise, for one audio context; going: runs still fading out, [run, when it's silent]. */
   var MUS = { on: false, own: "", bpm: 60, to: 60, rate: 0, b0: 0, t0: 0, at: 0, plan: 0, q: [], st: null, fix: "", timer: 0,
-    bus: null, lvl: null, run: null, pad: null, swell: 1, lv: 1, log: [], nz: null };
+    bus: null, lvl: null, run: null, pad: null, swell: 1, lv: 1, log: [], nz: null, going: [] };
 
   function musOk(k) { return k === "off" || k === "aim" || k === "slow" || k === "steady" || k === "lively" || k === "own"; }
   // this device's choice, as kept, and as it plays: off until this device is unlocked
@@ -323,9 +323,21 @@
       run.gain.cancelScheduledValues(now);
       run.gain.setValueAtTime(run.gain.value, now);
       run.gain.linearRampToValueAtTime(0, now + f);
+      MUS.going = MUS.going.filter(function (x) { return x[1] > now; }).concat([[run, now + f]]);
       setTimeout(function () { try { run.disconnect(); } catch (e) {} }, (f + 0.3) * 1000);
     }
     musAfter();
+  }
+  // I need to stop: gone within `secs`, a slower fade already under way too (a session's end begins one just before)
+  function musHush(secs) {
+    var f = Math.max(0.02, secs), ctx = A.ctx;
+    musStop(f);
+    if (!ctx) return;
+    var now = ctx.currentTime;
+    MUS.going.forEach(function (x) {
+      if (x[1] <= now + f) return;
+      try { var g = x[0].gain; g.cancelScheduledValues(now); g.setValueAtTime(g.value, now); g.linearRampToValueAtTime(0, now + f); x[1] = now + f; } catch (e) {}
+    });
   }
   // a new tempo (40 to 160 beats a minute), at once or gliding there over `glide` seconds
   function musTempo(bpm, glide) {
@@ -472,7 +484,7 @@
 
   function musInit() {
     SUP_EXTRA.push({ name: "Music in the background", href: "#st-amb" });     // Settings' list of what the donation unlocks
-    SETTLE_HUSH.push(function (secs) { musStop(secs); });                       // I need to stop: the music fades with everything else
+    SETTLE_HUSH.push(musHush);                                                 // I need to stop: the music fades with everything else
     document.addEventListener("click", function (e) {
       var b = e.target.closest ? e.target.closest('.mus-seg[data-mus-for="dev"] button[data-mus]') : null;
       if (b) musPick(b.getAttribute("data-mus"), function (k) { musSet(k); });

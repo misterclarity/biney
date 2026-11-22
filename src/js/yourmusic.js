@@ -25,12 +25,13 @@
      db: the database, once open; el, src, g, lvl, out: the playing element and its way into the audio graph (g: this
      run's fade, lvl: a session's level, out: the volume); on: playing for a session (or a taste in Settings); cur: the
      song in the element; url: its object URL; stopAt: when it last stopped (a pause keeps your place for a while);
-     gen: guards timers from an earlier start; segs: what played and when, for the end screens; votes: the thumbs
-     given, by occasion; taste: a song tried in Settings; bless: the element unlocked for Safari; bFrom, bWas: Breathe's
-     session, watched for its end; occ: Breathe's last session's occasion; msg: what Settings says about the last add. */
+     gen: guards timers from an earlier start; outAt: when the last stop's fade ends (ms); segs: what played and
+     when, for the end screens; votes: the thumbs given, by occasion; taste: a song tried in Settings; bless: the
+     element unlocked for Safari; bFrom, bWas: Breathe's session, watched for its end; occ: Breathe's last session's
+     occasion; msg: what Settings says about the last add. */
   var YM = { list: [], here: {}, bad: {}, db: null, dbTried: false, el: null, src: null, g: null, lvl: null, out: null, lv: 1,
     on: false, cur: "", url: "", stopAt: 0, gen: 0, segs: [], votes: {}, taste: "", bless: "", blessing: false, sys: false,
-    bFrom: 0, bWas: "idle", occ: "", busy: false, msg: "", err: "" };
+    bFrom: 0, bWas: "idle", occ: "", busy: false, msg: "", err: "", outAt: 0 };
 
   /* ----- the list, kept with the settings (names only) ----- */
   function ymId() { return (Date.now().toString(36) + Math.random().toString(36).slice(2, 7)).slice(-12); }
@@ -324,19 +325,28 @@
   // stop: the sound fades over `fade` seconds, then the element pauses where it is
   function ymStop(fade) {
     if (!YM.on) return;
-    var f = fade === undefined ? 1.5 : Math.max(0.02, fade), g = ++YM.gen;
     YM.on = false; YM.taste = ""; YM.stopAt = Date.now();
     ymSegEnd();
+    ymOut(fade === undefined ? 1.5 : Math.max(0.02, fade));
+    ymUI();
+  }
+  function ymOut(f) {
+    var g = ++YM.gen;
+    YM.outAt = Date.now() + f * 1000;
     ymFade(0, f);
     setTimeout(function () { if (g === YM.gen && YM.el) { YM.pausing = true; YM.el.pause(); YM.pausing = false; } }, f * 1000 + 120);
-    ymUI();
   }
   function ymHalt() { ymStop(0.3); }
   // the phone's own controls (lock screen, notifications) pausing or playing a song when no track holds them (lockscreen.js)
   function ymSysPause() { if (YM.on && YM.el && !YM.el.paused) YM.el.pause(); }
   function ymSysPlay() { if (YM.on && YM.sys && YM.el) { var p = YM.el.play(); if (p && p.catch) p.catch(function () {}); } }
-  // I need to stop: gone in the same few tenths of a second as everything else
-  function ymHush(secs) { ymStop(secs === undefined ? 0.5 : secs); }
+  // I need to stop: gone in the same few tenths of a second as everything else, a slower fade already under way too
+  // (a session's end begins one just before)
+  function ymHush(secs) {
+    var f = secs === undefined ? 0.5 : Math.max(0.02, secs);
+    if (YM.on) ymStop(f);
+    else if (YM.outAt > Date.now() + f * 1000) ymOut(f);
+  }
 
   /* Following the music's choice (musSync, music.js, every half second with the background sound): w is
      { lvl } while Yours should play, or null. A song tried in Settings plays on until it ends or is stopped. */

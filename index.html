@@ -14043,7 +14043,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "c91c8b09";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "69d3f206";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -16084,8 +16084,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
 
   /* ----- playback -----
-     The background is rain, crickets or both (or neither), with any of the nature sounds added on top. */
-  var AMB = { kind: "off", add: [], vol: 40, out: null, srcs: [], playing: null, until: 0, tick: 0 };
+     The background is rain, crickets or both (or neither), with any of the nature sounds added on top.
+     until: a short taste plays till then; hush: nothing plays till then (I need to stop). */
+  var AMB = { kind: "off", add: [], vol: 40, out: null, srcs: [], playing: null, until: 0, hush: 0, tick: 0 };
   var AMB_KINDS = [["off", "Off"], ["rain", "Summer rain"], ["crickets", "Crickets"], ["night", "Rain and crickets"]];
   var AMB_SHORT = { off: "Off", rain: "Rain", crickets: "Crickets", night: "Rain + crickets" };
   // the nature sounds: [id, its button, its name (also in the player's list and the unlock dialog), its loops and their levels]
@@ -16138,7 +16139,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      practice (a short preview too). It follows them in and out, so there's nothing to manage.
      Sleep sounds is a sound of its own, so the background stays out of it. */
   function ambActive() {
+    if (bNow() < AMB.hush) return false;
     return !!((A.playing && !(A.track && A.track.sleep)) || B.state === "running" || (typeof P !== "undefined" && P.state === "running") || bNow() < AMB.until);
+  }
+  // I need to stop (settle.js): out over secs, and nothing brings it or the music back meanwhile (a track fading out
+  // still counts as playing until it has gone)
+  function ambHush(secs) {
+    AMB.until = 0; AMB.hush = bNow() + secs + 1;
+    ambStop(secs);
   }
   function ambSync() {
     musSync();                                     // the music made on the device follows the same sessions (music.js)
@@ -16372,9 +16380,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      plan: the first beat not yet worked out; q: notes worked out, not yet on the clock; st: the generator; fix:
      a feel kept whatever the tempo; the gains (bus: volume, lvl: a session's level, run: this run's fade in and
      out, pad: the chords' swell); swell and lv: their levels; log: the last notes put on the clock (for tests);
-     nz: the shaker's noise, for one audio context. */
+     nz: the shaker's noise, for one audio context; going: runs still fading out, [run, when it's silent]. */
   var MUS = { on: false, own: "", bpm: 60, to: 60, rate: 0, b0: 0, t0: 0, at: 0, plan: 0, q: [], st: null, fix: "", timer: 0,
-    bus: null, lvl: null, run: null, pad: null, swell: 1, lv: 1, log: [], nz: null };
+    bus: null, lvl: null, run: null, pad: null, swell: 1, lv: 1, log: [], nz: null, going: [] };
 
   function musOk(k) { return k === "off" || k === "aim" || k === "slow" || k === "steady" || k === "lively" || k === "own"; }
   // this device's choice, as kept, and as it plays: off until this device is unlocked
@@ -16646,9 +16654,21 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       run.gain.cancelScheduledValues(now);
       run.gain.setValueAtTime(run.gain.value, now);
       run.gain.linearRampToValueAtTime(0, now + f);
+      MUS.going = MUS.going.filter(function (x) { return x[1] > now; }).concat([[run, now + f]]);
       setTimeout(function () { try { run.disconnect(); } catch (e) {} }, (f + 0.3) * 1000);
     }
     musAfter();
+  }
+  // I need to stop: gone within `secs`, a slower fade already under way too (a session's end begins one just before)
+  function musHush(secs) {
+    var f = Math.max(0.02, secs), ctx = A.ctx;
+    musStop(f);
+    if (!ctx) return;
+    var now = ctx.currentTime;
+    MUS.going.forEach(function (x) {
+      if (x[1] <= now + f) return;
+      try { var g = x[0].gain; g.cancelScheduledValues(now); g.setValueAtTime(g.value, now); g.linearRampToValueAtTime(0, now + f); x[1] = now + f; } catch (e) {}
+    });
   }
   // a new tempo (40 to 160 beats a minute), at once or gliding there over `glide` seconds
   function musTempo(bpm, glide) {
@@ -16795,7 +16815,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   function musInit() {
     SUP_EXTRA.push({ name: "Music in the background", href: "#st-amb" });     // Settings' list of what the donation unlocks
-    SETTLE_HUSH.push(function (secs) { musStop(secs); });                       // I need to stop: the music fades with everything else
+    SETTLE_HUSH.push(musHush);                                                 // I need to stop: the music fades with everything else
     document.addEventListener("click", function (e) {
       var b = e.target.closest ? e.target.closest('.mus-seg[data-mus-for="dev"] button[data-mus]') : null;
       if (b) musPick(b.getAttribute("data-mus"), function (k) { musSet(k); });
@@ -16838,12 +16858,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      db: the database, once open; el, src, g, lvl, out: the playing element and its way into the audio graph (g: this
      run's fade, lvl: a session's level, out: the volume); on: playing for a session (or a taste in Settings); cur: the
      song in the element; url: its object URL; stopAt: when it last stopped (a pause keeps your place for a while);
-     gen: guards timers from an earlier start; segs: what played and when, for the end screens; votes: the thumbs
-     given, by occasion; taste: a song tried in Settings; bless: the element unlocked for Safari; bFrom, bWas: Breathe's
-     session, watched for its end; occ: Breathe's last session's occasion; msg: what Settings says about the last add. */
+     gen: guards timers from an earlier start; outAt: when the last stop's fade ends (ms); segs: what played and
+     when, for the end screens; votes: the thumbs given, by occasion; taste: a song tried in Settings; bless: the
+     element unlocked for Safari; bFrom, bWas: Breathe's session, watched for its end; occ: Breathe's last session's
+     occasion; msg: what Settings says about the last add. */
   var YM = { list: [], here: {}, bad: {}, db: null, dbTried: false, el: null, src: null, g: null, lvl: null, out: null, lv: 1,
     on: false, cur: "", url: "", stopAt: 0, gen: 0, segs: [], votes: {}, taste: "", bless: "", blessing: false, sys: false,
-    bFrom: 0, bWas: "idle", occ: "", busy: false, msg: "", err: "" };
+    bFrom: 0, bWas: "idle", occ: "", busy: false, msg: "", err: "", outAt: 0 };
 
   /* ----- the list, kept with the settings (names only) ----- */
   function ymId() { return (Date.now().toString(36) + Math.random().toString(36).slice(2, 7)).slice(-12); }
@@ -17137,19 +17158,28 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   // stop: the sound fades over `fade` seconds, then the element pauses where it is
   function ymStop(fade) {
     if (!YM.on) return;
-    var f = fade === undefined ? 1.5 : Math.max(0.02, fade), g = ++YM.gen;
     YM.on = false; YM.taste = ""; YM.stopAt = Date.now();
     ymSegEnd();
+    ymOut(fade === undefined ? 1.5 : Math.max(0.02, fade));
+    ymUI();
+  }
+  function ymOut(f) {
+    var g = ++YM.gen;
+    YM.outAt = Date.now() + f * 1000;
     ymFade(0, f);
     setTimeout(function () { if (g === YM.gen && YM.el) { YM.pausing = true; YM.el.pause(); YM.pausing = false; } }, f * 1000 + 120);
-    ymUI();
   }
   function ymHalt() { ymStop(0.3); }
   // the phone's own controls (lock screen, notifications) pausing or playing a song when no track holds them (lockscreen.js)
   function ymSysPause() { if (YM.on && YM.el && !YM.el.paused) YM.el.pause(); }
   function ymSysPlay() { if (YM.on && YM.sys && YM.el) { var p = YM.el.play(); if (p && p.catch) p.catch(function () {}); } }
-  // I need to stop: gone in the same few tenths of a second as everything else
-  function ymHush(secs) { ymStop(secs === undefined ? 0.5 : secs); }
+  // I need to stop: gone in the same few tenths of a second as everything else, a slower fade already under way too
+  // (a session's end begins one just before)
+  function ymHush(secs) {
+    var f = secs === undefined ? 0.5 : Math.max(0.02, secs);
+    if (YM.on) ymStop(f);
+    else if (YM.outAt > Date.now() + f * 1000) ymOut(f);
+  }
 
   /* Following the music's choice (musSync, music.js, every half second with the background sound): w is
      { lvl } while Yours should play, or null. A song tried in Settings plays on until it ends or is stopped. */
@@ -22766,6 +22796,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function settleHush(secs) {
     pHush();
     if (A.playing) fadeOutAndStop("Stopped.", secs);                // a track, or a practice's beat
+    ambHush(secs);                                                  // the background sound, kept from coming back as the rest fades
     var ctx = A.ctx;
     if (ctx) {
       var now = ctx.currentTime;
@@ -22773,8 +22804,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         if (!g) return;
         try { g.gain.cancelScheduledValues(now); g.gain.setValueAtTime(g.gain.value, now); g.gain.linearRampToValueAtTime(0, now + secs); } catch (e) {}
       });
-      // the bells come back for the next practice once any tick already queued has passed
-      if (P.bus) try { P.bus.gain.setValueAtTime(0.55, now + secs + 2.5); } catch (e) {}
+      // the bells' bus is let go once quiet, with any bell still ringing on it (one rings for six seconds) and any tick
+      // already queued: the next practice makes a fresh one (pBusOn)
+      if (P.bus) { var pb = P.bus; P.bus = null; setTimeout(function () { try { pb.disconnect(); } catch (e) {} }, (secs + 0.25) * 1000); }
     }
     SETTLE_HUSH.forEach(function (f) { try { f(secs); } catch (e) {} });
   }
@@ -22872,10 +22904,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     try { history.replaceState(null, "", back && back !== "#settle" ? back : location.pathname + location.search); } catch (e) {}
     settleNow();
   }
-  // the control on a running practice and on the breathing guide
+  // the control on a running practice and on the breathing guide, and while Breath-led sound's music plays as it
+  // waits for your pace (breathled.js)
   function settleSync() {
     var b = $("#bOut");
-    if (b) b.hidden = !(B.state === "running" || B.state === "paused") || (P.usesB && pBusy());
+    if (b) b.hidden = !(B.state === "running" || B.state === "paused" || BLS.phase === "find") || (P.usesB && pBusy());
   }
   function settleInit() {
     $("#sOut").addEventListener("click", settleNow);

@@ -9,13 +9,13 @@
 //      their names in the list; Yours under Music and in the player's list; a taste; under Breathe, at the background's
 //      volume, through a pause, I need to stop; the thumbs under the guide; the pick weighted by them; removing a song
 //   C  unlocked: a practice's own Yours and its end screen's thumbs; Music Break to your own songs, softer for the
-//      closing words; a backup's names on another device, a song taking its file back with its thumbs; a list lost
-//      and found again from the database
+//      closing words, and gone in half a second with I need to stop; a backup's names on another device, a song taking
+//      its file back with its thumbs; a list lost and found again from the database
 //   D  the belly's breath from the motion sensor's readings (blsTilt): its level, its swing, still when the phone is
 //   E  unlocked: breath-led sound with the phone on your belly: finding your pace, the guide starting at it, which way
 //      is in learnt from the guide, the chords following the belly itself, slowing towards your resonance pace, holding
 //      while you're faster, a pause, a pattern picked by hand, the end and the history; Begin now; no motion sensor;
-//      the microphone; a practice using the guide left alone; I need to stop
+//      the microphone; a practice using the guide left alone; I need to stop, while it waits for your pace too
 //   F  360 px, 44 px targets, British spelling
 // Run: node tests/mymusictest.js [group letter]
 const { chromium, APP, OUT } = require('./pw');
@@ -273,6 +273,14 @@ const BROKEN = { name: 'broken.mp3', mimeType: 'audio/mpeg', buffer: Buffer.from
       ok(await until(p, () => window.__entrain.P.steps[window.__entrain.P.idx].title === 'Come back' && window.__entrain.YM.lv === 0.45, 4000) && await E(p, () => window.__entrain.YM.on), 'for the closing words your music turns down, and plays on');
       await E(p, () => { const P = window.__entrain.P; P.t0 -= P.total; });
       ok(await until(p, () => window.__entrain.P.state === 'done', 6000) && await until(p, () => !window.__entrain.YM.on, 4000), 'it ends with Music Break');
+      // I need to stop: your song is gone in the same half second as everything else, though the practice's end begins a slower fade
+      await go(p, 'practice', 300); await go(p, 'practice/music-break', 500);
+      await p.click('#sGo');
+      ok(await until(p, () => window.__entrain.P.state === 'running' && window.__entrain.YM.on && !window.__entrain.YM.el.paused && window.__entrain.YM.g.gain.value > 0.5, 8000), 'Music Break to your songs again');
+      await p.click('#sOut'); await p.waitForTimeout(650);
+      const so = await E(p, () => { const Y = window.__entrain.YM; return { on: Y.on, g: +Y.g.gain.value.toFixed(4), st: window.__entrain.P.state }; });
+      ok(!so.on && so.g < 0.001 && so.st !== 'running' && await until(p, () => window.__entrain.YM.el.paused, 1000), 'I need to stop: your song is silent within 0.65 s and pauses: ' + JSON.stringify(so));
+      await p.keyboard.press('Escape'); await p.waitForTimeout(200);
       // a list lost (a backup from before), found again from the database with the names
       // (as Entrain opens: the kept list read, then the database's songs, through the same two functions)
       await E(p, () => new Promise(res => { const X = window.__entrain; localStorage.removeItem('entrain.myMusic'); X.ymLoadList(); X.ymScan(res); }));
@@ -332,8 +340,9 @@ const BROKEN = { name: 'broken.mp3', mimeType: 'audio/mpeg', buffer: Buffer.from
       const on = await E(p, () => ({ on: document.querySelector('#bLedOn').checked, kept: localStorage.getItem('entrain.breathLed'), belly: window.__entrain.MOT.belly, src: document.querySelector('#bLedSrcRow').hidden, row: document.querySelector('#bLedRow').hidden }));
       ok(on.on && on.kept === '1' && on.belly && !on.src && !on.row && await seg(p, '#bLedSrc button') === 'Phone on my belly* | Microphone', 'switched on: the phone on your belly listens, chosen beside the microphone, and the row under the guide says what to do: ' + await t(p, '#bLedTxt'));
       await p.click('#bStart'); await p.waitForTimeout(500);
-      const f = await E(p, () => ({ ph: window.__entrain.BLS.phase, st: window.__entrain.B.state, name: document.querySelector('#bPhase').textContent, hint: document.querySelector('#bHint').textContent, btn: document.querySelector('#bStart').textContent, mus: window.__entrain.MUS.on && window.__entrain.MUS.own === 'breath', reset: document.querySelector('#bReset').disabled }));
-      ok(f.ph === 'find' && f.st === 'idle' && f.name === 'Breathe as usual' && /^Finding your pace/.test(f.hint) && f.btn === 'Begin now' && f.mus && !f.reset, 'Start: the music begins and the guide waits, finding your pace: ' + f.hint);
+      const f = await E(p, () => ({ ph: window.__entrain.BLS.phase, st: window.__entrain.B.state, name: document.querySelector('#bPhase').textContent, hint: document.querySelector('#bHint').textContent, btn: document.querySelector('#bStart').textContent, mus: window.__entrain.MUS.on && window.__entrain.MUS.own === 'breath', reset: document.querySelector('#bReset').disabled,
+        out: !document.querySelector('#bOut').hidden && document.querySelector('#bOut').getBoundingClientRect().height >= 44 }));
+      ok(f.ph === 'find' && f.st === 'idle' && f.name === 'Breathe as usual' && /^Finding your pace/.test(f.hint) && f.btn === 'Begin now' && f.mus && !f.reset && f.out, 'Start: the music begins and the guide waits, finding your pace, with I need to stop in reach: ' + f.hint);
       ok(await until(p, () => window.__entrain.BLS.phase === 'run' && window.__entrain.B.state === 'running', 20000), 'once the phone has your pace, the guide begins');
       const b0 = await E(p, () => { const X = window.__entrain; return { from: X.BLS.from, r0: X.BLS.rate0, cyc: X.B.ph.cycle, inh: X.B.ph.list[0].secs, k: X.B.ph.list.map(x => x.k).join(), target: X.BLS.target, txt: document.querySelector('#bLedTxt').textContent }; });
       ok(b0.from === 'sensor' && Math.abs(b0.r0 - 12) <= 0.8 && Math.abs(b0.cyc - 60 / b0.r0) < 0.2 && Math.abs(b0.inh / b0.cyc - 0.4) < 0.03 && b0.k === 'in,out' && b0.target === 5.5,
@@ -402,6 +411,16 @@ const BROKEN = { name: 'broken.mp3', mimeType: 'audio/mpeg', buffer: Buffer.from
       // I need to stop
       await p.click('#bOut'); await p.waitForTimeout(900);
       ok(await E(p, () => window.__entrain.BLS.phase === 'off' && window.__entrain.B.state === 'idle' && (!window.__entrain.MUS.on || window.__entrain.MUS.own === '')), 'I need to stop ends it with the session');
+      await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+      // and while it waits for your pace, the music playing
+      await p.click('#bLedOn'); await p.waitForTimeout(200);
+      await p.click('#bLedOn'); await p.waitForTimeout(300);
+      await E(p, () => { const M = window.__entrain.MOT; M.bins = []; M.est = null; M.since = performance.now() / 1000; });
+      await p.click('#bStart'); await p.waitForTimeout(400);
+      ok(await E(p, () => window.__entrain.BLS.phase === 'find' && window.__entrain.MUS.on && !document.querySelector('#bOut').hidden), 'waiting for your pace again, I need to stop is there');
+      await p.click('#bOut'); await p.waitForTimeout(650);
+      const wo = await E(p, () => { const X = window.__entrain; return { ph: X.BLS.phase, on: X.MUS.on, g: Math.max(0, ...X.MUS.going.map(x => x[0].gain.value)), stl: !document.querySelector('#stlModal').hidden, out: !document.querySelector('#bOut').hidden, btn: document.querySelector('#bStart').textContent }; });
+      ok(wo.ph === 'off' && !wo.on && wo.g < 0.001 && wo.stl && !wo.out && wo.btn === 'Start breathing', 'one tap ends the wait, the music gone within 0.65 s, and Settle opens: ' + JSON.stringify(wo));
       await p.keyboard.press('Escape'); await p.waitForTimeout(300);
       // a practice using the guide is left alone
       await go(p, 'practice/calm-reset', 600);

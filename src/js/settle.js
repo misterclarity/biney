@@ -15,6 +15,7 @@
   function settleHush(secs) {
     pHush();
     if (A.playing) fadeOutAndStop("Stopped.", secs);                // a track, or a practice's beat
+    ambHush(secs);                                                  // the background sound, kept from coming back as the rest fades
     var ctx = A.ctx;
     if (ctx) {
       var now = ctx.currentTime;
@@ -22,8 +23,9 @@
         if (!g) return;
         try { g.gain.cancelScheduledValues(now); g.gain.setValueAtTime(g.gain.value, now); g.gain.linearRampToValueAtTime(0, now + secs); } catch (e) {}
       });
-      // the bells come back for the next practice once any tick already queued has passed
-      if (P.bus) try { P.bus.gain.setValueAtTime(0.55, now + secs + 2.5); } catch (e) {}
+      // the bells' bus is let go once quiet, with any bell still ringing on it (one rings for six seconds) and any tick
+      // already queued: the next practice makes a fresh one (pBusOn)
+      if (P.bus) { var pb = P.bus; P.bus = null; setTimeout(function () { try { pb.disconnect(); } catch (e) {} }, (secs + 0.25) * 1000); }
     }
     SETTLE_HUSH.forEach(function (f) { try { f(secs); } catch (e) {} });
   }
@@ -121,10 +123,11 @@
     try { history.replaceState(null, "", back && back !== "#settle" ? back : location.pathname + location.search); } catch (e) {}
     settleNow();
   }
-  // the control on a running practice and on the breathing guide
+  // the control on a running practice and on the breathing guide, and while Breath-led sound's music plays as it
+  // waits for your pace (breathled.js)
   function settleSync() {
     var b = $("#bOut");
-    if (b) b.hidden = !(B.state === "running" || B.state === "paused") || (P.usesB && pBusy());
+    if (b) b.hidden = !(B.state === "running" || B.state === "paused" || BLS.phase === "find") || (P.usesB && pBusy());
   }
   function settleInit() {
     $("#sOut").addEventListener("click", settleNow);

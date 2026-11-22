@@ -2,10 +2,10 @@
 // intense breathwork (care.js, settle.js).
 //   A  the health check: Today's offer, Settings, what's kept and backed up, hcFlags/hcCaution, and the cautions
 //      it adds to the practices it affects, the Swim & dive dialog and search; never a block
-//   B  I need to stop in a practice: every sound faded in half a second, the session ended into the history,
-//      Settle's paced breaths (30 frames a second, no blur, still with reduced motion), the 5-4-3-2-1 grounding,
-//      in reach on a scrolled phone at 360 px
-//   C  I need to stop on Breathe (and in its focus view), and from search
+//   B  I need to stop in a practice: every sound faded in half a second, the bells' bus let go with anything still
+//      ringing on it, the session ended into the history, Settle's paced breaths (30 frames a second, no blur, still
+//      with reduced motion), the 5-4-3-2-1 grounding, in reach on a scrolled phone at 360 px
+//   C  I need to stop on Breathe (and in its focus view), the background sound gone with it, and from search
 //   D  intense breathwork: the hour's rest noted from the history, Restart and Do it again asking first, Wim Hof's
 //      eight rounds a day, what the history keeps, Swim & dive's Start again, and the energising cautions' wording
 //   E  free: the same on the real build (locked) and on the unlocked test copy, with no donation asked
@@ -210,7 +210,8 @@ const entry = (id, ago, o) => Object.assign({ k: 'practice', id, n: id, at: Date
       const out = await E(p, () => { const b = document.querySelector('#sOut'), r = b.getBoundingClientRect(); return { txt: b.textContent, h: r.height, top: r.top, inView: r.top >= 0 && r.bottom <= innerHeight }; });
       ok(out.txt === 'I need to stop' && out.h >= 44 && out.inView, 'a running practice: I need to stop, in sight and big enough to tap (' + Math.round(out.h) + ' px)');
       await E(p, () => { window.__entrain.P.t0 -= 95; }); await p.waitForTimeout(300);
-      await p.click('#sOut');
+      await E(p, () => { window.__pb = window.__entrain.P.bus; });     // the bells' bus, where a bell may still be ringing
+      await p.click('#sOut'); const tOut = Date.now();
       await p.waitForTimeout(620);
       const after = await E(p, () => { const X = window.__entrain; return { m: X.A.master.gain.value, a: X.AMB.out.gain.value, state: X.P.state, said: 0 }; });
       ok(before.m > 0.003 && before.a > 0.05 && after.m < 0.0005 && after.a < 0.0005, 'one tap: the beat and the rain are silent within 0.6 s (beat ' + before.m.toFixed(4) + ' → ' + after.m.toFixed(5) + ', rain ' + before.a.toFixed(3) + ' → ' + after.a.toFixed(5) + ')');
@@ -240,6 +241,9 @@ const entry = (id, ago, o) => Object.assign({ k: 'practice', id, n: id, at: Date
       ok(turn[0] === 'Breathe in…' && turn[1], 'and the words follow the clock: in, then out at four seconds');
       ok(fr.n >= 20 && fr.n <= 32 && !fr.blur && fr.radii > 6, 'its circle draws ' + fr.n + ' frames a second, without blur, moving (' + fr.radii + ' sizes in a second)');
       await p.screenshot({ path: OUT + 'caretest-b-settle.png' });
+      await p.waitForTimeout(Math.max(0, 3500 - (Date.now() - tOut)));
+      const pb = await E(p, () => ({ old: window.__pb ? window.__pb.gain.value : -1, fresh: window.__entrain.P.bus !== window.__pb }));
+      ok(pb.old === 0 && pb.fresh, 'the bells\' bus stays silent with anything still ringing on it (a bell rings for six seconds), and is let go: ' + JSON.stringify(pb));
       await E(p, () => { window.__entrain.SETTLE.t0 -= 60; }); await p.waitForTimeout(400);
       s = await settle(p);
       ok(s.cue === 'Breathe at your own pace now' && s.n === 'Five slow breaths. Well done.', 'after five: your own pace');
@@ -252,6 +256,7 @@ const entry = (id, ago, o) => Object.assign({ k: 'practice', id, n: id, at: Date
       await p.click('#stlGround'); await p.waitForTimeout(500);
       const g = await E(p, () => ({ id: window.__entrain.P.def.id, state: window.__entrain.P.state, hash: location.hash, open: !document.querySelector('#stlModal').hidden }));
       ok(g.id === 'grounding' && g.state === 'running' && g.hash === '#practice/grounding' && !g.open, '5-4-3-2-1 Grounding starts at once: ' + JSON.stringify(g));
+      ok(await E(p, () => { const b = window.__entrain.P.bus; return !!b && b !== window.__pb && b.gain.value > 0.5; }), 'its bells on a bus of their own, at full level');
       await p.keyboard.press('Escape');
       await p.click('#sOut'); await p.waitForTimeout(300);
       await p.keyboard.press('Escape'); await p.waitForTimeout(200);
@@ -280,11 +285,11 @@ const entry = (id, ago, o) => Object.assign({ k: 'practice', id, n: id, at: Date
 
     /* C. I need to stop on Breathe, and from search */
     if (!only || only === 'C') {
-      const p = await page({ breath: JSON.stringify({ pattern: 'resonance', inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0, visual: 'circle', minutes: 5, sound: 'tones', cue: 60, buzz: false }) });
+      const p = await page({ breath: JSON.stringify({ pattern: 'resonance', inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0, visual: 'circle', minutes: 5, sound: 'tones', cue: 60, buzz: false }), amb: 'rain', ambVol: '60' });
       await go(p, 'breathe');
       ok(!(await vis(p, '#bOut')), 'Breathe at rest: no I need to stop');
       await p.click('#bStart');
-      await until(p, () => { const B = window.__entrain.B; return B.state === 'running' && B.bus && B.bus.gain.value > 0.05; }, 6000);
+      await until(p, () => { const X = window.__entrain, B = X.B; return B.state === 'running' && B.bus && B.bus.gain.value > 0.05 && X.AMB.playing === 'rain' && X.AMB.out && X.AMB.out.gain.value > 0.05; }, 8000);
       ok(await vis(p, '#bOut') && await t(p, '#bOut') === 'I need to stop' && await tall(p, '#bOut') >= 44, 'breathing: I need to stop is there');
       await p.click('#bStart'); await p.waitForTimeout(150);
       ok(await vis(p, '#bOut'), 'paused too');
@@ -294,9 +299,11 @@ const entry = (id, ago, o) => Object.assign({ k: 'practice', id, n: id, at: Date
       ok(await E(p, () => document.querySelector('#bStage').classList.contains('focus')) && await vis(p, '#bOut'), 'and in the focus view');
       await p.screenshot({ path: OUT + 'caretest-c-focus.png' });
       await p.click('#bOut'); await p.waitForTimeout(620);
-      const b = await E(p, () => { const X = window.__entrain; return { state: X.B.state, gain: X.B.bus.gain.value, focus: document.querySelector('#bStage').classList.contains('focus'), out: !document.querySelector('#bOut').hidden }; });
+      const b = await E(p, () => { const X = window.__entrain; return { state: X.B.state, gain: X.B.bus.gain.value, rain: X.AMB.out.gain.value, focus: document.querySelector('#bStage').classList.contains('focus'), out: !document.querySelector('#bOut').hidden }; });
       const s = await settle(p);
-      ok(b.state === 'idle' && b.gain < 0.0005 && !b.focus && !b.out && s.open && s.hash === '#breathe', 'one tap: the cues fade, the session ends, the focus view closes and Settle opens: ' + JSON.stringify(b));
+      ok(b.state === 'idle' && b.gain < 0.0005 && b.rain < 0.0005 && !b.focus && !b.out && s.open && s.hash === '#breathe', 'one tap: the cues and the rain fade, the session ends, the focus view closes and Settle opens: ' + JSON.stringify(b));
+      await p.waitForTimeout(700);
+      ok(await E(p, () => { const X = window.__entrain; return X.AMB.out.gain.value < 0.0005 && !X.AMB.playing; }), 'and the rain stays gone');
       const h = await hist(p);
       ok(h.length === 1 && h[0].k === 'breath' && h[0].full === false && h[0].ib === undefined, 'the session is in the history, ended early: ' + JSON.stringify(h[0]));
       await p.click('#stlDone'); await p.waitForTimeout(150);
