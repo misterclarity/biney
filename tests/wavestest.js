@@ -184,14 +184,14 @@ const UK = /\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!R
           sig: [...document.querySelectorAll('#lnSignals tbody tr')].map(r => [...r.children].map(tx)), left: [...document.getElementById('l-leftout').nextElementSibling.querySelectorAll('li b')].map(tx),
           leftTx: sec('l-leftout') };
       });
-      ok(/400 adults/.test(K.expect) && /12 breaths a minute/.test(K.expect) && /Fincham et al\., 2023/.test(K.expect) && /200 adults/.test(K.expect) && /Fincham et al\., 2024/.test(K.expect) &&
+      ok(/400 adults/.test(K.expect) && /12 breaths a minute/.test(K.expect) && /\(Fincham, Strauss & Cavanagh, 2023\)/.test(K.expect) && /200 adults/.test(K.expect) && /Fincham et al\., 2024/.test(K.expect) &&
         /stress improved in both by the same amount/.test(K.expect) && /cyclic sighing still lifted mood more than mindfulness/.test(K.expect) && /van Middendorp et al\., 2016/.test(K.expect),
         'expectation and placebo: the coherent and Wim Hof-style placebo trials, what still stands, and expectations in the immune study');
       ok(/83 studies with 6,703 participants, 8\.3%/.test(K.side) && /3\.7% in experimental studies and 33\.2% in observational/.test(K.side) && /anxiety, depression and cognitive anomalies/.test(K.side) &&
         /Farias et al\., 2020/.test(K.side), 'side effects of meditation as Farias and colleagues found them');
       ok(/20 minutes twice a day/.test(K.dose) && /Lehrer et al\., 2000/.test(K.dose) && /5 to 20 minutes once or twice a day/.test(K.dose) && /minority, precautionary view/.test(K.dose) &&
-        /35 to 65 minutes a day for wellbeing and 50 to 80 for mental health/.test(K.dose) && /how often they practised predicted/.test(K.dose) && /280,000 sessions/.test(K.dose) &&
-        /back-to-back blocks, because of the risk of fainting/.test(K.dose), 'how often and how long: the Lehrer protocol, frequency over length, the doses, no stacking of intense breathing');
+        /35 to 65 minutes a day for wellbeing and 50 to 80 for mental health/.test(K.dose) && /how often they practised predicted/.test(K.dose) && /280,000 sessions/.test(K.dose) && /slightly better mood with somewhat longer sessions/.test(K.dose) &&
+        /back-to-back blocks, because of the risk of fainting/.test(K.dose), 'how often and how long: the Lehrer protocol, frequency over length (with the app study\'s hint for longer sessions), the doses, no stacking of intense breathing');
       ok(/rarely test whether effects add up/.test(K.combine) && /Fuchs et al\., 2018/.test(K.combine) && /haven't been tested/.test(K.combine), 'combining techniques: little direct evidence, one pilot, the programmes untested as wholes');
       const sig = K.sig.map(r => r[0]), cant = K.sig.filter(r => /A web page can't read it/.test(r[2])).map(r => r[0]);
       ok(sig.join('|') === 'Heart rate|Heart-rate variability|Breathing rate|Finger temperature|Skin conductance|Blood oxygen|Movement, stillness|EEG|How you feel' &&
@@ -208,16 +208,22 @@ const UK = /\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!R
         (body.match(/\(([^()]*\d{4})\)/g) || []).forEach(g => g.slice(1, -1).split(';').forEach(c => {
           const m = new RegExp('^' + who + '[^;]*?,? (\\d{4})$').exec(c.trim()); if (m) found.push([m[1], m[2], c.trim()]);
         }));
+        const inLearn = found.length;
         X.PRACTICES.concat(X.TRACKS, X.BREATHS).forEach(d => (d.cite || '').split(' · ').forEach(c => {
           const m = new RegExp('^' + who + '[^·]*? (\\d{4})\\b').exec(c.trim()); if (m) found.push([m[1], m[2], c.trim()]);
         }));
         const keys = refs.map(r => { const m = /^([^,(]+?),.*?\((\d{4})\)/.exec(r); return m ? [m[1].trim(), m[2]] : null; });
-        return { n: found.length, refs, links: [...document.querySelectorAll('#references li')].map(li => !!li.querySelector('a[href^="https://"]')),
+        // two references by the same first author in the same year: Learn names enough authors to tell them apart
+        const twins = keys.filter((k, i) => k && keys.findIndex(j => j && j[0] === k[0] && j[1] === k[1]) !== i);
+        return { n: found.length, refs, twins: twins.map(k => k.join(' ')),
+          clash: found.slice(0, inLearn).filter(f => twins.some(k => k[0] === f[0] && k[1] === f[1]) && /^\S+ et al\.,? \d{4}$/.test(f[2])).map(f => f[2]), links: [...document.querySelectorAll('#references li')].map(li => !!li.querySelector('a[href^="https://"]')),
           missing: found.filter(f => !keys.some(k => k && k[0] === f[0] && k[1] === f[1])).map(f => f[2]),
           unused: refs.filter((r, i) => keys[i] && !found.some(f => f[0] === keys[i][0] && f[1] === keys[i][1])).map(r => r.slice(0, 60)) };
       });
       ok(C.n > 150 && !C.missing.length && !C.unused.length, C.n + ' citations in Learn and on the practices, tracks and patterns, each with its reference among ' + C.refs.length + ', and every reference cited' +
         (C.missing.length ? '; no reference for: ' + C.missing.join(' | ') : '') + (C.unused.length ? '; never cited: ' + C.unused.join(' | ') : ''));
+      ok(!C.clash.length, 'where two references share a first author and year (' + C.twins.join(', ') + '), Learn\'s citations name enough authors to tell them apart' +
+        (C.clash.length ? '; ambiguous: ' + C.clash.join(' | ') : ''));
       const gone = NEW_REFS.filter(a => !C.refs.some((r, i) => r.startsWith(a) && C.links[i]));
       ok(!gone.length, 'the ' + NEW_REFS.length + ' new references are listed, each with a link to the paper' + (gone.length ? '; missing: ' + gone.join(' | ') : ''));
       const spell = await E(p, re => {
