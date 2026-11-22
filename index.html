@@ -2017,6 +2017,57 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     .tc-card{max-width:none;min-height:100%;max-height:none;border-radius:0;padding:max(18px,env(safe-area-inset-top,0px)) 18px max(18px,env(safe-area-inset-bottom,0px))}
     .tc-card .pm-actions .btn{flex:1 1 auto}
   }
+  /* ---------- screen light (light.js), while a practice runs on screen or Breathe is open. Bright is a light set
+     of the colours, cool and near-white; Green the same under a pale green veil. Warm and Night lay a colour over the
+     whole screen that multiplies with it (.lt-veil), so only the warm part of each pixel's light stays, a scene's and a
+     chart's too, and for Night only the red: no blue at all. Their own colours are chosen to come through the veil. ---------- */
+  :root[data-light="bright"],:root[data-light="green"]{
+    --bg:#f3f7ff;--bg-2:#e9effa;--panel:#ffffff;--panel-2:#e6edf9;--panel-3:#d5e0f3;--line:#c0cde4;--line-soft:#d9e2f2;
+    --text:#0c1730;--text-dim:#33415e;--text-faint:#525f7c;
+    --relax:#0b7d70;--relax-deep:#086b60;--stim:#9a5b00;--stim-deep:#824c00;--ther:#6447c9;--accent:#4652c9;--danger:#c0223f;
+    --b-in:#0b7d70;--b-sip:#08805a;--b-hold:#9a5b00;--b-out:#6447c9;--hr:#c0223f;--food:#2f7d26;
+    --tn-a:#4652c9;--tn-down:#0b7d70;--tn-up:#9a5b00;
+    --shadow:0 24px 48px -24px rgba(30,50,90,.35);
+    color-scheme:light;
+  }
+  :root[data-light="warm"]{
+    --bg:#100b07;--bg-2:#130d08;--panel:#1b130c;--panel-2:#241911;--panel-3:#2f2116;--line:#3b2a1c;--line-soft:#2a1d13;
+    --text:#f8e8d4;--text-dim:#cfb79e;--text-faint:#ab927a;
+    --relax:#f5c27a;--relax-deep:#e8a95a;--stim:#ffcf70;--stim-deep:#f0b040;--ther:#f2a6a0;--accent:#f2ae7e;--danger:#ff8a80;
+    --b-in:#f5c27a;--b-sip:#f8dcae;--b-hold:#ffcf70;--b-out:#f09a8c;--hr:#ff8a80;--food:#dcc47a;
+    --tn-a:#f2ae7e;--tn-down:#f5c27a;--tn-up:#ffcf70;
+  }
+  :root[data-light="night"]{
+    --bg:#000000;--bg-2:#030101;--panel:#0b0505;--panel-2:#140909;--panel-3:#1d0e0e;--line:#2b1515;--line-soft:#1a0c0c;
+    --text:#ffe6dc;--text-dim:#e6c0b4;--text-faint:#c89c8f;
+    --relax:#ffc4ad;--relax-deep:#f0a88f;--stim:#ffd6b0;--stim-deep:#f0bc90;--ther:#ffb4b4;--accent:#ffbca0;--danger:#ff9c90;
+    --b-in:#ffc4ad;--b-sip:#ffd9c8;--b-hold:#ffe0b8;--b-out:#ff9c8c;--hr:#ff9c90;--food:#ffd0a0;
+    --tn-a:#ffbca0;--tn-down:#ffc4ad;--tn-up:#ffe0b8;
+  }
+  :root[data-light="night"] body,:root[data-light="night"] body.immersive{background:#000}
+  .lt-veil{position:fixed;inset:0;z-index:2147483000;pointer-events:none;mix-blend-mode:multiply;display:none}
+  :root[data-light="warm"] .lt-veil{display:block;background:#f0b880}
+  :root[data-light="night"] .lt-veil{display:block;background:#b42400}
+  :root[data-light="green"] .lt-veil{display:block;background:#d2f5c8}
+  /* Bright: the few colours written for a dark page */
+  :root[data-light="bright"] .btn.primary,:root[data-light="green"] .btn.primary,
+  :root[data-light="bright"] .ses-b.main,:root[data-light="green"] .ses-b.main{color:#fff}
+  :root[data-light="bright"] .topbar,:root[data-light="green"] .topbar{background:rgba(243,247,255,.88)}
+  :root[data-light="bright"] .rail,:root[data-light="green"] .rail{background:rgba(243,247,255,.95)}
+  :root[data-light="bright"] input.sw:checked::after,:root[data-light="green"] input.sw:checked::after{background:#fff}
+  :root[data-light="bright"] .ses-x.armed,:root[data-light="green"] .ses-x.armed,
+  :root[data-light="bright"] .ses-nose span.on,:root[data-light="green"] .ses-nose span.on{color:#fff}
+  :root[data-light="bright"] .ses-out,:root[data-light="green"] .ses-out,
+  :root[data-light="bright"] .b-transport .b-out,:root[data-light="green"] .b-transport .b-out{background:rgba(192,34,63,.1);border-color:rgba(192,34,63,.3);color:#a3122f}
+  /* the rows that pick it: Settings, a practice's Options, Breathe */
+  .lt-seg button{display:inline-flex;align-items:center;gap:4px;min-height:44px}
+  .lt-seg .sup-ic{background:none;padding:0;color:var(--stim)}
+  .lt-seg .sup-ic svg.i{width:12px;height:12px}
+  .st-card .lt-seg{align-self:flex-start;max-width:100%}
+  .b-lt .chip{min-height:44px}
+  .b-lt .chip .sup-ic{margin-left:5px}
+  .lt-ev .strength{vertical-align:middle;margin-left:4px}
+  .lt-exp{display:inline-block;font-size:11px;font-weight:750;padding:2px 8px;border-radius:999px;margin-left:4px;color:var(--ther);background:color-mix(in srgb,var(--ther) 14%,transparent)}
 </style>
 </head>
 <body>
@@ -2551,6 +2602,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           <p class="hint" id="bVisHint">The circle grows as you breathe in and shrinks as you breathe out. The outer arc fills as each phase runs.</p>
         </div>
 
+        <div class="prime-row b-lt">
+          <div class="prime-label" id="bltLab">Screen light</div>
+          <div class="chips" id="bLight" role="radiogroup" aria-labelledby="bltLab">
+            <label class="chip on"><input type="radio" name="blight" value="off" checked> Usual</label>
+            <label class="chip"><input type="radio" name="blight" value="auto"> Automatic</label>
+            <label class="chip"><input type="radio" name="blight" value="bright"> Bright</label>
+            <label class="chip"><input type="radio" name="blight" value="warm"> Warm</label>
+            <label class="chip"><input type="radio" name="blight" value="night"> Night</label>
+          </div>
+          <p class="hint" id="bLightHint">The screen as it usually is.</p>
+        </div>
+
         <div class="prime-row">
           <div class="prime-label" id="blLab">Length</div>
           <div class="chips" id="bLen" role="radiogroup" aria-labelledby="blLab">
@@ -2885,6 +2948,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-sleepsnd">Sound and sleep</a>
             <a href="#l-music">Music</a>
             <a href="#l-scenes">Scenes</a>
+            <a href="#l-light">Light colour</a>
             <a href="#l-touch">Touch</a>
             <a href="#l-temp">Cold and heat</a>
             <a href="#l-mind">Imagery and nidra</a>
@@ -3040,8 +3104,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Vision</th></tr>
                 <tr class="ln-row"><th scope="row"><b>Eyes closed</b> <small>Alpha (relaxation)</small></th><td>Strong</td><td>In the guidance of practices such as <a href="#practice/anapana">Anapana</a></td></tr>
-                <tr class="ln-row"><th scope="row"><b>Bright, cool light in the morning</b> <small>Alertness</small></th><td>Strong</td><td><a href="#living/morning">A morning routine</a>, <a href="#living/light-box">a light box</a></td></tr>
-                <tr class="ln-row"><th scope="row"><b>Dim, warm light in the evening</b> <small>Ready for sleep</small></th><td>Strong</td><td><a href="#living/sleep-habits">Healthy sleep habits</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Bright, cool light in the morning</b> <small>Alertness</small></th><td>Strong</td><td><a href="#living/morning">A morning routine</a>, <a href="#living/light-box">a light box</a>, and Bright <a href="#st-light">screen light</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Dim, warm light in the evening</b> <small>Ready for sleep</small></th><td>Strong</td><td><a href="#living/sleep-habits">Healthy sleep habits</a>, and Warm or Night <a href="#st-light">screen light</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Rhythmic light flicker</b> <small>Entrainment, such as 40&nbsp;Hz</small></th><td>Early (a seizure risk)</td><td class="ln-lo">Learn only</td></tr>
                 <tr class="ln-row"><th scope="row"><b>Nature scenes, restoration breaks</b> <small>Alpha, attention recovery</small></th><td>Moderate</td><td><a href="#st-scenes">Scenes</a> to watch on Breathe or in a practice: clouds, water, leaves, a misty forest</td></tr>
                 <tr class="ln-row"><th scope="row"><b>A fireplace, with its sound</b> <small>Relaxation, lower blood pressure</small></th><td>Moderate</td><td>A fire to watch, one of the <a href="#st-scenes">scenes</a>, always with its crackle (one of the <a href="#l-nature">nature sounds</a>)</td></tr>
@@ -3790,6 +3854,55 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               follows your breath. These drawings haven't been tested themselves.
             </p>
 
+            <h3 id="l-light">Light colour: bright, warm and red</h3>
+            <p>
+              Light reaches the brain by a second route besides sight. Cells in the eye that contain melanopsin, most
+              sensitive to blue light at around 480&nbsp;nm, feed the body clock and the systems that keep you alert. Brighter
+              light makes people more alert and quicker, lowers the EEG activity in the theta and low alpha range
+              (5&ndash;9&nbsp;Hz) that goes with drowsiness, and holds back the sleep hormone melatonin at night (Sletten et al.,
+              2021). Blue LED light in the evening lowered alpha power, in keeping with more alertness, in a small study of
+              nine young men (Kayaba et al., 2014). Cool white light at 6500&nbsp;K held back melatonin more than warmer light
+              did, and gave faster reactions in tasks that need sustained attention (Chellappa et al., 2011), and a 2025
+              preprint, not yet peer reviewed, also found blue or blue-enriched light more alerting than warmer light of longer
+              wavelengths. The guide behind Entrain's new techniques rates this as strong evidence, from body-clock research,
+              and calls it the safest of the light techniques.
+            </p>
+            <p>
+              The effect depends on the time and on the person. In morning types, blue light in the afternoon brought more
+              of the slower theta and low alpha waves than white light did, which may mean they were less alert then: a
+              preliminary finding (Siemiginowska &amp; Iskra-Golec, 2020). In one small study of 24 men, evening types showed
+              more of the fast beta waves that go with alertness under green light than people in between did, and its
+              authors concluded that green light alerts evening types best (Vani et al., 2025). The results are mixed, too:
+              in adolescents and young adults, blue light of two strengths, against a dim orange light, left alpha and theta
+              power unchanged (Sharifpour et al., 2025). And light in the evening costs sleep: after two hours of
+              blue-enriched light at 6500&nbsp;K in the evening, deep slow-wave activity was lower in the first cycle of sleep
+              (Chellappa et al., 2013).
+            </p>
+            <p>
+              Entrain follows the guide's table with a screen light, in <a href="#st-light">Settings</a>, on Breathe and
+              under a practice's Options. Bright is cool and near-white, for focus and energy in the morning; Warm is amber
+              and dimmer, with less blue, for winding down in the evening; Night is very dim and red, with no blue at all,
+              for the time before sleep. Warm and Night lay a colour over the whole screen, so every part of it, a scene
+              too, keeps only the warm part of its light, and for Night only the red. Automatic picks one from what the
+              session is for and the time of day: Bright for focus and energy by day and Warm from the evening on; the usual
+              screen for calm, recovery and reflection by day, Warm in the evening and Night late at night; for sleep, Warm
+              in the day and Night from the evening on; and Night on any practice's sleep steps. You can say whether
+              you're a morning person, an evening person or in between: a morning person's times come an hour earlier, and
+              Automatic leaves Bright out of their afternoon, as the study of morning types suggests; an evening person's come an hour
+              later, with Bright in green if they like, from that one small study. Today's suggestion follows the same times.
+            </p>
+            <p>
+              A phone screen gives far less light than daylight or a light box. Light and sleep researchers recommend at
+              least 250&nbsp;lux at the eye by day, counting the light the body clock responds to, and no more than 10 in the
+              three hours before bed (Brown et al., 2022). A light box gives 10,000&nbsp;lux at your eyes, and daylight
+              outdoors gives thousands even on a cloudy day, while a screen at reading distance gives a small fraction of
+              either. So for alertness, daylight comes first, as in <a href="#living/morning">the morning routine</a>, with
+              <a href="#living/light-box">a light box</a> on dark winter mornings; a screen's own light matters most in the
+              evening, when less is better. Bright, Warm and Night haven't been tested on a phone screen: they follow the
+              research on light at the eye, at a far smaller dose. A web page can't set your phone's brightness, so turn it
+              up for Bright and down for Night.
+            </p>
+
             <h3 id="l-touch">Touch: slow strokes, a hand on the heart, weighted blankets and massage</h3>
             <p id="l-ctouch">
               <b>Slow, gentle stroking.</b> Hairy skin, like the forearm's, has nerves of its own for caress-like touch:
@@ -4019,7 +4132,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 research for now.</li>
               <li><b>Smart bulbs.</b> A web page can't reach the bulbs in your home: they answer their makers' apps, or a hub on
                 your home network that a secure web page isn't allowed to talk to. Set them yourself instead: bright and cool in the
-                morning, dim and warm in the evening, very dim and warm or red before sleep.</li>
+                morning, dim and warm in the evening, very dim and warm or red before sleep. Entrain's <a href="#st-light">screen
+                light</a> does the same for the screen.</li>
               <li><b>EMDR.</b> Eye movements while recalling a memory tax working memory, and in laboratory studies they made
                 distressing memories less vivid and less upsetting (Jeffries &amp; Davis, 2013). But EMDR is a therapy for trauma,
                 given by trained clinicians, so Entrain has no self-guided version: trauma work belongs with a clinician.</li>
@@ -4255,6 +4369,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Taylor, R. P. (2006). Reduction of physiological stress using fractal art and architecture. <em>Leonardo</em>, 39(3), 245–251. <a href="https://doi.org/10.1162/leon.2006.39.3.245" rel="noopener">DOI</a></li>
       <li>Taylor, R. P., &amp; Spehar, B. (2016). Fractal fluency: An intimate relationship between the brain and processing of fractal stimuli. In A. Di Ieva (Ed.), <em>The Fractal Geometry of the Brain</em>. Springer. <a href="https://doi.org/10.1007/978-1-4939-3995-4_30" rel="noopener">DOI</a></li>
       <li>Ikei, H., Komatsu, M., Song, C., Himoro, E., &amp; Miyazaki, Y. (2014). The physiological and psychological relaxing effects of viewing rose flowers in office workers. <em>Journal of Physiological Anthropology</em>, 33, 6. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3974224/" rel="noopener">PMC</a></li>
+      <li>Sletten, T. L., Raman, B., Magee, M., Ferguson, S. A., Kennaway, D. J., Grunstein, R. R., Lockley, S. W., &amp; Rajaratnam, S. M. W. (2021). A blue-enriched, increased intensity light intervention to improve alertness and performance in rotating night shift workers in an operational setting. <em>Nature and Science of Sleep</em>, 13, 647–657. <a href="https://doi.org/10.2147/NSS.S287097" rel="noopener">DOI</a></li>
+      <li>Kayaba, M., Iwayama, K., Ogata, H., Seya, Y., Kiyono, K., Satoh, M., &amp; Tokuyama, K. (2014). The effect of nocturnal blue light exposure from light-emitting diodes on wakefulness and energy metabolism the following morning. <em>Environmental Health and Preventive Medicine</em>, 19(5), 354–361. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4166587/" rel="noopener">PMC</a></li>
+      <li>Chellappa, S. L., Steiner, R., Blattner, P., Oelhafen, P., G&ouml;tz, T., &amp; Cajochen, C. (2011). Non-visual effects of light on melatonin, alertness and cognitive performance: can blue-enriched light keep us alert? <em>PLOS ONE</em>, 6(1), e16429. <a href="https://doi.org/10.1371/journal.pone.0016429" rel="noopener">DOI</a></li>
+      <li>Siemiginowska, P., &amp; Iskra-Golec, I. (2020). Blue light effect on EEG activity: the role of exposure timing and chronotype. <em>Lighting Research &amp; Technology</em>, 52(4), 472–484. <a href="https://doi.org/10.1177/1477153519876969" rel="noopener">DOI</a></li>
+      <li>Vani, V., Ojha, P., Gadhvi, M. A., &amp; Dixit, A. (2025). Colored light exposure ensues chronotype-based responses: evidence from QEEG analysis. <em>Physiological Research</em>, 74(3), 519–527. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12462703/" rel="noopener">PMC</a></li>
+      <li>Sharifpour, R., Balda, F., Paparella, I., et al. (2025). Cortical excitability is affected by light exposure: distinct effects in adolescents and young adults. <em>Neurobiology of Sleep and Circadian Rhythms</em>, 20, 100138. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12688668/" rel="noopener">PMC</a></li>
+      <li>Chellappa, S. L., Steiner, R., Oelhafen, P., Lang, D., G&ouml;tz, T., Krebs, J., &amp; Cajochen, C. (2013). Acute exposure to evening blue-enriched light impacts on human sleep. <em>Journal of Sleep Research</em>, 22(5), 573–580. <a href="https://doi.org/10.1111/jsr.12050" rel="noopener">DOI</a></li>
       <li>Ikei, H., Song, C., &amp; Miyazaki, Y. (2023). Physiological adjustment effect of visual stimulation by fresh rose flowers on sympathetic nervous activity. <em>Frontiers in Psychology</em>, 14, 1159458. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10174444/" rel="noopener">PMC</a></li>
       <li>L&ouml;ken, L. S., Wessberg, J., Morrison, I., McGlone, F., &amp; Olausson, H. (2009). Coding of pleasant touch by unmyelinated afferents in humans. <em>Nature Neuroscience</em>, 12(5), 547–548. <a href="https://doi.org/10.1038/nn.2312" rel="noopener">DOI</a></li>
       <li>Olausson, H., Lamarre, Y., Backlund, H., Morin, C., Wallin, B. G., Starck, G., Ekholm, S., Strigo, I., Worsley, K., Vallbo, &Aring;. B., &amp; Bushnell, M. C. (2002). Unmyelinated tactile afferents signal touch and project to insular cortex. <em>Nature Neuroscience</em>, 5(9), 900–904. <a href="https://doi.org/10.1038/nn896" rel="noopener">DOI</a></li>
@@ -8276,6 +8397,247 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       X.scnSoundOf = scnSoundOf; X.scnSound = scnSound; X.scnSes = scnSes; X.scnOf = scnOf; X.pVis = pVis; X.bVisNow = bVisNow; X.scnFits = scnFits;
     }
   }
+  /* ------------------------------ screen light ------------------------------
+     The light from the screen while a practice runs or Breathe is open, from the guide's advice on light colour and
+     brain states: Bright (cool and near-white, for focus and energy in the morning), Warm (amber and dimmer, for
+     winding down in the evening) and Night (very dim and red, with no blue, before sleep), or Automatic, which picks
+     one from what the session is for and the time of day. Bright is a light set of the page's colours (styles.css,
+     :root[data-light]); Warm and Night lay a colour over the whole screen that multiplies with it (.lt-veil,
+     mix-blend-mode), so every pixel, a scene's and a chart's too, keeps only the warm part of its light, or for Night
+     only the red. A morning or evening person moves Automatic's times, and Today's suggestion, an hour earlier or
+     later; an evening person can have Bright in green (one study). Bright, Warm and Night are new techniques: while
+     this device is locked nothing changes, and a choice kept from before shows the usual screen.
+  ------------------------------------------------------------------------------ */
+
+  var LT_NAME = "Screen light";                                   // the unlock dialog: "… is one of the new techniques."
+  var LT_KINDS = [["off", "Usual"], ["auto", "Automatic"], ["bright", "Bright"], ["warm", "Warm"], ["night", "Night"]];
+  var LT_WHAT = {
+    off: "The screen as it usually is.",
+    bright: "Cool and near-white, for focus and energy in the morning.",
+    green: "Bright, in green: in one small study, green light was the most alerting for evening types.",
+    warm: "Amber and dimmer, with less blue, for winding down in the evening.",
+    night: "Very dim and red, with no blue, for the time before sleep."
+  };
+  var LT_LOOK = { "": "the usual screen", bright: "Bright", green: "Bright in green", warm: "Warm", night: "Night" };
+  var LT_NOTE = "Bright for focus and energy in the morning, Warm in the evening, Night before sleep. Automatic picks one from what the session is for and the time of day.";
+  var LT_CHRONO = [["morning", "Morning person"], ["mid", "In between"], ["evening", "Evening person"]];
+  // hours added to the clock before reading the time of day: a morning person's evening comes an hour sooner
+  var LT_SHIFT = { morning: 1, mid: 0, evening: -1 };
+  // the browser's own bar, in each look's background
+  var LT_BAR = { "": "#0b1120", bright: "#f3f7ff", green: "#e2f4dc", warm: "#120c07", night: "#000000" };
+  // look: the light on screen now ("" for the usual one)
+  var LT = { look: "", meta: null };
+
+  function ltOk(k) { return k === "off" || k === "auto" || k === "bright" || k === "warm" || k === "night"; }
+  // this device's choice, for Breathe and every practice that keeps none of its own
+  function ltStored() { var k = store.get("light"); return ltOk(k) ? k : "off"; }
+  function ltDev() { return supOn() ? ltStored() : "off"; }
+  // what a row shows: the usual screen while this device is locked, whatever was kept
+  function ltShown(k) { return supOn() && ltOk(k) ? k : "off"; }
+  // morning person, evening person or in between (counted once this device is unlocked)
+  function ltChrono() { var c = store.get("chrono"); return supOn() && (c === "morning" || c === "evening") ? c : "mid"; }
+  function ltGreen() { return ltChrono() === "evening" && store.get("ltGreen") === "1"; }
+  // a practice where the light could nudge a reading: the Stress Check keeps the usual screen
+  function ltFits(d) { return !!d && !d.stress; }
+
+  /* ----- Automatic: the time of day and what the session is for ----- */
+  // the hour now, with minutes (the tests can set it)
+  function ltHour() {
+    if (window.__ltHour !== undefined) return +window.__ltHour;
+    var n = new Date();
+    return n.getHours() + n.getMinutes() / 60;
+  }
+  // the hour as your body clock reads it
+  function ltClock(h) { return (((h + LT_SHIFT[ltChrono()]) % 24) + 24) % 24; }
+  // morning 5 to 12, afternoon 12 to 6, evening 6 to 10, night 10 to 5, by your body clock
+  function ltPart(h) { var c = ltClock(h); return c >= 5 && c < 12 ? "morning" : c >= 12 && c < 18 ? "afternoon" : c >= 18 && c < 22 ? "evening" : "night"; }
+  /* The guide's table: bright, cool light for morning focus and alertness, dim and warm in the evening, very dim and
+     red before sleep. Focus and energy: Bright by day (a morning person's afternoon keeps the usual screen: in morning
+     types, blue light in the afternoon may lower alertness), Warm from the evening on. Sleep: Night from the evening
+     on, Warm before it, and Night on any practice's sleep steps. Calm, recovery and reflection: the usual screen by
+     day, Warm in the evening and Night at night. "" is the usual screen. */
+  function ltAuto(goal, h, sleepy) {
+    var w = ltPart(h);
+    if (sleepy) return "night";
+    if (goal === "sleep") return w === "evening" || w === "night" ? "night" : "warm";
+    if (goal === "focus" || goal === "energy") return w === "morning" ? "bright" : w === "afternoon" ? (ltChrono() === "morning" ? "" : "bright") : "warm";
+    return w === "evening" ? "warm" : w === "night" ? "night" : "";
+  }
+  // a choice as a look: Automatic worked out, and Bright in green for an evening person who asked for it
+  function ltResolve(k, goal, sleepy) {
+    var look = k === "auto" ? ltAuto(goal, ltHour(), sleepy) : k === "bright" || k === "warm" || k === "night" ? k : "";
+    return look === "bright" && ltGreen() ? "green" : look;
+  }
+  // the light the screen should have now: a running practice's on its screen, Breathe's on Breathe, else the usual
+  function ltNow() {
+    if (!supOn()) return "";
+    var run = pBusy() && P.def, s;
+    if (curView === "session" && run) {
+      if (!ltFits(P.def)) return "";
+      s = P.steps && P.steps[P.idx];
+      return ltResolve(P.opt.light, P.def.goal, !!s && pSleepyStep(s));
+    }
+    if (curView === "breathe") {
+      if (run && P.usesB) return ltFits(P.def) ? ltResolve(P.opt.light, P.def.goal, false) : "";
+      var b = preset(BC.pattern);
+      return ltResolve(ltDev(), b && b.goal || "", false);
+    }
+    return "";
+  }
+  // the page's colours for a look; the canvases read theirs again and draw
+  function ltApply(look) {
+    if (look === LT.look) return;
+    LT.look = look;
+    var root = document.documentElement;
+    if (look) root.setAttribute("data-light", look); else root.removeAttribute("data-light");
+    if (LT.meta) LT.meta.setAttribute("content", LT_BAR[look] || LT_BAR[""]);
+    readColors();
+    var cs = getComputedStyle(root);
+    ["relax", "stim", "ther", "accent", "food", "hr"].forEach(function (k) { P.col[k] = cs.getPropertyValue("--" + k).trim() || P.col[k]; });
+    if (B.ph) draw();
+  }
+  function ltSync() { ltApply(ltNow()); }
+
+  /* ----- the buttons: Settings, a practice's Options, Breathe ----- */
+  function ltSeg(id, cur, scope) {
+    return '<div class="mini-seg lt-seg"' + (id ? ' id="' + id + '"' : "") + ' data-lt-for="' + scope + '" role="group" aria-label="Screen light">' +
+      LT_KINDS.map(function (k) {
+        return '<button type="button" data-lt="' + k[0] + '" aria-pressed="' + (k[0] === cur) + '">' + k[1] + (k[0] !== "off" ? supTag(true) : "") + "</button>";
+      }).join("") + "</div>";
+  }
+  // a practice's Options: its own choice, or this device's
+  function ltRow(O) {
+    return '<div class="so-row so-seg so-lt"><span class="so-l">Screen light<small id="sLtNote">' + esc(ltSays(ltShown(O.light), P.view && P.view.goal, "practice")) + "</small></span>" +
+      ltSeg("sOptLt", ltShown(O.light), "prac") + "</div>";
+  }
+  // what a choice does, in words; for Automatic, what it picks now and why
+  function ltSays(k, goal, what) {
+    if (k !== "auto") return k === "bright" && ltGreen() ? LT_WHAT.green : LT_WHAT[k] || LT_WHAT.off;
+    var look = ltResolve("auto", goal || "", false), part = ltPart(ltHour());
+    return "Automatic picks from the time of day and what " + (what === "pattern" ? "the pattern" : "the practice") + " is for: " + LT_LOOK[look] + " now, " +
+      (part === "night" ? "at night" : "in the " + part) + (what === "practice" ? ", and Night on its sleep steps." : ".");
+  }
+  // Automatic, as it stands now, for each kind of session (Settings)
+  function ltAutoTxt() {
+    var h = ltHour(), part = ltPart(h), f = ltResolve("auto", "focus"), c = ltResolve("auto", "calm"), s = ltResolve("auto", "sleep");
+    return "Automatic now (" + part + (ltChrono() !== "mid" ? ", by your body clock" : "") + "): " + LT_LOOK[f] + " for focus and energy, " + LT_LOOK[c] + " for calm, recovery and reflection, " + LT_LOOK[s] + " for sleep.";
+  }
+  /* Picking one, at the moment of use: Usual at once; a light once this device is unlocked, otherwise the unlock
+     dialog first, and the pick goes ahead if the dialog unlocks it. */
+  function ltPick(k, then) {
+    if (!ltOk(k)) return;
+    if (k === "off" || supOn()) { then(k); return; }
+    supGate(LT_NAME, function () { then(k); }, function (ok) { if (ok) then(k); else ltUI(); });
+    ltUI();
+  }
+  // this device's choice: kept, and an open practice page with no choice of its own follows it
+  function ltSet(k) {
+    store.set("light", k);
+    if (!pBusy() && P.optFor) P.opt = pOptsOf(P.optFor);
+    ltUI();
+  }
+  // morning person, evening person or in between: either end is part of the new technique
+  function ltChronoPick(c) {
+    if (c !== "morning" && c !== "mid" && c !== "evening") return;
+    var go = function () { if (c === "mid") storeDel("chrono"); else store.set("chrono", c); ltUI(); };
+    if (c === "mid" || supOn()) go(); else { supGate(LT_NAME, go, function (ok) { if (ok) go(); else ltUI(); }); ltUI(); }
+  }
+
+  /* ----- Settings: Screen light ----- */
+  function ltCard() {
+    var ch = ltChrono();
+    return '<section class="st-card" id="st-light" aria-labelledby="stLt"><h2 id="stLt">Screen light</h2>' +
+      '<p class="st-note">The light from your screen during a practice and on Breathe. Bright is cool and near-white, for focus and energy in the morning; ' +
+        'Warm is amber and dimmer, for winding down in the evening; Night is very dim and red, with no blue, for the time before sleep. ' +
+        'Automatic picks one from what the session is for and the time of day. <a href="#l-light">What the research says</a></p>' +
+      '<div class="so-row so-seg"><span class="so-l">During sessions<small>On Breathe and in every practice, unless a practice keeps its own under Options.</small></span>' +
+        ltSeg("stLtSeg", ltDev(), "dev") + "</div>" +
+      '<p class="st-note" id="ltAutoTxt">' + esc(ltAutoTxt()) + "</p>" +
+      '<h3 class="sup-h" id="ltChH">Your body clock</h3>' +
+      '<div class="so-row so-seg"><span class="so-l">Morning person, evening person or in between?<small>A morning person\'s times come an hour earlier, an evening person\'s an hour later: ' +
+        "Automatic's, and Today's suggestion.</small></span>" +
+        '<div class="mini-seg lt-seg lt-ch" id="stLtCh" role="group" aria-labelledby="ltChH">' + LT_CHRONO.map(function (o) {
+          return '<button type="button" data-chrono="' + o[0] + '" aria-pressed="' + (o[0] === ch) + '">' + o[1] + (o[0] !== "mid" ? supTag(true) : "") + "</button>";
+        }).join("") + "</div></div>" +
+      '<div id="ltGreenRow"' + (ch === "evening" ? "" : " hidden") + ">" + pToggle("ltGreenOn", "Bright in green", ltGreen(),
+        "In one small study, green light was the most alerting for evening types. It's one study, and untested on a screen.") + "</div>" +
+      '<p class="st-note lt-ev">Light at the eye: strong evidence, from body-clock research ' + dots(3) + "</p>" +
+      '<p class="st-note lt-ev">Your body clock\'s times and green for an evening person: single studies <span class="lt-exp">Experimental</span></p>' +
+      '<p class="st-note">A phone screen gives a small fraction of the light of daylight or a light box, so for alertness daylight comes first: outdoors in the morning, ' +
+        'or <a href="#living/light-box">a light box</a> on dark winter mornings. A web page can\'t set your phone\'s brightness: turn it up for Bright and down for Night.</p>' +
+      "</section>";
+  }
+  function ltStWire() {
+    var g = $("#stLtCh");
+    if (!g) return;
+    g.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-chrono]");
+      if (b) ltChronoPick(b.getAttribute("data-chrono"));
+    });
+    $("#ltGreenOn").addEventListener("change", function () {
+      var on = this.checked, go = function () { if (on) store.set("ltGreen", "1"); else storeDel("ltGreen"); ltUI(); };
+      if (!on || supOn()) go(); else supGate(LT_NAME, go, function (ok) { if (ok) go(); else ltUI(); });
+    });
+  }
+
+  // every Screen light button in step: pressed, and the cup while locked (after an unlock too: supRefresh calls this)
+  function ltUI() {
+    var lock = !supOn(), dev = ltDev(), ch = ltChrono(), i;
+    document.querySelectorAll(".lt-seg").forEach(function (g) {
+      var prac = g.getAttribute("data-lt-for") === "prac";
+      var cur = prac && P.view ? ltShown(pBusy() && P.def !== P.view ? pOptsOf(P.view.id).light : P.opt.light) : dev;
+      g.querySelectorAll("button[data-lt], button[data-chrono]").forEach(function (b) {
+        var k = b.getAttribute("data-lt"), c = b.getAttribute("data-chrono"), tag = b.querySelector(".sup-tag");
+        b.setAttribute("aria-pressed", String(k ? k === cur : c === ch));
+        if ((k || c) === "off" || c === "mid") return;
+        if (tag && !lock) tag.parentNode.removeChild(tag);
+        else if (!tag && lock) b.insertAdjacentHTML("beforeend", supTag(true));
+      });
+      if (prac && P.view) bSetT("#sLtNote", ltSays(cur, P.view.goal, "practice"));
+    });
+    var gr = $("#ltGreenRow");
+    if (gr) { gr.hidden = ch !== "evening"; $("#ltGreenOn").checked = ltGreen(); }
+    if ($("#ltAutoTxt")) bSetT("#ltAutoTxt", ltAutoTxt());
+    // Breathe's chips: the device's choice, the cups while locked, and what it does
+    var bl = $("#bLight");
+    if (bl) {
+      checkRadio("blight", dev); syncChips("#bLight");
+      var labs = bl.querySelectorAll(".chip");
+      for (i = 0; i < labs.length; i++) {
+        var v = labs[i].querySelector("input").value, t = labs[i].querySelector(".sup-tag");
+        if (v === "off") continue;
+        if (t && !lock) t.parentNode.removeChild(t);
+        else if (!t && lock) labs[i].insertAdjacentHTML("beforeend", supTag(true));
+      }
+      var bp = preset(BC.pattern);
+      bSetT("#bLightHint", ltSays(dev, bp && bp.goal || "", "pattern") + (dev === "off" ? "" : " A web page can't set your phone's brightness: turn it up for Bright and down for Night."));
+    }
+    if (curView === "home") pSuggest();                // Today's suggestion follows your body clock
+    ltSync();
+  }
+
+  function ltInit() {
+    LT.meta = document.querySelector('meta[name="theme-color"]');
+    var veil = document.createElement("div");                     // Warm's and Night's colour over the whole screen
+    veil.className = "lt-veil"; veil.setAttribute("aria-hidden", "true");
+    document.body.appendChild(veil);
+    SUP_EXTRA.push({ name: LT_NAME, href: "#st-light" });         // Settings' list of what the donation unlocks
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest('.lt-seg[data-lt-for="dev"] button[data-lt]') : null;
+      if (b) ltPick(b.getAttribute("data-lt"), function (k) { ltSet(k); });
+    });
+    $("#bLight").addEventListener("change", function (e) {
+      var k = e.target.value;
+      if (!ltOk(k)) return;
+      ltPick(k, function (x) { ltSet(x); });
+    });
+    $("#bPats").addEventListener("change", function () { ltUI(); });     // Automatic goes by the pattern's goal (after Breathe's own handler)
+    ltUI();
+    if (window.__entrain) {                                       // for automated tests only
+      var X = window.__entrain;
+      X.LT = LT; X.ltAuto = ltAuto; X.ltResolve = ltResolve; X.ltNow = ltNow; X.ltPart = ltPart; X.ltChrono = ltChrono; X.ltHour = ltHour; X.ltSync = ltSync; X.readColors = readColors; X.BCOL = BCOL;
+    }
+  }
   /* ---------------------- your own breathing patterns ----------------------
      Timings made on the sliders and saved under a name, on this device: up to twelve. Each one
      is a chip beside the presets (its value "my-<uid>"), a row under Yours in the library, a
@@ -10272,7 +10634,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "2dcab42d";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "7215af71";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -10825,6 +11187,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ambSync();
     slpSync(); slpLink();                                     // Sleep sounds' page and Today's link to it (sleepsounds.js)
     scnUI();                                                  // the scenes' buttons and cups, and Breathe's visual (scenes.js)
+    ltUI();                                                   // the screen light's buttons and cups, and the light itself (light.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }
@@ -15187,7 +15550,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off" },
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off" },
     paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
     bm: ""                                          // how its beat played (beatmode.js), for the history
   };
@@ -15306,9 +15669,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* ----- options: defaults for every practice (in Settings), and each practice's own changes on top.
      Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself.
      The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js),
-     and the music (music) to the background sound's choice (music.js). ----- */
+     the music (music) to the background sound's choice (music.js), and the screen light (light) to Breathe's (light.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene", "light"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -15317,15 +15680,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     } catch (e) {}
     o.beatMode = bmStored();
     o.music = musStored();
+    o.light = ltStored();
     return o;
   }
-  // the defaults for every practice, kept: the beat's sound and the music go to this device's own choices, which every page then shows
+  // the defaults for every practice, kept: the beat's sound, the music and the screen light go to this device's own choices, which every page then shows
   function pOptKeep(g) {
-    var m = g.beatMode, mu = g.music;
-    delete g.beatMode; delete g.music;
+    var m = g.beatMode, mu = g.music, lt = g.light;
+    delete g.beatMode; delete g.music; delete g.light;
     store.set("pOpt", JSON.stringify(g));
     if (bmOk(m) && m !== bmStored()) bmSet(m);
     if (musOk(mu) && mu !== musStored()) musSet(mu, true);
+    if (ltOk(lt) && lt !== ltStored()) ltSet(lt);
   }
   function pOptOwn(id) {
     try { var v = JSON.parse(store.get("pOpt." + id) || "null"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; }
@@ -15757,6 +16122,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var flowing = s.k === "breath" && prev && prev.k === "breath";
     if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
     $("#ses").dataset.dim = (ST.sleepDim && pSleepyStep(s)) || s.dim ? "1" : "";     // sleep steps if Settings asks; a step that asks for it
+    ltSync();                                        // Automatic's screen light: Night on a sleep step (light.js)
     pStage(s);
     pRenderSegs();
     pUI();
@@ -16597,6 +16963,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         }).join("") + "</div></div>");
     }
     if (scnFits(d)) opts.push(scnRow(O));               // a scene to watch, kept for this practice: with a donation while locked (scenes.js)
+    if (ltFits(d)) opts.push(ltRow(O));                 // the screen light, kept for this practice: with a donation while locked (light.js)
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
     every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl(true) + "</div>");   // its music is a row of its own above
@@ -16701,6 +17068,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (d.audio && O.audio && bmMode(O.beatMode) !== "binaural") s.push(bmMode(O.beatMode) === "monaural" ? "Monaural" : "Isochronic");
     if (!d.music && !d.noMus && musShown(O.music) !== "off") s.push(MUS_SHORT[O.music]);
     if (scnFits(d) && scnShown(O.scene) !== "off") s.push(scnOptName(O.scene));
+    if (ltFits(d) && ltShown(O.light) !== "off") s.push(LT_KINDS.filter(function (k) { return k[0] === O.light; })[0][1] + " light");
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -16793,6 +17161,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         if (P.view !== d) return;
         O.scene = k; save(); scnUI();
         if (k === "fire") amNeed(["fire", "fireP"]);
+      });
+    });
+    // the screen light, kept for this practice: picking one opens with a donation while this device is locked (light.js)
+    var lg = $("#sOptLt");
+    if (lg) lg.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-lt]"); if (!b) return;
+      ltPick(b.getAttribute("data-lt"), function (k) {
+        if (P.view !== d) return;
+        O.light = k; save(); ltUI();
       });
     });
     var pg = $("#sOptPace");
@@ -16940,6 +17317,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function pImmersive() {
     var on = curView === "session" && pBusy();
     document.body.classList.toggle("immersive", on);
+    ltSync();                                        // the screen light, while a practice runs on screen or Breathe is open (light.js)
   }
   function pPill() {
     var pill = $("#tbPrac");
@@ -16966,7 +17344,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   /* ----- Today: a suggestion for the time of day ----- */
   function pSuggest() {
-    var hr = new Date().getHours(), pick;
+    var hr = Math.floor(ltClock(ltHour())), pick;      // the hour by your body clock: a morning person's an hour on (light.js)
     if (hr >= 5 && hr < 9) pick = ["morning-tonic", "This morning", "Wake up gently: a long stretch, breathing that quickens, and a beat that rises with you."];
     else if (hr >= 9 && hr < 12) pick = ["focus-primer", "Before you work", "Steady your breath, then prime with beta before you start."];
     else if (hr >= 12 && hr < 17) pick = ["calm-reset", "This afternoon", "Ten minutes to bring stress down: cyclic sighs, then resonance breathing."];
@@ -19400,7 +19778,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   /* -------------------------------- settings --------------------------------
      What every practice starts with (a practice can change its own under Options on its page),
-     the background sound, the scenes you find restful (scenes.js), what's kept of reflections, how the screen behaves, the new techniques
+     the background sound, the scenes you find restful (scenes.js), what's kept of reflections, how the screen behaves and its light
+     (light.js), the new techniques
      (supporter.js), your data (backup.js), the feedback form, and About with the build.
   ------------------------------------------------------------------------------ */
 
@@ -19465,7 +19844,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap, Cognitive Shuffle and Autogenic Training's bedtime ending go almost dark. The screen still stays on.") +
-      "</section>" + supCard() + bkCard() +
+      "</section>" + ltCard() + supCard() + bkCard() +
       '<section class="st-card st-fb" id="st-feedback" aria-labelledby="stF"><h2 id="stF">Feedback</h2>' + fbForm() + "</section>" +
       '<section class="st-card st-about" aria-labelledby="stI"><h2 id="stI">About</h2>' +
         '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project, and free software under the GNU AGPL, version 3. <a href="#l-impressum">Impressum, licence and credits</a></p>' +
@@ -19478,6 +19857,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     supStWire();
     hcStWire();
     scnStWire();
+    ltStWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }
@@ -21094,6 +21474,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("breath", "Scenes", "Breathe, practices and Settings · clouds, water, leaves, a forest, a fractal, flowers, a fire",
       ["Scenes to watch, drawn on your device and moving slowly: on Breathe the scene moves with your breath, in a practice it takes the place of the orb, and in Settings you pick the ones you find restful."], "#st-scenes",
       { ic: "leaf", col: "var(--b-in)", w: 1.05, alias: SCN_NAME, tags: "scene scenes visual visuals nature clouds sky water lake sea ripples leaves tree branch forest mist misty ridge mountains fractal fractals flowers roses fire fireplace flames embers restful restorative soft fascination video", sup: true }));
+    out.push(fdEntry("app", LT_NAME, "Breathe, practices and Settings · bright, warm or night, by the time of day",
+      ["The light from your screen during a session: Bright, cool and near-white, for focus and energy in the morning; Warm, amber and dimmer, in the evening; Night, very dim and red, before sleep; or Automatic. Say whether you're a morning or an evening person, and the times move with you."], "#st-light",
+      { ic: "sun", col: "var(--stim)", w: 1.05, tags: "light lights colour bright brightness warm amber night red blue tint screen theme mode dark white green body clock circadian chronotype morning evening person lark owl melatonin alert alertness", sup: true }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
       ["Pair a HeartMath ear-clip sensor, a chest strap or a Garmin watch set to broadcast, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
       { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));
@@ -23452,7 +23835,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["music", musInit], ["scenes", scnInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["music", musInit], ["scenes", scnInit], ["the screen light", ltInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

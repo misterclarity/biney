@@ -17,7 +17,7 @@
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off" },
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off" },
     paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
     bm: ""                                          // how its beat played (beatmode.js), for the history
   };
@@ -136,9 +136,9 @@
   /* ----- options: defaults for every practice (in Settings), and each practice's own changes on top.
      Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself.
      The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js),
-     and the music (music) to the background sound's choice (music.js). ----- */
+     the music (music) to the background sound's choice (music.js), and the screen light (light) to Breathe's (light.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene", "light"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -147,15 +147,17 @@
     } catch (e) {}
     o.beatMode = bmStored();
     o.music = musStored();
+    o.light = ltStored();
     return o;
   }
-  // the defaults for every practice, kept: the beat's sound and the music go to this device's own choices, which every page then shows
+  // the defaults for every practice, kept: the beat's sound, the music and the screen light go to this device's own choices, which every page then shows
   function pOptKeep(g) {
-    var m = g.beatMode, mu = g.music;
-    delete g.beatMode; delete g.music;
+    var m = g.beatMode, mu = g.music, lt = g.light;
+    delete g.beatMode; delete g.music; delete g.light;
     store.set("pOpt", JSON.stringify(g));
     if (bmOk(m) && m !== bmStored()) bmSet(m);
     if (musOk(mu) && mu !== musStored()) musSet(mu, true);
+    if (ltOk(lt) && lt !== ltStored()) ltSet(lt);
   }
   function pOptOwn(id) {
     try { var v = JSON.parse(store.get("pOpt." + id) || "null"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; }
@@ -587,6 +589,7 @@
     var flowing = s.k === "breath" && prev && prev.k === "breath";
     if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
     $("#ses").dataset.dim = (ST.sleepDim && pSleepyStep(s)) || s.dim ? "1" : "";     // sleep steps if Settings asks; a step that asks for it
+    ltSync();                                        // Automatic's screen light: Night on a sleep step (light.js)
     pStage(s);
     pRenderSegs();
     pUI();
@@ -1427,6 +1430,7 @@
         }).join("") + "</div></div>");
     }
     if (scnFits(d)) opts.push(scnRow(O));               // a scene to watch, kept for this practice: with a donation while locked (scenes.js)
+    if (ltFits(d)) opts.push(ltRow(O));                 // the screen light, kept for this practice: with a donation while locked (light.js)
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
     every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl(true) + "</div>");   // its music is a row of its own above
@@ -1531,6 +1535,7 @@
     if (d.audio && O.audio && bmMode(O.beatMode) !== "binaural") s.push(bmMode(O.beatMode) === "monaural" ? "Monaural" : "Isochronic");
     if (!d.music && !d.noMus && musShown(O.music) !== "off") s.push(MUS_SHORT[O.music]);
     if (scnFits(d) && scnShown(O.scene) !== "off") s.push(scnOptName(O.scene));
+    if (ltFits(d) && ltShown(O.light) !== "off") s.push(LT_KINDS.filter(function (k) { return k[0] === O.light; })[0][1] + " light");
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -1623,6 +1628,15 @@
         if (P.view !== d) return;
         O.scene = k; save(); scnUI();
         if (k === "fire") amNeed(["fire", "fireP"]);
+      });
+    });
+    // the screen light, kept for this practice: picking one opens with a donation while this device is locked (light.js)
+    var lg = $("#sOptLt");
+    if (lg) lg.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-lt]"); if (!b) return;
+      ltPick(b.getAttribute("data-lt"), function (k) {
+        if (P.view !== d) return;
+        O.light = k; save(); ltUI();
       });
     });
     var pg = $("#sOptPace");
@@ -1770,6 +1784,7 @@
   function pImmersive() {
     var on = curView === "session" && pBusy();
     document.body.classList.toggle("immersive", on);
+    ltSync();                                        // the screen light, while a practice runs on screen or Breathe is open (light.js)
   }
   function pPill() {
     var pill = $("#tbPrac");
@@ -1796,7 +1811,7 @@
 
   /* ----- Today: a suggestion for the time of day ----- */
   function pSuggest() {
-    var hr = new Date().getHours(), pick;
+    var hr = Math.floor(ltClock(ltHour())), pick;      // the hour by your body clock: a morning person's an hour on (light.js)
     if (hr >= 5 && hr < 9) pick = ["morning-tonic", "This morning", "Wake up gently: a long stretch, breathing that quickens, and a beat that rises with you."];
     else if (hr >= 9 && hr < 12) pick = ["focus-primer", "Before you work", "Steady your breath, then prime with beta before you start."];
     else if (hr >= 12 && hr < 17) pick = ["calm-reset", "This afternoon", "Ten minutes to bring stress down: cyclic sighs, then resonance breathing."];

@@ -290,6 +290,7 @@
     ambSync();
     slpSync(); slpLink();                                     // Sleep sounds' page and Today's link to it (sleepsounds.js)
     scnUI();                                                  // the scenes' buttons and cups, and Breathe's visual (scenes.js)
+    ltUI();                                                   // the screen light's buttons and cups, and the light itself (light.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }

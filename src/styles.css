@@ -1934,3 +1934,54 @@
     .tc-card{max-width:none;min-height:100%;max-height:none;border-radius:0;padding:max(18px,env(safe-area-inset-top,0px)) 18px max(18px,env(safe-area-inset-bottom,0px))}
     .tc-card .pm-actions .btn{flex:1 1 auto}
   }
+  /* ---------- screen light (light.js), while a practice runs on screen or Breathe is open. Bright is a light set
+     of the colours, cool and near-white; Green the same under a pale green veil. Warm and Night lay a colour over the
+     whole screen that multiplies with it (.lt-veil), so only the warm part of each pixel's light stays, a scene's and a
+     chart's too, and for Night only the red: no blue at all. Their own colours are chosen to come through the veil. ---------- */
+  :root[data-light="bright"],:root[data-light="green"]{
+    --bg:#f3f7ff;--bg-2:#e9effa;--panel:#ffffff;--panel-2:#e6edf9;--panel-3:#d5e0f3;--line:#c0cde4;--line-soft:#d9e2f2;
+    --text:#0c1730;--text-dim:#33415e;--text-faint:#525f7c;
+    --relax:#0b7d70;--relax-deep:#086b60;--stim:#9a5b00;--stim-deep:#824c00;--ther:#6447c9;--accent:#4652c9;--danger:#c0223f;
+    --b-in:#0b7d70;--b-sip:#08805a;--b-hold:#9a5b00;--b-out:#6447c9;--hr:#c0223f;--food:#2f7d26;
+    --tn-a:#4652c9;--tn-down:#0b7d70;--tn-up:#9a5b00;
+    --shadow:0 24px 48px -24px rgba(30,50,90,.35);
+    color-scheme:light;
+  }
+  :root[data-light="warm"]{
+    --bg:#100b07;--bg-2:#130d08;--panel:#1b130c;--panel-2:#241911;--panel-3:#2f2116;--line:#3b2a1c;--line-soft:#2a1d13;
+    --text:#f8e8d4;--text-dim:#cfb79e;--text-faint:#ab927a;
+    --relax:#f5c27a;--relax-deep:#e8a95a;--stim:#ffcf70;--stim-deep:#f0b040;--ther:#f2a6a0;--accent:#f2ae7e;--danger:#ff8a80;
+    --b-in:#f5c27a;--b-sip:#f8dcae;--b-hold:#ffcf70;--b-out:#f09a8c;--hr:#ff8a80;--food:#dcc47a;
+    --tn-a:#f2ae7e;--tn-down:#f5c27a;--tn-up:#ffcf70;
+  }
+  :root[data-light="night"]{
+    --bg:#000000;--bg-2:#030101;--panel:#0b0505;--panel-2:#140909;--panel-3:#1d0e0e;--line:#2b1515;--line-soft:#1a0c0c;
+    --text:#ffe6dc;--text-dim:#e6c0b4;--text-faint:#c89c8f;
+    --relax:#ffc4ad;--relax-deep:#f0a88f;--stim:#ffd6b0;--stim-deep:#f0bc90;--ther:#ffb4b4;--accent:#ffbca0;--danger:#ff9c90;
+    --b-in:#ffc4ad;--b-sip:#ffd9c8;--b-hold:#ffe0b8;--b-out:#ff9c8c;--hr:#ff9c90;--food:#ffd0a0;
+    --tn-a:#ffbca0;--tn-down:#ffc4ad;--tn-up:#ffe0b8;
+  }
+  :root[data-light="night"] body,:root[data-light="night"] body.immersive{background:#000}
+  .lt-veil{position:fixed;inset:0;z-index:2147483000;pointer-events:none;mix-blend-mode:multiply;display:none}
+  :root[data-light="warm"] .lt-veil{display:block;background:#f0b880}
+  :root[data-light="night"] .lt-veil{display:block;background:#b42400}
+  :root[data-light="green"] .lt-veil{display:block;background:#d2f5c8}
+  /* Bright: the few colours written for a dark page */
+  :root[data-light="bright"] .btn.primary,:root[data-light="green"] .btn.primary,
+  :root[data-light="bright"] .ses-b.main,:root[data-light="green"] .ses-b.main{color:#fff}
+  :root[data-light="bright"] .topbar,:root[data-light="green"] .topbar{background:rgba(243,247,255,.88)}
+  :root[data-light="bright"] .rail,:root[data-light="green"] .rail{background:rgba(243,247,255,.95)}
+  :root[data-light="bright"] input.sw:checked::after,:root[data-light="green"] input.sw:checked::after{background:#fff}
+  :root[data-light="bright"] .ses-x.armed,:root[data-light="green"] .ses-x.armed,
+  :root[data-light="bright"] .ses-nose span.on,:root[data-light="green"] .ses-nose span.on{color:#fff}
+  :root[data-light="bright"] .ses-out,:root[data-light="green"] .ses-out,
+  :root[data-light="bright"] .b-transport .b-out,:root[data-light="green"] .b-transport .b-out{background:rgba(192,34,63,.1);border-color:rgba(192,34,63,.3);color:#a3122f}
+  /* the rows that pick it: Settings, a practice's Options, Breathe */
+  .lt-seg button{display:inline-flex;align-items:center;gap:4px;min-height:44px}
+  .lt-seg .sup-ic{background:none;padding:0;color:var(--stim)}
+  .lt-seg .sup-ic svg.i{width:12px;height:12px}
+  .st-card .lt-seg{align-self:flex-start;max-width:100%}
+  .b-lt .chip{min-height:44px}
+  .b-lt .chip .sup-ic{margin-left:5px}
+  .lt-ev .strength{vertical-align:middle;margin-left:4px}
+  .lt-exp{display:inline-block;font-size:11px;font-weight:750;padding:2px 8px;border-radius:999px;margin-left:4px;color:var(--ther);background:color-mix(in srgb,var(--ther) 14%,transparent)}

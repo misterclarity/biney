@@ -150,6 +150,9 @@
     out.push(fdEntry("breath", "Scenes", "Breathe, practices and Settings · clouds, water, leaves, a forest, a fractal, flowers, a fire",
       ["Scenes to watch, drawn on your device and moving slowly: on Breathe the scene moves with your breath, in a practice it takes the place of the orb, and in Settings you pick the ones you find restful."], "#st-scenes",
       { ic: "leaf", col: "var(--b-in)", w: 1.05, alias: SCN_NAME, tags: "scene scenes visual visuals nature clouds sky water lake sea ripples leaves tree branch forest mist misty ridge mountains fractal fractals flowers roses fire fireplace flames embers restful restorative soft fascination video", sup: true }));
+    out.push(fdEntry("app", LT_NAME, "Breathe, practices and Settings · bright, warm or night, by the time of day",
+      ["The light from your screen during a session: Bright, cool and near-white, for focus and energy in the morning; Warm, amber and dimmer, in the evening; Night, very dim and red, before sleep; or Automatic. Say whether you're a morning or an evening person, and the times move with you."], "#st-light",
+      { ic: "sun", col: "var(--stim)", w: 1.05, tags: "light lights colour bright brightness warm amber night red blue tint screen theme mode dark white green body clock circadian chronotype morning evening person lark owl melatonin alert alertness", sup: true }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
       ["Pair a HeartMath ear-clip sensor, a chest strap or a Garmin watch set to broadcast, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
       { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));
