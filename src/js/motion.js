@@ -24,7 +24,8 @@
     bins: [], cur: null, got: 0, since: 0, sec: -1, mv: [],   // a tenth of a second each; mv: each second, moving or not
     est: null, marks: [], tickT: 0, watchT: 0, tickAt: 0,
     ses: null, last: null,                      // the Breathe session's tally, and the last one's
-    sr: null                                    // the running practice's stillness
+    sr: null,                                   // the running practice's stillness
+    ask: 0                                      // Breathe's switch set on or off so many times (motBellySet)
   };
 
   // motion access: asked in a tap where the browser asks (Safari on an iPhone or iPad; Chrome answers at once). Anything but a
@@ -237,11 +238,15 @@
     var st = $("#sOptStill");
     if (st && !supOn()) st.checked = false;
   }
-  // Breathe's switch: on with a donation while locked, then motion access in the same tap
+  // Breathe's switch: on with a donation while locked, then motion access in the same tap. An answer still on its way
+  // (an iPhone asks in a dialog) counts only while nothing has set it since: turned off meanwhile, here or by breath-led
+  // sound giving up the sensor it asked for (breathled.js), it stays off
   function motBellySet(on) {
+    var n = ++MOT.ask;
     if (!on) { MOT.belly = false; MOT.last = null; MOT.ses = null; motListen(); motUI(); return; }
     var go = function () {
       motAsk(function (s) {
+        if (n !== MOT.ask) return;
         if (s !== "ok") { MOT.state = s; MOT.belly = true; motUI(); return; }
         MOT.belly = true; MOT.last = null; MOT.ses = null; motListen(); motTick();
       });

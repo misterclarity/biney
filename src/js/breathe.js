@@ -391,6 +391,12 @@
     if (BLS.phase === "find") { go(); return; }   // Begin now, while breath-led sound waits for your pace: the check-in came before the wait
     if (!ciBefore("breath", ciBreathName(), go)) go();
   }
+  // leaving Breathe (showView): a check-in still open for its Start closes, starting nothing, as Escape does, so the
+  // session can't begin on another page; and breath-led sound stops waiting for your pace (breathled.js)
+  function bLeave() {
+    if (CI.mode === "before" && CI.kind === "breath") ciClose();
+    blsLeave();
+  }
 
   /* ----- a new technique's pattern (sup: true; supporter.js), not yet unlocked on this device: picking it,
      reaching it from a link, starting it, or Breathe opening on it brings up the dialog that unlocks it.

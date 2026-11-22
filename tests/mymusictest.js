@@ -16,7 +16,8 @@
 //      is in learnt from the guide, the chords following the belly itself, slowing towards your resonance pace, holding
 //      while you're faster, a pause, a pattern picked by hand, the end and the history; Begin now; no motion sensor;
 //      the microphone; a practice using the guide left alone; I need to stop, while it waits for your pace too;
-//      leaving Breathe while it waits ending the wait, and a session under way carrying on away from it
+//      leaving Breathe while it waits ending the wait, and a session under way carrying on away from it; Breathe's
+//      check-in closed by going back, starting nothing; an iPhone's motion access answered after leaving left off
 //   F  360 px, 44 px targets, British spelling
 // Run: node tests/mymusictest.js [group letter]
 const { chromium, APP, OUT } = require('./pw');
@@ -496,6 +497,37 @@ const BROKEN = { name: 'broken.mp3', mimeType: 'audio/mpeg', buffer: Buffer.from
       await m.click('#bLedOn'); await m.waitForTimeout(500);
       ok(await E(m, () => window.__entrain.MIC.on && !window.__entrain.BLS.on), 'is left listening after a session and the switch, as Heart\'s button is where it stops');
       await m.context().close();
+      // Breathe's check-in, left by going back: it closes, so the session can't begin on another page
+      const c = await page({ checkIn: '1', breathLed: '1', breathLedSrc: 'mic' }, { url: URL, unlock: true, mic: { bpm: 10 }, desk: true });
+      await go(c, 'home', 300); await go(c, 'breathe', 500);
+      await c.click('#bStart'); await c.waitForTimeout(400);
+      ok(await E(c, () => !document.querySelector('#ciModal').hidden && window.__entrain.BLS.phase === 'off'), 'with check-ins on, Start opens the check-in first');
+      await c.goBack(); await c.waitForTimeout(500);
+      const cb = await E(c, () => { const X = window.__entrain; return { view: location.hash, ci: !document.querySelector('#ciModal').hidden, mode: X.CI.mode, st: X.B.state, ph: X.BLS.phase, mus: X.MUS.on, mic: window.__mic.calls }; });
+      ok(cb.view === '#home' && !cb.ci && cb.mode === '' && cb.st === 'idle' && cb.ph === 'off' && !cb.mus && cb.mic === 0, 'going back to Today closes it, and nothing starts: no music, no microphone, the guide idle: ' + JSON.stringify(cb));
+      await go(c, 'breathe', 500);
+      await c.click('#bStart'); await c.waitForTimeout(300);
+      await c.click('#ciSkip');
+      ok(await until(c, () => window.__entrain.MIC.on && window.__entrain.BLS.phase === 'find', 4000), 'back on Breathe, Start and its check-in begin the wait as before');
+      await go(c, 'home', 600);
+      ok(await E(c, () => !window.__entrain.MIC.on && !window.__entrain.MIC.busy && window.__entrain.BLS.phase === 'off' && window.__mic.stopped >= 1), 'and leaving closes the microphone it opened');
+      await c.context().close();
+      // an iPhone still asking for motion access when you leave: the answer, once it comes, leaves the phone on the belly off
+      const ip = await page({ breathLed: '1', breathLedSrc: 'belly' }, { url: URL, unlock: true, mot: { bpm: 12, ios: true }, desk: true });
+      await go(ip, 'breathe', 500);
+      await E(ip, () => { const D = window.DeviceMotionEvent, r = D.requestPermission; D.requestPermission = () => new Promise(ok => setTimeout(ok, 1500)).then(() => r()); });
+      await ip.click('#bStart'); await ip.waitForTimeout(300);
+      ok(await E(ip, () => window.__entrain.BLS.phase === 'find' && window.__entrain.BLS.belly && !window.__entrain.MOT.belly), 'Start asks for motion access and waits, the answer still to come');
+      await go(ip, 'home', 300);
+      ok(await E(ip, () => window.__entrain.BLS.phase === 'off' && !window.__entrain.BLS.belly), 'leaving ends the wait with the question still open');
+      await ip.waitForTimeout(2500);
+      const ia = await E(ip, () => { const X = window.__entrain; return { asked: window.__mot.asked, perm: X.MOT.perm, belly: X.MOT.belly, on: X.MOT.on, sw: document.querySelector('#bBellyOn').checked, ph: X.BLS.phase, st: X.B.state }; });
+      ok(ia.asked === 1 && ia.perm === 'granted' && !ia.belly && !ia.on && !ia.sw && ia.ph === 'off' && ia.st === 'idle', 'allowed after that, the phone on the belly stays off, its switch too: ' + JSON.stringify(ia));
+      await go(ip, 'breathe', 500);
+      await ip.click('#bBellyOn');
+      ok(await until(ip, () => window.__entrain.MOT.belly && window.__entrain.MOT.on, 3000), 'and Breathe\'s own switch turns it on as usual');
+      await ip.click('#bBellyOn'); await ip.waitForTimeout(200);
+      await ip.context().close();
     }
 
     /* F. 360 px, targets, spelling */

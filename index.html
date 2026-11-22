@@ -7802,6 +7802,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (BLS.phase === "find") { go(); return; }   // Begin now, while breath-led sound waits for your pace: the check-in came before the wait
     if (!ciBefore("breath", ciBreathName(), go)) go();
   }
+  // leaving Breathe (showView): a check-in still open for its Start closes, starting nothing, as Escape does, so the
+  // session can't begin on another page; and breath-led sound stops waiting for your pace (breathled.js)
+  function bLeave() {
+    if (CI.mode === "before" && CI.kind === "breath") ciClose();
+    blsLeave();
+  }
 
   /* ----- a new technique's pattern (sup: true; supporter.js), not yet unlocked on this device: picking it,
      reaching it from a link, starting it, or Breathe opening on it brings up the dialog that unlocks it.
@@ -12256,7 +12262,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     bins: [], cur: null, got: 0, since: 0, sec: -1, mv: [],   // a tenth of a second each; mv: each second, moving or not
     est: null, marks: [], tickT: 0, watchT: 0, tickAt: 0,
     ses: null, last: null,                      // the Breathe session's tally, and the last one's
-    sr: null                                    // the running practice's stillness
+    sr: null,                                   // the running practice's stillness
+    ask: 0                                      // Breathe's switch set on or off so many times (motBellySet)
   };
 
   // motion access: asked in a tap where the browser asks (Safari on an iPhone or iPad; Chrome answers at once). Anything but a
@@ -12469,11 +12476,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var st = $("#sOptStill");
     if (st && !supOn()) st.checked = false;
   }
-  // Breathe's switch: on with a donation while locked, then motion access in the same tap
+  // Breathe's switch: on with a donation while locked, then motion access in the same tap. An answer still on its way
+  // (an iPhone asks in a dialog) counts only while nothing has set it since: turned off meanwhile, here or by breath-led
+  // sound giving up the sensor it asked for (breathled.js), it stays off
   function motBellySet(on) {
+    var n = ++MOT.ask;
     if (!on) { MOT.belly = false; MOT.last = null; MOT.ses = null; motListen(); motUI(); return; }
     var go = function () {
       motAsk(function (s) {
+        if (n !== MOT.ask) return;
         if (s !== "ok") { MOT.state = s; MOT.belly = true; motUI(); return; }
         MOT.belly = true; MOT.last = null; MOT.ses = null; motListen(); motTick();
       });
@@ -13902,7 +13913,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   function showView(v) {
     if (VIEWS.indexOf(v) < 0) v = "home";
-    if (v !== "breathe") { sheet(false); blsLeave(); }   // breath-led sound stops waiting for your pace (breathled.js)
+    if (v !== "breathe") { sheet(false); bLeave(); }   // Breathe's check-in closes, and breath-led sound stops waiting for your pace (breathe.js)
     if (v !== "living") lvLeave();                // a recipe stops keeping the screen on
     VIEWS.forEach(function (n) { $("#v-" + n).hidden = n !== v; });
     var links = document.querySelectorAll(".nav a"), navV = V_TAB[v] || v;
@@ -14071,7 +14082,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "3371e80c";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "b5231348";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -17405,7 +17416,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
        way it goes), they swell with the guide, which started at your own pace.
      It's a new technique, so turning it on opens with a donation (supporter.js). Nothing is recorded or kept
      beyond the session's start and end pace, which go into the history, and a sensor it opened itself closes again
-     when the session ends, when it's switched off or when the other sensor is chosen (blsQuiet).
+     when the session ends, when it's switched off or when the other sensor is chosen (blsQuiet), even one whose
+     access is still being asked for then.
   ------------------------------------------------------------------------------ */
 
   var BLS_NAME = "Breath-led sound";
@@ -17452,10 +17464,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else if (!MIC.on && !MIC.busy && blsHasMic()) { BLS.mic = true; micStart(); }
   }
   // close what it opened itself, but for `keep` ("belly" or "mic"): the microphone (its recording light, Heart's
-  // listening) or the phone on your belly, so neither carries on after the session or the switch
+  // listening) or the phone on your belly, so neither carries on after the session or the switch; one still being
+  // asked for (the browser's dialog up) stays closed when the answer comes (micStart, motBellySet)
   function blsQuiet(keep) {
     if (BLS.mic && keep !== "mic") { BLS.mic = false; if (MIC.on || MIC.busy) micStop(); }
-    if (BLS.belly && keep !== "belly") { BLS.belly = false; if (MOT.belly) motBellySet(false); }
+    if (BLS.belly && keep !== "belly") { BLS.belly = false; motBellySet(false); }
   }
   function blsMusic(fade) { if (!MUS.on || MUS.own !== "breath") musStart({ feel: "slow", own: "breath", fade: fade }); }
 

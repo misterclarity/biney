@@ -23,7 +23,8 @@
        way it goes), they swell with the guide, which started at your own pace.
      It's a new technique, so turning it on opens with a donation (supporter.js). Nothing is recorded or kept
      beyond the session's start and end pace, which go into the history, and a sensor it opened itself closes again
-     when the session ends, when it's switched off or when the other sensor is chosen (blsQuiet).
+     when the session ends, when it's switched off or when the other sensor is chosen (blsQuiet), even one whose
+     access is still being asked for then.
   ------------------------------------------------------------------------------ */
 
   var BLS_NAME = "Breath-led sound";
@@ -70,10 +71,11 @@
     else if (!MIC.on && !MIC.busy && blsHasMic()) { BLS.mic = true; micStart(); }
   }
   // close what it opened itself, but for `keep` ("belly" or "mic"): the microphone (its recording light, Heart's
-  // listening) or the phone on your belly, so neither carries on after the session or the switch
+  // listening) or the phone on your belly, so neither carries on after the session or the switch; one still being
+  // asked for (the browser's dialog up) stays closed when the answer comes (micStart, motBellySet)
   function blsQuiet(keep) {
     if (BLS.mic && keep !== "mic") { BLS.mic = false; if (MIC.on || MIC.busy) micStop(); }
-    if (BLS.belly && keep !== "belly") { BLS.belly = false; if (MOT.belly) motBellySet(false); }
+    if (BLS.belly && keep !== "belly") { BLS.belly = false; motBellySet(false); }
   }
   function blsMusic(fade) { if (!MUS.on || MUS.own !== "breath") musStart({ feel: "slow", own: "breath", fade: fade }); }
 
