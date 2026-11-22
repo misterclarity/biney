@@ -349,15 +349,16 @@ const NAMES = ['Heart rate from the camera', 'Phone on your belly', 'Stillness o
       const sr = await E(p, () => Object.assign({}, window.__entrain.MOT.sr));
       await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(800);
       const tile = await E(p, () => { const b = document.querySelector('.sd-t[data-ex="still"]'); return b && [b.querySelector('span').textContent, b.querySelector('b').textContent, b.querySelector('small').textContent]; });
-      const pct = Math.round(100 * sr.still / sr.secs);
-      ok(tile && tile[0] === 'Stillness' && tile[1] === pct + '%' && pct >= 70 && pct <= 95 && /^still, longest \d+ min( \d+ s)?$/.test(tile[2]) && sr.moves >= 1,
+      // sr is read just before the end, and the clock runs at 20x: under load a few more seconds can pass, so allow a point
+      const pct = Math.round(100 * sr.still / sr.secs), shown = tile ? parseInt(tile[1], 10) : NaN;
+      ok(tile && tile[0] === 'Stillness' && tile[1] === shown + '%' && Math.abs(shown - pct) <= 1 && pct >= 70 && pct <= 95 && /^still, longest \d+ min( \d+ s)?$/.test(tile[2]) && sr.moves >= 1,
         'the end screen: ' + (tile || []).join(' ') + ' (' + sr.still + ' of ' + sr.secs + ' seconds still, ' + sr.moves + ' shift)');
       await p.click('.sd-t[data-ex="still"]'); await p.waitForTimeout(200);
       const ex = await t(p, '#sdEx');
       ok(/^Stillness ?How much of the session the phone lay still, resting on you or on the bed: \d+% of the \d+ min( \d+ s)? it read\. Your longest still stretch lasted .+, and you moved or shifted (once|twice|\d+ times)\./.test(ex) && /a rough measure rather than a tested one/.test(ex),
         'tapped, it explains itself: ' + ex.slice(0, 160));
       const h = await E(p, () => JSON.parse(localStorage.getItem('entrain.history')).slice(-1)[0]);
-      ok(h.id === 'body-scan' && h.still === pct && /still \d+%/.test(h.note), 'the history keeps it: ' + h.note);
+      ok(h.id === 'body-scan' && h.still === shown && /still \d+%/.test(h.note), 'the history keeps it: ' + h.note);
       ok(!(await E(p, () => window.__entrain.MOT.on)), 'and the sensor rests once the practice ends');
       // I need to stop ends it like any session, and the sensor rests
       await p.click('#sdAgain'); await p.waitForTimeout(400);
