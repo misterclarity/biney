@@ -1,6 +1,6 @@
 // Runs every suite against the built index.html, a few at a time, and adds up the results.
 //   node tests/run.js                   every suite, as many at a time as there are processor cores (at most 4)
-//   node tests/run.js --jobs 1          one at a time (about twenty minutes; two at a time takes ten)
+//   node tests/run.js --jobs 1          one at a time (about an hour; two at a time takes half an hour)
 //   node tests/run.js regress choices   only the suites named
 // The longest suites start first, so a run takes about as long as its longest suite once there are
 // enough cores. Each suite is its own process with its own browser; its results print in one piece

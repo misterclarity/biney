@@ -199,7 +199,9 @@ const UK = /\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!R
         'what to measure: nine signals, which ones a web page can\'t read, combining signals, trends rather than verdicts');
       ok(K.left.join(' | ') === 'Pink noise timed to deep sleep. | Smart bulbs. | EMDR. | Candle gazing and panoramic vision. | Skin temperature, skin conductance and health apps.' &&
         /closed-loop/.test(K.leftTx) && /bright and cool in the morning, dim and warm in the evening/.test(K.leftTx) && /no self-guided version/.test(K.leftTx) && /No good-quality studies/.test(K.leftTx) &&
-        /Apple Health and Google Health Connect/.test(K.leftTx), 'what Entrain leaves out, and why: timed pink noise, smart bulbs, self-guided EMDR, gaze techniques, skin signals and health apps');
+        /Apple Health and Google Health Connect/.test(K.leftTx) && /Brain trends reads a Muse headband only for broad trends, averaged over 25 seconds, not each wave/.test(K.leftTx) &&
+        /a heart sensor, a fingertip oximeter, an Aranet4 CO₂ monitor and a Muse headband over Bluetooth, and the phone's camera, microphone and motion sensor\./.test(K.leftTx),
+        'what Entrain leaves out, and why: timed pink noise (Brain trends too slow for it), smart bulbs, self-guided EMDR, gaze techniques, skin signals and health apps (and every sensor Entrain does read)');
       // every citation has its reference and every reference is cited (as choices V checks), the new references named
       const C = await E(p, () => {
         const X = window.__entrain, refs = [...document.querySelectorAll('#references li')].map(li => li.textContent.replace(/\s+/g, ' ').trim());
