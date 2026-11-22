@@ -472,7 +472,9 @@
     chang: ["Chang, A.-M., Aeschbach, D., Duffy, J. F., & Czeisler, C. A. (2015). Evening use of light-emitting eReaders negatively affects sleep, circadian timing, and next-morning alertness. PNAS, 112(4), 1232–1237.", "https://doi.org/10.1073/pnas.1418490112", "DOI"],
     scullin: ["Scullin, M. K., Krueger, M. L., Ballard, H. K., Pruett, N., & Bliwise, D. L. (2018). The effects of bedtime writing on difficulty falling asleep: a polysomnographic study comparing to-do lists and completed activity lists. Journal of Experimental Psychology: General, 147(1), 139–146.", "https://doi.org/10.1037/xge0000374", "DOI"],
     ekholm: ["Ekholm, B., Spulber, S., & Adler, M. (2020). A randomized controlled study of weighted chain blankets for insomnia in psychiatric disorders. Journal of Clinical Sleep Medicine, 16(9), 1567–1577.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC7970589/", "PMC"],
-    yuwb: ["Yu, J., Du, J., Yang, Z., Chen, W., Sun, S., Gan, M., et al. (2024). Effect of weighted blankets on sleep quality among adults with insomnia: a pilot randomized controlled trial. BMC Psychiatry, 24, 765.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC11539645/", "PMC"]
+    yuwb: ["Yu, J., Du, J., Yang, Z., Chen, W., Sun, S., Gan, M., et al. (2024). Effect of weighted blankets on sleep quality among adults with insomnia: a pilot randomized controlled trial. BMC Psychiatry, 24, 765.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC11539645/", "PMC"],
+    sramek: ["Šrámek, P., Šimečková, M., Janský, L., Šavlíková, J., & Vybíral, S. (2000). Human physiological responses to immersion into water of different temperatures. European Journal of Applied Physiology, 81(5), 436–442.", "https://doi.org/10.1007/s004210050065", "DOI"],
+    yankouskaya: ["Yankouskaya, A., Williamson, R., Stacey, C., Totman, J. J., & Massey, H. (2023). Short-term head-out whole-body cold-water immersion facilitates positive affect and increases interaction between large-scale brain networks. Biology, 12(2), 211.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC9953392/", "PMC"]
   };
   var ROUTINES = [
     { id: "sleep-habits", name: "Healthy sleep habits", icon: "moon", tags: "sleep hygiene insomnia habits bedtime regular schedule caffeine alcohol nap bedroom weighted blanket",
@@ -496,11 +498,13 @@
         { w: "On waking", t: "Up at your usual time", p: "The same time every day, weekends too, and open the curtains straight away. Or wake up slowly first, in bed, with a stretch and a beat that rises with you.", go: [["#practice/morning-tonic", "Morning Wake-Up"]] },
         { w: "In the first hour", t: "Daylight", p: "10 to 30 minutes outdoors, or at a bright window: a short walk, breakfast outside, the way to work. Morning light moves the body clock earlier, so you get sleepy sooner at night and wake more easily. On dark winter mornings, a light box does the same.", go: [["#living/light-box", "Light box"]] },
         { t: "Water and a stretch", p: "A glass of water, then a few minutes of gentle movement to wake the body.", go: [["#practice/morning-stretch", "Morning Stretch"], ["#practice/morning-yoga", "Morning Tonic"]] },
+        { t: "A cold finish, if you like", p: "End your shower with 15 to 30 seconds of cool, then cold, water, breathing out long and slow through the gasp, and lengthen it over the weeks, up to a minute. Cold water sharply raises the body's alertness chemicals, and people come out of it feeling more active and alert. Read its cautions first, above all with a heart condition or high blood pressure.",
+          go: [["#practice/cold-finish", "Cold Finish"], ["#living/cold-water", "Cold water"]] },
         { t: "A practice, before the screens", p: "Ten to fifteen minutes of breathing or meditation before the day's messages and news. Afterwards, notice how it leaves you feeling in your body: that's the feeling the day's short breaks bring you back to.", go: [["#practice/calm-reset", "Calm Reset"], ["#practice/coherence", "Heart Coherence"], ["#practice/anapana", "Anapana"]] },
         { t: "Breakfast", p: "Something with protein and fibre to keep you going until lunch, eaten sitting down and away from the screens.", go: [["#living/overnight-oats", "Overnight oats"], ["#living/apple-oats", "Stewed apple with oats"], ["#living/congee", "Congee"], ["#practice/meal", "Mindful Meal"]] },
         { t: "Then the screens", p: "Leave email, news and social feeds until after the practice and breakfast, so the day starts from your own state rather than from everyone else's. Coffee is fine now: it's the afternoon cup that costs sleep." }
       ],
-      refs: [R_REF.brown, R_REF.windred, R_REF.gardiner] },
+      refs: [R_REF.brown, R_REF.windred, R_REF.gardiner, R_REF.sramek, R_REF.yankouskaya] },
 
     { id: "daytime", name: "Through the day", icon: "spark", tags: "screen break screens devices digital break mindfulness overthinking analysis paralysis rumination stuck thinking feelings body",
       lead: "Two habits that carry the morning's practice through the day, and a third that adds daylight.",
@@ -519,7 +523,8 @@
       steps: [
         { w: "9 hours before", t: "Last coffee", p: "And the last cola, black or green tea, or energy drink.", go: [["#living/coffee", "Coffee and caffeine"]] },
         { w: "3 hours before", t: "Lights down", p: "Lamps instead of ceiling lights, warm and low. Finish the last big meal around now, eaten slowly, and go easy on alcohol.", go: [["#practice/meal", "Mindful Meal"]] },
-        { w: "1 to 2 hours before", t: "A warm shower or bath", p: "About 10 minutes in water at 40 to 42.5 °C. As your body cools down afterwards, sleep comes sooner: by about 10 minutes, across 13 studies, and it was rated better too." },
+        { w: "1 to 2 hours before", t: "A warm shower or bath", p: "About 10 minutes in water at 40 to 42.5 °C. As your body cools down afterwards, sleep comes sooner: by about 10 minutes, across 13 studies, and it was rated better too. A relaxation practice after it suits the cooling.",
+          go: [["#practice/body-scan", "Body Scan"], ["#practice/sleep-descent", "Sleep Descent"], ["#living/sauna", "Sauna and heat"]] },
         { w: "1 hour before", t: "Screens away", p: "Put the phone away for the night, outside the bedroom if you can, or turn on night mode and dim it. Reading on a tablet for four hours before bed, rather than a printed book, delayed sleep by about 10 minutes, cut dream sleep and left people less alert the next morning." },
         { t: "Tomorrow's list", p: "Five minutes writing down what you need to do tomorrow. In a sleep-lab study, people who did fell asleep about 10 minutes sooner than those who wrote about what they'd already done, and the more specific the list, the sooner." },
         { w: "30 minutes before", t: "Wind down", p: "Ten to twenty minutes of something calming: Autogenic Training with its bedtime ending lets it carry you into sleep. And, if you like, three good things from the day.",
@@ -585,6 +590,65 @@
         ["Wunsch, A., & Matuschka, K. (2014). A controlled trial to determine the efficacy of red and near-infrared light treatment in patient satisfaction, reduction of fine lines, wrinkles, skin roughness, and intradermal collagen density increase. Photomedicine and Laser Surgery, 32(2), 93–100.", "https://doi.org/10.1089/pho.2013.3616", "DOI"],
         ["Zhao, J., Tian, Y., Nie, J., Xu, J., & Liu, D. (2012). Red light and the sleep quality and endurance performance of Chinese female basketball players. Journal of Athletic Training, 47(6), 673–678.", "https://doi.org/10.4085/1062-6050-47.6.08", "DOI"],
         ["Ostrin, L. A., & Schill, A. W. (2026). Safety evaluation of 4 red light therapy devices for myopia. JAMA Ophthalmology.", "https://doi.org/10.1001/jamaophthalmol.2025.5660", "DOI"]
+      ] }
+  ];
+
+  /* ----- cold and heat: cold water and plunges, and saunas and hot baths, as cards like the light's -----
+     Free to read; Cold Finish, the practice they lead to, opens with the donation (cold.js). As the guide gives
+     them: a strong rise in alertness chemicals and mood in cold-water studies, with cold shock's real danger;
+     heat's one striking trial (with a medical machine, not a sauna) and limited evidence for regular saunas.
+     Sources checked in November 2026, against the papers themselves. */
+  var SAFE_TEMP = "Cold water shock can be dangerous, above all with a heart condition or high blood pressure: start gradually, never go into cold open water alone, and never combine cold water with breath holds. With a heart condition, low blood pressure or pregnancy, ask a doctor before saunas or very hot baths; drink water, and skip them after alcohol.";
+  var TEMPS = [
+    { id: "cold-water", name: "Cold water", alias: "cold shower cold plunge ice bath", temp: true, icon: "rain",
+      tags: "cold water shower cold shower plunge cold plunge ice bath cold bath cold exposure immersion open water wild swimming cold shock gasp noradrenaline dopamine alertness mood",
+      lead: "A cold shower, a cold bath or a plunge sets off a fast, strong rise in the body's alertness chemicals, and people come out of it feeling more awake. Start with the end of your shower; a plunge comes later, with clear rules.",
+      uses: [
+        [2, "Alertness", "In 10 healthy men, an hour sitting in water at 14 °C raised noradrenaline by about 530% and dopamine by about 250%. That is far colder and longer than anyone needs for a lift, and the shorter doses below haven't been measured this way."],
+        [2, "Mood", "In 33 adults new to cold water, five minutes up to the collarbones at about 20 °C left them feeling more active, alert, attentive, proud and inspired, and less distressed and nervous. In a brain scan afterwards, large brain networks were more strongly connected."],
+        [1, "Stress hormones", "After 15 minutes at 10.5 °C, cortisol hadn't changed half an hour later but was 47% lower three hours later, in eight healthy adults. One small study."]
+      ],
+      facts: [
+        ["Amounts studied", "An hour at 14 °C, five minutes at 20 °C and 15 minutes at 10.5 °C, all in baths. A cold shower is gentler and less studied: 15 to 60 seconds at the end of a warm one is the usual way to start."],
+        ["How to start", "Finish a warm shower with 15 to 30 seconds of cool, then cold, water, breathing out long and slow through the first gasp, and lengthen it over the weeks, up to a minute. Cold Finish times it, and builds up for you."],
+        ["Cold plunges, later", "An advanced step, once a cold finish feels easy: in slowly, a minute or two at first, with someone beside you, and out as soon as you shiver hard or feel numb or unwell. Cold shock is a real danger in water below 15 °C. In open water, never alone; if the cold takes your breath, float on your back for 60 to 90 seconds until your breathing settles."]
+      ],
+      go: [["#practice/cold-finish", "Cold Finish"]],
+      care: [
+        "Cold water sets off a shock response: a gasp, fast breathing and a sudden rise in heart rate and blood pressure. With a heart condition, high blood pressure or asthma, or in pregnancy, ask your doctor first.",
+        "Never practise cold immersion alone in open water. The first gasp can draw in water, and cold shock is behind many drownings.",
+        "Never combine cold water with Wim Hof breathing or breath holds: do breathwork on dry land, and breathe all the way through the cold.",
+        "Start gradually, with the end of a shower, and build up over weeks. Warm up at once if you feel dizzy, numb or unwell, or shiver hard.",
+        "Mind your footing: the gasp can make you unsteady, so use a non-slip mat or a rail."
+      ],
+      refs: [R_REF.sramek, R_REF.yankouskaya,
+        ["Reed, E. L., Chapman, C. L., Whittman, E. K., et al. (2023). Cardiovascular and mood responses to an acute bout of cold water immersion. Journal of Thermal Biology, 118, 103727.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC10842018/", "PMC"],
+        ["Tipton, M. J., Collier, N., Massey, H., Corbett, J., & Harper, M. (2017). Cold water immersion: kill or cure? Experimental Physiology, 102(11), 1335–1355.", "https://doi.org/10.1113/EP086283", "DOI"],
+        ["RYA (Royal Yachting Association). Cold water shock.", "https://www.rya.org.uk/water-safety/cold-water-shock-safety/cold-water-shock/", "RYA"]
+      ] },
+    { id: "sauna", name: "Sauna and heat", alias: "hot bath steam", temp: true, icon: "sun",
+      tags: "sauna heat hot bath warm bath hot tub steam infrared sauna finnish sauna hyperthermia depression mood relaxation sleep evening wind down",
+      lead: "A sauna or a hot bath relaxes you, and one striking trial of whole-body heating eased depression, but the evidence for regular saunas is still limited. In the evening, a warm bath or shower helps you fall asleep.",
+      uses: [
+        [2, "Falling asleep (a warm bath)", "Across 13 studies, a warm shower or bath of about 10 minutes at 40 to 42.5 °C, one to two hours before bed, helped people fall asleep about 10 minutes sooner, and they rated their sleep better."],
+        [1, "Depression, in one trial", "In 34 adults with major depression, a single session of whole-body heating in an infrared chamber, until their core temperature reached 38.5 °C (about an hour and three quarters), then an hour's rest as they cooled, eased depression more than a convincing sham did, and the difference lasted the six weeks of follow-up. It used a specialised medical machine, not a sauna."],
+        [1, "Regular saunas", "A review of 40 studies of regular dry saunas found mostly benefits, but few good trials: better mood and less anxiety came from small, mostly uncontrolled studies, and the links seen in large population studies may not be cause and effect."]
+      ],
+      facts: [
+        ["Amounts studied", "Finnish saunas at 80 to 100 °C for 5 to 20 minutes, and infrared ones at about 45 to 60 °C for 15 to 30, once to several times a week; a warm bath at 40 to 42.5 °C for about 10 minutes, one to two hours before bed."],
+        ["How to use it", "In the evening, as part of your wind-down, followed by a relaxation or sleep practice as your body cools. Drink water before and after, and come out sooner if you feel dizzy or unwell."],
+        ["Getting out", "Heat lowers your blood pressure: stand up slowly, and sit down at once if you feel faint."]
+      ],
+      go: [["#practice/body-scan", "Body Scan"], ["#practice/sleep-descent", "Sleep Descent"], ["#practice/yoga-nidra", "Yoga Nidra"]],
+      care: [
+        "With a heart condition or low blood pressure, or in pregnancy, ask a doctor before saunas or very hot baths.",
+        "Drink water, and skip the sauna after alcohol: alcohol played a part in about half of the sauna deaths reported.",
+        "Get out at once if you feel dizzy, faint, sick or unwell, and cool down slowly.",
+        "Trying for a baby? In a small study, regular saunas lowered sperm counts for a while; they recovered once the saunas stopped."
+      ],
+      refs: [R_REF.haghayegh,
+        ["Janssen, C. W., Lowry, C. A., Mehl, M. R., et al. (2016). Whole-body hyperthermia for the treatment of major depressive disorder: a randomized clinical trial. JAMA Psychiatry, 73(8), 789–795.", "https://doi.org/10.1001/jamapsychiatry.2016.1031", "DOI"],
+        ["Hussain, J., & Cohen, M. (2018). Clinical effects of regular dry sauna bathing: a systematic review. Evidence-Based Complementary and Alternative Medicine, 2018, 1857413.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC5941775/", "PMC"]
       ] }
   ];
 

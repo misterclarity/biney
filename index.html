@@ -1004,6 +1004,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   [data-k="sing"]{--kc:var(--food)}
   [data-k="stroke"]{--kc:var(--hr)}
   [data-k="rotate"]{--kc:var(--relax)}
+  [data-k="cold"]{--kc:#7cc4fa}
   .si-tl i{background:color-mix(in srgb,var(--kc) 75%,var(--panel-3))}
 
   /* ---------- practice: session intro ---------- */
@@ -1853,6 +1854,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .lv-sugg .lv-chev{margin:0;width:15px;height:15px}
   .lv-sugg[open] > summary .lv-chev{transform:none}
   .lv-rsteps .lv-go{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0 2px}
+  .lv-card-go{display:flex;align-items:center;gap:6px 8px;flex-wrap:wrap;margin:16px 0 0;max-width:70ch}
+  .lv-card-go > span{font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);margin-right:2px}
+  #lvp-cold-heat .hc-note{max-width:70ch}
   .lv-rt .lv-refs{margin-top:14px}
   .lv-tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0}
   .lv-tags span{font-size:11.5px;font-weight:650;color:var(--text-dim);background:var(--panel-2);border-radius:7px;padding:3px 8px}
@@ -2146,7 +2150,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         <div class="quick">
           <button class="qk" data-go="resonance-test" style="--qc:var(--hr)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-target"/></svg></span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
           <button class="qk" data-go="heart" style="--qc:var(--accent)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg></span><b id="qkSensorT">Heart sensor</b><span id="qkSensor">Not connected</span></button>
-          <button class="qk qk-wide" data-go="living" style="--qc:var(--food)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></span><b>Healthy living</b><span>Recipes, supplements, sleep habits, morning and evening routines, and light</span></button>
+          <button class="qk qk-wide" data-go="living" style="--qc:var(--food)"><span class="qi"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></span><b>Healthy living</b><span>Recipes, supplements, sleep habits, morning and evening routines, and light, cold and heat</span></button>
         </div>
 
         <div class="note-card td-safety">
@@ -2882,6 +2886,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-music">Music</a>
             <a href="#l-scenes">Scenes</a>
             <a href="#l-touch">Touch</a>
+            <a href="#l-temp">Cold and heat</a>
             <a href="#l-mind">Imagery and nidra</a>
             <a href="#l-expect">Placebo and side effects</a>
             <a href="#l-dose">How often</a>
@@ -2892,7 +2897,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-impressum">Impressum</a>
           </nav>
           <article class="prose" id="science">
-            <a class="lv-promo" href="#living"><span class="lv-promo-ic"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></span><span class="lv-promo-t"><b>Healthy living</b><span>Recipes such as congee, kitchari and dal; what the research says about omega-3, CoQ10, creatine and other supplements, and about coffee; healthy sleep habits, a morning and an evening routine; and light therapy.</span></span><svg class="i lv-promo-go" aria-hidden="true"><use href="#i-up"/></svg></a>
+            <a class="lv-promo" href="#living"><span class="lv-promo-ic"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg></span><span class="lv-promo-t"><b>Healthy living</b><span>Recipes such as congee, kitchari and dal; what the research says about omega-3, CoQ10, creatine and other supplements, and about coffee; healthy sleep habits, a morning and an evening routine; and light therapy, cold water and saunas.</span></span><svg class="i lv-promo-go" aria-hidden="true"><use href="#i-up"/></svg></a>
             <h2 id="l-waves">Brain-wave states</h2>
             <p class="v-lede">Brain waves are the rhythmic electrical activity of large groups of neurons, measured with EEG and
               named by how many cycles they complete each second (Hz). At any moment the brain makes a mix of all of them: what
@@ -3055,8 +3060,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Temperature</th></tr>
-                <tr class="ln-row"><th scope="row"><b>Cold exposure</b> <small>Alertness, better mood</small></th><td>Moderate (a safety risk)</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Heat, sauna</b> <small>Relaxation, mood</small></th><td>Early to moderate</td><td>A warm bath in <a href="#living/evening">an evening routine</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Cold exposure</b> <small>Alertness, better mood</small></th><td>Moderate (a safety risk)</td><td><a href="#practice/cold-finish">Cold Finish</a>, and <a href="#living/cold-water">cold water and plunges</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Heat, sauna</b> <small>Relaxation, mood</small></th><td>Early to moderate</td><td><a href="#living/sauna">Sauna and heat</a>, and a warm bath in <a href="#living/evening">an evening routine</a></td></tr>
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Mind</th></tr>
@@ -3833,6 +3838,44 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               neck and shoulders and feet with moderate pressure, or takes turns with a partner.
             </p>
 
+            <h3 id="l-temp">Temperature: cold and heat</h3>
+            <p id="l-cold">
+              <b>Cold water.</b> Cold gives a fast, strong boost to the body's alertness chemicals, and to mood. In 10 healthy
+              men, an hour sitting in water at 14&nbsp;&deg;C raised noradrenaline by about 530% and dopamine by about 250%
+              (Šrámek et al., 2000). In 33 adults new to cold water, five minutes up to the collarbones at about 20&nbsp;&deg;C
+              left them feeling more active, alert, attentive, proud and inspired, and less distressed and nervous, and in a brain
+              scan afterwards large brain networks were more strongly connected (Yankouskaya et al., 2023). After 15 minutes at
+              10.5&nbsp;&deg;C, cortisol hadn't changed half an hour later but was 47% lower three hours later, in a small study of
+              eight adults (Reed et al., 2023). The guide rates cold exposure as moderate evidence for alertness and a better mood,
+              with a real safety risk. All of these were baths, colder or longer than the end of a shower: a cold finish to a shower
+              is the gentle start the guide suggests, 30 to 60 seconds of it for morning energy, and it hasn't itself been measured
+              this way. <a href="#practice/cold-finish">Cold Finish</a> times 15 seconds to a minute of it, building up over the
+              weeks, with loud cues to breathe out long and slow through the gasp, and a bell to turn the water cold and another to
+              turn it off; the <a href="#living/morning">morning routine</a> and the end of Morning Wake-Up suggest it.
+              <a href="#living/cold-water">Cold water</a>, in Healthy living, covers cold plunges too.
+            </p>
+            <p id="l-coldshock">
+              <b>Cold shock.</b> Sudden cold water sets off a gasp, fast breathing and a jump in heart rate and blood pressure:
+              the cold shock response, the main danger of cold water and a common start to drowning (Tipton et al., 2017). It is
+              riskiest with a heart condition or high blood pressure. So start gradually, with the end of a shower; never go into
+              cold open water alone; and never combine cold water with Wim Hof breathing or breath holds. The
+              <a href="#st-health">health check</a> adds a caution written for you, and Cold Finish asks for it first.
+            </p>
+            <p id="l-heat">
+              <b>Heat.</b> In a randomised trial, 34 adults with major depression had a single session of whole-body heating in
+              an infrared chamber, until their core temperature reached 38.5&nbsp;&deg;C (about an hour and three quarters), then
+              an hour's rest as they cooled, or a convincing sham. Depression eased more after the heating, and the difference
+              lasted the six weeks of follow-up (Janssen et al., 2016). It used a specialised medical machine, not a sauna, and
+              direct evidence that regular saunas ease depression or anxiety is still limited: a review of 40 studies of regular
+              dry saunas found mostly benefits, but few good trials, with better mood and less anxiety in small, mostly
+              uncontrolled studies, and links in large population studies that may not be cause and effect (Hussain &amp; Cohen,
+              2018). The guide rates heat as early to moderate evidence for relaxation and mood. A warm bath in the evening is
+              better supported for sleep: across 13 studies, about 10 minutes at 40 to 42.5&nbsp;&deg;C, one to two hours before
+              bed, helped people fall asleep about 10 minutes sooner (Haghayegh et al., 2019). <a href="#living/sauna">Sauna and
+              heat</a> and the <a href="#living/evening">evening routine</a> pair it with a relaxation or sleep practice. Drink
+              water, skip saunas after alcohol, and with a heart condition, low blood pressure or pregnancy, ask a doctor first.
+            </p>
+
             <h3 id="l-mind">The mind: guided imagery and yoga nidra</h3>
             <p id="l-imagery">
               <b>Hypnosis and guided imagery.</b> An overview of 49 meta-analyses of hypnosis from the last 20 years, covering
@@ -4024,6 +4067,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <li><b>Light.</b> Ask a doctor before you use a light box if you have bipolar disorder or an eye condition, or
                   take medicines that make you sensitive to light. Shield your eyes from red and near-infrared devices, and use a
                   light box, never a tanning lamp, for light therapy.</li>
+                <li><b>Cold and heat.</b> Cold water sets off a shock response, a gasp, fast breathing and a sudden rise in heart
+                  rate and blood pressure, which can be dangerous, above all with a heart condition or high blood pressure: ask
+                  your doctor first, and if you're pregnant too. Start gradually, with the end of a shower; never go into cold
+                  open water alone; and never combine cold water with Wim Hof breathing or breath holds. With a heart condition,
+                  low blood pressure or pregnancy, ask a doctor before saunas or very hot baths; drink water, and skip them after
+                  alcohol.</li>
               </ul>
               <p>Check with a clinician before you start if you have a heart, lung or seizure condition, are pregnant, or are
                 in treatment for anxiety, trauma or depression. Practices with cautions of their own give them in their
@@ -4219,6 +4268,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Zhao, Y., Zhang, Q., Liu, Z., Zhao, Z., &amp; Zhu, Q. (2024). Safety and effectiveness of weighted blankets for symptom management in patients with mental disorders: a systematic review and meta-analysis of randomized controlled trials. <em>Complementary Therapies in Medicine</em>, 87, 103104. <a href="https://doi.org/10.1016/j.ctim.2024.103104" rel="noopener">DOI</a></li>
       <li>Chmiel, J., &amp; Kurpas, D. (2026). Through massage to the brain: neuronal and neuroplastic mechanisms of massage based on various neuroimaging techniques (EEG, fMRI, and fNIRS). <em>Journal of Clinical Medicine</em>, 15(2), 909. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12842157/" rel="noopener">PMC</a></li>
       <li>Chang, K.-M., Luo, S.-Y., Chen, S.-H., Wang, T.-P., &amp; Ching, C. T.-S. (2012). Body massage performance investigation by brain activity analysis. <em>Evidence-Based Complementary and Alternative Medicine</em>, 2012, 252163. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3317228/" rel="noopener">PMC</a></li>
+      <li>Šrámek, P., Šimečková, M., Janský, L., Šavlíková, J., &amp; Vybíral, S. (2000). Human physiological responses to immersion into water of different temperatures. <em>European Journal of Applied Physiology</em>, 81(5), 436–442. <a href="https://doi.org/10.1007/s004210050065" rel="noopener">DOI</a></li>
+      <li>Yankouskaya, A., Williamson, R., Stacey, C., Totman, J. J., &amp; Massey, H. (2023). Short-term head-out whole-body cold-water immersion facilitates positive affect and increases interaction between large-scale brain networks. <em>Biology</em>, 12(2), 211. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9953392/" rel="noopener">PMC</a></li>
+      <li>Reed, E. L., Chapman, C. L., Whittman, E. K., Park, T. E., Larson, E. A., Kaiser, B. W., Comrada, L. N., Wiedenfeld Needham, K., Halliwill, J. R., &amp; Minson, C. T. (2023). Cardiovascular and mood responses to an acute bout of cold water immersion. <em>Journal of Thermal Biology</em>, 118, 103727. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10842018/" rel="noopener">PMC</a></li>
+      <li>Tipton, M. J., Collier, N., Massey, H., Corbett, J., &amp; Harper, M. (2017). Cold water immersion: kill or cure? <em>Experimental Physiology</em>, 102(11), 1335–1355. <a href="https://doi.org/10.1113/EP086283" rel="noopener">DOI</a></li>
+      <li>Janssen, C. W., Lowry, C. A., Mehl, M. R., et al. (2016). Whole-body hyperthermia for the treatment of major depressive disorder: a randomized clinical trial. <em>JAMA Psychiatry</em>, 73(8), 789–795. <a href="https://doi.org/10.1001/jamapsychiatry.2016.1031" rel="noopener">DOI</a></li>
+      <li>Hussain, J., &amp; Cohen, M. (2018). Clinical effects of regular dry sauna bathing: a systematic review. <em>Evidence-Based Complementary and Alternative Medicine</em>, 2018, 1857413. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5941775/" rel="noopener">PMC</a></li>
+      <li>Haghayegh, S., Khoshnevis, S., Smolensky, M. H., Diller, K. R., &amp; Castriotta, R. J. (2019). Before-bedtime passive body heating by warm shower or bath to improve sleep: a systematic review and meta-analysis. <em>Sleep Medicine Reviews</em>, 46, 124–135. <a href="https://doi.org/10.1016/j.smrv.2019.04.008" rel="noopener">DOI</a></li>
       <li>Rosendahl, J., Alldredge, C. T., &amp; Haddenhorst, A. (2024). Meta-analytic evidence on the efficacy of hypnosis for mental and somatic health issues: a 20-year perspective. <em>Frontiers in Psychology</em>, 14, 1330238. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10807512/" rel="noopener">PMC</a></li>
       <li>Freeman, M., Ayers, C., Kondo, K., Noonan, K., O&rsquo;Neil, M., Morasco, B., &amp; Kansagara, D. (2019). Guided imagery, biofeedback, and hypnosis: a map of the evidence. VA Evidence Synthesis Program, project 05-225. US Department of Veterans Affairs. <a href="https://www.ncbi.nlm.nih.gov/books/NBK545738/" rel="noopener">NCBI Bookshelf</a></li>
       <li>Jensen, M. P., Adachi, T., &amp; Hakimian, S. (2015). Brain oscillations, hypnosis, and hypnotizability. <em>American Journal of Clinical Hypnosis</em>, 57(3), 230–253. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4361031/" rel="noopener">PMC</a></li>
@@ -6012,6 +6068,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
        hcCaution(kinds)   the caution for those kinds ("fast-breath", "hold", "cold", "heat", "flicker",
                           "scent", "imagery", "body", "strain", "touch"), or "" when nothing ticked bears on them
        hcBox(kinds)       the same in a box with a link to the answers, for a page
+       hcSlot(d)          a practice page's box: its caution, or, for one that asks first (hcFirst), an
+                          offer to answer the health check while it's unanswered (Cold Finish)
        hcAnswered()       whether it's been answered, for a feature that offers it first (#st-health)
      A practice names its kinds in `hc` (a list, or a function of the practice for one that depends on
      its choices).
@@ -6105,6 +6163,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   // a practice's kinds of risk, which can follow its choices (breath of fire, power breaths)
   function hcKindsOf(d) { var k = d && pFn(d.hc, d); return Array.isArray(k) ? k : []; }
+  /* What a practice's page shows from the health check: the caution written for you, or, for a practice that
+     asks for it first (hcFirst: Cold Finish, before cold water), an offer to answer it while it's unanswered. */
+  function hcSlot(d) {
+    if (d && d.hcFirst && !hcAnswered()) {
+      return '<div class="hc-note hc-ask" role="note"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg><span><b>' + esc(d.hcFirst) + "</b> " +
+        "It takes a minute and stays on this device. If what you tick makes this riskier for you, a caution written for you shows here. " +
+        '<a class="hc-edit" href="#st-health">Answer the health check</a></span></div>';
+    }
+    return hcBox(hcKindsOf(d));
+  }
 
   /* ----- in Settings, and offered once on Today ----- */
   function hcStTxt() {
@@ -10204,7 +10272,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "297d2d91";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "2dcab42d";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -10751,6 +10819,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else if (curView === "session" && P.view && !$("#sIntro").hidden) pIntroReplan(P.view);
     else if (curView === "track") trSync();
     lnMark();                                                 // Learn's links to new techniques (learn.js)
+    lvMark();                                                 // and Healthy living's (living.js)
     bmSync();                                                 // the beat's Sound buttons and their cups (beatmode.js)
     ambUI();                                                  // the nature sounds' buttons, and what plays (ambience.js)
     ambSync();
@@ -13106,7 +13175,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      device (supporter.js), and every way to start it asks for that first; its page stays free to read.
      Patterns in BREATHS and tracks in TRACKS take the same flag.
      A page can add a tip, free to read ([lead, text, link, link text]), and a row of its own under
-     Options (optHtml, redrawn by optSync when the badges change).
+     Options (optHtml, redrawn by optSync when the badges change). It can ask for the health check first
+     while it's unanswered (hcFirst, the offer's lead: care.js hcSlot), and add a note above Start (careNote).
+     `next` can be a function of the practice, and can give two suggestions.
   ------------------------------------------------------------------------------ */
 
   function pLines(lines, secs) {
@@ -14252,7 +14323,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         { key: "move", label: "Movement", def: "stretch", note: "Stretches in bed (or seated), then a few standing poses with drawings: an upward salute, side bends, a forward fold and arm circles.",
           opts: [["stretch", "Stretch, then stand"], ["still", "Breathing only"]] }
       ],
-      next: { id: "focus-primer", txt: "Starting work soon? The Focus Primer steadies you, then plays 16 Hz beta while you plan your first step." },
+      next: function (d) {                       // work, and the shower: Cold Finish ends it on cold (cold.js), after the breath has settled from breath of fire
+        return [{ id: "focus-primer", txt: "Starting work soon? The Focus Primer steadies you, then plays 16 Hz beta while you plan your first step." },
+          { id: "cold-finish", txt: pChoice(d, "breath") === "fire" ? "Showering next? Cold Finish ends it with 15 seconds to a minute of cold. After breath of fire, give your breathing time to settle back to normal first."
+            : "Showering next? Cold Finish ends it with 15 seconds to a minute of cold, and loud cues to breathe out long and slow." }];
+      },
       build: function (min) { return morningSteps(this, min || 15); },
       how: "Sleep Descent the other way round. Start in bed as you wake, or sitting up: a big yawn and a long, cat-like stretch, then breathing that begins slow, with the out-breath longer, evens out, and quickens, the in-breath leading, while a binaural beat rises from 6 Hz theta through 10 Hz alpha to 16 Hz beta. If you choose breath of fire, two rounds of 30 short, sharp breaths out follow, sitting up. Then stretches in bed (or seated), a few standing poses with drawings to follow, and to finish, daylight, a glass of water and one thing you'd like from today. 10, 15 or 20 minutes.",
       ev: "The grogginess after waking (sleep inertia) usually fades within 15 to 30 minutes, and a 2019 review found no wake-up routine with clear evidence of speeding that up: sound looked promising, light made people feel more alert, and movement hadn't been tested. Beta binaural beats (16 and 24 Hz) improved vigilance and mood compared with theta and delta beats. Fast yoga breathing shifts the heart rhythm towards arousal, the opposite of slow breathing, and a session of it improved attention in 11- and 12-year-olds. Morning daylight is the body clock's strongest signal that the day has begun. This sequence itself hasn't been tested.",
@@ -14949,6 +15024,34 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       caution: "Yoga nidra can bring up memories or strong feelings, or leave you feeling detached or unreal. If you have, or have had, psychosis or a dissociative disorder, talk to your doctor or therapist before you use it. With trauma, you can let any part of the body go and move on with the voice. You can open your eyes whenever you like, and I need to stop ends the session in one tap. Never listen while driving. In later pregnancy, lie on your side rather than flat on your back."
     },
 
+    /* ===== temperature (cold.js): a new technique from the brain-wave guide ===== */
+    {
+      id: "cold-finish", name: "Cold Finish", lengths: [3, 5, 8], min: 5, strength: 2, sup: true,
+      tone: "stim", confirm: true, hc: ["cold"], hcFirst: "Before the cold: your health check.", noTap: true, noMus: true, noScene: true,   // no scene to watch from the shower, nor a crackle over the cues
+      opt: { voice: true, bells: true },         // the phone is outside the shower: the voice and the bells carry the session
+      careNote: function () { return coldCareNote(); },     // fast breathing or long holds within the hour
+      needs: [["phone", "Your phone outside the shower", "somewhere dry, where you can hear it over the water"],
+        ["volume", "Volume up", "the voice and bells are loud on purpose: they say when to turn the water cold, and when to turn it off"],
+        ["warn", "A steady footing", "a non-slip mat or a rail to hold: the first gasp of cold can make you unsteady"]],
+      alias: "Cold shower",
+      words: "cold shower cold water finish cool morning energy wake up alert alertness noradrenaline norepinephrine dopamine mood cold exposure cold therapy plunge ice bath bracing shock gasp",
+      blurb: "End your shower on cold, 15 seconds to a minute of it, building up over the weeks. Loud, spoken cues guide a long, slow breath out through the gasp, with a bell to turn the water cold and another to turn it off.",
+      parts: "A warm shower · slow breaths · 15 to 60 s of cold, breathing out long and slow · warming up",
+      choices: [
+        { key: "cold", label: "Cold", def: "auto",
+          note: function () { return "Build up: " + coldNow() + " " + coldRule() + " Or pick a length yourself."; },
+          opts: [["auto", "Build up"], ["15", "15 s"], ["30", "30 s"], ["45", "45 s"], ["60", "60 s"]] },
+        { key: "tone", label: "Breath-out tone", def: "on", note: "A low tone that falls through each long breath out in the cold, so you can keep the pace when the water drowns the words.",
+          opts: [["on", "On"], ["off", "Off"]] }
+      ],
+      build: function (min) { return coldSteps(this, min || 5); },
+      end: "Cold done. Enjoy the energy.",
+      how: "Put your phone outside the shower, somewhere dry, with the volume up, and tap Start as you step in. Shower warm as usual for most of the 3, 5 or 8 minutes; half a minute before the cold, the voice asks you to finish washing, then to breathe slowly, in through the nose and out long through the mouth. On a triple bell, turn the water to cold, or just to cool the first few times. Through the cold, a voice at the start of each long breath out, a low tone falling with it and the seconds counting down on the screen take you through, with three pips before a second triple bell to turn the water off. Then dry off and move to warm up. Build up starts at 15 seconds, and once you've done three at one length, the third at least a week after the first, the next is 15 seconds longer, up to a minute; after a month away it steps back once. Or pick 15, 30, 45 or 60 seconds yourself. The end screen keeps your seconds of cold, and where your build-up stands.",
+      ev: "The guide rates cold exposure as moderate evidence for alertness and a better mood, with a real safety risk. In 10 healthy men, an hour in water at 14 °C raised noradrenaline by about 530% and dopamine by about 250%. In 33 adults new to cold water, five minutes up to the collarbones at about 20 °C left them feeling more active, alert, attentive, proud and inspired, and less distressed and nervous, changes linked to stronger connections between large brain networks. After 15 minutes at 10.5 °C, cortisol hadn't changed half an hour later but was 47% lower three hours later, in eight healthy adults. All of these were baths, colder or longer than the end of a shower: a cold finish is the gentle start the guide suggests, and hasn't itself been measured this way. Cold shock, the gasp and racing heart of sudden cold water, is cold water's main danger.",
+      cite: "Šrámek et al. 2000 · Yankouskaya et al. 2023 · Reed et al. 2023 · Tipton et al. 2017",
+      caution: "Cold water sets off a shock response: a gasp, fast breathing and a sudden rise in heart rate and blood pressure. It can be dangerous with a heart condition or high blood pressure, and in pregnancy: ask your doctor first. Start short, with cool rather than icy water, build up over weeks, and turn it warm again at once if you feel dizzy, numb or unwell. Breathe all the way through: never combine cold water with Wim Hof breathing or breath holds, and never practise cold immersion alone in open water. Keep a firm footing, since the gasp can make you unsteady."
+    },
+
     /* ===== movement ===== */
     yogaPractice("standing-flow", { stand: true,
       blurb: "Nine standing poses, held for a few breaths each: mountain, reach, side bends, forward fold, chair, the warriors, triangle and tree." }),
@@ -15024,7 +15127,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     energy: [["morning-tonic", "program", "lie sit stand"], ["sport", "program", "sit stand"], ["b:dive", "breath", "sit lie"], ["morning-yoga", "move", "stand"], ["standing-flow", "move", "stand"], ["morning-stretch", "move", "stand"],
       ["standing-reset", "move", "stand"], ["balance-yoga", "move", "stand"], ["kapalabhati", "breath", "sit"],
       ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"], ["laughter", "move", "stand sit"], ["let-it-out", "breath", "stand sit"],
-      ["sing", "program", "stand sit"]],
+      ["sing", "program", "stand sit"], ["cold-finish", "breath", "stand"]],
     recover: [["recovery", "program", "sit walk"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
       ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"], ["self-massage", "relax", "sit"], ["yoga-nidra", "relax", "lie"]],
     reflect: [["nvc-self", "write", "sit"], ["nvc-prep", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
@@ -15618,6 +15721,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (s.k === "count") return "count";
     if (s.k === "sing") return "sing";               // the words to sing, and where each part is (vocal.js)
     if (s.k === "stroke") return "stroke";           // an arm and a dot to stroke along with (touch.js)
+    if (s.k === "cold") return "cold";               // the seconds of cold left, round a breath-out pacer (cold.js)
     if (ST.sleepDim && pSleepyStep(s)) return s.k === "shuffle" ? "word" : "dark";   // dimmed for sleep (Settings)
     if (s.k === "drift") return "glow";
     if (s.k === "hold") return "hold";
@@ -15639,6 +15743,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     vxEnter(s);                                      // and a song's notes to its own (vocal.js)
     tcEnter(s);                                      // and a stroke's sweeps to theirs (touch.js)
     mnEnter(s);                                      // a rotation's point is marked afresh (mind.js)
+    coldEnter(s);                                    // the bells to turn the water cold, and off again (cold.js)
     if (s.k === "wake") { NP.rung = 0; NP.vibs = 0; }
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
@@ -15735,6 +15840,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     vxTick(s, st);                                   // the drone, and a song's tune and count-in (vocal.js)
     tcTick(s, st);                                   // a soft sweep with each stroke (touch.js)
     mnTick(s, st);                                   // the point of a rotation round the body, on the body map (mind.js)
+    coldTick(s, st);                                 // the cold's breath-out tones and its last three pips (cold.js)
     pAudioSync(T);
     pUI();
   }
@@ -15911,6 +16017,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       sub = smSub(s, st);
     } else if (s.k === "rotate") {
       sub = ynSub(s, st);
+    } else if (s.k === "cold") {
+      var cw = coldWords(s, st); cap = cw.cap; sub = cw.sub;
     } else if (s.k === "adapt") {
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
@@ -15977,7 +16085,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -16003,6 +16111,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         else if (vis === "stroke") tcDraw(c, W, Hh, s, st, col);
         else if (vis === "mind") mnDraw(c, W, Hh, s, st, col);
         else if (vis === "scene") scnStep(c, W, Hh, s, T);
+        else if (vis === "cold") coldDraw(c, W, Hh, s, st);
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -16221,6 +16330,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     napWakeStop();
     vxHush();
     tcHush();
+    coldHush();
     pHush();
     pUnlock();
     pUI();
@@ -16272,6 +16382,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     napWakeStop();
     vxHush();
     tcHush();
+    coldHush();
     P.mv = null;
     if (pTrack()) {
       var trk = A.track;
@@ -16321,6 +16432,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (P.bm && P.bm !== "binaural") r.bm = P.bm;     // its beat played monaural or isochronic (beatmode.js)
     napSummary(r, T);
     stressSummary(r, T);
+    coldSummary(r, T);                                 // the seconds of cold you stayed for (cold.js)
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(nvcKindOf(d));
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -16335,6 +16447,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (r.suds) notes.push((d.rate ? d.rate.what : "intensity") + " " + r.suds.join(" → ") + " of 10");
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
     if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
+    if (r.cold) notes.push(r.cold + " s of cold");
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
     // fast breathing that ran: an hour's rest before the next block, and Wim Hof's rounds for the day (care.js)
     var ib = P.steps.filter(function (s) { return ibStep(s) && s.at < T; }).length;
@@ -16343,7 +16456,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg, ib: r.ib, wh: d.id === "wim-hof" && ib ? ib : undefined,
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
-      bm: r.bm, note: notes.join(", ") || undefined });
+      bm: r.bm, cold: r.cold, note: notes.join(", ") || undefined });
     return r;
   }
   /* ----- the session screen: intro ----- */
@@ -16410,10 +16523,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   // your health check's caution, and a block of fast breathing within the hour or today's rounds (care.js)
   function pCareSync(d, plan) {
-    var hs = $("#sIntro .hc-slot"), nt = $("#sIbNote"), t = ibNote(d, plan), h = hcBox(hcKindsOf(d));
+    var hs = $("#sIntro .hc-slot"), nt = $("#sIbNote"), t = pCareNote(d, plan), h = hcSlot(d);
     if (hs && hs.innerHTML !== h) hs.innerHTML = h;
     if (nt) { nt.hidden = !t; bSetT("#sIbNote", t); }
   }
+  // above Start: rest between blocks of fast breathing (care.js), and a practice's own (Cold Finish after fast breathing)
+  function pCareNote(d, plan) { return [ibNote(d, plan), d.careNote ? pFn(d.careNote, d) : ""].filter(Boolean).join(" "); }
   function pIntro(id) {
     var d = pDef(id);
     if (!d) { location.hash = "practice"; return; }
@@ -16512,13 +16627,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its " + (bmMode(O.beatMode) === "binaural" ? "binaural " : "") + "beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
-        '<div class="hc-slot">' + hcBox(hcKindsOf(d)) + "</div>" +
+        '<div class="hc-slot">' + hcSlot(d) + "</div>" +
       "</div>" +
       '<div class="si-side">' +                     // Start first: above the options on a computer, last on a phone (order)
       '<div class="si-bar">' +
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> ' + (hcCaution(hcKindsOf(d)) ? "I've read the cautions, and I choose to go ahead" : "None of the cautions apply to me") + "</label>" : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
-        '<p class="si-ib" id="sIbNote"' + (ibNote(d, plan) ? "" : " hidden") + ">" + esc(ibNote(d, plan)) + "</p>" +
+        '<p class="si-ib" id="sIbNote"' + (pCareNote(d, plan) ? "" : " hidden") + ">" + esc(pCareNote(d, plan)) + "</p>" +
         '<button class="btn primary si-go" id="sGo"' + (d.confirm && !pSupWho(d) ? " disabled" : "") + ">" + pGoHtml(d, plan) + "</button>" +
         '<p class="si-bar-note" id="sSupNote"' + (pSupWho(d) ? "" : " hidden") + ">" + SUP_NOTE + "</p>" +
       "</div>" +
@@ -16993,6 +17108,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath", "wander"]);
     if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · "), "holds"]);
     if (r.suds) tiles.push([d.rate ? d.rate.name : "Intensity", r.suds.join(" → "), r.suds.length > 1 ? (d.rate ? "out of 10, before and after" : "out of 10, first to last") : "out of 10", "suds"]);   // a feeling's strength, or what the practice rates
+    var ct = coldTile(r);                                // Cold Finish: the seconds of cold, and where your build-up stands (cold.js)
+    if (ct) tiles.push(ct);
     if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatHeart ? "Hz, led by your heart" : "Hz, scripted (no heart data)", "beat"]);
     if (r.nap) {
       if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate", "onset"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated", "nap"]); }
@@ -17053,13 +17170,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var ch = P.chain && P.chain.then !== d.id ? pDef(P.chain.then) : null;
     if (ch) return '<div class="note-card sd-next"><p><b>Next: ' + esc(ch.name) + ".</b> " + esc(ch.chainTxt || "") + "</p>" +
       '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + (ch.sup ? supTag() : "") + "</button></div>";
-    var nt = pFn(d.next, d), nx = nt && pDef(nt.id);     // a suggestion can follow the choices made (Sports Performance's)
-    return nx ? '<div class="note-card sd-next"><p>' + esc(nt.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + (nx.sup ? supTag() : "") + "</a></div>" : "";
+    var nt = pFn(d.next, d);                             // a suggestion can follow the choices made (Sports Performance's), or be two (Morning Wake-Up's)
+    return (Array.isArray(nt) ? nt : [nt]).map(function (x) {
+      var nx = x && pDef(x.id);
+      return nx ? '<div class="note-card sd-next"><p>' + esc(x.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + (nx.sup ? supTag() : "") + "</a></div>" : "";
+    }).join("");
   }
 
   // what each number means, with your own value read back
   function sdExplain(k) {
-    var sx = scExplain(k);
+    var sx = scExplain(k) || coldExplain(k);
     if (sx) return sx;                               // a stress check's own tiles
     var r = SD.r, d = SD.d, n, p = [];
     var plural = function (x, one, many) { return x + " " + (x === 1 ? one : many); };
@@ -18727,6 +18847,235 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (window.__entrain) {
       var X = window.__entrain;
       X.MN = MN; X.ynIdx = ynIdx; X.ynSub = ynSub; X.mnNum = mnNum; X.mnPts = mnPts; X.YN_IMG = YN_IMG; X.ynPoints = ynPoints;
+    }
+  }
+  /* ------------------------------- cold and heat -------------------------------
+     Cold Finish, a new technique from the brain-wave guide (practice-data.js holds its entry, sup: true):
+     the end of a shower turned cold, 15 to 60 seconds of it, for morning energy. The phone sits outside
+     the shower, so everything that matters is loud: a triple bell to turn the water cold and another to
+     turn it off, spoken cues to breathe out long and slow through the cold's gasp, a low tone that falls
+     with each long breath out, and three pips before the end. Its plan: a warm shower (the length you
+     choose, less the rest), slow breaths still in the warm, the cold, then warming up by moving.
+       Build up    the cold's length from your history, since the guide says to start gradually: 15
+                   seconds to begin with; three at one length, the third at least a week after the
+                   first, and the next is 15 seconds longer, up to a minute; a month away, one step back
+       "cold"      a step of its own kind: its lines start each long breath out (out 6, in 3), its
+                   visual a ring of the seconds left round a pacer that shrinks as you breathe out
+     Its page asks for the health check first while it's unanswered, carries the health check's cold
+     caution once it is (care.js), and says so when fast breathing or long holds ended within the hour.
+     Healthy living's Cold and heat tab (living-data.js TEMPS) is free to read.
+  -------------------------------------------------------------------------------- */
+
+  var COLD_SECS = [15, 30, 45, 60];          // the lengths of cold, shortest first
+  var COLD_WEEK = 6 * 864e5;                 // a week from the first at a length, give or take a morning
+  var COLD_BREAK = 28 * 864e5;               // a month away steps back once
+  var COLD_IN = 3, COLD_OUT = 6;             // in the cold: a long breath out of 6 seconds, then 3 in, out first
+  var COLD_COL = "#7cc4fa";                  // cold water's blue
+  var COLD = { g: null, next: -1, pip: -1, due: 0 };   // the sound's own gain, the next breath-out tone and pip to schedule, and a bell still due (Hz)
+
+  /* ----- how far you've built up, from the history ----- */
+  // { i, secs, n: done at this length, t0: the first of them, last: the latest Cold Finish }
+  function coldLevel() {
+    var i = 0, n = 0, t0 = 0, last = 0;
+    hLoad().forEach(function (e) {
+      if (e.k !== "practice" || e.id !== "cold-finish" || !(e.cold > 0)) return;
+      if (last && e.at - last > COLD_BREAK) { if (i > 0) i--; n = 0; }       // after a month away, one step back, and the count again
+      last = e.at;
+      if (e.cold < COLD_SECS[i]) return;            // a session cut short in the cold doesn't count
+      if (!n) t0 = e.at;
+      n++;
+      if (n >= 3 && e.at - t0 >= COLD_WEEK && i < COLD_SECS.length - 1) { i++; n = 0; }
+    });
+    if (last && Date.now() - last > COLD_BREAK) { if (i > 0) i--; n = 0; }
+    return { i: i, secs: COLD_SECS[i], n: n, t0: t0, last: last };
+  }
+  // the seconds of cold a plan has: your build-up, or the length you picked
+  function coldSecs(d) {
+    var c = pChoice(d, "cold");
+    return c === "auto" ? coldLevel().secs : +c || COLD_SECS[0];
+  }
+  function coldDay(t) { return new Date(t).toLocaleDateString(undefined, { day: "numeric", month: "long" }); }
+  // where you are, in a sentence: under Build up on the page, and on the end screen
+  function coldNow() {
+    var lv = coldLevel();
+    if (!lv.last) return "15 seconds to begin with.";
+    if (lv.i === COLD_SECS.length - 1) return "The full minute now.";
+    var due = lv.t0 + COLD_WEEK;
+    return lv.secs + " seconds now, " + lv.n + " of 3 done" + (lv.n >= 3 && due > Date.now() ? ", and " + COLD_SECS[lv.i + 1] + " from " + coldDay(due) : "") + ".";
+  }
+  function coldRule() {
+    return "After three at one length, the third at least a week after the first, the next is 15 seconds longer, up to a minute; after a month away, one step shorter.";
+  }
+
+  /* ----- the plan ----- */
+  // the cold's words: one at the start of each long breath out, halfway on the longer ones, nearly there at the last
+  function coldLines(secs) {
+    var cyc = COLD_IN + COLD_OUT, starts = [], out = [], near = -1, half = -1, m = 0, i;
+    var mids = ["In through the nose, and a long breath out.", "Shoulders down. Breathe out, slow and long.",
+      "Let each breath out last a little longer.", "You're doing well. A long, slow breath out."];
+    for (var t = 0; t < secs - 5.5; t += cyc) starts.push(t);
+    for (i = starts.length - 1; i > 0; i--) if (secs - starts[i] >= 6) { near = i; break; }
+    if (secs >= 45) {
+      starts.forEach(function (t, j) { if (half < 0 || Math.abs(t - secs / 2) < Math.abs(starts[half] - secs / 2)) half = j; });
+      if (half === near || half === 0) half = -1;
+    }
+    starts.forEach(function (t, j) {
+      out.push([t, j === 0 ? "Cold now. Let the gasp pass, and breathe out, long and slow." : j === near ? "Nearly there. One more long breath out."
+        : j === half ? "Halfway. Breathe out, long and slow." : mids[m++ % mids.length]]);
+    });
+    return out;
+  }
+  function coldSteps(d, min) {
+    var T = (min || 5) * 60, cold = coldSecs(d), ready = 18, after = 32, warm = T - cold - ready - after;
+    return [
+      G(warm, "Warm shower", [[0, "Phone outside the shower, volume up. Step into a warm shower, and wash as you usually do. I'll tell you when the cold is coming."],
+        [frac(warm, 0.45), "Enjoy the warmth. Let your shoulders drop, and your breathing slow down."],
+        [warm - 12, "About half a minute to the cold. Finish washing, and rinse off."]], { vis: "glow" }),
+      Br(ready, "Slow breaths", { inh: COLD_IN, sip: 0, hold: 0, exh: COLD_OUT, rest: 0 }, {
+        lines: [[0, "Still in the warm: breathe in through the nose, and out through the mouth, long and slow."],
+          [9, "On the bell, turn the water to cold, or to cool for your first few times."]] }),
+      { k: "cold", secs: cold, title: "Cold", lines: coldLines(cold), nobell: true, tone: pChoice(d, "tone") !== "off" },
+      G(after, "Warm up", [[0, "That's it. Turn the water off, or back to warm if you like, and step out."],
+        [12, "Dry off briskly, then move: swing your arms, and march on the spot while the warmth comes back."],
+        [25, "Notice how awake you feel."]], { vis: "glow", nobell: true, coldEnd: true })
+    ];
+  }
+
+  /* ----- its sounds: loud, on a gain of their own, scheduled ahead on the audio clock ----- */
+  function coldOut() {
+    if (!pBusOn()) return null;
+    if (!COLD.g) { COLD.g = A.ctx.createGain(); COLD.g.gain.value = 0.9; COLD.g.connect(A.ctx.destination); }
+    return COLD.g;
+  }
+  // three strokes of a bell, well above the usual: low to turn the water cold, high to turn it off
+  function coldBells(hz) {
+    var g = coldOut();
+    if (!g) return;
+    for (var i = 0; i < 3; i++) pBell(1.2, A.ctx.currentTime + 0.05 + i * 0.6, hz, g, true);
+  }
+  // a long breath out: a tone falling from C5 to G4 with a soft octave above it, as long as the breath
+  function coldSigh(when, dur) {
+    var g = coldOut();
+    if (!g) return;
+    var ctx = A.ctx, end = when + dur;
+    [[523.25, 392, 0.22], [1046.5, 784, 0.05]].forEach(function (p) {
+      var o = ctx.createOscillator(), v = ctx.createGain();
+      o.type = "sine"; o.frequency.value = p[0];
+      o.frequency.setValueAtTime(p[0], when); o.frequency.exponentialRampToValueAtTime(p[1], end);
+      v.gain.setValueAtTime(0, when); v.gain.linearRampToValueAtTime(p[2], when + 0.35);
+      v.gain.setValueAtTime(p[2], Math.max(when + 0.35, end - 1.4)); v.gain.linearRampToValueAtTime(0, end);
+      o.connect(v); v.connect(g); o.start(when); o.stop(end + 0.05);
+      o.onended = function () { try { o.disconnect(); v.disconnect(); } catch (e) {} };
+    });
+  }
+  // a short pip, for each of the last three seconds
+  function coldPip(when) {
+    var g = coldOut();
+    if (!g) return;
+    var ctx = A.ctx, o = ctx.createOscillator(), v = ctx.createGain();
+    o.type = "sine"; o.frequency.value = 880;
+    v.gain.setValueAtTime(0, when); v.gain.linearRampToValueAtTime(0.32, when + 0.01); v.gain.exponentialRampToValueAtTime(0.0001, when + 0.16);
+    o.connect(v); v.connect(g); o.start(when); o.stop(when + 0.2);
+    o.onended = function () { try { o.disconnect(); v.disconnect(); } catch (e) {} };
+  }
+  // what's queued, silenced at once (a pause, a skip, the end, I need to stop)
+  function coldHush(fade) {
+    var g = COLD.g;
+    COLD.g = null; COLD.next = -1; COLD.pip = -1;
+    if (!g || !A.ctx) return;
+    var t = A.ctx.currentTime, f = fade || 0.06;
+    try { g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + f); } catch (e) {}
+    setTimeout(function () { try { g.disconnect(); } catch (e) {} }, (f + 0.3) * 1000);
+  }
+  // a new step: the cold starts with its bells, and the step after it with the bells to turn the water off
+  // (a step skipped to while paused rings them when it carries on, if it's still near its start)
+  function coldEnter(s) {
+    coldHush();
+    COLD.due = s.k === "cold" ? 392 : s.coldEnd ? 587.33 : 0;
+    if (COLD.due && P.state === "running") { coldBells(COLD.due); COLD.due = 0; }
+  }
+  // every tick of a running practice: the bells still due, the breath-out tones and the last three pips, up to just ahead
+  function coldTick(s, st) {
+    if (COLD.due && P.state === "running") { if (st < 2) coldBells(COLD.due); COLD.due = 0; }
+    if (s.k !== "cold" || !A.ctx || P.state !== "running") return;
+    var cyc = COLD_IN + COLD_OUT, horizon = st + (document.hidden ? 2 : 0.6), t;
+    if (s.tone) {
+      // a breath out begun up to half a second ago still gets its tone (the step's first comes on the first tick)
+      if (COLD.next < 0) COLD.next = Math.max(0, Math.ceil((st - 0.5) / cyc));
+      for (t = COLD.next * cyc; t < horizon && t < s.secs - 1; t = (++COLD.next) * cyc) {
+        var late = Math.max(0, st - t);
+        if (late < 0.5) coldSigh(A.ctx.currentTime + Math.max(0, t - st), Math.min(COLD_OUT, s.secs - t) - 0.2 - late);
+      }
+    }
+    if (COLD.pip < 0) COLD.pip = Math.max(1, Math.ceil(s.secs - st - 0.05));     // seconds before the end: 3, 2, 1
+    while (COLD.pip >= 1 && s.secs - COLD.pip < horizon) {
+      t = s.secs - COLD.pip;
+      if (COLD.pip <= 3 && t >= st - 0.05) coldPip(A.ctx.currentTime + (t - st));
+      COLD.pip--;
+    }
+  }
+
+  /* ----- what you see: the seconds left round a pacer, and the words under it ----- */
+  // where the breath is: out for 6 seconds (f 0 to 1), then in for 3
+  function coldPhase(st) {
+    var cyc = COLD_IN + COLD_OUT, ph = ((st % cyc) + cyc) % cyc;
+    return ph < COLD_OUT ? { out: true, f: ph / COLD_OUT } : { out: false, f: (ph - COLD_OUT) / COLD_IN };
+  }
+  function coldWords(s, st) {
+    var ph = coldPhase(st), left = Math.max(0, Math.ceil(s.secs - st));
+    return { cap: ph.out ? "Breathe out, long and slow" : "In through the nose", sub: left + " s of cold left" };
+  }
+  function coldDraw(c, W, Hh, s, st) {
+    var cx = W / 2, cy = Hh / 2, R = Math.min(W, Hh) * 0.38, f = Math.min(1, Math.max(0, st / s.secs)), ph = coldPhase(st);
+    // the pacer: full as a breath out begins, shrinking through it, filling again on the breath in (still under reduced motion)
+    var lv = RM ? 0.75 : ph.out ? 1 - 0.45 * (1 - Math.cos(ph.f * Math.PI)) / 2 : 0.55 + 0.45 * (1 - Math.cos(ph.f * Math.PI)) / 2;
+    var r = R * 0.82 * lv, g = c.createRadialGradient(cx, cy, r * 0.1, cx, cy, r);
+    g.addColorStop(0, rgba(COLD_COL, 0.34)); g.addColorStop(0.7, rgba(COLD_COL, 0.14)); g.addColorStop(1, rgba(COLD_COL, 0));
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = rgba(COLD_COL, 0.5); c.lineWidth = 1.5; c.beginPath(); c.arc(cx, cy, r, 0, Math.PI * 2); c.stroke();
+    // the seconds left, as a ring that empties
+    c.lineWidth = 7; c.strokeStyle = rgba(BCOL.line, 0.9);
+    c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.stroke();
+    c.strokeStyle = COLD_COL; c.lineCap = "round";
+    c.beginPath(); c.arc(cx, cy, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - f)); c.stroke(); c.lineCap = "butt";
+    c.font = "700 " + Math.round(R * 0.62) + "px " + B_MONO; c.fillStyle = BCOL.text; c.textAlign = "center"; c.textBaseline = "middle";
+    c.fillText(String(Math.max(0, Math.ceil(s.secs - st))), cx, cy + 2);
+    c.font = "600 13px " + B_SANS; c.fillStyle = BCOL["text-faint"];
+    c.fillText(ph.out ? "breathe out" : "breathe in", cx, cy + R * 0.45);
+  }
+
+  /* ----- its page, its history and its end ----- */
+  // above Start: fast breathing or long holds that ended within the hour (care.js)
+  function coldCareNote() {
+    var r = ibRecent();
+    return r ? "You did " + r.name + " " + ibAgo(r) + ". Give your breathing time to settle back to normal before the cold, and keep breathing all the way through it, with no breath holds." : "";
+  }
+  // into the summary: the seconds of cold you stayed for, and the length planned
+  function coldSummary(r, T) {
+    var s = P.steps.filter(function (x) { return x.k === "cold"; })[0];
+    if (!s || T <= s.at) return;
+    r.cold = Math.round(Math.min(s.secs, T - s.at));
+    r.coldOf = s.secs;
+  }
+  // the end screen's tile: how long, and where your build-up stands now that this one is in the history
+  function coldTile(r) {
+    if (!r.cold) return null;
+    return ["Cold", r.cold + " s", r.cold >= r.coldOf ? "the whole of it" : "of " + r.coldOf + " s planned", "cold", r.at ? "Build up: " + coldNow().replace(/\.$/, "") : ""];
+  }
+  function coldExplain(k) {
+    if (k !== "cold" || !SD.r || !SD.r.cold) return null;
+    var r = SD.r, p = [];
+    p.push(r.cold >= r.coldOf ? "You stayed in the cold for all " + r.cold + " seconds." : "You turned the water back after " + r.cold + " of the " + r.coldOf + " seconds planned, and that's fine: ending early is always the right call when you feel dizzy, numb or unwell.");
+    p.push("Build up: " + coldNow() + " " + coldRule());
+    p.push("Cold water's first gasp is strongest in the first minute or so; slow breaths out help you through it. A minute of cold is plenty for a lift: the studies of colder, longer baths are in Learn.");
+    return ["Cold", p];
+  }
+
+  function coldInit() {
+    SETTLE_HUSH.push(function (secs) { coldHush(secs); });      // I need to stop: the bells and tones fade with everything else
+    if (window.__entrain) {
+      var X = window.__entrain;
+      X.COLD = COLD; X.coldLevel = coldLevel; X.coldLines = coldLines; X.coldPhase = coldPhase; X.coldNow = coldNow; X.TEMPS = TEMPS;
     }
   }
   /* ------------------------------- the library -------------------------------
@@ -21526,7 +21875,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     chang: ["Chang, A.-M., Aeschbach, D., Duffy, J. F., & Czeisler, C. A. (2015). Evening use of light-emitting eReaders negatively affects sleep, circadian timing, and next-morning alertness. PNAS, 112(4), 1232–1237.", "https://doi.org/10.1073/pnas.1418490112", "DOI"],
     scullin: ["Scullin, M. K., Krueger, M. L., Ballard, H. K., Pruett, N., & Bliwise, D. L. (2018). The effects of bedtime writing on difficulty falling asleep: a polysomnographic study comparing to-do lists and completed activity lists. Journal of Experimental Psychology: General, 147(1), 139–146.", "https://doi.org/10.1037/xge0000374", "DOI"],
     ekholm: ["Ekholm, B., Spulber, S., & Adler, M. (2020). A randomized controlled study of weighted chain blankets for insomnia in psychiatric disorders. Journal of Clinical Sleep Medicine, 16(9), 1567–1577.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC7970589/", "PMC"],
-    yuwb: ["Yu, J., Du, J., Yang, Z., Chen, W., Sun, S., Gan, M., et al. (2024). Effect of weighted blankets on sleep quality among adults with insomnia: a pilot randomized controlled trial. BMC Psychiatry, 24, 765.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC11539645/", "PMC"]
+    yuwb: ["Yu, J., Du, J., Yang, Z., Chen, W., Sun, S., Gan, M., et al. (2024). Effect of weighted blankets on sleep quality among adults with insomnia: a pilot randomized controlled trial. BMC Psychiatry, 24, 765.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC11539645/", "PMC"],
+    sramek: ["Šrámek, P., Šimečková, M., Janský, L., Šavlíková, J., & Vybíral, S. (2000). Human physiological responses to immersion into water of different temperatures. European Journal of Applied Physiology, 81(5), 436–442.", "https://doi.org/10.1007/s004210050065", "DOI"],
+    yankouskaya: ["Yankouskaya, A., Williamson, R., Stacey, C., Totman, J. J., & Massey, H. (2023). Short-term head-out whole-body cold-water immersion facilitates positive affect and increases interaction between large-scale brain networks. Biology, 12(2), 211.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC9953392/", "PMC"]
   };
   var ROUTINES = [
     { id: "sleep-habits", name: "Healthy sleep habits", icon: "moon", tags: "sleep hygiene insomnia habits bedtime regular schedule caffeine alcohol nap bedroom weighted blanket",
@@ -21550,11 +21901,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         { w: "On waking", t: "Up at your usual time", p: "The same time every day, weekends too, and open the curtains straight away. Or wake up slowly first, in bed, with a stretch and a beat that rises with you.", go: [["#practice/morning-tonic", "Morning Wake-Up"]] },
         { w: "In the first hour", t: "Daylight", p: "10 to 30 minutes outdoors, or at a bright window: a short walk, breakfast outside, the way to work. Morning light moves the body clock earlier, so you get sleepy sooner at night and wake more easily. On dark winter mornings, a light box does the same.", go: [["#living/light-box", "Light box"]] },
         { t: "Water and a stretch", p: "A glass of water, then a few minutes of gentle movement to wake the body.", go: [["#practice/morning-stretch", "Morning Stretch"], ["#practice/morning-yoga", "Morning Tonic"]] },
+        { t: "A cold finish, if you like", p: "End your shower with 15 to 30 seconds of cool, then cold, water, breathing out long and slow through the gasp, and lengthen it over the weeks, up to a minute. Cold water sharply raises the body's alertness chemicals, and people come out of it feeling more active and alert. Read its cautions first, above all with a heart condition or high blood pressure.",
+          go: [["#practice/cold-finish", "Cold Finish"], ["#living/cold-water", "Cold water"]] },
         { t: "A practice, before the screens", p: "Ten to fifteen minutes of breathing or meditation before the day's messages and news. Afterwards, notice how it leaves you feeling in your body: that's the feeling the day's short breaks bring you back to.", go: [["#practice/calm-reset", "Calm Reset"], ["#practice/coherence", "Heart Coherence"], ["#practice/anapana", "Anapana"]] },
         { t: "Breakfast", p: "Something with protein and fibre to keep you going until lunch, eaten sitting down and away from the screens.", go: [["#living/overnight-oats", "Overnight oats"], ["#living/apple-oats", "Stewed apple with oats"], ["#living/congee", "Congee"], ["#practice/meal", "Mindful Meal"]] },
         { t: "Then the screens", p: "Leave email, news and social feeds until after the practice and breakfast, so the day starts from your own state rather than from everyone else's. Coffee is fine now: it's the afternoon cup that costs sleep." }
       ],
-      refs: [R_REF.brown, R_REF.windred, R_REF.gardiner] },
+      refs: [R_REF.brown, R_REF.windred, R_REF.gardiner, R_REF.sramek, R_REF.yankouskaya] },
 
     { id: "daytime", name: "Through the day", icon: "spark", tags: "screen break screens devices digital break mindfulness overthinking analysis paralysis rumination stuck thinking feelings body",
       lead: "Two habits that carry the morning's practice through the day, and a third that adds daylight.",
@@ -21573,7 +21926,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       steps: [
         { w: "9 hours before", t: "Last coffee", p: "And the last cola, black or green tea, or energy drink.", go: [["#living/coffee", "Coffee and caffeine"]] },
         { w: "3 hours before", t: "Lights down", p: "Lamps instead of ceiling lights, warm and low. Finish the last big meal around now, eaten slowly, and go easy on alcohol.", go: [["#practice/meal", "Mindful Meal"]] },
-        { w: "1 to 2 hours before", t: "A warm shower or bath", p: "About 10 minutes in water at 40 to 42.5 °C. As your body cools down afterwards, sleep comes sooner: by about 10 minutes, across 13 studies, and it was rated better too." },
+        { w: "1 to 2 hours before", t: "A warm shower or bath", p: "About 10 minutes in water at 40 to 42.5 °C. As your body cools down afterwards, sleep comes sooner: by about 10 minutes, across 13 studies, and it was rated better too. A relaxation practice after it suits the cooling.",
+          go: [["#practice/body-scan", "Body Scan"], ["#practice/sleep-descent", "Sleep Descent"], ["#living/sauna", "Sauna and heat"]] },
         { w: "1 hour before", t: "Screens away", p: "Put the phone away for the night, outside the bedroom if you can, or turn on night mode and dim it. Reading on a tablet for four hours before bed, rather than a printed book, delayed sleep by about 10 minutes, cut dream sleep and left people less alert the next morning." },
         { t: "Tomorrow's list", p: "Five minutes writing down what you need to do tomorrow. In a sleep-lab study, people who did fell asleep about 10 minutes sooner than those who wrote about what they'd already done, and the more specific the list, the sooner." },
         { w: "30 minutes before", t: "Wind down", p: "Ten to twenty minutes of something calming: Autogenic Training with its bedtime ending lets it carry you into sleep. And, if you like, three good things from the day.",
@@ -21639,6 +21993,65 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         ["Wunsch, A., & Matuschka, K. (2014). A controlled trial to determine the efficacy of red and near-infrared light treatment in patient satisfaction, reduction of fine lines, wrinkles, skin roughness, and intradermal collagen density increase. Photomedicine and Laser Surgery, 32(2), 93–100.", "https://doi.org/10.1089/pho.2013.3616", "DOI"],
         ["Zhao, J., Tian, Y., Nie, J., Xu, J., & Liu, D. (2012). Red light and the sleep quality and endurance performance of Chinese female basketball players. Journal of Athletic Training, 47(6), 673–678.", "https://doi.org/10.4085/1062-6050-47.6.08", "DOI"],
         ["Ostrin, L. A., & Schill, A. W. (2026). Safety evaluation of 4 red light therapy devices for myopia. JAMA Ophthalmology.", "https://doi.org/10.1001/jamaophthalmol.2025.5660", "DOI"]
+      ] }
+  ];
+
+  /* ----- cold and heat: cold water and plunges, and saunas and hot baths, as cards like the light's -----
+     Free to read; Cold Finish, the practice they lead to, opens with the donation (cold.js). As the guide gives
+     them: a strong rise in alertness chemicals and mood in cold-water studies, with cold shock's real danger;
+     heat's one striking trial (with a medical machine, not a sauna) and limited evidence for regular saunas.
+     Sources checked in November 2026, against the papers themselves. */
+  var SAFE_TEMP = "Cold water shock can be dangerous, above all with a heart condition or high blood pressure: start gradually, never go into cold open water alone, and never combine cold water with breath holds. With a heart condition, low blood pressure or pregnancy, ask a doctor before saunas or very hot baths; drink water, and skip them after alcohol.";
+  var TEMPS = [
+    { id: "cold-water", name: "Cold water", alias: "cold shower cold plunge ice bath", temp: true, icon: "rain",
+      tags: "cold water shower cold shower plunge cold plunge ice bath cold bath cold exposure immersion open water wild swimming cold shock gasp noradrenaline dopamine alertness mood",
+      lead: "A cold shower, a cold bath or a plunge sets off a fast, strong rise in the body's alertness chemicals, and people come out of it feeling more awake. Start with the end of your shower; a plunge comes later, with clear rules.",
+      uses: [
+        [2, "Alertness", "In 10 healthy men, an hour sitting in water at 14 °C raised noradrenaline by about 530% and dopamine by about 250%. That is far colder and longer than anyone needs for a lift, and the shorter doses below haven't been measured this way."],
+        [2, "Mood", "In 33 adults new to cold water, five minutes up to the collarbones at about 20 °C left them feeling more active, alert, attentive, proud and inspired, and less distressed and nervous. In a brain scan afterwards, large brain networks were more strongly connected."],
+        [1, "Stress hormones", "After 15 minutes at 10.5 °C, cortisol hadn't changed half an hour later but was 47% lower three hours later, in eight healthy adults. One small study."]
+      ],
+      facts: [
+        ["Amounts studied", "An hour at 14 °C, five minutes at 20 °C and 15 minutes at 10.5 °C, all in baths. A cold shower is gentler and less studied: 15 to 60 seconds at the end of a warm one is the usual way to start."],
+        ["How to start", "Finish a warm shower with 15 to 30 seconds of cool, then cold, water, breathing out long and slow through the first gasp, and lengthen it over the weeks, up to a minute. Cold Finish times it, and builds up for you."],
+        ["Cold plunges, later", "An advanced step, once a cold finish feels easy: in slowly, a minute or two at first, with someone beside you, and out as soon as you shiver hard or feel numb or unwell. Cold shock is a real danger in water below 15 °C. In open water, never alone; if the cold takes your breath, float on your back for 60 to 90 seconds until your breathing settles."]
+      ],
+      go: [["#practice/cold-finish", "Cold Finish"]],
+      care: [
+        "Cold water sets off a shock response: a gasp, fast breathing and a sudden rise in heart rate and blood pressure. With a heart condition, high blood pressure or asthma, or in pregnancy, ask your doctor first.",
+        "Never practise cold immersion alone in open water. The first gasp can draw in water, and cold shock is behind many drownings.",
+        "Never combine cold water with Wim Hof breathing or breath holds: do breathwork on dry land, and breathe all the way through the cold.",
+        "Start gradually, with the end of a shower, and build up over weeks. Warm up at once if you feel dizzy, numb or unwell, or shiver hard.",
+        "Mind your footing: the gasp can make you unsteady, so use a non-slip mat or a rail."
+      ],
+      refs: [R_REF.sramek, R_REF.yankouskaya,
+        ["Reed, E. L., Chapman, C. L., Whittman, E. K., et al. (2023). Cardiovascular and mood responses to an acute bout of cold water immersion. Journal of Thermal Biology, 118, 103727.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC10842018/", "PMC"],
+        ["Tipton, M. J., Collier, N., Massey, H., Corbett, J., & Harper, M. (2017). Cold water immersion: kill or cure? Experimental Physiology, 102(11), 1335–1355.", "https://doi.org/10.1113/EP086283", "DOI"],
+        ["RYA (Royal Yachting Association). Cold water shock.", "https://www.rya.org.uk/water-safety/cold-water-shock-safety/cold-water-shock/", "RYA"]
+      ] },
+    { id: "sauna", name: "Sauna and heat", alias: "hot bath steam", temp: true, icon: "sun",
+      tags: "sauna heat hot bath warm bath hot tub steam infrared sauna finnish sauna hyperthermia depression mood relaxation sleep evening wind down",
+      lead: "A sauna or a hot bath relaxes you, and one striking trial of whole-body heating eased depression, but the evidence for regular saunas is still limited. In the evening, a warm bath or shower helps you fall asleep.",
+      uses: [
+        [2, "Falling asleep (a warm bath)", "Across 13 studies, a warm shower or bath of about 10 minutes at 40 to 42.5 °C, one to two hours before bed, helped people fall asleep about 10 minutes sooner, and they rated their sleep better."],
+        [1, "Depression, in one trial", "In 34 adults with major depression, a single session of whole-body heating in an infrared chamber, until their core temperature reached 38.5 °C (about an hour and three quarters), then an hour's rest as they cooled, eased depression more than a convincing sham did, and the difference lasted the six weeks of follow-up. It used a specialised medical machine, not a sauna."],
+        [1, "Regular saunas", "A review of 40 studies of regular dry saunas found mostly benefits, but few good trials: better mood and less anxiety came from small, mostly uncontrolled studies, and the links seen in large population studies may not be cause and effect."]
+      ],
+      facts: [
+        ["Amounts studied", "Finnish saunas at 80 to 100 °C for 5 to 20 minutes, and infrared ones at about 45 to 60 °C for 15 to 30, once to several times a week; a warm bath at 40 to 42.5 °C for about 10 minutes, one to two hours before bed."],
+        ["How to use it", "In the evening, as part of your wind-down, followed by a relaxation or sleep practice as your body cools. Drink water before and after, and come out sooner if you feel dizzy or unwell."],
+        ["Getting out", "Heat lowers your blood pressure: stand up slowly, and sit down at once if you feel faint."]
+      ],
+      go: [["#practice/body-scan", "Body Scan"], ["#practice/sleep-descent", "Sleep Descent"], ["#practice/yoga-nidra", "Yoga Nidra"]],
+      care: [
+        "With a heart condition or low blood pressure, or in pregnancy, ask a doctor before saunas or very hot baths.",
+        "Drink water, and skip the sauna after alcohol: alcohol played a part in about half of the sauna deaths reported.",
+        "Get out at once if you feel dizzy, faint, sick or unwell, and cool down slowly.",
+        "Trying for a baby? In a small study, regular saunas lowered sperm counts for a while; they recovered once the saunas stopped."
+      ],
+      refs: [R_REF.haghayegh,
+        ["Janssen, C. W., Lowry, C. A., Mehl, M. R., et al. (2016). Whole-body hyperthermia for the treatment of major depressive disorder: a randomized clinical trial. JAMA Psychiatry, 73(8), 789–795.", "https://doi.org/10.1001/jamapsychiatry.2016.1031", "DOI"],
+        ["Hussain, J., & Cohen, M. (2018). Clinical effects of regular dry sauna bathing: a systematic review. Evidence-Based Complementary and Alternative Medicine, 2018, 1857413.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC5941775/", "PMC"]
       ] }
   ];
 
@@ -21710,22 +22123,24 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      you cook. Supplements: each is a card that opens to what the trials found, how strong that
      is, the amounts studied, what to check first and the sources. Routines: healthy sleep habits,
      a morning, the day and an evening, each step with the practices that fit. Light: a light box
-     and red and near-infrared light, as cards like the supplements'.
+     and red and near-infrared light, as cards like the supplements'. Cold and heat: cold water and
+     plunges, and saunas and hot baths, as cards too, with links to the practices that fit.
      #living opens the tab you had last, #living/<tab> opens a tab, #living/<recipe> a recipe's
-     page, #living/<supplement or light> its card, opened, and #living/<routine> that routine.
+     page, #living/<supplement, light or temperature card> its card, opened, and #living/<routine>
+     that routine.
   -------------------------------------------------------------------------------- */
 
   var LV = { tab: "", rid: "", n: 0, base: 0, cook: false };
   var LV_UNITS = { g: "g", ml: "ml", tsp: "tsp", tbsp: "tbsp", cm: "cm", tin: ["tin", "tins"], handful: ["handful", "handfuls"],
     slice: ["slice", "slices"], pinch: ["pinch", "pinches"] };
   var LV_MAX = 12;                         // servings
-  var LV_TABS = [["recipes", "Recipes"], ["supplements", "Supplements"], ["routines", "Routines"], ["light", "Light"]];
+  var LV_TABS = [["recipes", "Recipes"], ["supplements", "Supplements"], ["routines", "Routines"], ["light", "Light"], ["cold-heat", "Cold and heat"]];
   var LV_SHORT = { "sleep-habits": "Sleep habits", morning: "Morning", daytime: "Through the day", evening: "Evening" };
 
   function routineById(id) { for (var i = 0; i < ROUTINES.length; i++) if (ROUTINES[i].id === id) return ROUTINES[i]; return null; }
   function recipeById(id) { for (var i = 0; i < RECIPES.length; i++) if (RECIPES[i].id === id) return RECIPES[i]; return null; }
-  function suppById(id) {                  // a supplement's card, a light's, or coffee's
-    var all = SUPPS.concat(SUPPS_MORE, LIGHTS, [COFFEE]);
+  function suppById(id) {                  // a supplement's card, a light's, cold's or heat's, or coffee's
+    var all = SUPPS.concat(SUPPS_MORE, LIGHTS, TEMPS, [COFFEE]);
     for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i];
     return null;
   }
@@ -21843,6 +22258,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           [s.food ? "In food" : "What to buy", s.food || s.buy]]).map(function (f) { return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(lvNb(f[1])) + "</dd></div>"; }).join("") + "</dl>" +
         '<div class="lv-care"><h3><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg>Check first</h3><ul>' +
           s.care.map(function (c) { return "<li>" + esc(lvNb(c)) + "</li>"; }).join("") + "</ul></div>";
+      if (s.go) h += '<p class="lv-go lv-card-go"><span>In Entrain</span>' + s.go.map(lvChip).join("") + "</p>";
     }
     return h + lvRefs(s.refs) + "</div></details>";
   }
@@ -21857,6 +22273,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     });
     return ot ? "See also" : rc && pr ? "Suggested recipes and practices" : rc ? "Suggested recipes" : "Suggested practices";
   }
+  // a link to a practice or a page, with the cup while it's a new technique this device hasn't unlocked
+  function lvChip(g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + (supLocked(lnItem(g[0])) ? supTag(true) : "") + "</a>"; }
+  // after an unlock: the cups go from the links on the page, without drawing it again (supRefresh)
+  function lvMark() {
+    var el = $("#lvBody");
+    if (!el) return;
+    el.querySelectorAll("a.lv-chip").forEach(function (a) {
+      var tag = a.querySelector(".sup-tag"), lk = supLocked(lnItem(a.getAttribute("href")));
+      if (lk && !tag) a.insertAdjacentHTML("beforeend", supTag(true));
+      else if (!lk && tag) tag.parentNode.removeChild(tag);
+    });
+  }
   // a routine: its steps, each with when (if it has a time), what and why, and the practices that fit behind a button
   function lvRoutine(r) {
     var timed = r.steps.some(function (x) { return x.w; });
@@ -21867,7 +22295,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         return "<li>" + (x.w ? '<span class="lv-when">' + esc(x.w) + "</span>" : "") + "<b>" + esc(x.t) + "</b><p>" + esc(lvNb(x.p)) + "</p>" +
           (x.go ? '<details class="lv-sugg"><summary>' + esc(lvGoLabel(x.go)) + '<span class="lv-sugg-n" aria-hidden="true">' + x.go.length + "</span>" +
             '<svg class="i lv-chev" aria-hidden="true"><use href="#i-up"/></svg></summary>' +
-            '<p class="lv-go">' + x.go.map(function (g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + (supLocked(lnItem(g[0])) ? supTag(true) : "") + "</a>"; }).join("") + "</p></details>" : "") + "</li>";
+            '<p class="lv-go">' + x.go.map(lvChip).join("") + "</p></details>" : "") + "</li>";
       }).join("") + "</ol>" + lvRefs(r.refs) + "</section>";
   }
   var LV_LEGEND = '<p class="pr-legend">Evidence' +
@@ -21901,8 +22329,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       safeBox([SAFE_LIGHT]) + LV_LEGEND +
       '<div class="lv-sups">' + LIGHTS.map(lvSupCard).join("") + "</div>" +
       '<p class="pr-note">Not medical advice. The sources were checked in October 2026, and each card lists its own.</p></div>';
+    var tmp = '<div class="lv-panel" role="tabpanel" id="lvp-cold-heat" aria-labelledby="lvt-cold-heat" hidden>' +
+      '<p class="lv-lede">Cold water wakes you up, and heat helps you wind down. Here is what the research says about each: what it may help, how strong the evidence is, the amounts studied, how to start and what to check first.</p>' +
+      safeBox([SAFE_TEMP]) + hcBox(["cold", "heat"]) + LV_LEGEND +
+      '<div class="lv-sups">' + TEMPS.map(lvSupCard).join("") + "</div>" +
+      '<p class="pr-note">Not medical advice. The sources were checked in November 2026, and each card lists its own.</p></div>';
     return '<a class="si-back" href="#learn"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Learn</a>' +
-      '<p class="v-lede lv-intro">Food, sleep and daily routines that look after you, and an honest look at supplements and light.</p>' + tabs + rec + sup + rtn + lit;
+      '<p class="v-lede lv-intro">Food, sleep and daily routines that look after you, and an honest look at supplements and light.</p>' + tabs + rec + sup + rtn + lit + tmp;
   }
   function lvTab(tab, focus) {
     if (!LV_TABS.some(function (t) { return t[0] === tab; })) tab = "recipes";
@@ -21991,7 +22424,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (rest && !s && !rt && !LV_TABS.some(function (t) { return t[0] === rest; })) { location.replace("#living"); return; }
     el.innerHTML = lvList();
     el.style.setProperty("--pcol", "var(--food)");
-    lvTab(s ? (s.light ? "light" : "supplements") : rt ? "routines" : rest || store.get("livTab") || "recipes");
+    lvTab(s ? (s.light ? "light" : s.temp ? "cold-heat" : "supplements") : rt ? "routines" : rest || store.get("livTab") || "recipes");
     var card = s || rt ? document.getElementById("lv-" + (s || rt).id) : null;
     if (card) {                            // a card opens; a routine is scrolled to
       if (s) card.open = true;
@@ -22010,9 +22443,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   /* ----- search: the page, each recipe and each supplement ----- */
   function fdLiving(out) {
-    out.push(fdEntry("living", "Healthy living", "Learn · recipes, supplements, routines and light",
-      ["Simple, nourishing recipes such as congee, kitchari and dal, what the research says about omega-3, coenzyme Q10, creatine, vitamin D, magnesium, B12 and more, healthy sleep habits and a morning and evening routine, and light therapy."], "#living",
-      { ic: "leaf", col: "var(--food)", w: 1.1, tags: "healthy living food nutrition diet eating recipes cooking supplements vitamins routine habits sleep light" }));
+    out.push(fdEntry("living", "Healthy living", "Learn · recipes, supplements, routines, light, cold and heat",
+      ["Simple, nourishing recipes such as congee, kitchari and dal, what the research says about omega-3, coenzyme Q10, creatine, vitamin D, magnesium, B12 and more, healthy sleep habits and a morning and evening routine, light therapy, and cold water and saunas."], "#living",
+      { ic: "leaf", col: "var(--food)", w: 1.1, tags: "healthy living food nutrition diet eating recipes cooking supplements vitamins routine habits sleep light cold heat sauna" }));
     ROUTINES.forEach(function (r) {
       out.push(fdEntry("living", r.name, "Healthy living · routines", [r.lead].concat(r.steps.map(function (x) { return x.t + ": " + x.p; })), "#living/" + r.id,
         { ic: r.icon, col: "var(--food)", w: 1.1, tags: "routine habits " + r.tags }));
@@ -22021,6 +22454,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       var b = lvBest(s);
       out.push(fdEntry("living", s.name, "Light therapy · best evidence: " + b[1].toLowerCase(), [s.lead].concat(s.uses.map(function (u) { return u[1] + ": " + u[2]; }), [s.amount, s.care.join(" ")]),
         "#living/" + s.id, { ic: "sun", col: "var(--food)", w: 1.1, alias: s.alias || "", tags: "light therapy " + s.tags }));
+    });
+    TEMPS.forEach(function (s) {
+      var b = lvBest(s);
+      out.push(fdEntry("living", s.name, "Cold and heat · best evidence: " + b[1].toLowerCase(), [s.lead].concat(s.uses.map(function (u) { return u[1] + ": " + u[2]; }), s.facts.map(function (f) { return f[0] + ": " + f[1]; }), [s.care.join(" ")]),
+        "#living/" + s.id, { ic: s.icon, col: "var(--food)", w: 1.1, alias: s.alias || "", tags: "temperature " + s.tags }));
     });
     RECIPES.forEach(function (r) {
       out.push(fdEntry("living", r.name, "Recipe · " + lvTime(r) + " · serves " + r.serves,
@@ -22112,7 +22550,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     rate: "number", beat: "number", hr0: "number", hr1: "number", hrAvg: "number", swing: "number", coh: "number", best: "number", rm: "number", felt: "number",
     full: "boolean", est: "boolean", ib: "boolean", wh: "number",        // ib: a block of intense breathing; wh: Wim Hof's rounds (care.js)
     bm: "string",                                                        // bm: a beat played monaural or isochronic (beatmode.js)
-    snd: "string" };                                                     // snd: what Sleep sounds played (sleepsounds.js)
+    snd: "string",                                                       // snd: what Sleep sounds played (sleepsounds.js)
+    cold: "number" };                                                    // cold: the seconds of cold in Cold Finish (cold.js)
   var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
     for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
@@ -23013,7 +23452,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["music", musInit], ["scenes", scnInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["music", musInit], ["scenes", scnInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

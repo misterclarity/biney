@@ -921,6 +921,7 @@
   [data-k="sing"]{--kc:var(--food)}
   [data-k="stroke"]{--kc:var(--hr)}
   [data-k="rotate"]{--kc:var(--relax)}
+  [data-k="cold"]{--kc:#7cc4fa}
   .si-tl i{background:color-mix(in srgb,var(--kc) 75%,var(--panel-3))}
 
   /* ---------- practice: session intro ---------- */
@@ -1770,6 +1771,9 @@
   .lv-sugg .lv-chev{margin:0;width:15px;height:15px}
   .lv-sugg[open] > summary .lv-chev{transform:none}
   .lv-rsteps .lv-go{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0 2px}
+  .lv-card-go{display:flex;align-items:center;gap:6px 8px;flex-wrap:wrap;margin:16px 0 0;max-width:70ch}
+  .lv-card-go > span{font-size:11.5px;font-weight:750;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);margin-right:2px}
+  #lvp-cold-heat .hc-note{max-width:70ch}
   .lv-rt .lv-refs{margin-top:14px}
   .lv-tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0}
   .lv-tags span{font-size:11.5px;font-weight:650;color:var(--text-dim);background:var(--panel-2);border-radius:7px;padding:3px 8px}

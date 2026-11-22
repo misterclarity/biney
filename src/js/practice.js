@@ -551,6 +551,7 @@
     if (s.k === "count") return "count";
     if (s.k === "sing") return "sing";               // the words to sing, and where each part is (vocal.js)
     if (s.k === "stroke") return "stroke";           // an arm and a dot to stroke along with (touch.js)
+    if (s.k === "cold") return "cold";               // the seconds of cold left, round a breath-out pacer (cold.js)
     if (ST.sleepDim && pSleepyStep(s)) return s.k === "shuffle" ? "word" : "dark";   // dimmed for sleep (Settings)
     if (s.k === "drift") return "glow";
     if (s.k === "hold") return "hold";
@@ -572,6 +573,7 @@
     vxEnter(s);                                      // and a song's notes to its own (vocal.js)
     tcEnter(s);                                      // and a stroke's sweeps to theirs (touch.js)
     mnEnter(s);                                      // a rotation's point is marked afresh (mind.js)
+    coldEnter(s);                                    // the bells to turn the water cold, and off again (cold.js)
     if (s.k === "wake") { NP.rung = 0; NP.vibs = 0; }
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
@@ -668,6 +670,7 @@
     vxTick(s, st);                                   // the drone, and a song's tune and count-in (vocal.js)
     tcTick(s, st);                                   // a soft sweep with each stroke (touch.js)
     mnTick(s, st);                                   // the point of a rotation round the body, on the body map (mind.js)
+    coldTick(s, st);                                 // the cold's breath-out tones and its last three pips (cold.js)
     pAudioSync(T);
     pUI();
   }
@@ -844,6 +847,8 @@
       sub = smSub(s, st);
     } else if (s.k === "rotate") {
       sub = ynSub(s, st);
+    } else if (s.k === "cold") {
+      var cw = coldWords(s, st); cap = cw.cap; sub = cw.sub;
     } else if (s.k === "adapt") {
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
@@ -910,7 +915,7 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -936,6 +941,7 @@
         else if (vis === "stroke") tcDraw(c, W, Hh, s, st, col);
         else if (vis === "mind") mnDraw(c, W, Hh, s, st, col);
         else if (vis === "scene") scnStep(c, W, Hh, s, T);
+        else if (vis === "cold") coldDraw(c, W, Hh, s, st);
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -1154,6 +1160,7 @@
     napWakeStop();
     vxHush();
     tcHush();
+    coldHush();
     pHush();
     pUnlock();
     pUI();
@@ -1205,6 +1212,7 @@
     napWakeStop();
     vxHush();
     tcHush();
+    coldHush();
     P.mv = null;
     if (pTrack()) {
       var trk = A.track;
@@ -1254,6 +1262,7 @@
     if (P.bm && P.bm !== "binaural") r.bm = P.bm;     // its beat played monaural or isochronic (beatmode.js)
     napSummary(r, T);
     stressSummary(r, T);
+    coldSummary(r, T);                                 // the seconds of cold you stayed for (cold.js)
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(nvcKindOf(d));
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -1268,6 +1277,7 @@
     if (r.suds) notes.push((d.rate ? d.rate.what : "intensity") + " " + r.suds.join(" → ") + " of 10");
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
     if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
+    if (r.cold) notes.push(r.cold + " s of cold");
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
     // fast breathing that ran: an hour's rest before the next block, and Wim Hof's rounds for the day (care.js)
     var ib = P.steps.filter(function (s) { return ibStep(s) && s.at < T; }).length;
@@ -1276,7 +1286,7 @@
     if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg, ib: r.ib, wh: d.id === "wim-hof" && ib ? ib : undefined,
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
-      bm: r.bm, note: notes.join(", ") || undefined });
+      bm: r.bm, cold: r.cold, note: notes.join(", ") || undefined });
     return r;
   }
   /* ----- the session screen: intro ----- */
@@ -1343,10 +1353,12 @@
   }
   // your health check's caution, and a block of fast breathing within the hour or today's rounds (care.js)
   function pCareSync(d, plan) {
-    var hs = $("#sIntro .hc-slot"), nt = $("#sIbNote"), t = ibNote(d, plan), h = hcBox(hcKindsOf(d));
+    var hs = $("#sIntro .hc-slot"), nt = $("#sIbNote"), t = pCareNote(d, plan), h = hcSlot(d);
     if (hs && hs.innerHTML !== h) hs.innerHTML = h;
     if (nt) { nt.hidden = !t; bSetT("#sIbNote", t); }
   }
+  // above Start: rest between blocks of fast breathing (care.js), and a practice's own (Cold Finish after fast breathing)
+  function pCareNote(d, plan) { return [ibNote(d, plan), d.careNote ? pFn(d.careNote, d) : ""].filter(Boolean).join(" "); }
   function pIntro(id) {
     var d = pDef(id);
     if (!d) { location.hash = "practice"; return; }
@@ -1445,13 +1457,13 @@
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its " + (bmMode(O.beatMode) === "binaural" ? "binaural " : "") + "beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
-        '<div class="hc-slot">' + hcBox(hcKindsOf(d)) + "</div>" +
+        '<div class="hc-slot">' + hcSlot(d) + "</div>" +
       "</div>" +
       '<div class="si-side">' +                     // Start first: above the options on a computer, last on a phone (order)
       '<div class="si-bar">' +
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> ' + (hcCaution(hcKindsOf(d)) ? "I've read the cautions, and I choose to go ahead" : "None of the cautions apply to me") + "</label>" : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
-        '<p class="si-ib" id="sIbNote"' + (ibNote(d, plan) ? "" : " hidden") + ">" + esc(ibNote(d, plan)) + "</p>" +
+        '<p class="si-ib" id="sIbNote"' + (pCareNote(d, plan) ? "" : " hidden") + ">" + esc(pCareNote(d, plan)) + "</p>" +
         '<button class="btn primary si-go" id="sGo"' + (d.confirm && !pSupWho(d) ? " disabled" : "") + ">" + pGoHtml(d, plan) + "</button>" +
         '<p class="si-bar-note" id="sSupNote"' + (pSupWho(d) ? "" : " hidden") + ">" + SUP_NOTE + "</p>" +
       "</div>" +

@@ -10,6 +10,8 @@
        hcCaution(kinds)   the caution for those kinds ("fast-breath", "hold", "cold", "heat", "flicker",
                           "scent", "imagery", "body", "strain", "touch"), or "" when nothing ticked bears on them
        hcBox(kinds)       the same in a box with a link to the answers, for a page
+       hcSlot(d)          a practice page's box: its caution, or, for one that asks first (hcFirst), an
+                          offer to answer the health check while it's unanswered (Cold Finish)
        hcAnswered()       whether it's been answered, for a feature that offers it first (#st-health)
      A practice names its kinds in `hc` (a list, or a function of the practice for one that depends on
      its choices).
@@ -103,6 +105,16 @@
   }
   // a practice's kinds of risk, which can follow its choices (breath of fire, power breaths)
   function hcKindsOf(d) { var k = d && pFn(d.hc, d); return Array.isArray(k) ? k : []; }
+  /* What a practice's page shows from the health check: the caution written for you, or, for a practice that
+     asks for it first (hcFirst: Cold Finish, before cold water), an offer to answer it while it's unanswered. */
+  function hcSlot(d) {
+    if (d && d.hcFirst && !hcAnswered()) {
+      return '<div class="hc-note hc-ask" role="note"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg><span><b>' + esc(d.hcFirst) + "</b> " +
+        "It takes a minute and stays on this device. If what you tick makes this riskier for you, a caution written for you shows here. " +
+        '<a class="hc-edit" href="#st-health">Answer the health check</a></span></div>';
+    }
+    return hcBox(hcKindsOf(d));
+  }
 
   /* ----- in Settings, and offered once on Today ----- */
   function hcStTxt() {

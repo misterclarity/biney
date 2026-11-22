@@ -23,7 +23,9 @@
      device (supporter.js), and every way to start it asks for that first; its page stays free to read.
      Patterns in BREATHS and tracks in TRACKS take the same flag.
      A page can add a tip, free to read ([lead, text, link, link text]), and a row of its own under
-     Options (optHtml, redrawn by optSync when the badges change).
+     Options (optHtml, redrawn by optSync when the badges change). It can ask for the health check first
+     while it's unanswered (hcFirst, the offer's lead: care.js hcSlot), and add a note above Start (careNote).
+     `next` can be a function of the practice, and can give two suggestions.
   ------------------------------------------------------------------------------ */
 
   function pLines(lines, secs) {
@@ -1169,7 +1171,11 @@
         { key: "move", label: "Movement", def: "stretch", note: "Stretches in bed (or seated), then a few standing poses with drawings: an upward salute, side bends, a forward fold and arm circles.",
           opts: [["stretch", "Stretch, then stand"], ["still", "Breathing only"]] }
       ],
-      next: { id: "focus-primer", txt: "Starting work soon? The Focus Primer steadies you, then plays 16 Hz beta while you plan your first step." },
+      next: function (d) {                       // work, and the shower: Cold Finish ends it on cold (cold.js), after the breath has settled from breath of fire
+        return [{ id: "focus-primer", txt: "Starting work soon? The Focus Primer steadies you, then plays 16 Hz beta while you plan your first step." },
+          { id: "cold-finish", txt: pChoice(d, "breath") === "fire" ? "Showering next? Cold Finish ends it with 15 seconds to a minute of cold. After breath of fire, give your breathing time to settle back to normal first."
+            : "Showering next? Cold Finish ends it with 15 seconds to a minute of cold, and loud cues to breathe out long and slow." }];
+      },
       build: function (min) { return morningSteps(this, min || 15); },
       how: "Sleep Descent the other way round. Start in bed as you wake, or sitting up: a big yawn and a long, cat-like stretch, then breathing that begins slow, with the out-breath longer, evens out, and quickens, the in-breath leading, while a binaural beat rises from 6 Hz theta through 10 Hz alpha to 16 Hz beta. If you choose breath of fire, two rounds of 30 short, sharp breaths out follow, sitting up. Then stretches in bed (or seated), a few standing poses with drawings to follow, and to finish, daylight, a glass of water and one thing you'd like from today. 10, 15 or 20 minutes.",
       ev: "The grogginess after waking (sleep inertia) usually fades within 15 to 30 minutes, and a 2019 review found no wake-up routine with clear evidence of speeding that up: sound looked promising, light made people feel more alert, and movement hadn't been tested. Beta binaural beats (16 and 24 Hz) improved vigilance and mood compared with theta and delta beats. Fast yoga breathing shifts the heart rhythm towards arousal, the opposite of slow breathing, and a session of it improved attention in 11- and 12-year-olds. Morning daylight is the body clock's strongest signal that the day has begun. This sequence itself hasn't been tested.",
@@ -1864,6 +1870,34 @@
       ev: "The guide rates yoga nidra as moderate evidence for deep relaxation. In a randomised trial of 41 adults with chronic insomnia, yoga nidra and cognitive behavioural therapy for insomnia both improved sleep time and sleep quality; in the sleep lab only yoga nidra added deep sleep, and its salivary cortisol fell. An online yoga nidra based on a body scan reduced stress slightly over two months of daily use, and its 30-minute version reduced sleep disturbance. In a small brain-imaging study, the release of dopamine in the striatum rose during yoga nidra, along with more theta in the EEG. The stages come from Swami Satyananda Saraswati's teaching; they haven't been tested one by one, and the beats' own evidence is mixed.",
       cite: "Datta et al. 2021 · Moszeik et al. 2025 · Kjaer et al. 2002 · Satyananda Saraswati 1976",
       caution: "Yoga nidra can bring up memories or strong feelings, or leave you feeling detached or unreal. If you have, or have had, psychosis or a dissociative disorder, talk to your doctor or therapist before you use it. With trauma, you can let any part of the body go and move on with the voice. You can open your eyes whenever you like, and I need to stop ends the session in one tap. Never listen while driving. In later pregnancy, lie on your side rather than flat on your back."
+    },
+
+    /* ===== temperature (cold.js): a new technique from the brain-wave guide ===== */
+    {
+      id: "cold-finish", name: "Cold Finish", lengths: [3, 5, 8], min: 5, strength: 2, sup: true,
+      tone: "stim", confirm: true, hc: ["cold"], hcFirst: "Before the cold: your health check.", noTap: true, noMus: true, noScene: true,   // no scene to watch from the shower, nor a crackle over the cues
+      opt: { voice: true, bells: true },         // the phone is outside the shower: the voice and the bells carry the session
+      careNote: function () { return coldCareNote(); },     // fast breathing or long holds within the hour
+      needs: [["phone", "Your phone outside the shower", "somewhere dry, where you can hear it over the water"],
+        ["volume", "Volume up", "the voice and bells are loud on purpose: they say when to turn the water cold, and when to turn it off"],
+        ["warn", "A steady footing", "a non-slip mat or a rail to hold: the first gasp of cold can make you unsteady"]],
+      alias: "Cold shower",
+      words: "cold shower cold water finish cool morning energy wake up alert alertness noradrenaline norepinephrine dopamine mood cold exposure cold therapy plunge ice bath bracing shock gasp",
+      blurb: "End your shower on cold, 15 seconds to a minute of it, building up over the weeks. Loud, spoken cues guide a long, slow breath out through the gasp, with a bell to turn the water cold and another to turn it off.",
+      parts: "A warm shower · slow breaths · 15 to 60 s of cold, breathing out long and slow · warming up",
+      choices: [
+        { key: "cold", label: "Cold", def: "auto",
+          note: function () { return "Build up: " + coldNow() + " " + coldRule() + " Or pick a length yourself."; },
+          opts: [["auto", "Build up"], ["15", "15 s"], ["30", "30 s"], ["45", "45 s"], ["60", "60 s"]] },
+        { key: "tone", label: "Breath-out tone", def: "on", note: "A low tone that falls through each long breath out in the cold, so you can keep the pace when the water drowns the words.",
+          opts: [["on", "On"], ["off", "Off"]] }
+      ],
+      build: function (min) { return coldSteps(this, min || 5); },
+      end: "Cold done. Enjoy the energy.",
+      how: "Put your phone outside the shower, somewhere dry, with the volume up, and tap Start as you step in. Shower warm as usual for most of the 3, 5 or 8 minutes; half a minute before the cold, the voice asks you to finish washing, then to breathe slowly, in through the nose and out long through the mouth. On a triple bell, turn the water to cold, or just to cool the first few times. Through the cold, a voice at the start of each long breath out, a low tone falling with it and the seconds counting down on the screen take you through, with three pips before a second triple bell to turn the water off. Then dry off and move to warm up. Build up starts at 15 seconds, and once you've done three at one length, the third at least a week after the first, the next is 15 seconds longer, up to a minute; after a month away it steps back once. Or pick 15, 30, 45 or 60 seconds yourself. The end screen keeps your seconds of cold, and where your build-up stands.",
+      ev: "The guide rates cold exposure as moderate evidence for alertness and a better mood, with a real safety risk. In 10 healthy men, an hour in water at 14 °C raised noradrenaline by about 530% and dopamine by about 250%. In 33 adults new to cold water, five minutes up to the collarbones at about 20 °C left them feeling more active, alert, attentive, proud and inspired, and less distressed and nervous, changes linked to stronger connections between large brain networks. After 15 minutes at 10.5 °C, cortisol hadn't changed half an hour later but was 47% lower three hours later, in eight healthy adults. All of these were baths, colder or longer than the end of a shower: a cold finish is the gentle start the guide suggests, and hasn't itself been measured this way. Cold shock, the gasp and racing heart of sudden cold water, is cold water's main danger.",
+      cite: "Šrámek et al. 2000 · Yankouskaya et al. 2023 · Reed et al. 2023 · Tipton et al. 2017",
+      caution: "Cold water sets off a shock response: a gasp, fast breathing and a sudden rise in heart rate and blood pressure. It can be dangerous with a heart condition or high blood pressure, and in pregnancy: ask your doctor first. Start short, with cool rather than icy water, build up over weeks, and turn it warm again at once if you feel dizzy, numb or unwell. Breathe all the way through: never combine cold water with Wim Hof breathing or breath holds, and never practise cold immersion alone in open water. Keep a firm footing, since the gasp can make you unsteady."
     },
 
     /* ===== movement ===== */

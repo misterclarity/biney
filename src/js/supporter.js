@@ -284,6 +284,7 @@
     else if (curView === "session" && P.view && !$("#sIntro").hidden) pIntroReplan(P.view);
     else if (curView === "track") trSync();
     lnMark();                                                 // Learn's links to new techniques (learn.js)
+    lvMark();                                                 // and Healthy living's (living.js)
     bmSync();                                                 // the beat's Sound buttons and their cups (beatmode.js)
     ambUI();                                                  // the nature sounds' buttons, and what plays (ambience.js)
     ambSync();

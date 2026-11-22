@@ -218,7 +218,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(!/Not for everyone/.test(await E(p, () => document.documentElement.innerHTML)), 'the paragraph repeated on five pages is gone');
       const learn = await E(p, () => ({ toc: !!document.querySelector('.toc a[href="#l-safety"]'), h: document.querySelector('#l-safety').textContent,
         items: [...document.querySelectorAll('#sfNote .sf-list li b')].map(b => b.textContent) }));
-      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Breath holds. | Moving. | Feelings. | Food and supplements. | Light.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
+      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Breath holds. | Moving. | Feelings. | Food and supplements. | Light. | Cold and heat.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
       const opened = async (from) => {
         await p.click(from); await p.waitForTimeout(250);
         return E(p, () => { const m = document.querySelector('#sfModal'), b = document.querySelector('#sfBody');
@@ -1473,8 +1473,8 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
           links: all('#lvp-routines .lv-go a').map(a => a.getAttribute('href')), refs: all('#lvp-routines .lv-refl a').map(a => a.getAttribute('href')),
           w: document.documentElement.scrollWidth, iw: innerWidth };
       });
-      ok(R.tabs === 'Recipes | Supplements | Routines* | Light' && R.w <= R.iw, 'Healthy living has four tabs: ' + R.tabs);
-      ok(R.secs === 'lv-sleep-habits:Healthy sleep habits:9:11 | lv-morning:A morning routine:6:3 | lv-daytime:Through the day:4:6 | lv-evening:An evening routine:7:6' &&
+      ok(R.tabs === 'Recipes | Supplements | Routines* | Light | Cold and heat' && R.w <= R.iw, 'Healthy living has five tabs: ' + R.tabs);
+      ok(R.secs === 'lv-sleep-habits:Healthy sleep habits:9:11 | lv-morning:A morning routine:7:5 | lv-daytime:Through the day:4:6 | lv-evening:An evening routine:7:6' &&
         R.jump === 'Sleep habits>#living/sleep-habits | Morning>#living/morning | Through the day>#living/daytime | Evening>#living/evening',
         'Routines: sleep habits, a morning, the day and an evening, each with its sources: ' + R.secs);
       const S = R.steps, step = (id, t) => (S['lv-' + id] || []).find(x => x.t === t) || { p: '' };
@@ -1484,7 +1484,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(S['lv-evening'].map(x => x.w).filter(Boolean).join(' | ') === '9 hours before | 3 hours before | 1 to 2 hours before | 1 hour before | 30 minutes before | Bedtime' &&
         /^Five minutes writing down what you need to do tomorrow/.test(step('evening', "Tomorrow's list").p) && /40 to 42\.5 °C/.test(step('evening', 'A warm shower or bath').p),
         'the evening routine counts back from bedtime: ' + S['lv-evening'].map(x => x.t).join(', '));
-      ok(S['lv-morning'].map(x => x.t).join(' | ') === 'Up at your usual time | Daylight | Water and a stretch | A practice, before the screens | Breakfast | Then the screens' &&
+      ok(S['lv-morning'].map(x => x.t).join(' | ') === 'Up at your usual time | Daylight | Water and a stretch | A cold finish, if you like | A practice, before the screens | Breakfast | Then the screens' &&
         /that's the feeling the day's short breaks bring you back to\.$/.test(step('morning', 'A practice, before the screens').p), 'the morning routine: daylight, a practice before the screens, breakfast');
       ok(/Short breaks from devices and screens let your body remember the feeling from the morning's practice, and regulate around it/.test(step('daytime', 'Short breaks from screens').p),
         'through the day: short breaks from screens let the body remember the morning practice\'s feeling and regulate around it');
@@ -1508,8 +1508,8 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const ev = await E(p, () => ({ sel: document.querySelector('#lvt-routines').getAttribute('aria-selected'), top: Math.round(document.querySelector('#lv-evening').getBoundingClientRect().top) }));
       ok(ev.sel === 'true' && ev.top >= 50 && ev.top < 140, '#living/evening opens Routines at the evening routine: ' + JSON.stringify(ev));
       // the tabs by keyboard, round to the start
-      await p.focus('#lvt-supplements'); await p.keyboard.press('ArrowRight'); await p.keyboard.press('ArrowRight'); await p.keyboard.press('ArrowRight'); await p.waitForTimeout(150);
-      ok(await E(p, () => document.activeElement.id + ' ' + location.hash) === 'lvt-recipes #living/recipes', 'the arrow keys go through all four tabs and round');
+      await p.focus('#lvt-supplements'); for (let i = 0; i < 4; i++) await p.keyboard.press('ArrowRight'); await p.waitForTimeout(150);
+      ok(await E(p, () => document.activeElement.id + ' ' + location.hash) === 'lvt-recipes #living/recipes', 'the arrow keys go through all five tabs and round');
       // light
       await E(p, () => location.hash = 'living/light'); await p.waitForTimeout(500);
       const L = await E(p, () => {
@@ -2161,8 +2161,8 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
           sugg: all('#lvp-routines .lv-sugg').map(d => (d.open ? '*' : '') + d.querySelector('summary').textContent.replace(/\s+/g, ' ').trim()).join(' | '),
           loose: all('#lvp-routines .lv-go').filter(g => !g.closest('details.lv-sugg')).length, hid: all('#lvp-routines .lv-rsteps .lv-chip').filter(a => a.checkVisibility ? a.checkVisibility() : a.closest('details').open).length };
       });
-      ok(R.rot === 0 && !R.loose && R.hid === 0 && R.sugg === 'See also1 | Suggested practices1 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | See also1 | Suggested practices2 | Suggested practices3 | ' +
-        'Suggested recipes and practices4 | Suggested practices2 | Suggested practices3 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | Suggested practices4 | Suggested practices3',
+      ok(R.rot === 0 && !R.loose && R.hid === 0 && R.sugg === 'See also1 | Suggested practices1 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | See also1 | Suggested practices2 | See also2 | Suggested practices3 | ' +
+        'Suggested recipes and practices4 | Suggested practices2 | Suggested practices3 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | See also3 | Suggested practices4 | Suggested practices3',
         'in the routines nothing is turned on its side, and each step\'s practices wait behind a closed button named for what\'s there, with a count: ' + R.sugg.slice(0, 80) + '…');
       await E(p, () => document.querySelector('#lv-morning .lv-sugg').scrollIntoView({ block: 'center' }));
       await p.click('#lv-morning .lv-sugg > summary'); await p.waitForTimeout(250);

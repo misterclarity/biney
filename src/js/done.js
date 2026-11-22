@@ -18,6 +18,8 @@
     if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath", "wander"]);
     if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · "), "holds"]);
     if (r.suds) tiles.push([d.rate ? d.rate.name : "Intensity", r.suds.join(" → "), r.suds.length > 1 ? (d.rate ? "out of 10, before and after" : "out of 10, first to last") : "out of 10", "suds"]);   // a feeling's strength, or what the practice rates
+    var ct = coldTile(r);                                // Cold Finish: the seconds of cold, and where your build-up stands (cold.js)
+    if (ct) tiles.push(ct);
     if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatHeart ? "Hz, led by your heart" : "Hz, scripted (no heart data)", "beat"]);
     if (r.nap) {
       if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate", "onset"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated", "nap"]); }
@@ -78,13 +80,16 @@
     var ch = P.chain && P.chain.then !== d.id ? pDef(P.chain.then) : null;
     if (ch) return '<div class="note-card sd-next"><p><b>Next: ' + esc(ch.name) + ".</b> " + esc(ch.chainTxt || "") + "</p>" +
       '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + (ch.sup ? supTag() : "") + "</button></div>";
-    var nt = pFn(d.next, d), nx = nt && pDef(nt.id);     // a suggestion can follow the choices made (Sports Performance's)
-    return nx ? '<div class="note-card sd-next"><p>' + esc(nt.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + (nx.sup ? supTag() : "") + "</a></div>" : "";
+    var nt = pFn(d.next, d);                             // a suggestion can follow the choices made (Sports Performance's), or be two (Morning Wake-Up's)
+    return (Array.isArray(nt) ? nt : [nt]).map(function (x) {
+      var nx = x && pDef(x.id);
+      return nx ? '<div class="note-card sd-next"><p>' + esc(x.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + (nx.sup ? supTag() : "") + "</a></div>" : "";
+    }).join("");
   }
 
   // what each number means, with your own value read back
   function sdExplain(k) {
-    var sx = scExplain(k);
+    var sx = scExplain(k) || coldExplain(k);
     if (sx) return sx;                               // a stress check's own tiles
     var r = SD.r, d = SD.d, n, p = [];
     var plural = function (x, one, many) { return x + " " + (x === 1 ? one : many); };
