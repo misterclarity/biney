@@ -236,15 +236,16 @@
   /* ----- today's minutes and the days in a row ----- */
   // minutes today, the run of days with a session (today counts once it has one), and the days of the last 30
   function owDays() {
-    var days = {}, i;
-    hLoad().forEach(function (e) { var k = hDayStart(e.at); days[k] = (days[k] || 0) + e.secs; });
-    var t0 = hDayStart(Date.now()), today = days[t0] || 0, run = 0, d = new Date(t0), d30 = 0;
-    if (!today) d.setDate(d.getDate() - 1);
-    while (days[d.getTime()]) { run++; d.setDate(d.getDate() - 1); }
-    d = new Date(t0);
-    for (i = 0; i < 30; i++) { if (days[d.getTime()]) d30++; d.setDate(d.getDate() - 1); }
+    var days = {}, i, k;
+    hLoad().forEach(function (e) { var ds = hDayStart(e.at); days[ds] = (days[ds] || 0) + e.secs; });
+    var t0 = hDayStart(Date.now()), today = days[t0] || 0, run = 0, d30 = 0;
+    for (k = today ? t0 : owPrev(t0); days[k]; k = owPrev(k)) run++;
+    for (i = 0, k = t0; i < 30; i++, k = owPrev(k)) if (days[k]) d30++;
     return { today: today, run: run, live: !!today, d30: d30 };
   }
+  // the start of the day before, as hDayStart keys it: midday before it, so a day of 23 or 25 hours, or a clock
+  // change at midnight (where that day starts at 1 a.m.), keeps each day's key
+  function owPrev(k) { return hDayStart(k - DAY / 2); }
   // the line for Today and History; while locked, the way to unlock it
   function owHtml(id) {
     if (!supOn()) return '<button type="button" class="ow-lk" id="' + id + '"><svg class="i" aria-hidden="true"><use href="#i-today"/></svg>Today\'s minutes and your days in a row' + supTag() + "</button>";
@@ -667,8 +668,10 @@
     h += '<p class="hi-tot"><b>' + st.nA + "</b> " + esc(v[0]) + " · <b>" + st.nB + "</b> " + esc(v[1]) + "</p>";
     if (!over) {
       var d = pDef(nx === "B" && x.f === "other" ? x.q : x.p);
-      h += '<p class="xp-next">Next: <b>' + esc(v[nx === "A" ? 0 : 1]) + "</b>." + (x.f === "other" ? "" : " Entrain sets it as you start " + esc(d.name) + ".") +
-        ' <a class="btn small" href="#practice/' + d.id + '">Open ' + esc(d.name) + (lk ? supTag(true) : "") + "</a></p>";
+      if (lk) h += '<p class="xp-next"><span>Next: <b>' + esc(v[nx === "A" ? 0 : 1]) + "</b>. Your experiment is one of the new techniques: it carries on once it's unlocked.</span>" +   // kept from a backup on a locked device (xpFor sets nothing)
+        '<button type="button" class="btn small" id="xpOpen">Unlock it' + supTag(true) + "</button></p>";
+      else h += '<p class="xp-next">Next: <b>' + esc(v[nx === "A" ? 0 : 1]) + "</b>." + (x.f === "other" ? "" : " Entrain sets it as you start " + esc(d.name) + ".") +
+        ' <a class="btn small" href="#practice/' + d.id + '">Open ' + esc(d.name) + "</a></p>";
     }
     var said = st.rows.map(function (r) { return xpSay(x, r); }).filter(Boolean);
     if (st.n) h += xpTable(x, st) + (said.length ? '<ul class="xp-say">' + said.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>" : "");

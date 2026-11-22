@@ -49,7 +49,7 @@
   var AQ = { state: "off", dev: null, name: "", gen: 0, wantOn: false, err: "", chr: null, timer: 0, hintT: 0, fails: 0, msgTxt: "", wait: false, batt: null, last: null };
   /* The oximeter: off | busy | on | lost. v: the last SpO2 (%), pr: pulse rate, pi: perfusion index, at: bNow() of
      the last usable reading, q: what the last reading was worth (good, weak, off, demo, none), cont: continuous or spot-check. */
-  var OX = { state: "off", dev: null, name: "", gen: 0, wantOn: false, tries: 0, err: "", chr: null, cont: true, msgTxt: "", step: "", v: null, pr: null, pi: null, at: 0, q: "", n: 0, firstWait: null };
+  var OX = { state: "off", dev: null, name: "", gen: 0, wantOn: false, tries: 0, err: "", chr: null, cont: true, msgTxt: "", step: "", v: null, pr: null, pi: null, at: 0, q: "", n: 0, firstWait: null, drop: false };
 
   /* ----- what's chosen ----- */
   function aqPromptOn() { return supOn() && store.get("airPrompt") !== "0"; }
@@ -277,7 +277,7 @@
   function oxConnect() {
     if (!aqBt() || OX.state !== "off") return;
     var gen = ++OX.gen, req;
-    OX.err = "";
+    OX.err = ""; OX.drop = false;
     oxSet("busy");
     oxMsg("Choose your oximeter…");
     try {
@@ -343,14 +343,14 @@
     OX.chr = null;
   }
   function oxCancel() {
-    OX.wantOn = false; OX.gen++;
+    OX.wantOn = false; OX.gen++; OX.drop = false;
     try { if (OX.dev) OX.dev.gatt.disconnect(); } catch (e) {}
     oxUnhook();
     oxMsg("");
     oxSet("off");
   }
   function oxDisconnect() {
-    OX.wantOn = false; OX.gen++;
+    OX.wantOn = false; OX.gen++; OX.drop = false;
     try { if (OX.chr) OX.chr.stopNotifications().catch(function () {}); } catch (e) {}
     try { if (OX.dev) OX.dev.gatt.disconnect(); } catch (e) {}
     oxUnhook();
@@ -361,7 +361,7 @@
   function oxFail(e, gen) {
     if (gen !== undefined && gen !== OX.gen) return;
     var n = e.name, k = e.step, was = OX.state;
-    OX.wantOn = false;
+    OX.wantOn = false; OX.drop = was === "lost";       // it dropped out and didn't come back (oxChips)
     try { if (OX.dev && k !== "choose") OX.dev.gatt.disconnect(); } catch (x) {}
     oxUnhook();
     OX.v = null;
@@ -385,7 +385,7 @@
     oxCheck();
     oxUI();
   }
-  function oxSet(st) { OX.state = st; oxUI(); }
+  function oxSet(st) { OX.state = st; if (st === "on") P.oxHad = true; oxUI(); }
   function oxMsg(s) { OX.msgTxt = s; bSetT("#oxMsg", s); }
   function oxSay(text) {
     if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
@@ -428,7 +428,7 @@
     bSetT("#bLive", "Breathe now.");
     oxSay("Breathe now.");
   }
-  function oxReset() { P.oxAt = []; }                        // from pStart (practice.js)
+  function oxReset() { P.oxAt = []; P.oxHad = OX.state === "on" || OX.state === "lost"; }      // from pStart (practice.js); oxHad: it was connected in this practice
   function oxSummary(r) { if (P.oxAt && P.oxAt.length) r.ox = P.oxAt.slice(); }
   function oxNote(r) { return r.ox ? (r.ox.length === 1 ? "a hold ended at " + r.ox[0] + "% oxygen" : r.ox.length + " holds ended, at " + r.ox.join("%, ") + "% oxygen") : ""; }
   function oxTiles(r) {
@@ -444,8 +444,10 @@
     p.push("It's a rough safety signal, not a score: a longer hold or a lower reading is never progress here.");
     return ["Oxygen", p];
   }
-  // a practice's live chip, while an oximeter is connected
+  // a practice's live chip, while an oximeter is connected, and when it drops out during the practice: holds then go unchecked
   function oxChips() {
+    var gone = OX.state === "lost" ? "reconnecting" : OX.state === "off" && OX.drop && P.oxHad ? "dropped out" : "";
+    if (gone) return ['<span class="lc off">Oximeter ' + gone + ((P.steps || []).some(function (s) { return s.k === "hold"; }) ? ": holds aren't checked" : "") + "</span>"];
     if (OX.state !== "on" || !OX.n) return [];
     if (!oxFresh()) return ['<span class="lc off">Oximeter: ' + (OX.q === "off" ? "no finger" : "no reading") + "</span>"];
     return ['<span class="lc ox' + (OX.v < OX_FLOOR ? " low" : "") + '">SpO₂ <b>' + OX.v + "</b>%</span>"];

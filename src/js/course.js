@@ -200,7 +200,8 @@
     h += '<p class="xp-what"><b>' + (c.per === 1 ? "Once a day" : "Twice a day") + ", from " + esc(new Date(c.at).toLocaleDateString(undefined, { day: "numeric", month: "long" })) + ".</b> " +
       (st.over ? (st.ended ? "Ended in week " + st.week + ": " : "Done: ") : "Week " + st.week + " of 8, day " + (st.day + 1) + " of 56: ") +
       st.n + " of " + st.target + " sessions" + (st.full ? ", " + st.full + (st.full === 1 ? " day" : " days") + " in full." : ".") + "</p>";
-    if (!st.over) h += '<p class="xp-next"><span>Next: 20 minutes at your resonance pace, ' + (H.find && H.find.best ? H.find.best + " a minute, from your test." : "5.5 a minute until you take the resonance test.") +
+    if (!st.over && lk) h += '<p class="xp-next"><span>Your resonance course is one of the new techniques.</span><button type="button" class="btn small rc-unlock" id="rcOpen">Unlock it' + supTag(true) + "</button></p>";   // kept from a backup on a locked device, as on Today
+    else if (!st.over) h += '<p class="xp-next"><span>Next: 20 minutes at your resonance pace, ' + (H.find && H.find.best ? H.find.best + " a minute, from your test." : "5.5 a minute until you take the resonance test.") +
       '</span><button type="button" class="btn small" id="rcBreathe">Breathe 20 min</button></p>';
     var upTo = function (k) { return st.weeks.map(function (w, i) { return i < wk.length ? w[k] : undefined; }); };     // the weeks to come stay empty
     h += '<div class="rc-chs">' +
@@ -217,7 +218,7 @@
       if (!wk.some(function (w) { return w.coh !== null || w.sw !== null; })) h += '<p class="xp-miss">No heart readings in these sessions yet: with a heart sensor, or the phone\'s camera, on <a href="#heart">Heart</a>, each week\'s coherence and swing show here.</p>';
       else h += '<p class="xp-miss">Coherence and the swing rise as your heart follows your breath more closely. They also move with the sensor\'s fit, the time of day, coffee and sleep, so read the weeks together rather than one session.</p>';
     } else h += '<p class="xp-miss">No sessions yet. A session of 20 minutes or more at a resonance pace counts, on Breathe or as Heart Coherence.</p>';
-    if (!st.over) h += rcPerSeg(c.per);
+    if (!st.over && !lk) h += rcPerSeg(c.per);
     h += rcHonest();
     h += '<div class="xp-act">' + (st.over ? '<button type="button" class="btn primary" id="rcNew">Start a new course</button>' : '<button type="button" class="btn small" id="rcEnd">End the course</button>') + "</div>";
     return h + "</section>";

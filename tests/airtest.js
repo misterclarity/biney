@@ -361,6 +361,23 @@ const slot = p => E(p, () => { const s = [...document.querySelectorAll('.view:no
       const back = await until(p, () => window.__entrain.OX.state === 'on' && window.__entrain.OX.n > 0, 6000);
       await go(p, 'ox', 300); await p.click('#oxGo'); await p.waitForTimeout(300);
       ok(back && await E(p, () => window.__entrain.OX.state === 'off' && document.querySelector('#oxOn').hidden), 'a dropped link reconnects by itself; Disconnect turns it off');
+      // a link that drops out during a hold and doesn't come back: the live chips say the holds aren't checked
+      ok(await oxOn(p), 'connected again');
+      await go(p, 'practice/wim-hof', 500);
+      await p.check('#sOk'); await p.click('#sGo'); await p.waitForTimeout(400);
+      for (let i = 0; i < 4 && !/hold/.test(await E(p, () => window.__entrain.P.steps[window.__entrain.P.idx].title)); i++) { await p.click('#sNext'); await p.waitForTimeout(250); }
+      await p.waitForTimeout(1500);
+      await E(p, () => { window.__oxDown = true; window.__oxDrop(); });
+      const gone = await until(p, () => window.__entrain.OX.state === 'off', 6000);
+      await p.waitForTimeout(1200);
+      const dr = await E(p, () => ({ st: window.__entrain.P.state, step: window.__entrain.P.steps[window.__entrain.P.idx].title, chip: document.querySelector('#sLive').textContent }));
+      ok(gone && dr.st === 'running' && /hold/.test(dr.step) && /^Oximeter dropped out: holds aren't checked/.test(dr.chip), 'an oximeter that drops out mid-hold and doesn\'t come back says so among the live chips: ' + JSON.stringify(dr));
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(500);
+      await go(p, 'practice/calm-reset', 400);
+      await p.click('#sGo'); await p.waitForTimeout(1200);
+      ok(await E(p, () => window.__entrain.P.state === 'running') && !/Oximeter/.test(await t(p, '#sLive')), 'and the next practice, started with it off, has no such chip: ' + await t(p, '#sLive'));
+      await E(p, () => { window.__oxDown = false; });
+      await p.click('#sEnd'); await p.click('#sEnd'); await p.waitForTimeout(400);
       await p.context().close();
       // spot-check oximeters, another kind, the chooser closed
       p = await page(null, { unlock: true, scale: 0.05, mock: { ox: { spot: true } } });

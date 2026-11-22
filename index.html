@@ -13261,7 +13261,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var AQ = { state: "off", dev: null, name: "", gen: 0, wantOn: false, err: "", chr: null, timer: 0, hintT: 0, fails: 0, msgTxt: "", wait: false, batt: null, last: null };
   /* The oximeter: off | busy | on | lost. v: the last SpO2 (%), pr: pulse rate, pi: perfusion index, at: bNow() of
      the last usable reading, q: what the last reading was worth (good, weak, off, demo, none), cont: continuous or spot-check. */
-  var OX = { state: "off", dev: null, name: "", gen: 0, wantOn: false, tries: 0, err: "", chr: null, cont: true, msgTxt: "", step: "", v: null, pr: null, pi: null, at: 0, q: "", n: 0, firstWait: null };
+  var OX = { state: "off", dev: null, name: "", gen: 0, wantOn: false, tries: 0, err: "", chr: null, cont: true, msgTxt: "", step: "", v: null, pr: null, pi: null, at: 0, q: "", n: 0, firstWait: null, drop: false };
 
   /* ----- what's chosen ----- */
   function aqPromptOn() { return supOn() && store.get("airPrompt") !== "0"; }
@@ -13489,7 +13489,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function oxConnect() {
     if (!aqBt() || OX.state !== "off") return;
     var gen = ++OX.gen, req;
-    OX.err = "";
+    OX.err = ""; OX.drop = false;
     oxSet("busy");
     oxMsg("Choose your oximeter…");
     try {
@@ -13555,14 +13555,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     OX.chr = null;
   }
   function oxCancel() {
-    OX.wantOn = false; OX.gen++;
+    OX.wantOn = false; OX.gen++; OX.drop = false;
     try { if (OX.dev) OX.dev.gatt.disconnect(); } catch (e) {}
     oxUnhook();
     oxMsg("");
     oxSet("off");
   }
   function oxDisconnect() {
-    OX.wantOn = false; OX.gen++;
+    OX.wantOn = false; OX.gen++; OX.drop = false;
     try { if (OX.chr) OX.chr.stopNotifications().catch(function () {}); } catch (e) {}
     try { if (OX.dev) OX.dev.gatt.disconnect(); } catch (e) {}
     oxUnhook();
@@ -13573,7 +13573,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function oxFail(e, gen) {
     if (gen !== undefined && gen !== OX.gen) return;
     var n = e.name, k = e.step, was = OX.state;
-    OX.wantOn = false;
+    OX.wantOn = false; OX.drop = was === "lost";       // it dropped out and didn't come back (oxChips)
     try { if (OX.dev && k !== "choose") OX.dev.gatt.disconnect(); } catch (x) {}
     oxUnhook();
     OX.v = null;
@@ -13597,7 +13597,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     oxCheck();
     oxUI();
   }
-  function oxSet(st) { OX.state = st; oxUI(); }
+  function oxSet(st) { OX.state = st; if (st === "on") P.oxHad = true; oxUI(); }
   function oxMsg(s) { OX.msgTxt = s; bSetT("#oxMsg", s); }
   function oxSay(text) {
     if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
@@ -13640,7 +13640,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     bSetT("#bLive", "Breathe now.");
     oxSay("Breathe now.");
   }
-  function oxReset() { P.oxAt = []; }                        // from pStart (practice.js)
+  function oxReset() { P.oxAt = []; P.oxHad = OX.state === "on" || OX.state === "lost"; }      // from pStart (practice.js); oxHad: it was connected in this practice
   function oxSummary(r) { if (P.oxAt && P.oxAt.length) r.ox = P.oxAt.slice(); }
   function oxNote(r) { return r.ox ? (r.ox.length === 1 ? "a hold ended at " + r.ox[0] + "% oxygen" : r.ox.length + " holds ended, at " + r.ox.join("%, ") + "% oxygen") : ""; }
   function oxTiles(r) {
@@ -13656,8 +13656,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     p.push("It's a rough safety signal, not a score: a longer hold or a lower reading is never progress here.");
     return ["Oxygen", p];
   }
-  // a practice's live chip, while an oximeter is connected
+  // a practice's live chip, while an oximeter is connected, and when it drops out during the practice: holds then go unchecked
   function oxChips() {
+    var gone = OX.state === "lost" ? "reconnecting" : OX.state === "off" && OX.drop && P.oxHad ? "dropped out" : "";
+    if (gone) return ['<span class="lc off">Oximeter ' + gone + ((P.steps || []).some(function (s) { return s.k === "hold"; }) ? ": holds aren't checked" : "") + "</span>"];
     if (OX.state !== "on" || !OX.n) return [];
     if (!oxFresh()) return ['<span class="lc off">Oximeter: ' + (OX.q === "off" ? "no finger" : "no reading") + "</span>"];
     return ['<span class="lc ox' + (OX.v < OX_FLOOR ? " low" : "") + '">SpO₂ <b>' + OX.v + "</b>%</span>"];
@@ -14043,7 +14045,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "fea3608d";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "cbc6062e";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -17371,7 +17373,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
        you, in step or not. Until then, and with the microphone (which hears each breath but not which
        way it goes), they swell with the guide, which started at your own pace.
      It's a new technique, so turning it on opens with a donation (supporter.js). Nothing is recorded or kept
-     beyond the session's start and end pace, which go into the history.
+     beyond the session's start and end pace, which go into the history, and a sensor it opened itself closes again
+     when the session ends, when it's switched off or when the other sensor is chosen (blsQuiet).
   ------------------------------------------------------------------------------ */
 
   var BLS_NAME = "Breath-led sound";
@@ -17385,9 +17388,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      may slow next; hold: holding while you're faster; hand: the pace was changed by hand; ph, pend: the guide's
      phases it set, now and waiting for the next breath; v: the belly's main direction; sign: which way it goes as
      you breathe in (0 until learnt); pairs: the belly's level beside the guide's, to learn it; lvl, how: the chords'
-     level and what leads it ("belly", "guide" or ""); last: the session before. */
+     level and what leads it ("belly", "guide" or ""); last: the session before; mic, belly: it opened that sensor
+     itself (not you, on Heart or with Breathe's own switch), so it closes it again. */
   var BLS = { on: false, src: "belly", phase: "off", t0: 0, from: "", rate0: 0, rate: 0, target: 0, next: 0, hold: false, hand: false,
-    ph: null, pend: null, v: null, sign: 0, pairs: [], corr: 0, corrAt: 0, lvl: 0.7, how: "", last: null, timer: 0 };
+    ph: null, pend: null, v: null, sign: 0, pairs: [], corr: 0, corrAt: 0, lvl: 0.7, how: "", last: null, timer: 0, mic: false, belly: false };
 
   function blsOn() { return BLS.on && supOn(); }
   function blsHasBelly() { return !!window.DeviceMotionEvent; }
@@ -17413,8 +17417,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   // start the chosen sensor, in the tap (Safari asks for motion access there; browsers ask for the microphone)
   function blsListen() {
-    if (BLS.src === "belly") { if (!MOT.belly && blsHasBelly()) motBellySet(true); }
-    else if (!MIC.on && !MIC.busy && blsHasMic()) micStart();
+    if (BLS.src === "belly") { if (!MOT.belly && blsHasBelly()) { BLS.belly = true; motBellySet(true); } }
+    else if (!MIC.on && !MIC.busy && blsHasMic()) { BLS.mic = true; micStart(); }
+  }
+  // close what it opened itself, but for `keep` ("belly" or "mic"): the microphone (its recording light, Heart's
+  // listening) or the phone on your belly, so neither carries on after the session or the switch
+  function blsQuiet(keep) {
+    if (BLS.mic && keep !== "mic") { BLS.mic = false; if (MIC.on || MIC.busy) micStop(); }
+    if (BLS.belly && keep !== "belly") { BLS.belly = false; if (MOT.belly) motBellySet(false); }
   }
   function blsMusic(fade) { if (!MUS.on || MUS.own !== "breath") musStart({ feel: "slow", own: "breath", fade: fade }); }
 
@@ -17466,6 +17476,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     BLS.phase = "off"; BLS.pend = null;
     clearInterval(BLS.timer); BLS.timer = 0;
     if (MUS.own === "breath") musStop(2);
+    blsQuiet();
     syncTransport(); updateHead(); blsUI();
   }
   function blsTimer() { clearInterval(BLS.timer); BLS.timer = setInterval(blsTick, 100); }
@@ -17646,6 +17657,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!on) {
       BLS.on = false; store.set("breathLed", "0");
       if (BLS.phase === "find") blsEnd(true);
+      blsQuiet();
       blsUI(); return;
     }
     var yes = function () {
@@ -17659,6 +17671,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function blsSrc(v) {
     if (v !== "belly" && v !== "mic") return;
     BLS.src = v; store.set("breathLedSrc", v);
+    blsQuiet(v);
     if (blsOn()) blsListen();
     blsUI();
   }
@@ -17671,6 +17684,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     SETTLE_HUSH.push(function () { if (BLS.phase !== "off") blsEnd(BLS.phase === "find"); });   // I need to stop: it ends with the session
     $("#bLedOn").addEventListener("change", function () { blsSet(this.checked); });
     $("#bLedSrc").addEventListener("click", function (e) { var b = e.target.closest("button[data-v]"); if (b) blsSrc(b.getAttribute("data-v")); });
+    // a sensor you start or stop yourself is yours from then on: Heart's microphone button, Breathe's Phone on your belly
+    $("#mcStart").addEventListener("click", function () { BLS.mic = false; });
+    $("#bBellyOn").addEventListener("change", function () { BLS.belly = false; });
     blsUI();
     if (window.__entrain) {                                             // for automated tests only
       var X = window.__entrain;
@@ -28972,15 +28988,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* ----- today's minutes and the days in a row ----- */
   // minutes today, the run of days with a session (today counts once it has one), and the days of the last 30
   function owDays() {
-    var days = {}, i;
-    hLoad().forEach(function (e) { var k = hDayStart(e.at); days[k] = (days[k] || 0) + e.secs; });
-    var t0 = hDayStart(Date.now()), today = days[t0] || 0, run = 0, d = new Date(t0), d30 = 0;
-    if (!today) d.setDate(d.getDate() - 1);
-    while (days[d.getTime()]) { run++; d.setDate(d.getDate() - 1); }
-    d = new Date(t0);
-    for (i = 0; i < 30; i++) { if (days[d.getTime()]) d30++; d.setDate(d.getDate() - 1); }
+    var days = {}, i, k;
+    hLoad().forEach(function (e) { var ds = hDayStart(e.at); days[ds] = (days[ds] || 0) + e.secs; });
+    var t0 = hDayStart(Date.now()), today = days[t0] || 0, run = 0, d30 = 0;
+    for (k = today ? t0 : owPrev(t0); days[k]; k = owPrev(k)) run++;
+    for (i = 0, k = t0; i < 30; i++, k = owPrev(k)) if (days[k]) d30++;
     return { today: today, run: run, live: !!today, d30: d30 };
   }
+  // the start of the day before, as hDayStart keys it: midday before it, so a day of 23 or 25 hours, or a clock
+  // change at midnight (where that day starts at 1 a.m.), keeps each day's key
+  function owPrev(k) { return hDayStart(k - DAY / 2); }
   // the line for Today and History; while locked, the way to unlock it
   function owHtml(id) {
     if (!supOn()) return '<button type="button" class="ow-lk" id="' + id + '"><svg class="i" aria-hidden="true"><use href="#i-today"/></svg>Today\'s minutes and your days in a row' + supTag() + "</button>";
@@ -29403,8 +29420,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     h += '<p class="hi-tot"><b>' + st.nA + "</b> " + esc(v[0]) + " · <b>" + st.nB + "</b> " + esc(v[1]) + "</p>";
     if (!over) {
       var d = pDef(nx === "B" && x.f === "other" ? x.q : x.p);
-      h += '<p class="xp-next">Next: <b>' + esc(v[nx === "A" ? 0 : 1]) + "</b>." + (x.f === "other" ? "" : " Entrain sets it as you start " + esc(d.name) + ".") +
-        ' <a class="btn small" href="#practice/' + d.id + '">Open ' + esc(d.name) + (lk ? supTag(true) : "") + "</a></p>";
+      if (lk) h += '<p class="xp-next"><span>Next: <b>' + esc(v[nx === "A" ? 0 : 1]) + "</b>. Your experiment is one of the new techniques: it carries on once it's unlocked.</span>" +   // kept from a backup on a locked device (xpFor sets nothing)
+        '<button type="button" class="btn small" id="xpOpen">Unlock it' + supTag(true) + "</button></p>";
+      else h += '<p class="xp-next">Next: <b>' + esc(v[nx === "A" ? 0 : 1]) + "</b>." + (x.f === "other" ? "" : " Entrain sets it as you start " + esc(d.name) + ".") +
+        ' <a class="btn small" href="#practice/' + d.id + '">Open ' + esc(d.name) + "</a></p>";
     }
     var said = st.rows.map(function (r) { return xpSay(x, r); }).filter(Boolean);
     if (st.n) h += xpTable(x, st) + (said.length ? '<ul class="xp-say">' + said.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>" : "");
@@ -29728,7 +29747,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     h += '<p class="xp-what"><b>' + (c.per === 1 ? "Once a day" : "Twice a day") + ", from " + esc(new Date(c.at).toLocaleDateString(undefined, { day: "numeric", month: "long" })) + ".</b> " +
       (st.over ? (st.ended ? "Ended in week " + st.week + ": " : "Done: ") : "Week " + st.week + " of 8, day " + (st.day + 1) + " of 56: ") +
       st.n + " of " + st.target + " sessions" + (st.full ? ", " + st.full + (st.full === 1 ? " day" : " days") + " in full." : ".") + "</p>";
-    if (!st.over) h += '<p class="xp-next"><span>Next: 20 minutes at your resonance pace, ' + (H.find && H.find.best ? H.find.best + " a minute, from your test." : "5.5 a minute until you take the resonance test.") +
+    if (!st.over && lk) h += '<p class="xp-next"><span>Your resonance course is one of the new techniques.</span><button type="button" class="btn small rc-unlock" id="rcOpen">Unlock it' + supTag(true) + "</button></p>";   // kept from a backup on a locked device, as on Today
+    else if (!st.over) h += '<p class="xp-next"><span>Next: 20 minutes at your resonance pace, ' + (H.find && H.find.best ? H.find.best + " a minute, from your test." : "5.5 a minute until you take the resonance test.") +
       '</span><button type="button" class="btn small" id="rcBreathe">Breathe 20 min</button></p>';
     var upTo = function (k) { return st.weeks.map(function (w, i) { return i < wk.length ? w[k] : undefined; }); };     // the weeks to come stay empty
     h += '<div class="rc-chs">' +
@@ -29745,7 +29765,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (!wk.some(function (w) { return w.coh !== null || w.sw !== null; })) h += '<p class="xp-miss">No heart readings in these sessions yet: with a heart sensor, or the phone\'s camera, on <a href="#heart">Heart</a>, each week\'s coherence and swing show here.</p>';
       else h += '<p class="xp-miss">Coherence and the swing rise as your heart follows your breath more closely. They also move with the sensor\'s fit, the time of day, coffee and sleep, so read the weeks together rather than one session.</p>';
     } else h += '<p class="xp-miss">No sessions yet. A session of 20 minutes or more at a resonance pace counts, on Breathe or as Heart Coherence.</p>';
-    if (!st.over) h += rcPerSeg(c.per);
+    if (!st.over && !lk) h += rcPerSeg(c.per);
     h += rcHonest();
     h += '<div class="xp-act">' + (st.over ? '<button type="button" class="btn primary" id="rcNew">Start a new course</button>' : '<button type="button" class="btn small" id="rcEnd">End the course</button>') + "</div>";
     return h + "</section>";

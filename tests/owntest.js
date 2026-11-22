@@ -30,10 +30,10 @@ const NAMES = ['Check in before and after', "Today's minutes and streak", 'Daily
   const log = []; const ok = (c, m) => log.push((c ? 'PASS ' : 'FAIL ') + m);
   const UNLOCKED = testApp();
   // a phone, debug on, the headphone check done; st: stored values; o.unlock: the unlocked test copy; o.at: [hour, minute]
-  // the page's clock is moved to, today; o.vp: the window
+  // the page's clock is moved to, today; o.vp: the window; o.tz: the time zone
   const page = async (st, o) => {
     o = o || {};
-    const ctx = await browser.newContext({ userAgent: S20, viewport: o.vp || { width: 412, height: 915 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, acceptDownloads: true });
+    const ctx = await browser.newContext(Object.assign({ userAgent: S20, viewport: o.vp || { width: 412, height: 915 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, acceptDownloads: true }, o.tz ? { timezoneId: o.tz } : {}));
     const p = await ctx.newPage();
     p.on('pageerror', e => log.push('PAGEERROR ' + e.message));
     p.on('console', m => { if (m.type() === 'error') log.push('CONSOLE ' + m.text()); });
@@ -153,6 +153,15 @@ const NAMES = ['Check in before and after', "Today's minutes and streak", 'Daily
       await r.click('#sGo'); await r.waitForTimeout(400);
       const run = await E(r, () => ({ st: window.__entrain.P.state, ci: !document.querySelector('#ciModal').hidden, xp: window.__entrain.P.xp, audio: window.__entrain.P.opt.audio }));
       ok(run.st === 'running' && !run.ci && !run.xp && run.audio === false, 'Start starts at once: no check-in, and the experiment leaves its options alone: ' + JSON.stringify(run));
+      await r.click('#sEnd'); await r.click('#sEnd'); await r.waitForTimeout(450);
+      await go(r, 'history', 450);
+      const hx = await E(r, () => ({ next: document.querySelector('#experiment .xp-next').textContent.replace(/\s+/g, ' ').trim(), cup: !!document.querySelector('#experiment #xpOpen .sup-tag'), open: !!document.querySelector('#experiment a[href^="#practice/"]') }));
+      ok(/^Next: (with|without) its beat\. Your experiment is one of the new techniques: it carries on once it's unlocked\.\s*Unlock it/.test(hx.next) && hx.cup && !hx.open,
+        'History: the kept experiment carries on once unlocked, with the way to unlock it, and says nothing of setting it as you start: ' + hx.next);
+      await r.click('#experiment #xpOpen'); await r.waitForTimeout(300);
+      const sx = await sup(r);
+      ok(sx.open && /^Personal experiments? (is|are) one/.test(sx.said), 'which opens the dialog naming it: ' + sx.said);
+      await supClose(r);
       await r.context().close();
     }
 
@@ -337,6 +346,17 @@ const NAMES = ['Check in before and after', "Today's minutes and streak", 'Daily
       ok((await t(p, '#hiDay .ow-l')) === '0 min today · 2 of the last 30 days' && (await t(p, '#hiDay .ow-n')) === "A missed day isn't a setback: what counts is how often you practise over the weeks.",
         'after a day off, no run, and a gentle word: ' + await t(p, '#hiDay'));
       await p.context().close();
+      // where the clock goes forward at midnight (Chile, 6 September 2026: that day starts at 1 a.m.), the days before it still count
+      const z = await page({}, { unlock: true, tz: 'America/Santiago' });
+      d = await E(z, () => {
+        const X = window.__entrain, l = X.hLoad(), now = Date.now;
+        l.length = 0;
+        for (let i = 3; i <= 9; i++) l.push({ k: 'practice', id: 'calm-reset', secs: 600, full: true, at: new Date(2026, 8, i, 12).getTime() });
+        Date.now = () => new Date(2026, 8, 9, 18).getTime();
+        try { return Object.assign(X.owDays(), { start: new Date(2026, 8, 6).getHours() }); } finally { Date.now = now; l.length = 0; }
+      });
+      ok(d.start === 1 && d.run === 7 && d.d30 === 7, 'a clock change at midnight leaves the run and the last 30 days whole, 7 days from 3 to 9 September in Santiago: ' + JSON.stringify(d));
+      await z.context().close();
     }
 
     /* E. the daily rhythm, at a pinned time of day */

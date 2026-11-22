@@ -397,6 +397,7 @@ const BROKEN = { name: 'broken.mp3', mimeType: 'audio/mpeg', buffer: Buffer.from
       const end = await E(p, () => { const X = window.__entrain, h = JSON.parse(localStorage.getItem('entrain.history') || '[]').filter(e => e.k === 'breath').pop(); return { ph: X.BLS.phase, mus: X.MUS.on, h, txt: document.querySelector('#bLedTxt').textContent, btn: document.querySelector('#bStart').textContent }; });
       ok(end.ph === 'off' && !end.mus && /^Last session, breath-led: the guide went from \d+(\.\d)? to \d+(\.\d)? breaths a minute, then kept the pace you set\.$/.test(end.txt) && end.btn === 'Start breathing', 'Reset ends it, the music too, and the row says what it did: ' + end.txt);
       ok(end.h && end.h.id === 'custom' && /^breath-led from \d+(\.\d)? a minute$/.test(end.h.note) && end.h.secs >= 60, 'the history keeps it as breathing at a pace of its own, breath-led from yours: ' + JSON.stringify(end.h && { id: end.h.id, rate: end.h.rate, note: end.h.note }));
+      ok(await E(p, () => !window.__entrain.MOT.belly && !document.querySelector('#bBellyOn').checked), 'and the phone on your belly, which it turned on, turns off with it');
       ok(await E(p, () => JSON.parse(localStorage.getItem('entrain.breath')).pattern === 'box'), 'and the pattern you picked is the one kept');
       // Begin now, before a steady reading
       await E(p, () => { const i = document.querySelector('#bPats input[value="resonance"]'); i.checked = true; i.dispatchEvent(new Event('change', { bubbles: true })); });
@@ -448,6 +449,23 @@ const BROKEN = { name: 'broken.mp3', mimeType: 'audio/mpeg', buffer: Buffer.from
       const mh = await E(m, () => ({ how: window.__entrain.BLS.how, txt: document.querySelector('#bLedTxt').textContent }));
       ok(mr.from === 'sensor' && Math.abs(mr.r0 - 10) <= 1 && mh.how === 'guide' && /a microphone hears each breath, but not which way it goes/.test(mh.txt), 'at the pace it heard (' + mr.r0 + '), the chords swelling with the guide: ' + mh.txt);
       await m.click('#bReset'); await m.waitForTimeout(300);
+      // the microphone it opened closes with the session, and with the switch; one you started on Heart stays yours
+      const shut = () => until(m, () => !window.__entrain.MIC.on && !window.__entrain.MIC.busy, 3000);
+      ok(await shut() && await E(m, () => window.__mic.stopped >= 1), 'Reset closes the microphone it opened: ' + await t(m, '#bLedHint'));
+      await m.click('#bLedOn'); await m.waitForTimeout(200);
+      await m.click('#bLedOn');
+      ok(await until(m, () => window.__entrain.MIC.on, 4000), 'switched off and on again, it listens');
+      await m.click('#bLedOn');
+      ok(await shut() && await E(m, () => !window.__entrain.BLS.on), 'switched off, the microphone closes');
+      await go(m, 'heart', 400);
+      await m.click('#mcStart');
+      ok(await until(m, () => window.__entrain.MIC.on, 4000), 'the microphone started on Heart');
+      await go(m, 'breathe', 400);
+      await m.click('#bLedOn'); await m.waitForTimeout(300);
+      await m.click('#bStart'); await m.waitForTimeout(400);
+      await m.click('#bReset'); await m.waitForTimeout(300);
+      await m.click('#bLedOn'); await m.waitForTimeout(500);
+      ok(await E(m, () => window.__entrain.MIC.on && !window.__entrain.BLS.on), 'is left listening after a session and the switch, as Heart\'s button is where it stops');
       await m.context().close();
     }
 

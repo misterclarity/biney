@@ -20,7 +20,8 @@
        you, in step or not. Until then, and with the microphone (which hears each breath but not which
        way it goes), they swell with the guide, which started at your own pace.
      It's a new technique, so turning it on opens with a donation (supporter.js). Nothing is recorded or kept
-     beyond the session's start and end pace, which go into the history.
+     beyond the session's start and end pace, which go into the history, and a sensor it opened itself closes again
+     when the session ends, when it's switched off or when the other sensor is chosen (blsQuiet).
   ------------------------------------------------------------------------------ */
 
   var BLS_NAME = "Breath-led sound";
@@ -34,9 +35,10 @@
      may slow next; hold: holding while you're faster; hand: the pace was changed by hand; ph, pend: the guide's
      phases it set, now and waiting for the next breath; v: the belly's main direction; sign: which way it goes as
      you breathe in (0 until learnt); pairs: the belly's level beside the guide's, to learn it; lvl, how: the chords'
-     level and what leads it ("belly", "guide" or ""); last: the session before. */
+     level and what leads it ("belly", "guide" or ""); last: the session before; mic, belly: it opened that sensor
+     itself (not you, on Heart or with Breathe's own switch), so it closes it again. */
   var BLS = { on: false, src: "belly", phase: "off", t0: 0, from: "", rate0: 0, rate: 0, target: 0, next: 0, hold: false, hand: false,
-    ph: null, pend: null, v: null, sign: 0, pairs: [], corr: 0, corrAt: 0, lvl: 0.7, how: "", last: null, timer: 0 };
+    ph: null, pend: null, v: null, sign: 0, pairs: [], corr: 0, corrAt: 0, lvl: 0.7, how: "", last: null, timer: 0, mic: false, belly: false };
 
   function blsOn() { return BLS.on && supOn(); }
   function blsHasBelly() { return !!window.DeviceMotionEvent; }
@@ -62,8 +64,14 @@
   }
   // start the chosen sensor, in the tap (Safari asks for motion access there; browsers ask for the microphone)
   function blsListen() {
-    if (BLS.src === "belly") { if (!MOT.belly && blsHasBelly()) motBellySet(true); }
-    else if (!MIC.on && !MIC.busy && blsHasMic()) micStart();
+    if (BLS.src === "belly") { if (!MOT.belly && blsHasBelly()) { BLS.belly = true; motBellySet(true); } }
+    else if (!MIC.on && !MIC.busy && blsHasMic()) { BLS.mic = true; micStart(); }
+  }
+  // close what it opened itself, but for `keep` ("belly" or "mic"): the microphone (its recording light, Heart's
+  // listening) or the phone on your belly, so neither carries on after the session or the switch
+  function blsQuiet(keep) {
+    if (BLS.mic && keep !== "mic") { BLS.mic = false; if (MIC.on || MIC.busy) micStop(); }
+    if (BLS.belly && keep !== "belly") { BLS.belly = false; if (MOT.belly) motBellySet(false); }
   }
   function blsMusic(fade) { if (!MUS.on || MUS.own !== "breath") musStart({ feel: "slow", own: "breath", fade: fade }); }
 
@@ -115,6 +123,7 @@
     BLS.phase = "off"; BLS.pend = null;
     clearInterval(BLS.timer); BLS.timer = 0;
     if (MUS.own === "breath") musStop(2);
+    blsQuiet();
     syncTransport(); updateHead(); blsUI();
   }
   function blsTimer() { clearInterval(BLS.timer); BLS.timer = setInterval(blsTick, 100); }
@@ -295,6 +304,7 @@
     if (!on) {
       BLS.on = false; store.set("breathLed", "0");
       if (BLS.phase === "find") blsEnd(true);
+      blsQuiet();
       blsUI(); return;
     }
     var yes = function () {
@@ -308,6 +318,7 @@
   function blsSrc(v) {
     if (v !== "belly" && v !== "mic") return;
     BLS.src = v; store.set("breathLedSrc", v);
+    blsQuiet(v);
     if (blsOn()) blsListen();
     blsUI();
   }
@@ -320,6 +331,9 @@
     SETTLE_HUSH.push(function () { if (BLS.phase !== "off") blsEnd(BLS.phase === "find"); });   // I need to stop: it ends with the session
     $("#bLedOn").addEventListener("change", function () { blsSet(this.checked); });
     $("#bLedSrc").addEventListener("click", function (e) { var b = e.target.closest("button[data-v]"); if (b) blsSrc(b.getAttribute("data-v")); });
+    // a sensor you start or stop yourself is yours from then on: Heart's microphone button, Breathe's Phone on your belly
+    $("#mcStart").addEventListener("click", function () { BLS.mic = false; });
+    $("#bBellyOn").addEventListener("change", function () { BLS.belly = false; });
     blsUI();
     if (window.__entrain) {                                             // for automated tests only
       var X = window.__entrain;

@@ -164,6 +164,15 @@ const FITS = 'sleep-descent calm-reset coherence gratitude conversation after-ta
       s = await sup(q);
       ok(s.open && /^Resonance course is one/.test(s.said), 'which opens the dialog naming it');
       await supClose(q);
+      await go(q, 'history', 450);
+      const hk = await E(q, () => ({ what: document.querySelector('#rcourse .xp-what').textContent, next: document.querySelector('#rcourse .xp-next').textContent.replace(/\s+/g, ' ').trim(),
+        cup: !!document.querySelector('#rcourse #rcOpen .sup-tag'), go: !!document.querySelector('#rcBreathe'), per: !!document.querySelector('#rcPer'), kept: localStorage.getItem('entrain.rcourse') }));
+      ok(/^Twice a day, from/.test(hk.what) && /^Your resonance course is one of the new techniques\.\s*Unlock it/.test(hk.next) && hk.cup && !hk.go && !hk.per,
+        'History keeps its weeks to read, with the way to unlock it as on Today, and no Breathe 20 min or sessions a day: ' + hk.next);
+      await q.click('#rcourse #rcOpen'); await q.waitForTimeout(300);
+      s = await sup(q);
+      ok(s.open && /^Resonance course is one/.test(s.said) && await E(q, k => localStorage.getItem('entrain.rcourse') === k, hk.kept), 'which opens the dialog too, the course left as it was');
+      await supClose(q);
       await go(q, 'breathe', 500);
       b = await E(q, () => ({ v: window.__entrain.bVisNow(), r: document.querySelector('#bVis input:checked').value, eyes: document.querySelector('#bStage').dataset.eyes || '', cb: document.querySelector('#bEyesOn').checked,
         m: window.__entrain.BC.minutes, len: document.querySelector('#bLen input:checked').value }));
