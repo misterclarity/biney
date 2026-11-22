@@ -987,6 +987,11 @@
   .amb-add button{display:inline-flex;align-items:center;gap:4px;min-height:44px}
   .amb-add .sup-ic{background:none;padding:0;color:var(--stim)}
   .amb-add .sup-ic svg.i{width:12px;height:12px}
+  /* the music: a row of its own under the background sounds (and in a practice's Options), the cup on its buttons while locked */
+  .mus-ctl{display:flex;flex-direction:column;gap:8px;align-items:flex-start;width:100%}
+  .mus-seg button{display:inline-flex;align-items:center;gap:4px;min-height:44px}
+  .mus-seg .sup-ic{background:none;padding:0;color:var(--stim)}
+  .mus-seg .sup-ic svg.i{width:12px;height:12px}
   .slp-row{flex-direction:column;align-items:stretch;gap:8px;margin:0 0 16px}
   .slp-row .mini-seg{align-self:flex-start;max-width:100%}
   .slp-seg button{min-height:44px}

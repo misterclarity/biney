@@ -91,14 +91,27 @@
     var t = A.track;
     if (!t || t.practice) return;
     var el = A.playing && A.ctx ? A.ctx.currentTime - A.startedAt : A.elapsed;
-    var secs = el - (A.hAt || 0);
+    var from = A.hAt || 0, secs = el - from;
     if (secs < 60) return;
     A.hAt = el;                                  // a paused track logged as the page goes away isn't logged twice
     var e = { k: "track", id: t.id, secs: secs, full: !t.then && el >= t.minutes * 60 - 10 };
     if (t.id === "prime" || t.id === "custom") { e.beat = +t.beat.toFixed(1); e.band = t.band; }
     if (t.sleep) e.snd = t.snd;                   // Sleep sounds: which sound
     else if (A.mode !== "binaural") e.bm = A.mode;     // how it played, when not binaural (beatmode.js)
+    hTrackHr(e, from, el);
     hAdd(e);
+  }
+  /* The heart rate while a track played, from a sensor (heart.js keeps it in A.hrLog), kept as a breathing session
+     keeps it: the first minute's average and the last minute's once there are two and a half minutes of readings,
+     or else the average; so History, Today and the trends show what a track does for you. */
+  function hTrackHr(e, from, to) {
+    var s = (A.hrLogTrack === A.track && A.hrLog || []).filter(function (x) { return x.t >= from && x.t <= to + 1; });
+    if (s.length < 10) return;
+    var a = s[0].t, end = s[s.length - 1].t, hr = function (x) { return x.hr; };
+    if (end - a >= 150) {
+      e.hr0 = Math.round(avg(s.filter(function (x) { return x.t < a + 60; }).map(hr)));
+      e.hr1 = Math.round(avg(s.filter(function (x) { return x.t > end - 60; }).map(hr)));
+    } else e.hrAvg = Math.round(avg(s.map(hr)));
   }
   function hTest(secs, best) { hAdd({ k: "test", id: "resonance", secs: secs, full: true, best: best }); }
 

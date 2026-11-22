@@ -17,7 +17,7 @@
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural" },
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off" },
     paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
     bm: ""                                          // how its beat played (beatmode.js), for the history
   };
@@ -135,9 +135,10 @@
   function pMinutes(d, len) { return Math.max(1, Math.round(pPlan(d, pLenOf(d, len)).total / 60)); }
   /* ----- options: defaults for every practice (in Settings), and each practice's own changes on top.
      Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself.
-     The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js). ----- */
+     The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js),
+     and the music (music) to the background sound's choice (music.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -145,14 +146,16 @@
       if (g && typeof g === "object") for (var k in o) if (typeof g[k] === typeof o[k]) o[k] = g[k];
     } catch (e) {}
     o.beatMode = bmStored();
+    o.music = musStored();
     return o;
   }
-  // the defaults for every practice, kept: the beat's sound goes to this device's own choice, which every page then shows
+  // the defaults for every practice, kept: the beat's sound and the music go to this device's own choices, which every page then shows
   function pOptKeep(g) {
-    var m = g.beatMode;
-    delete g.beatMode;
+    var m = g.beatMode, mu = g.music;
+    delete g.beatMode; delete g.music;
     store.set("pOpt", JSON.stringify(g));
     if (bmOk(m) && m !== bmStored()) bmSet(m);
+    if (musOk(mu) && mu !== musStored()) musSet(mu, true);
   }
   function pOptOwn(id) {
     try { var v = JSON.parse(store.get("pOpt." + id) || "null"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; }
@@ -1374,6 +1377,7 @@
       opts.push(pToggle("sOptAudio", bmMode(O.beatMode) === "binaural" ? "Binaural layer" : "Beat", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. " + pBmNeed(O)));
       opts.push(pBmRow(O));
     }
+    if (!d.music && !d.noMus) opts.push(pMusRow(O));      // music made on the device, kept for this practice (music.js)
     if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesised berimbau keeps time for the capoeira moves."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
@@ -1401,7 +1405,7 @@
     }
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
-    every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl() + "</div>");
+    every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl(true) + "</div>");   // its music is a row of its own above
     if (d.reflect) every.push(pToggle("sOptKeep", "Keep a copy on this device", O.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
     var openOpts = store.get("optsOpen") === "1";
     var other = pBusy() && P.def !== d;
@@ -1479,6 +1483,11 @@
   function pBmRow(O) {
     return '<div class="so-row so-seg so-bm"><span class="so-l">Sound<small>' + BM_NOTE + "</small></span>" + bmSeg("sOptMode", bmMode(O.beatMode), "prac") + "</div>";
   }
+  // the Music row: off, matched to what the practice is for, or a tempo, kept for this practice; the cups while this device is locked
+  function pMusRow(O) {
+    return '<div class="so-row so-seg so-mus"><span class="so-l">Music<small>' + MUS_NOTE + " Your choice for every session, unless you keep one for this practice.</small></span>" +
+      musSeg("sOptMus", musShown(O.music), "prac") + "</div>";
+  }
   // the optimal default is your own resonance rate: the test's answer, or 5.5 a minute, the usual one, until you take it
   function pPaceNote(pc) {
     if (pc.own) return pc.rate + " breaths a minute, at your own in and out.";
@@ -1496,6 +1505,7 @@
     if (O.bells) s.push("Bells");
     if (d.audio) s.push(O.audio ? (d.beats ? pBeat(d).label : "Binaural") : "No beats");
     if (d.audio && O.audio && bmMode(O.beatMode) !== "binaural") s.push(bmMode(O.beatMode) === "monaural" ? "Monaural" : "Isochronic");
+    if (!d.music && !d.noMus && musShown(O.music) !== "off") s.push(MUS_SHORT[O.music]);
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -1569,6 +1579,15 @@
         pIntro(d.id);
         var nb = document.querySelector('#sOptMode button[data-bm="' + m + '"]');
         if (nb) nb.focus();
+      });
+    });
+    // music, kept for this practice: picking it opens with a donation while this device is locked (music.js)
+    var mu = $("#sOptMus");
+    if (mu) mu.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-mus]"); if (!b) return;
+      musPick(b.getAttribute("data-mus"), function (k) {
+        if (P.view !== d) return;
+        O.music = k; save(); musUI();
       });
     });
     var pg = $("#sOptPace");

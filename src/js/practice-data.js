@@ -1622,7 +1622,7 @@
     /* ===== the voice (vocal.js): new techniques from the brain-wave guide ===== */
     {
       id: "om", name: "Om Chanting", lengths: [5, 10, 15], min: 10, strength: 1, sup: true,
-      tone: "relax", sensor: "optional", noTap: true,
+      tone: "relax", sensor: "optional", noTap: true, noMus: true,      // you chant on your own note, or the drone's: no music under it (music.js)
       opt: { cues: "chimes" },                   // a chime at each turn of the breath sits lightly over your voice
       optNote: "The drone and the length of each chant are kept for it.",
       alias: "Aum", words: "om aum chant chanting mantra hum humming vibration drone voice sound meditation calm",
@@ -1694,7 +1694,7 @@
     },
     {
       id: "sing", name: "Sing Together", lengths: [10, 15], min: 10, strength: 2, sup: true,
-      tone: "accent", noTap: true, noAna: true,
+      tone: "accent", noTap: true, noAna: true, noMus: true,      // its own tune and drone: no music under it (music.js)
       optNote: "Your choices are kept for it.",
       alias: "Sing-along", words: "sing singing song songs round rounds choir group together sing-along music hum humming voice frere jacques brother john bonding friends family party",
       blurb: "Sing rounds together, Frère Jacques and Row, Row, Row Your Boat, with the words on the screen and a soft tune and drone to lead you. For a group in one room, or on your own, with the phone as your partner.",
@@ -1777,6 +1777,35 @@
       ev: "A shift towards alpha brain waves is one of the most consistent findings in EEG studies of massage: across 30 of them, a single session commonly raised alpha and lowered faster beta and gamma activity, and moderate pressure favoured a relaxed, parasympathetic profile. Not every study agrees: in 24 young adults, a massage by hand and one by a device changed delta, theta and beta differently, and alpha fell during that short session in both. Almost all of this research is on massage from a trained therapist; massage you give yourself, or a partner, has been studied far less.",
       cite: "Chmiel & Kurpas 2026 · Chang et al. 2012",
       caution: "Leave out any area with an injury, a wound, a rash, a bruise or swelling, and go lightly around varicose veins rather than pressing on them. If you take blood thinners or bruise easily, keep the pressure light. A painful, swollen, warm calf can be a blood clot: leave it alone and see a doctor. Keep to the back and sides of the neck, away from the front of the throat. Massage should feel good: ease off if anything hurts, and with a partner, say so straight away."
+    },
+
+    /* ===== music (music.js): a new technique from the brain-wave guide ===== */
+    {
+      id: "music-break", name: "Music Break", lengths: [10, 15, 20], min: 10, strength: 3, sup: true,
+      tone: "relax", noTap: true,
+      music: function (d) { return pChoice(d, "tempo"); },     // the music plays all through, at the tempo chosen here (music.js)
+      optNote: "Your tempo is kept for it.",
+      alias: "Music for stress", words: "music listen listening song songs tune tunes melody chords ambient relax relaxing stress tempo slow calm heart rate pulse eyes closed break pause",
+      blurb: "Ten to twenty minutes with your eyes closed and soft music made on your device, slow unless you pick another tempo. With a heart sensor, the end shows your heart rate at the start and the end, against your usual.",
+      parts: "Settle in · Listen, eyes closed · Come back",
+      needs: [["sounds", "Speakers or headphones", "the music plays on either; headphones close out the room"],
+        ["pulse", "Heart sensor", "optional: your heart rate at the start and the end, against your usual"]],
+      choices: [
+        { key: "tempo", label: "Music", def: "slow",
+          note: function (d) {
+            return {
+              slow: "Slow, about 60 beats a minute: the tempo that goes with calm. Pick another if you like it better, since music you like does more.",
+              steady: "Steady, about 96 beats a minute, the tempo Entrain plays for focus. Music you like does more, so keep it if you enjoy it.",
+              lively: "Lively, about 124 beats a minute, with a soft pulse: the tempo for energy. Music you like does more, so keep it if you enjoy it."
+            }[pChoice(d, "tempo")];
+          },
+          opts: [["slow", "Slow"], ["steady", "Steady"], ["lively", "Lively"]] }
+      ],
+      build: function (min) { return mbSteps(min || 10); },
+      end: "Welcome back. Notice how you feel now.",
+      how: "Settle in for 45 seconds and let your eyes close, then simply listen, with a few quiet words now and then, while music made on your device plays: soft chords, a low note under them and sparse plucked notes, never quite the same twice, slow (60 beats a minute) unless you pick steady (96) or lively (124). In the last 50 seconds the music softens and you come back and open your eyes. With a heart sensor connected, the end shows your heart rate over the first two minutes and the last two, against your usual for Music Break. The volume is the background sound's, in the quick controls while it runs.",
+      ev: "Across two meta-analyses of 104 randomised trials, music, mostly listening, lowered the body's signs of stress with a small-to-medium effect and how stressed people felt with a medium one, and of the body's signs it lowered heart rate most clearly. With a music therapist the effect was larger, across 47 studies. In one EEG study, slow music raised theta and alpha at the front of the head and fast music raised beta and gamma. Music people like raises brain-wave power more than music they dislike, so the tempo you enjoy is the one to pick. The studies used recorded music, often chosen by the researchers or the listeners; the music here is made on your device, and hasn't been tested itself.",
+      cite: "de Witte et al. 2020 · de Witte et al. 2022 · Yang et al. 2025 · Kučikienė & Praninskienė 2018"
     },
 
     /* ===== movement ===== */

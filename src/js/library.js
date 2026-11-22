@@ -49,7 +49,8 @@
   function libPhones(mode) { return bmMode(mode) === "binaural" ? ["phones"] : []; }
   function libNeeds(o) {
     var n = [];
-    if ((o.audio && !(o.opt && o.opt.audio === false)) || o.method === "sound") n = n.concat(libPhones(o.phonesOnly ? "binaural" : pOptsOf(o.id).beatMode));     // a beat that starts off needs none
+    // a beat that starts off needs none, and nor does music (Music Break plays on speakers too)
+    if ((o.audio && !(o.opt && o.opt.audio === false)) || (o.method === "sound" && !o.music)) n = n.concat(libPhones(o.phonesOnly ? "binaural" : pOptsOf(o.id).beatMode));
     if (o.sensor === "best") n.push("sensor");
     if (o.method === "move" || (o.posture || []).join() === "walk") n.push("space");      // walking as an option needs no more than a quiet route
     return n;

@@ -11,7 +11,8 @@
      each on or off as you like, since people differ in which natural sounds they find
      pleasant. They open with a donation (supporter.js); until this device is unlocked,
      any kept from before stay silent. Sleep sounds (sleepsounds.js) plays the same
-     loops, and pink noise, with a long fade.
+     loops, and pink noise, with a long fade. Music made on the device (music.js) is
+     chosen beside them, follows the same sessions and shares their volume.
   ------------------------------------------------------------------------------ */
   var AMB_SR = 22050;
   function amRand(seed) {                       // a small seeded generator (mulberry32)
@@ -611,6 +612,7 @@
     return !!((A.playing && !(A.track && A.track.sleep)) || B.state === "running" || (typeof P !== "undefined" && P.state === "running") || bNow() < AMB.until);
   }
   function ambSync() {
+    musSync();                                     // the music made on the device follows the same sessions (music.js)
     var sig = ambSig(), want = sig && ambActive() ? sig : null;
     if (want === AMB.playing) return;
     if (AMB.playing) ambStop(want ? 0.8 : 1.5);
@@ -618,7 +620,10 @@
   }
   function ambVolNow() {
     if (AMB.out && AMB.playing && A.ctx) AMB.out.gain.setTargetAtTime(ambGain(), A.ctx.currentTime, 0.08);
+    musVolNow();                                   // one volume for the background, the music too
   }
+  // the volume shows when something of the background is chosen or plays: rain, crickets, a nature sound or music
+  function ambVolShown() { return !!ambSig() || musDev() !== "off" || MUS.on; }
   // a five-second taste of a new choice when nothing runs
   function ambTaste(quiet) { if (ambSig() && !ambActive() && !quiet) AMB.until = bNow() + 5; }
   // rain, crickets, both or off; off is all of it, the nature sounds too
@@ -690,8 +695,9 @@
   function ambVolInput(label) {
     return '<input type="range" class="amb-vol" min="0" max="100" value="' + AMB.vol + '" aria-label="' + (label || "Background volume") + '">';
   }
-  function ambCtl() {
-    return ambChips() + ambAddChips() + '<label class="amb-volrow b-vol"' + (ambSig() ? "" : " hidden") + "><span>Volume</span>" + ambVolInput() + "</label>";
+  // noMus: without the music's row, where the page has one of its own (a practice's Options)
+  function ambCtl(noMus) {
+    return ambChips() + ambAddChips() + (noMus ? "" : musCtl()) + '<label class="amb-volrow b-vol"' + (ambVolShown() ? "" : " hidden") + "><span>Volume</span>" + ambVolInput() + "</label>";
   }
   // the player's list: each sound on its own, and a mix of your own when that's what plays
   function ambSelFill(sel) {
@@ -717,10 +723,11 @@
     }
     var vs = document.querySelectorAll(".amb-vol");
     for (i = 0; i < vs.length; i++) if (document.activeElement !== vs[i]) vs[i].value = AMB.vol;
-    var rows = document.querySelectorAll(".amb-volrow");
-    for (i = 0; i < rows.length; i++) rows[i].hidden = !sig;
+    var rows = document.querySelectorAll(".amb-volrow"), vol = ambVolShown();
+    for (i = 0; i < rows.length; i++) rows[i].hidden = !vol;
     var sel = document.querySelectorAll(".amb-sel");
     for (i = 0; i < sel.length; i++) ambSelFill(sel[i]);
+    musUI();                                       // the music's buttons and list (music.js)
     var q = $("#sqAmb");
     if (q) { q.setAttribute("aria-pressed", sig ? "true" : "false"); bSetT("#sqAmbTxt", sig ? ambShort() : "Background"); }
   }

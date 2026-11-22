@@ -144,6 +144,9 @@
     out.push(fdEntry("sound", "Nature sounds", "Background sound · birdsong, a stream, wind and fire",
       ["Add birdsong, a stream, wind in the leaves or a crackling fire to rain or crickets, or have one on its own, under practices, breathing sessions and tracks. Each goes on and off by itself."], "#st-amb",
       { ic: "rain", col: "var(--relax)", w: 1, tags: "birdsong birds bird stream brook water river wind leaves fire fireplace crackle crackling campfire nature soundscape ambience background", sup: true }));
+    out.push(fdEntry("sound", "Music in the background", "Background sound · slow, steady, lively or matched",
+      ["Music made on your device, with no words: soft chords, a low note and plucked notes, slow for sleep and calm, steady for focus, lively for energy. It plays under practices, breathing sessions and tracks, and a practice can keep its own."], "#st-amb",
+      { ic: "sounds", col: "var(--relax)", w: 1.05, tags: "music tempo bpm beats song songs tune melody chords ambient generative slow steady lively focus energy calm background", sup: true }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
       ["Pair a HeartMath ear-clip sensor, a chest strap or a Garmin watch set to broadcast, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
       { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));
