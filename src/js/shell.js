@@ -94,6 +94,12 @@
     if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
     if (h === "living" || h.indexOf("living/") === 0) { showView("living"); lvOpen(h.slice(7)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
+    if (h === "experiment" || h === "checkins") {         // a part of History, which is drawn as it opens (own.js)
+      showView("history");
+      var hs = document.getElementById(h);
+      if (hs) setTimeout(function () { jumpTo(hs); }, 30);
+      return;
+    }
     if (h === "feedback" || h.indexOf("st-") === 0) {     // a section of Settings, which is drawn as it opens
       showView("settings");
       var sec = document.getElementById(h === "feedback" ? "st-feedback" : h);
@@ -272,7 +278,7 @@
       CAM.on || CAM.busy || MOT.belly ||                                      // the camera reading your pulse, the phone on your belly (camera.js, motion.js)
       EG.state !== "off" || !!EG.chk ||                                       // an EEG headband, which would have to be paired again (eeg.js)
       AQ.state !== "off" || OX.state !== "off" ||                             // a CO2 monitor or an oximeter, the same (air.js)
-      FD.open || !$("#stlModal").hidden ||                                    // search, or settling after I need to stop
+      FD.open || !$("#stlModal").hidden || !$("#ciModal").hidden ||           // search, settling after I need to stop, or a check-in (own.js)
       (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
       (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together
       (!!LV.rid && (LV.cook || !!document.querySelector(".lv-ing input:checked, .lv-steps input:checked")));   // a recipe being cooked

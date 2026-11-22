@@ -48,7 +48,9 @@
     snd: "string",                                                       // snd: what Sleep sounds played (sleepsounds.js)
     cold: "number",                                                      // cold: the seconds of cold in Cold Finish (cold.js)
     still: "number",                                                     // still: the share of a session lain still, in % (motion.js)
-    alpha: "number", theta: "number" };                                  // a headband's alpha and theta, first minute to last two, in % (eeg.js)
+    alpha: "number", theta: "number",                                    // a headband's alpha and theta, first minute to last two, in % (eeg.js)
+    mood0: "number", mood1: "number", str0: "number", str1: "number",    // your check-in, mood and stress before and after, 0 to 10 (own.js)
+    xid: "number", xv: "string" };                                       // a personal experiment's session: which experiment, and which way, A or B (own.js)
   var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
     for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
@@ -74,7 +76,9 @@
   // a breathing session on the guide (not one a practice is running, and not the resonance test)
   function hBreath(secs, full) {
     if (BC.long && !P.usesB && !B.finder && secs > 0) ibEnded(preset(BC.pattern) ? patName(preset(BC.pattern)) : "long breath holds");   // rest before the next (care.js)
-    if (P.usesB || B.finder || secs < 60) return;
+    if (P.usesB || B.finder) return;
+    var ci = ciTake("breath");                   // your check-in as it began, if you keep them (own.js)
+    if (secs < 60) return;
     var e = { k: "breath", id: BC.pattern, secs: secs, full: full, rate: +(60 / cycleOf(BC)).toFixed(1), ib: BC.long || undefined }, mine = mpGet(BC.pattern);
     if (mine) e.n = mine.name;                   // your own pattern keeps its name here even once it's deleted
     var s = B.hr;
@@ -88,14 +92,15 @@
     if (B.swings.length) e.swing = +avg(B.swings.map(function (x) { return x.amp; })).toFixed(1);
     if (B.coh.length) e.coh = +avg(B.coh).toFixed(2);
     blsHist(e);                                  // breath-led sound: a pace of its own, from yours (breathled.js)
-    hAdd(e);
+    hAdd(ciTag(e, ci));
+    if (ci) ciAfterSoon(e, ciBreathName());      // and how you feel now (own.js)
   }
   // a track, the primer or a built beat: the time actually listened, once it stops for good
   function hTrack() {
     var t = A.track;
     if (!t || t.practice) return;
     var el = A.playing && A.ctx ? A.ctx.currentTime - A.startedAt : A.elapsed;
-    var from = A.hAt || 0, secs = el - from;
+    var from = A.hAt || 0, secs = el - from, ci = ciTake("track", t);    // your check-in as it began, if you keep them (own.js)
     if (secs < 60) return;
     A.hAt = el;                                  // a paused track logged as the page goes away isn't logged twice
     var e = { k: "track", id: t.id, secs: secs, full: !t.then && el >= t.minutes * 60 - 10 };
@@ -103,7 +108,8 @@
     if (t.sleep) e.snd = t.snd;                   // Sleep sounds: which sound
     else if (A.mode !== "binaural") e.bm = A.mode;     // how it played, when not binaural (beatmode.js)
     hTrackHr(e, from, el);
-    hAdd(e);
+    hAdd(ciTag(e, ci));
+    if (ci) ciAfterSoon(e, t.name);              // and how you feel now (own.js)
   }
   /* The heart rate while a track played, from a sensor (heart.js keeps it in A.hrLog), kept as a breathing session
      keeps it: the first minute's average and the last minute's once there are two and a half minutes of readings,
@@ -149,6 +155,7 @@
     else if (e.hrAvg) p.push("heart rate " + e.hrAvg);
     if (e.coh) p.push("coherence " + e.coh.toFixed(1) + (e.est ? " (est.)" : ""));
     if (e.swing) p.push("swing " + e.swing.toFixed(1));
+    if (ciDetail(e)) p.push(ciDetail(e));        // your check-in (own.js)
     if (e.note) p.push(e.note);
     return p.join(" · ");
   }
@@ -233,15 +240,15 @@
     var l = hLoad(), w = hWeek(), h = '<a class="si-back" href="#home"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Today</a>';
     if (!l.length) {
       h += '<div class="hi-empty"><p>Nothing here yet. Practices, breathing sessions and tracks of a minute or more show up here once they end, with your heart-rate change and coherence when a sensor is connected.</p>' +
-        '<a class="btn small" href="#practice">Open the library</a></div>';
+        '<a class="btn small" href="#practice">Open the library</a></div>' + xpSec();      // a personal experiment can be set up before the first session (own.js)
       $("#hiBody").innerHTML = h;
       return;
     }
     var goals = GOALS.filter(function (g) { return w.goals[g.id]; }), gmax = Math.max.apply(null, goals.map(function (g) { return w.goals[g.id]; }).concat([1]));
-    h += '<section class="hi-sum" aria-labelledby="hiWk"><h2 id="hiWk">Last 7 days</h2>' + hTotals(w) + hDays(w) +
+    h += '<section class="hi-sum" aria-labelledby="hiWk"><h2 id="hiWk">Last 7 days</h2>' + hTotals(w) + owHtml("hiDay") + hDays(w) +
       (goals.length ? '<ul class="hi-goals" aria-label="Minutes by goal">' + goals.map(function (g) {
         return '<li style="--gcol:' + GOAL_COL[g.id] + '"><span>' + esc(g.name) + "</span><i style=\"--w:" + Math.max(4, Math.round(w.goals[g.id] / gmax * 100)) + '%"></i><b>' + Math.round(w.goals[g.id] / 60) + " min</b></li>";
-      }).join("") + "</ul>" : "") + "</section>" + tnSec();
+      }).join("") + "</ul>" : "") + "</section>" + tnSec() + ciSec() + xpSec();     // your check-ins and a personal experiment (own.js)
     var day = -1, open = false;
     for (var i = l.length - 1; i >= 0; i--) {
       var d = hDayStart(l[i].at);

@@ -287,7 +287,7 @@
     closeDialog("#ibModal");
     if (go && what === "restart") { IB.pass = true; pRestart(); return; }
     if (go && what === "again" && d) { pIntro(d.id); return; }
-    if (go && what === "breathe") { if (B.state === "idle" || B.state === "done") { bFresh(); bResume(); } return; }
+    if (go && what === "breathe") { if (B.state === "idle" || B.state === "done") bBegin(); return; }
     if (paused && P.state === "paused") pResume();                    // the session it interrupted carries on
   }
   // Breathe: Swim & dive's row says when an intense block ended within the hour

@@ -47,8 +47,11 @@
     if (l.length) {
       var w = hWeek();
       $("#tdRecentBody").innerHTML = '<div class="td-wk"><div class="td-wt"><span>Last 7 days</span>' + hTotals(w) + "</div>" + hDays(w) + "</div>" +
+        owHtml("tdDay") +                                 // today's minutes and the days in a row (own.js)
         '<ul class="hi-list">' + hLatest(3).map(function (e) { return hRow(e, true); }).join("") + "</ul>";
     }
+
+    rhmSync();                          // the daily rhythm, or its offer (own.js)
 
     // the six goals, each with the first few of its own
     $("#tdGoals").innerHTML = GOALS.map(function (g) {

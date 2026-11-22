@@ -265,12 +265,15 @@
 
   function load(track) {
     if (supLocked(track)) { supGate(track.name, function () { load(track); }); return; }   // a new technique's track, by any way in
+    // your check-in first, if you keep them (own.js): not for a practice's own beat, or a switch while one plays
+    if (!track.practice && !(A.playing && A.track && !A.track.practice) && ciBefore("track", track.name, function () { load(track); })) return;
     if (A.playing || A.oscL) hardStop(true);
     else hTrack();                       // a paused track that's being replaced still counts
     A.hAt = 0;
     A.gen++;
     A.voicesOff = false;
     A.track = track;
+    ciBind(track);                       // the check-in just given is this track's (own.js)
     A.elapsed = 0;
     A.phase = track.then ? "prime" : "single";
     A.gainMul = track.gain || 1;                      // a practice's quieter beat (During the Call: half)

@@ -213,6 +213,19 @@
     out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
       ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
       { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));
+    // your own data (own.js)
+    out.push(fdEntry("app", CI_NAME, "Settings · your mood and stress, 0 to 10, at the start and end of a session",
+      ["A quick rating of your mood and your stress as any practice, breathing session or track starts and ends, kept in your history and set against your usual change."], "#st-checkin",
+      { ic: "heart", col: "var(--accent)", w: 1.05, alias: "Check-ins", tags: "check in checkin checkins mood stress rating rate feel feeling feelings how before after self report journal what helps", sup: true }));
+    out.push(fdEntry("app", OW_NAME, "Today and History · minutes today and days in a row",
+      ["Your minutes today, the days in a row you've practised and the days of the last month: how often counts for more than how long, and a missed day isn't a setback."], "#history",
+      { ic: "today", col: "var(--accent)", w: 1, alias: "Daily total", tags: "streak streaks days in a row run total minutes today daily total habit consistency", sup: true }));
+    out.push(fdEntry("app", RHM_NAME, "Today · morning energy, a midday reset and an evening wind-down",
+      ["Three short sessions spread through the day, each with a practice you choose, ticked off from your history, with reminders for your calendar and a nudge while Entrain is open."], "#st-rhythm",
+      { ic: "today", col: "var(--accent)", w: 1.05, tags: "rhythm schedule plan routine reminder reminders calendar ics notification notify alarm morning midday lunchtime evening twice three times a day spaced", sup: true }));
+    out.push(fdEntry("app", "Personal experiment", "History · one practice two ways, alternated over ten sessions",
+      ["Compare a practice with its beat or without, with music or without, with a scene or the usual visual, or against another practice: your heart-rate change, coherence and check-ins side by side, with an honest word on noise and expectation."], "#experiment",
+      { ic: "target", col: "var(--accent)", w: 1.05, tags: "experiment experiments test compare comparison ab a/b trial n of 1 which works best for me stacked combination combine", sup: true }));
     fdLiving(out);
     fdLearn(out);
     return out;

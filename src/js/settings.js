@@ -1,6 +1,7 @@
   /* -------------------------------- settings --------------------------------
      What every practice starts with (a practice can change its own under Options on its page),
-     the background sound, the scenes you find restful (scenes.js), what's kept of reflections, how the screen behaves and its light
+     the background sound, the scenes you find restful (scenes.js), what's kept of reflections, check-ins and the daily rhythm (own.js),
+     how the screen behaves and its light
      (light.js), the new techniques
      (supporter.js), your data (backup.js), the feedback form, and About with the build.
   ------------------------------------------------------------------------------ */
@@ -60,7 +61,7 @@
       "</section>" + ymStCard() + scnCard() + aqCard() +
       '<section class="st-card" aria-labelledby="stR"><h2 id="stR">Reflections</h2>' +
         pToggle("stKeep", "Keep a copy on this device", g.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing.") +
-      "</section>" +
+      "</section>" + ciStCard() +
       '<section class="st-card" id="st-screen" aria-labelledby="stS"><h2 id="stS">Screen</h2>' +
         pToggle("stScrSes", "Keep the screen on during practices and breathing", ST.screenSessions, "Also for ten minutes into a pause.") +
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
@@ -82,6 +83,7 @@
     ymStWire();
     ltStWire();
     aqStWire();
+    ciStWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }

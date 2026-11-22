@@ -191,3 +191,18 @@
 </div>
 
 
+<!-- ============ CHECK IN: your mood and stress before a session, and after a breathing session or a track (own.js) ============ -->
+<div class="modal ci" id="ciModal" hidden>
+  <div class="modal-card ci-mcard" role="dialog" aria-modal="true" aria-labelledby="ciTitle">
+    <h2 id="ciTitle">Check in</h2>
+    <p id="ciWhat"></p>
+    <div class="ci-qs" id="ciQs"></div>
+    <div class="ci-res" id="ciRes" aria-live="polite" hidden></div>
+    <div class="pm-actions">
+      <button class="btn primary" id="ciGo">Start</button>
+      <button class="btn" id="ciSkip">Skip</button>
+    </div>
+    <p class="hint">Kept in your history on this device, and set against your usual change. <a href="#st-checkin">Check-ins in Settings</a></p>
+  </div>
+</div>
+

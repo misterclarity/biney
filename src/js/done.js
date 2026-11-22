@@ -40,6 +40,7 @@
           (t[4] ? '<em class="sd-cmp">' + esc(t[4]) + "</em>" : "") + "</button>";
       }).join("") + "</div>" +
       '<div class="sd-ex" id="sdEx" role="region" aria-label="What this number means" hidden></div>' +
+      ciCard(r) +                                         // how you feel now, after your check-in as it began (own.js)
       (r.stress ? stressCard(r) : "") +                    // a stress check's advice comes first, before the chart
       (chart ? '<div class="sd-chart"><span>Heart rate across the session, in bpm' + (r.beatLog ? ", with the beat in violet" : "") + "</span>" +
         '<canvas id="sdChart" tabindex="0" role="slider" aria-label="Read the heart-rate chart" aria-valuemin="0" aria-valuemax="' + r.secs + '" aria-valuenow="0" aria-valuetext="Tap or use the arrow keys to read a point"></canvas>' +
@@ -60,6 +61,7 @@
     $("#ses").dataset.state = "done";
     $("#sdAgain").addEventListener("click", function () { if (!ibAsk("again", d)) pIntro(d.id); });   // fast breathing again: rest first? (care.js)
     if (r.stress) stressWire(r);
+    ciCardWire(r);
     var cg = $("#sdChain");
     if (cg) cg.addEventListener("click", function () {     // on to the practice this one began
       var nx = P.chain && pDef(P.chain.then);

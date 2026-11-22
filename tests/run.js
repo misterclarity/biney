@@ -35,6 +35,7 @@ const SUITES = [   // name, what it covers, and about how long it takes on its o
   ['movetest', 'Movement: Dance Break and the Eight Brocades, the qigong moves in the routine builder, locked and unlocked', 120],
   ['mymusictest', 'Your own music and breath-led sound: songs kept on the device, the thumbs, the pace from your breath, locked and unlocked', 200],
   ['airtest', 'Air, scent and blood oxygen: a CO2 monitor, Air the room, the scent and gum tips, an oximeter ending a hold; locked and unlocked', 110],
+  ['owntest', 'Your own data: check-ins before and after, today\'s minutes and the days in a row, a daily rhythm with calendar reminders, a personal experiment; locked and unlocked', 120],
   ['cuetrend', 'Lock screen, vibration, comparisons, trends, start-up, Heart', 70],
   ['choices', 'Saved patterns, safety note, filters, Heart Coherence, live changes, Restart, Healthy living, Gratitude, Calm Reset, donations, connecting, difficult conversations, autogenic training, walking, feedback, routines and light, the consistency check, a mindful meal, four more programmes, the Heart page explained, breath from the microphone, coffee, Swim & dive', 290]
 ];

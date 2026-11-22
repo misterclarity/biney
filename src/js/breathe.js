@@ -380,9 +380,13 @@
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();
     else if (B.state === "paused") { if (!bSupGate("resume") && !dvGate("resume")) bResume(); }
-    else if (!bSupGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) {   // Start again: rest first? (care.js)
-      if (!blsStart()) { bFresh(); bResume(); }      // breath-led sound starts at your own pace (breathled.js)
-    }
+    else if (!bSupGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) bBegin();   // Start again: rest first? (care.js)
+  }
+  // a fresh session: your check-in first, if you keep them (own.js); breath-led sound starts at your own pace (breathled.js)
+  function bBegin() {
+    var go = function () { if (B.state === "idle" || B.state === "done") { if (!blsStart()) { bFresh(); bResume(); } } };
+    if (BLS.phase === "find") { go(); return; }   // Begin now, while breath-led sound waits for your pace: the check-in came before the wait
+    if (!ciBefore("breath", ciBreathName(), go)) go();
   }
 
   /* ----- a new technique's pattern (sup: true; supporter.js), not yet unlocked on this device: picking it,
@@ -458,7 +462,7 @@
     var then = DV.then, paused = DV.paused;
     store.set("diveAck", "1");
     dvHide();
-    if (then === "start" && (B.state === "idle" || B.state === "done")) { bFresh(); bResume(); }
+    if (then === "start" && (B.state === "idle" || B.state === "done")) bBegin();
     else if ((then === "resume" || paused) && B.state === "paused") bResume();
   }
   // declined: back to the pattern before (or Resonance, if Breathe opened on Swim & dive)

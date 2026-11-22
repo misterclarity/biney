@@ -19,7 +19,8 @@
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
     opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off", still: false },
     paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
-    bm: ""                                          // how its beat played (beatmode.js), for the history
+    bm: "",                                         // how its beat played (beatmode.js), for the history
+    ci: null, xp: null, xpOrig: null                // your check-in as it began, a personal experiment's way this time and your own options under it (own.js)
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
 
@@ -208,7 +209,10 @@
     pOptKeep(g);
     storeDel("pOpt." + id);
   }
-  function pSaveOpt() { if (P.optFor) pOptSave(P.optFor, P.opt); else pOptKeep(JSON.parse(JSON.stringify(P.opt))); }
+  function pSaveOpt() {
+    var o = xpReal(P.opt);                           // a personal experiment's setting for this session isn't yours to keep (own.js)
+    if (P.optFor) pOptSave(P.optFor, o); else pOptKeep(JSON.parse(JSON.stringify(o)));
+  }
   // the options an intro shows and edits: the running practice's own stay as they are
   function pIntroOpts(d) {
     if (pBusy() && P.def !== d) return pOptsOf(d.id);
@@ -1149,7 +1153,9 @@
       if (pBusy()) pFinish(true, true);
       if (again !== true) { P.paceK = 1; P.beatAdj = 0; P.beatOff = false; }
       P.def = d;
+      if (again !== true) P.ci = cont ? ciCarry() : d.stress ? null : ciTake("practice");     // how you were as it began: your check-in, or the end screen's before it (own.js)
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
+      P.xp = xpFor(d); xpApply();                      // a personal experiment's way of doing it this time (own.js)
       scnStart(d);                                     // and the scene it shows, if any (scenes.js)
       motStillStart(d);                                // and how still you stay, if it notes that (motion.js)
       if (B.finder) finderCancel();
@@ -1191,7 +1197,9 @@
       pLoop();
       ambSync();
     };
-    if (d.audio && P.opt.audio) gate(go, bmMode(pOptsOf(d.id).beatMode)); else go();    // on speakers there's no headphone check
+    var begin = function () { if (d.audio && xpAudio(d, P.opt.audio)) gate(go, bmMode(pOptsOf(d.id).beatMode)); else go(); };    // on speakers there's no headphone check
+    // your check-in first, if you keep them (own.js): not on a restart, carrying on, or a Stress Check, which asks its own
+    if (again === true || cont || d.stress || !ciBefore("practice", d.name, function () { if (P.view === d) begin(); })) begin();
   }
   function pPause() {
     if (P.state !== "running") return;
@@ -1302,6 +1310,7 @@
     if (d.id === "anapana") r.wander = P.wander;
     if (P.holds.length) r.holds = P.holds.slice();
     if (P.suds.length) r.suds = P.suds.slice();
+    r.ci = P.ci || null;                               // your check-in as it began, for the end screen's after (own.js)
     var bl = AD.log.filter(function (x) { return x.src !== "base"; });
     if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatBrain = bl.some(function (x) { return x.src === "brain"; }); r.beatLog = AD.log.slice(); }
     if (P.bm && P.bm !== "binaural") r.bm = P.bm;     // its beat played monaural or isochronic (beatmode.js)
@@ -1338,7 +1347,9 @@
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
       bm: r.bm, cold: r.cold, still: r.still && !r.still.none ? r.still.pct : undefined,
-      alpha: r.eeg && !r.eeg.none ? r.eeg.da : undefined, theta: r.eeg && !r.eeg.none ? r.eeg.dt : undefined, note: notes.join(", ") || undefined });
+      alpha: r.eeg && !r.eeg.none ? r.eeg.da : undefined, theta: r.eeg && !r.eeg.none ? r.eeg.dt : undefined,
+      mood0: r.ci && ciNum(r.ci.m) ? r.ci.m : undefined, str0: r.ci && ciNum(r.ci.s) ? r.ci.s : undefined,     // your check-in before it (own.js)
+      xid: P.xp ? P.xp.id : undefined, xv: P.xp ? P.xp.v : undefined, note: notes.join(", ") || undefined });     // a personal experiment's session (own.js)
     return r;
   }
   /* ----- the session screen: intro ----- */
@@ -1409,6 +1420,7 @@
     var hs = $("#sIntro .hc-slot"), nt = $("#sIbNote"), t = pCareNote(d, plan), h = hcSlot(d);
     if (hs && hs.innerHTML !== h) hs.innerHTML = h;
     if (nt) { nt.hidden = !t; bSetT("#sIbNote", t); }
+    xpBarSync(d);                                    // a personal experiment's way this time (own.js)
   }
   // above Start: rest between blocks of fast breathing (care.js), and a practice's own (Cold Finish after fast breathing)
   function pCareNote(d, plan) { return [ibNote(d, plan), d.careNote ? pFn(d.careNote, d) : ""].filter(Boolean).join(" "); }
@@ -1520,6 +1532,7 @@
         (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> ' + (hcCaution(hcKindsOf(d)) ? "I've read the cautions, and I choose to go ahead" : "None of the cautions apply to me") + "</label>" : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
         '<p class="si-ib" id="sIbNote"' + (pCareNote(d, plan) ? "" : " hidden") + ">" + esc(pCareNote(d, plan)) + "</p>" +
+        xpBar(d) +                                  // a personal experiment's way this time (own.js)
         '<button class="btn primary si-go" id="sGo"' + (d.confirm && !pSupWho(d) ? " disabled" : "") + ">" + pGoHtml(d, plan) + "</button>" +
         '<p class="si-bar-note" id="sSupNote"' + (pSupWho(d) ? "" : " hidden") + ">" + SUP_NOTE + "</p>" +
       "</div>" +
