@@ -11,8 +11,9 @@
 //   C  unlocked (the test copy), Breathe: each look on the page, measured on a picture of the screen (Bright light
 //      and cool, Warm with blue at under half of red, Night with no blue in any pixel, Green mostly green), the canvas
 //      reading its colours again, the browser's bar, 30 frames a second, I need to stop reaching through the light,
-//      Automatic by the pattern's goal, the usual screen again on other pages; picked while locked and unlocked in the
-//      dialog, the light comes on
+//      Automatic by the pattern's goal, the usual screen again on other pages; under Bright, Swim & dive's cautions, the
+//      hour's rest and the health check's note at 4.5:1 or more, and a dimmed step's stage and I need to stop still dark;
+//      picked while locked and unlocked in the dialog, the light comes on
 //   D  unlocked, practices: a practice's own light kept, summarised and on while it runs, gone at the end; the device's
 //      choice for the rest; Automatic by goal and time, Night on a sleep step; Settings' body clock, green, the
 //      words for Automatic now
@@ -44,6 +45,21 @@ const HOOKS = () => {
   const d = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, 'shadowBlur');
   Object.defineProperty(CanvasRenderingContext2D.prototype, 'shadowBlur', { configurable: true, get: d.get, set(v) { if (v) window.__blur.push(v); d.set.call(this, v); } });
 };
+// each selector's text contrast against the backgrounds it sits on, laid over one another down to the page's own
+const contrast = (p, sels) => E(p, sels => {
+  const rgb = s => { const m = /rgba?\(([\d.]+), ([\d.]+), ([\d.]+)(?:, ([\d.]+))?\)/.exec(s); return m ? [+m[1], +m[2], +m[3], m[4] === undefined ? 1 : +m[4]] : null; };
+  const lum = c => c.slice(0, 3).map(v => v / 255).map(v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)).reduce((a, v, i) => a + v * [0.2126, 0.7152, 0.0722][i], 0);
+  return sels.map(s => {
+    const e = document.querySelector(s);
+    if (!e || !e.getClientRects().length) return { s, r: 0 };
+    const L = [];
+    for (let a = e; a; a = a.parentElement) { const c = rgb(getComputedStyle(a).backgroundColor); if (c && c[3] > 0) { L.push(c); if (c[3] === 1) break; } }
+    let b = [255, 255, 255];
+    for (let i = L.length - 1; i >= 0; i--) b = b.map((v, k) => L[i][k] * L[i][3] + v * (1 - L[i][3]));
+    const f = lum(rgb(getComputedStyle(e).color)), g = lum(b);
+    return { s, r: Math.round((Math.max(f, g) + 0.05) / (Math.min(f, g) + 0.05) * 100) / 100 };
+  });
+}, sels);
 const rate = async (p, id, ms) => { const a = await E(p, k => window.__cl[k] || 0, id); await p.waitForTimeout(ms); return ((await E(p, k => window.__cl[k] || 0, id)) - a) / ms * 1000; };
 
 // a PNG screenshot read back into its pixels (8 bits a channel, RGB or RGBA, not interlaced: what the browser gives)
@@ -329,6 +345,30 @@ const said = l => 'mean R ' + f1(l.r) + ' G ' + f1(l.g) + ' B ' + f1(l.b) + ', l
       ok(/^Bright, in green: in one small study, green light was the most alerting for evening types\./.test(await t(g, '#bLightHint')), 'and says so: ' + await t(g, '#bLightHint'));
       await g.screenshot({ path: OUT + 'lighttest-c-green.png' });
       await g.context().close();
+      // Bright keeps the free cautions readable: Swim & dive's dialog, rows and settings, the hour's rest, the health check
+      const w = await page({ light: 'bright', health: JSON.stringify({ at: Date.now(), on: ['heart'] }),
+        history: JSON.stringify([{ k: 'practice', id: 'wim-hof', n: 'Wim Hof Breathing', at: Date.now() - 6e5, secs: 600, full: true, ib: true }]) }, { url: URL, unlock: true, hour: 10 });
+      await go(w, 'breathe/dive', 700);
+      const dlgCr = await contrast(w, ['#dvModal .dv-list li:first-child', '#dvHc .hc-note span', '#dvHc .hc-note b']);
+      await w.click('#dvGo'); await w.waitForTimeout(400);
+      const rowCr = await contrast(w, ['#bDiveRow span', '#bDiveRow b', '#bIbTxt']);
+      await w.click('#bAdjust'); await w.waitForTimeout(500);
+      const setCr = await contrast(w, ['#bDiveSafe .si-caution span', '#bDiveHc .hc-note span', '#bDiveHc .hc-note b']);
+      const allCr = dlgCr.concat(rowCr, setCr);
+      ok((await look(w)).attr === 'bright' && allCr.every(c => c.r >= 4.5), 'under Bright, Swim & dive\'s cautions, the hour\'s rest and the health check\'s note read at 4.5:1 or more: ' + allCr.map(c => c.s + ' ' + c.r).join(', '));
+      await w.screenshot({ path: OUT + 'lighttest-c-dive-bright.png' });
+      await w.context().close();
+      // a dimmed step keeps its dark stage under Bright, and I need to stop its dark colours
+      const m = await page({ 'pOpt.music-break': JSON.stringify({ light: 'bright' }) }, { url: URL, unlock: true, hour: 10 });
+      await go(m, 'practice/music-break', 500);
+      await m.click('#sGo'); await m.waitForTimeout(600);
+      for (let k = 0; k < 4 && await E(m, () => { const X = window.__entrain; return X.P.steps[X.P.idx].title !== 'Listen'; }); k++) { await m.click('#sNext'); await m.waitForTimeout(400); }
+      const dimCr = await contrast(m, ['#sOut']);
+      const dm = await E(m, () => ({ attr: document.documentElement.getAttribute('data-light'), dim: document.querySelector('#ses').dataset.dim, body: getComputedStyle(document.body).backgroundColor,
+        rs: getComputedStyle(document.querySelector('.qt-rs')).backgroundColor }));
+      ok(dm.attr === 'bright' && dm.dim === '1' && dm.body === 'rgb(4, 6, 12)' && dimCr[0].r >= 4.5 && dm.rs === 'rgb(19, 27, 48)',
+        'Music Break\'s dimmed Listen step under Bright: the stage stays dark, I need to stop at ' + dimCr[0].r + ':1 and Restart dark too: ' + JSON.stringify(dm));
+      await m.context().close();
       // locked, then unlocked from the dialog: the light comes on
       const q = await page(null, { url: URL });
       await go(q, 'breathe', 500);

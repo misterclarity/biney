@@ -1124,7 +1124,7 @@
   .vx-p{display:flex;flex-direction:column;gap:1px;padding:4px 0}
   .vx-p b{font-size:12.5px;font-weight:750;color:var(--text-faint)}
   .vx-p.on b{color:var(--pcol)}
-  .vx-p.wait .vx-l,.vx-p.done .vx-l{opacity:.55}
+  .vx-p.done .vx-l{opacity:.55}
   .ses-sing[data-n="3"] .vx-p,.ses-sing[data-n="4"] .vx-p{display:block;padding:2px 0}
   .ses-sing[data-n="3"] .vx-p b,.ses-sing[data-n="4"] .vx-p b{margin-right:6px}
   .ses-sing[data-n="3"] .vx-l,.ses-sing[data-n="4"] .vx-l{display:inline;font-size:15px;line-height:1.35}
@@ -1903,7 +1903,11 @@
   }
   .b-transport .b-out{background:rgba(251,113,133,.14);border-color:rgba(251,113,133,.35);color:#fda4af}
   .b-transport .b-out:hover{background:rgba(251,113,133,.24)}
-  @media (max-width:560px){ .b-transport .btn.b-out{flex:1 1 100%} }
+  @media (max-width:560px){       /* on a phone, Pause and I need to stop share the first line, so it's above the tab bar */
+    .b-transport .b-go{order:-2}
+    .b-transport .btn.b-out{order:-1;flex:0 0 auto;padding:10px 14px}
+    .b-transport:has(.b-out:not([hidden])) .b-go{flex:1 1 calc(100% - 150px);min-width:0}   /* the two fill the line: Adjust starts the next */
+  }
   .b-ib span{flex:1;min-width:0}
   .stl-card{text-align:center;max-width:460px}
   .stl-card h2{margin-bottom:8px}
@@ -1927,7 +1931,7 @@
   .tc-card > p{margin-bottom:12px}
   .tc-box{box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;margin:0 -8px;padding:4px 10px;
     border-top:2px solid var(--relax);border-bottom:2px solid var(--relax);background:color-mix(in srgb,var(--relax) 7%,transparent);
-    font-size:12px;font-weight:650;color:var(--text-faint);min-height:40px}
+    font-size:12px;font-weight:650;color:var(--text-dim);min-height:40px}
   .tc-adj{display:flex;align-items:center;gap:10px;margin-top:12px}
   .tc-adj input[type=range]{flex:1;min-width:0;margin:0}
   .tc-b{flex:none;width:44px;height:44px;border:0;border-radius:12px;background:var(--panel-2);color:var(--text);font:inherit;font-size:20px;font-weight:700;line-height:1;cursor:pointer}
@@ -1979,6 +1983,18 @@
   :root[data-light="bright"] .ses-nose span.on,:root[data-light="green"] .ses-nose span.on{color:#fff}
   :root[data-light="bright"] .ses-out,:root[data-light="green"] .ses-out,
   :root[data-light="bright"] .b-transport .b-out,:root[data-light="green"] .b-transport .b-out{background:rgba(192,34,63,.1);border-color:rgba(192,34,63,.3);color:#a3122f}
+  /* the cautions' amber and rose: Swim & dive's rows and dialog, a caution box, rest between blocks, the health check */
+  :root[data-light="bright"] .b-dive,:root[data-light="green"] .b-dive,:root[data-light="bright"] .b-dive b,:root[data-light="green"] .b-dive b,
+  :root[data-light="bright"] .dv-list li:first-child,:root[data-light="green"] .dv-list li:first-child,
+  :root[data-light="bright"] .si-caution,:root[data-light="green"] .si-caution,
+  :root[data-light="bright"] .si-ib,:root[data-light="green"] .si-ib,
+  :root[data-light="bright"] p.sup-warn,:root[data-light="green"] p.sup-warn{color:var(--stim-deep)}
+  :root[data-light="bright"] .hc-note,:root[data-light="green"] .hc-note{color:var(--text)}
+  :root[data-light="bright"] .hc-note b,:root[data-light="green"] .hc-note b{color:var(--danger)}
+  /* a dimmed step keeps its dark stage, so its controls keep their dark colours too */
+  :root[data-light="bright"] .ses[data-dim="1"],:root[data-light="green"] .ses[data-dim="1"]{
+    --panel:#131b30;--panel-2:#1a2440;--panel-3:#222e4f;--line:#28334f;--line-soft:#1d2741;color-scheme:dark}
+  :root[data-light] .ses[data-dim="1"] .ses-out{background:#1c1522;color:#a87884}
   /* the rows that pick it: Settings, a practice's Options, Breathe */
   .lt-seg button{display:inline-flex;align-items:center;gap:4px;min-height:44px}
   .lt-seg .sup-ic{background:none;padding:0;color:var(--stim)}
@@ -2119,7 +2135,7 @@
   .aq-air .aq-done{margin-left:auto}
   .aq-tip{margin:0;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--relax) 8%,transparent);font-size:13.5px;line-height:1.5;color:var(--text-dim)}
   .aq-tip b{color:var(--text);font-weight:720}
-  .aq-safe{display:block;margin-top:6px;font-size:12.5px;color:var(--text-faint)}
+  .aq-safe{display:block;margin-top:6px;font-size:12.5px;color:var(--text-dim)}
   .aq-safe .sf-link{min-height:24px}
   .lc.ox b{color:var(--b-in)}
   .lc.ox.low{color:var(--danger);background:color-mix(in srgb,var(--danger) 14%,transparent)}

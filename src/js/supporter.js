@@ -98,8 +98,11 @@
   // what a result means, in a sentence
   function supSay(r, a) {
     if (r === "ok") return "Unlocked on this device. Thank you for your donation.";
-    if (r === "wrong-device") return "That code is for another device, " + supFmt(a.device) + ". This device's code is " + supFmt(supDevice()) +
-      ": a donation with it unlocks this one.";
+    /* the same phone can hold two codes: on an iPhone, Entrain on the Home Screen keeps its storage apart from Safari,
+       where a link from the email opens, and so does another browser or a mail app's own */
+    if (r === "wrong-device") return "That code is for another device or browser, " + supFmt(a.device) + ". If it's for Entrain on your Home Screen or in " +
+      "another browser on this device, paste it there, in Settings under New techniques. The device code here is " + supFmt(supDevice()) +
+      ": a donation with it unlocks Entrain here.";
     if (r === "no-crypto") return "This page can't check codes. Open Entrain from its web address (https) or as a file on this device, then try again.";
     if (r === "empty") return "Paste the activation code or link from the email first.";
     if (r === "busy") return "Checking…";
@@ -222,7 +225,7 @@
       '<p class="sup-st" id="supSt"></p>' +
       '<div class="sup-dev"><span class="sup-dl">Your device code</span><code class="mono" id="supStDev"></code><button class="btn" id="supStCopy">Copy</button></div>' +
       '<p class="sup-said" id="supStSaid" aria-live="polite" hidden></p>' +
-      '<div class="sup-how" id="supStHow"><p>Donate €1 or more on Ko-fi and put your device code in the message. You\'ll get an activation link by email: open it on this device, or paste the code here.</p>' +
+      '<div class="sup-how" id="supStHow"><p>Donate €1 or more on Ko-fi and put your device code in the message. You\'ll get an activation link by email: open it on this device, or paste the code here. If you use Entrain from your Home Screen, paste the code here: the link opens in your browser instead.</p>' +
         '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Donate on Ko-fi</a>' +
         '<div class="sup-paste"><input id="supStIn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Activation code or link" aria-label="Activation code or link">' +
         '<button class="btn primary" id="supStGo">Activate</button></div></div>' +

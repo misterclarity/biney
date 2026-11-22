@@ -16,6 +16,9 @@ const go = async (p, h, ms) => { await p.evaluate(x => location.hash = x, h); aw
 const shut = p => p.$eval('#supModal', e => e.hidden);
 const LOCKED_GO = 'Unlock to start';
 const DLG_LINE = 'The techniques from the brain-wave guide open with a donation of €1 or more on Ko-fi, once on each device.';
+// a code for another device or browser: the same phone can hold two, Entrain on an iPhone's Home Screen and Safari
+const WRONG = (them, here) => 'That code is for another device or browser, ' + them + ". If it's for Entrain on your Home Screen or in another browser on this device, " +
+  'paste it there, in Settings under New techniques. The device code here is ' + here + ': a donation with it unlocks Entrain here.';
 const EACH = "It unlocks this device and this browser only. On another device, or once this browser's data is cleared, a new donation unlocks it there. Backups don't carry it.";
 const THANKS = 'Unlocked on this device. Thank you for your donation.';
 // flag (or unflag) existing items as new techniques, as later features will be: practices, patterns (b:) and tracks (t:)
@@ -100,8 +103,8 @@ const until = async (p, f, ms) => { try { await p.waitForFunction(f, null, { tim
         'Start opens the dialog, naming what was tapped, with focus inside: ' + d.for);
       ok(await E(p, () => window.__entrain.P.state) !== 'running', 'and the practice doesn\'t start');
       ok(/^[0-9A-HJKMNP-TV-Z]{10}$/.test(dev) && d.dev === dev.slice(0, 5) + '-' + dev.slice(5), 'the device code is made on first need, ten characters of Crockford base 32, shown as ' + d.dev);
-      ok(/Donate €1 or more on Ko-fi and put this code in your message\./.test(d.text) && /You'll get an activation link by email\. Open it on this device, or paste the code here\./.test(d.text),
-        'it says what to do, step by step');
+      ok(/Donate €1 or more on Ko-fi and put this code in your message\./.test(d.text) && /You'll get an activation link by email\. Open it on this device, or paste the code here\. If you use Entrain from your Home Screen, paste the code here: the link opens in your browser instead\./.test(d.text),
+        'it says what to do, step by step, and to paste the code into Entrain on the Home Screen');
       const kofi = await E(p, () => { const a = document.querySelector('#supKofi'), r = a.getBoundingClientRect(); return { href: a.getAttribute('href'), target: a.target, rel: a.rel, txt: a.textContent.trim(), h: r.height }; });
       ok(kofi.href === 'https://ko-fi.com/misterclarity' && kofi.target === '_blank' && /noopener/.test(kofi.rel) && kofi.txt === 'Donate on Ko-fi' && kofi.h >= 44, 'Donate on Ko-fi opens Ko-fi in the browser: ' + kofi.txt);
       // Tab stays inside; Escape closes, and focus goes back to Start
@@ -342,8 +345,8 @@ const until = async (p, f, ms) => { try { await p.waitForFunction(f, null, { tim
       ok(/^That isn't a valid activation code\./.test((await dlg(p)).res) && !(await E(p, () => window.__entrain.supOn())), 'a code from a key the app doesn\'t trust is refused');
       await p.fill('#supIn', sign('ZZZZZ00000')); await p.click('#supGo'); await p.waitForTimeout(300);
       const wr = (await dlg(p)).res;
-      ok(wr === "That code is for another device, ZZZZZ-00000. This device's code is " + d.dev + ': a donation with it unlocks this one.' && !(await E(p, () => window.__entrain.supOn())),
-        'a code for another device is refused, naming both: ' + wr);
+      ok(wr === WRONG('ZZZZZ-00000', d.dev) && !(await E(p, () => window.__entrain.supOn())),
+        'a code for another device or browser is refused, naming both and where to paste it: ' + wr);
       const code = sign(dev), dash = code.slice(0, 5).toLowerCase().replace(/0/g, 'o').replace(/1/g, 'l') + '-' + code.slice(5, 10).toLowerCase() + code.slice(10);
       await p.fill('#supIn', 'Your activation code: ' + dash.slice(0, 40) + ' ' + dash.slice(40, 70) + '  ' + dash.slice(70) + ' (open it on the same device)'); await p.click('#supGo'); await p.waitForTimeout(400);
       d = await dlg(p);
@@ -419,7 +422,7 @@ const until = async (p, f, ms) => { try { await p.waitForFunction(f, null, { tim
       p = await page(HOME, { http: true, seed: { device: 'K7Q2M9X4PB' }, hash: 'unlock/' + sign('ZZZZZ00000') });
       await p.waitForTimeout(300);
       const w1 = await E(p, () => ({ hash: location.hash, res: document.querySelector('#supStRes').textContent, on: window.__entrain.supOn(), kept: localStorage.getItem('entrain.unlock') }));
-      ok(w1.hash === '#st-supporter' && w1.res === "That code is for another device, ZZZZZ-00000. This device's code is K7Q2M-9X4PB: a donation with it unlocks this one." && !w1.on && w1.kept === null,
+      ok(w1.hash === '#st-supporter' && w1.res === WRONG('ZZZZZ-00000', 'K7Q2M-9X4PB') && !w1.on && w1.kept === null,
         'a link for another device opens Settings\' section with why, naming both codes: ' + w1.res);
       await go(p, 'unlock/' + encodeURIComponent('K7Q2M9X4PB.not-a-signature'), 500);
       ok(/^That isn't a valid activation code\./.test(await t(p, '#supStRes')) && await E(p, () => location.hash === '#st-supporter' && !window.__entrain.supOn()), 'and a broken link: not a valid code');

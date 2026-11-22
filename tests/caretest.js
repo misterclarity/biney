@@ -5,7 +5,8 @@
 //   B  I need to stop in a practice: every sound faded in half a second, the bells' bus let go with anything still
 //      ringing on it, the session ended into the history, Settle's paced breaths (30 frames a second, no blur, still
 //      with reduced motion), the 5-4-3-2-1 grounding, in reach on a scrolled phone at 360 px
-//   C  I need to stop on Breathe (and in its focus view), the background sound gone with it, and from search
+//   C  I need to stop on Breathe (and in its focus view), the background sound gone with it, and from search; on a
+//      short phone, beside Pause and above the tab bar
 //   D  intense breathwork: the hour's rest noted from the history, Restart and Do it again asking first, Wim Hof's
 //      eight rounds a day, what the history keeps, Swim & dive's Start again, and the energising cautions' wording
 //   E  free: the same on the real build (locked) and on the unlocked test copy, with no donation asked
@@ -322,6 +323,25 @@ const entry = (id, ago, o) => Object.assign({ k: 'practice', id, n: id, at: Date
         await p.keyboard.press('Escape'); await p.waitForTimeout(150);
       }
       await p.context().close();
+      // on a short phone it's beside Pause, above the tab bar, without scrolling: a tap at its centre lands on it
+      for (const vp of [{ width: 360, height: 740 }, { width: 375, height: 667 }, { width: 320, height: 568 }]) {
+        const q = await page({}, { vp });
+        await go(q, 'breathe');
+        await q.click('#bStart'); await q.waitForTimeout(300);
+        const seen = () => E(q, () => {
+          const b = document.querySelector('#bOut'), r = b.getBoundingClientRect(), g = document.querySelector('#bStart').getBoundingClientRect(), nav = document.querySelector('.nav').getBoundingClientRect();
+          const hit = document.elementFromPoint(r.left + r.width / 2, Math.min(r.top + r.height / 2, innerHeight - 1));
+          return { state: window.__entrain.B.state, top: Math.round(r.top), bottom: Math.round(r.bottom), bar: Math.round(nav.top), hit: !b.hidden && (hit === b || b.contains(hit)),
+            row: Math.abs(r.top + r.height / 2 - (g.top + g.height / 2)) < 4, wide: document.documentElement.scrollWidth > innerWidth };
+        });
+        const a = await seen();
+        await q.click('#bStart'); await q.waitForTimeout(150);
+        const z = await seen();
+        ok(a.state === 'running' && z.state === 'paused' && a.hit && z.hit && a.row && a.top >= 0 && a.bottom <= a.bar && !a.wide,
+          'at ' + vp.width + ' × ' + vp.height + ', running and paused, I need to stop is beside Pause, above the tab bar: ' + JSON.stringify(a));
+        if (vp.width === 360) await q.screenshot({ path: OUT + 'caretest-c-run360.png' });
+        await q.context().close();
+      }
     }
 
     /* D. intense breathwork */
