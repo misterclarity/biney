@@ -10,7 +10,7 @@
   // device code and unlock (supporter.js): a donation unlocks one device, so a backup never carries
   // them to another, and a restore here keeps them; and this screen's real size, matched to a bank
   // card for Soothing Touch (touch.js), which would be wrong on another screen
-  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock", "touchPx"];
+  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock", "touchPx", "co2", "airAt"];
   // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
   var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
   var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+|health)$/;

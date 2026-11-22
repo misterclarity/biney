@@ -339,5 +339,63 @@
         </div>
       </details>
     </div>
+
+    <!-- room air from a CO2 monitor (air.js), for the focus pages -->
+    <div class="hr-box aq-box" id="air" data-state="off">
+      <div class="hr-box-head"><b>Room air (CO₂)</b><span class="hint eg-hint" id="aqHint">For focus sessions</span></div>
+      <p class="hr-find-txt">Fresh air goes with clearer thinking: in office studies, CO₂ above about 900&nbsp;ppm went with lower test scores. Connect an Aranet4 monitor, or type the reading from any CO₂ monitor, and the pages of the focus practices, the focus tracks and the custom primer show it, with a nudge to open a window above about 900&nbsp;ppm (<a href="#l-air">what the research says</a>).</p>
+      <div class="aq-now" id="aqNow" data-hi="" hidden>
+        <div class="aq-ppm"><b id="aqPpm">—</b><small>ppm CO₂</small></div>
+        <p class="aq-say"><b id="aqVerdict"></b> <span id="aqAge"></span></p>
+      </div>
+      <div class="eg-conn">
+        <span class="hr-pill eg-pill"><i></i><span id="aqPillTxt">Not connected</span></span>
+        <button class="btn" id="aqGo" type="button">{i:wind}<span id="aqGoTxt">Connect an Aranet4</span></button>
+      </div>
+      <p class="eg-msg" id="aqMsg" role="status"></p>
+      <p class="eg-msg" id="aqWait" role="status"></p>
+      <p class="eg-err" id="aqErr" role="status" hidden></p>
+      <p class="eg-no" id="aqNo" hidden>This browser can't reach Bluetooth devices: Safari and the other browsers on iPhone and iPad have no Web Bluetooth. The Aranet4 connects in Chrome or Edge on Android, a computer or a Chromebook; here, type its reading below.</p>
+      <form class="aq-type" id="aqForm" novalidate>
+        <label for="aqIn">Or type a reading from any CO₂ monitor</label>
+        <span class="aq-in"><input id="aqIn" type="text" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="ppm"><button class="btn" id="aqSave" type="submit">Save</button></span>
+      </form>
+      <p class="eg-msg" id="aqTypeMsg" role="status"></p>
+      <details class="ev eg-what">
+        <summary>How it works</summary>
+        <div class="ev-body">
+          <p>Indoors, CO₂ builds up from everyone breathing in the room, so it shows how stale the air is. Outdoor air holds about 420&nbsp;ppm. In a controlled office study, ventilation of 20 cubic feet a minute per person, with CO₂ above about 900&nbsp;ppm, went with significantly lower scores on a test of decision-making, so above 900&nbsp;ppm the focus pages say to open a window, and below it that the air is fresh enough. A reading counts for two hours; then the pages go back to the plain reminder.</p>
+          <p>The Aranet4 measures every one to ten minutes, as it's set, and Entrain reads its latest measurement each time it has a new one, with the temperature and humidity it gives too. The first time, your phone or computer may ask for the six-digit code shown on the monitor's screen. Any other monitor: type the number it shows, and it's kept the same way. Nothing is sent anywhere: the reading stays on this device, and isn't in backups, since it belongs to this room.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- blood oxygen from a fingertip oximeter (air.js), a safety signal during breath holds -->
+    <div class="hr-box aq-box ox-box" id="ox" data-state="off">
+      <div class="hr-box-head"><b>Blood oxygen (SpO₂)</b><span class="hint eg-hint" id="oxHint">A safety signal for breath holds</span></div>
+      <p class="hr-find-txt">A fingertip pulse oximeter, connected over Bluetooth, shows how much oxygen your blood carries. While a breath hold runs, in Wim Hof Breathing or on Breathe, a reading below 90% ends the hold at once, with “Breathe now”. It's a rough safety signal: it only ever ends a hold sooner, and a good reading is no reason to hold on (<a href="#l-ox">more in Learn</a>).</p>
+      <div class="eg-conn">
+        <span class="hr-pill eg-pill"><i></i><span id="oxPillTxt">Not connected</span></span>
+        <button class="btn" id="oxGo" type="button">{i:drop}<span id="oxGoTxt">Connect an oximeter</span></button>
+      </div>
+      <p class="eg-msg" id="oxMsg" role="status"></p>
+      <p class="eg-err" id="oxErr" role="status" hidden></p>
+      <p class="eg-no" id="oxNo" hidden>This browser can't reach Bluetooth devices: Safari and the other browsers on iPhone and iPad have no Web Bluetooth. An oximeter connects in Chrome or Edge on Android, a computer or a Chromebook.</p>
+      <div class="eg-on" id="oxOn" hidden>
+        <div class="eg-tiles ox-tiles">
+          <div class="hr-tile ox-t" data-low=""><div class="k">Oxygen</div><div class="v"><span id="oxV">—</span><small>%</small></div><div class="s" id="oxVS">Waiting for a reading</div></div>
+          <div class="hr-tile"><div class="k">Pulse</div><div class="v"><span id="oxPr">—</span><small>bpm</small></div><div class="s">Signal: <span id="oxQ">…</span></div></div>
+        </div>
+        <p class="mc-read" id="oxRead" role="status"></p>
+      </div>
+      <details class="ev eg-what">
+        <summary>How it works, and which oximeters</summary>
+        <div class="ev-body">
+          <p>An oximeter shines red and infrared light through your fingertip and works out how much of your blood's haemoglobin carries oxygen, the SpO₂; at rest it usually reads 95 to 100%. During a practice's breath hold (Wim Hof Breathing's), or a hold in Breathe's pattern (Swim &amp; dive's, or any pattern of your own with a hold), a reading below 90% ends the hold at once: the practice pauses with “Breathe now”, and Breathe ends the session. If the next step is another hold, it's left out too, and a hold that starts while the reading is still low ends straight away.</p>
+          <p>Why only sooner: a fingertip reading trails the blood by several seconds, so by the time it shows a drop, your oxygen may already be a little lower. A wrist or ring reading is less accurate again. So the number is a rough safety signal, never a reason to hold on: breathe at the first strong urge, whatever it says. With no reading, or a finger out of the oximeter, holds run as they would without one. Entrain's own rule, from general knowledge rather than a trial.</p>
+          <p>Entrain reads oximeters that use Bluetooth's standard pulse oximeter service (PLX); many low-cost fingertip oximeters use their own instead and won't connect. Nothing is recorded or sent: only the latest reading is kept, for this visit.</p>
+        </div>
+      </details>
+    </div>
       </section>
 

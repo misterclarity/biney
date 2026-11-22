@@ -697,6 +697,8 @@
     tcTick(s, st);                                   // a soft sweep with each stroke (touch.js)
     mnTick(s, st);                                   // the point of a rotation round the body, on the body map (mind.js)
     coldTick(s, st);                                 // the cold's breath-out tones and its last three pips (cold.js)
+    oxTick(s);                                       // a hold ends when the oximeter reads low (air.js)
+    if (P.state !== "running") return;
     pAudioSync(T);
     pUI();
   }
@@ -913,6 +915,7 @@
     if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
     if (live && H.coh) chips.push('<span class="lc coh">Coherence <b>' + H.coh.cs.toFixed(1) + "</b></span>");
     chips = chips.concat(egChips());                 // a headband's alpha and theta trends (eeg.js)
+    chips = chips.concat(oxChips());                 // an oximeter's SpO2 (air.js)
     if (tr && A.playing) chips.push('<span class="lc beat">' + esc(tr.band) + " <b>" + beatAt(tr, A.elapsed).toFixed(1) + "</b> Hz</span>");
     else if (tr && P.audioOn && !A.playing && P.state === "running" && T < tr.minutes * 60 - (tr.fade || FADE_OUT)) chips.push('<span class="lc off">Sound paused</span>');   // not once the sound has ended as planned
     var h = chips.join("");
@@ -1159,6 +1162,7 @@
       $("#ses").dataset.bare = "";
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
       P.eeg = []; egLedReset();                        // the headband's record and Brain-Led Beats' rest (eeg.js)
+      oxReset();                                       // the holds an oximeter ended (air.js)
       pAdaptReset(); napReset(); scReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
@@ -1306,6 +1310,7 @@
     coldSummary(r, T);                                 // the seconds of cold you stayed for (cold.js)
     motStillSummary(r);                                // how still you stayed (motion.js)
     egSummary(r, T);                                   // a headband's alpha and theta, first minute to last two (eeg.js)
+    oxSummary(r);                                      // the holds an oximeter ended, and at what (air.js)
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(nvcKindOf(d));
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -1320,6 +1325,7 @@
     if (r.suds) notes.push((d.rate ? d.rate.what : "intensity") + " " + r.suds.join(" → ") + " of 10");
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart || r.beatBrain ? "" : " (scripted)"));
     if (egNote(r)) notes.push(egNote(r));
+    if (oxNote(r)) notes.push(oxNote(r));
     if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
     if (r.cold) notes.push(r.cold + " s of cold");
     if (r.still && !r.still.none) notes.push("still " + r.still.pct + "%");
@@ -1503,6 +1509,7 @@
         "<h3>How it runs</h3><p>" + esc(d.how || pYogaHow(plan)) + "</p>" +
         '<ol class="si-steps">' + pStepsHtml(d, plan) + "</ol>" +
         (d.tip ? '<p class="si-tip"><b>' + esc(d.tip[0]) + "</b> " + esc(d.tip[1]) + (d.tip[2] ? ' <a href="' + d.tip[2] + '">' + esc(d.tip[3]) + "</a>" : "") + "</p>" : "") +
+        aqSlot(aqPracKinds(d, plan)) +              // air the room, the scent and gum tips, the oximeter on holds (air.js)
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its " + (bmMode(O.beatMode) === "binaural" ? "binaural " : "") + "beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +

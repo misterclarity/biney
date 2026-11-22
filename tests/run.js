@@ -33,6 +33,7 @@ const SUITES = [   // name, what it covers, and about how long it takes on its o
   ['phonetest', 'Measuring with the phone alone: heart rate from the camera, the phone on your belly, stillness; the method, locked and unlocked', 200],
   ['eegtest', 'A Muse EEG headband: brain trends, the eyes check and Brain-Led Beats; the method, locked and unlocked', 150],
   ['movetest', 'Movement: Dance Break and the Eight Brocades, the qigong moves in the routine builder, locked and unlocked', 120],
+  ['airtest', 'Air, scent and blood oxygen: a CO2 monitor, Air the room, the scent and gum tips, an oximeter ending a hold; locked and unlocked', 110],
   ['cuetrend', 'Lock screen, vibration, comparisons, trends, start-up, Heart', 70],
   ['choices', 'Saved patterns, safety note, filters, Heart Coherence, live changes, Restart, Healthy living, Gratitude, Calm Reset, donations, connecting, difficult conversations, autogenic training, walking, feedback, routines and light, the consistency check, a mindful meal, four more programmes, the Heart page explained, breath from the microphone, coffee, Swim & dive', 290]
 ];

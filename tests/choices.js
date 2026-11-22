@@ -218,7 +218,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(!/Not for everyone/.test(await E(p, () => document.documentElement.innerHTML)), 'the paragraph repeated on five pages is gone');
       const learn = await E(p, () => ({ toc: !!document.querySelector('.toc a[href="#l-safety"]'), h: document.querySelector('#l-safety').textContent,
         items: [...document.querySelectorAll('#sfNote .sf-list li b')].map(b => b.textContent) }));
-      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Breath holds. | Moving. | Feelings. | Food and supplements. | Light. | Cold and heat.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
+      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Breath holds. | Moving. | Feelings. | Food and supplements. | Light. | Cold and heat. | Scents.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
       const opened = async (from) => {
         await p.click(from); await p.waitForTimeout(250);
         return E(p, () => { const m = document.querySelector('#sfModal'), b = document.querySelector('#sfBody');
@@ -1474,7 +1474,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
           w: document.documentElement.scrollWidth, iw: innerWidth };
       });
       ok(R.tabs === 'Recipes | Supplements | Routines* | Light | Cold and heat' && R.w <= R.iw, 'Healthy living has five tabs: ' + R.tabs);
-      ok(R.secs === 'lv-sleep-habits:Healthy sleep habits:9:11 | lv-morning:A morning routine:7:5 | lv-daytime:Through the day:5:9 | lv-evening:An evening routine:7:6' &&
+      ok(R.secs === 'lv-sleep-habits:Healthy sleep habits:9:11 | lv-morning:A morning routine:7:5 | lv-daytime:Through the day:6:11 | lv-evening:An evening routine:7:7' &&
         R.jump === 'Sleep habits>#living/sleep-habits | Morning>#living/morning | Through the day>#living/daytime | Evening>#living/evening',
         'Routines: sleep habits, a morning, the day and an evening, each with its sources: ' + R.secs);
       const S = R.steps, step = (id, t) => (S['lv-' + id] || []).find(x => x.t === t) || { p: '' };
@@ -1495,6 +1495,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
         const X = window.__entrain;
         return links.filter(h => {
           if (h === '#sleep-sounds') return !document.getElementById('v-sleep-sounds');     // a page of its own (Sleep sounds)
+          if (h === '#air') return !document.getElementById('air');                         // Room air, on the Heart page
           const m = /^#(practice|living|breathe)\/(.+)$/.exec(h);
           if (!m) return true;
           if (m[1] === 'practice') return !X.pDef(m[2]);
@@ -1861,9 +1862,11 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await p.click('#tbFind');
       const find = async q => { await p.fill('#fdIn', q); await p.waitForTimeout(250); return E(p, () => [...document.querySelectorAll('#fdRes .fd-it')].map(a => a.getAttribute('href'))); };
       const f = {};
-      for (const q of ['mindful eating', 'eating', 'meal', 'lunch', 'hunger', 'chewing']) f[q] = (await find(q))[0];
+      for (const q of ['mindful eating', 'eating', 'meal', 'lunch', 'hunger']) f[q] = (await find(q))[0];
+      const chew = await find('chewing');                // Learn's chewing gum comes first for this one; the meal is the first practice
       await p.keyboard.press('Escape');
-      ok(Object.values(f).every(h => h === '#practice/meal'), 'search finds it first for mindful eating, eating, meal, lunch, hunger and chewing: ' + Object.values(f).join(', '));
+      ok(Object.values(f).every(h => h === '#practice/meal') && chew[0] === '#l-gum' && chew.find(h => /^#practice\//.test(h)) === '#practice/meal',
+        'search finds it first for mindful eating, eating, meal, lunch and hunger, and as the first practice for chewing (after Learn\'s chewing gum): ' + Object.values(f).join(', ') + ' | ' + chew.slice(0, 2).join(', '));
       await E(p, () => location.hash = 'l-meal'); await p.waitForTimeout(400);
       const lt = await t(p, '#v-learn');
       ok(/Mindful eating\. How you eat changes how much you eat/.test(lt) && /Robinson, E\., Aveyard, P\., Daley, A\., et al\. \(2013\)/.test(lt) && /Robinson, E\., Almiron-Roig, E\./.test(lt) &&
@@ -2162,7 +2165,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
           loose: all('#lvp-routines .lv-go').filter(g => !g.closest('details.lv-sugg')).length, hid: all('#lvp-routines .lv-rsteps .lv-chip').filter(a => a.checkVisibility ? a.checkVisibility() : a.closest('details').open).length };
       });
       ok(R.rot === 0 && !R.loose && R.hid === 0 && R.sugg === 'See also1 | Suggested practices1 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | See also1 | Suggested practices2 | See also2 | Suggested practices3 | ' +
-        'Suggested recipes and practices4 | Suggested practices3 | Suggested practices3 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | See also3 | Suggested practices4 | Suggested practices3',
+        'Suggested recipes and practices4 | Suggested practices3 | Suggested practices3 | Suggested practices1 | Suggested practices1 | See also1 | See also1 | Suggested practices1 | See also3 | Suggested practices4 | Suggested practices3',
         'in the routines nothing is turned on its side, and each step\'s practices wait behind a closed button named for what\'s there, with a count: ' + R.sugg.slice(0, 80) + '…');
       await E(p, () => document.querySelector('#lv-morning .lv-sugg').scrollIntoView({ block: 'center' }));
       await p.click('#lv-morning .lv-sugg > summary'); await p.waitForTimeout(250);

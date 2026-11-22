@@ -437,7 +437,7 @@ const SOUND = { clouds: 'wind', water: 'stream', leaves: 'wind', forest: 'birds'
           sb: sb ? [...sb.querySelectorAll('.lv-chip')].map(a => a.getAttribute('href') + (a.querySelector('.sup-tag') ? '+cup' : '')).join(' ') : '',
           refs: [...sec.querySelectorAll('.lv-refl li')].map(tx).filter(x => /^(Berman|Ikei)/.test(x)).length, links: [...sec.querySelectorAll('.lv-refl a')].every(a => /^https:\/\//.test(a.getAttribute('href'))) };
       });
-      ok(R.steps === 'Short breaks from screens | When thinking goes round in circles | Lunch away from the screen | Daylight and a walk | Fresh flowers on your desk' &&
+      ok(R.steps === 'Short breaks from screens | When thinking goes round in circles | Lunch away from the screen | Daylight and a walk | Air the room | Fresh flowers on your desk' &&
         /^If you like flowers, keep a few fresh ones where you work\./.test(R.fl) && /214 people/.test(R.fl) && /The evidence is early: mostly one research group, and real flowers only/.test(R.fl),
         'the day routine has fresh flowers on your desk, with the evidence as early, real flowers only: ' + R.fl.slice(0, 60));
       ok(/In a park or among trees, it can rest your attention too/.test(R.walk) && R.sb === '#breathe/sigh #practice/calm-reset #practice/restoration+cup' && R.refs === 3 && R.links,

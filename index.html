@@ -2141,6 +2141,46 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .lc.eg b{color:var(--b-in)}
   [data-k="brain"]{--kc:var(--relax)}
   .sd-chart.eg-sd canvas{cursor:default;height:150px}
+  /* ---------- room air, the scent and gum tips, and blood oxygen (air.js) ---------- */
+  .aq-box{margin-top:14px;scroll-margin-top:84px}
+  .aq-box[data-state="on"] .eg-pill i{background:var(--b-in)}
+  .aq-box[data-state="busy"] .eg-pill i,.aq-box[data-state="lost"] .eg-pill i{background:var(--b-hold)}
+  .aq-box .eg-conn .btn svg.i{color:var(--b-in)}
+  .aq-now{display:flex;align-items:baseline;gap:6px 14px;flex-wrap:wrap;background:var(--panel-2);border-radius:14px;padding:10px 14px}
+  .aq-now[hidden]{display:none}
+  .aq-ppm{display:flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums}
+  .aq-ppm b{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.15}
+  .aq-ppm small{font-size:13px;color:var(--text-faint);font-weight:650}
+  .aq-now[data-hi="1"] .aq-ppm b,.aq-now[data-hi="1"] #aqVerdict{color:var(--b-hold)}
+  .aq-say{margin:0;font-size:13px;color:var(--text-dim);line-height:1.45;flex:1 1 180px;min-width:0}
+  .aq-say b{color:var(--text);font-weight:700}
+  .aq-type{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+  .aq-type label{font-size:13.5px;color:var(--text-dim)}
+  .aq-in{display:inline-flex;gap:8px;align-items:center;min-width:0}
+  .aq-in input{width:7.5em;min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg-2);color:var(--text);font:inherit;font-size:16px;padding:0 12px;font-variant-numeric:tabular-nums}
+  .aq-in input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .ox-tiles .hr-tile[data-low="1"] .v{color:var(--danger)}
+  .ox-tiles .v small{font-size:13px;color:var(--text-faint);font-weight:650}
+  .aq-slot{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+  .aq-slot:empty{display:none}
+  .aq-air{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px 10px;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--b-in) 9%,transparent);font-size:13.5px;line-height:1.5}
+  .aq-air[data-hi="1"]{background:color-mix(in srgb,var(--b-hold) 12%,transparent)}
+  .aq-air > svg.i{color:var(--b-in);margin-top:1px}
+  .aq-air[data-hi="1"] > svg.i{color:var(--b-hold)}
+  .aq-air p{margin:0;flex:1 1 200px;min-width:0;color:var(--text-dim)}
+  .aq-air b{color:var(--text);font-weight:720}
+  .aq-air a,.aq-tip a{color:var(--text);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;display:inline-block;min-height:24px}
+  .aq-air .aq-done{margin-left:auto}
+  .aq-tip{margin:0;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--relax) 8%,transparent);font-size:13.5px;line-height:1.5;color:var(--text-dim)}
+  .aq-tip b{color:var(--text);font-weight:720}
+  .aq-safe{display:block;margin-top:6px;font-size:12.5px;color:var(--text-faint)}
+  .aq-safe .sf-link{min-height:24px}
+  .lc.ox b{color:var(--b-in)}
+  .lc.ox.low{color:var(--danger);background:color-mix(in srgb,var(--danger) 14%,transparent)}
+  .lc.ox.low b{color:var(--danger)}
+  .b-stat.b-ox{color:var(--b-in);background:color-mix(in srgb,var(--b-in) 12%,transparent)}
+  .b-stat.b-ox b{color:var(--b-in)}
+  .b-stat.b-ox.low,.b-stat.b-ox.low b{color:var(--danger)}
 </style>
 </head>
 <body>
@@ -2157,6 +2197,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.2 3 5.5 13.5h5.8L10.4 21l8-10.6h-5.8z"/></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3.5 8.6A1.6 1.6 0 0 1 5.1 7h2.6l1.6-2.4h5.4L16.3 7h2.6a1.6 1.6 0 0 1 1.6 1.6v9.3a1.6 1.6 0 0 1-1.6 1.6H5.1a1.6 1.6 0 0 1-1.6-1.6z"/><circle cx="12" cy="12.9" r="3.5"/></symbol>
+  <symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 9.5h10.5a2.75 2.75 0 1 0-2.6-3.6"/><path d="M3 14h15a2.75 2.75 0 1 1-2.6 3.6"/><path d="M3 18.5h6.5"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5c3.4 4.3 6 7.6 6 10.8a6 6 0 0 1-12 0c0-3.2 2.6-6.5 6-10.8z"/><path d="M9.2 14.6a2.9 2.9 0 0 0 2.4 2.6"/></symbol>
   <symbol id="i-brain" viewBox="0 0 24 24"><path d="M4.5 14a7.5 7.5 0 0 1 15 0"/><path d="M3 14h3.2M17.8 14H21"/><path d="M6.5 19.5c1.4-2.4 2.4-2.4 3.7 0s2.3 2.4 3.6 0 2.3-2.4 3.7 0"/></symbol>
   <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2.5 12.5h4l2.2-5 4.2 10 2.4-5h6.2"/></symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
@@ -2482,6 +2524,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <h3>Why before, not during</h3>
             <p>The clearest finding in the meta-analysis is about timing: listening before a task, or before and during it, worked better than listening only while you work. So prime first, get a cue when the block ends, then start.</p>
             <p class="si-tip nt-after" id="primeAfter"></p>
+            <div class="aq-slot" data-aq="work" id="primeAq"></div>
             <div data-safe="beats"></div>
           </div>
           <div class="si-side">
@@ -2570,6 +2613,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <span class="b-stat b-hr" id="bCohStat" title="Coherence score over the last 64 seconds, usually 0 to 8" hidden>coherence <b id="bCoh">—</b></span>
             <span class="b-stat b-mic" id="bMicStat" title="Your breathing pace, as the microphone hears it" hidden>heard <b id="bMic">—</b> /min</span>
             <span class="b-stat b-belly" id="bBellyStat" title="Your breathing pace, as the phone on your belly counts it" hidden>belly <b id="bBelly">—</b> /min · <span id="bBellyV"></span></span>
+            <span class="b-stat b-ox" id="bOxStat" title="Blood oxygen from your oximeter: a hold ends below 90%" hidden>SpO₂ <b id="bOx">—</b>%</span>
             <span class="b-favs" id="bFav"></span>
           </div>
         </div>
@@ -3084,6 +3128,64 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         </div>
       </details>
     </div>
+
+    <!-- room air from a CO2 monitor (air.js), for the focus pages -->
+    <div class="hr-box aq-box" id="air" data-state="off">
+      <div class="hr-box-head"><b>Room air (CO₂)</b><span class="hint eg-hint" id="aqHint">For focus sessions</span></div>
+      <p class="hr-find-txt">Fresh air goes with clearer thinking: in office studies, CO₂ above about 900&nbsp;ppm went with lower test scores. Connect an Aranet4 monitor, or type the reading from any CO₂ monitor, and the pages of the focus practices, the focus tracks and the custom primer show it, with a nudge to open a window above about 900&nbsp;ppm (<a href="#l-air">what the research says</a>).</p>
+      <div class="aq-now" id="aqNow" data-hi="" hidden>
+        <div class="aq-ppm"><b id="aqPpm">—</b><small>ppm CO₂</small></div>
+        <p class="aq-say"><b id="aqVerdict"></b> <span id="aqAge"></span></p>
+      </div>
+      <div class="eg-conn">
+        <span class="hr-pill eg-pill"><i></i><span id="aqPillTxt">Not connected</span></span>
+        <button class="btn" id="aqGo" type="button"><svg class="i" aria-hidden="true"><use href="#i-wind"/></svg><span id="aqGoTxt">Connect an Aranet4</span></button>
+      </div>
+      <p class="eg-msg" id="aqMsg" role="status"></p>
+      <p class="eg-msg" id="aqWait" role="status"></p>
+      <p class="eg-err" id="aqErr" role="status" hidden></p>
+      <p class="eg-no" id="aqNo" hidden>This browser can't reach Bluetooth devices: Safari and the other browsers on iPhone and iPad have no Web Bluetooth. The Aranet4 connects in Chrome or Edge on Android, a computer or a Chromebook; here, type its reading below.</p>
+      <form class="aq-type" id="aqForm" novalidate>
+        <label for="aqIn">Or type a reading from any CO₂ monitor</label>
+        <span class="aq-in"><input id="aqIn" type="text" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="ppm"><button class="btn" id="aqSave" type="submit">Save</button></span>
+      </form>
+      <p class="eg-msg" id="aqTypeMsg" role="status"></p>
+      <details class="ev eg-what">
+        <summary>How it works</summary>
+        <div class="ev-body">
+          <p>Indoors, CO₂ builds up from everyone breathing in the room, so it shows how stale the air is. Outdoor air holds about 420&nbsp;ppm. In a controlled office study, ventilation of 20 cubic feet a minute per person, with CO₂ above about 900&nbsp;ppm, went with significantly lower scores on a test of decision-making, so above 900&nbsp;ppm the focus pages say to open a window, and below it that the air is fresh enough. A reading counts for two hours; then the pages go back to the plain reminder.</p>
+          <p>The Aranet4 measures every one to ten minutes, as it's set, and Entrain reads its latest measurement each time it has a new one, with the temperature and humidity it gives too. The first time, your phone or computer may ask for the six-digit code shown on the monitor's screen. Any other monitor: type the number it shows, and it's kept the same way. Nothing is sent anywhere: the reading stays on this device, and isn't in backups, since it belongs to this room.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- blood oxygen from a fingertip oximeter (air.js), a safety signal during breath holds -->
+    <div class="hr-box aq-box ox-box" id="ox" data-state="off">
+      <div class="hr-box-head"><b>Blood oxygen (SpO₂)</b><span class="hint eg-hint" id="oxHint">A safety signal for breath holds</span></div>
+      <p class="hr-find-txt">A fingertip pulse oximeter, connected over Bluetooth, shows how much oxygen your blood carries. While a breath hold runs, in Wim Hof Breathing or on Breathe, a reading below 90% ends the hold at once, with “Breathe now”. It's a rough safety signal: it only ever ends a hold sooner, and a good reading is no reason to hold on (<a href="#l-ox">more in Learn</a>).</p>
+      <div class="eg-conn">
+        <span class="hr-pill eg-pill"><i></i><span id="oxPillTxt">Not connected</span></span>
+        <button class="btn" id="oxGo" type="button"><svg class="i" aria-hidden="true"><use href="#i-drop"/></svg><span id="oxGoTxt">Connect an oximeter</span></button>
+      </div>
+      <p class="eg-msg" id="oxMsg" role="status"></p>
+      <p class="eg-err" id="oxErr" role="status" hidden></p>
+      <p class="eg-no" id="oxNo" hidden>This browser can't reach Bluetooth devices: Safari and the other browsers on iPhone and iPad have no Web Bluetooth. An oximeter connects in Chrome or Edge on Android, a computer or a Chromebook.</p>
+      <div class="eg-on" id="oxOn" hidden>
+        <div class="eg-tiles ox-tiles">
+          <div class="hr-tile ox-t" data-low=""><div class="k">Oxygen</div><div class="v"><span id="oxV">—</span><small>%</small></div><div class="s" id="oxVS">Waiting for a reading</div></div>
+          <div class="hr-tile"><div class="k">Pulse</div><div class="v"><span id="oxPr">—</span><small>bpm</small></div><div class="s">Signal: <span id="oxQ">…</span></div></div>
+        </div>
+        <p class="mc-read" id="oxRead" role="status"></p>
+      </div>
+      <details class="ev eg-what">
+        <summary>How it works, and which oximeters</summary>
+        <div class="ev-body">
+          <p>An oximeter shines red and infrared light through your fingertip and works out how much of your blood's haemoglobin carries oxygen, the SpO₂; at rest it usually reads 95 to 100%. During a practice's breath hold (Wim Hof Breathing's), or a hold in Breathe's pattern (Swim &amp; dive's, or any pattern of your own with a hold), a reading below 90% ends the hold at once: the practice pauses with “Breathe now”, and Breathe ends the session. If the next step is another hold, it's left out too, and a hold that starts while the reading is still low ends straight away.</p>
+          <p>Why only sooner: a fingertip reading trails the blood by several seconds, so by the time it shows a drop, your oxygen may already be a little lower. A wrist or ring reading is less accurate again. So the number is a rough safety signal, never a reason to hold on: breathe at the first strong urge, whatever it says. With no reading, or a finger out of the oximeter, holds run as they would without one. Entrain's own rule, from general knowledge rather than a trial.</p>
+          <p>Entrain reads oximeters that use Bluetooth's standard pulse oximeter service (PLX); many low-cost fingertip oximeters use their own instead and won't connect. Nothing is recorded or sent: only the latest reading is kept, for this visit.</p>
+        </div>
+      </details>
+    </div>
       </section>
 
       <!-- ============ LEARN ============ -->
@@ -3111,6 +3213,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-light">Light colour</a>
             <a href="#l-touch">Touch</a>
             <a href="#l-temp">Cold and heat</a>
+            <a href="#l-air">Air and scent</a>
             <a href="#l-mind">Imagery and nidra</a>
             <a href="#l-expect">Placebo and side effects</a>
             <a href="#l-dose">How often</a>
@@ -3252,9 +3355,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Smell</th></tr>
-                <tr class="ln-row"><th scope="row"><b>Fresh air, low CO<sub>2</sub></b> <small>Clear thinking</small></th><td>Strong</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Rosemary scent</b> <small>Alertness</small></th><td>Early</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Lavender scent</b> <small>Relaxation</small></th><td>Early to moderate</td><td class="ln-lo">Learn only</td></tr>
+                <tr class="ln-row"><th scope="row"><b>Fresh air, low CO<sub>2</sub></b> <small>Clear thinking</small></th><td>Strong</td><td><a href="#st-air">Air the room</a> before focus sessions, your room's CO<sub>2</sub> from <a href="#air">a monitor</a>, and a step in <a href="#living/daytime">the day's routine</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Rosemary scent</b> <small>Alertness</small></th><td>Early</td><td>An optional tip on focus pages, such as <a href="#practice/focus-primer">Focus Primer</a>, with its safety line (<a href="#l-scent">why</a>)</td></tr>
+                <tr class="ln-row"><th scope="row"><b>Lavender scent</b> <small>Relaxation</small></th><td>Early to moderate</td><td>An optional tip on sleep pages, such as <a href="#practice/sleep-descent">Sleep Descent</a>, and in <a href="#living/evening">an evening routine</a></td></tr>
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Sound</th></tr>
@@ -3291,7 +3394,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Taste</th></tr>
-                <tr class="ln-row"><th scope="row"><b>Chewing gum</b> <small>Alertness</small></th><td>Early to moderate</td><td class="ln-lo">Learn only</td></tr>
+                <tr class="ln-row"><th scope="row"><b>Chewing gum</b> <small>Alertness</small></th><td>Early to moderate</td><td>An optional tip before focused work, on <a href="#practice/focus-primer">Focus Primer</a>, the focus tracks such as <a href="#track/deep-work">Deep Work Block</a> and the custom primer (<a href="#l-gum">why</a>)</td></tr>
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Temperature</th></tr>
@@ -4223,6 +4326,54 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               water, skip saunas after alcohol, and with a heart condition, low blood pressure or pregnancy, ask a doctor first.
             </p>
 
+            <h3 id="l-air">Air, scent and chewing gum</h3>
+            <p>
+              What you breathe matters as well as how you breathe. In a controlled study at Harvard, 24 office workers spent six
+              full working days in the same office, without being told what changed from day to day. On the day its air held few of
+              the chemicals given off by paint, cleaning products and furniture (volatile organic compounds), their scores on a test
+              of decision-making were 61% higher than on the day with a typical office's air, and on the two days with more fresh air
+              on top, 101% higher. Carbon dioxide (CO₂) and those chemicals each went with lower scores on their own
+              (Allen et al., 2016). As a later study sums that one up, ventilation of 20 cubic feet a minute per person, with
+              CO₂ above about 900&nbsp;ppm, went with significantly lower scores; the later study itself, following 302
+              office workers in six countries for a year, found their answers on short tests a little slower and less accurate as
+              CO₂ rose (Cedeño Laurent et al., 2021). At home the levels are usually lower: in 206 people working from
+              home for a year, most readings were under 640&nbsp;ppm, and a slight link between more CO₂ and poorer scores
+              on one test remained, short of statistical significance (Young et al., 2024). The guide rates fresh air for clear
+              thinking as strong evidence.
+            </p>
+            <p>
+              So the page of each focus practice and focus track, and the custom primer, can remind you to air the room first
+              (<a href="#st-air">Air the room before focus sessions</a>, in Settings), and shows your room's CO₂
+              when there's a reading from the last two hours: from an Aranet4 monitor connected over Bluetooth, or a number you type
+              in from any monitor, on the Heart page's <a href="#air">Room air</a>. Above about 900&nbsp;ppm it says to open a
+              window. Outdoor air holds about 420&nbsp;ppm, so a few minutes with a window open brings the room's air down towards
+              it. The same reminder is a step in <a href="#living/daytime">the day's routine</a>.
+            </p>
+            <p id="l-scent">
+              <b>Scent.</b> In a classic study, 40 adults breathed lavender or rosemary for three minutes and did simple sums
+              before and after. With lavender, beta power in the EEG rose, which the authors read as drowsiness; people felt more
+              relaxed and less depressed, and did the sums faster and more accurately. With rosemary, frontal alpha and beta power
+              fell, which they read as alertness, and people felt more alert (Diego et al., 1998). It's a small, older study, and
+              the authors' reading of lavender's EEG is unusual, since more beta normally goes with alertness. The guide rates
+              rosemary for alertness as early evidence and lavender for relaxation as early to moderate, so Entrain offers each
+              as an optional tip, never a need: rosemary on focus pages, and lavender on sleep pages and in
+              <a href="#living/evening">an evening routine</a>, each with the scents line from the <a href="#l-safety">safety
+              notes</a>, since some people react to essential oils and some oils are harmful to pets. The tips can be turned
+              off in <a href="#st-air">Settings</a>.
+            </p>
+            <p id="l-gum">
+              <b>Chewing gum.</b> The best-studied effect in taste comes from chewing gum rather than flavour, and it's a mild
+              one. In experiments, people felt more alert while chewing gum, and in a study of a working day, chewing went with
+              getting more done and fewer cognitive problems; it raised cortisol in the morning and left the heart rate alone,
+              though chewing has raised the heart rate a little in laboratory studies. Under stress the findings are mixed: some
+              studies found cortisol fell with gum, others that it rose (Allen &amp; Smith, 2015). A 2025 review of 32
+              brain-imaging studies found that chewing, flavoured gum most of all, briefly heightened alertness, which faded soon
+              after the chewing stopped, and its authors caution that the changes in the brain can't yet be tied directly to the
+              benefits (Chmiel &amp; Malinowska, 2025). A 2022 meta-analysis reporting that chewing gum eases anxiety and stress was
+              retracted by its publisher in 2023 and shouldn't be relied on (Luo et al., 2022). The guide rates gum for alertness
+              as early to moderate evidence, so Entrain offers it as an optional tip on focus pages, before work.
+            </p>
+
             <h3 id="l-mind">The mind: guided imagery and yoga nidra</h3>
             <p id="l-imagery">
               <b>Hypnosis and guided imagery.</b> An overview of 49 meta-analyses of hypnosis from the last 20 years, covering
@@ -4342,7 +4493,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <tr><th scope="row"><b>Breathing rate</b></th><td>Whether you're actually following the guided pace</td><td><a href="#l-mic">Breath from the microphone</a>, or <a href="#l-phone">the phone on your belly</a> on Breathe</td></tr>
                 <tr><th scope="row"><b>Finger temperature</b></th><td>Relaxation: the hands warm as their blood vessels widen, and stress cools the fingertips most (Vinkers et al., 2013)</td><td class="ln-lo">A web page can't read it</td></tr>
                 <tr><th scope="row"><b>Skin conductance</b></th><td>Moment-to-moment stress and arousal. Sensitive, but consumer devices are less reliable: a Fitbit Charge 5 agreed only moderately at best with a research device (Ko et al., 2025)</td><td class="ln-lo">A web page can't read it</td></tr>
-                <tr><th scope="row"><b>Blood oxygen</b></th><td>A rough safety signal during breath holds. A wrist reading is less accurate than a fingertip oximeter</td><td class="ln-lo">Not measured</td></tr>
+                <tr><th scope="row"><b>Blood oxygen</b></th><td>A rough safety signal during breath holds. A wrist reading is less accurate than a fingertip oximeter</td><td><a href="#ox">Blood oxygen</a> on Heart, from a fingertip oximeter: a hold ends below 90%</td></tr>
                 <tr><th scope="row"><b>Movement, stillness</b></th><td>Settling down, restlessness, sleep</td><td><a href="#l-phone">Stillness</a>, on the end screen of practices done lying down</td></tr>
                 <tr><th scope="row"><b>EEG</b></th><td>Broad brain-wave trends only, as <a href="#l-muse">measuring at home</a> explains</td><td><a href="#eeg">Brain trends</a> on Heart, from a Muse headband</td></tr>
                 <tr><th scope="row"><b>How you feel</b></th><td>What you actually feel, the main measure in most stress research</td><td><a href="#practice/stress-check">Stress Check</a>, which asks first</td></tr>
@@ -4355,6 +4506,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               stress a little more accurately than any one alone (Darwish et al., 2025). And as with EEG, changes over a session and
               over weeks say more than a single &ldquo;you are stressed&rdquo; verdict, which is why the end screen sets each number
               against your own usual.
+            </p>
+            <p id="l-ox">
+              <b>Blood oxygen.</b> A pulse oximeter shines red and infrared light through a fingertip and works out how much of the
+              blood's haemoglobin carries oxygen, the SpO₂; at rest it usually reads 95 to 100%. A breath hold lowers it,
+              and long holds after fast breathing can take it low before the urge to breathe comes, which is how people black out
+              (see <a href="#l-dive">breath training for swimming and diving</a>). A fingertip oximeter is more accurate than a
+              watch at the wrist or a ring, but even its reading trails the blood by several seconds, so it's a rough safety signal,
+              never a reason to hold on. On <a href="#ox">the Heart page</a>, Entrain connects to a fingertip oximeter that uses
+              Bluetooth's standard pulse oximeter service; while a breath hold runs, in Wim Hof Breathing or on Breathe, a reading
+              below 90% ends the hold at once, with &ldquo;Breathe now&rdquo;. It only ever ends a hold sooner. That's Entrain's own
+              rule, from general knowledge rather than a trial.
             </p>
 
             <h3 id="l-phone">Measuring with the phone alone</h3>
@@ -4433,7 +4595,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                   make you black out without warning, so practise them only on dry land, sitting or lying down, never in or
                   near water, in the bath or while driving. Breathe normally before each hold, never fast and deep to
                   stretch it, breathe whenever you need to, and keep the second inhale a gentle top-up rather than forcing in
-                  extra air. In the water, train breath holds only with a coach or a trained buddy watching you.</li>
+                  extra air. In the water, train breath holds only with a coach or a trained buddy watching you. A fingertip
+                  oximeter on the Heart page ends a hold that reads below 90%, but its reading trails the blood: it's a rough safety
+                  signal, never a reason to hold on.</li>
                 <li><b>Moving.</b> Go only as far as is comfortable, stop anything that hurts, and keep clear space around
                   you. Dancing and other brisk movement raise your heart rate: with a heart condition or high blood pressure,
                   ask your doctor how hard to work, and rest if you feel dizzy, faint or very short of breath.</li>
@@ -4454,6 +4618,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                   open water alone; and never combine cold water with Wim Hof breathing or breath holds. With a heart condition,
                   low blood pressure or pregnancy, ask a doctor before saunas or very hot baths; drink water, and skip them after
                   alcohol.</li>
+                <li><b>Scents.</b> Some people react to essential oils, and some oils are harmful to pets. Use a drop or two in a
+                  diffuser or on a tissue, in an aired room; dilute an oil before it touches your skin, never swallow one, and keep
+                  them away from small children and pets, cats above all. With asthma, or in pregnancy, ask your doctor or midwife
+                  first, and stop if your chest tightens or your skin reacts.</li>
               </ul>
               <p>Check with a clinician before you start if you have a heart, lung or seizure condition, are pregnant, or are
                 in treatment for anxiety, trauma or depression. Practices with cautions of their own give them in their
@@ -4670,6 +4838,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Janssen, C. W., Lowry, C. A., Mehl, M. R., et al. (2016). Whole-body hyperthermia for the treatment of major depressive disorder: a randomized clinical trial. <em>JAMA Psychiatry</em>, 73(8), 789–795. <a href="https://doi.org/10.1001/jamapsychiatry.2016.1031" rel="noopener">DOI</a></li>
       <li>Hussain, J., &amp; Cohen, M. (2018). Clinical effects of regular dry sauna bathing: a systematic review. <em>Evidence-Based Complementary and Alternative Medicine</em>, 2018, 1857413. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5941775/" rel="noopener">PMC</a></li>
       <li>Haghayegh, S., Khoshnevis, S., Smolensky, M. H., Diller, K. R., &amp; Castriotta, R. J. (2019). Before-bedtime passive body heating by warm shower or bath to improve sleep: a systematic review and meta-analysis. <em>Sleep Medicine Reviews</em>, 46, 124–135. <a href="https://doi.org/10.1016/j.smrv.2019.04.008" rel="noopener">DOI</a></li>
+      <li>Allen, J. G., MacNaughton, P., Satish, U., Santanam, S., Vallarino, J., &amp; Spengler, J. D. (2016). Associations of cognitive function scores with carbon dioxide, ventilation, and volatile organic compound exposures in office workers: a controlled exposure study of green and conventional office environments. <em>Environmental Health Perspectives</em>, 124(6), 805–812. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4892924/" rel="noopener">PMC</a></li>
+      <li>Cedeño Laurent, J. G., MacNaughton, P., Jones, E., Young, A. S., Bliss, M., Flanigan, S., Vallarino, J., Chen, L. J., Cao, X., &amp; Allen, J. G. (2021). Associations between acute exposures to PM2.5 and carbon dioxide indoors and cognitive function in office workers: a multicountry longitudinal prospective observational study. <em>Environmental Research Letters</em>, 16(9), 094047. <a href="https://doi.org/10.1088/1748-9326/ac1bd8" rel="noopener">DOI</a></li>
+      <li>Young, A. S., Parikh, S., Dedesko, S., Bliss, M., Xu, J., Zanobetti, A., Miller, S. L., &amp; Allen, J. G. (2024). Home indoor air quality and cognitive function over one year for people working remotely during COVID-19. <em>Building and Environment</em>, 257, 111551. <a href="https://doi.org/10.1016/j.buildenv.2024.111551" rel="noopener">DOI</a></li>
+      <li>Diego, M. A., Jones, N. A., Field, T., Hernandez-Reif, M., Schanberg, S., Kuhn, C., Galamaga, M., McAdam, V., &amp; Galamaga, R. (1998). Aromatherapy positively affects mood, EEG patterns of alertness and math computations. <em>International Journal of Neuroscience</em>, 96(3–4), 217–224. <a href="https://pubmed.ncbi.nlm.nih.gov/10069621/" rel="noopener">PubMed</a></li>
+      <li>Allen, A. P., &amp; Smith, A. P. (2015). Chewing gum: cognitive performance, mood, well-being, and associated physiology. <em>BioMed Research International</em>, 2015, 654806. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4449949/" rel="noopener">PMC</a></li>
+      <li>Chmiel, J., &amp; Malinowska, A. (2025). The neural correlates of chewing gum: a neuroimaging review of its effects on brain activity. <em>Brain Sciences</em>, 15(6), 657. <a href="https://doi.org/10.3390/brainsci15060657" rel="noopener">DOI</a></li>
+      <li>Luo, J., Xia, M., &amp; Zhang, C. (2022). The effects of chewing gum on reducing anxiety and stress: a meta-analysis of randomized controlled trials. <em>Journal of Healthcare Engineering</em>, 2022, 8606693. Retracted by the publisher in 2023. <a href="https://doi.org/10.1155/2023/9834258" rel="noopener">Retraction notice</a></li>
       <li>Rosendahl, J., Alldredge, C. T., &amp; Haddenhorst, A. (2024). Meta-analytic evidence on the efficacy of hypnosis for mental and somatic health issues: a 20-year perspective. <em>Frontiers in Psychology</em>, 14, 1330238. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10807512/" rel="noopener">PMC</a></li>
       <li>Freeman, M., Ayers, C., Kondo, K., Noonan, K., O&rsquo;Neil, M., Morasco, B., &amp; Kansagara, D. (2019). Guided imagery, biofeedback, and hypnosis: a map of the evidence. VA Evidence Synthesis Program, project 05-225. US Department of Veterans Affairs. <a href="https://www.ncbi.nlm.nih.gov/books/NBK545738/" rel="noopener">NCBI Bookshelf</a></li>
       <li>Jensen, M. P., Adachi, T., &amp; Hakimian, S. (2015). Brain oscillations, hypnosis, and hypnotizability. <em>American Journal of Clinical Hypnosis</em>, 57(3), 230–253. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4361031/" rel="noopener">PMC</a></li>
@@ -5900,6 +6075,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         '<ul class="si-need" id="trNeeds">' + trNeedsHtml(t) + "</ul>" +
         (t.notch ? '<div class="tr-notch" id="trNotch"></div>' : bmRow()) +      // the notched track is binaural only
         '<h3>How it runs</h3><p id="trHow">' + esc(trHow(t)) + "</p>" +
+        aqSlot(aqTrackKinds(t)) +                                          // air the room and the tips, on focus and sleep tracks (air.js)
         (t.brk ? '<p class="si-tip nt-after">' + ntAfterHtml("After the block.") + "</p>" : "") +     // a break when the work is done (nature.js)
         '<details class="ev si-ev"><summary>Evidence ' + dots(t.strength) + '</summary><div class="ev-body">' + esc(t.ev) + "<cite>" + esc(t.cite) + "</cite></div></details>" +
         safeBox([SAFE_BEATS]) +
@@ -12260,6 +12436,639 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       X.egCmd = egCmd; X.egSpan = egSpan; X.egWord = egWord; X.egChips = egChips;
     }
   }
+  /* ------------------- air, scent, chewing gum and blood oxygen -------------------
+     From the brain-wave guide's "Smell and air quality", "Taste and chewing" and its table of what to measure.
+
+     Fresh air, with less CO2, goes with clearer thinking, and the guide rates that evidence strong: in a controlled
+     office study, ventilation of 20 cubic feet a minute per person and CO2 above about 900 ppm went with lower test
+     scores (Allen et al. 2016, as Cedeño Laurent et al. 2021 sum it up). So the pages of the focus practices, the
+     focus tracks and the custom primer remind you to air the room (a Settings choice, on once the device is
+     unlocked), and show your room's CO2 when there's a reading from the last two hours: from an Aranet4 monitor over
+     Bluetooth (its current readings, as the open-source Aranet4-Python reads them), or typed in from any monitor
+     (the Heart page's Room air, #air), with "Open a window" above about 900 ppm.
+
+     Scent and chewing gum have early evidence only, so they're optional tips, free to read, each with its safety line:
+     rosemary on focus pages, lavender on sleep pages (Diego et al. 1998), and gum before focused work (Allen & Smith
+     2015). Settings can turn the tips off.
+
+     Blood oxygen, as the guide puts it, is a rough safety signal during breath holds: a fingertip oximeter that speaks
+     Bluetooth's standard pulse oximeter service (PLX, 0x1822). While a hold runs, a practice's hold step (Wim Hof's) or
+     a hold in Breathe's pattern (Swim & dive's), a fresh reading below 90% ends it with "Breathe now": a practice
+     pauses, Breathe ends the session. It only ever ends a hold sooner; nothing here lengthens a hold or says one
+     could be longer. Entrain's own rule, from general knowledge rather than a trial.
+
+     The CO2 monitor, the typed reading, the oximeter and the reminder open with a donation while this device is
+     locked; the tips, the safety lines and Learn are free.
+  ------------------------------------------------------------------------------- */
+  var AQ_NAME = "Room air from a CO₂ monitor";
+  var AQ_PROMPT = "Air the room before focus sessions";
+  var OX_NAME = "Blood oxygen from an oximeter";
+  var AQ_HIGH = 900;                                         // ppm: above about this, open a window
+  var AQ_FOR = 2 * 3600e3;                                   // a reading counts for two hours
+  var AQ_AIRED = 3600e3;                                     // "It's aired" holds for an hour
+  var AQ_MIN = 300, AQ_MAX = 10000;                          // what a room's air can read, in ppm
+  var AQ_SVC = 0xfce0, AQ_SVC_OLD = "f0cd1400-95da-4f4b-9ac8-aa55d312af0c";     // the Aranet4's service: firmware 1.2 on, and before
+  var AQ_DET = "f0cd3001-95da-4f4b-9ac8-aa55d312af0c", AQ_CUR = "f0cd1503-95da-4f4b-9ac8-aa55d312af0c";   // current readings, with and without timing
+  var AQ_STEPS = { link: ["linking up", 15000], service: ["finding its readings", 15000], read: ["reading the CO₂", 40000] };
+  var OX_SVC = 0x1822, OX_CONT = 0x2a5f, OX_SPOT = 0x2a5e;  // Pulse Oximeter Service: continuous and spot-check measurements
+  var OX_FLOOR = 90, OX_STALE = 6;                           // %: below it a hold ends; seconds a reading counts for
+  var OX_STEPS = { link: ["linking up", 15000], service: ["finding its oxygen readings", 15000], read: ["starting its readings", 30000] };
+  var OX_TRIES = 3;
+  var SAFE_SCENT = "Essential oils are strong: a drop or two in a diffuser or on a tissue is plenty, in an aired room. Dilute them before they touch your skin, never swallow them, " +
+    "and keep them away from small children and pets, cats above all, since some oils are harmful to them. With asthma, or in pregnancy, ask your doctor or midwife first, " +
+    "and stop if your chest tightens or your skin reacts.";
+  var AQ_TIPS = {
+    rosemary: ["Optional: rosemary.", "In a small, older study, three minutes of rosemary scent left people feeling more alert. It's early evidence, so take it as an extra you might enjoy, not something you need.", "#l-scent"],
+    lavender: ["Optional: lavender.", "In the same small, older study, three minutes of lavender scent left people more relaxed and in a better mood. Early to moderate evidence: a gentle extra for the evening and bedtime.", "#l-scent"],
+    gum: ["Optional: chewing gum.", "Chewing gum is mildly alerting: in a study of a working day, people who chewed it got more done and reported fewer cognitive problems. A small effect; sugar-free gum spares your teeth, and skip it if your jaw aches.", "#l-gum"]
+  };
+  /* The CO2 monitor: off | busy (connecting) | on. last: the latest reading { ppm, at (Date.now() of the
+     measurement), src "monitor" | "typed", name, temp, rh, batt }, kept (store "co2", left out of backups). */
+  var AQ = { state: "off", dev: null, name: "", gen: 0, wantOn: false, err: "", chr: null, timer: 0, hintT: 0, fails: 0, msgTxt: "", wait: false, batt: null, last: null };
+  /* The oximeter: off | busy | on | lost. v: the last SpO2 (%), pr: pulse rate, pi: perfusion index, at: bNow() of
+     the last usable reading, q: what the last reading was worth (good, weak, off, demo, none), cont: continuous or spot-check. */
+  var OX = { state: "off", dev: null, name: "", gen: 0, wantOn: false, tries: 0, err: "", chr: null, cont: true, msgTxt: "", step: "", v: null, pr: null, pi: null, at: 0, q: "", n: 0, firstWait: null };
+
+  /* ----- what's chosen ----- */
+  function aqPromptOn() { return supOn() && store.get("airPrompt") !== "0"; }
+  function aqTipsOn() { return store.get("airTips") !== "0"; }
+  function aqBt() { return !!(navigator.bluetooth && navigator.bluetooth.requestDevice); }
+  function aqScale() { return window.__aqScale || 1; }       // the tests run the deadlines faster
+  function aqErr(name, step, msg) { var e = new Error(msg || name); e.name = name; e.step = step; return e; }
+  // a step with its deadline; whatever it does after the deadline is ignored
+  function aqLimit(p, ms, k) {
+    return new Promise(function (ok, no) {
+      var over = false, t = setTimeout(function () { over = true; no(aqErr("TimeoutError", k)); }, ms * aqScale());
+      p.then(function (v) { clearTimeout(t); if (!over) ok(v); }, function (e) { clearTimeout(t); if (!over) no(aqErr((e && e.name) || "Error", k, e && e.message)); });
+    });
+  }
+  function aqEmbedded() { try { return window.self !== window.top; } catch (x) { return true; } }
+  // why the browser's list of devices didn't give one: the same for both devices
+  function aqChooseMsg(e, what, btn) {
+    var n = e.name;
+    return n === "NotFoundError" && /adapter|not available/i.test(e.message || "") ? "Bluetooth is off or unavailable on this device: switch it on, then press " + btn + " again."
+      : n === "NotFoundError" ? "No " + what + " was chosen. Switch it on, keep it close, and press " + btn + " again."
+      : n === "SecurityError" ? (aqEmbedded() ? "This copy sits inside another page, such as a preview, which blocks Bluetooth. Open Entrain at its own web address to connect."
+        : "The browser wants a fresh tap before it shows its list: press " + btn + " again.")
+      : "Bluetooth isn't available: check that it's switched on, and that the browser is allowed to use it (the browser said " + n + ").";
+  }
+  function aqNum(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  function aqAgo(at) {
+    var m = Math.max(0, Math.round((Date.now() - at) / 60000));
+    return m < 1 ? "just now" : m < 60 ? m + " min ago" : Math.floor(m / 60) + " h " + (m % 60) + " min ago";
+  }
+
+  /* ----- the CO2 reading ----- */
+  /* The Aranet4's current readings, little-endian: CO2 (ppm), temperature (a twentieth of a degree), pressure
+     (a tenth of a hectopascal), humidity (%), battery (%), its colour (1 green, 2 amber, 3 red), and in the
+     detailed form the interval between measurements and the seconds since the last one. No CO2 yet: ppm null. */
+  function aqParse(dv) {
+    if (!dv || dv.byteLength < 9) return null;
+    var co2 = dv.getUint16(0, true);
+    var r = { ppm: co2 >= AQ_MIN && co2 <= AQ_MAX ? co2 : null, temp: Math.round(dv.getUint16(2, true) * 0.5) / 10, hpa: Math.round(dv.getUint16(4, true)) / 10,
+      rh: dv.getUint8(6), batt: dv.getUint8(7), status: dv.getUint8(8) };
+    if (dv.byteLength >= 13) { r.interval = dv.getUint16(9, true); r.ago = dv.getUint16(11, true); }
+    return r;
+  }
+  function aqLoad() {
+    try {
+      var r = JSON.parse(store.get("co2") || "null");
+      if (r && r.ppm >= AQ_MIN && r.ppm <= AQ_MAX && r.at > 0) AQ.last = r;
+    } catch (e) {}
+  }
+  function aqKeep(r) { AQ.last = r; store.set("co2", JSON.stringify(r)); aqUI(); }
+  // the reading from the last two hours, if there is one (only while this device is unlocked: it's the monitor's)
+  function aqNow() {
+    var r = AQ.last;
+    if (!r || !supOn()) return null;
+    var age = Date.now() - r.at;
+    return age < AQ_FOR && age > -60000 ? r : null;
+  }
+  function aqHigh(r) { return !!r && r.ppm >= AQ_HIGH; }
+  // aired within the hour, and no reading since says otherwise
+  function aqAired(r) {
+    var a = +store.get("airAt") || 0;
+    return Date.now() - a < AQ_AIRED && (!r || r.at <= a);
+  }
+  function aqFrom(r) { return r.src === "typed" ? "typed in" : (r.name || "Aranet4"); }
+
+  /* ----- typing a reading in ----- */
+  function aqType() {
+    var raw = ($("#aqIn").value || "").replace(/[\s,.]/g, ""), v = /^\d+$/.test(raw) ? parseInt(raw, 10) : NaN;
+    if (!(v >= AQ_MIN && v <= AQ_MAX)) { aqTypeSay("Type the number your monitor shows, in ppm: between 300 and 10,000."); return; }
+    var go = function () {
+      aqKeep({ ppm: v, at: Date.now(), src: "typed" });
+      $("#aqIn").value = "";
+      aqTypeSay("Kept: " + aqNum(v) + " ppm, for the next two hours.");
+    };
+    supGate(AQ_NAME, go, function (ok) { if (ok) go(); else aqUI(); });
+  }
+  function aqTypeSay(s) { bSetT("#aqTypeMsg", s); }
+
+  /* ----- connecting an Aranet4 ----- */
+  function aqGo() {
+    if (AQ.state === "busy") { aqCancel(); return; }
+    if (AQ.state === "on") { aqDisconnect(); return; }
+    if (!aqBt()) { aqUI(); return; }
+    // the chooser needs this tap: unlocked, it opens now; unlocked in the dialog, its button's tap opens it
+    supGate(AQ_NAME, aqConnect, function (ok) { if (ok && AQ.state === "off") aqConnect(); else aqUI(); });
+  }
+  function aqConnect() {
+    if (!aqBt() || AQ.state !== "off") return;
+    var gen = ++AQ.gen, req;
+    AQ.err = "";
+    aqSet("busy");
+    aqMsg("Choose your Aranet4…");
+    try {
+      req = navigator.bluetooth.requestDevice({ filters: [{ namePrefix: "Aranet4" }, { services: [AQ_SVC] }, { services: [AQ_SVC_OLD] }],
+        optionalServices: [AQ_SVC, AQ_SVC_OLD, "battery_service", "device_information"] });
+    } catch (e) { aqFail(aqErr(e.name || "Error", "choose", e.message), gen); return; }
+    req.then(function (dev) {
+      if (gen !== AQ.gen) return;
+      if (AQ.dev && AQ.dev !== dev) AQ.dev.removeEventListener("gattserverdisconnected", aqDrop);
+      AQ.dev = dev; AQ.name = dev.name || "Aranet4"; AQ.wantOn = true; AQ.fails = 0; AQ.chr = null;
+      dev.removeEventListener("gattserverdisconnected", aqDrop);
+      dev.addEventListener("gattserverdisconnected", aqDrop);
+      aqRead(true);
+    }, function (e) { aqFail(aqErr((e && e.name) || "Error", "choose", e && e.message), gen); });
+  }
+  /* One reading: link up again if the link has dropped (the Aranet4 lets an idle link go), find the readings,
+     read them. The first time, the phone or computer may ask for the six-digit code on the monitor's screen,
+     so reading has longer to answer, with a word about it after four seconds. Then the next reading when the
+     monitor has a new one (its interval less the seconds since its last, a few seconds over), or in a minute. */
+  function aqRead(first) {
+    var gen = AQ.gen, dev = AQ.dev, k = "link";
+    var chk = function (v) { if (gen !== AQ.gen || !AQ.wantOn) throw aqErr("AbortError", k); return v; };
+    var say = function (key) { k = key; if (first) aqMsg("Connecting to " + AQ.name + ": " + AQ_STEPS[key][0] + "…"); };
+    var chr;
+    if (dev.gatt.connected && AQ.chr) chr = Promise.resolve(AQ.chr);
+    else {
+      say("link");
+      chr = aqLimit(dev.gatt.connect(), AQ_STEPS.link[1], "link").then(chk)
+        .then(function (srv) {
+          say("service");
+          var svc = srv.getPrimaryService(AQ_SVC).catch(function () { return srv.getPrimaryService(AQ_SVC_OLD); });
+          return aqLimit(svc.then(function (s) { return s.getCharacteristic(AQ_DET).catch(function () { return s.getCharacteristic(AQ_CUR); }); }), AQ_STEPS.service[1], "service");
+        }).then(chk)
+        .then(function (c) { AQ.chr = c; return c; });
+    }
+    chr.then(function (c) {
+      say("read");
+      if (first) { clearTimeout(AQ.hintT); AQ.hintT = setTimeout(function () { if (gen === AQ.gen && AQ.state === "busy") aqMsg("Connecting to " + AQ.name + ": reading the CO₂… If your phone or computer asks for a code, type the six digits shown on the monitor's screen."); }, 4000 * aqScale()); }
+      return aqLimit(c.readValue(), first ? AQ_STEPS.read[1] : 15000, "read");
+    }).then(chk)
+      .then(function (dv) {
+        clearTimeout(AQ.hintT);
+        var r = aqParse(dv);
+        AQ.fails = 0; AQ.err = "";
+        if (AQ.state !== "on") aqSet("on");
+        aqMsg("");
+        AQ.wait = !r || !r.ppm;
+        if (r) AQ.batt = r.batt;
+        if (r && r.ppm) aqKeep({ ppm: r.ppm, at: Date.now() - Math.min(r.ago || 0, 3600) * 1000, src: "monitor", name: AQ.name, temp: r.temp, rh: r.rh, batt: r.batt });
+        else aqUI();
+        aqNext(r && r.interval ? Math.max(20, Math.min(600, r.interval - (r.ago || 0) + 5)) : 60);
+      })
+      .catch(function (e) {
+        clearTimeout(AQ.hintT);
+        if (gen !== AQ.gen || e.name === "AbortError") return;
+        AQ.chr = null;
+        if (first) { aqFail(e, gen); return; }
+        AQ.fails++;                                          // a missed reading: try again in half a minute, three times
+        if (AQ.fails >= 3) aqFail(aqErr(e.name, "lost"), gen);
+        else { aqUI(); aqNext(30); }
+      });
+  }
+  function aqNext(secs) {
+    clearTimeout(AQ.timer);
+    var gen = AQ.gen;
+    AQ.timer = setTimeout(function () { if (gen === AQ.gen && AQ.wantOn && AQ.state === "on") aqRead(false); }, secs * 1000 * aqScale());
+  }
+  function aqDrop() { AQ.chr = null; }                       // the next reading links up again
+  function aqStopAll() {
+    AQ.wantOn = false; AQ.gen++;
+    clearTimeout(AQ.timer); clearTimeout(AQ.hintT);
+    try { if (AQ.dev && AQ.dev.gatt.connected) AQ.dev.gatt.disconnect(); } catch (e) {}
+    AQ.chr = null; AQ.wait = false;
+  }
+  function aqCancel() { aqStopAll(); aqMsg(""); aqSet("off"); }
+  function aqDisconnect() { aqStopAll(); aqMsg(""); aqSet("off"); }
+  function aqFail(e, gen) {
+    if (gen !== undefined && gen !== AQ.gen) return;
+    var n = e.name, k = e.step;
+    aqStopAll();
+    AQ.err = k === "choose" ? aqChooseMsg(e, "monitor", "Connect an Aranet4")
+      : k === "service" && n === "NotFoundError" ? "This device has no Aranet4 readings that Entrain can find. It reads the Aranet4; for any other CO₂ monitor, type its reading below."
+      : k === "read" && (n === "SecurityError" || n === "NotAllowedError") ? "The Aranet4 asked to pair and it didn't go through. When your phone or computer asks, type the six-digit code shown on the monitor's screen, then press Connect an Aranet4 again."
+      : k === "lost" ? "The monitor stopped answering, so its last reading stays until it's two hours old. Keep it within a few metres, and press Connect an Aranet4 again."
+      : n === "TimeoutError" && AQ_STEPS[k] ? "The Aranet4 didn't answer while " + AQ_STEPS[k][0] + ". If your phone or computer asked for a code, type the six digits shown on the monitor's screen; close the Aranet app on any phone nearby, since it can hold on to the monitor; then press Connect an Aranet4 again."
+      : "The connection didn't work (the browser said " + n + " while " + (AQ_STEPS[k] ? AQ_STEPS[k][0] : "connecting") + "). Switch Bluetooth off and on, and try again.";
+    aqMsg("");
+    aqSet("off");
+  }
+  function aqSet(st) { AQ.state = st; aqUI(); }
+  function aqMsg(s) { AQ.msgTxt = s; bSetT("#aqMsg", s); }
+
+  /* ----- the oximeter ----- */
+  // an IEEE-11073 16-bit float: a 4-bit exponent and a 12-bit mantissa; not a number, not at this resolution and the infinities: null
+  function oxSf(v) {
+    if (v === 0x07ff || v === 0x0800 || v === 0x07fe || v === 0x0802 || v === 0x0801) return null;
+    var m = v & 0x0fff, e = v >> 12;
+    if (m >= 0x0800) m -= 0x1000;
+    if (e >= 8) e -= 16;
+    return m * Math.pow(10, e);
+  }
+  /* A PLX measurement: flags, then SpO2 and pulse rate; then, as the flags say, (continuous) the fast and slow
+     averages, or (spot-check) a time stamp; then the measurement status (16 bits), the device and sensor status
+     (24 bits) and the pulse amplitude index. */
+  function oxParse(dv, cont) {
+    if (!dv || dv.byteLength < 5) return null;
+    var f = dv.getUint8(0), i = 5, n = dv.byteLength, r = { spo2: oxSf(dv.getUint16(1, true)), pr: oxSf(dv.getUint16(3, true)), ms: 0, dss: 0, pi: null };
+    if (cont) { if (f & 1) i += 4; if (f & 2) i += 4; }
+    else if (f & 1) i += 7;
+    var bit = cont ? 4 : 2;                                  // the status fields' flags sit two places higher in a continuous measurement
+    if (f & bit && i + 2 <= n) { r.ms = dv.getUint16(i, true); i += 2; }
+    if (f & (bit << 1) && i + 3 <= n) { r.dss = dv.getUint16(i, true) | (dv.getUint8(i + 2) << 16); i += 3; }
+    if (f & (bit << 2) && i + 2 <= n) { r.pi = oxSf(dv.getUint16(i, true)); i += 2; }
+    return r;
+  }
+  /* What a reading is worth: off (the sensor isn't on a finger), demo (demonstration or test data), none (no
+     measurement, or a number that can't be SpO2), weak (the oximeter flags it questionable: a poor or erratic
+     signal, low perfusion, a displaced sensor) or good. A weak reading still ends a hold when it's low: ending a
+     hold sooner is always safe. */
+  function oxQ(r) {
+    if (!r) return "none";
+    if (r.dss & ((1 << 11) | (1 << 15))) return "off";
+    if (r.ms & ((1 << 10) | (1 << 11))) return "demo";
+    if (r.ms & (1 << 13) || r.spo2 === null || !(r.spo2 > 0 && r.spo2 <= 100)) return "none";
+    if (r.ms & ((1 << 14) | (1 << 15)) || r.dss & 0x75fe) return "weak";
+    return "good";
+  }
+  function oxFresh() { return OX.state === "on" && OX.v !== null && bNow() - OX.at < OX_STALE; }
+  function oxLow() { return oxFresh() && OX.v < OX_FLOOR; }
+  function oxGo() {
+    if (OX.state === "busy") { oxCancel(); return; }
+    if (OX.state === "on" || OX.state === "lost") { oxDisconnect(); return; }
+    if (!aqBt()) { oxUI(); return; }
+    supGate(OX_NAME, oxConnect, function (ok) { if (ok && OX.state === "off") oxConnect(); else oxUI(); });
+  }
+  function oxConnect() {
+    if (!aqBt() || OX.state !== "off") return;
+    var gen = ++OX.gen, req;
+    OX.err = "";
+    oxSet("busy");
+    oxMsg("Choose your oximeter…");
+    try {
+      req = navigator.bluetooth.requestDevice({ filters: [{ services: [OX_SVC] }], optionalServices: ["battery_service", "device_information"] });
+    } catch (e) { oxFail(aqErr(e.name || "Error", "choose", e.message), gen); return; }
+    req.then(function (dev) {
+      if (gen !== OX.gen) return;
+      if (OX.dev && OX.dev !== dev) OX.dev.removeEventListener("gattserverdisconnected", oxLost);
+      OX.dev = dev; OX.name = dev.name || "Oximeter"; OX.wantOn = true; OX.tries = 0; OX.v = null; OX.q = ""; OX.n = 0;
+      dev.removeEventListener("gattserverdisconnected", oxLost);
+      dev.addEventListener("gattserverdisconnected", oxLost);
+      oxAttach();
+    }, function (e) { oxFail(aqErr((e && e.name) || "Error", "choose", e && e.message), gen); });
+  }
+  // link up, find the service and its continuous measurement (or, failing that, its spot-checks), and ask for them
+  function oxAttach() {
+    var gen = ++OX.gen, dev = OX.dev;
+    var chk = function (v) { if (gen !== OX.gen || !OX.wantOn) throw aqErr("AbortError", OX.step); return v; };
+    var say = function (k) { OX.step = k; oxMsg("Connecting to " + OX.name + ": " + OX_STEPS[k][0] + (OX.tries > 0 ? ", try " + (OX.tries + 1) + " of " + OX_TRIES : "") + "…"); };
+    if (OX.state !== "lost") oxSet("busy");
+    say("link");
+    aqLimit(dev.gatt.connect(), OX_STEPS.link[1], "link").then(chk)
+      .then(function (srv) {
+        say("service");
+        return aqLimit(srv.getPrimaryService(OX_SVC).then(function (s) {
+          return s.getCharacteristic(OX_CONT).then(function (c) { return { c: c, cont: true }; }, function () {
+            return s.getCharacteristic(OX_SPOT).then(function (c) { return { c: c, cont: false }; });
+          });
+        }), OX_STEPS.service[1], "service");
+      }).then(chk)
+      .then(function (x) {
+        oxUnhook();
+        OX.chr = x.c; OX.cont = x.cont;
+        OX.chr.addEventListener("characteristicvaluechanged", oxOnValue);
+        say("read");
+        return aqLimit(OX.chr.startNotifications(), OX_STEPS.read[1], "read");
+      }).then(chk)
+      .then(function () {
+        OX.tries = 0; OX.err = "";
+        oxMsg("");
+        oxSet("on");
+      })
+      .catch(function (e) {
+        if (gen !== OX.gen || e.name === "AbortError") return;
+        if (OX.state === "lost" && OX.tries < OX_TRIES && e.name !== "NotFoundError") { oxRetry(); return; }
+        oxFail(e, gen);
+      });
+  }
+  function oxRetry() {
+    OX.tries++;
+    try { OX.dev.gatt.disconnect(); } catch (x) {}
+    var gen = OX.gen;
+    setTimeout(function () { if (gen === OX.gen && OX.wantOn) oxAttach(); }, 1500 * OX.tries * aqScale());
+  }
+  function oxLost() {
+    if (!OX.wantOn || OX.state !== "on") return;            // still connecting: that try fails by itself
+    oxSet("lost");
+    oxMsg("The oximeter dropped out. Reconnecting…");
+    oxRetry();
+  }
+  function oxUnhook() {
+    if (OX.chr) { try { OX.chr.removeEventListener("characteristicvaluechanged", oxOnValue); } catch (e) {} }
+    OX.chr = null;
+  }
+  function oxCancel() {
+    OX.wantOn = false; OX.gen++;
+    try { if (OX.dev) OX.dev.gatt.disconnect(); } catch (e) {}
+    oxUnhook();
+    oxMsg("");
+    oxSet("off");
+  }
+  function oxDisconnect() {
+    OX.wantOn = false; OX.gen++;
+    try { if (OX.chr) OX.chr.stopNotifications().catch(function () {}); } catch (e) {}
+    try { if (OX.dev) OX.dev.gatt.disconnect(); } catch (e) {}
+    oxUnhook();
+    OX.v = null; OX.q = "";
+    oxMsg("");
+    oxSet("off");
+  }
+  function oxFail(e, gen) {
+    if (gen !== undefined && gen !== OX.gen) return;
+    var n = e.name, k = e.step, was = OX.state;
+    OX.wantOn = false;
+    try { if (OX.dev && k !== "choose") OX.dev.gatt.disconnect(); } catch (x) {}
+    oxUnhook();
+    OX.v = null;
+    OX.err = k === "choose" ? aqChooseMsg(e, "oximeter", "Connect an oximeter")
+      : k === "service" && n === "NotFoundError" ? "This oximeter doesn't use Bluetooth's standard pulse oximeter service, so Entrain can't read it. Many low-cost fingertip oximeters use their own instead; one that lists Bluetooth's pulse oximeter profile (PLX) will work."
+      : k === "read" && (n === "SecurityError" || n === "NotAllowedError") ? "The oximeter asked to pair and it didn't go through: accept the request when your phone or computer shows it, then press Connect an oximeter again."
+      : was === "lost" ? "The oximeter dropped out and didn't come back. Switch it off and on, and press Connect an oximeter again."
+      : n === "TimeoutError" && OX_STEPS[k] ? "The oximeter didn't answer while " + OX_STEPS[k][0] + ". Switch it off and on with your finger in it, close its own app on any phone nearby, since it can hold on to it, and press Connect an oximeter again."
+      : "The connection didn't work (the browser said " + n + " while " + (OX_STEPS[k] ? OX_STEPS[k][0] : "connecting") + "). Switch the oximeter off and on, and try again.";
+    oxMsg("");
+    oxSet("off");
+  }
+  function oxOnValue(e) {
+    var r = oxParse(e.target.value, OX.cont), q = oxQ(r);
+    OX.q = q; OX.n++;
+    if (q === "good" || q === "weak") {
+      OX.v = Math.round(r.spo2); OX.at = bNow();
+      OX.pr = r.pr > 20 && r.pr < 300 ? Math.round(r.pr) : null;
+      OX.pi = r.pi !== null && r.pi >= 0 && r.pi < 100 ? r.pi : null;
+    }
+    oxCheck();
+    oxUI();
+  }
+  function oxSet(st) { OX.state = st; oxUI(); }
+  function oxMsg(s) { OX.msgTxt = s; bSetT("#oxMsg", s); }
+  function oxSay(text) {
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+    try {
+      var u = new SpeechSynthesisUtterance(text), v = pVoice();
+      if (v) { u.voice = v; u.lang = v.lang; } else u.lang = "en-GB";
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  /* ----- a breath hold, ended by a low reading ----- */
+  // each reading: a practice's hold, or Breathe's pattern with holds in it
+  function oxCheck() {
+    if (!oxLow()) return;
+    if (P.state === "running") { oxTick(P.steps[P.idx]); return; }
+    if (B.state === "running" && !P.usesB && !B.finder && (BC.hold > 0 || BC.rest > 0)) oxBreatheEnd();
+  }
+  // every tick of a practice (practice.js): a hold that starts while the reading is still low ends at once too
+  function oxTick(s) {
+    if (!s || s.k !== "hold" || P.state !== "running" || !oxLow()) return;
+    var v = OX.v;
+    (P.oxAt = P.oxAt || []).push(v);
+    if (P.idx >= P.steps.length - 1) { pFinish(true); oxSay("Breathe now."); return; }      // a hold at the very end: the practice ends
+    // the hold ends, and so does a hold straight after it (Wim Hof's recovery breath): breathing comes first
+    pAdvance();
+    while (P.state === "running" && P.steps[P.idx] && P.steps[P.idx].k === "hold" && P.idx < P.steps.length - 1) pAdvance();
+    pPause();
+    bSetT("#sLine", "Breathe now. Your oxygen read " + v + "%, below " + OX_FLOOR + "%: breathe normally, and carry on when you're ready.");
+    $("#sLine").classList.remove("ana");
+    P.lineAt = bNow();
+    pBell(0.5, 0, 523.25, 0, true);
+    oxSay("Breathe now.");
+  }
+  // Breathe: the session ends there, with what to do
+  function oxBreatheEnd() {
+    var v = OX.v, bt = Math.max(0, breathTime());
+    bEnd(bt > 0 ? locate(bt).count : 0, bt, "Breathe now: your oxygen read " + v + "%, below " + OX_FLOOR + "%. Breathe normally for a couple of minutes before anything else.");
+    hBreath(bt, false);
+    syncTransport(); updateHead(); draw();
+    bSetT("#bLive", "Breathe now.");
+    oxSay("Breathe now.");
+  }
+  function oxReset() { P.oxAt = []; }                        // from pStart (practice.js)
+  function oxSummary(r) { if (P.oxAt && P.oxAt.length) r.ox = P.oxAt.slice(); }
+  function oxNote(r) { return r.ox ? (r.ox.length === 1 ? "a hold ended at " + r.ox[0] + "% oxygen" : r.ox.length + " holds ended, at " + r.ox.join("%, ") + "% oxygen") : ""; }
+  function oxTiles(r) {
+    if (!r.ox) return [];
+    return [["Oxygen", Math.min.apply(null, r.ox) + "%", r.ox.length === 1 ? "below " + OX_FLOOR + "%: a hold ended" : "below " + OX_FLOOR + "%: " + r.ox.length + " holds ended", "ox"]];
+  }
+  function oxExplain(k) {
+    if (k !== "ox" || !SD.r || !SD.r.ox) return null;
+    var o = SD.r.ox, p = [];
+    p.push("Your oximeter read below " + OX_FLOOR + "% during a hold " + (o.length === 1 ? "once, at " + o[0] + "%" : o.length + " times, at " + o.join("%, ") + "%") +
+      ", so the hold ended there and the practice paused for you to breathe.");
+    p.push("A fingertip reading trails the blood by several seconds, so your oxygen may have gone a little lower than it showed. A low reading means the hold went far enough: next time, keep the holds shorter and easier, and breathe at the first strong urge.");
+    p.push("It's a rough safety signal, not a score: a longer hold or a lower reading is never progress here.");
+    return ["Oxygen", p];
+  }
+  // a practice's live chip, while an oximeter is connected
+  function oxChips() {
+    if (OX.state !== "on" || !OX.n) return [];
+    if (!oxFresh()) return ['<span class="lc off">Oximeter: ' + (OX.q === "off" ? "no finger" : "no reading") + "</span>"];
+    return ['<span class="lc ox' + (OX.v < OX_FLOOR ? " low" : "") + '">SpO₂ <b>' + OX.v + "</b>%</span>"];
+  }
+
+  /* ----- the pages: focus and sleep pages, a practice with holds ----- */
+  // what a practice's page gets: work or focus (meditation), sleep, and holds
+  function aqPracKinds(d, plan) {
+    var k = [];
+    if (d.goal === "focus") k.push(d.method === "meditate" ? "focus" : "work");
+    else if (pSleepy(d)) k.push("sleep");
+    if (plan && plan.steps.some(function (s) { return s.k === "hold"; })) k.push("hold");
+    return k;
+  }
+  function aqTrackKinds(t) {
+    return t.goal === "focus" ? ["work"] : t.goal === "sleep" || (t.also || []).indexOf("sleep") >= 0 ? ["sleep"] : [];
+  }
+  function aqSlot(kinds) { return kinds.length ? '<div class="aq-slot" data-aq="' + kinds.join(" ") + '">' + aqSlotIn(kinds) + "</div>" : ""; }
+  function aqSlotIn(kinds) {
+    var has = function (k) { return kinds.indexOf(k) >= 0; }, focus = has("work") || has("focus"), out = [];
+    if (focus) out.push(aqAirHtml());
+    if (aqTipsOn()) {
+      if (focus) out.push(aqTipHtml("rosemary"));
+      if (has("work")) out.push(aqTipHtml("gum"));
+      if (has("sleep")) out.push(aqTipHtml("lavender"));
+    }
+    if (has("hold")) out.push(oxNoteHtml());
+    return out.join("");
+  }
+  /* Air the room first; with a reading, what it says. It holds back for an hour once you say the room is aired,
+     unless a newer reading is still high. */
+  function aqAirHtml() {
+    var r = aqNow(), on = aqPromptOn(), hi = aqHigh(r);
+    if (aqAired(r) || (!r && !on)) return "";
+    var ic = '<svg class="i" aria-hidden="true"><use href="#i-wind"/></svg>', btn = '<button type="button" class="btn aq-done" data-aq-aired="1">It\'s aired</button>';
+    if (r && !hi) return '<div class="aq-air" data-hi="0">' + ic + '<p><b>Room air: ' + aqNum(r.ppm) + " ppm</b> of CO₂, " + aqAgo(r.at) + " (" + esc(aqFrom(r)) + "): below about 900 ppm, fresh enough for focus.</p></div>";
+    if (r) return '<div class="aq-air" data-hi="1">' + ic + "<p><b>Open a window.</b> Your room air read <b>" + aqNum(r.ppm) + " ppm</b> of CO₂ " + aqAgo(r.at) + " (" + esc(aqFrom(r)) + "), " +
+      'above about 900 ppm, where test scores were lower in office studies. A few minutes with a window open lets fresh air in. <a href="#l-air">Why</a></p>' + btn + "</div>";
+    return '<div class="aq-air" data-hi="">' + ic + "<p><b>Air the room first.</b> Open a window for a few minutes before you start: fresh air, with less CO₂, goes with clearer thinking. " +
+      '<a href="#l-air">Why</a> · <a href="#air">Add a CO₂ reading</a></p>' + btn + "</div>";
+  }
+  function aqTipHtml(k) {
+    var t = AQ_TIPS[k], scent = k !== "gum";
+    return '<p class="aq-tip"><b>' + t[0] + "</b> " + t[1] + ' <a href="' + t[2] + '">More in Learn</a>' +
+      (scent ? '<span class="aq-safe">' + SAFE_SCENT + ' <button type="button" class="sf-link" data-safety="1">Safety notes</button></span>' : "") + "</p>";
+  }
+  function oxNoteHtml() {
+    var on = OX.state === "on";
+    return '<p class="aq-tip ox-tip"><b>Blood oxygen.</b> ' + (on ? "Your oximeter is connected: a reading below " + OX_FLOOR + "% during a hold ends it, with “Breathe now”."
+      : 'With a fingertip oximeter connected on <a href="#ox">the Heart page</a>' + supTag(true) + ", a reading below " + OX_FLOOR + "% during a hold ends it, with “Breathe now”.") +
+      " A rough safety signal: it only ever ends a hold sooner, and a good reading is no reason to hold on.</p>";
+  }
+  // every slot on the pages that are open, with what's true now (a new reading, a choice, an unlock)
+  function aqSlots() {
+    document.querySelectorAll(".aq-slot").forEach(function (el) {
+      var h = aqSlotIn((el.getAttribute("data-aq") || "").split(" ").filter(Boolean));
+      if (el.aqHtml !== h) { el.aqHtml = h; el.innerHTML = h; }       // only when it changes (the browser writes markup back its own way)
+    });
+  }
+
+  /* ----- Settings: Air and scent ----- */
+  function aqCard() {
+    return '<section class="st-card" id="st-air" aria-labelledby="stAq"><h2 id="stAq">Air and scent</h2>' +
+      '<p class="st-note">Fresh air goes with clearer thinking, and the evidence for it is strong; scents and chewing gum have early evidence only, so they come as optional tips. <a href="#l-air">What the research says</a></p>' +
+      pToggle("aqPromptOn", AQ_PROMPT + '<span class="aq-cup">' + supTag(true) + "</span>", aqPromptOn(),
+        "A reminder to open a window on the page of each focus practice, focus track and the custom primer, with your room's CO₂ when there's a reading from the last two hours.") +
+      pToggle("aqTipsOn", "Scent and chewing-gum tips", aqTipsOn(),
+        "Rosemary on focus pages, lavender on sleep pages and chewing gum before focused work, each with its safety line.") +
+      hcBox(["scent"]) +
+      '<p class="st-note">A CO₂ monitor and a fingertip oximeter connect on the Heart page: <a href="#air">Room air</a> and <a href="#ox">Blood oxygen</a>.</p>' +
+      "</section>";
+  }
+  function aqStWire() {
+    var p = $("#aqPromptOn"), t = $("#aqTipsOn");
+    if (!p) return;
+    p.addEventListener("change", function () {
+      var on = this.checked, go = function () { store.set("airPrompt", on ? "1" : "0"); aqUI(); };
+      if (!on || supOn()) go();
+      else { this.checked = false; supGate(AQ_PROMPT, go, function (ok) { if (ok) go(); else aqUI(); }); }
+    });
+    t.addEventListener("change", function () { store.set("airTips", this.checked ? "1" : "0"); aqUI(); });
+  }
+
+  /* ----- the Heart page's boxes, and everything else that shows them ----- */
+  function aqUI() {
+    aqSlots();
+    var p = $("#aqPromptOn");
+    if (p) {
+      p.checked = aqPromptOn();
+      var cup = $("#st-air .aq-cup");
+      if (cup && cup.innerHTML !== supTag(true)) cup.innerHTML = supTag(true);      // the cup while locked, gone after an unlock
+    }
+    if ($("#aqTipsOn")) $("#aqTipsOn").checked = aqTipsOn();
+    var box = $("#air");
+    if (!box) return;
+    var st = AQ.state, sup = aqBt(), r = aqNow();
+    box.dataset.state = st;
+    bSetT("#aqPillTxt", st === "on" ? "Connected" : st === "busy" ? "Connecting…" : "Not connected");
+    bSetT("#aqGoTxt", st === "on" ? "Disconnect" : st === "busy" ? "Cancel" : "Connect an Aranet4");
+    var go = $("#aqGo");
+    go.disabled = !sup;
+    aqCup(go, st === "off");
+    aqCup($("#aqSave"), true, true);
+    $("#aqNo").hidden = sup;
+    var err = st === "off" ? AQ.err : "";
+    bSetT("#aqErr", err); $("#aqErr").hidden = !err;
+    bSetT("#aqHint", st === "on" ? AQ.name + (AQ.batt !== null && AQ.batt !== undefined ? " · battery " + AQ.batt + "%" : "") : "For focus sessions");
+    var now = $("#aqNow");
+    now.hidden = !r;
+    if (r) {
+      var hi = aqHigh(r);
+      if (now.dataset.hi !== (hi ? "1" : "0")) now.dataset.hi = hi ? "1" : "0";
+      bSetT("#aqPpm", aqNum(r.ppm));
+      bSetT("#aqVerdict", hi ? "Above about 900 ppm: open a window for a few minutes." : "Below about 900 ppm: fresh enough for focus.");
+      bSetT("#aqAge", aqAgo(r.at) + ", " + aqFrom(r) + (r.src === "monitor" && r.temp ? " · " + r.temp.toFixed(1) + " °C, " + r.rh + "% humidity" : ""));
+    }
+    bSetT("#aqWait", st === "on" && AQ.wait ? "The monitor has no CO₂ reading yet: it measures every few minutes after it's switched on." : "");
+  }
+  // the cup on a button while this device is locked
+  function aqCup(b, show, icon) {
+    if (!b) return;
+    var tag = b.querySelector(".sup-tag"), lk = !supOn() && show;
+    if (tag && !lk) tag.parentNode.removeChild(tag);
+    else if (!tag && lk) b.insertAdjacentHTML("beforeend", supTag(icon));
+  }
+  function oxUI() {
+    aqSlots();
+    var fresh = oxFresh(), bs = $("#bOxStat");
+    if (bs) {
+      var show = OX.state === "on" && fresh;
+      if (bs.hidden !== !show) bs.hidden = !show;
+      bSetT("#bOx", show ? String(OX.v) : "—");
+      bs.classList.toggle("low", show && OX.v < OX_FLOOR);
+    }
+    var box = $("#ox");
+    if (!box) return;
+    var st = OX.state, on = st === "on", sup = aqBt();
+    box.dataset.state = st;
+    bSetT("#oxPillTxt", on ? "Connected" : st === "busy" ? "Connecting…" : st === "lost" ? "Reconnecting…" : "Not connected");
+    bSetT("#oxGoTxt", on || st === "lost" ? "Disconnect" : st === "busy" ? "Cancel" : "Connect an oximeter");
+    var go = $("#oxGo");
+    go.disabled = !sup;
+    aqCup(go, st === "off");
+    $("#oxNo").hidden = sup;
+    var err = st === "off" ? OX.err : "";
+    bSetT("#oxErr", err); $("#oxErr").hidden = !err;
+    bSetT("#oxHint", on ? OX.name : "A safety signal for breath holds");
+    $("#oxOn").hidden = !on;
+    if (!on) return;
+    var low = fresh && OX.v < OX_FLOOR;
+    bSetT("#oxV", fresh ? String(OX.v) : "—");
+    bSetT("#oxVS", fresh ? (low ? "Below " + OX_FLOOR + "%" : "SpO₂") : OX.q === "off" ? "No finger in the oximeter" : OX.n ? "No reading just now" : "Waiting for a reading");
+    $("#oxV").closest(".hr-tile").dataset.low = low ? "1" : "";
+    bSetT("#oxPr", fresh && OX.pr ? String(OX.pr) : "—");
+    bSetT("#oxQ", !OX.n ? "…" : OX.q === "good" ? "Good" : OX.q === "weak" ? "Weak" : OX.q === "off" ? "No finger" : OX.q === "demo" ? "Demonstration data" : "No reading");
+    bSetT("#oxRead", !OX.n ? "Rest your hand and keep the finger still while it finds your pulse."
+      : OX.q === "demo" ? "The oximeter says it's sending demonstration or test data, so Entrain leaves it out: switch that mode off on the oximeter."
+      : OX.q === "off" || !fresh ? "No usable reading: put a fingertip all the way in, rest your hand, and keep still."
+      : low ? "Below " + OX_FLOOR + "%. During a breath hold this ends the hold. At rest, check the oximeter sits well, warm your hands and keep still; if low readings keep coming at rest, talk to a doctor."
+      : OX.q === "weak" ? "The oximeter has doubts about this reading (a weak or unsteady signal): keep your hand still and warm."
+      : "Breath holds, in Wim Hof Breathing or on Breathe, now end at once if a reading falls below " + OX_FLOOR + "%.");
+  }
+
+  function aqInit() {
+    aqLoad();
+    $("#aqGo").addEventListener("click", aqGo);
+    $("#aqForm").addEventListener("submit", function (e) { e.preventDefault(); aqType(); });
+    $("#oxGo").addEventListener("click", oxGo);
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("[data-aq-aired]") : null;
+      if (!b) return;
+      store.set("airAt", String(Date.now()));
+      aqSlots();
+      toast("Aired. The reminder rests for an hour.", { ms: 3500 });
+    });
+    SUP_EXTRA.push({ name: AQ_PROMPT, href: "#st-air" }, { name: AQ_NAME, href: "#air" }, { name: OX_NAME, href: "#ox" });     // Settings' list of what the donation unlocks
+    window.addEventListener("pagehide", function () { if (AQ.state !== "off") aqDisconnect(); if (OX.state !== "off") oxDisconnect(); });
+    setInterval(function () { if (document.querySelector(".aq-slot")) aqSlots(); if (AQ.last && !$("#v-heart").hidden) aqUI(); }, 30000);    // ages, and a reading that has gone stale
+    aqUI(); oxUI();
+    if (window.__entrain) {
+      var X = window.__entrain;
+      X.AQ = AQ; X.OX = OX; X.aqParse = aqParse; X.oxParse = oxParse; X.oxSf = oxSf; X.oxQ = oxQ; X.aqNow = aqNow; X.aqSlotIn = aqSlotIn; X.aqPracKinds = aqPracKinds;
+      X.aqPromptOn = aqPromptOn; X.oxLow = oxLow; X.AQ_TIPS = AQ_TIPS; X.SAFE_SCENT = SAFE_SCENT;
+    }
+  }
   /* ---------------------------- app shell ----------------------------
      Views behind a hash router. The five tabs are #home (Today), #practice (the library),
      #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
@@ -12454,7 +13263,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "d934b9e8";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "66e05e0f";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -12533,6 +13342,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       MIC.on || MIC.busy ||                                                   // the microphone listening for your breathing
       CAM.on || CAM.busy || MOT.belly ||                                      // the camera reading your pulse, the phone on your belly (camera.js, motion.js)
       EG.state !== "off" || !!EG.chk ||                                       // an EEG headband, which would have to be paired again (eeg.js)
+      AQ.state !== "off" || OX.state !== "off" ||                             // a CO2 monitor or an oximeter, the same (air.js)
       FD.open || !$("#stlModal").hidden ||                                    // search, or settling after I need to stop
       (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
       (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together
@@ -13015,6 +13825,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ntUI();                                                   // the Restoration Break's links on the work pages (nature.js)
     egUI();                                                   // the Heart page's headband button (eeg.js)
     mvtUI();                                                  // the qigong moves' cups in the routine builder (movement.js)
+    aqUI(); oxUI();                                           // room air, the reminder, the oximeter, and the focus pages' slots (air.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }
@@ -15316,6 +16127,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         '<div class="so-row so-seg slp-row"><span class="so-l">Fades out over</span>' +
           slpSeg("slpMin", "data-slp-min", SLP_MINS.map(function (m) { return [m, m + " min"]; }), "Fades out over") + "</div>" +
         '<h3>How it runs</h3><p id="slpHow"></p>' +
+        aqSlot(["sleep"]) +                                                // the lavender tip (air.js)
         '<details class="ev si-ev"><summary>Evidence ' + dots(x.strength) + '</summary><div class="ev-body">' +
           "Nobody has tested a sound that fades out like this one, so treat it as something to try. Natural sounds such as birdsong, wind and water " +
           "are often, though not always, found pleasant and restful, and people differ in which ones they like. Short bursts of pink noise timed to " +
@@ -18590,6 +19402,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     tcTick(s, st);                                   // a soft sweep with each stroke (touch.js)
     mnTick(s, st);                                   // the point of a rotation round the body, on the body map (mind.js)
     coldTick(s, st);                                 // the cold's breath-out tones and its last three pips (cold.js)
+    oxTick(s);                                       // a hold ends when the oximeter reads low (air.js)
+    if (P.state !== "running") return;
     pAudioSync(T);
     pUI();
   }
@@ -18806,6 +19620,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
     if (live && H.coh) chips.push('<span class="lc coh">Coherence <b>' + H.coh.cs.toFixed(1) + "</b></span>");
     chips = chips.concat(egChips());                 // a headband's alpha and theta trends (eeg.js)
+    chips = chips.concat(oxChips());                 // an oximeter's SpO2 (air.js)
     if (tr && A.playing) chips.push('<span class="lc beat">' + esc(tr.band) + " <b>" + beatAt(tr, A.elapsed).toFixed(1) + "</b> Hz</span>");
     else if (tr && P.audioOn && !A.playing && P.state === "running" && T < tr.minutes * 60 - (tr.fade || FADE_OUT)) chips.push('<span class="lc off">Sound paused</span>');   // not once the sound has ended as planned
     var h = chips.join("");
@@ -19052,6 +19867,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       $("#ses").dataset.bare = "";
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
       P.eeg = []; egLedReset();                        // the headband's record and Brain-Led Beats' rest (eeg.js)
+      oxReset();                                       // the holds an oximeter ended (air.js)
       pAdaptReset(); napReset(); scReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
@@ -19199,6 +20015,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     coldSummary(r, T);                                 // the seconds of cold you stayed for (cold.js)
     motStillSummary(r);                                // how still you stayed (motion.js)
     egSummary(r, T);                                   // a headband's alpha and theta, first minute to last two (eeg.js)
+    oxSummary(r);                                      // the holds an oximeter ended, and at what (air.js)
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(nvcKindOf(d));
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -19213,6 +20030,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (r.suds) notes.push((d.rate ? d.rate.what : "intensity") + " " + r.suds.join(" → ") + " of 10");
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart || r.beatBrain ? "" : " (scripted)"));
     if (egNote(r)) notes.push(egNote(r));
+    if (oxNote(r)) notes.push(oxNote(r));
     if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
     if (r.cold) notes.push(r.cold + " s of cold");
     if (r.still && !r.still.none) notes.push("still " + r.still.pct + "%");
@@ -19396,6 +20214,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         "<h3>How it runs</h3><p>" + esc(d.how || pYogaHow(plan)) + "</p>" +
         '<ol class="si-steps">' + pStepsHtml(d, plan) + "</ol>" +
         (d.tip ? '<p class="si-tip"><b>' + esc(d.tip[0]) + "</b> " + esc(d.tip[1]) + (d.tip[2] ? ' <a href="' + d.tip[2] + '">' + esc(d.tip[3]) + "</a>" : "") + "</p>" : "") +
+        aqSlot(aqPracKinds(d, plan)) +              // air the room, the scent and gum tips, the oximeter on holds (air.js)
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its " + (bmMode(O.beatMode) === "binaural" ? "binaural " : "") + "beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
@@ -19903,6 +20722,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var stt = motStillTile(r);                           // lying down: how still you stayed (motion.js)
     if (stt) tiles.push(stt);
     egTiles(r).forEach(function (x) { tiles.push(x); });  // a headband's alpha and theta trends (eeg.js)
+    oxTiles(r).forEach(function (x) { tiles.push(x); });  // a hold an oximeter ended (air.js)
     if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatBrain ? "Hz, led by your alpha and theta" : r.beatHeart ? "Hz, led by your heart" : d.eeg ? "Hz, scripted (no headband data)" : "Hz, scripted (no heart data)", "beat"]);
     if (r.nap) {
       if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate", "onset"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated", "nap"]); }
@@ -19974,7 +20794,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   // what each number means, with your own value read back
   function sdExplain(k) {
-    var sx = scExplain(k) || coldExplain(k) || motStillExplain(k) || egExplain(k);
+    var sx = scExplain(k) || coldExplain(k) || motStillExplain(k) || egExplain(k) || oxExplain(k);
     if (sx) return sx;                               // a stress check's own tiles
     var r = SD.r, d = SD.d, n, p = [];
     var plural = function (x, one, many) { return x + " " + (x === 1 ? one : many); };
@@ -22254,7 +23074,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         'or have one on its own: each goes on and off by itself, since people differ in which natural sounds they find pleasant. <a href="#l-nature">What the research says</a></p>' +
         '<p class="st-note">Music made on your device can play under them too, and a practice can keep a choice of its own under Options. ' +
         '<a href="#l-music">Music and the research</a></p>' + ambCtl() +
-      "</section>" + scnCard() +
+      "</section>" + scnCard() + aqCard() +
       '<section class="st-card" aria-labelledby="stR"><h2 id="stR">Reflections</h2>' +
         pToggle("stKeep", "Keep a copy on this device", g.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing.") +
       "</section>" +
@@ -22277,6 +23097,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     hcStWire();
     scnStWire();
     ltStWire();
+    aqStWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }
@@ -23924,6 +24745,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("heart", EG_NAME, "Heart · a Muse EEG headband, alpha and theta trends",
       ["Connect a Muse headband and see whether your alpha and theta are rising or falling since your first minute, with an eyes-open, eyes-closed check."], "#eeg",
       { ic: "brain", col: "var(--hr)", w: 1.05, alias: "EEG neurofeedback", tags: "eeg muse headband brain waves brainwaves alpha theta neurofeedback interaxon eyes closed calibration", sup: true }));
+    out.push(fdEntry("heart", "Room air (CO₂)", "Heart · an Aranet4 monitor, or a reading you type in",
+      ["Connect an Aranet4 CO₂ monitor, or type the reading from any monitor, and the focus pages show your room's CO₂, with a nudge to open a window above about 900 ppm."], "#air",
+      { ic: "wind", col: "var(--hr)", w: 1.05, alias: AQ_NAME, tags: "co2 carbon dioxide air fresh stuffy ventilation ventilate window aranet aranet4 monitor sensor room ppm focus", sup: true }));
+    out.push(fdEntry("heart", OX_NAME, "Heart · a fingertip oximeter, a safety signal for breath holds",
+      ["Connect a fingertip pulse oximeter: during a breath hold, in Wim Hof Breathing or on Breathe, a reading below 90% ends the hold with Breathe now."], "#ox",
+      { ic: "drop", col: "var(--hr)", w: 1.05, alias: "SpO2 pulse oximeter", tags: "spo2 oxygen saturation oximeter pulse oximetry blood oxygen fingertip breath hold holds wim hof swim dive freediving safety plx", sup: true }));
+    out.push(fdEntry("app", AQ_PROMPT, "Settings · a reminder on focus pages to open a window",
+      ["On the page of each focus practice, focus track and the custom primer, a reminder to air the room first, with your room's CO₂ when there's a reading."], "#st-air",
+      { ic: "wind", col: "var(--accent)", w: 1, tags: "fresh air open window ventilate ventilation stuffy room co2 focus reminder prompt", sup: true }));
+    out.push(fdEntry("app", "Scent and chewing-gum tips", "Settings · rosemary, lavender and gum, with their safety line",
+      ["Optional tips with early evidence: rosemary on focus pages, lavender on sleep pages, and chewing gum before focused work."], "#st-air",
+      { ic: "leaf", col: "var(--accent)", w: 0.95, tags: "scent scents smell aroma aromatherapy essential oil oils rosemary lavender diffuser chewing gum chew taste" }));
     out.push(fdEntry("heart", "Live heart data and coherence", "Heart · rate, swing, RMSSD, coherence",
       ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
       { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));
@@ -24701,7 +25534,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     yankouskaya: ["Yankouskaya, A., Williamson, R., Stacey, C., Totman, J. J., & Massey, H. (2023). Short-term head-out whole-body cold-water immersion facilitates positive affect and increases interaction between large-scale brain networks. Biology, 12(2), 211.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC9953392/", "PMC"],
     berman: ["Berman, M. G., Jonides, J., & Kaplan, S. (2008). The cognitive benefits of interacting with nature. Psychological Science, 19(12), 1207–1212.", "https://pubmed.ncbi.nlm.nih.gov/19121124/", "PubMed"],
     ikei14: ["Ikei, H., Komatsu, M., Song, C., Himoro, E., & Miyazaki, Y. (2014). The physiological and psychological relaxing effects of viewing rose flowers in office workers. Journal of Physiological Anthropology, 33, 6.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC3974224/", "PMC"],
-    ikei23: ["Ikei, H., Song, C., & Miyazaki, Y. (2023). Physiological adjustment effect of visual stimulation by fresh rose flowers on sympathetic nervous activity. Frontiers in Psychology, 14, 1159458.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC10174444/", "PMC"]
+    ikei23: ["Ikei, H., Song, C., & Miyazaki, Y. (2023). Physiological adjustment effect of visual stimulation by fresh rose flowers on sympathetic nervous activity. Frontiers in Psychology, 14, 1159458.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC10174444/", "PMC"],
+    allen16: ["Allen, J. G., MacNaughton, P., Satish, U., Santanam, S., Vallarino, J., & Spengler, J. D. (2016). Associations of cognitive function scores with carbon dioxide, ventilation, and volatile organic compound exposures in office workers: a controlled exposure study of green and conventional office environments. Environmental Health Perspectives, 124(6), 805–812.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC4892924/", "PMC"],
+    young24: ["Young, A. S., Parikh, S., Dedesko, S., Bliss, M., Xu, J., Zanobetti, A., Miller, S. L., & Allen, J. G. (2024). Home indoor air quality and cognitive function over one year for people working remotely during COVID-19. Building and Environment, 257, 111551.", "https://doi.org/10.1016/j.buildenv.2024.111551", "DOI"],
+    diego: ["Diego, M. A., Jones, N. A., Field, T., Hernandez-Reif, M., Schanberg, S., Kuhn, C., Galamaga, M., McAdam, V., & Galamaga, R. (1998). Aromatherapy positively affects mood, EEG patterns of alertness and math computations. International Journal of Neuroscience, 96(3–4), 217–224.", "https://pubmed.ncbi.nlm.nih.gov/10069621/", "PubMed"]
   };
   var ROUTINES = [
     { id: "sleep-habits", name: "Healthy sleep habits", icon: "moon", tags: "sleep hygiene insomnia habits bedtime regular schedule caffeine alcohol nap bedroom weighted blanket",
@@ -24734,7 +25570,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       refs: [R_REF.brown, R_REF.windred, R_REF.gardiner, R_REF.sramek, R_REF.yankouskaya] },
 
     { id: "daytime", name: "Through the day", icon: "spark", tags: "screen break screens devices digital break mindfulness overthinking analysis paralysis rumination stuck thinking feelings body",
-      lead: "Habits that carry the morning's practice through the day, with daylight, a walk and a few fresh flowers.",
+      lead: "Habits that carry the morning's practice through the day, with fresh air, daylight, a walk and a few fresh flowers.",
       steps: [
         { t: "Short breaks from screens", p: "Every hour or so, take two to five minutes away from every screen: stand up, look out of a window or into the distance, and take a few slow breaths. Short breaks from devices and screens let your body remember the feeling from the morning's practice, and regulate around it, so the calm you found doesn't stay behind at breakfast. Mindfulness courses teach a three-minute breathing space for the same reason, and in a 2022 meta-analysis of 19 studies, short breaks raised energy and eased fatigue.",
           go: [["#breathe/sigh", "A minute of cyclic sighs"], ["#practice/calm-reset", "Calm Reset"], ["#practice/restoration", "Restoration Break"]] },
@@ -24742,9 +25578,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           go: [["#practice/body-scan", "Body Scan"], ["#practice/self-compassion", "Self-Compassion Break"], ["#practice/coherence", "Heart Coherence"]] },
         { t: "Lunch away from the screen", p: "Eat sitting down, away from your desk and the screens. Across 24 studies, eating while distracted made people eat more at that meal and more again later; with your attention on the meal you taste it, and notice when you've had enough.", go: [["#practice/meal", "Mindful Meal"]] },
         { t: "Daylight and a walk", p: "A walk outside around midday gives you daylight, movement and a break from screens at once. In a park or among trees, it can rest your attention too: in one study, a walk through an arboretum helped attention and memory, and the same walk through a city didn't.", go: [["#practice/walking", "Walking Meditation"]] },
+        { t: "Air the room", p: "Before a block of focused work, open a window for a few minutes, and again every hour or two, or keep one open a crack. In a controlled office study, people scored 61% higher on a test of decision-making when the air held few chemicals from paint, cleaning products and furniture, and 101% higher with more fresh air on top, than in a typical office; carbon dioxide and those chemicals each went with lower scores, and above about 900 ppm of CO₂ scores were lower. At home, where CO₂ was mostly low, a slight link with poorer scores remained. A CO₂ monitor shows when it's time.",
+          go: [["#air", "Room air"]] },
         { t: "Fresh flowers on your desk", p: "If you like flowers, keep a few fresh ones where you work. Office workers who looked at a vase of fresh roses for four minutes were more relaxed, by their heart-rate variability and by how they felt, than with no flowers, and pooled across 214 people in such studies, roses seemed to even things out: fight-or-flight activity fell in those who started high and rose in those who started low. The evidence is early: mostly one research group, and real flowers only, so pictures of flowers haven't been tested." }
       ],
-      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.robinson, R_REF.brown, R_REF.berman, R_REF.ikei14, R_REF.ikei23] },
+      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.robinson, R_REF.brown, R_REF.berman, R_REF.allen16, R_REF.young24, R_REF.ikei14, R_REF.ikei23] },
 
     { id: "evening", name: "An evening routine", icon: "moon", tags: "evening routine bedtime wind down night screens bath shower to-do list relax sleep",
       lead: "A wind-down to make your own, counted back from bedtime. For an 11 pm bedtime, the last coffee is around 2 pm and the lights go down at 8.",
@@ -24755,12 +25593,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           go: [["#practice/body-scan", "Body Scan"], ["#practice/sleep-descent", "Sleep Descent"], ["#living/sauna", "Sauna and heat"]] },
         { w: "1 hour before", t: "Screens away", p: "Put the phone away for the night, outside the bedroom if you can, or turn on night mode and dim it. Reading on a tablet for four hours before bed, rather than a printed book, delayed sleep by about 10 minutes, cut dream sleep and left people less alert the next morning." },
         { t: "Tomorrow's list", p: "Five minutes writing down what you need to do tomorrow. In a sleep-lab study, people who did fell asleep about 10 minutes sooner than those who wrote about what they'd already done, and the more specific the list, the sooner." },
-        { w: "30 minutes before", t: "Wind down", p: "Ten to twenty minutes of something calming: Autogenic Training with its bedtime ending lets it carry you into sleep. And, if you like, three good things from the day.",
+        { w: "30 minutes before", t: "Wind down", p: "Ten to twenty minutes of something calming: Autogenic Training with its bedtime ending lets it carry you into sleep. And, if you like, three good things from the day. If you enjoy scents, a little lavender is a gentle extra: in a small, older study, three minutes of it left people more relaxed. A drop or two in a diffuser or on a tissue, never swallowed, and kept away from small children and pets, cats above all; with asthma or in pregnancy, ask your doctor or midwife first.",
           go: [["#practice/sleep-descent", "Sleep Descent"], ["#practice/autogenic", "Autogenic Training"], ["#practice/body-scan", "Body Scan"], ["#practice/pmr", "Progressive Muscle Relaxation"]] },
         { w: "Bedtime", t: "Lights out", p: "At your usual time, in a cool, dark, quiet room. If your mind is busy, the Cognitive Shuffle gives it something light to do; if you're still awake after about 20 minutes, get up for a while.",
           go: [["#practice/shuffle", "Cognitive Shuffle"], ["#breathe/478", "4-7-8 breathing"], ["#sleep-sounds", "Sleep sounds"]] }
       ],
-      refs: [R_REF.gardiner, R_REF.brown, R_REF.haghayegh, R_REF.chang, R_REF.scullin, R_REF.edinger] }
+      refs: [R_REF.gardiner, R_REF.brown, R_REF.haghayegh, R_REF.chang, R_REF.scullin, R_REF.edinger, R_REF.diego] }
   ];
 
   /* ----- light: a light box and red and near-infrared light, as cards like the supplements' ----- */
@@ -26044,7 +26882,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   // device code and unlock (supporter.js): a donation unlocks one device, so a backup never carries
   // them to another, and a restore here keeps them; and this screen's real size, matched to a bank
   // card for Soothing Touch (touch.js), which would be wrong on another screen
-  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock", "touchPx"];
+  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock", "touchPx", "co2", "airAt"];
   // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
   var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
   var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+|health)$/;
@@ -26279,7 +27117,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit], ["the movement practices", mvtInit],["music", musInit], ["scenes", scnInit], ["the screen light", ltInit], ["the phone's camera", camInit], ["the motion sensor", motInit], ["the headband", egInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit], ["the movement practices", mvtInit],["music", musInit], ["scenes", scnInit], ["the screen light", ltInit], ["the phone's camera", camInit], ["the motion sensor", motInit], ["the headband", egInit], ["room air and the oximeter", aqInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

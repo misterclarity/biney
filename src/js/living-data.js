@@ -477,7 +477,10 @@
     yankouskaya: ["Yankouskaya, A., Williamson, R., Stacey, C., Totman, J. J., & Massey, H. (2023). Short-term head-out whole-body cold-water immersion facilitates positive affect and increases interaction between large-scale brain networks. Biology, 12(2), 211.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC9953392/", "PMC"],
     berman: ["Berman, M. G., Jonides, J., & Kaplan, S. (2008). The cognitive benefits of interacting with nature. Psychological Science, 19(12), 1207–1212.", "https://pubmed.ncbi.nlm.nih.gov/19121124/", "PubMed"],
     ikei14: ["Ikei, H., Komatsu, M., Song, C., Himoro, E., & Miyazaki, Y. (2014). The physiological and psychological relaxing effects of viewing rose flowers in office workers. Journal of Physiological Anthropology, 33, 6.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC3974224/", "PMC"],
-    ikei23: ["Ikei, H., Song, C., & Miyazaki, Y. (2023). Physiological adjustment effect of visual stimulation by fresh rose flowers on sympathetic nervous activity. Frontiers in Psychology, 14, 1159458.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC10174444/", "PMC"]
+    ikei23: ["Ikei, H., Song, C., & Miyazaki, Y. (2023). Physiological adjustment effect of visual stimulation by fresh rose flowers on sympathetic nervous activity. Frontiers in Psychology, 14, 1159458.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC10174444/", "PMC"],
+    allen16: ["Allen, J. G., MacNaughton, P., Satish, U., Santanam, S., Vallarino, J., & Spengler, J. D. (2016). Associations of cognitive function scores with carbon dioxide, ventilation, and volatile organic compound exposures in office workers: a controlled exposure study of green and conventional office environments. Environmental Health Perspectives, 124(6), 805–812.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC4892924/", "PMC"],
+    young24: ["Young, A. S., Parikh, S., Dedesko, S., Bliss, M., Xu, J., Zanobetti, A., Miller, S. L., & Allen, J. G. (2024). Home indoor air quality and cognitive function over one year for people working remotely during COVID-19. Building and Environment, 257, 111551.", "https://doi.org/10.1016/j.buildenv.2024.111551", "DOI"],
+    diego: ["Diego, M. A., Jones, N. A., Field, T., Hernandez-Reif, M., Schanberg, S., Kuhn, C., Galamaga, M., McAdam, V., & Galamaga, R. (1998). Aromatherapy positively affects mood, EEG patterns of alertness and math computations. International Journal of Neuroscience, 96(3–4), 217–224.", "https://pubmed.ncbi.nlm.nih.gov/10069621/", "PubMed"]
   };
   var ROUTINES = [
     { id: "sleep-habits", name: "Healthy sleep habits", icon: "moon", tags: "sleep hygiene insomnia habits bedtime regular schedule caffeine alcohol nap bedroom weighted blanket",
@@ -510,7 +513,7 @@
       refs: [R_REF.brown, R_REF.windred, R_REF.gardiner, R_REF.sramek, R_REF.yankouskaya] },
 
     { id: "daytime", name: "Through the day", icon: "spark", tags: "screen break screens devices digital break mindfulness overthinking analysis paralysis rumination stuck thinking feelings body",
-      lead: "Habits that carry the morning's practice through the day, with daylight, a walk and a few fresh flowers.",
+      lead: "Habits that carry the morning's practice through the day, with fresh air, daylight, a walk and a few fresh flowers.",
       steps: [
         { t: "Short breaks from screens", p: "Every hour or so, take two to five minutes away from every screen: stand up, look out of a window or into the distance, and take a few slow breaths. Short breaks from devices and screens let your body remember the feeling from the morning's practice, and regulate around it, so the calm you found doesn't stay behind at breakfast. Mindfulness courses teach a three-minute breathing space for the same reason, and in a 2022 meta-analysis of 19 studies, short breaks raised energy and eased fatigue.",
           go: [["#breathe/sigh", "A minute of cyclic sighs"], ["#practice/calm-reset", "Calm Reset"], ["#practice/restoration", "Restoration Break"]] },
@@ -518,9 +521,11 @@
           go: [["#practice/body-scan", "Body Scan"], ["#practice/self-compassion", "Self-Compassion Break"], ["#practice/coherence", "Heart Coherence"]] },
         { t: "Lunch away from the screen", p: "Eat sitting down, away from your desk and the screens. Across 24 studies, eating while distracted made people eat more at that meal and more again later; with your attention on the meal you taste it, and notice when you've had enough.", go: [["#practice/meal", "Mindful Meal"]] },
         { t: "Daylight and a walk", p: "A walk outside around midday gives you daylight, movement and a break from screens at once. In a park or among trees, it can rest your attention too: in one study, a walk through an arboretum helped attention and memory, and the same walk through a city didn't.", go: [["#practice/walking", "Walking Meditation"]] },
+        { t: "Air the room", p: "Before a block of focused work, open a window for a few minutes, and again every hour or two, or keep one open a crack. In a controlled office study, people scored 61% higher on a test of decision-making when the air held few chemicals from paint, cleaning products and furniture, and 101% higher with more fresh air on top, than in a typical office; carbon dioxide and those chemicals each went with lower scores, and above about 900 ppm of CO₂ scores were lower. At home, where CO₂ was mostly low, a slight link with poorer scores remained. A CO₂ monitor shows when it's time.",
+          go: [["#air", "Room air"]] },
         { t: "Fresh flowers on your desk", p: "If you like flowers, keep a few fresh ones where you work. Office workers who looked at a vase of fresh roses for four minutes were more relaxed, by their heart-rate variability and by how they felt, than with no flowers, and pooled across 214 people in such studies, roses seemed to even things out: fight-or-flight activity fell in those who started high and rose in those who started low. The evidence is early: mostly one research group, and real flowers only, so pictures of flowers haven't been tested." }
       ],
-      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.robinson, R_REF.brown, R_REF.berman, R_REF.ikei14, R_REF.ikei23] },
+      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.robinson, R_REF.brown, R_REF.berman, R_REF.allen16, R_REF.young24, R_REF.ikei14, R_REF.ikei23] },
 
     { id: "evening", name: "An evening routine", icon: "moon", tags: "evening routine bedtime wind down night screens bath shower to-do list relax sleep",
       lead: "A wind-down to make your own, counted back from bedtime. For an 11 pm bedtime, the last coffee is around 2 pm and the lights go down at 8.",
@@ -531,12 +536,12 @@
           go: [["#practice/body-scan", "Body Scan"], ["#practice/sleep-descent", "Sleep Descent"], ["#living/sauna", "Sauna and heat"]] },
         { w: "1 hour before", t: "Screens away", p: "Put the phone away for the night, outside the bedroom if you can, or turn on night mode and dim it. Reading on a tablet for four hours before bed, rather than a printed book, delayed sleep by about 10 minutes, cut dream sleep and left people less alert the next morning." },
         { t: "Tomorrow's list", p: "Five minutes writing down what you need to do tomorrow. In a sleep-lab study, people who did fell asleep about 10 minutes sooner than those who wrote about what they'd already done, and the more specific the list, the sooner." },
-        { w: "30 minutes before", t: "Wind down", p: "Ten to twenty minutes of something calming: Autogenic Training with its bedtime ending lets it carry you into sleep. And, if you like, three good things from the day.",
+        { w: "30 minutes before", t: "Wind down", p: "Ten to twenty minutes of something calming: Autogenic Training with its bedtime ending lets it carry you into sleep. And, if you like, three good things from the day. If you enjoy scents, a little lavender is a gentle extra: in a small, older study, three minutes of it left people more relaxed. A drop or two in a diffuser or on a tissue, never swallowed, and kept away from small children and pets, cats above all; with asthma or in pregnancy, ask your doctor or midwife first.",
           go: [["#practice/sleep-descent", "Sleep Descent"], ["#practice/autogenic", "Autogenic Training"], ["#practice/body-scan", "Body Scan"], ["#practice/pmr", "Progressive Muscle Relaxation"]] },
         { w: "Bedtime", t: "Lights out", p: "At your usual time, in a cool, dark, quiet room. If your mind is busy, the Cognitive Shuffle gives it something light to do; if you're still awake after about 20 minutes, get up for a while.",
           go: [["#practice/shuffle", "Cognitive Shuffle"], ["#breathe/478", "4-7-8 breathing"], ["#sleep-sounds", "Sleep sounds"]] }
       ],
-      refs: [R_REF.gardiner, R_REF.brown, R_REF.haghayegh, R_REF.chang, R_REF.scullin, R_REF.edinger] }
+      refs: [R_REF.gardiner, R_REF.brown, R_REF.haghayegh, R_REF.chang, R_REF.scullin, R_REF.edinger, R_REF.diego] }
   ];
 
   /* ----- light: a light box and red and near-infrared light, as cards like the supplements' ----- */

@@ -112,6 +112,7 @@
         '<div class="so-row so-seg slp-row"><span class="so-l">Fades out over</span>' +
           slpSeg("slpMin", "data-slp-min", SLP_MINS.map(function (m) { return [m, m + " min"]; }), "Fades out over") + "</div>" +
         '<h3>How it runs</h3><p id="slpHow"></p>' +
+        aqSlot(["sleep"]) +                                                // the lavender tip (air.js)
         '<details class="ev si-ev"><summary>Evidence ' + dots(x.strength) + '</summary><div class="ev-body">' +
           "Nobody has tested a sound that fades out like this one, so treat it as something to try. Natural sounds such as birdsong, wind and water " +
           "are often, though not always, found pleasant and restful, and people differ in which ones they like. Short bursts of pink noise timed to " +

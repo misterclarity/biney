@@ -174,6 +174,18 @@
     out.push(fdEntry("heart", EG_NAME, "Heart · a Muse EEG headband, alpha and theta trends",
       ["Connect a Muse headband and see whether your alpha and theta are rising or falling since your first minute, with an eyes-open, eyes-closed check."], "#eeg",
       { ic: "brain", col: "var(--hr)", w: 1.05, alias: "EEG neurofeedback", tags: "eeg muse headband brain waves brainwaves alpha theta neurofeedback interaxon eyes closed calibration", sup: true }));
+    out.push(fdEntry("heart", "Room air (CO₂)", "Heart · an Aranet4 monitor, or a reading you type in",
+      ["Connect an Aranet4 CO₂ monitor, or type the reading from any monitor, and the focus pages show your room's CO₂, with a nudge to open a window above about 900 ppm."], "#air",
+      { ic: "wind", col: "var(--hr)", w: 1.05, alias: AQ_NAME, tags: "co2 carbon dioxide air fresh stuffy ventilation ventilate window aranet aranet4 monitor sensor room ppm focus", sup: true }));
+    out.push(fdEntry("heart", OX_NAME, "Heart · a fingertip oximeter, a safety signal for breath holds",
+      ["Connect a fingertip pulse oximeter: during a breath hold, in Wim Hof Breathing or on Breathe, a reading below 90% ends the hold with Breathe now."], "#ox",
+      { ic: "drop", col: "var(--hr)", w: 1.05, alias: "SpO2 pulse oximeter", tags: "spo2 oxygen saturation oximeter pulse oximetry blood oxygen fingertip breath hold holds wim hof swim dive freediving safety plx", sup: true }));
+    out.push(fdEntry("app", AQ_PROMPT, "Settings · a reminder on focus pages to open a window",
+      ["On the page of each focus practice, focus track and the custom primer, a reminder to air the room first, with your room's CO₂ when there's a reading."], "#st-air",
+      { ic: "wind", col: "var(--accent)", w: 1, tags: "fresh air open window ventilate ventilation stuffy room co2 focus reminder prompt", sup: true }));
+    out.push(fdEntry("app", "Scent and chewing-gum tips", "Settings · rosemary, lavender and gum, with their safety line",
+      ["Optional tips with early evidence: rosemary on focus pages, lavender on sleep pages, and chewing gum before focused work."], "#st-air",
+      { ic: "leaf", col: "var(--accent)", w: 0.95, tags: "scent scents smell aroma aromatherapy essential oil oils rosemary lavender diffuser chewing gum chew taste" }));
     out.push(fdEntry("heart", "Live heart data and coherence", "Heart · rate, swing, RMSSD, coherence",
       ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
       { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));
