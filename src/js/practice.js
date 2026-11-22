@@ -567,6 +567,7 @@
     napWakeStop();                                   // wake-up chimes belong to their own step
     vxEnter(s);                                      // and a song's notes to its own (vocal.js)
     tcEnter(s);                                      // and a stroke's sweeps to theirs (touch.js)
+    mnEnter(s);                                      // a rotation's point is marked afresh (mind.js)
     if (s.k === "wake") { NP.rung = 0; NP.vibs = 0; }
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
@@ -662,6 +663,7 @@
     if (s.metro) pMetroTick(s, st);
     vxTick(s, st);                                   // the drone, and a song's tune and count-in (vocal.js)
     tcTick(s, st);                                   // a soft sweep with each stroke (touch.js)
+    mnTick(s, st);                                   // the point of a rotation round the body, on the body map (mind.js)
     pAudioSync(T);
     pUI();
   }
@@ -836,6 +838,8 @@
       var tw = tcWords(s, st); cap = tw.cap; sub = tw.sub;
     } else if (s.k === "massage") {
       sub = smSub(s, st);
+    } else if (s.k === "rotate") {
+      sub = ynSub(s, st);
     } else if (s.k === "adapt") {
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
@@ -902,7 +906,7 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1, mind: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -926,6 +930,7 @@
         else if (vis === "beat") vxBeat(c, W, Hh, s, st, col);
         else if (vis === "sing") vxShow(s, st);
         else if (vis === "stroke") tcDraw(c, W, Hh, s, st, col);
+        else if (vis === "mind") mnDraw(c, W, Hh, s, st, col);
       }
     }
     P.raf = requestAnimationFrame(pDraw);

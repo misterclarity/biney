@@ -13,6 +13,7 @@
        hold     a breath hold: open (tap Breathe in, capped) or a fixed count
        stroke   strokes along an arm on each breath out, following a gliding dot (touch.js)
        massage  an area of the body map with its pressure and stroke (touch.js)
+       rotate   a point of the body named every few seconds and marked on the body map (yoga nidra, mind.js)
      Lengths are in seconds. `lines` are [offset, text] pairs, or plain strings spread
      evenly across the step; a third item marks an Anapana reminder ("ana", said softly) or a
      chime that sounds in place of the voice ("chime"). A step can end when you tap a button
@@ -1806,6 +1807,63 @@
       how: "Settle in for 45 seconds and let your eyes close, then simply listen, with a few quiet words now and then, while music made on your device plays: soft chords, a low note under them and sparse plucked notes, never quite the same twice, slow (60 beats a minute) unless you pick steady (96) or lively (124). In the last 50 seconds the music softens and you come back and open your eyes. With a heart sensor connected, the end shows your heart rate over the first two minutes and the last two, against your usual for Music Break. The volume is the background sound's, in the quick controls while it runs.",
       ev: "Across two meta-analyses of 104 randomised trials, music, mostly listening, lowered the body's signs of stress with a small-to-medium effect and how stressed people felt with a medium one, and of the body's signs it lowered heart rate most clearly. With a music therapist the effect was larger, across 47 studies. In one EEG study, slow music raised theta and alpha at the front of the head and fast music raised beta and gamma. Music people like raises brain-wave power more than music they dislike, so the tempo you enjoy is the one to pick. The studies used recorded music, often chosen by the researchers or the listeners; the music here is made on your device, and hasn't been tested itself.",
       cite: "de Witte et al. 2020 · de Witte et al. 2022 · Yang et al. 2025 · Kučikienė & Praninskienė 2018"
+    },
+
+    /* ===== the mind (mind.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "imagery", name: "Guided Imagery", lengths: [10, 15, 20], min: 10, strength: 2, sup: true,
+      tone: "relax", lie: true, voice: true, noTap: true, hc: ["imagery"],
+      alias: "Self-hypnosis", words: "guided imagery visualisation visualise imagine picture hypnosis self-hypnosis hypnotic hypnotherapy relaxation calm safe place happy place beach sea forest trees mountain lake countdown count down ten to one suggestion confidence rest anxiety theta sleep",
+      blurb: "Breathe out slowly, close your eyes and count down from ten, then spend time in a calm place you picture through every sense: a beach, a forest, a mountain lake or your own. A suggestion you choose, then back to alert, or on into sleep.",
+      parts: "Long breaths out · eyes closed · 10 to 1 · your place through each sense · a suggestion · 1 to 5, or into sleep · optional theta",
+      audio: { name: "Guided Imagery", band: "Theta", carrier: 200, fade: 15, cat: "relax" },
+      beats: mnBeats("the hypnotic state is linked with"),
+      opt: { audio: false },
+      choices: [
+        { key: "place", label: "Your place", def: "beach", note: "Where you'll spend the middle of the session, exploring it through each sense. A place of your own can be somewhere you've been, or one you make up.",
+          opts: [["beach", "A beach"], ["forest", "A forest"], ["lake", "A mountain lake"], ["own", "A place of your own"]] },
+        { key: "aim", label: "Suggestion", def: "calm",
+          note: function (d) {
+            return {
+              calm: "Calm you can bring back later with three slow breaths out and a touch of thumb and finger.",
+              confidence: "Picturing yourself meeting something ahead steadily, and a steadiness you can call on later with the same breaths and touch.",
+              rest: "Your body resting and restoring itself: for deep rest now, or before sleep."
+            }[pChoice(d, "aim")];
+          },
+          opts: [["calm", "Calm"], ["confidence", "Confidence"], ["rest", "Rest"]] },
+        { key: "end", label: "Ending", def: "wake", redraw: true, note: "Back to alert counts you up from one to five, your eyes opening on five. At bedtime, Into sleep lets the scene fade and carries you on into sleep, with no bells at the end.",
+          opts: [["wake", "Back to alert"], ["sleep", "Into sleep"]] }
+      ],
+      next: { id: "yoga-nidra", txt: "Ready to go deeper? Yoga Nidra takes you, lying down, through a resolve, a journey of attention round the body, the breath and quick images." },
+      build: function (min) { return giSteps(this, min || 10); },
+      end: "Take the calm of your place with you.",
+      how: "Lie down or sit back. You rest your eyes on one spot while you breathe slowly with a longer breath out (4 seconds in, 6 out) until your eyelids grow heavy; then a chime asks you to close them. A slow count from ten down to one deepens the calm, each number large on the screen. Then the place you chose, a beach, a forest, a mountain lake or a place of your own, explored through each sense in turn: what you see, hear, feel and smell, and a while just to rest there. There, the suggestion you chose: calm you can bring back later with three slow breaths and a touch of thumb and finger, confidence for something ahead, or deep rest. Back to alert counts you up from one to five, your eyes opening on five; Into sleep lets the scene fade and carries you on into sleep, with no bells at the end. A 6 Hz theta beat can play underneath if you add it, sliding to 3 Hz delta with Into sleep.",
+      ev: "The guide rates hypnosis and guided imagery as moderate to strong evidence for less anxiety. An overview of 49 meta-analyses of hypnosis found medium to large effects on distress, anxiety included, around medical procedures, and very small or small effects on physiological measures; only nine of the meta-analyses were of high quality. In the US Department of Veterans Affairs' map of the evidence, guided imagery significantly reduced anxiety or tension in 4 of 6 studies of people having heart surgery, with low confidence; across the other groups studied, the findings were mixed, with low confidence overall. In the EEG, hypnosis has been linked most closely with more theta and with changes in gamma activity. Most of this research is on hypnosis given by a clinician or a recording in hospital; imagery you do on your own at home has been studied less. The beats' own evidence is mixed.",
+      cite: "Rosendahl et al. 2024 · Freeman et al. 2019 (VA) · Jensen et al. 2015",
+      caution: "Guided imagery and deep relaxation can bring up memories or strong feelings, or leave you feeling detached or unreal. If you have, or have had, psychosis or a dissociative disorder, talk to your doctor or therapist before you use it. You can open your eyes whenever you like, and I need to stop ends the session in one tap. Never listen while driving or doing anything that needs your attention, and unless you chose Into sleep, take a moment to come back fully before you stand up."
+    },
+    {
+      id: "yoga-nidra", name: "Yoga Nidra", lengths: [20, 30, 45], min: 30, strength: 2, sup: true,
+      tone: "relax", lie: true, voice: true, noTap: true, hc: ["imagery", "body"],
+      alias: "NSDR, non-sleep deep rest", words: "yoga nidra nsdr non-sleep deep rest yogic sleep sankalpa resolve intention rotation of consciousness awareness body map breath counting count backwards opposites heavy light warm cool images visualisation satyananda relaxation theta sleep insomnia",
+      blurb: "Yogic sleep, also called non-sleep deep rest: lying down, a resolve, a quick journey of attention round the body, your breaths counted backwards, heavy and light, warm and cool, quick images, and the resolve again. Then back to alert, or on into sleep.",
+      parts: "Resolve · rotation round the body · breaths counted back from 27 · heavy and light, warm and cool · images · resolve again · back to alert or into sleep · optional theta",
+      audio: { name: "Yoga Nidra", band: "Theta", carrier: 200, fade: 20, cat: "relax" },
+      beats: mnBeats("linked with yoga nidra's drowsy, inward state"),
+      opt: { audio: false },
+      choices: [
+        { key: "resolve", label: "Your resolve", def: "own", note: "Yoga nidra's sankalpa: a short, positive sentence in the present tense, said three times at the start and again at the end. Make your own, or take one of these.",
+          opts: [["own", "Your own"], ["calm", "I am calm and at ease"], ["rest", "I rest deeply and wake refreshed"], ["strong", "I am steady and strong"]] },
+        { key: "end", label: "Ending", def: "wake", redraw: true, note: "Back to alert brings you back gently: the breath, the room and a slow stretch. At bedtime, Into sleep lets you drift off instead, with no bells at the end.",
+          opts: [["wake", "Back to alert"], ["sleep", "Into sleep"]] }
+      ],
+      next: { id: "imagery", txt: "Enjoyed the images? Guided Imagery spends longer in one calm place, through every sense." },
+      build: function (min) { return ynSteps(this, min || 30); },
+      end: "Yoga nidra is complete. Sit up slowly, in your own time.",
+      how: "Lie on your back with a blanket over you, and listen to the sounds around you, far and then near. You make a resolve, a sankalpa: a short, positive sentence of your own, or one of three offered, said silently three times. Then your attention travels quickly round the body as each part is named, about one every three seconds, from the right thumb to the whole body, each part lit and marked on the body map. You count your breaths backwards from 27, feel heaviness and then lightness, warmth and then coolness, and picture quick images as they're named; the longer sessions add a spell of quiet rest. Then the resolve again. Back to alert brings you back gently, to the breath, the room and a slow stretch; Into sleep lets you drift off, with no bells at the end. 20, 30 or 45 minutes; in 45, the rotation goes round twice, the second time a little faster. A 6 Hz theta beat can play underneath if you add it, sliding to 3 Hz delta with Into sleep.",
+      ev: "The guide rates yoga nidra as moderate evidence for deep relaxation. In a randomised trial of 41 adults with chronic insomnia, yoga nidra and cognitive behavioural therapy for insomnia both improved sleep time and sleep quality; in the sleep lab only yoga nidra added deep sleep, and its salivary cortisol fell. An online yoga nidra based on a body scan reduced stress slightly over two months of daily use, and its 30-minute version reduced sleep disturbance. In a small brain-imaging study, the release of dopamine in the striatum rose during yoga nidra, along with more theta in the EEG. The stages come from Swami Satyananda Saraswati's teaching; they haven't been tested one by one, and the beats' own evidence is mixed.",
+      cite: "Datta et al. 2021 · Moszeik et al. 2025 · Kjaer et al. 2002 · Satyananda Saraswati 1976",
+      caution: "Yoga nidra can bring up memories or strong feelings, or leave you feeling detached or unreal. If you have, or have had, psychosis or a dissociative disorder, talk to your doctor or therapist before you use it. With trauma, you can let any part of the body go and move on with the voice. You can open your eyes whenever you like, and I need to stop ends the session in one tap. Never listen while driving. In later pregnancy, lie on your side rather than flat on your back."
     },
 
     /* ===== movement ===== */
