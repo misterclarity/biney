@@ -613,7 +613,10 @@
   }
   function ambSync() {
     musSync();                                     // the music made on the device follows the same sessions (music.js)
-    var sig = ambSig(), want = sig && ambActive() ? sig : null;
+    var sig = ambSig(), x = scnSound(), want;
+    // a fire on screen always comes with its crackle, chosen or not (scenes.js): silent fire showed no effect
+    if (x && ("+" + sig + "+").indexOf("+" + x + "+") < 0) sig = sig ? sig + "+" + x : x;
+    want = sig && ambActive() ? sig : null;
     if (want === AMB.playing) return;
     if (AMB.playing) ambStop(want ? 0.8 : 1.5);
     if (want) ambStart(want);

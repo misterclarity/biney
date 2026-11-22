@@ -993,6 +993,23 @@
   .mus-seg button{display:inline-flex;align-items:center;gap:4px;min-height:44px}
   .mus-seg .sup-ic{background:none;padding:0;color:var(--stim)}
   .mus-seg .sup-ic svg.i{width:12px;height:12px}
+  /* scenes to watch: Breathe's Scene chip and its row of scenes, a practice's Scene row, Settings' restful scenes */
+  .b-scnchip,.b-scn .chip{min-height:44px}
+  .b-scn{margin-top:8px}
+  .scn-seg button{display:inline-flex;align-items:center;gap:4px;min-height:44px}
+  .scn-seg .sup-ic{background:none;padding:0;color:var(--stim)}
+  .scn-seg .sup-ic svg.i{width:12px;height:12px}
+  .st-card .scn-seg{align-self:flex-start;max-width:100%}
+  .scn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px}
+  .scn-pick{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:6px 6px 8px;min-height:44px;border-radius:12px;
+    border:1px solid transparent;background:var(--panel-2);color:var(--text-dim);font:inherit;font-size:13px;font-weight:700;text-align:left;cursor:pointer;--c1:var(--text-dim)}
+  .scn-pick[aria-pressed="true"]{border-color:var(--relax);background:var(--panel-3);color:var(--text);--c1:var(--relax)}
+  .scn-pick:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .scn-thumb{display:block;width:100%;height:62px;border-radius:8px;background:var(--bg-2)}
+  .scn-pn{display:flex;align-items:center;gap:4px;padding:0 2px}
+  .scn-pn .sup-ic{background:none;padding:0;color:var(--stim)}
+  .scn-pn .sup-ic svg.i{width:12px;height:12px}
+  .scn-pick .strength{margin:0 2px}
   .slp-row{flex-direction:column;align-items:stretch;gap:8px;margin:0 0 16px}
   .slp-row .mini-seg{align-self:flex-start;max-width:100%}
   .slp-seg button{min-height:44px}

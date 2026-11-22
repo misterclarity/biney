@@ -288,6 +288,7 @@
     ambUI();                                                  // the nature sounds' buttons, and what plays (ambience.js)
     ambSync();
     slpSync(); slpLink();                                     // Sleep sounds' page and Today's link to it (sleepsounds.js)
+    scnUI();                                                  // the scenes' buttons and cups, and Breathe's visual (scenes.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }

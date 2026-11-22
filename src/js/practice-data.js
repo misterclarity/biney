@@ -1069,7 +1069,7 @@
       cite: "Goessl et al. 2017 · Brooks 2014 · Jamieson et al. 2012 · Creswell et al. 2005 · Gollwitzer & Sheeran 2006 · Kross et al. 2014 · Garcia-Argibay et al. 2019"
     },
     {
-      id: "call", name: "During the Call", lengths: [30, 60, 90], min: 60, open: true, strength: 1,
+      id: "call", name: "During the Call", lengths: [30, 60, 90], min: 60, open: true, strength: 1, noScene: true,   // no scene's sound in the call
       tone: "relax", sensor: "optional", pace: true, paceSplit: 0.4,
       opt: { voice: false, bells: false, cues: "off", buzz: false, ana: 0 },
       optNote: "It starts silent: captions only, with no voice, bells or breath sounds, only the beat.",

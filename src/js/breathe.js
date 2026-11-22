@@ -72,7 +72,7 @@
     box: "Trace the square: up on the in-breath, across the top on the hold, down on the out-breath, back along the bottom.",
     dial: "One lap of the dial is one breath, divided by phase. The centre swells with each in-breath.",
     column: "The column fills like your lungs and drains as you breathe out."
-  };
+  };                                                  // a scene's own words are in scenes.js (scnHint)
 
   // max: the sliders' usual range, in half seconds; xmax: the Swim & dive range, in whole seconds
   var B_FIELDS = [
@@ -93,7 +93,7 @@
 
   var BC = {
     pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0, long: false,
-    visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false
+    visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false, scene: "clouds"
   };
 
   var B = {
@@ -124,7 +124,7 @@
     var c = BC;
     if (B.finder) {
       c = B.finder.saved;
-      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue; c.buzz = BC.buzz;
+      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue; c.buzz = BC.buzz; c.scene = BC.scene;
     }
     store.set("breath", JSON.stringify(c));
   }
@@ -304,8 +304,8 @@
     if (el) el.checked = true;
   }
   function syncVisHint() {
-    var s = B_VIS_HINT[BC.visual] || "";
-    if (BC.visual === "box" && !BC.hold && !BC.rest) s += " This pattern has no holds, so the top and bottom sides are skipped.";
+    var v = bVisNow(), s = v === "scene" ? scnHint() : B_VIS_HINT[v] || "";
+    if (v === "box" && !BC.hold && !BC.rest) s += " This pattern has no holds, so the top and bottom sides are skipped.";
     bSetT("#bVisHint", s);
   }
   function syncTransport() {
@@ -731,7 +731,8 @@
           if (isFinite(v) && v >= f.min && v <= f.xmax) BC[f.k] = Math.round(v * 2) / 2;
         });
         BC.long = saved.long === true || bLongT(BC);
-        if (BVIS[saved.visual]) BC.visual = saved.visual;
+        if (BVIS[saved.visual]) BC.visual = saved.visual;    // a scene kept while this device is locked shows the circle (bVisNow)
+        if (scnGet(saved.scene)) BC.scene = saved.scene;
         if (["off", "tones", "chimes"].indexOf(saved.sound) >= 0) BC.sound = saved.sound;
         if ([0, 2, 5, 10, 15].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;
         var cue = parseInt(saved.cue, 10);
@@ -745,11 +746,12 @@
     mpInit();
     dvInit();
     checkRadio("bpat", BC.pattern);
-    checkRadio("bvis", BC.visual);
+    checkRadio("bvis", bVisNow());
     checkRadio("blen", String(BC.minutes));
     checkRadio("bsnd", BC.sound);
     ["#bPats", "#bVis", "#bLen", "#bSnd"].forEach(syncChips);
     bSupChips();
+    scnBreatheSync();                                   // the Scene chip's cup, and the row of scenes (scenes.js)
     $("#bCue").value = BC.cue;
     $("#bVolRow").hidden = BC.sound === "off";
     bBuzzSync();
@@ -789,8 +791,12 @@
       });
     });
     $("#bVis").addEventListener("change", function (e) {
-      BC.visual = e.target.value;
-      syncChips("#bVis"); syncVisHint(); draw(); saveBreath();
+      var v = e.target.value, go = function () {
+        BC.visual = v;
+        scnBreatheSync(); syncVisHint(); draw(); saveBreath();
+        if (v === "scene" && BC.scene === "fire") amNeed(["fire", "fireP"]);    // its crackle ready to play with it
+      };
+      if (v === "scene") scnBreathePick(go); else go();     // a scene is a new technique: the dialog first while locked (scenes.js)
     });
     $("#bLen").addEventListener("change", function (e) {
       if (B.finder) finderCancel();

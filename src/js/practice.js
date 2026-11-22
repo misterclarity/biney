@@ -17,7 +17,7 @@
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off" },
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off" },
     paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
     bm: ""                                          // how its beat played (beatmode.js), for the history
   };
@@ -138,7 +138,7 @@
      The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js),
      and the music (music) to the background sound's choice (music.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -307,13 +307,15 @@
   function pBreathOn(s, st) {
     if (!P.saved) {
       P.saved = {};
-      ["inh", "sip", "hold", "exh", "rest", "long", "minutes", "sound", "cue", "buzz", "visual"].forEach(function (k) { P.saved[k] = BC[k]; });
+      ["inh", "sip", "hold", "exh", "rest", "long", "minutes", "sound", "cue", "buzz", "visual", "scene"].forEach(function (k) { P.saved[k] = BC[k]; });
     }
     var c = pCfgAt(s, st || 0);
     B_KEYS.forEach(function (k) { BC[k] = c[k]; });
     BC.long = false;                     // a practice's breathing keeps the usual guidance, whatever range Breathe was on
     BC.minutes = 0;
-    BC.visual = P.opt.visual;
+    var sc = scnGet(s.scene) ? s.scene : scnSes();      // a scene in place of the breath visual, following the breath (scenes.js)
+    BC.visual = sc ? "scene" : P.opt.visual;
+    if (sc) BC.scene = sc;
     var snd = P.opt.cues;
     if (BC.sound !== snd && B.state === "running") { BC.sound = snd; cueOff(); if (snd !== "off") cueOn(); }
     BC.sound = snd;
@@ -355,7 +357,7 @@
     B.state = "idle";
     applyTimings();
     syncFields(); syncRate(); renderNote(); syncVisHint();
-    checkRadio("bvis", BC.visual); syncChips("#bVis");
+    scnBreatheSync();
     $("#bCue").value = BC.cue;
     bBuzzSync();
     pLockBreathe();
@@ -539,7 +541,9 @@
     for (var i = P.steps.length - 1; i >= 0; i--) if (T >= P.steps[i].at - 1e-6) return i;
     return 0;
   }
-  function pVis(s) {
+  // what the stage shows for a step: a scene in place of the orb, the still point or the glow when the practice shows one (scenes.js)
+  function pVis(s) { return scnVis(s, pVisOf(s)); }
+  function pVisOf(s) {
     if (s.k === "breath") return "breath";
     if (s.k === "pose") return "pose";
     if (s.k === "pump") return "pump";
@@ -906,7 +910,7 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1, mind: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -931,6 +935,7 @@
         else if (vis === "sing") vxShow(s, st);
         else if (vis === "stroke") tcDraw(c, W, Hh, s, st, col);
         else if (vis === "mind") mnDraw(c, W, Hh, s, st, col);
+        else if (vis === "scene") scnStep(c, W, Hh, s, T);
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -1100,6 +1105,7 @@
       if (again !== true) { P.paceK = 1; P.beatAdj = 0; P.beatOff = false; }
       P.def = d;
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
+      scnStart(d);                                     // and the scene it shows, if any (scenes.js)
       if (B.finder) finderCancel();
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
@@ -1408,6 +1414,7 @@
           return '<button data-v="' + o[0] + '" aria-pressed="' + (O.visual === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
     }
+    if (scnFits(d)) opts.push(scnRow(O));               // a scene to watch, kept for this practice: with a donation while locked (scenes.js)
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
     every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl(true) + "</div>");   // its music is a row of its own above
@@ -1511,6 +1518,7 @@
     if (d.audio) s.push(O.audio ? (d.beats ? pBeat(d).label : "Binaural") : "No beats");
     if (d.audio && O.audio && bmMode(O.beatMode) !== "binaural") s.push(bmMode(O.beatMode) === "monaural" ? "Monaural" : "Isochronic");
     if (!d.music && !d.noMus && musShown(O.music) !== "off") s.push(MUS_SHORT[O.music]);
+    if (scnFits(d) && scnShown(O.scene) !== "off") s.push(scnOptName(O.scene));
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -1593,6 +1601,16 @@
       musPick(b.getAttribute("data-mus"), function (k) {
         if (P.view !== d) return;
         O.music = k; save(); musUI();
+      });
+    });
+    // a scene, kept for this practice: picking one opens with a donation while this device is locked (scenes.js)
+    var sg = $("#sOptScn");
+    if (sg) sg.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-scn]"); if (!b) return;
+      scnPickOpt(b.getAttribute("data-scn"), function (k) {
+        if (P.view !== d) return;
+        O.scene = k; save(); scnUI();
+        if (k === "fire") amNeed(["fire", "fireP"]);
       });
     });
     var pg = $("#sOptPace");

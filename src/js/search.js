@@ -123,7 +123,7 @@
         [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id, sup: b.sup }));
     });
     out.push(fdEntry("breath", "Breathing guide", "Breathe · paced breathing",
-      ["Paced breathing with five visuals, timed sessions, sound cues and live heart data."], "#breathe",
+      ["Paced breathing with five visuals and scenes that move with your breath, timed sessions, sound cues and live heart data."], "#breathe",
       { ic: "breathe", col: "var(--b-in)", w: 1, tags: "breathe pace" }));
     TRACKS.forEach(function (t) {
       var g = goalOf(t.goal), gn = g ? g.name : "Tinnitus";
@@ -147,6 +147,9 @@
     out.push(fdEntry("sound", "Music in the background", "Background sound · slow, steady, lively or matched",
       ["Music made on your device, with no words: soft chords, a low note and plucked notes, slow for sleep and calm, steady for focus, lively for energy. It plays under practices, breathing sessions and tracks, and a practice can keep its own."], "#st-amb",
       { ic: "sounds", col: "var(--relax)", w: 1.05, tags: "music tempo bpm beats song songs tune melody chords ambient generative slow steady lively focus energy calm background", sup: true }));
+    out.push(fdEntry("breath", "Scenes", "Breathe, practices and Settings · clouds, water, leaves, a forest, a fractal, flowers, a fire",
+      ["Scenes to watch, drawn on your device and moving slowly: on Breathe the scene moves with your breath, in a practice it takes the place of the orb, and in Settings you pick the ones you find restful."], "#st-scenes",
+      { ic: "leaf", col: "var(--b-in)", w: 1.05, alias: SCN_NAME, tags: "scene scenes visual visuals nature clouds sky water lake sea ripples leaves tree branch forest mist misty ridge mountains fractal fractals flowers roses fire fireplace flames embers restful restorative soft fascination video", sup: true }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
       ["Pair a HeartMath ear-clip sensor, a chest strap or a Garmin watch set to broadcast, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
       { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));

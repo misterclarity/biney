@@ -1076,6 +1076,23 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .mus-seg button{display:inline-flex;align-items:center;gap:4px;min-height:44px}
   .mus-seg .sup-ic{background:none;padding:0;color:var(--stim)}
   .mus-seg .sup-ic svg.i{width:12px;height:12px}
+  /* scenes to watch: Breathe's Scene chip and its row of scenes, a practice's Scene row, Settings' restful scenes */
+  .b-scnchip,.b-scn .chip{min-height:44px}
+  .b-scn{margin-top:8px}
+  .scn-seg button{display:inline-flex;align-items:center;gap:4px;min-height:44px}
+  .scn-seg .sup-ic{background:none;padding:0;color:var(--stim)}
+  .scn-seg .sup-ic svg.i{width:12px;height:12px}
+  .st-card .scn-seg{align-self:flex-start;max-width:100%}
+  .scn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px}
+  .scn-pick{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:6px 6px 8px;min-height:44px;border-radius:12px;
+    border:1px solid transparent;background:var(--panel-2);color:var(--text-dim);font:inherit;font-size:13px;font-weight:700;text-align:left;cursor:pointer;--c1:var(--text-dim)}
+  .scn-pick[aria-pressed="true"]{border-color:var(--relax);background:var(--panel-3);color:var(--text);--c1:var(--relax)}
+  .scn-pick:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .scn-thumb{display:block;width:100%;height:62px;border-radius:8px;background:var(--bg-2)}
+  .scn-pn{display:flex;align-items:center;gap:4px;padding:0 2px}
+  .scn-pn .sup-ic{background:none;padding:0;color:var(--stim)}
+  .scn-pn .sup-ic svg.i{width:12px;height:12px}
+  .scn-pick .strength{margin:0 2px}
   .slp-row{flex-direction:column;align-items:stretch;gap:8px;margin:0 0 16px}
   .slp-row .mini-seg{align-self:flex-start;max-width:100%}
   .slp-seg button{min-height:44px}
@@ -2516,6 +2533,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <label class="chip"><input type="radio" name="bvis" value="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/><circle cx="2.5" cy="8" r="1.5" fill="currentColor" stroke="none"/></svg>Box</label>
             <label class="chip"><input type="radio" name="bvis" value="dial"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 1.8A6.2 6.2 0 1 1 1.8 8"/><circle cx="8" cy="8" r="2.2"/></svg>Dial</label>
             <label class="chip"><input type="radio" name="bvis" value="column"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="1.5" width="6" height="13" rx="3"/><path d="M5 9.5h6"/></svg>Column</label>
+            <label class="chip b-scnchip"><input type="radio" name="bvis" value="scene"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="4.6" r="1.8"/><path d="M1.2 13.5l4.3-6 3 3.8 2-2.4 4.3 4.6z"/></svg>Scene</label>
+          </div>
+          <div class="chips b-scn" id="bScn" role="radiogroup" aria-label="Scene" hidden>
+            <label class="chip"><input type="radio" name="bscn" value="clouds" checked> Clouds</label>
+            <label class="chip"><input type="radio" name="bscn" value="water"> Water</label>
+            <label class="chip"><input type="radio" name="bscn" value="leaves"> Leaves</label>
+            <label class="chip"><input type="radio" name="bscn" value="forest"> Forest</label>
+            <label class="chip"><input type="radio" name="bscn" value="fractal"> Fractal</label>
+            <label class="chip"><input type="radio" name="bscn" value="flowers"> Flowers</label>
+            <label class="chip"><input type="radio" name="bscn" value="fire"> Fire</label>
           </div>
           <p class="hint" id="bVisHint">The circle grows as you breathe in and shrinks as you breathe out. The outer arc fills as each phase runs.</p>
         </div>
@@ -2853,6 +2880,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-nature">Nature sounds</a>
             <a href="#l-sleepsnd">Sound and sleep</a>
             <a href="#l-music">Music</a>
+            <a href="#l-scenes">Scenes</a>
             <a href="#l-touch">Touch</a>
             <a href="#l-mind">Imagery and nidra</a>
             <a href="#l-expect">Placebo and side effects</a>
@@ -3010,10 +3038,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <tr class="ln-row"><th scope="row"><b>Bright, cool light in the morning</b> <small>Alertness</small></th><td>Strong</td><td><a href="#living/morning">A morning routine</a>, <a href="#living/light-box">a light box</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Dim, warm light in the evening</b> <small>Ready for sleep</small></th><td>Strong</td><td><a href="#living/sleep-habits">Healthy sleep habits</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Rhythmic light flicker</b> <small>Entrainment, such as 40&nbsp;Hz</small></th><td>Early (a seizure risk)</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Nature scenes, restoration breaks</b> <small>Alpha, attention recovery</small></th><td>Moderate</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>A fireplace, with its sound</b> <small>Relaxation, lower blood pressure</small></th><td>Moderate</td><td class="ln-lo">Learn only, as a fire to watch; its crackle is one of the <a href="#l-nature">nature sounds</a></td></tr>
-                <tr class="ln-row"><th scope="row"><b>Mid-complexity fractals</b> <small>Stress reduction</small></th><td>Promising (mostly one lab)</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Fresh flowers</b> <small>Balancing arousal</small></th><td>Early</td><td class="ln-lo">Learn only</td></tr>
+                <tr class="ln-row"><th scope="row"><b>Nature scenes, restoration breaks</b> <small>Alpha, attention recovery</small></th><td>Moderate</td><td><a href="#st-scenes">Scenes</a> to watch on Breathe or in a practice: clouds, water, leaves, a misty forest</td></tr>
+                <tr class="ln-row"><th scope="row"><b>A fireplace, with its sound</b> <small>Relaxation, lower blood pressure</small></th><td>Moderate</td><td>A fire to watch, one of the <a href="#st-scenes">scenes</a>, always with its crackle (one of the <a href="#l-nature">nature sounds</a>)</td></tr>
+                <tr class="ln-row"><th scope="row"><b>Mid-complexity fractals</b> <small>Stress reduction</small></th><td>Promising (mostly one lab)</td><td>Fractal ridgelines, one of the <a href="#st-scenes">scenes</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Fresh flowers</b> <small>Balancing arousal</small></th><td>Early</td><td>Flowers, one of the <a href="#st-scenes">scenes</a> (real flowers were studied; on a screen, untested)</td></tr>
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Touch</th></tr>
@@ -3702,6 +3730,61 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               falls near a beat's carrier tone moves an octave away, so the music leaves a binaural beat alone.
             </p>
 
+            <h3 id="l-scenes">Scenes to watch: nature, fractals, flowers and fire</h3>
+            <p>
+              What you look at matters too. In an early study, alpha waves, a sign of wakeful relaxation, were higher while
+              people looked at slides of trees and plants than of city streets, and higher on average for water too (Ulrich,
+              1981). A study in Taiwan found alpha rising with the more restorative natural scenes (Chang et al., 2008), and
+              video works as well: in 24 students, three-minute nature videos raised alpha more than city or abstract videos,
+              most over the centre of the head, and were rated the most relaxing, though a memory task afterwards came out
+              the same (Grassini et al., 2022). The guide behind Entrain's new techniques rates nature scenes as moderate
+              evidence. Attention Restoration Theory explains them by soft fascination: drifting clouds, leaves, water and fire
+              hold your attention without effort, which may let tired focus recover; and a setting restores best when it
+              suits you, which the theory calls compatibility (Kaplan, 1995). That's why you pick the scenes you find
+              restful.
+            </p>
+            <p>
+              Many natural forms are fractals: the same kind of detail repeats at finer and finer scales, as in clouds,
+              coastlines, trees and the outline of hills. How rough they are is measured as a fractal dimension, from 1 for a
+              smooth line to 2 for one that fills the page, and the outlines in natural scenery mostly lie between about 1.3
+              and 1.5. In an EEG study of landscape silhouettes with different dimensions, the one at 1.3 gave the highest
+              frontal alpha (H&auml;gerh&auml;ll et al., 2008), and Taylor's group reports that fractals of mid complexity
+              lower physiological stress, by as much as 60% on its measures of skin conductance and EEG, from work its first
+              paper called preliminary (Taylor, 2006). Its explanation, fractal fluency, is that our eyes grew up among
+              natural fractals and take them in with little effort (Taylor &amp; Spehar, 2016). The guide rates fractals as
+              promising: the findings come mostly from one lab and haven't been widely repeated by others. Entrain's fractal
+              is ridgelines made the way fractal landscapes are, from waves each about twice as fine and a little less tall
+              than the last (a Weierstrass-Mandelbrot curve), with a dimension of 1.4 by construction, drifting slowly past
+              one another. Counted in boxes on a phone-sized drawing, over the few scales a screen can show, it comes out a
+              little lower, at about 1.25.
+            </p>
+            <p>
+              Fresh flowers have a small research record of their own, mostly from Yoshifumi Miyazaki's group in Japan.
+              Office workers who looked at a vase of thirty pink roses for four minutes showed more of the heart-rate
+              variability that goes with rest, and felt more comfortable and relaxed, than with no flowers (Ikei et al.,
+              2014). Pooled across 214 people in such studies, from high school students to older adults, the roses seemed
+              to even things out: fight-or-flight activity fell in those who started high and rose in those who started low
+              (Ikei et al., 2023). The guide rates this as early: one group, and real roses only. Flowers on a screen haven't
+              been tested, so Entrain's flowers are simply something gentle to look at, and real flowers on your desk are
+              what was studied.
+            </p>
+            <p>
+              The fire comes from the study under nature sounds: watching a fire with its crackle lowered blood pressure, and
+              more the longer people watched, while the same fire with no sound had no consistent effect (Lynn, 2014). That
+              fire was on a screen, so a fire to watch is one of the scenes, and it always comes with its crackle, even with
+              the background sound off. The guide rates it as moderate evidence, and best in the evening.
+            </p>
+            <p>
+              Each scene is drawn on your device as it plays, with no video and nothing downloaded: drifting clouds,
+              rippling water with glints of moonlight, leaves swaying on a branch, a misty forest ridge, the fractal
+              ridgelines, flowers and the fire, all moving slowly. On Breathe, choose Scene under Visual and one part of it
+              follows your breath: as you breathe in, the sun rises, the moon's path on the water grows, the branch lifts,
+              the mist rises, the light behind the ridges grows, the flowers open and the flames rise. In a practice, a scene
+              can take the place of the orb, under Options. Pick the ones you find restful in <a href="#st-scenes">Settings</a>.
+              With reduced motion turned on in your device's settings, each scene stays still, and on Breathe only its light
+              follows your breath. These drawings haven't been tested themselves.
+            </p>
+
             <h3 id="l-touch">Touch: slow strokes, a hand on the heart, weighted blankets and massage</h3>
             <p id="l-ctouch">
               <b>Slow, gentle stroking.</b> Hairy skin, like the forearm's, has nerves of its own for caress-like touch:
@@ -4115,6 +4198,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>de Witte, M., da Silva Pinho, A., Stams, G.-J., Moonen, X., Bos, A. E. R., &amp; van Hooren, S. (2022). Music therapy for stress reduction: a systematic review and meta-analysis. <em>Health Psychology Review</em>, 16(1), 134–159. <a href="https://doi.org/10.1080/17437199.2020.1846580" rel="noopener">DOI</a></li>
       <li>Yang, Z., Su, Q., Xie, J., Su, H., Huang, T., Han, C., Zhang, S., Zhang, K., &amp; Xu, G. (2025). Music tempo modulates emotional states as revealed through EEG insights. <em>Scientific Reports</em>, 15, 8276. <a href="https://doi.org/10.1038/s41598-025-92679-1" rel="noopener">DOI</a></li>
       <li>Kučikienė, D., &amp; Praninskienė, R. (2018). The impact of music on the bioelectrical oscillations of the brain. <em>Acta Medica Lituanica</em>, 25(2), 101–106. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6130927/" rel="noopener">PMC</a></li>
+      <li>Ulrich, R. S. (1981). Natural versus urban scenes: Some psychophysiological effects. <em>Environment and Behavior</em>, 13(5), 523–556. <a href="https://doi.org/10.1177/0013916581135001" rel="noopener">DOI</a></li>
+      <li>Chang, C.-Y., Hammitt, W. E., Chen, P.-K., Machnik, L., &amp; Su, W.-C. (2008). Psychophysiological responses and restorative values of natural environments in Taiwan. <em>Landscape and Urban Planning</em>, 85(2), 79–84. <a href="https://doi.org/10.1016/j.landurbplan.2007.09.010" rel="noopener">DOI</a></li>
+      <li>Grassini, S., Segurini, G. V., &amp; Koivisto, M. (2022). Watching nature videos promotes physiological restoration: Evidence from the modulation of alpha waves in electroencephalography. <em>Frontiers in Psychology</em>, 13, 871143. <a href="https://doi.org/10.3389/fpsyg.2022.871143" rel="noopener">DOI</a></li>
+      <li>Kaplan, S. (1995). The restorative benefits of nature: Toward an integrative framework. <em>Journal of Environmental Psychology</em>, 15, 169–182. <a href="https://doi.org/10.1016/0272-4944(95)90001-2" rel="noopener">DOI</a></li>
+      <li>H&auml;gerh&auml;ll, C. M., Laike, T., Taylor, R. P., K&uuml;ller, M., K&uuml;ller, R., &amp; Martin, T. P. (2008). Investigations of human EEG response to viewing fractal patterns. <em>Perception</em>, 37(10), 1488–1494. <a href="https://pubmed.ncbi.nlm.nih.gov/19065853/" rel="noopener">PubMed</a></li>
+      <li>Taylor, R. P. (2006). Reduction of physiological stress using fractal art and architecture. <em>Leonardo</em>, 39(3), 245–251. <a href="https://doi.org/10.1162/leon.2006.39.3.245" rel="noopener">DOI</a></li>
+      <li>Taylor, R. P., &amp; Spehar, B. (2016). Fractal fluency: An intimate relationship between the brain and processing of fractal stimuli. In A. Di Ieva (Ed.), <em>The Fractal Geometry of the Brain</em>. Springer. <a href="https://doi.org/10.1007/978-1-4939-3995-4_30" rel="noopener">DOI</a></li>
+      <li>Ikei, H., Komatsu, M., Song, C., Himoro, E., &amp; Miyazaki, Y. (2014). The physiological and psychological relaxing effects of viewing rose flowers in office workers. <em>Journal of Physiological Anthropology</em>, 33, 6. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3974224/" rel="noopener">PMC</a></li>
+      <li>Ikei, H., Song, C., &amp; Miyazaki, Y. (2023). Physiological adjustment effect of visual stimulation by fresh rose flowers on sympathetic nervous activity. <em>Frontiers in Psychology</em>, 14, 1159458. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10174444/" rel="noopener">PMC</a></li>
       <li>L&ouml;ken, L. S., Wessberg, J., Morrison, I., McGlone, F., &amp; Olausson, H. (2009). Coding of pleasant touch by unmyelinated afferents in humans. <em>Nature Neuroscience</em>, 12(5), 547–548. <a href="https://doi.org/10.1038/nn.2312" rel="noopener">DOI</a></li>
       <li>Olausson, H., Lamarre, Y., Backlund, H., Morin, C., Wallin, B. G., Starck, G., Ekholm, S., Strigo, I., Worsley, K., Vallbo, &Aring;. B., &amp; Bushnell, M. C. (2002). Unmyelinated tactile afferents signal touch and project to insular cortex. <em>Nature Neuroscience</em>, 5(9), 900–904. <a href="https://doi.org/10.1038/nn896" rel="noopener">DOI</a></li>
       <li>Pawling, R., Cannon, P. R., McGlone, F. P., &amp; Walker, S. C. (2017). C-tactile afferent stimulating touch carries a positive affective value. <em>PLOS ONE</em>, 12(3), e0173457. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5345811/" rel="noopener">PMC</a></li>
@@ -6274,7 +6366,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     box: "Trace the square: up on the in-breath, across the top on the hold, down on the out-breath, back along the bottom.",
     dial: "One lap of the dial is one breath, divided by phase. The centre swells with each in-breath.",
     column: "The column fills like your lungs and drains as you breathe out."
-  };
+  };                                                  // a scene's own words are in scenes.js (scnHint)
 
   // max: the sliders' usual range, in half seconds; xmax: the Swim & dive range, in whole seconds
   var B_FIELDS = [
@@ -6295,7 +6387,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   var BC = {
     pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0, long: false,
-    visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false
+    visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false, scene: "clouds"
   };
 
   var B = {
@@ -6326,7 +6418,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var c = BC;
     if (B.finder) {
       c = B.finder.saved;
-      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue; c.buzz = BC.buzz;
+      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue; c.buzz = BC.buzz; c.scene = BC.scene;
     }
     store.set("breath", JSON.stringify(c));
   }
@@ -6506,8 +6598,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (el) el.checked = true;
   }
   function syncVisHint() {
-    var s = B_VIS_HINT[BC.visual] || "";
-    if (BC.visual === "box" && !BC.hold && !BC.rest) s += " This pattern has no holds, so the top and bottom sides are skipped.";
+    var v = bVisNow(), s = v === "scene" ? scnHint() : B_VIS_HINT[v] || "";
+    if (v === "box" && !BC.hold && !BC.rest) s += " This pattern has no holds, so the top and bottom sides are skipped.";
     bSetT("#bVisHint", s);
   }
   function syncTransport() {
@@ -6933,7 +7025,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           if (isFinite(v) && v >= f.min && v <= f.xmax) BC[f.k] = Math.round(v * 2) / 2;
         });
         BC.long = saved.long === true || bLongT(BC);
-        if (BVIS[saved.visual]) BC.visual = saved.visual;
+        if (BVIS[saved.visual]) BC.visual = saved.visual;    // a scene kept while this device is locked shows the circle (bVisNow)
+        if (scnGet(saved.scene)) BC.scene = saved.scene;
         if (["off", "tones", "chimes"].indexOf(saved.sound) >= 0) BC.sound = saved.sound;
         if ([0, 2, 5, 10, 15].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;
         var cue = parseInt(saved.cue, 10);
@@ -6947,11 +7040,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     mpInit();
     dvInit();
     checkRadio("bpat", BC.pattern);
-    checkRadio("bvis", BC.visual);
+    checkRadio("bvis", bVisNow());
     checkRadio("blen", String(BC.minutes));
     checkRadio("bsnd", BC.sound);
     ["#bPats", "#bVis", "#bLen", "#bSnd"].forEach(syncChips);
     bSupChips();
+    scnBreatheSync();                                   // the Scene chip's cup, and the row of scenes (scenes.js)
     $("#bCue").value = BC.cue;
     $("#bVolRow").hidden = BC.sound === "off";
     bBuzzSync();
@@ -6991,8 +7085,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       });
     });
     $("#bVis").addEventListener("change", function (e) {
-      BC.visual = e.target.value;
-      syncChips("#bVis"); syncVisHint(); draw(); saveBreath();
+      var v = e.target.value, go = function () {
+        BC.visual = v;
+        scnBreatheSync(); syncVisHint(); draw(); saveBreath();
+        if (v === "scene" && BC.scene === "fire") amNeed(["fire", "fireP"]);    // its crackle ready to play with it
+      };
+      if (v === "scene") scnBreathePick(go); else go();     // a scene is a new technique: the dialog first while locked (scenes.js)
     });
     $("#bLen").addEventListener("change", function (e) {
       if (B.finder) finderCancel();
@@ -7526,6 +7624,590 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
   };
 
+  /* ------------------------------- scenes -------------------------------
+     Scenes to watch, from the brain-wave guide's "Vision: what you look at": drifting clouds, rippling water
+     with glints of light, leaves swaying on a branch, a misty forest ridge, fractal ridgelines, flowers and
+     a fire. Each is drawn on the device as it goes, with nothing downloaded: gradients and paths on a canvas,
+     30 frames a second through the same loops as the other visuals, with no blurred shadows. Each moves
+     slowly by itself (soft fascination: slow, gentle movement, nothing busy), and on Breathe one part of it
+     follows the breath: the sun rises, the moon's path on the water lengthens, the branch lifts, the mist
+     rises, the light behind the ridges grows, the flowers open, the flames rise, all as you breathe in.
+     With reduced motion a scene is still; on Breathe only its light follows the breath.
+     The fire always comes with its crackle (one of the nature sounds, ambience.js), since the study that
+     found a fire relaxing played it with its sound, and the same fire on mute had no consistent effect.
+
+     Where they show: Breathe's visual Scene (BVIS.scene, with the scene in BC.scene); a practice's Options,
+     Scene (P_OWN "scene": off, "mine" for one of the scenes you find restful, or one of them), which puts the
+     scene in place of the orb, the still point and the glow, and paces its breath steps; and any step that
+     asks for one: { vis: "scene" } shows the session's scene, { vis: "scene", scene: "fire" } that one. In
+     Settings (#st-scenes) you pick the scenes you find restful (the compatibility principle: a setting
+     restores best when it fits what you want), for "Yours" and for later features: scnMine(), scnPick(),
+     scnSoundOf(id) (the nature sound that goes with a scene). They are new techniques: picking one opens
+     the donation dialog until this device is unlocked, and a scene kept from before shows the usual visual.
+  ------------------------------------------------------------------------------ */
+
+  // id, chip name, its longer name (lists, the unlock dialog), evidence dots, the nature sound that suits it,
+  // what moves with the breath on Breathe, and what the guide says of its evidence
+  var SCN_LIST = [
+    { id: "clouds", name: "Clouds", long: "Drifting clouds", dots: 2, sound: "wind",
+      hint: "Clouds drift across a dusk sky. The sun rises as you breathe in and sinks as you breathe out." },
+    { id: "water", name: "Water", long: "Rippling water", dots: 2, sound: "stream",
+      hint: "Ripples cross the water with glints of moonlight. The moon lifts and its path on the water grows as you breathe in, and settles as you breathe out." },
+    { id: "leaves", name: "Leaves", long: "Swaying leaves", dots: 2, sound: "wind",
+      hint: "Leaves sway on a branch in a breeze. The branch lifts as you breathe in and sinks as you breathe out, and the light behind it brightens." },
+    { id: "forest", name: "Forest", long: "A misty forest", dots: 2, sound: "birds",
+      hint: "Ridges of pines with mist drifting between them. The mist rises as you breathe in and settles as you breathe out." },
+    { id: "fractal", name: "Fractal", long: "Fractal ridgelines", dots: 1, sound: "",
+      hint: "Ridgelines as rough as natural skylines, a fractal of mid complexity, drifting slowly. The light behind them rises as you breathe in and fades as you breathe out." },
+    { id: "flowers", name: "Flowers", long: "Flowers", dots: 1, sound: "birds",
+      hint: "Flowers nodding in a breeze. They open as you breathe in and close a little as you breathe out. The studies used real flowers; flowers on a screen haven't been tested." },
+    { id: "fire", name: "Fire", long: "A fire to watch", dots: 2, sound: "fire",
+      hint: "A fire with embers rising, and its crackle while you breathe. The flames rise as you breathe in and settle as you breathe out." }
+  ];
+  var SCN_NAME = "Scenes to watch";                 // Settings' list, search, the dialog from a choice that isn't one scene
+  var SCN_NOTE = "A scene in place of the orb, moving slowly; on breath steps it moves with your breath. Yours is one of the scenes you find restful, in Settings.";
+  var SCN_H = 0.6;                                  // the fractal's roughness (Hurst exponent): a dimension of 2 − 0.6 = 1.4 by construction
+  var SCN_LAM = 1.9;                                // each octave of the ridgeline this much finer than the last
+  // mine: the scenes you find restful (none picked: all of them); spr: drawings made once and reused
+  var SCN = { mine: [], spr: {}, nspr: 0 };
+
+  function scnGet(id) { for (var i = 0; i < SCN_LIST.length; i++) if (SCN_LIST[i].id === id) return SCN_LIST[i]; return null; }
+  // the scenes you find restful, in the list's order; all of them until you pick
+  function scnMine() {
+    var m = SCN_LIST.map(function (x) { return x.id; }).filter(function (id) { return SCN.mine.indexOf(id) >= 0; });
+    return m.length ? m : SCN_LIST.map(function (x) { return x.id; });
+  }
+  // one of them, for a session: a different one each day, in turn (n: a number of your own instead of the day)
+  function scnPick(n) {
+    var m = scnMine(), k = typeof n === "number" ? n : Math.floor((Date.now() - new Date().getTimezoneOffset() * 6e4) / 864e5);
+    return m[((k % m.length) + m.length) % m.length];
+  }
+  // the nature sound that suits a scene ("" for none): the fire's crackle always plays with the fire
+  function scnSoundOf(id) { var x = scnGet(id); return x ? x.sound : ""; }
+  function scnMineSet(list) {
+    SCN.mine = SCN_LIST.map(function (x) { return x.id; }).filter(function (id) { return list.indexOf(id) >= 0; });
+    if (SCN.mine.length) store.set("scenes", SCN.mine.join(",")); else storeDel("scenes");
+  }
+
+  /* ----- drawing helpers ----- */
+  // a smooth wander between -1 and 1: three slow sines that never line up
+  function scnWob(t, a) { return (Math.sin(t + a) + 0.6 * Math.sin(t * 1.618 + a * 2.3) + 0.35 * Math.sin(t * 2.718 + a * 0.7)) / 1.95; }
+  function scnMix(h1, h2, f) {
+    var a = parseInt(h1.slice(1), 16), b = parseInt(h2.slice(1), 16), out = "#";
+    [16, 8, 0].forEach(function (s) {
+      var v = Math.round(((a >> s) & 255) * (1 - f) + ((b >> s) & 255) * f);
+      out += (v < 16 ? "0" : "") + v.toString(16);
+    });
+    return out;
+  }
+  function scnSky(c, W, H, stops) {
+    var g = c.createLinearGradient(0, 0, 0, H);
+    stops.forEach(function (s) { g.addColorStop(s[0], s[1]); });
+    c.fillStyle = g; c.fillRect(0, 0, W, H);
+  }
+  // a soft light: a radial gradient fading out from its centre
+  function scnGlow(c, x, y, r, col, a) {
+    if (r <= 0 || a <= 0) return;
+    var g = c.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, rgba(col, a)); g.addColorStop(0.35, rgba(col, a * 0.45)); g.addColorStop(1, rgba(col, 0));
+    c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill();
+  }
+  // a drawing made once (a cloud, a band of mist) and reused every frame
+  function scnSprite(key, w, h, fn) {
+    if (SCN.spr[key]) return SCN.spr[key];
+    if (SCN.nspr > 24) { SCN.spr = {}; SCN.nspr = 0; }
+    var cv = document.createElement("canvas");
+    cv.width = w; cv.height = h;
+    var x = cv.getContext && cv.getContext("2d");
+    if (!x) return null;
+    fn(x, w, h);
+    SCN.nspr++;
+    return (SCN.spr[key] = cv);
+  }
+  function scnRound(c, W, H, r) {
+    c.beginPath();
+    c.moveTo(r, 0); c.arcTo(W, 0, W, H, r); c.arcTo(W, H, 0, H, r); c.arcTo(0, H, 0, 0, r); c.arcTo(0, 0, W, 0, r);
+    c.closePath();
+  }
+
+  /* ----- the scenes. Each is drawn from (W, H, T, L, G): T the time in seconds, L the breath's level for the
+     light (0 empty to 1 full) and G the same for what moves with it. With reduced motion T and G stay put. ----- */
+  function scnCloudSprite(v) {
+    return scnSprite("cloud" + v, 512, 240, function (x, w, h) {
+      var r = amRand(41 + v * 7);
+      for (var i = 0; i < 11; i++) {
+        var px = w * (0.16 + 0.68 * r()), dome = Math.sin(Math.PI * px / w), py = h * (0.66 - 0.28 * dome + 0.08 * r()), pr = h * (0.16 + 0.2 * dome + 0.08 * r());
+        var g = x.createRadialGradient(px, py, 0, px, py, pr);
+        g.addColorStop(0, "rgba(255,255,255,0.95)"); g.addColorStop(0.62, "rgba(255,255,255,0.8)"); g.addColorStop(0.85, "rgba(255,255,255,0.3)"); g.addColorStop(1, "rgba(255,255,255,0)");
+        x.fillStyle = g; x.beginPath(); x.arc(px, py, pr, 0, Math.PI * 2); x.fill();
+      }
+      x.globalCompositeOperation = "source-atop";              // lit from above, shadowed beneath
+      var s = x.createLinearGradient(0, 0, 0, h);
+      s.addColorStop(0, "#f4e9e4"); s.addColorStop(0.5, "#c9c8de"); s.addColorStop(1, "#7f7fa6");
+      x.fillStyle = s; x.fillRect(0, 0, w, h);
+    });
+  }
+  function scnClouds(c, W, H, T, L, G) {
+    var u = Math.min(W, H);
+    scnSky(c, W, H, [[0, "#16223f"], [0.5, "#2e3d68"], [0.82, "#6a5f86"], [1, "#a07a86"]]);
+    // the sun, low in a dusk sky: it rises as you breathe in and sinks as you breathe out
+    var sx = W * 0.5, sy = H * (0.84 - 0.32 * G), sr = u * (0.07 + 0.02 * L);
+    scnGlow(c, sx, sy, sr * 5, "#f6c48c", 0.12 + 0.2 * L);
+    scnGlow(c, sx, sy, sr * 1.25, "#fff0cf", 0.55 + 0.35 * L);
+    for (var layer = 0; layer < 3; layer++) {
+      var r = amRand(70 + layer), n = 3 + (layer === 1 ? 1 : 0);
+      for (var i = 0; i < n; i++) {
+        var w = W * (0.3 + 0.14 * layer) * (0.75 + 0.5 * r()), h = w * 0.47, span = W + w * 1.2;
+        var x = (r() * span + (3 + 4.5 * layer) * (W / 400) * T) % span - w * 1.1, y = H * (0.03 + 0.12 * layer + 0.09 * r()) - h * 0.25;
+        var spr = scnCloudSprite(Math.floor(r() * 3));
+        c.globalAlpha = 0.34 + 0.2 * layer + 0.1 * L;
+        if (spr) c.drawImage(spr, x, y, w, h);
+      }
+    }
+    c.globalAlpha = 1;
+    // a dark line of hills to stand on
+    c.fillStyle = "#121a2e";
+    c.beginPath(); c.moveTo(0, H);
+    for (var hx = 0; hx <= W + 8; hx += 8) c.lineTo(hx, H * (0.9 - 0.035 * Math.sin(hx / W * 5.3 + 1) - 0.02 * Math.sin(hx / W * 13 + 2)));
+    c.lineTo(W, H); c.closePath(); c.fill();
+  }
+  function scnWater(c, W, H, T, L, G) {
+    var hy = H * 0.42, u = Math.min(W, H), j, k;
+    scnSky(c, W, H, [[0, "#141d3a"], [0.3, "#2b3763"], [0.42, "#6a6189"], [0.43, "#26315a"], [1, "#0c1328"]]);
+    // the moon lifts a little as you breathe in, and its path on the water lengthens and brightens
+    var mx = W * 0.62, my = hy - H * (0.08 + 0.14 * G), mr = u * 0.045;
+    scnGlow(c, mx, my, mr * 6, "#f3e2c0", 0.1 + 0.16 * L);
+    scnGlow(c, mx, my, mr * 1.3, "#fff5dc", 0.7 + 0.25 * L);
+    // a far shore
+    c.fillStyle = "#151b33";
+    c.beginPath(); c.moveTo(0, hy + 1);
+    for (var sx = 0; sx <= W + 6; sx += 6) c.lineTo(sx, hy - H * (0.012 + 0.03 * Math.max(0, Math.sin(sx / W * 4.1 + 0.6)) + 0.008 * Math.sin(sx / W * 17)));
+    c.lineTo(W, hy + 1); c.closePath(); c.fill();
+    // ripples, closer and wider towards you, drifting slowly
+    var rows = 28;
+    c.lineWidth = 1;
+    for (j = 1; j <= rows; j++) {
+      var f = j / rows, y = hy + (H - hy) * Math.pow(f, 1.6), amp = 0.6 + 3.2 * f, kx = 0.05 / (0.4 + f);
+      c.strokeStyle = rgba("#9db3e0", 0.05 + 0.07 * f);
+      c.beginPath();
+      for (var x = 0; x <= W; x += 10) {
+        var yy = y + amp * Math.sin(x * kx + T * (0.5 + 0.4 * f) + j * 1.7);
+        if (x === 0) c.moveTo(x, yy); else c.lineTo(x, yy);
+      }
+      c.stroke();
+    }
+    // the glints on the moon's path: short dashes that come and go
+    var reach = 0.45 + 0.55 * L, rr = amRand(91);
+    for (j = 0; j < 34; j++) {
+      var d = j / 34, gy = hy + 3 + (H - hy - 3) * Math.pow(d, 1.5);
+      for (k = 0; k < 3; k++) {
+        var a1 = rr(), a2 = rr(), a3 = rr();
+        if (d > reach) continue;
+        var spread = W * (0.03 + 0.16 * d), gx = mx + (a1 - 0.5) * 2 * spread + Math.sin(T * 0.8 + j * 0.9 + k) * 4 * d;
+        var tw = 0.5 + 0.5 * Math.sin(T * (1.1 + a2 * 1.4) + a3 * 12), gw = (3 + 16 * d) * (0.5 + a2);
+        c.fillStyle = rgba("#ffeec8", (0.12 + 0.55 * tw) * (1 - d / reach * 0.7) * (0.55 + 0.45 * L));
+        c.fillRect(gx - gw / 2, gy, gw, 1 + d * 1.5);
+      }
+    }
+  }
+  function scnLeaf(c, len, wid, col, tip) {
+    var g = c.createLinearGradient(0, 0, len, 0);
+    g.addColorStop(0, col); g.addColorStop(1, tip);
+    c.fillStyle = g;
+    c.beginPath(); c.moveTo(0, 0);
+    c.bezierCurveTo(len * 0.3, -wid, len * 0.72, -wid * 0.8, len, 0);
+    c.bezierCurveTo(len * 0.72, wid * 0.8, len * 0.3, wid, 0, 0);
+    c.fill();
+    c.strokeStyle = "rgba(200,232,190,0.22)"; c.lineWidth = 0.8;
+    c.beginPath(); c.moveTo(len * 0.04, 0); c.lineTo(len * 0.9, 0); c.stroke();
+  }
+  // a branch from (bx, by) towards angle a0, its leaves in pairs, swaying by sw and lifted by up
+  function scnBranch(c, bx, by, len, a0, sw, up, n, seed, T, m, dark) {
+    var r = amRand(seed), lw = len / n;
+    c.save();
+    c.translate(bx, by); c.rotate(a0 + sw - up);
+    c.strokeStyle = dark ? "#1c2a20" : "#3a3326"; c.lineCap = "round";
+    c.lineWidth = Math.max(2, len * 0.014);
+    c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(len * 0.5, len * 0.05, len, len * 0.02); c.stroke();
+    for (var i = 1; i <= n; i++) {
+      var p = i / (n + 0.4), x = len * p, y = len * 0.05 * Math.sin(Math.PI * p) * 0.9;
+      for (var s = -1; s <= 1; s += 2) {
+        var a1 = r(), a2 = r(), fl = m * 0.16 * Math.sin(T * (0.9 + 0.5 * a1) + a2 * 6.3);
+        c.save();
+        c.translate(x, y); c.rotate(s * (0.75 + 0.25 * a1) + fl + 0.15);
+        scnLeaf(c, lw * (1.5 + 0.5 * a2) * (1.1 - 0.4 * p), lw * 0.34, dark ? "#1f3d2b" : "#2e6b40", dark ? "#2e5a3a" : "#7cbf72");
+        c.restore();
+      }
+    }
+    c.restore();
+  }
+  function scnLeaves(c, W, H, T, L, G, m) {
+    var u = Math.min(W, H);
+    scnSky(c, W, H, [[0, "#132622"], [0.6, "#1b3a2e"], [1, "#0f1d18"]]);
+    // light through the leaves, brightening as you breathe in
+    scnGlow(c, W * 0.32, H * 0.3, u * 0.95, "#e7efb2", 0.08 + 0.17 * L);
+    var r = amRand(55), i;
+    for (i = 0; i < 8; i++) {
+      var bx = W * r() + Math.sin(T * 0.08 + i) * W * 0.03, by = H * r(), br = u * (0.05 + 0.08 * r());
+      scnGlow(c, bx, by, br, i % 2 ? "#a9d89f" : "#f0e6a8", (0.05 + 0.06 * r()) * (0.7 + 0.6 * L));
+    }
+    var sway = m * (0.045 * Math.sin(T * 0.35) + 0.02 * Math.sin(T * 0.83 + 1)), up = (G - 0.5) * 0.16;
+    scnBranch(c, -W * 0.05, H * 0.16, W * 0.75, 0.34, -sway * 0.6, up * 0.5, 7, 12, T, m, true);   // a darker branch further back
+    scnBranch(c, W * 1.04, -H * 0.02, Math.max(W, H) * 0.95, Math.PI - 0.62, sway, -up, 9, 31, T + 3, m, false);
+  }
+  function scnForest(c, W, H, T, L, G) {
+    scnSky(c, W, H, [[0, "#1a2442"], [0.45, "#3d4f72"], [0.62, "#8b93a9"], [1, "#2a3a3a"]]);
+    scnGlow(c, W * 0.7, H * 0.4, Math.min(W, H) * 0.6, "#f1e3c4", 0.08 + 0.12 * L);
+    var lift = (G - 0.5) * H * 0.08;
+    for (var i = 0; i < 4; i++) {
+      var r = amRand(200 + i), p1 = r() * 6.3, p2 = r() * 6.3, base = H * (0.47 + 0.135 * i);
+      var col = scnMix("#8790a8", "#0f1c17", i / 3), step = 6 + 5 * i, th = 9 + 9 * i;
+      var ridge = function (x) { return base - H * (0.045 + 0.01 * i) * (Math.sin(x / W * 2.2 + p1) + 0.45 * Math.sin(x / W * 5.1 + p2)); };
+      c.fillStyle = col;
+      c.beginPath(); c.moveTo(0, H);
+      for (var x = 0; x <= W + 6; x += 6) c.lineTo(x, ridge(x));
+      c.lineTo(W, H); c.closePath(); c.fill();
+      c.beginPath();                                       // pines along the ridge
+      for (var tx = -step * r(); tx < W + step; tx += step * (0.45 + 1.2 * r())) {
+        var ty = ridge(tx) + 2, h = th * (0.5 + 0.9 * r()), w = h * (0.17 + 0.12 * r());
+        c.moveTo(tx - w, ty); c.lineTo(tx, ty - h); c.lineTo(tx + w, ty); c.closePath();
+      }
+      c.fill();
+      // mist in front of this ridge: it drifts, and rises and thickens as you breathe in
+      var mist = scnSprite("mist", 512, 64, function (x, w, h) {
+        var q = amRand(17);
+        for (var k = 0; k < 9; k++) {
+          var mx = w * q(), mr = w * (0.12 + 0.1 * q());
+          for (var wrap = -1; wrap <= 1; wrap++) {           // drawn again a width either side, so the band joins up as it repeats
+            x.save(); x.translate(mx + wrap * w, h / 2); x.scale(1, h / (2 * mr));
+            var g = x.createRadialGradient(0, 0, 0, 0, 0, mr);
+            g.addColorStop(0, "rgba(214,222,236,0.85)"); g.addColorStop(1, "rgba(214,222,236,0)");
+            x.fillStyle = g; x.beginPath(); x.arc(0, 0, mr, 0, Math.PI * 2); x.fill(); x.restore();
+          }
+        }
+      });
+      if (mist && i < 3) {
+        var mw = W * 1.6, mh = H * (0.08 + 0.03 * i), off = (T * (3 + 2 * i) * (W / 400) + r() * mw) % mw, my = base + H * 0.03 - mh / 2 - lift;
+        c.globalAlpha = 0.16 + 0.1 * i + 0.16 * L;
+        c.drawImage(mist, off - mw, my, mw, mh); c.drawImage(mist, off, my, mw, mh);
+        c.globalAlpha = 1;
+      }
+    }
+  }
+  /* The fractal: Weierstrass-Mandelbrot ridgelines, sums of sines each SCN_LAM times finer and SCN_LAM^-H as
+     tall, down to a pixel. Such a curve has a fractal dimension of 2 − H: 1.4 here, the middle of the 1.3 to 1.5
+     found in natural scenery (box counting over the few octaves a screen shows gives a little less). */
+  function scnRidge(i, W) {
+    var r = amRand(300 + i), oct = [];
+    for (var n = 0, w = 1.3 * W; w >= 1 && n < 14; n++, w /= SCN_LAM) oct.push([2 * Math.PI / w, Math.pow(SCN_LAM, -n * SCN_H), r() * 6.2832]);
+    return function (x) {
+      var s = 0;
+      for (var j = 0; j < oct.length; j++) s += oct[j][1] * Math.sin(oct[j][0] * x + oct[j][2]);
+      return s;
+    };
+  }
+  function scnFractal(c, W, H, T, L, G) {
+    scnSky(c, W, H, [[0, "#120f2b"], [0.45, "#2b2452"], [0.7, "#5d4a7a"], [1, "#2a2140"]]);
+    // a dawn light behind the ridges: it rises and grows as you breathe in
+    scnGlow(c, W * 0.38, H * (0.62 - 0.14 * G), Math.min(W, H) * (0.5 + 0.2 * L), "#f2b79c", 0.14 + 0.24 * L);
+    var amp = [0.05, 0.065, 0.085, 0.11], cols = ["#7064a0", "#4d437c", "#312a5a", "#1a1636"], v = [1.5, 2.5, 4, 6];
+    if (!SCN.ridge || SCN.ridge.W !== Math.round(W)) SCN.ridge = { W: Math.round(W), f: [0, 1, 2, 3].map(function (i) { return scnRidge(i, Math.round(W)); }) };
+    for (var i = 0; i < 4; i++) {
+      var f = SCN.ridge.f[i], base = H * (0.42 + 0.15 * i), A = Math.min(W, H * 1.3) * amp[i], sh = v[i] * T;
+      c.fillStyle = cols[i];
+      c.beginPath(); c.moveTo(0, H);
+      for (var x = 0; x <= W + 1; x += 1) c.lineTo(x, base - A * f(x + sh));
+      c.lineTo(W, H); c.closePath(); c.fill();
+    }
+  }
+  function scnFlower(c, x, y, R, open, col, tip, tilt, spin) {
+    c.save();
+    c.translate(x, y); c.scale(1, tilt); c.rotate(spin);
+    var n = 8, len = R * (0.62 + 0.38 * open), wid = R * (0.2 + 0.1 * open);
+    for (var i = 0; i < n; i++) {
+      c.save(); c.rotate(i * Math.PI * 2 / n);
+      var g = c.createLinearGradient(0, 0, len, 0);
+      g.addColorStop(0, col); g.addColorStop(1, tip);
+      c.fillStyle = g;
+      c.beginPath(); c.moveTo(R * 0.12, 0);
+      c.bezierCurveTo(len * 0.4, -wid, len * 0.95, -wid * 0.8, len, 0);
+      c.bezierCurveTo(len * 0.95, wid * 0.8, len * 0.4, wid, R * 0.12, 0);
+      c.fill(); c.restore();
+    }
+    var cg = c.createRadialGradient(0, 0, 0, 0, 0, R * 0.22);
+    cg.addColorStop(0, "#ffd86b"); cg.addColorStop(0.7, "#e0a83a"); cg.addColorStop(1, "#8a5a1e");
+    c.fillStyle = cg; c.beginPath(); c.arc(0, 0, R * 0.22, 0, Math.PI * 2); c.fill();
+    c.restore();
+  }
+  function scnFlowers(c, W, H, T, L, G, m) {
+    var u = Math.min(W, H), r = amRand(77), i;
+    scnSky(c, W, H, [[0, "#14231f"], [0.55, "#1e3526"], [1, "#0e1813"]]);
+    scnGlow(c, W * 0.5, H * 0.42, u * 0.8, "#f6e7c8", 0.07 + 0.16 * L);
+    for (i = 0; i < 6; i++) scnGlow(c, W * r(), H * r() * 0.7, u * (0.04 + 0.06 * r()), "#b7dca5", 0.05 + 0.04 * r());
+    // long leaves from the ground
+    c.fillStyle = "#1f4a2c";
+    for (i = 0; i < 9; i++) {
+      var lx = W * (i + 0.5) / 9 + (r() - 0.5) * 20, lh = H * (0.18 + 0.2 * r()), lean = (r() - 0.5) * 0.6 + m * 0.04 * Math.sin(T * 0.5 + i);
+      c.beginPath(); c.moveTo(lx - 5, H + 2);
+      c.quadraticCurveTo(lx + lh * lean * 0.5, H - lh * 0.6, lx + lh * lean, H - lh);
+      c.quadraticCurveTo(lx + lh * lean * 0.3, H - lh * 0.5, lx + 5, H + 2); c.fill();
+    }
+    var cols = [["#d77fa1", "#f6c3d6"], ["#e9e1ef", "#ffffff"], ["#e99a6c", "#f8d0b0"], ["#a985d6", "#dcc8f4"], ["#d77fa1", "#f8d6e3"], ["#e9e1ef", "#fbf3dc"]];
+    var open = 0.25 + 0.75 * G;
+    for (i = 0; i < 6; i++) {
+      var bx = W * (0.1 + 0.8 * (i + 0.5) / 6) + (r() - 0.5) * W * 0.06, hy = H * (0.28 + 0.34 * r()), R = u * (0.07 + 0.035 * r());
+      var sw = m * W * 0.018 * Math.sin(T * (0.45 + 0.15 * r()) + i * 1.3), hx = bx + sw + (r() - 0.5) * W * 0.06;
+      c.strokeStyle = "#2f5e35"; c.lineWidth = Math.max(1.5, u * 0.008);
+      c.beginPath(); c.moveTo(bx, H + 2); c.quadraticCurveTo(bx + sw * 0.2, (H + hy) / 2, hx, hy); c.stroke();
+      scnFlower(c, hx, hy, R, open, cols[i][0], cols[i][1], 0.6 + 0.35 * r(), r() * 3 + m * 0.05 * Math.sin(T * 0.3 + i));
+    }
+  }
+  function scnFire(c, W, H, T, L, G) {
+    var u = Math.min(W, H), cx = W / 2, by = H * 0.8, fw = u * 0.46, hmax = u * 0.55, i, r;
+    scnSky(c, W, H, [[0, "#06070d"], [0.7, "#0e0c12"], [1, "#16100c"]]);
+    var fl = 0.5 + 0.5 * scnWob(T * 2.1, 0.3);
+    scnGlow(c, cx, by - hmax * 0.2, u * 1.0, "#ff8a3d", 0.1 + 0.05 * fl + 0.12 * L);   // the room lit by the fire
+    // the hearth and two logs, their edges glowing
+    c.fillStyle = "#18110d";
+    c.beginPath(); c.ellipse(cx, by + u * 0.06, fw * 0.9, u * 0.07, 0, 0, Math.PI * 2); c.fill();
+    [[-1, 0.18], [1, -0.18]].forEach(function (lg) {
+      c.save(); c.translate(cx, by + u * 0.02); c.rotate(lg[1]);
+      c.fillStyle = "#3a2618"; c.fillRect(-fw * 0.55, -u * 0.035, fw * 1.1, u * 0.07);
+      var eg = c.createLinearGradient(0, -u * 0.035, 0, u * 0.01);
+      eg.addColorStop(0, rgba("#ff7a2a", 0.5 + 0.3 * fl)); eg.addColorStop(1, "rgba(255,122,42,0)");
+      c.fillStyle = eg; c.fillRect(-fw * 0.5, -u * 0.035, fw, u * 0.045);
+      c.restore();
+    });
+    // the flames, added to each other's light: they rise as you breathe in and settle as you breathe out
+    c.globalCompositeOperation = "lighter";
+    c.save(); c.translate(cx, by); c.scale(1, 0.28);                  // the bed of embers the flames rise from
+    scnGlow(c, 0, 0, fw * 0.62, "#ff9a3c", 0.45 + 0.15 * fl);
+    c.restore();
+    var rise = 0.72 + 0.4 * G;
+    for (var pass = 0; pass < 2; pass++) {
+      r = amRand(500 + pass);
+      var n = pass ? 4 : 7;
+      for (i = 0; i < n; i++) {
+        var a1 = r(), a2 = r(), a3 = r();
+        var x0 = cx + (i - (n - 1) / 2) * fw * (pass ? 0.18 : 0.15) + (a1 - 0.5) * fw * 0.06;
+        var h = hmax * (pass ? 0.45 : 0.6 + 0.4 * a2) * (1 - Math.abs(i - (n - 1) / 2) / n * 0.9) * rise * (1 + 0.13 * scnWob(T * (1.9 + a3), i * 2.1 + pass));
+        var w = fw * (pass ? 0.14 : 0.2 + 0.08 * a3), dx = w * 0.7 * scnWob(T * (1.4 + a1), i * 3.3 + pass * 5);
+        var g = c.createLinearGradient(0, by, 0, by - h);
+        if (pass) { g.addColorStop(0, "rgba(255,250,225,0.85)"); g.addColorStop(0.5, "rgba(255,214,140,0.5)"); g.addColorStop(1, "rgba(255,180,80,0)"); }
+        else { g.addColorStop(0, "rgba(255,200,110,0.75)"); g.addColorStop(0.35, "rgba(255,135,45,0.55)"); g.addColorStop(0.75, "rgba(220,70,25,0.25)"); g.addColorStop(1, "rgba(180,40,20,0)"); }
+        c.fillStyle = g;
+        c.beginPath(); c.moveTo(x0 - w / 2, by);
+        c.bezierCurveTo(x0 - w * 0.6, by - h * 0.45, x0 + dx * 0.4 - w * 0.15, by - h * 0.75, x0 + dx, by - h);
+        c.bezierCurveTo(x0 + dx * 0.4 + w * 0.15, by - h * 0.75, x0 + w * 0.6, by - h * 0.45, x0 + w / 2, by);
+        c.closePath(); c.fill();
+      }
+    }
+    // embers rising and fading
+    r = amRand(611);
+    for (i = 0; i < 22; i++) {
+      var life = 2.2 + 1.8 * r(), ph = ((T / life + r()) % 1 + 1) % 1, ex = cx + (r() - 0.5) * fw * 0.8, sway = Math.sin(T * 1.3 + r() * 6.3) * 10 * ph;
+      var ey = by - hmax * 0.3 - ph * H * 0.55, tw = 0.6 + 0.4 * Math.sin(T * 9 + i * 7.7);
+      c.fillStyle = rgba("#ffb867", Math.pow(1 - ph, 1.5) * tw * 0.9);
+      c.beginPath(); c.arc(ex + sway, ey, 0.9 + 1.1 * r(), 0, Math.PI * 2); c.fill();
+    }
+    c.globalCompositeOperation = "source-over";
+  }
+  var SCN_PAINT = { clouds: scnClouds, water: scnWater, leaves: scnLeaves, forest: scnForest, fractal: scnFractal, flowers: scnFlowers, fire: scnFire };
+
+  /* Draw a scene over the whole of (0, 0, W, H). t: seconds, for what moves by itself; lv: the breath's level
+     (0 to 1) when it follows a breath, or null. With reduced motion nothing moves: time stands still, and only
+     the light follows the breath. */
+  function scnPaint(c, W, H, id, t, lv) {
+    if (!c || !W || !H) return;
+    var f = SCN_PAINT[id] || scnClouds, L = lv === null || lv === undefined ? 0.5 : Math.max(0, Math.min(1, lv));
+    c.save();
+    try {
+      scnRound(c, W, H, 16); c.clip();
+      f(c, W, H, RM ? 0 : t, L, RM ? 0.5 : L, RM ? 0 : 1);
+    } finally { c.restore(); }
+  }
+
+  /* ----- Breathe: the visual Scene, which follows the breath ----- */
+  // the visual Breathe draws: a scene kept from before shows the circle while this device is locked
+  function bVisNow() { return BC.visual === "scene" && !supOn() ? "circle" : BC.visual; }
+  BVIS.scene = function (S) {
+    if (!supOn()) { BVIS.circle(S); return; }
+    scnPaint(d2, CW, CH, scnGet(BC.scene) ? BC.scene : "clouds", bNow(), S.live ? (S.lead ? 0 : S.level) : 0.45);
+  };
+  function scnHint() { var x = scnGet(BC.scene) || SCN_LIST[0]; return x.hint; }
+  // the visual chips, the Scene chip's cup while locked, and the row of scenes while Scene is chosen
+  function scnBreatheSync() {
+    var v = bVisNow(), lab = document.querySelector('#bVis input[value="scene"]'), tag;
+    checkRadio("bvis", v); syncChips("#bVis");
+    if (lab) {
+      lab = lab.parentNode; tag = lab.querySelector(".sup-tag");
+      if (tag && supOn()) tag.parentNode.removeChild(tag);
+      else if (!tag && !supOn()) lab.insertAdjacentHTML("beforeend", supTag(true));
+    }
+    var row = $("#bScn");
+    if (!row) return;
+    row.hidden = v !== "scene";
+    checkRadio("bscn", scnGet(BC.scene) ? BC.scene : "clouds"); syncChips("#bScn");
+  }
+  // Scene picked under Visual: at once once this device is unlocked; otherwise the visual stays as it was and
+  // the dialog opens, and if it unlocks the device the scene comes on
+  function scnBreathePick(go) {
+    if (supOn()) { go(); return; }
+    scnBreatheSync();
+    supGate(SCN_NAME, go, function (ok) { if (ok) go(); else scnBreatheSync(); });
+  }
+
+  /* ----- practices: Options, Scene ----- */
+  var SCN_OPTS = [["off", "Off"], ["mine", "Yours"]].concat(SCN_LIST.map(function (x) { return [x.id, x.name]; }));
+  function scnOptOk(k) { return k === "off" || k === "mine" || !!scnGet(k); }
+  // what a practice's Options shows: off while this device is locked, whatever was kept
+  function scnShown(k) { return supOn() && scnOptOk(k) ? k : "off"; }
+  // a practice that shows no scene: a measurement or a call, where the fire's crackle would get in the way
+  function scnFits(d) { return !!d && !d.noScene && !d.stress; }
+  function scnSeg(id, cur) {
+    return '<div class="mini-seg scn-seg" id="' + id + '" role="group" aria-label="Scene">' + SCN_OPTS.map(function (o) {
+      return '<button type="button" data-scn="' + o[0] + '" aria-pressed="' + (o[0] === cur) + '">' + o[1] + (o[0] !== "off" ? supTag(true) : "") + "</button>";
+    }).join("") + "</div>";
+  }
+  function scnRow(O) {
+    return '<div class="so-row so-seg so-scn"><span class="so-l">Scene<small>' + SCN_NOTE + "</small></span>" + scnSeg("sOptScn", scnShown(O.scene)) + "</div>";
+  }
+  // a pick from a Scene row: off at once; a scene at once once unlocked, otherwise the dialog naming it
+  function scnPickOpt(k, then) {
+    if (!scnOptOk(k)) return;
+    if (k === "off" || supOn()) { then(k); return; }
+    var x = scnGet(k);
+    supGate(x ? x.long : SCN_NAME, function () { then(k); }, function (ok) { if (ok) then(k); else scnUI(); });
+  }
+  function scnOptName(k) { return k === "mine" ? "Your scenes" : scnGet(k) ? scnGet(k).name : ""; }
+  // at a practice's start: whether it shows a scene, and which (Yours: one of your restful scenes)
+  function scnStart(d) {
+    var k = P.opt.scene;
+    P.scnOn = scnFits(d) && supOn() && scnOptOk(k) && k !== "off";
+    P.scene = scnGet(k) ? k : scnPick();
+    if (P.scnOn && P.scene === "fire") amNeed(["fire", "fireP"]);     // its crackle ready to play with it
+  }
+  // the scene the running practice shows in place of the orb, or ""
+  function scnSes() { return P.scnOn && supOn() && pBusy() ? P.scene : ""; }
+  function scnVis(s, v) { return scnSes() && (v === "orb" || v === "still" || v === "glow") ? "scene" : v; }
+  function scnOf(s) { return s && scnGet(s.scene) ? s.scene : scnGet(P.scene) ? P.scene : scnMine()[0]; }
+  function scnStep(c, W, Hh, s, T) {
+    if (!supOn()) { pOrb(c, W, Hh, T, BCOL["b-in"], 1); return; }
+    scnPaint(c, W, Hh, scnOf(s), T, null);
+  }
+  // the scene on screen while something runs, if it's the fire: its crackle plays with it (ambience.js)
+  function scnSound() {
+    if (!supOn()) return "";
+    var id = "";
+    if (P.state === "running") {
+      var s = P.steps && P.steps[P.idx];
+      if (s && s.k === "breath") id = P.usesB && BC.visual === "scene" ? BC.scene : "";
+      else if (s && pVis(s) === "scene") id = scnOf(s);
+    } else if (B.state === "running" && !P.usesB && BC.visual === "scene") id = BC.scene;
+    return id === "fire" ? "fire" : "";
+  }
+
+  /* ----- Settings: the scenes you find restful ----- */
+  function scnCard() {
+    var mine = SCN.mine;
+    return '<section class="st-card" id="st-scenes" aria-labelledby="stScn"><h2 id="stScn">Scenes</h2>' +
+      '<p class="st-note">Scenes to watch while you breathe or practise, drawn on your device and moving slowly: clouds, water, leaves, a misty forest, ' +
+        'fractal ridgelines, flowers and a fire. On Breathe, choose Scene under Visual, and the scene moves with your breath; in a practice, under Options. ' +
+        '<a href="#l-scenes">What the research says</a></p>' +
+      '<h3 class="sup-h" id="scnMineH">Scenes you find restful</h3>' +
+      '<p class="st-note">A setting restores you best when it suits you, so pick the ones you like. Yours, in a practice, shows one of them, a different one each day.</p>' +
+      '<div class="scn-grid" role="group" aria-labelledby="scnMineH">' + SCN_LIST.map(function (x) {
+        return '<button type="button" class="scn-pick" data-scn-mine="' + x.id + '" aria-pressed="' + (mine.indexOf(x.id) >= 0) + '">' +
+          '<canvas class="scn-thumb" data-scn-thumb="' + x.id + '" aria-hidden="true"></canvas><span class="scn-pn">' + x.name + supTag(true) + "</span>" + dots(x.dots) + "</button>";
+      }).join("") + "</div>" +
+      '<p class="st-note" id="scnMineTxt"></p>' +
+      '<div class="so-row so-seg"><span class="so-l">In every practice<small>Your scenes in place of the orb, unless a practice keeps its own choice under Options.</small></span>' +
+        '<div class="mini-seg scn-seg" id="stScnDef" role="group" aria-label="Scene in every practice">' + [["off", "Off"], ["mine", "Your scenes"]].map(function (o) {
+          return '<button type="button" data-v="' + o[0] + '" aria-pressed="' + (scnShown(pOptDefaults().scene) === o[0]) + '">' + o[1] + (o[0] !== "off" ? supTag(true) : "") + "</button>";
+        }).join("") + "</div></div>" +
+      '<p class="st-note">Nature scenes, even on video, have raised alpha waves in studies; the fractal is promising, mostly from one lab; the flower studies used real flowers, ' +
+        'so flowers on a screen haven\'t been tested; and the fire comes with its crackle, as in its study.</p>' +
+      "</section>";
+  }
+  function scnMineTxt() {
+    return SCN.mine.length ? "Yours: " + SCN.mine.map(function (id) { return scnGet(id).name.toLowerCase(); }).join(", ") + "."
+      : "None picked yet, so Yours takes turns through all seven.";   // (a list after a colon stays in lower case)
+  }
+  // the little pictures on the Settings buttons: each scene, still, drawn once
+  function scnThumbs() {
+    var cs = document.querySelectorAll("[data-scn-thumb]"), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    for (var i = 0; i < cs.length; i++) {
+      var cv = cs[i], r = cv.getBoundingClientRect(), w = r.width || 120, h = r.height || 72, x = cv.getContext && cv.getContext("2d");
+      if (!x) continue;
+      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+      x.setTransform(dpr, 0, 0, dpr, 0, 0);
+      scnPaint(x, w, h, cv.getAttribute("data-scn-thumb"), 40, 0.6);
+    }
+  }
+  function scnStWire() {
+    if (!$("#st-scenes")) return;
+    bSetT("#scnMineTxt", scnMineTxt());
+    scnThumbs();
+    var g = $("#stScnDef");
+    g.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-v]"); if (!b) return;
+      scnPickOpt(b.getAttribute("data-v"), function (k) { stDefault("scene", k); scnUI(); });
+    });
+  }
+  // a restful scene on or off: picking one is using a new technique, so the dialog first while locked
+  function scnMineToggle(id) {
+    var x = scnGet(id);
+    if (!x) return;
+    var go = function () {
+      scnMineSet(SCN.mine.indexOf(id) >= 0 ? SCN.mine.filter(function (k) { return k !== id; }) : SCN.mine.concat([id]));
+      scnUI();
+    };
+    if (supOn()) go(); else supGate(x.long, go, function (ok) { if (ok) go(); });
+  }
+  // every Scene button in step: pressed, and the cup while locked (after an unlock too: supRefresh calls this)
+  function scnUI() {
+    var i, lock = !supOn(), bs = document.querySelectorAll("[data-scn], [data-scn-mine], #stScnDef button");
+    for (i = 0; i < bs.length; i++) {
+      var b = bs[i], k = b.getAttribute("data-scn") || b.getAttribute("data-v"), mineB = b.hasAttribute("data-scn-mine"), host = mineB ? b.querySelector(".scn-pn") : b, tag = host.querySelector(".sup-tag");
+      if (mineB) b.setAttribute("aria-pressed", String(!lock && SCN.mine.indexOf(b.getAttribute("data-scn-mine")) >= 0));
+      else if (b.closest("#stScnDef")) b.setAttribute("aria-pressed", String(scnShown(pOptDefaults().scene) === k));
+      if (k === "off") continue;
+      if (tag && !lock) tag.parentNode.removeChild(tag);
+      else if (!tag && lock) host.insertAdjacentHTML("beforeend", supTag(true));
+    }
+    var opt = $("#sOptScn");
+    if (opt && P.view) {
+      var cur = scnShown(pBusy() && P.def !== P.view ? pOptsOf(P.view.id).scene : P.opt.scene), ob = opt.querySelectorAll("button");
+      for (i = 0; i < ob.length; i++) ob[i].setAttribute("aria-pressed", String(ob[i].getAttribute("data-scn") === cur));
+    }
+    if ($("#scnMineTxt")) bSetT("#scnMineTxt", scnMineTxt());
+    scnBreatheSync(); syncVisHint(); draw();
+  }
+
+  function scnInit() {
+    SCN.mine = [];
+    scnMineSet(String(store.get("scenes") || "").split(","));
+    SUP_EXTRA.push({ name: SCN_NAME, href: "#st-scenes" });     // Settings' list of what the donation unlocks
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("[data-scn-mine]");
+      if (b) scnMineToggle(b.getAttribute("data-scn-mine"));
+    });
+    $("#bScn").addEventListener("change", function (e) {
+      var id = e.target.value;
+      scnBreathePick(function () {
+        if (scnGet(id)) BC.scene = id;
+        if (BC.visual !== "scene") BC.visual = "scene";
+        scnBreatheSync(); syncVisHint(); draw(); saveBreath();
+        if (id === "fire") amNeed(["fire", "fireP"]);
+      });
+    });
+    scnUI();
+    if (window.__entrain) {
+      var X = window.__entrain;
+      X.SCN = SCN; X.SCN_LIST = SCN_LIST; X.SCN_H = SCN_H; X.SCN_LAM = SCN_LAM; X.scnPaint = scnPaint; X.scnRidge = scnRidge; X.scnMine = scnMine; X.scnPick = scnPick;
+      X.scnSoundOf = scnSoundOf; X.scnSound = scnSound; X.scnSes = scnSes; X.scnOf = scnOf; X.pVis = pVis; X.bVisNow = bVisNow; X.scnFits = scnFits;
+    }
+  }
   /* ---------------------- your own breathing patterns ----------------------
      Timings made on the sliders and saved under a name, on this device: up to twelve. Each one
      is a chip beside the presets (its value "my-<uid>"), a row under Yours in the library, a
@@ -9522,7 +10204,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "3fdb219b";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "297d2d91";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -10073,6 +10755,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ambUI();                                                  // the nature sounds' buttons, and what plays (ambience.js)
     ambSync();
     slpSync(); slpLink();                                     // Sleep sounds' page and Today's link to it (sleepsounds.js)
+    scnUI();                                                  // the scenes' buttons and cups, and Breathe's visual (scenes.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }
@@ -11329,7 +12012,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   function ambSync() {
     musSync();                                     // the music made on the device follows the same sessions (music.js)
-    var sig = ambSig(), want = sig && ambActive() ? sig : null;
+    var sig = ambSig(), x = scnSound(), want;
+    // a fire on screen always comes with its crackle, chosen or not (scenes.js): silent fire showed no effect
+    if (x && ("+" + sig + "+").indexOf("+" + x + "+") < 0) sig = sig ? sig + "+" + x : x;
+    want = sig && ambActive() ? sig : null;
     if (want === AMB.playing) return;
     if (AMB.playing) ambStop(want ? 0.8 : 1.5);
     if (want) ambStart(want);
@@ -13466,7 +14152,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       cite: "Goessl et al. 2017 · Brooks 2014 · Jamieson et al. 2012 · Creswell et al. 2005 · Gollwitzer & Sheeran 2006 · Kross et al. 2014 · Garcia-Argibay et al. 2019"
     },
     {
-      id: "call", name: "During the Call", lengths: [30, 60, 90], min: 60, open: true, strength: 1,
+      id: "call", name: "During the Call", lengths: [30, 60, 90], min: 60, open: true, strength: 1, noScene: true,   // no scene's sound in the call
       tone: "relax", sensor: "optional", pace: true, paceSplit: 0.4,
       opt: { voice: false, bells: false, cues: "off", buzz: false, ana: 0 },
       optNote: "It starts silent: captions only, with no voice, bells or breath sounds, only the beat.",
@@ -14398,7 +15084,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off" },
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off" },
     paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
     bm: ""                                          // how its beat played (beatmode.js), for the history
   };
@@ -14519,7 +15205,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js),
      and the music (music) to the background sound's choice (music.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -14688,13 +15374,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function pBreathOn(s, st) {
     if (!P.saved) {
       P.saved = {};
-      ["inh", "sip", "hold", "exh", "rest", "long", "minutes", "sound", "cue", "buzz", "visual"].forEach(function (k) { P.saved[k] = BC[k]; });
+      ["inh", "sip", "hold", "exh", "rest", "long", "minutes", "sound", "cue", "buzz", "visual", "scene"].forEach(function (k) { P.saved[k] = BC[k]; });
     }
     var c = pCfgAt(s, st || 0);
     B_KEYS.forEach(function (k) { BC[k] = c[k]; });
     BC.long = false;                     // a practice's breathing keeps the usual guidance, whatever range Breathe was on
     BC.minutes = 0;
-    BC.visual = P.opt.visual;
+    var sc = scnGet(s.scene) ? s.scene : scnSes();      // a scene in place of the breath visual, following the breath (scenes.js)
+    BC.visual = sc ? "scene" : P.opt.visual;
+    if (sc) BC.scene = sc;
     var snd = P.opt.cues;
     if (BC.sound !== snd && B.state === "running") { BC.sound = snd; cueOff(); if (snd !== "off") cueOn(); }
     BC.sound = snd;
@@ -14736,7 +15424,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     B.state = "idle";
     applyTimings();
     syncFields(); syncRate(); renderNote(); syncVisHint();
-    checkRadio("bvis", BC.visual); syncChips("#bVis");
+    scnBreatheSync();
     $("#bCue").value = BC.cue;
     bBuzzSync();
     pLockBreathe();
@@ -14920,7 +15608,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     for (var i = P.steps.length - 1; i >= 0; i--) if (T >= P.steps[i].at - 1e-6) return i;
     return 0;
   }
-  function pVis(s) {
+  // what the stage shows for a step: a scene in place of the orb, the still point or the glow when the practice shows one (scenes.js)
+  function pVis(s) { return scnVis(s, pVisOf(s)); }
+  function pVisOf(s) {
     if (s.k === "breath") return "breath";
     if (s.k === "pose") return "pose";
     if (s.k === "pump") return "pump";
@@ -15287,7 +15977,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1, mind: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -15312,6 +16002,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         else if (vis === "sing") vxShow(s, st);
         else if (vis === "stroke") tcDraw(c, W, Hh, s, st, col);
         else if (vis === "mind") mnDraw(c, W, Hh, s, st, col);
+        else if (vis === "scene") scnStep(c, W, Hh, s, T);
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -15481,6 +16172,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (again !== true) { P.paceK = 1; P.beatAdj = 0; P.beatOff = false; }
       P.def = d;
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
+      scnStart(d);                                     // and the scene it shows, if any (scenes.js)
       if (B.finder) finderCancel();
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
@@ -15789,6 +16481,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           return '<button data-v="' + o[0] + '" aria-pressed="' + (O.visual === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
     }
+    if (scnFits(d)) opts.push(scnRow(O));               // a scene to watch, kept for this practice: with a donation while locked (scenes.js)
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
     every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl(true) + "</div>");   // its music is a row of its own above
@@ -15892,6 +16585,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (d.audio) s.push(O.audio ? (d.beats ? pBeat(d).label : "Binaural") : "No beats");
     if (d.audio && O.audio && bmMode(O.beatMode) !== "binaural") s.push(bmMode(O.beatMode) === "monaural" ? "Monaural" : "Isochronic");
     if (!d.music && !d.noMus && musShown(O.music) !== "off") s.push(MUS_SHORT[O.music]);
+    if (scnFits(d) && scnShown(O.scene) !== "off") s.push(scnOptName(O.scene));
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -15974,6 +16668,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       musPick(b.getAttribute("data-mus"), function (k) {
         if (P.view !== d) return;
         O.music = k; save(); musUI();
+      });
+    });
+    // a scene, kept for this practice: picking one opens with a donation while this device is locked (scenes.js)
+    var sg = $("#sOptScn");
+    if (sg) sg.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-scn]"); if (!b) return;
+      scnPickOpt(b.getAttribute("data-scn"), function (k) {
+        if (P.view !== d) return;
+        O.scene = k; save(); scnUI();
+        if (k === "fire") amNeed(["fire", "fireP"]);
       });
     });
     var pg = $("#sOptPace");
@@ -18347,7 +19051,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   /* -------------------------------- settings --------------------------------
      What every practice starts with (a practice can change its own under Options on its page),
-     the background sound, what's kept of reflections, how the screen behaves, the new techniques
+     the background sound, the scenes you find restful (scenes.js), what's kept of reflections, how the screen behaves, the new techniques
      (supporter.js), your data (backup.js), the feedback form, and About with the build.
   ------------------------------------------------------------------------------ */
 
@@ -18403,7 +19107,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         'or have one on its own: each goes on and off by itself, since people differ in which natural sounds they find pleasant. <a href="#l-nature">What the research says</a></p>' +
         '<p class="st-note">Music made on your device can play under them too, and a practice can keep a choice of its own under Options. ' +
         '<a href="#l-music">Music and the research</a></p>' + ambCtl() +
-      "</section>" +
+      "</section>" + scnCard() +
       '<section class="st-card" aria-labelledby="stR"><h2 id="stR">Reflections</h2>' +
         pToggle("stKeep", "Keep a copy on this device", g.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing.") +
       "</section>" +
@@ -18424,6 +19128,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     fbWire();
     supStWire();
     hcStWire();
+    scnStWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }
@@ -20013,7 +20718,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id, sup: b.sup }));
     });
     out.push(fdEntry("breath", "Breathing guide", "Breathe · paced breathing",
-      ["Paced breathing with five visuals, timed sessions, sound cues and live heart data."], "#breathe",
+      ["Paced breathing with five visuals and scenes that move with your breath, timed sessions, sound cues and live heart data."], "#breathe",
       { ic: "breathe", col: "var(--b-in)", w: 1, tags: "breathe pace" }));
     TRACKS.forEach(function (t) {
       var g = goalOf(t.goal), gn = g ? g.name : "Tinnitus";
@@ -20037,6 +20742,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("sound", "Music in the background", "Background sound · slow, steady, lively or matched",
       ["Music made on your device, with no words: soft chords, a low note and plucked notes, slow for sleep and calm, steady for focus, lively for energy. It plays under practices, breathing sessions and tracks, and a practice can keep its own."], "#st-amb",
       { ic: "sounds", col: "var(--relax)", w: 1.05, tags: "music tempo bpm beats song songs tune melody chords ambient generative slow steady lively focus energy calm background", sup: true }));
+    out.push(fdEntry("breath", "Scenes", "Breathe, practices and Settings · clouds, water, leaves, a forest, a fractal, flowers, a fire",
+      ["Scenes to watch, drawn on your device and moving slowly: on Breathe the scene moves with your breath, in a practice it takes the place of the orb, and in Settings you pick the ones you find restful."], "#st-scenes",
+      { ic: "leaf", col: "var(--b-in)", w: 1.05, alias: SCN_NAME, tags: "scene scenes visual visuals nature clouds sky water lake sea ripples leaves tree branch forest mist misty ridge mountains fractal fractals flowers roses fire fireplace flames embers restful restorative soft fascination video", sup: true }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
       ["Pair a HeartMath ear-clip sensor, a chest strap or a Garmin watch set to broadcast, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
       { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));
@@ -22305,7 +23013,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["music", musInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["music", musInit], ["scenes", scnInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });
