@@ -15,7 +15,8 @@
 //   E  unlocked: breath-led sound with the phone on your belly: finding your pace, the guide starting at it, which way
 //      is in learnt from the guide, the chords following the belly itself, slowing towards your resonance pace, holding
 //      while you're faster, a pause, a pattern picked by hand, the end and the history; Begin now; no motion sensor;
-//      the microphone; a practice using the guide left alone; I need to stop, while it waits for your pace too
+//      the microphone; a practice using the guide left alone; I need to stop, while it waits for your pace too;
+//      leaving Breathe while it waits ending the wait, and a session under way carrying on away from it
 //   F  360 px, 44 px targets, British spelling
 // Run: node tests/mymusictest.js [group letter]
 const { chromium, APP, OUT } = require('./pw');
@@ -423,6 +424,34 @@ const BROKEN = { name: 'broken.mp3', mimeType: 'audio/mpeg', buffer: Buffer.from
       const wo = await E(p, () => { const X = window.__entrain; return { ph: X.BLS.phase, on: X.MUS.on, g: Math.max(0, ...X.MUS.going.map(x => x[0].gain.value)), stl: !document.querySelector('#stlModal').hidden, out: !document.querySelector('#bOut').hidden, btn: document.querySelector('#bStart').textContent }; });
       ok(wo.ph === 'off' && !wo.on && wo.g < 0.001 && wo.stl && !wo.out && wo.btn === 'Start breathing', 'one tap ends the wait, the music gone within 0.65 s, and Settle opens: ' + JSON.stringify(wo));
       await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+      // leaving Breathe while it waits for your pace ends the wait too, and the guide stays put
+      await p.click('#bLedOn'); await p.waitForTimeout(200);
+      await p.click('#bLedOn'); await p.waitForTimeout(300);
+      await E(p, () => { const M = window.__entrain.MOT; M.bins = []; M.est = null; M.since = performance.now() / 1000; });
+      const hn = await E(p, () => JSON.parse(localStorage.getItem('entrain.history') || '[]').length);
+      await p.click('#bStart'); await p.waitForTimeout(400);
+      ok(await E(p, () => { const X = window.__entrain; return X.BLS.phase === 'find' && X.MUS.on && X.MUS.own === 'breath' && X.MOT.belly; }), 'waiting for your pace once more, the music playing and the phone on your belly listening');
+      await go(p, 'home', 900);
+      const lv = await E(p, () => { const X = window.__entrain; return { ph: X.BLS.phase, st: X.B.state, on: X.MUS.on, g: Math.max(0, ...X.MUS.going.map(x => x[0].gain.value)), belly: X.MOT.belly, sw: document.querySelector('#bBellyOn').checked }; });
+      ok(lv.ph === 'off' && lv.st === 'idle' && !lv.on && lv.g < 0.001 && !lv.belly && !lv.sw, 'leaving Breathe while it waits ends the wait: the music gone within 0.9 s, the phone on your belly closed, the guide idle: ' + JSON.stringify(lv));
+      await p.waitForTimeout(75 / 4 * 1000 + 2500);                       // longer than the 75 seconds it waits, at four times speed
+      const lt = await E(p, () => { const X = window.__entrain; return { ph: X.BLS.phase, st: X.B.state, on: X.MUS.on, n: JSON.parse(localStorage.getItem('entrain.history') || '[]').length }; });
+      ok(lt.ph === 'off' && lt.st === 'idle' && !lt.on && lt.n === hn, 'past the 75 seconds the guide still hasn\'t started by itself, and the history is as it was: ' + JSON.stringify(lt) + ', ' + hn + ' before');
+      await go(p, 'breathe', 500);
+      const bk = await E(p, () => ({ st: window.__entrain.B.state, btn: document.querySelector('#bStart').textContent, name: document.querySelector('#bPhase').textContent, out: !document.querySelector('#bOut').hidden }));
+      ok(bk.st === 'idle' && bk.btn === 'Start breathing' && bk.name !== 'Breathe as usual' && !bk.out, 'back on Breathe, it\'s ready to start: ' + JSON.stringify(bk));
+      // a session the guide has begun carries on away from Breathe, as any session there does
+      await p.click('#bLedOn'); await p.waitForTimeout(200);
+      await p.click('#bLedOn'); await p.waitForTimeout(300);
+      await E(p, () => { const M = window.__entrain.MOT; M.bins = []; M.est = null; M.since = performance.now() / 1000; });
+      await p.click('#bStart'); await p.waitForTimeout(400);
+      await p.click('#bStart'); await p.waitForTimeout(500);
+      ok(await E(p, () => window.__entrain.BLS.phase === 'run' && window.__entrain.B.state === 'running'), 'Begin now: the guide begins');
+      await go(p, 'home', 1500);
+      const rn = await E(p, () => { const X = window.__entrain; return { ph: X.BLS.phase, st: X.B.state, mus: X.MUS.on && X.MUS.own === 'breath', belly: X.MOT.belly }; });
+      ok(rn.ph === 'run' && rn.st === 'running' && rn.mus && rn.belly, 'and carries on away from Breathe, with its music and the phone on your belly: ' + JSON.stringify(rn));
+      await go(p, 'breathe', 400);
+      await p.click('#bReset'); await p.waitForTimeout(400);
       // a practice using the guide is left alone
       await go(p, 'practice/calm-reset', 600);
       await p.click('#sGo');

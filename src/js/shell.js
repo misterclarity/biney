@@ -29,7 +29,7 @@
 
   function showView(v) {
     if (VIEWS.indexOf(v) < 0) v = "home";
-    if (v !== "breathe") sheet(false);
+    if (v !== "breathe") { sheet(false); blsLeave(); }   // breath-led sound stops waiting for your pace (breathled.js)
     if (v !== "living") lvLeave();                // a recipe stops keeping the screen on
     VIEWS.forEach(function (n) { $("#v-" + n).hidden = n !== v; });
     var links = document.querySelectorAll(".nav a"), navV = V_TAB[v] || v;

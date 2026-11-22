@@ -6,7 +6,9 @@
      their breathing most (Learn, #l-mymusic). Here:
      - Listening: the phone on your belly (motion.js) or the microphone (breath-mic.js) finds your
        own breathing pace. Start breathing with it on, and if neither has your pace yet, Breathe waits
-       ("Breathe as usual") while the music begins, for up to 75 seconds, then starts the guide.
+       ("Breathe as usual") while the music begins, for up to 75 seconds, then starts the guide. Leaving Breathe meanwhile
+       ends the wait, as I need to stop does: the music fades in half a second and the guide stays put (a screen lock
+       leaves the wait as it is, and a session already under way carries on, as any on Breathe does).
      - The pace: the guide starts at the pace it found (40% in, 60% out, the resonance test's split),
        stays there for a minute, then slows by a quarter of a breath a minute every 15 seconds, so
        a breath a minute each minute, towards your resonance pace (the test's answer, or 5.5). While
@@ -117,20 +119,24 @@
     B.pending = BLS.pend = ph;
     BLS.rate = nr; BLS.next = now + BLS_EVERY;
   }
-  // the session ended (or the wait was cancelled): the music fades, and what it did is kept for the row
-  function blsEnd(cancel) {
+  // the session ended (or the wait was cancelled): the music fades (over `fade` seconds, 2 unless given), and what it
+  // did is kept for the row
+  function blsEnd(cancel, fade) {
     if (BLS.phase === "run" && !cancel) BLS.last = { rate0: BLS.rate0, rate1: BLS.rate, from: BLS.from, hand: BLS.hand };
     BLS.phase = "off"; BLS.pend = null;
     clearInterval(BLS.timer); BLS.timer = 0;
-    if (MUS.own === "breath") musStop(2);
+    if (MUS.own === "breath") musStop(fade === undefined ? 2 : fade);
     blsQuiet();
     syncTransport(); updateHead(); blsUI();
   }
+  // leaving Breathe (showView) while it waits for your pace: the wait ends, the music going in half a second
+  function blsLeave() { if (BLS.phase === "find") blsEnd(true, 0.5); }
   function blsTimer() { clearInterval(BLS.timer); BLS.timer = setInterval(blsTick, 100); }
   function blsTick() {
     var now = bNow();
     if (BLS.phase === "find") {
       if (!blsOn() || P.usesB || B.state !== "idle") { blsEnd(true); return; }
+      if (curView !== "breathe") { blsLeave(); return; }
       if (blsRateNow()) { blsBegin(false); return; }
       if (blsSensorBad() || now - BLS.t0 > BLS_WAIT) { blsBegin(true); return; }
       blsPad(blsBelly());
