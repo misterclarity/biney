@@ -2003,7 +2003,57 @@
     yogaPractice("solo-capoeira", { stand: true, room: true, rhythm: true, strength: 1, tone: "stim",
       blurb: "A warm-up, then the ginga, dodges, the negativa and two kicks to a berimbau, a free ginga to play with, and a cool-down stretch.",
       caution: "Capoeira asks a lot of the knees, hips and ankles. Squat and kick only as deep and as high as is comfortable, keep clear space around you, and skip the moves that hurt.",
-      ev: CAPO_EV, cite: "Köhler et al. 2025" })
+      ev: CAPO_EV, cite: "Köhler et al. 2025" }),
+
+    /* ===== movement (movement.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "dance", name: "Dance Break", lengths: [5, 10, 15], min: 10, strength: 3, sup: true,
+      tone: "stim", noTap: true, noScene: true, hc: ["exertion"],
+      music: function (d) { return pChoice(d, "music") === "own" ? "off" : "lively"; },     // the music plays all through, each part at its own tempo (music.js)
+      rate: { name: "Mood", what: "mood" },     // its 0 to 10 ratings are of your mood, before and after
+      optNote: "Your choices are kept for it.",
+      alias: "Dance", words: "dance dancing disco party groove grooving move moving music beat beats tempo bpm energy mood happy depression low exercise cardio shake sway freestyle seated chair",
+      blurb: "Five to fifteen minutes of free dance to music made on your device, its tempo rising from 100 to 124 beats a minute: shake out, sway, bigger moves, freestyle, then a cool down. Standing or seated, with your mood before and after.",
+      parts: "Mood check · shake out · sway · bigger moves · freestyle · cool down · mood again",
+      needs: [["move", "Room to move", "about two metres clear around you, on a floor with good grip; or a chair, seated"],
+        ["sounds", "Speakers or headphones", "for the music; speakers leave you free to move"]],
+      choices: [
+        { key: "how", label: "Moves", def: "stand", note: "Standing: steps, sways and arm moves on the spot. Seated: the same music with your arms, shoulders, head and feet, in a chair.",
+          opts: [["stand", "Standing"], ["seat", "Seated"]] },
+        { key: "music", label: "Music", def: "made",
+          note: function (d) {
+            return pChoice(d, "music") === "own" ? "Play your own music from another app, something you love to move to; the prompts and the bells come over it. Music you like does more."
+              : "Made on your device: about 100 beats a minute to shake out, rising to 124 for the freestyle, and 100 again to cool down. Music you like does more, so try your own too.";
+          },
+          opts: [["made", "Made on your device"], ["own", "Your own"]] },
+        { key: "mood", label: "Mood check", def: "on", note: "Rate your mood from 0 to 10 before and after. The end screen sets them side by side, and so does your history.",
+          opts: [["on", "Before and after"], ["off", "Leave it out"]] }
+      ],
+      next: { id: "qigong", txt: "For something slower that still moves you, the Eight Brocades: eight qigong movements, each with your breath." },
+      build: function (min) { return dncSteps(this, min || 10); },
+      end: "Well danced. Notice how you feel now.",
+      how: "Five parts to music made on your device, its tempo rising and settling with them: shake out (100 beats a minute), sway (106), bigger moves (114), freestyle (124) and a cool down (100), with a few ideas in each, spoken over the music, and a ring that pulses with the beat. Standing, or Seated for your arms, shoulders, head and feet in a chair. Or your own music: play it from another app and the prompts come over it. Before and after, rate your mood from 0 to 10, set side by side at the end and in your history, or leave the mood check out. The music's volume is the background sound's, in the quick controls while it runs.",
+      ev: "Movement has some of the strongest evidence in the guide. In a 2024 network meta-analysis of randomised trials of exercise for depression, dance brought the largest reduction in symptoms compared with active controls such as usual care, a large effect (Hedges' g −0.96), ahead of walking or jogging (−0.62) and yoga (−0.55), and the results held up against publication bias. The dance estimate rests on only five small trials with 107 people, which the authors say is too few to recommend it more strongly. The trials ran over weeks, mostly with people who had depression; a single break like this one hasn't been tested, and nor has the music made on your device.",
+      cite: "Noetel et al. 2024",
+      caution: "Clear some floor space, with a surface that grips, away from furniture and sharp corners, in trainers or bare feet. Keep to steps and sways rather than jumps with sore knees, hips or ankles, or choose Seated. With a heart condition or high blood pressure, or if you've been told to limit exercise, ask your doctor how hard to work first. Rest if you feel dizzy, faint or very short of breath, and stop at once with any chest pain."
+    },
+    {
+      id: "qigong", name: "Eight Brocades", lengths: [10, 15, 20], min: 15, strength: 2, sup: true,
+      tone: "relax", stand: true, noTap: true, noScene: true, pace: true, paceSplit: 0.4,
+      optNote: "Your pace is kept for it.",
+      alias: "Qigong (Baduanjin)", words: "qigong chi gong chikung baduanjin ba duan jin eight brocades pieces of brocade silk tai chi taiji chinese moving meditation breath breathing standing gentle slow exercise holding up the sky drawing the bow owl bouncing toes",
+      blurb: "Baduanjin, the Eight Brocades of qigong: eight slow, standing movements, from holding up the sky to bouncing on your toes, each repeated with your breath while a drawing moves with you.",
+      parts: "Standing post · the eight movements, each set up and then repeated with your breath · gathering",
+      needs: [["move", "Space to stand", "an arm's length all around, on a floor with good grip"],
+        ["sounds", "Sound on", "the voice names each movement, and the breath cues mark each breath in and out"]],
+      next: { id: "dance", txt: "Want something livelier? Dance Break is free dance to music made on your device, with your mood before and after." },
+      build: function (min) { return qgSteps(this, min || 15); },
+      end: "Let the stillness settle in you before you move on.",
+      how: "A standing post to begin, arms rounded as if holding a large ball. Then the eight movements of Baduanjin in order: holding up the sky, drawing the bow, separating heaven and earth, the wise owl looking back, swaying head and tail, hands to the feet, punching with fierce eyes, and bouncing on the toes. Each is set up in twelve seconds with its drawing, then repeated with your breath: eight, six or four breaths (as many as fit the length at your pace, two at a very slow one; a side on each breath for those done to both sides), and seven bounces on the toes. You breathe in as you open, rise or reach and out as you close, lower or sink; the drawing moves with each breath, the caption says which breath it is and counts them, and the breath cues (a tone, chimes or vibration) mark each one. Your pace is your resonance pace, 40% in and 60% out, unless you set your own under Options. It ends by gathering, hands on the lower belly; with more time, the standing at the start and the end grows longer. The movements are in the routine builder too.",
+      ev: "In a 2024 network meta-analysis of randomised trials of exercise for depression, tai chi or qigong brought a moderate reduction in symptoms compared with active controls such as usual care (Hedges' g −0.42, across 12 trials with 343 people), close to mixed aerobic exercise and a little behind walking or jogging, yoga and strength training. The trials ran over weeks and tested tai chi and qigong in general; this routine, with its breath counts, hasn't been tested itself.",
+      cite: "Noetel et al. 2024",
+      caution: "Move slowly and within a comfortable range. Bend your knees for the forward fold, and keep it small, or skip it, with back pain, glaucoma or high blood pressure that isn't under control; come up slowly. Sink into the horse stance only as low as your knees like. Keep the bounces small and soft with sore knees, ankles or back, or lower your heels slowly instead, and hold a chair if your balance is unsteady."
+    }
   ];
 
   /* Words for the cognitive shuffle: concrete, neutral, easy to picture. */

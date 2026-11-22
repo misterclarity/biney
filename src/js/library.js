@@ -192,7 +192,7 @@
   function libBuildRow() {
     return '<li class="pc pc-build" style="--pcol:var(--accent)"><a href="#yoga" class="pc-a"><span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span>' +
       '<span class="pc-b"><span class="pc-top"><b>Routine builder</b></span><span class="pc-meta"><span class="pc-sub">Tool · your choice</span></span>' +
-      '<span class="pc-blurb">Pick from ' + ASANAS.length + " yoga poses, stretches, mobility drills and capoeira moves, set each one's time, and save the routine. Each comes with its own drawing and spoken cues, offline.</span></span></a></li>";
+      '<span class="pc-blurb">Pick from ' + ASANAS.length + " yoga poses, stretches, mobility drills, qigong and capoeira moves, set each one's time, and save the routine. Each comes with its own drawing and spoken cues, offline.</span></span></a></li>";
   }
   // a chip that toggles a choice, with how many it would show alongside the other rows' choices
   // (no count for "All" and "Any": the line under the chips gives the total)

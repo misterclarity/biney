@@ -106,16 +106,16 @@
   function fdBuildBase() {
     var out = [];
     PRACTICES.forEach(function (d) { out.push(fdPractice(d)); });
-    var types = { yoga: "Yoga pose", stretch: "Stretch", mobility: "Mobility drill", capoeira: "Capoeira move" }, poses = {};
+    var types = { yoga: "Yoga pose", stretch: "Stretch", mobility: "Mobility drill", capoeira: "Capoeira move", qigong: "Qigong move" }, poses = {};
     A_POSES.forEach(function (c) { poses[c[0]] = c[1]; });
     ASANAS.forEach(function (a) {
       out.push(fdEntry("pose", a.en, a.sa + " · " + (types[aType(a)] || "Pose") + " · " + (poses[aPos(a)] || "") + (a.sides ? " · both sides" : ""),
         a.cues.map(function (c) { return aCue(c, a.sides ? "right" : null); }).concat([a.caution]), "#yoga/find/" + a.id,
-        { ic: a.cat === "capoeira" ? "drum" : "move", col: "var(--accent)", w: 1, alias: a.sa }));
+        { ic: a.cat === "capoeira" ? "drum" : "move", col: "var(--accent)", w: 1, alias: a.sa, sup: a.sup }));
     });
     out.push(fdEntry("pose", "Routine builder", "Movement · " + ASANAS.length + " poses and moves",
-      ["Pick yoga poses, stretches, mobility drills and capoeira moves, set each one's time, and save the routine."], "#yoga",
-      { ic: "plus", col: "var(--accent)", w: 1.1, tags: "yoga builder custom sequence" }));
+      ["Pick yoga poses, stretches, mobility drills, qigong and capoeira moves, set each one's time, and save the routine."], "#yoga",
+      { ic: "plus", col: "var(--accent)", w: 1.1, tags: "yoga builder custom sequence qigong" }));
     BREATHS.forEach(function (b) {
       var lab = document.querySelector('#bPats input[value="' + b.id + '"]'), t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
       var name = lab ? fdTxt(lab.parentNode) : b.id;

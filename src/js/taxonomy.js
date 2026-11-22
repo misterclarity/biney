@@ -29,7 +29,7 @@
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["brain-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
-      ["t:preop-calm", "sound", "lie"], ["om", "breath", "sit"], ["touch", "relax", "sit lie"], ["music-break", "sound", "sit lie"], ["imagery", "relax", "sit lie"], ["fireside", "relax", "sit lie"]],
+      ["t:preop-calm", "sound", "lie"], ["om", "breath", "sit"], ["touch", "relax", "sit lie"], ["music-break", "sound", "sit lie"], ["imagery", "relax", "sit lie"], ["fireside", "relax", "sit lie"], ["qigong", "move", "stand"]],
     focus: [["focus-primer", "program", "sit"], ["creative", "program", "sit"], ["anapana", "meditate", "sit"], ["b:box", "breath", "sit"],
       ["x:prime", "sound", "sit"], ["t:deep-work", "sound", "sit"], ["t:sustained-24", "sound", "sit"],
       ["t:vigilance-16", "sound", "sit"], ["t:gamma-40", "sound", "sit"], ["t:gamma-memory", "sound", "sit"],
@@ -37,7 +37,7 @@
     energy: [["morning-tonic", "program", "lie sit stand"], ["sport", "program", "sit stand"], ["b:dive", "breath", "sit lie"], ["morning-yoga", "move", "stand"], ["standing-flow", "move", "stand"], ["morning-stretch", "move", "stand"],
       ["standing-reset", "move", "stand"], ["balance-yoga", "move", "stand"], ["kapalabhati", "breath", "sit"],
       ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"], ["laughter", "move", "stand sit"], ["let-it-out", "breath", "stand sit"],
-      ["sing", "program", "stand sit"], ["cold-finish", "breath", "stand"]],
+      ["sing", "program", "stand sit"], ["cold-finish", "breath", "stand"], ["dance", "move", "stand sit"]],
     recover: [["recovery", "program", "sit walk"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
       ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"], ["self-massage", "relax", "sit"], ["yoga-nidra", "relax", "lie"], ["restoration", "relax", "sit"]],
     reflect: [["nvc-self", "write", "sit"], ["nvc-prep", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
@@ -49,7 +49,7 @@
     anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], gratitude: ["calm"], "back-hips": ["calm"],
     "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"], meal: ["reflect"], "mindful-sex": ["reflect"], sport: ["focus"],
     laughter: ["calm"], "let-it-out": ["calm"], sing: ["reflect"], "self-massage": ["calm"], imagery: ["sleep"], "yoga-nidra": ["sleep"],
-    fireside: ["sleep"], restoration: ["focus"]
+    fireside: ["sleep"], restoration: ["focus"], qigong: ["energy"]
   };
   var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8", dive: "Swim & dive" };
   var TOOLS = {

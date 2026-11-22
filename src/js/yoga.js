@@ -19,6 +19,7 @@
     var pos = items.map(function (i) { return ASANA[i.id].pos; });
     return {
       id: "my-" + q.uid, custom: q.uid, method: "move", goal: goalOf(q.goal) ? q.goal : "", also: [], name: q.name || "My routine", strength: 2, tone: "relax", voice: true,
+      sup: items.some(function (i) { return ASANA[i.id].sup; }),    // with a qigong move in it, it starts with a donation (movement.js)
       stand: pos.indexOf("stand") >= 0, lie: pos.indexOf("supine") >= 0 || pos.indexOf("prone") >= 0,
       posture: (pos.indexOf("stand") >= 0 ? ["stand"] : []).concat(pos.indexOf("supine") >= 0 || pos.indexOf("prone") >= 0 ? ["lie"] : [], pos.indexOf("seat") >= 0 ? ["sit"] : []),
       blurb: names.length ? names.slice(0, 6).join(", ") + (names.length > 6 ? " and " + (names.length - 6) + " more." : ".") : "No poses yet.",
@@ -107,10 +108,11 @@
     bSetT("#ybLibN", n + " " + noun);
     edgeFade($("#ybCats")); edgeFade($("#ybPos"));
     $("#ybLib").innerHTML = list.map(function (a) {
-      var say = "Add " + a.en + ", " + yHoldTxt(a.hold) + (a.sides ? ", both sides" : "") + (a.move ? ", moving" : "") + ", level " + a.level + " of 3" + (a.caution ? ", with a caution" : "");
+      var lock = supLocked(a);                       // a qigong move, a new technique: the cup, until this device is unlocked (movement.js)
+      var say = "Add " + a.en + ", " + yHoldTxt(a.hold) + (a.sides ? ", both sides" : "") + (a.move ? ", moving" : "") + ", level " + a.level + " of 3" + (a.caution ? ", with a caution" : "") + (lock ? ", opens with a donation" : "");
       return '<li><button class="yb-tile" data-add="' + a.id + '" aria-label="' + esc(say) + '">' +
         '<span class="yb-tfig">' + yFig(a.id) + "</span>" +
-        '<span class="yb-tt"><b>' + esc(a.en) + "</b><small>" + esc(a.sa) + "</small>" +
+        '<span class="yb-tt"><b>' + esc(a.en) + (lock ? supTag(true) : "") + "</b><small>" + esc(a.sa) + "</small>" +
         '<span class="yb-cue">' + esc(aCue(a.cues[0], a.sides ? "right" : null)) + "</span>" +
         '<span class="yb-tm">' + yHoldTxt(a.hold) + (a.sides ? " · both sides" : "") + (a.move ? " · moving" : "") + '<i class="lv" aria-hidden="true">' + "●●●".slice(0, a.level) + '<s>' + "●●●".slice(a.level) + "</s></i>" +
         (a.caution ? ' · <em>caution</em>' : "") + "</span></span>" +
@@ -146,11 +148,16 @@
     $("#ybLib").addEventListener("click", function (e) {
       var b = e.target.closest("[data-add]"); if (!b) return;
       var a = ASANA[b.dataset.add];
-      Y.items.push({ id: a.id, hold: a.hold });
-      yRenderSeq();
-      var rows = $("#ybList").children, last = rows[rows.length - 1];
-      if (last) { last.classList.add("flash"); setTimeout(function () { last.classList.remove("flash"); }, 900); }
-      toast("Added " + a.en + (a.sides ? " (both sides)" : "") + ".", { ms: 1800 });
+      var add = function () {
+        Y.items.push({ id: a.id, hold: a.hold });
+        yRenderSeq();
+        var rows = $("#ybList").children, last = rows[rows.length - 1];
+        if (last) { last.classList.add("flash"); setTimeout(function () { last.classList.remove("flash"); }, 900); }
+        toast("Added " + a.en + (a.sides ? " (both sides)" : "") + ".", { ms: 1800 });
+      };
+      // a qigong move opens with a donation: the dialog first, and it's added if the dialog unlocks this device
+      if (a.sup) supGate(a.en, add, function (ok) { yRenderLib(); if (ok) add(); });
+      else add();
     });
     $("#ybList").addEventListener("click", function (e) {
       var b = e.target.closest("button[data-a]"); if (!b) return;

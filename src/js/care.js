@@ -8,7 +8,7 @@
        hcFlags()          which conditions are ticked: { heart, bpHigh, bpLow, epilepsy, pregnant,
                           panic, trauma, psychosis, asthma }, all false until it's answered
        hcCaution(kinds)   the caution for those kinds ("fast-breath", "hold", "cold", "heat", "flicker",
-                          "scent", "imagery", "body", "strain", "touch"), or "" when nothing ticked bears on them
+                          "scent", "imagery", "body", "strain", "touch", "exertion"), or "" when nothing ticked bears on them
        hcBox(kinds)       the same in a box with a link to the answers, for a page
        hcSlot(d)          a practice page's box: its caution, or, for one that asks first (hcFirst), an
                           offer to answer the health check while it's unanswered (Cold Finish)
@@ -43,7 +43,8 @@
      doctor's approval with a heart condition, low blood pressure or pregnancy, or after alcohol;
      flashing light can set off a seizure; some people react to essential oils. Laughing hard and shouting
      (Laughter Break, Let It Out) raise the heart rate and blood pressure for a while and press on the belly.
-     Touch, your own or a partner's (Soothing Touch, Self-Massage), can bring up strong feelings or memories. */
+     Touch, your own or a partner's (Soothing Touch, Self-Massage), can bring up strong feelings or memories.
+     Brisk movement (Dance Break) raises the heart rate and blood pressure, and can bring on wheezing. */
   var HC_KINDS = {
     "fast-breath": { who: ["heart", "bpHigh", "bpLow", "epilepsy", "pregnant", "asthma"],
       txt: "Fast breathing can make you dizzy or faint. With {who}, leave it out unless your doctor says it's fine for you; if you go ahead, keep it short and gentle, sitting or lying down, never in or near water, in the bath or while driving, and stop as soon as you feel dizzy, tingly or unwell.",
@@ -65,6 +66,9 @@
       txt: "Laughing hard and shouting raise your heart rate and blood pressure for a while, press on your belly, and can leave you short of breath. With {who}, keep it gentle: smiles and soft laughter rather than belly laughs, a steady speaking voice rather than big shouts, and rest as soon as you feel breathless, dizzy or unwell." },
     touch: { who: ["trauma", "psychosis", "panic"],
       txt: "Touch, your own or someone else's, can bring up strong feelings or memories. With {who}, go gently: start with your hands, keep your eyes open if you like, move on from any area that feels difficult, and tap I need to stop whenever you want to. With a partner, agree a word that means stop, and use it freely." },
+    exertion: { who: ["heart", "bpHigh", "pregnant", "asthma"],
+      txt: "Dancing and other brisk movement raise your heart rate and blood pressure, and can bring on wheezing. With {who}, ask your doctor or midwife how hard you can safely work; if you go ahead, keep to a pace at which you can still talk, keep an inhaler near if you use one, and rest as soon as you feel dizzy, faint or very short of breath. Stop at once with any chest pain.",
+      also: { pregnant: "In pregnancy, keep to steps and sways rather than jumps and quick turns, stay cool and drink water." } },
     body: { who: ["trauma", "psychosis", "panic"],
       txt: "Close attention to the body and the breath can bring up strong feelings, memories or panic. With {who}, go gently: keep your eyes open if you like, move your attention away from any part that feels difficult, and tap I need to stop whenever you want to. If you're in treatment, ask your therapist whether it suits you now." }
   };

@@ -567,7 +567,7 @@
   // what the stage shows for a step: a scene in place of the orb, the still point or the glow when the practice shows one (scenes.js)
   function pVis(s) { return scnVis(s, pVisOf(s)); }
   function pVisOf(s) {
-    if (s.k === "breath") return "breath";
+    if (s.k === "breath") return s.pose ? "pose" : "breath";      // a qigong movement: its drawing moves with the breath (movement.js)
     if (s.k === "pose") return "pose";
     if (s.k === "pump") return "pump";
     if (s.k === "shuffle") return "word";
@@ -624,8 +624,8 @@
     fig.hidden = !(vis === "pose" || vis === "body" || vis === "tap" || vis === "face");
     P.tapAt = "";
     var a = vis === "pose" && ASANA[s.pose];
-    P.mv = a && a.keys && s.k === "pose" ? { a: a, side: s.side, box: figBox(a, s.side), drawn: 0, ph: -1 } : null;
-    if (vis === "pose") fig.innerHTML = !a ? "" : P.mv ? figMove(a, pMovePhase(a, s, pT()), s.side, "", P.mv.box) : figSVG(a.fig, s.side);
+    P.mv = a && a.keys && (s.k === "pose" || s.k === "breath") ? { a: a, side: s.side, box: figBox(a, s.side), drawn: 0, ph: -1 } : null;
+    if (vis === "pose") fig.innerHTML = !a ? "" : P.mv ? (s.k === "breath" ? qgSVG(P.mv) : figMove(a, pMovePhase(a, s, pT()), s.side, "", P.mv.box)) : figSVG(a.fig, s.side);
     else if (vis === "body") fig.innerHTML = pBodySVG(s.body || ["all"]);
     else if (vis === "face") fig.innerHTML = pFaceSVG(s.zone || 0);
     else if (vis === "tap") { fig.innerHTML = tapSVG(null, []); pTapPoint(s, pT() - s.at); }
@@ -714,6 +714,7 @@
     var m = P.mv;
     if (!m || bNow() - m.drawn < 0.04) return;
     m.drawn = bNow();
+    if (s.k === "breath") { qgDraw(m); return; }    // a qigong movement goes where the breath is (movement.js)
     var ph = pMovePhase(m.a, s, T);
     if (RM) {                                       // reduced motion: step from key to key instead of gliding
       var mv = movePrep(m.a), i = 0;
@@ -838,7 +839,8 @@
       var w = pBreathWords(s); cap = w.cap; sub = w.sub;
     } else if (s.k === "pose") {
       var asa = ASANA[s.pose];
-      sub = asa && asa.move ? asa.sa + " · " + (asa.rhythm ? (P.opt.rhythm ? "with the berimbau" : "in your own rhythm") : "keep it flowing")
+      sub = asa && asa.cat === "qigong" && asa.move ? qgPoseSub(asa, s, T)      // which breath, for a qigong move in a routine (movement.js)
+        : asa && asa.move ? asa.sa + " · " + (asa.rhythm ? (P.opt.rhythm ? "with the berimbau" : "in your own rhythm") : "keep it flowing")
         : (asa ? asa.sa + " · " : "") + "about " + Math.max(1, Math.round((s.secs - 4) / 11)) + " slow breaths";
     } else if (s.k === "guide" && s.trans) {
       sub = "";
@@ -945,7 +947,7 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, brainled: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, brainled: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1, dance: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -973,6 +975,7 @@
         else if (vis === "mind") mnDraw(c, W, Hh, s, st, col);
         else if (vis === "scene") scnStep(c, W, Hh, s, T);
         else if (vis === "cold") coldDraw(c, W, Hh, s, st);
+        else if (vis === "dance") dncDraw(c, W, Hh, s, st, col);   // a ring that pulses with the music's beat (movement.js)
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -1003,6 +1006,7 @@
     c.fillStyle = rgba(col, 0.95); c.beginPath(); c.arc(cx, cy, r * 0.5, 0, Math.PI * 2); c.fill();
   }
   function pPoseRing(c, W, Hh, T, col, s) {
+    if (s && s.k === "breath") { qgRing(c, W, Hh, col); return; }   // a qigong movement: the ring follows your breath (movement.js)
     var a = s && s.k === "pose" && ASANA[s.pose];
     if (a && a.move) {                              // moving: a soft pulse on the beat (stronger on the bar) or a quiet ring
       var cx0 = W / 2, cy0 = Hh / 2, R0 = Math.min(W, Hh) * 0.47, k = 0;
@@ -1464,7 +1468,7 @@
           return '<button data-v="' + o[0] + '" aria-pressed="' + (O.cues === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
       if (bzOk()) opts.push(pToggle("sOptBuzz", "Vibrate with the breath", O.buzz, "A short buzz to breathe in, a long one to breathe out, two taps for a hold."));
-      opts.push('<div class="so-row so-seg"><span class="so-l">Breath visual</span><div class="mini-seg" id="sOptVis">' +
+      if (plan.steps.some(function (s) { return s.k === "breath" && !s.pose; })) opts.push('<div class="so-row so-seg"><span class="so-l">Breath visual</span><div class="mini-seg" id="sOptVis">' +
         [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]].map(function (o) {
           return '<button data-v="' + o[0] + '" aria-pressed="' + (O.visual === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
