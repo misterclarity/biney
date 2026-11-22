@@ -397,8 +397,9 @@ const LOCKED_GO = 'Unlock to start';
       ok(!miss.length, 'each study it cites is in the references, with a link' + (miss.length ? ': missing ' + miss.join(', ') : ''));
       const all = L.ps.map(x => x.t).join(' ');
       ok(/no study has tested what imitating animals does/.test(all) && /humour explained more of the effect, a finding they call exploratory/.test(all) && /pressing a button worked about as well/.test(all) &&
-        /left pain unchanged/.test(all) && /no firm conclusions yet/.test(all) && /No study has tested singing along with a phone/.test(all) && /low quality/.test(all),
-        'it states the evidence as it is: animal sounds untested, the made-up words and the button, humour over disinhibition, no firm conclusions for Om, low-quality laughter studies, no study of singing with a phone');
+        /left pain unchanged/.test(all) && /no firm conclusions yet/.test(all) && /No study has tested singing along with a phone/.test(all) && /low quality/.test(all) &&
+        /pain thresholds rose by a similar amount in each, and closeness grew more in the big choir \(Weinstein et al\., 2016\)/.test(all),
+        'it states the evidence as it is: animal sounds untested, the made-up words and the button, humour over disinhibition, no firm conclusions for Om, low-quality laughter studies, no study of singing with a phone, and only pain thresholds rising alike in small and big choirs');
       await p.click('#tbFind'); await p.waitForTimeout(150);
       await p.fill('#fdIn', 'ice-breaker'); await p.waitForTimeout(300);
       const hit = await E(p, () => [...document.querySelectorAll('#fdRes a.fd-it')].slice(0, 4).map(a => a.querySelector('b').textContent + '>' + a.getAttribute('href')));

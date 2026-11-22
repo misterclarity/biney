@@ -145,9 +145,9 @@ const BROKEN = { name: 'broken.mp3', mimeType: 'audio/mpeg', buffer: Buffer.from
       });
       ok(L.view && L.toc && L.h === 'Your own music, and music that follows your breath' && L.ps.length === 3, 'Learn has the section, in its contents, free to read: ' + L.h + ', ' + L.ps.length + ' paragraphs');
       ok(/strongest for stress relief/.test(L.ps[0]) && /Kučikienė & Praninskienė, 2018/.test(L.ps[0]) && /nothing is uploaded/.test(L.ps[0]) && /up to five times as often/.test(L.ps[0]) &&
-        /19 adults/.test(L.ps[1]) && /three quarters of each person's own breathing rate/.test(L.ps[1]) && /\(Leslie et al\., 2019\)/.test(L.ps[1]) && /early but promising/.test(L.ps[1]) &&
+        /19 adults/.test(L.ps[1]) && /three quarters of each person's own breathing rate/.test(L.ps[1]) && /\(Leslie et al\., 2019\)/.test(L.ps[1]) && /at a set 6 breaths a minute/.test(L.ps[1]) && /that followed each breath slowed breathing too, but showed no clear change in the other measures/.test(L.ps[1]) && /early but promising/.test(L.ps[1]) &&
         /experimental/.test(L.ps[2]) && /hasn't been tested/.test(L.ps[2]) && /a breath a minute each minute/.test(L.ps[2]),
-        'it says what the guide rates and why, the study with its numbers, the guide\'s "early but promising", and that Entrain\'s version is untested');
+        'it says what the guide rates and why, the study with its numbers (its three designs, and the one that followed each breath changing only breathing clearly), the guide\'s "early but promising", and that Entrain\'s version is untested');
       ok(/^Leslie, G., Ghandeharioun, A., Zhou, D., & Picard, R. W. \(2019\)\. Engineering music to slow breathing and invite relaxed physiology\./.test(L.ref) && L.doi, 'its reference, with the DOI: ' + L.ref.slice(0, 90));
       ok(L.row === '#st-mymusic #practice/music-break | Strong | false', 'the glance table\'s Music you choose yourself now links to Your own music and Music Break, its evidence still Strong: ' + L.row);
       await p.context().close();

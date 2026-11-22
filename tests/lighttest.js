@@ -223,9 +223,9 @@ const said = l => 'mean R ' + f1(l.r) + ' G ' + f1(l.g) + ' B ' + f1(l.b) + ', l
       });
       const all = L.ps.join(' ');
       ok(L.view && L.dlg && L.title === 'Light colour: bright, warm and red' && L.toc && L.ps.length === 4, 'Learn has a section on light colour, in the contents, free to read: ' + L.title);
-      ok(/melanopsin/.test(all) && /480 nm/.test(all) && /\(5–9 Hz\)/.test(all) && /\(Sletten et al\., 2021\)/.test(all) && /nine young men \(Kayaba et al\., 2014\)/.test(all) && /6500 K held back melatonin more/.test(all) &&
+      ok(/melanopsin/.test(all) && /480 nm/.test(all) && /\(5–9 Hz\)/.test(all) && /Laboratory studies, summed up by Sletten and colleagues/.test(all) && /28 night-shift workers/.test(all) && /\(Sletten et al\., 2021\)/.test(all) && /nine young men \(Kayaba et al\., 2014\)/.test(all) && /6500 K held back melatonin more/.test(all) &&
         /\(Chellappa et al\., 2011\)/.test(all) && /2025 preprint, not yet peer reviewed/.test(all) && /strong evidence, from body-clock research/.test(all),
-        'how it works: melanopsin near 480 nm, brighter light lowering theta and low alpha, blue LED light and alpha, 6500 K, a preprint named as one, strong evidence');
+        'how it works: melanopsin near 480 nm, brighter light lowering theta and low alpha (laboratory studies Sletten sums up, apart from its own night-shift study), blue LED light and alpha, 6500 K, a preprint named as one, strong evidence');
       ok(/In morning types, blue light in the afternoon/.test(all) && /preliminary finding \(Siemiginowska & Iskra-Golec, 2020\)/.test(all) && /24 men/.test(all) && /\(Vani et al\., 2025\)/.test(all) &&
         /left alpha and theta power unchanged \(Sharifpour et al\., 2025\)/.test(all) && /first cycle of sleep \(Chellappa et al\., 2013\)/.test(all),
         'the catches: timing in morning types, green for evening types in one small study, a study that found no change, the cost to deep sleep');

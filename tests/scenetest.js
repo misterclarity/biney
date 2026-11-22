@@ -210,7 +210,7 @@ const diff = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) s += Math
         const refs = [...document.querySelectorAll('#references li')].map(l => l.textContent);
         const row = n => { const r = [...document.querySelectorAll('#lnGlance tr.ln-row')].find(x => x.querySelector('th b').textContent === n); return { lo: r.children[2].classList.contains('ln-lo'), a: [...r.children[2].querySelectorAll('a')].map(a => a.getAttribute('href')).join(' '), ev: r.children[1].textContent }; };
         return { title: h.textContent, toc: !!document.querySelector('.toc a[href="#l-scenes"]'), ps, view: !document.querySelector('#v-learn').hidden, dlg: document.querySelector('#supModal').hidden,
-          refs: ['Ulrich, R. S. (1981)', 'Chang, C.-Y., Hammitt', 'Grassini, S.', 'Kaplan, S. (1995)', 'Hägerhäll, C. M.', 'Taylor, R. P. (2006)', 'Taylor, R. P., & Spehar', 'Ikei, H., Komatsu', 'Ikei, H., Song, C., & Miyazaki, Y. (2023)', 'Lynn, C. D. (2014)']
+          refs: ['Ulrich, R. S. (1981)', 'Chang, C.-Y., Hammitt', 'Grassini, S.', 'Kaplan, S. (1995)', 'Hägerhäll, C. M.', 'Taylor, R. P. (2006)', 'Taylor, R. P. (2017)', 'Taylor, R. P., & Spehar', 'Ikei, H., Komatsu', 'Ikei, H., Song, C., & Miyazaki, Y. (2023)', 'Lynn, C. D. (2014)']
             .map(k => { const r = [...document.querySelectorAll('#references li')].find(l => l.textContent.startsWith(k)); return r ? (r.querySelector('a[href^="https://"]') ? 1 : 0) : -1; }).join(''),
           rows: ['Nature scenes, restoration breaks', 'A fireplace, with its sound', 'Mid-complexity fractals', 'Fresh flowers'].map(row) };
       });
@@ -218,13 +218,13 @@ const diff = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) s += Math
       ok(L.view && L.dlg && L.title === 'Scenes to watch: nature, fractals, flowers and fire' && L.toc && L.ps.length === 5, 'Learn has a section on scenes, in the contents, free to read: ' + L.title);
       ok(/\(Ulrich, 1981\)/.test(all) && /\(Chang et al\., 2008\)/.test(all) && /24 students/.test(all) && /memory task afterwards came out the same \(Grassini et al\., 2022\)/.test(all) && /moderate evidence/.test(all) && /compatibility \(Kaplan, 1995\)/.test(all),
         'nature scenes and alpha, on slides and on video (and what didn\'t change), rated moderate, and choosing what suits you');
-      ok(/1\.3 gave the highest frontal alpha \(Hägerhäll et al\., 2008\)/.test(all) && /60%/.test(all) && /preliminary \(Taylor, 2006\)/.test(all) && /fractal fluency/.test(all) && /\(Taylor & Spehar, 2016\)/.test(all) && /mostly from one lab and haven't been widely repeated/.test(all) && /dimension of 1\.4 by construction/.test(all),
-        'fractals: mid complexity, alpha and stress, fluency, promising and mostly one lab, and Entrain\'s at 1.4');
+      ok(/1\.3 gave the highest frontal alpha \(Hägerhäll et al\., 2008\)/.test(all) && /24 people/.test(all) && /44% smaller than facing a plain white panel, a result the paper called preliminary \(Taylor, 2006\)/.test(all) && /up to 60%, measured with EEG and skin\s+conductance \(Taylor, 2017\)/.test(all) && /fractal fluency/.test(all) && /\(Taylor & Spehar, 2016\)/.test(all) && /mostly from one lab and haven't been widely repeated/.test(all) && /dimension of 1\.4 by construction/.test(all),
+        'fractals: mid complexity, alpha and stress (the paper\'s own 44%, and the 60% from Taylor\'s later article), fluency, promising and mostly one lab, and Entrain\'s at 1.4');
       ok(/thirty pink roses/.test(all) && /\(Ikei et al\., 2014\)/.test(all) && /214 people/.test(all) && /\(Ikei et al\., 2023\)/.test(all) && /real roses only/.test(all) && /Flowers on a screen haven't\s+been tested/.test(all),
         'flowers: the roses studies, early, real roses only, a screen untested');
       ok(/same fire with no sound had no consistent effect \(Lynn, 2014\)/.test(all) && /always comes with its crackle/.test(all) && /reduced motion/.test(all) && /haven't been tested themselves/.test(all),
         'the fire with its crackle, reduced motion, and the drawings themselves untested');
-      ok(L.refs === '1111111111', 'every study cited has its reference, each with a link: ' + L.refs);
+      ok(L.refs === '11111111111', 'every study cited has its reference, each with a link: ' + L.refs);
       ok(L.rows.every(r => !r.lo && /#st-scenes/.test(r.a)) && L.rows[1].a.includes('#l-nature') && L.rows[2].ev === 'Promising (mostly one lab)' && L.rows[3].ev === 'Early',
         'the glance table\'s rows for nature scenes, the fire, fractals and flowers lead to the scenes now, their evidence unchanged: ' + JSON.stringify(L.rows));
       await s.screenshot({ path: OUT + 'scenetest-b-learn.png' });
