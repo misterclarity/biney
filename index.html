@@ -997,11 +997,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .si-tl i,.ses-segs i{display:block;min-width:2px;background:var(--panel-3)}
   [data-k="breath"]{--kc:var(--b-in)}
   [data-k="guide"]{--kc:var(--accent)}
-  [data-k="pose"],[data-k="pmr"]{--kc:var(--stim)}
+  [data-k="pose"],[data-k="pmr"],[data-k="massage"]{--kc:var(--stim)}
   [data-k="pump"]{--kc:var(--danger)}
   [data-k="observe"],[data-k="shuffle"],[data-k="count"]{--kc:var(--ther)}
   [data-k="drift"]{--kc:#3b4a78}
   [data-k="sing"]{--kc:var(--food)}
+  [data-k="stroke"]{--kc:var(--hr)}
   .si-tl i{background:color-mix(in srgb,var(--kc) 75%,var(--panel-3))}
 
   /* ---------- practice: session intro ---------- */
@@ -1969,6 +1970,25 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     .stl-card{max-width:none;min-height:100%;max-height:none;border-radius:0;display:flex;flex-direction:column;justify-content:center;
       padding:max(20px,env(safe-area-inset-top,0px)) 18px max(20px,env(safe-area-inset-bottom,0px))}
   }
+  /* ---------- touch (touch.js): Soothing Touch's real size against a bank card, and tips on a practice's page ---------- */
+  .si-main > p.si-tip{margin-top:14px;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--relax) 8%,transparent);font-size:13.5px;line-height:1.5}
+  .si-tip b{color:var(--text);font-weight:720}
+  .tc-cal .btn{flex:none}
+  .tc-card{max-width:460px}
+  .tc-card h2{margin-bottom:8px}
+  .tc-card > p{margin-bottom:12px}
+  .tc-box{box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;margin:0 -8px;padding:4px 10px;
+    border-top:2px solid var(--relax);border-bottom:2px solid var(--relax);background:color-mix(in srgb,var(--relax) 7%,transparent);
+    font-size:12px;font-weight:650;color:var(--text-faint);min-height:40px}
+  .tc-adj{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .tc-adj input[type=range]{flex:1;min-width:0;margin:0}
+  .tc-b{flex:none;width:44px;height:44px;border:0;border-radius:12px;background:var(--panel-2);color:var(--text);font:inherit;font-size:20px;font-weight:700;line-height:1;cursor:pointer}
+  .tc-card .pm-actions{margin-top:12px}
+  @media (max-width:560px){
+    .tc{padding:0}
+    .tc-card{max-width:none;min-height:100%;max-height:none;border-radius:0;padding:max(18px,env(safe-area-inset-top,0px)) 18px max(18px,env(safe-area-inset-bottom,0px))}
+    .tc-card .pm-actions .btn{flex:1 1 auto}
+  }
 </style>
 </head>
 <body>
@@ -2825,6 +2845,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-voice">Your voice</a>
             <a href="#l-nature">Nature sounds</a>
             <a href="#l-sleepsnd">Sound and sleep</a>
+            <a href="#l-touch">Touch</a>
             <a href="#l-expect">Placebo and side effects</a>
             <a href="#l-dose">How often</a>
             <a href="#l-measure">What to measure</a>
@@ -2987,9 +3008,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Touch</th></tr>
-                <tr class="ln-row"><th scope="row"><b>Slow self-stroking</b> <small>About 3&nbsp;cm a second, for calm and lower cortisol</small></th><td>Moderate</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Weighted blanket</b> <small>Sleep, less anxiety</small></th><td>Moderate</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Massage</b> <small>Alpha (relaxation)</small></th><td>Moderate</td><td class="ln-lo">Learn only</td></tr>
+                <tr class="ln-row"><th scope="row"><b>Slow self-stroking</b> <small>About 3&nbsp;cm a second, for calm and lower cortisol</small></th><td>Moderate</td><td><a href="#practice/touch">Soothing Touch</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Weighted blanket</b> <small>Sleep, less anxiety</small></th><td>Moderate</td><td>A tip in <a href="#practice/sleep-descent">Sleep Descent</a> and <a href="#living/sleep-habits">healthy sleep habits</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Massage</b> <small>Alpha (relaxation)</small></th><td>Moderate</td><td><a href="#practice/self-massage">Self-Massage</a>, alone or with a partner</td></tr>
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Taste</th></tr>
@@ -3635,6 +3656,54 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               open-ended late at night with noise or a background sound under it, the player says so.
             </p>
 
+            <h3 id="l-touch">Touch: slow strokes, a hand on the heart, weighted blankets and massage</h3>
+            <p id="l-ctouch">
+              <b>Slow, gentle stroking.</b> Hairy skin, like the forearm's, has nerves of its own for caress-like touch:
+              C-tactile fibres. Stroked with a soft brush, they fired most at 1 to 10 cm a second, the speeds people rated the
+              most pleasant (L&ouml;ken et al., 2009), and they carry touch to the insula, a part of the brain that deals with
+              feelings from the body (Olausson et al., 2002). Stroking the forearm at 3 cm a second was rated more pleasant than
+              at 30 cm a second and slowed the heart more, and only on the forearm did it stir the muscles of a smile (Pawling et
+              al., 2017). In 9-month-old babies, stroking at 3 cm a second slowed the heart, while slower and faster stroking
+              didn't (Fairhurst et al., 2014). A review sets this touch among the ways close contact calms the body's stress
+              responses (Kidd et al., 2023), and it may work partly through oxytocin, a hormone of bonding, though that link is
+              still a proposal (Walker et al., 2017). <a href="#practice/touch">Soothing Touch</a> paces your own strokes at about 3
+              cm a second, one on each long breath out. Its speed on the screen comes from the screen's size, which you can match
+              to a bank card, since a phone shows a CSS centimetre at about six tenths of a real one. A soft brush or a piece of
+              velvet is an optional extra; the guide rates the evidence for soft textures as early.
+            </p>
+            <p id="l-selftouch">
+              <b>A hand on your heart, or a hug.</b> In a randomised trial with 159 adults, 20 seconds of self-soothing touch just
+              before a stressful mock job interview, most often a hand on the chest and the other on the belly with a few deep
+              breaths, and a 20-second hug from someone else both lowered the rise of the stress hormone cortisol, compared with
+              making a paper plane; heart rate and how stressed people felt stayed the same (Dreisoerner et al., 2021). Most of
+              the participants were young women studying psychology, and the trial couldn't rule out other explanations, such as
+              positive feelings or extra attention. The guide rates a hand on the heart or a self-hug as early to moderate
+              evidence: a simple, calming add-on. Soothing Touch offers both.
+            </p>
+            <p id="l-weighted">
+              <b>Weighted blankets.</b> In a Swedish randomised trial of 120 outpatients with depression, bipolar disorder,
+              generalised anxiety disorder or ADHD and insomnia, four weeks under a chain blanket of 6 to 8 kg eased insomnia far
+              more than a light one did, a large effect (Cohen's d = 1.90), with no serious side effects (Ekholm et al., 2020).
+              In a pilot trial of 102 adults with insomnia, a 5.5 kg blanket improved sleep quality after a month, with less
+              daytime sleepiness, stress and anxiety (Yu et al., 2024). Across five trials in people with mental disorders,
+              anxiety fell a little, a standardised mean difference of 0.40 (Zhao et al., 2024). So a weighted blanket is a
+              low-risk option with moderate support for adults whose restlessness at night has an anxious or low edge, and
+              unproven for most other people. Choose one you can easily push off by yourself: it's not for small children, or for
+              anyone who couldn't take it off unaided. <a href="#practice/sleep-descent">Sleep Descent</a> and
+              <a href="#living/sleep-habits">healthy sleep habits</a> suggest one.
+            </p>
+            <p id="l-massage">
+              <b>Massage and alpha.</b> A shift towards alpha waves is one of the most consistent findings in EEG studies of
+              massage: across 30 of them, a single session commonly raised alpha and lowered faster beta and gamma activity, and
+              moderate pressure favoured a relaxed, parasympathetic profile; in one, a moderate-pressure Swedish massage lowered
+              the slow delta and theta waves and raised alpha at the front of the head (Chmiel &amp; Kurpas, 2026). Not every
+              study agrees. In 24 young adults, a massage by hand and one by a device changed delta, theta and beta differently,
+              and alpha fell during that short session in both (Chang et al., 2012). Almost all of this research is on massage
+              from a trained therapist; massage you give yourself, or a partner, has been studied far less.
+              <a href="#practice/self-massage">Self-Massage</a> walks you round the hands and forearms, jaw and temples, scalp,
+              neck and shoulders and feet with moderate pressure, or takes turns with a partner.
+            </p>
+
             <h3 id="l-expect">Expectation, placebo and side effects</h3>
             <p>
               Recent breathwork trials compare a real technique with a convincing fake that people expect just as much from. In
@@ -3955,6 +4024,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Levitt, J., et al. (2026). Closed-loop auditory stimulation in phase with slow waves during sleep enhances cerebrospinal fluid flow in humans. <em>Science Translational Medicine</em>. <a href="https://doi.org/10.1126/scitranslmed.aea5469" rel="noopener">DOI</a></li>
       <li>Harlow, T. J., Jané, M. B., Read, H. L., &amp; Chrobak, J. J. (2023). Memory retention following acoustic stimulation in slow-wave sleep: a meta-analytic review of replicability and measurement quality. <em>Frontiers in Sleep</em>, 2. <a href="https://doi.org/10.3389/frsle.2023.1082253" rel="noopener">DOI</a></li>
       <li>Vickrey, B., &amp; Lerner, I. (2023). Overnight exposure to pink noise could jeopardize sleep-dependent insight and pattern detection. <em>Frontiers in Human Neuroscience</em>, 17, 1302836. <a href="https://doi.org/10.3389/fnhum.2023.1302836" rel="noopener">DOI</a></li>
+      <li>L&ouml;ken, L. S., Wessberg, J., Morrison, I., McGlone, F., &amp; Olausson, H. (2009). Coding of pleasant touch by unmyelinated afferents in humans. <em>Nature Neuroscience</em>, 12(5), 547–548. <a href="https://doi.org/10.1038/nn.2312" rel="noopener">DOI</a></li>
+      <li>Olausson, H., Lamarre, Y., Backlund, H., Morin, C., Wallin, B. G., Starck, G., Ekholm, S., Strigo, I., Worsley, K., Vallbo, &Aring;. B., &amp; Bushnell, M. C. (2002). Unmyelinated tactile afferents signal touch and project to insular cortex. <em>Nature Neuroscience</em>, 5(9), 900–904. <a href="https://doi.org/10.1038/nn896" rel="noopener">DOI</a></li>
+      <li>Pawling, R., Cannon, P. R., McGlone, F. P., &amp; Walker, S. C. (2017). C-tactile afferent stimulating touch carries a positive affective value. <em>PLOS ONE</em>, 12(3), e0173457. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5345811/" rel="noopener">PMC</a></li>
+      <li>Fairhurst, M. T., L&ouml;ken, L., &amp; Grossmann, T. (2014). Physiological and behavioral responses reveal 9-month-old infants&rsquo; sensitivity to pleasant touch. <em>Psychological Science</em>, 25(5), 1124–1131. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4017181/" rel="noopener">PMC</a></li>
+      <li>Kidd, T., Devine, S. L., &amp; Walker, S. C. (2023). Affective touch and regulation of stress responses. <em>Health Psychology Review</em>, 17(1), 60–77. <a href="https://doi.org/10.1080/17437199.2022.2143854" rel="noopener">DOI</a></li>
+      <li>Walker, S. C., Trotter, P. D., Swaney, W. T., Marshall, A., &amp; McGlone, F. P. (2017). C-tactile afferents: cutaneous mediators of oxytocin release during affiliative tactile interactions? <em>Neuropeptides</em>, 64, 27–38. <a href="https://doi.org/10.1016/j.npep.2017.01.001" rel="noopener">DOI</a></li>
+      <li>Dreisoerner, A., Junker, N. M., Schlotz, W., Heimrich, J., Bloemeke, S., Ditzen, B., &amp; van Dick, R. (2021). Self-soothing touch and being hugged reduce cortisol responses to stress: a randomized controlled trial on stress, physical touch, and social identity. <em>Comprehensive Psychoneuroendocrinology</em>, 8, 100091. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9216399/" rel="noopener">PMC</a></li>
+      <li>Ekholm, B., Spulber, S., &amp; Adler, M. (2020). A randomized controlled study of weighted chain blankets for insomnia in psychiatric disorders. <em>Journal of Clinical Sleep Medicine</em>, 16(9), 1567–1577. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7970589/" rel="noopener">PMC</a></li>
+      <li>Yu, J., Du, J., Yang, Z., Chen, W., Sun, S., Gan, M., et al. (2024). Effect of weighted blankets on sleep quality among adults with insomnia: a pilot randomized controlled trial. <em>BMC Psychiatry</em>, 24, 765. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11539645/" rel="noopener">PMC</a></li>
+      <li>Zhao, Y., Zhang, Q., Liu, Z., Zhao, Z., &amp; Zhu, Q. (2024). Safety and effectiveness of weighted blankets for symptom management in patients with mental disorders: a systematic review and meta-analysis of randomized controlled trials. <em>Complementary Therapies in Medicine</em>, 87, 103104. <a href="https://doi.org/10.1016/j.ctim.2024.103104" rel="noopener">DOI</a></li>
+      <li>Chmiel, J., &amp; Kurpas, D. (2026). Through massage to the brain: neuronal and neuroplastic mechanisms of massage based on various neuroimaging techniques (EEG, fMRI, and fNIRS). <em>Journal of Clinical Medicine</em>, 15(2), 909. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12842157/" rel="noopener">PMC</a></li>
+      <li>Chang, K.-M., Luo, S.-Y., Chen, S.-H., Wang, T.-P., &amp; Ching, C. T.-S. (2012). Body massage performance investigation by brain activity analysis. <em>Evidence-Based Complementary and Alternative Medicine</em>, 2012, 252163. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3317228/" rel="noopener">PMC</a></li>
       <li>American Heart Association. Devices that may interfere with ICDs and pacemakers. <a href="https://www.heart.org/en/health-topics/arrhythmia/prevention--treatment-of-arrhythmia/devices-that-may-interfere-with-icds-and-pacemakers" rel="noopener">heart.org</a></li>
       <li>Fincham, G. W., Strauss, C., &amp; Cavanagh, K. (2023). Effect of coherent breathing on mental health and wellbeing: a randomised placebo-controlled trial. <em>Scientific Reports</em>, 13. <a href="https://doaj.org/article/21a326834cdb4a7fbd35bc10ec8509f0" rel="noopener">DOAJ</a></li>
       <li>Fincham, G. W., Epel, E., Colasanti, A., Strauss, C., &amp; Cavanagh, K. (2024). Effects of brief remote high ventilation breathwork with retention on mental health and wellbeing: a randomised placebo-controlled trial. <em>Scientific Reports</em>, 14, 16893. <a href="https://doi.org/10.1038/s41598-024-64254-7" rel="noopener">DOI</a></li>
@@ -4098,6 +4179,27 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <button class="btn" id="stlGround"><svg class="i" aria-hidden="true"><use href="#i-leaf"/></svg>5-4-3-2-1 Grounding</button>
     </div>
     <p class="hint">If this keeps happening, or a practice often leaves you upset, talk to your doctor or a mental-health professional before you carry on with it. If you feel unsafe right now, call your local emergency number.</p>
+  </div>
+</div>
+
+
+<!-- ============ SOOTHING TOUCH: this screen's real size, against a bank card (touch.js) ============ -->
+<div class="modal tc" id="tcModal" hidden>
+  <div class="modal-card tc-card" role="dialog" aria-modal="true" aria-labelledby="tcTitle">
+    <h2 id="tcTitle">Match a bank card</h2>
+    <p>Lay a bank card on the screen sideways, its top edge on the upper line; its far end can hang over the edge. Then size the box until the lower line meets the card's bottom edge.</p>
+    <div class="tc-box" id="tcBox" aria-hidden="true"><span>Top edge of the card</span><span>Bottom edge</span></div>
+    <div class="tc-adj">
+      <button class="tc-b" id="tcLess" aria-label="Smaller">−</button>
+      <input type="range" id="tcRange" min="25" max="95" step="0.1" aria-label="Size of the box">
+      <button class="tc-b" id="tcMore" aria-label="Larger">+</button>
+    </div>
+    <p class="hint" id="tcSaid" aria-live="polite"></p>
+    <div class="pm-actions">
+      <button class="btn primary" id="tcSave">Save</button>
+      <button class="btn" id="tcUsual">Use the usual size</button>
+      <button class="btn" id="tcCancel">Not now</button>
+    </div>
   </div>
 </div>
 
@@ -5414,8 +5516,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* -------------------------------- dialogs --------------------------------
      Two blocking dialogs: the headphone check before the first beat, and the tinnitus pitch
      match before the notched track. Focus goes back where it was when one closes, and Tab
-     stays inside while one is open (in the others too: the safety note, Swim & dive's cautions
-     and unlocking the new techniques).
+     stays inside while one is open (in the others too: the safety note, Swim & dive's cautions,
+     unlocking the new techniques, and matching a bank card for Soothing Touch).
   ---------------------------------------------------------------------------- */
 
   var lastFocus = null;
@@ -5647,7 +5749,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     // they're all blocking, so Tab has to stay inside them
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return;
-      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal", "#supModal", "#ibModal", "#stlModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
+      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal", "#supModal", "#ibModal", "#stlModal", "#tcModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
       if (!box) return;
       var all = box.querySelectorAll("button, input, a[href], select, textarea");
       var list = [], i;
@@ -5718,7 +5820,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
        hcFlags()          which conditions are ticked: { heart, bpHigh, bpLow, epilepsy, pregnant,
                           panic, trauma, psychosis, asthma }, all false until it's answered
        hcCaution(kinds)   the caution for those kinds ("fast-breath", "hold", "cold", "heat", "flicker",
-                          "scent", "imagery", "body", "strain"), or "" when nothing ticked bears on them
+                          "scent", "imagery", "body", "strain", "touch"), or "" when nothing ticked bears on them
        hcBox(kinds)       the same in a box with a link to the answers, for a page
        hcAnswered()       whether it's been answered, for a feature that offers it first (#st-health)
      A practice names its kinds in `hc` (a list, or a function of the practice for one that depends on
@@ -5750,7 +5852,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      open water, never with breath holds in water); heat: stay hydrated, and saunas only with a
      doctor's approval with a heart condition, low blood pressure or pregnancy, or after alcohol;
      flashing light can set off a seizure; some people react to essential oils. Laughing hard and shouting
-     (Laughter Break, Let It Out) raise the heart rate and blood pressure for a while and press on the belly. */
+     (Laughter Break, Let It Out) raise the heart rate and blood pressure for a while and press on the belly.
+     Touch, your own or a partner's (Soothing Touch, Self-Massage), can bring up strong feelings or memories. */
   var HC_KINDS = {
     "fast-breath": { who: ["heart", "bpHigh", "bpLow", "epilepsy", "pregnant", "asthma"],
       txt: "Fast breathing can make you dizzy or faint. With {who}, leave it out unless your doctor says it's fine for you; if you go ahead, keep it short and gentle, sitting or lying down, never in or near water, in the bath or while driving, and stop as soon as you feel dizzy, tingly or unwell.",
@@ -5770,6 +5873,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       txt: "Guided imagery and deep relaxation can bring up memories, or leave you feeling detached or unreal. With {who}, ask your therapist or care team whether it suits you now; if you go ahead, keep it short, open your eyes whenever you like, and tap I need to stop if it gets too much." },
     strain: { who: ["heart", "bpHigh", "pregnant", "asthma"],
       txt: "Laughing hard and shouting raise your heart rate and blood pressure for a while, press on your belly, and can leave you short of breath. With {who}, keep it gentle: smiles and soft laughter rather than belly laughs, a steady speaking voice rather than big shouts, and rest as soon as you feel breathless, dizzy or unwell." },
+    touch: { who: ["trauma", "psychosis", "panic"],
+      txt: "Touch, your own or someone else's, can bring up strong feelings or memories. With {who}, go gently: start with your hands, keep your eyes open if you like, move on from any area that feels difficult, and tap I need to stop whenever you want to. With a partner, agree a word that means stop, and use it freely." },
     body: { who: ["trauma", "psychosis", "panic"],
       txt: "Close attention to the body and the breath can bring up strong feelings, memories or panic. With {who}, go gently: keep your eyes open if you like, move your attention away from any part that feels difficult, and tap I need to stop whenever you want to. If you're in treatment, ask your therapist whether it suits you now." }
   };
@@ -9319,7 +9424,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "e5b61bd3";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "e6fc19c6";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -11722,6 +11827,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
        pmr      tense one muscle group, then release it
        drift    a soft glow while the sound carries on (sleep)
        hold     a breath hold: open (tap Breathe in, capped) or a fixed count
+       stroke   strokes along an arm on each breath out, following a gliding dot (touch.js)
+       massage  an area of the body map with its pressure and stroke (touch.js)
      Lengths are in seconds. `lines` are [offset, text] pairs, or plain strings spread
      evenly across the step; a third item marks an Anapana reminder ("ana", said softly) or a
      chime that sounds in place of the voice ("chime"). A step can end when you tap a button
@@ -11730,6 +11837,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      A technique from the brain-wave guide carries `sup: true`: it opens with a donation, once on each
      device (supporter.js), and every way to start it asks for that first; its page stays free to read.
      Patterns in BREATHS and tracks in TRACKS take the same flag.
+     A page can add a tip, free to read ([lead, text, link, link text]), and a row of its own under
+     Options (optHtml, redrawn by optSync when the badges change).
   ------------------------------------------------------------------------------ */
 
   function pLines(lines, secs) {
@@ -12560,7 +12669,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       },
       how: "The first eight minutes pace your breath from 6 down to about 4.6 breaths a minute, with the out-breath always the longer half: 4 s in and 6 s out, gliding to 5 s in and 8 s out. The fuller inhale keeps the slow pace easy rather than air-hungry as you get drowsy. Then the cue sounds fade over three minutes, a short body release follows, and a soft glow stays on the screen while the binaural beat slides from 6 Hz theta to 3 Hz delta, holds there and fades out.",
       ev: "Each part has its own evidence; the combination hasn't been tested as a package. Twenty minutes of slow breathing at six a minute before bed shortened sleep onset and reduced night waking in people with self-reported insomnia. At that pace a longer exhale was rated more relaxing than the reverse. Relaxation training is a recommended (conditional) treatment for chronic insomnia. A 3 Hz binaural beat lengthened deep sleep in a sleep-lab study.",
-      cite: "Tsai et al. 2015 · Van Diest et al. 2014 · Edinger et al. 2021 (AASM) · Jirakittayakorn & Wongsawat 2018"
+      cite: "Tsai et al. 2015 · Van Diest et al. 2014 · Edinger et al. 2021 (AASM) · Jirakittayakorn & Wongsawat 2018",
+      // free to read, like every tip: the guide's weighted blanket, for the restless whose nights have an anxious or low edge
+      tip: ["A weighted blanket?", "If restlessness at night comes with anxiety or a low mood, a weighted blanket may help: in trials, people with insomnia slept better after a month under one. It's low-risk for most adults. Choose one you can easily push off by yourself; it's not for small children, or for anyone who couldn't take it off unaided.",
+        "#l-weighted", "What the research says"]
     },
     {
       id: "stress-check", name: "Stress Check", lengths: [3, 6], min: 3, strength: 2, stress: true,
@@ -13423,6 +13535,66 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       cite: "Weinstein et al. 2016 · Pearce et al. 2015 · Tarr et al. 2014"
     },
 
+    /* ===== touch (touch.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "touch", name: "Soothing Touch", lengths: [5, 10], min: 5, strength: 2, sup: true,
+      tone: "relax", noTap: true, hc: ["touch"],
+      optNote: "Your touch, pace and sound are kept for it.",
+      alias: "Self-soothing touch", words: "touch soothing self-soothing stroke stroking forearm arm skin caress gentle slow c-tactile ct fibres brush velvet soft hug self-hug hand on heart heart comfort calm cortisol oxytocin",
+      blurb: "Stroke your forearm slowly, at about 3 cm a second, one stroke on each long breath out, following a dot on the screen. Or give yourself a hug, or rest a hand on your heart.",
+      parts: "Forearm strokes at 3 cm a second, one arm then the other · or a self-hug · or a hand on your heart",
+      choices: [
+        { key: "touch", label: "Touch", def: "arm", redraw: true,
+          note: function (d) {
+            return {
+              arm: "Slow strokes from wrist to elbow, where the skin's slow-touch nerves are: moderate evidence, from a trial of self-soothing touch and research on these nerves.",
+              hug: "Arms crossed, slow strokes up your upper arms, then a held hug: early to moderate evidence.",
+              heart: "A hand on your heart, then one on your belly too, as most people chose in the self-soothing touch trial: early to moderate evidence."
+            }[pChoice(d, "touch")];
+          },
+          opts: [["arm", "Forearm stroking"], ["hug", "Self-hug"], ["heart", "Hand on heart"]] },
+        { key: "with", label: "Stroke with", def: "hand", show: function (d) { return pChoice(d, "touch") === "arm"; },
+          note: "A soft brush or a piece of velvet is an optional extra, pleasant for many people; its evidence is early.",
+          opts: [["hand", "Your fingertips"], ["soft", "A soft brush or velvet"]] },
+        { key: "pace", label: "Breathing", def: "slow",
+          note: function (d) {
+            return pChoice(d, "touch") === "heart" ? "A longer breath out, at either pace."
+              : pChoice(d, "pace") === "gentle" ? "3 s in, 6 s out: each stroke covers about 18 cm at 3 cm a second, most of the way."
+              : "4 s in, 8 s out: each stroke covers about 24 cm at 3 cm a second, about the length of a forearm.";
+          },
+          opts: [["slow", "4 in, 8 out"], ["gentle", "3 in, 6 out"]] },
+        { key: "sound", label: "Sweeping tone", def: "on", show: function (d) { return pChoice(d, "touch") !== "heart"; },
+          note: "A soft whoosh that rises with each stroke, made on your device: it paces the stroke with your eyes closed.",
+          opts: [["on", "On"], ["off", "Leave it out"]] }
+      ],
+      optHtml: function (d) { return tcOptHtml(d); },        // real size, against a bank card (touch.js)
+      optSync: function () { tcOptSync(); },
+      build: function (min) { return tcSteps(this, min || 5); },
+      end: "Let your hands rest, and take the calm with you.",
+      how: "Choose your touch. Forearm stroking: a dot glides along a drawing of the forearm from the wrist to the elbow at about 3 cm a second, and you follow it with your fingertips (or a soft brush or velvet), one slow stroke on each long breath out, lifting your hand back to the wrist as you breathe in: first the left arm, then the right (twice each in ten minutes), ending with a hand on your heart. A soft sweeping tone rises with each stroke, and under the arm, centimetre marks at real size move at the real speed while you stroke; in Options you can match the screen to a bank card to make them exact. Self-hug: arms crossed, the same slow strokes up your upper arms, then a held hug and a hand on your heart. Hand on heart: one hand on your chest, then the other on your belly, slow circles, and rest, with a longer breath out throughout.",
+      ev: "Hairy skin, like the forearm's, has nerves for caress-like touch, C-tactile fibres, which fire most to slow stroking at about 1 to 10 cm a second, the speeds people find most pleasant. Stroking at 3 cm a second was rated more pleasant than at 30 cm a second and slowed the heart more, in adults; in 9-month-old babies it slowed the heart where slower and faster stroking didn't. A review links this kind of touch with calmer stress responses. In a randomised trial of 159 adults, 20 seconds of self-soothing touch (most chose a hand on the chest and the other on the belly) and a 20-second hug both lowered the stress hormone cortisol after a stressful mock interview, compared with making a paper plane; heart rate and felt stress stayed the same. The participants were mostly young women studying psychology, and the trial couldn't rule out other explanations, such as positive feelings or extra attention. A hand on the heart or a self-hug has early to moderate evidence; soft textures, early.",
+      cite: "Löken et al. 2009 · Pawling et al. 2017 · Fairhurst et al. 2014 · Kidd et al. 2023 · Dreisoerner et al. 2021"
+    },
+    {
+      id: "self-massage", name: "Self-Massage", lengths: [8, 10], min: 8, strength: 2, sup: true,
+      tone: "ther", noTap: true, hc: ["touch"],
+      optNote: "Your choice is kept for it.",
+      alias: "Massage", words: "massage self-massage rub knead kneading hands palms fingers forearms jaw temples scalp head neck shoulders feet foot partner couple together giver receiver alpha tension relax",
+      blurb: "Massage your own hands and forearms, jaw and temples, scalp, neck and shoulders, and feet, with the pressure and stroke for each. Or take turns with a partner, swapping halfway.",
+      parts: "Hands and forearms · jaw and temples · scalp · neck and shoulders · feet · or with a partner",
+      choices: [
+        { key: "who", label: "With", def: "solo",
+          note: "With a partner: hands and forearms, shoulders and neck, and the scalp, for each of you in turn. The receiver sits on a chair; you swap halfway.",
+          opts: [["solo", "On your own"], ["partner", "With a partner"]] }
+      ],
+      build: function (min) { return smSteps(this, min || 8); },
+      end: "Rest your hands, and notice the ease.",
+      how: "On your own: a moment to settle, then each area in turn, lit on the body map, with its pressure and stroke under its name and the time left on it: each hand and forearm (thumb circles in the palm, each finger, long strokes and a gentle squeeze), the jaw and temples, the scalp, the neck and shoulders, and each foot, then a moment of rest. Moderate pressure most of the way: firm enough to move the skin over the muscle, and comfortable. With a partner: agree who gives first and how to say more or less, then the hands and forearms, shoulders and neck, and scalp, and you swap halfway, ending side by side.",
+      ev: "A shift towards alpha brain waves is one of the most consistent findings in EEG studies of massage: across 30 of them, a single session commonly raised alpha and lowered faster beta and gamma activity, and moderate pressure favoured a relaxed, parasympathetic profile. Not every study agrees: in 24 young adults, a massage by hand and one by a device changed delta, theta and beta differently, and alpha fell during that short session in both. Almost all of this research is on massage from a trained therapist; massage you give yourself, or a partner, has been studied far less.",
+      cite: "Chmiel & Kurpas 2026 · Chang et al. 2012",
+      caution: "Leave out any area with an injury, a wound, a rash, a bruise or swelling, and go lightly around varicose veins rather than pressing on them. If you take blood thinners or bruise easily, keep the pressure light. A painful, swollen, warm calf can be a blood clot: leave it alone and see a doctor. Keep to the back and sides of the neck, away from the front of the throat. Massage should feel good: ease off if anything hurts, and with a partner, say so straight away."
+    },
+
     /* ===== movement ===== */
     yogaPractice("standing-flow", { stand: true,
       blurb: "Nine standing poses, held for a few breaths each: mountain, reach, side bends, forward fold, chair, the warriors, triangle and tree." }),
@@ -13490,7 +13662,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
-      ["t:preop-calm", "sound", "lie"], ["om", "breath", "sit"]],
+      ["t:preop-calm", "sound", "lie"], ["om", "breath", "sit"], ["touch", "relax", "sit lie"]],
     focus: [["focus-primer", "program", "sit"], ["creative", "program", "sit"], ["anapana", "meditate", "sit"], ["b:box", "breath", "sit"],
       ["x:prime", "sound", "sit"], ["t:deep-work", "sound", "sit"], ["t:sustained-24", "sound", "sit"],
       ["t:vigilance-16", "sound", "sit"], ["t:gamma-40", "sound", "sit"], ["t:gamma-memory", "sound", "sit"],
@@ -13500,7 +13672,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"], ["laughter", "move", "stand sit"], ["let-it-out", "breath", "stand sit"],
       ["sing", "program", "stand sit"]],
     recover: [["recovery", "program", "sit walk"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
-      ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"]],
+      ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"], ["self-massage", "relax", "sit"]],
     reflect: [["nvc-self", "write", "sit"], ["nvc-prep", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
       ["metta", "meditate", "sit walk"], ["gratitude", "meditate", "sit lie walk"]],
     tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: a section of its own
@@ -13509,7 +13681,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],
     anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], gratitude: ["calm"], "back-hips": ["calm"],
     "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"], meal: ["reflect"], "mindful-sex": ["reflect"], sport: ["focus"],
-    laughter: ["calm"], "let-it-out": ["calm"], sing: ["reflect"]
+    laughter: ["calm"], "let-it-out": ["calm"], sing: ["reflect"], "self-massage": ["calm"]
   };
   var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8", dive: "Swim & dive" };
   var TOOLS = {
@@ -14084,6 +14256,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (s.k === "shuffle") return "word";
     if (s.k === "count") return "count";
     if (s.k === "sing") return "sing";               // the words to sing, and where each part is (vocal.js)
+    if (s.k === "stroke") return "stroke";           // an arm and a dot to stroke along with (touch.js)
     if (ST.sleepDim && pSleepyStep(s)) return s.k === "shuffle" ? "word" : "dark";   // dimmed for sleep (Settings)
     if (s.k === "drift") return "glow";
     if (s.k === "hold") return "hold";
@@ -14103,6 +14276,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1; P.metroNext = 0;
     napWakeStop();                                   // wake-up chimes belong to their own step
     vxEnter(s);                                      // and a song's notes to its own (vocal.js)
+    tcEnter(s);                                      // and a stroke's sweeps to theirs (touch.js)
     if (s.k === "wake") { NP.rung = 0; NP.vibs = 0; }
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
@@ -14197,6 +14371,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else if (s.k === "pmr") pPmrTick(s, st);
     if (s.metro) pMetroTick(s, st);
     vxTick(s, st);                                   // the drone, and a song's tune and count-in (vocal.js)
+    tcTick(s, st);                                   // a soft sweep with each stroke (touch.js)
     pAudioSync(T);
     pUI();
   }
@@ -14367,6 +14542,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       sub = s.sub || "0 is not at all, 10 is as strong as it gets";
     } else if (s.k === "sing") {
       sub = vxSub(s, st);
+    } else if (s.k === "stroke") {
+      var tw = tcWords(s, st); cap = tw.cap; sub = tw.sub;
+    } else if (s.k === "massage") {
+      sub = smSub(s, st);
     } else if (s.k === "adapt") {
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
@@ -14433,7 +14612,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -14456,6 +14635,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
         else if (vis === "beat") vxBeat(c, W, Hh, s, st, col);
         else if (vis === "sing") vxShow(s, st);
+        else if (vis === "stroke") tcDraw(c, W, Hh, s, st, col);
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -14672,6 +14852,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     rhyStop(0.3);
     napWakeStop();
     vxHush();
+    tcHush();
     pHush();
     pUnlock();
     pUI();
@@ -14722,6 +14903,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     rhyStop();
     napWakeStop();
     vxHush();
+    tcHush();
     P.mv = null;
     if (pTrack()) {
       var trk = A.track;
@@ -14856,6 +15038,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     pGoSync(d, plan);
     pPreRow(d);
     pCareSync(d, plan);
+    if (d.optSync) d.optSync(d);                     // a practice's own row in Options (Soothing Touch's real size)
   }
   // your health check's caution, and a block of fast breathing within the hour or today's rounds (care.js)
   function pCareSync(d, plan) {
@@ -14880,6 +15063,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       opts.push('<div class="so-row so-seg"><span class="so-l">' + esc(c.label) + (note ? "<small>" + esc(note) + "</small>" : "") + '</span><div class="mini-seg" data-choice="' + c.key + '">' +
         c.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (v === o[0]) + '">' + esc(o[1]) + "</button>"; }).join("") + "</div></div>");
     });
+    if (d.optHtml) opts.push(d.optHtml(d));          // a row of its own (Soothing Touch's real size, touch.js)
     if (d.audio && d.beats) {
       var bt = pBeat(d);
       opts.push('<div class="so-row so-seg so-beat"><span class="so-l">Binaural beat<small id="sBeatNote">' + esc(pBeatNote(d, O)) + '</small></span><div class="mini-seg" id="sOptBeat">' +
@@ -14954,6 +15138,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         }).join("") + "</ul>" : "") +
         "<h3>How it runs</h3><p>" + esc(d.how || pYogaHow(plan)) + "</p>" +
         '<ol class="si-steps">' + pStepsHtml(d, plan) + "</ol>" +
+        (d.tip ? '<p class="si-tip"><b>' + esc(d.tip[0]) + "</b> " + esc(d.tip[1]) + (d.tip[2] ? ' <a href="' + d.tip[2] + '">' + esc(d.tip[3]) + "</a>" : "") + "</p>" : "") +
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its " + (bmMode(O.beatMode) === "binaural" ? "binaural " : "") + "beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
@@ -16335,6 +16520,413 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function vxInit() {
     SETTLE_HUSH.push(function (secs) { vxHush(secs); });     // I need to stop: the tune and the drone fade with everything else
     if (window.__entrain) { window.__entrain.VX = VX; window.__entrain.VX_SONGS = VX_SONGS; window.__entrain.vxEvents = vxEvents; window.__entrain.vxPos = vxPos; }
+  }
+  /* ------------------------------- touch -------------------------------
+     Two practices for touch, from the brain-wave guide (practice-data.js holds their entries; each is
+     a new technique, sup: true):
+       Soothing Touch  slow strokes along your own forearm at about 3 cm a second, the speed the skin's
+                       C-tactile nerves like best, one stroke on each long breath out, following a dot
+                       that glides from the wrist to the elbow; or a self-hug, stroking up the upper
+                       arms and then holding; or a hand on the heart (and one on the belly), as in the
+                       self-soothing touch trial
+       Self-Massage    the hands and forearms, jaw and temples, scalp, neck and shoulders and the feet,
+                       each lit on the body map with its pressure and stroke under the step's name; or
+                       with a partner: hands, shoulders and neck and scalp, swapping giver and receiver
+                       halfway
+     A "stroke" step draws the arm and the gliding dot on the session canvas, and under it a strip of
+     centimetre marks at real size that moves at the real speed while you stroke. Real size comes from
+     this screen: a computer's CSS centimetre, or on a touch screen the usual phone density (a phone
+     shows a CSS centimetre at about six tenths of a real one); matching a bank card in the practice's
+     Options makes it exact, kept on this device only (the key is in backup.js BK_SKIP). A soft
+     sweeping tone, a rising whoosh with a tone a fifth below it, plays with each stroke: scheduled
+     ahead on the audio clock through a gain of its own that a pause, a skip, the end and I need to
+     stop silence at once.
+  ------------------------------------------------------------------------------ */
+
+  var TC_SPEED = 3;                        // cm a second: the CT-optimal pace the guide names
+  var TC_CARD = 5.398;                     // cm: the short side of a bank card (ID-1), the size matched on the screen
+  var TC_RANGE = [25, 95];                 // CSS pixels a centimetre the calibration allows
+  // the limb drawn for each part: its length in cm, the hand drawn beyond its start, the half widths at each end, and the ends' names
+  var TC_LIMB = {
+    arm: { len: 26, lead: 13, w0: 2.8, w1: 4.2, from: "wrist", to: "elbow", at: 1 },
+    hug: { len: 28, lead: 4, w0: 3.8, w1: 5, from: "elbow", to: "shoulder", at: 2 }
+  };
+  /* The sound and the calibration: the bus and the gain the sweeps go through (made fresh after each hush),
+     the next stroke in the step to schedule, the noise the whoosh is cut from, and the size in the dialog. */
+  var TC = { bus: null, g: null, next: -1, noise: null, noiseCtx: null, cal: 0 };
+
+  /* ----- real size ----- */
+  function tcGuess() { return (window.matchMedia && matchMedia("(pointer: coarse)").matches ? 160 : 96) / 2.54; }
+  function tcKept() { var v = parseFloat(store.get("touchPx")); return v >= TC_RANGE[0] && v <= TC_RANGE[1] ? v : 0; }
+  function tcPx() { return tcKept() || tcGuess(); }          // CSS pixels in a real centimetre on this screen
+
+  /* ----- Soothing Touch ----- */
+  function tcPace(d) { return pChoice(d, "pace") === "gentle" ? { inh: 3, exh: 6 } : { inh: 4, exh: 8 }; }
+  // n strokes, each a breath in (the hand back to the start) and a breath out (the stroke); part: "arm" or "hug"
+  function tcStroke(n, p, title, part, lines, o) {
+    var secs = n * (p.inh + p.exh);
+    return ext({ k: "stroke", secs: secs, title: title, part: part, inh: p.inh, exh: p.exh,
+      lines: lines.filter(function (l) { return l[0] < secs - 1; }) }, o);
+  }
+  function tcSteps(d, min) {
+    min = min || 5;
+    var T = min * 60, touch = pChoice(d, "touch"), p = tcPace(d), cyc = p.inh + p.exh;
+    var soft = touch === "arm" && pChoice(d, "with") === "soft", o = { sweep: touch !== "heart" && pChoice(d, "sound") !== "off" };
+    var t = { inh: p.inh, sip: 0, hold: 0, exh: p.exh, rest: 0 }, settle0 = min <= 5 ? 30 : 40;
+    var br = function (n, title, lines, hints, more) {
+      var secs = n * cyc;
+      return Br(secs, title, t, ext({ hints: hints, lines: lines.filter(function (l) { return l[0] < secs - 1; }) }, more));
+    };
+    var heart = function (n) {
+      return br(n, "Hand on heart", [[0, "Now rest one hand on your heart and the other on your belly."],
+        [cyc, "Notice the warmth of your hands, and their gentle weight."], [2 * cyc, "Breathe slowly, and let the calm settle."]],
+        { "in": "Hands resting on heart and belly.", out: "A long, slow breath out." });
+    };
+    var st = [], n, settle;
+    if (touch === "heart") {
+      n = Math.floor((T - settle0) / cyc);
+      var n1 = Math.round(n * 0.35), n2 = Math.round(n * 0.3), n3 = Math.round(n * 0.2), n4 = n - n1 - n2 - n3;
+      settle = T - n * cyc;
+      st.push(G(settle, "Settle", ["Sit or lie comfortably, and close your eyes if you like.",
+        "Rest one hand flat on the middle of your chest, over your heart.", "Breathe slowly, with a longer breath out."], { vis: "glow" }));
+      st.push(br(n1, "Hand on heart", [[0, "Notice the warmth of your hand, and its gentle pressure on your chest."],
+        [2 * cyc, "Let your chest rise into your hand as you breathe in, and soften under it as you breathe out."],
+        [4 * cyc, "Let your hand be kind, as it would be for a friend."]],
+        { "in": "Your chest rises into your hand.", out: "Soften under your hand." }));
+      st.push(br(n2, "Heart and belly", [[0, "Now rest your other hand on your belly."],
+        [2 * cyc, "Two warm hands holding you: the belly soft under one, the chest under the other."]],
+        { "in": "Your belly and chest fill under your hands.", out: "Both soften as you breathe out." }));
+      st.push(br(n3, "Slow circles", [[0, "Let the hand on your heart make small, slow circles, one on each breath out."],
+        [3 * cyc, "Slow and warm, as you would soothe someone you care for."]],
+        { "in": "Your hand rests still.", out: "One small, slow circle." }));
+      st.push(br(n4, "Rest", [[0, "Let your hands rest where they are, still and warm."], [2 * cyc, "Take this warmth with you."]],
+        { "in": "Hands resting.", out: "A long, slow breath out." }));
+      return st;
+    }
+    if (touch === "hug") {
+      n = Math.floor((T - settle0) / cyc) - 9;            // the strokes, after learning the pace, the held hug and the hand on heart
+      settle = T - (n + 9) * cyc;
+      st.push(G(settle, "Settle", ["Sit or stand comfortably, and let your shoulders drop.",
+        "Cross your arms over your chest, and rest each hand on the opposite upper arm, just above the elbow.",
+        "Breathe slowly, with a longer breath out."], { vis: "glow" }));
+      st.push(tcStroke(3, p, "Find the pace", "hug", [[0, "Watch the dot: on each breath out it glides from the elbow up towards the shoulder, about three centimetres a second."],
+        [cyc, "Now follow it: both hands stroke slowly up your upper arms as you breathe out."],
+        [2 * cyc, "As you breathe in, let your hands glide back down to the elbows."]], o));
+      st.push(tcStroke(n, p, "Self-hug", "hug", [[0, "Keep going: one slow stroke up both arms on each breath out."],
+        [3 * cyc, "Hold yourself as you would someone you love: warm, soft and unhurried."],
+        [7 * cyc, "Notice the warmth that follows each stroke."]], ext({ nobell: true }, o)));
+      st.push(br(3, "Hold the hug", [[0, "Now let your hands rest on your upper arms, and give yourself a gentle squeeze."],
+        [cyc, "Hold it, warm and steady, and breathe slowly."], [2 * cyc, "Notice your own arms around you."]],
+        { "in": "Hold the hug.", out: "A long, slow breath out." }));
+      st.push(heart(3));
+      return st;
+    }
+    // the forearm: learn the pace on the left, then strokes on each arm in turn (twice each in ten minutes), then a hand on the heart
+    n = Math.floor((T - settle0) / cyc) - 6;
+    settle = T - (n + 6) * cyc;
+    var k = min <= 5 ? 2 : 4, base = Math.floor(n / k), extra = n % k;
+    st.push(G(settle, "Settle", ["Sit or lie comfortably, and roll up your sleeves: bare skin on the forearm responds best.",
+      "Rest your left forearm across your lap or on a cushion, palm up.",
+      soft ? "Hold the soft brush or the velvet in your right hand." : "Your right hand does the stroking: fingertips together, light and soft.",
+      "Breathe slowly, with a longer breath out."], { vis: "glow" }));
+    st.push(tcStroke(3, p, "Find the pace", "arm", [[0, "Watch the dot: it glides from the wrist to the elbow at about three centimetres a second, slower than you might think."],
+      [cyc, soft ? "Now follow it with the brush or velvet, lightly, as you breathe out." : "Now follow it with your fingertips, lightly, skin on skin, as you breathe out."],
+      [2 * cyc, "As you breathe in, lift your hand and bring it back to the wrist."]], o));
+    var say = [
+      ["Left forearm", [[0, "Keep going: one slow stroke on each breath out."], [2 * cyc, "Light as a feather: just enough to sense the skin under your touch."],
+        [5 * cyc, "Let the touch be warm and kind, as you would stroke someone you care for."]]],
+      ["Right forearm", [[0, soft ? "Now switch: the brush or velvet in your left hand, stroking your right forearm." : "Now switch: your left hand strokes your right forearm, from the wrist to the elbow."],
+        [3 * cyc, "Notice the warmth and the tingle that follow each stroke."], [6 * cyc, "Let your breath and the stroke move together, slow and even."]]],
+      ["Left forearm", [[0, "Back to your left forearm."], [3 * cyc, "Soft and even, at the dot's pace."]]],
+      ["Right forearm", [[0, "And your right forearm once more."], [3 * cyc, "Let each stroke be soft and unhurried."]]]
+    ];
+    for (var i = 0; i < k; i++) st.push(tcStroke(base + (i < extra ? 1 : 0), p, say[i][0], "arm", say[i][1], ext(i ? {} : { nobell: true }, o)));
+    st.push(heart(3));
+    return st;
+  }
+
+  /* ----- Self-Massage ----- */
+  /* Each area: its title, the regions lit on the body map, its share of the time, its lines and its cues
+     (pressure and stroke, under the step's name), both as fractions of the area's time. */
+  var SM_SOLO = [
+    ["Right hand and forearm", ["handR", "armR"], 2, [[0, "With your left thumb, press slow circles into the palm of your right hand."],
+      [0.25, "Work along each finger from base to tip, with a gentle squeeze and pull."], [0.5, "Now long, slow strokes from the wrist up to the elbow, with your whole hand."],
+      [0.75, "Then squeeze the forearm gently, wrist to elbow, and release."]],
+      [[0, "Moderate pressure · thumb circles"], [0.25, "Gentle squeeze · each finger"], [0.5, "Light pressure · long strokes"], [0.75, "Moderate pressure · squeeze and release"]]],
+    ["Left hand and forearm", ["handL", "armL"], 2, [[0, "Now the left hand: your right thumb presses slow circles into the palm."],
+      [0.25, "Each finger from base to tip, with a gentle squeeze and pull."], [0.5, "Long, slow strokes from the wrist up to the elbow."],
+      [0.75, "Then squeeze the forearm gently, wrist to elbow, and release."]],
+      [[0, "Moderate pressure · thumb circles"], [0.25, "Gentle squeeze · each finger"], [0.5, "Light pressure · long strokes"], [0.75, "Moderate pressure · squeeze and release"]]],
+    ["Jaw and temples", ["face"], 2, [[0, "Let your teeth part a little. With your fingertips, find the muscles just in front of your ears: they bulge when you clench."],
+      [0.3, "Press them in slow circles, firm and comfortable, and let your jaw hang loose."], [0.6, "Now slide up to your temples, and make small, slow circles there, a little lighter."],
+      [0.82, "Finish with long strokes from the middle of your forehead out to the temples."]],
+      [[0, "Find the spot"], [0.3, "Moderate pressure · slow circles"], [0.6, "Light pressure · small circles"], [0.82, "Light pressure · long strokes"]]],
+    ["Scalp", ["head"], 1.5, [[0, "Spread your fingers through your hair, fingertips on your scalp, as if washing your hair slowly."],
+      [0.3, "Move the skin over the skull in small circles, rather than rubbing the hair."], [0.6, "Work from your hairline over the top of your head to the back."],
+      [0.85, "Then comb your fingers slowly through, front to back."]],
+      [[0, "Fingertips on the scalp"], [0.3, "Moderate pressure · small circles"], [0.6, "Moderate pressure · front to back"], [0.85, "Light · combing"]]],
+    ["Neck and shoulders", ["neck", "shoulders"], 2.5, [[0, "Reach your right hand to your left shoulder. Squeeze the muscle between neck and shoulder, hold for a breath, and release."],
+      [0.25, "Knead slowly along the top of the shoulder, out towards the arm."], [0.45, "Now switch: your left hand on your right shoulder. Squeeze, hold, and release."],
+      [0.64, "And knead along the top of that shoulder."], [0.82, "Both hands behind your neck: slow circles with your fingertips either side of the spine, up to the base of the skull."]],
+      [[0, "Moderate pressure · squeeze, hold, release"], [0.25, "Moderate pressure · kneading"], [0.45, "Moderate pressure · squeeze, hold, release"], [0.64, "Moderate pressure · kneading"],
+        [0.82, "Gentle pressure · slow circles"]]],
+    ["Right foot", ["footR"], 1.5, [[0, "Rest your right foot across your left knee, or on the seat beside you."],
+      [0.2, "Press your thumbs in slow circles across the sole, from the heel to the ball of the foot."], [0.55, "Squeeze and gently pull each toe."],
+      [0.8, "Finish with long strokes along the top of the foot, up to the ankle."]],
+      [[0, "Get comfortable"], [0.2, "Firm pressure · thumb circles"], [0.55, "Gentle · each toe"], [0.8, "Light pressure · long strokes"]]],
+    ["Left foot", ["footL"], 1.5, [[0, "Now the left foot, across your right knee or on the seat."],
+      [0.2, "Thumbs in slow circles across the sole, heel to ball."], [0.55, "Squeeze and gently pull each toe."],
+      [0.8, "Long strokes along the top of the foot, up to the ankle."]],
+      [[0, "Get comfortable"], [0.2, "Firm pressure · thumb circles"], [0.55, "Gentle · each toe"], [0.8, "Light pressure · long strokes"]]]
+  ];
+  // with a partner: the giver's hands on the receiver, and a word from each side
+  var SM_PAIR = [
+    ["Hands and forearms", ["handR", "handL", "armR", "armL"], 3, [[0, "Giver: hold your partner's hand palm up in both of yours, and press slow circles into the palm with your thumbs."],
+      [0.12, "Receiver: let your arm be heavy, and say “more” or “less” whenever you like."], [0.25, "Giver: work along each finger, base to tip, with a gentle squeeze."],
+      [0.4, "Then long, slow strokes up the forearm to the elbow."], [0.6, "Now the other hand: the palm, each finger, then the forearm."]],
+      [[0, "Moderate pressure · thumb circles"], [0.25, "Gentle squeeze · each finger"], [0.4, "Light pressure · long strokes"], [0.6, "The other hand · thumb circles"],
+        [0.8, "Light pressure · long strokes"]]],
+    ["Shoulders and neck", ["shoulders", "neck"], 3.5, [[0, "Receiver: sit tall on a chair, and let your shoulders drop. Giver: stand behind."],
+      [0.15, "Giver: rest your hands on the shoulders for a breath. Then squeeze the muscle between neck and shoulder, slowly, and release."],
+      [0.4, "Knead along the tops of the shoulders, out towards the arms, and back."],
+      [0.65, "Now slow thumb circles either side of the spine, up the back of the neck to the base of the skull, gently there."],
+      [0.86, "Finish with long strokes from the neck out across the shoulders."]],
+      [[0, "Get comfortable"], [0.15, "Moderate pressure · squeeze and release"], [0.4, "Moderate pressure · kneading"], [0.65, "Gentle pressure · thumb circles"],
+        [0.86, "Light pressure · long strokes"]]],
+    ["Scalp", ["head"], 2, [[0, "Giver: spread your fingers through your partner's hair, fingertips on the scalp."],
+      [0.3, "Move the skin in slow circles, front to back, like a slow shampoo."], [0.7, "Then comb your fingers slowly through the hair, from the forehead back."]],
+      [[0, "Fingertips on the scalp"], [0.3, "Moderate pressure · slow circles"], [0.7, "Light · combing"]]]
+  ];
+  function smArea(a, secs, first) {
+    var at = function (f) { return Math.round(f * secs); };
+    return { k: "massage", secs: secs, title: a[0], body: a[1], nobell: !first,
+      lines: a[3].map(function (l) { return [at(l[0]), l[1]]; }), cues: a[4].map(function (c) { return [at(c[0]), c[1]]; }) };
+  }
+  function smSteps(d, min) {
+    min = min || 8;
+    var T = min * 60, pair = pChoice(d, "who") === "partner", st = [];
+    var part = function (areas, total) {
+      var sh = shares(total, areas.map(function (a) { return [a[0], a[2]]; }));
+      return areas.map(function (a, i) { return smArea(a, sh[a[0]], i === 0); });
+    };
+    if (pair) {
+      var agree = min <= 8 ? 40 : 45, swap = 20, close = min <= 8 ? 30 : 35, half = (T - agree - swap - close) / 2;
+      st.push(G(agree, "Agree", ["Decide who gives first. The receiver sits on a chair; the giver stands or sits behind or beside them.",
+        "Agree how you'll say “more”, “less” and “just right”, and say it any time.",
+        "Giver: warm your hands first. Moderate pressure: firm, comfortable and slow."], { vis: "glow" }));
+      st = st.concat(part(SM_PAIR, half));
+      st.push(G(swap, "Swap", ["Thank you. Now swap places: the receiver gives, and the giver sits down to receive."], { vis: "glow" }));
+      st = st.concat(part(SM_PAIR, half));
+      st.push(G(close, "Together", ["Sit side by side for a moment.", "Notice how your hands, shoulders and head feel now.", "Thank each other."], { vis: "glow" }));
+      return st;
+    }
+    var settle = min <= 8 ? 30 : 35, end = min <= 8 ? 30 : 35;
+    st.push(G(settle, "Settle", ["Sit comfortably, with your feet bare if you can. A little oil or lotion helps your hands glide.",
+      "Use moderate pressure: firm enough to move the skin over the muscle, and comfortable throughout. Ease off wherever it's tender.",
+      "Breathe slowly as you go."], { vis: "glow" }));
+    st = st.concat(part(SM_SOLO, T - settle - end));
+    st.push(G(end, "Rest", ["Rest your hands in your lap.", "Notice how each part feels now: hands, face, scalp, shoulders and feet.",
+      "Take a slow breath, and carry the ease with you."], { vis: "glow" }));
+    return st;
+  }
+  // under the area's name: the pressure and stroke now, and the time left on this area
+  function smSub(s, st) {
+    var c = s.cues[0][1];
+    for (var i = 0; i < s.cues.length; i++) if (s.cues[i][0] <= st + 0.05) c = s.cues[i][1];
+    return c + " · " + Math.max(1, Math.ceil(s.secs - st)) + " s";
+  }
+
+  /* ----- a stroke step on the screen ----- */
+  // where the breath is: out (stroking) or in (back to the start), the stroke's progress p and the in-breath's q, seconds left
+  function tcPhase(s, st) {
+    var cyc = s.inh + s.exh, ph = ((st % cyc) + cyc) % cyc;
+    return ph < s.inh ? { out: false, left: s.inh - ph, p: 0, q: ph / s.inh } : { out: true, left: cyc - ph, p: (ph - s.inh) / s.exh, q: 1 };
+  }
+  function tcWords(s, st) {
+    var f = tcPhase(s, st), hug = s.part === "hug", n = Math.max(1, Math.ceil(f.left - 0.05));
+    return f.out ? { cap: "Breathe out and stroke", sub: (hug ? "Up towards your shoulders" : "Slowly towards the elbow") + " · " + n }
+      : { cap: "Breathe in", sub: (hug ? "Hands glide back to the elbows" : "Lift your hand back to the wrist") + " · " + n };
+  }
+  // the limb, the stroke's path, the dot and its trail; below, centimetre marks at real size moving at the real speed
+  function tcDraw(c, W, Hh, s, st, col) {
+    var L = TC_LIMB[s.part] || TC_LIMB.arm, f = tcPhase(s, st), px = tcPx(), faint = BCOL["text-faint"] || "#808cad";
+    var band = 46, top = 6, bot = Hh - band - 20, cy = (top + bot) / 2, span = L.lead + L.len + L.w1;
+    var k = Math.max(2, Math.min(px, (W - 32) / span, (bot - top) / (2 * L.w1 + 1)));     // screen pixels a centimetre of limb: real size when it fits
+    var x0 = (W - span * k) / 2 + L.lead * k, x1 = x0 + L.len * k, w0 = L.w0 * k, w1 = L.w1 * k;
+    // the limb in one outline: tapering, a little fuller near its far end; for the forearm, a hand beyond the wrist
+    // (palm up, the fingers together), otherwise a rounded elbow
+    var hand = s.part !== "hug", pw = w0 * 1.2, fw = w0 * 0.92, fb = x0 - 7.4 * k, ft = x0 - 13 * k;
+    c.fillStyle = rgba(col, 0.09); c.strokeStyle = rgba(col, 0.34); c.lineWidth = 1.5;
+    if (hand) {                                      // the thumb, under the palm's outline
+      c.beginPath(); c.ellipse(x0 - 5.2 * k, cy - pw - 0.5 * k, 2.6 * k, 1.05 * k, -0.42, 0, Math.PI * 2); c.fill(); c.stroke();
+    }
+    c.beginPath();
+    c.moveTo(x0, cy - w0);
+    c.quadraticCurveTo(x0 + (x1 - x0) * 0.62, cy - w1 * 1.12, x1, cy - w1);
+    c.arc(x1, cy, w1, -Math.PI / 2, Math.PI / 2);
+    c.quadraticCurveTo(x0 + (x1 - x0) * 0.62, cy + w1 * 1.12, x0, cy + w0);
+    if (hand) {
+      c.bezierCurveTo(x0 - 1.4 * k, cy + w0, x0 - 2.8 * k, cy + pw, x0 - 4.4 * k, cy + pw);
+      c.quadraticCurveTo(fb + 1.1 * k, cy + pw, fb, cy + fw);
+      c.lineTo(ft + fw, cy + fw);
+      c.arc(ft + fw, cy, fw, Math.PI / 2, Math.PI * 1.5);
+      c.lineTo(fb, cy - fw);
+      c.quadraticCurveTo(fb + 1.1 * k, cy - pw, x0 - 4.4 * k, cy - pw);
+      c.bezierCurveTo(x0 - 2.8 * k, cy - pw, x0 - 1.4 * k, cy - w0, x0, cy - w0);
+    } else c.arc(x0, cy, w0, Math.PI / 2, Math.PI * 1.5);
+    c.closePath(); c.fill(); c.stroke();
+    if (hand) {                                      // where the fingers part
+      c.strokeStyle = rgba(col, 0.2); c.lineWidth = 1;
+      c.beginPath();
+      [-0.5, 0, 0.5].forEach(function (y) { c.moveTo(fb - 0.4 * k, cy + y * fw); c.lineTo(ft + fw * 0.7, cy + y * fw); });
+      c.stroke();
+    }
+    // the path of each stroke, from just past the start, as long as a breath out at the CT pace
+    var xs = x0 + L.at * k, xe = Math.min(x1, x0 + (L.at + TC_SPEED * s.exh) * k), x = xs + (xe - xs) * f.p;
+    c.strokeStyle = rgba(col, 0.28); c.lineWidth = 2;
+    c.beginPath(); c.moveTo(xs, cy); c.lineTo(xe, cy); c.stroke();
+    c.beginPath(); c.moveTo(xe, cy - 7); c.lineTo(xe, cy + 7); c.stroke();
+    if (f.out) {                                     // the stroke: a soft trail behind the dot
+      var tg = c.createLinearGradient(xs, 0, Math.max(xs + 1, x), 0);
+      tg.addColorStop(0, rgba(col, 0)); tg.addColorStop(1, rgba(col, 0.42));
+      c.strokeStyle = tg; c.lineWidth = Math.max(6, w0 * 0.9); c.lineCap = "round";
+      c.beginPath(); c.moveTo(xs, cy); c.lineTo(x, cy); c.stroke(); c.lineCap = "butt";
+    } else if (!RM) {                                // the breath in: the hand lifts and comes back over the arm
+      var lx = xe + (xs - xe) * f.q, ly = cy - w1 - 10 - Math.sin(Math.PI * f.q) * Math.min(26, w1);
+      c.strokeStyle = rgba(col, 0.16); c.lineWidth = 1.5; c.setLineDash([3, 5]);
+      c.beginPath(); c.moveTo(xe, cy - w1 - 10); c.quadraticCurveTo((xs + xe) / 2, cy - w1 - 10 - 2 * Math.min(26, w1), xs, cy - w0 - 10); c.stroke(); c.setLineDash([]);
+      c.fillStyle = rgba(col, 0.35); c.beginPath(); c.arc(lx, ly, 4, 0, Math.PI * 2); c.fill();
+    }
+    var r = Math.max(14, w0 * 1.1), g = c.createRadialGradient(x, cy, 0, x, cy, r);
+    g.addColorStop(0, rgba(col, f.out ? 0.55 : 0.2 + 0.3 * f.q)); g.addColorStop(1, rgba(col, 0));
+    c.fillStyle = g; c.beginPath(); c.arc(x, cy, r, 0, Math.PI * 2); c.fill();
+    c.fillStyle = rgba(col, f.out ? 1 : 0.35 + 0.5 * f.q); c.beginPath(); c.arc(x, cy, 7, 0, Math.PI * 2); c.fill();
+    if (!f.out) { c.strokeStyle = rgba(col, 0.4 + 0.5 * f.q); c.lineWidth = 2; c.beginPath(); c.arc(x, cy, 11, 0, Math.PI * 2); c.stroke(); }
+    c.font = "600 12px " + B_SANS; c.fillStyle = faint; c.textAlign = "center"; c.textBaseline = "top";
+    c.fillText(L.from, x0, Math.min(bot + 4, cy + w1 + 8)); c.fillText(L.to, x1, Math.min(bot + 4, cy + w1 + 8));
+    // real size: a mark every centimetre, moving at the stroke's speed while you stroke
+    var by = Hh - 14, lft = 16, rgt = W - 16, off = RM || !f.out ? 0 : (f.p * s.exh * TC_SPEED * px) % px;
+    c.strokeStyle = rgba(faint, 0.55); c.lineWidth = 1;
+    c.beginPath(); c.moveTo(lft, by); c.lineTo(rgt, by);
+    for (var tx = lft + off; tx <= rgt; tx += px) { c.moveTo(tx, by); c.lineTo(tx, by - 9); }
+    c.stroke();
+    c.textAlign = "left"; c.textBaseline = "bottom"; c.font = "600 11px " + B_SANS; c.fillStyle = faint;
+    c.fillText((tcKept() ? "Real size" : "About real size") + " · 1 cm marks" + (RM ? "" : " · " + TC_SPEED + " cm a second"), lft, by - 13);
+  }
+
+  /* ----- the sweeping tone ----- */
+  function tcOut() {
+    if (!ensureCtx()) return false;
+    if (!TC.bus) { TC.bus = A.ctx.createGain(); TC.bus.gain.value = 0.9; TC.bus.connect(A.ctx.destination); }
+    if (!TC.g) { TC.g = A.ctx.createGain(); TC.g.gain.value = 1; TC.g.connect(TC.bus); }
+    return true;
+  }
+  // two seconds of noise, the same every time, for the whoosh
+  function tcNoise() {
+    if (TC.noise && TC.noiseCtx === A.ctx) return TC.noise;
+    var n = Math.round(A.ctx.sampleRate * 2), b = A.ctx.createBuffer(1, n, A.ctx.sampleRate), x = b.getChannelData(0), v = 12345;
+    for (var i = 0; i < n; i++) { v = (v * 1103515245 + 12345) % 2147483648; x[i] = v / 1073741824 - 1; }
+    TC.noise = b; TC.noiseCtx = A.ctx;
+    return b;
+  }
+  // one stroke's sound, dur seconds from when: a soft whoosh rising from 380 to 1500 Hz over a sine gliding a fifth, from G3 to D4
+  function tcSweep(when, dur) {
+    if (!tcOut()) return;
+    var ctx = A.ctx, end = when + dur, src = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), g = ctx.createGain(), o = ctx.createOscillator(), og = ctx.createGain();
+    var env = function (gp, peak, a, rl) {
+      gp.setValueAtTime(0, when); gp.linearRampToValueAtTime(peak, when + a); gp.setValueAtTime(peak, Math.max(when + a, end - rl)); gp.linearRampToValueAtTime(0, end);
+    };
+    src.buffer = tcNoise(); src.loop = true;
+    bp.type = "bandpass"; bp.Q.value = 1.3;
+    bp.frequency.setValueAtTime(380, when); bp.frequency.exponentialRampToValueAtTime(1500, end);
+    env(g.gain, 0.42, Math.min(0.9, dur / 3), Math.min(1.4, dur / 3));
+    o.type = "sine";
+    o.frequency.setValueAtTime(196, when); o.frequency.exponentialRampToValueAtTime(293.66, end);
+    env(og.gain, 0.04, Math.min(1, dur / 3), Math.min(1.5, dur / 3));
+    src.connect(bp); bp.connect(g); g.connect(TC.g); o.connect(og); og.connect(TC.g);
+    src.start(when); src.stop(end + 0.05); o.start(when); o.stop(end + 0.05);
+    o.onended = function () { try { src.disconnect(); bp.disconnect(); g.disconnect(); o.disconnect(); og.disconnect(); } catch (e) {} };
+  }
+  // what's queued, silenced at once (a pause, a skip, the end, I need to stop)
+  function tcHush(fade) {
+    var g = TC.g;
+    TC.g = null;
+    if (!g || !A.ctx) return;
+    var t = A.ctx.currentTime, f = fade || 0.06;
+    try { g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + f); } catch (e) {}
+    setTimeout(function () { try { g.disconnect(); } catch (e) {} }, (f + 0.3) * 1000);
+  }
+  // a new step: its strokes from the first still ahead
+  function tcEnter(s) { TC.next = -1; tcHush(); }
+  // every tick of a running practice: a stroke step's sweeps, up to just ahead, each starting as a breath out does
+  function tcTick(s, st) {
+    if (s.k !== "stroke" || !s.sweep || !A.ctx || P.state !== "running") return;
+    var cyc = s.inh + s.exh, horizon = st + (document.hidden ? 2 : 0.6);
+    if (TC.next < 0) TC.next = Math.max(0, Math.ceil((st - 0.05 - s.inh) / cyc));
+    for (var t = s.inh + TC.next * cyc; t < horizon && t < s.secs - 1; t = s.inh + (++TC.next) * cyc) {
+      if (t >= st - 0.05) tcSweep(A.ctx.currentTime + (t - st), s.exh);
+    }
+  }
+
+  /* ----- real size, against a bank card: a row in Soothing Touch's Options and its dialog ----- */
+  function tcCalNote() {
+    return tcKept() ? "Matched to a bank card on this device: the marks under the arm are real centimetres."
+      : "Set from this screen's usual size, so the marks under the arm are about a centimetre apart. Match a bank card to make them exact.";
+  }
+  function tcOptHtml(d) {
+    if (pChoice(d, "touch") === "heart") return "";
+    return '<div class="so-row so-seg tc-cal"><span class="so-l">Real size<small id="tcCalNote">' + esc(tcCalNote()) + "</small></span>" +
+      '<button class="btn" id="tcCalBtn">Match a bank card' + supTag(true) + "</button></div>";
+  }
+  // after an unlock or a new size: the note, and the cup on the button
+  function tcOptSync() {
+    var b = $("#tcCalBtn");
+    if (!b) return;
+    bSetT("#tcCalNote", tcCalNote());
+    var h = "Match a bank card" + supTag(true);
+    if (b.innerHTML !== h) b.innerHTML = h;
+  }
+  function tcCalShow(v) {
+    v = Math.max(TC_RANGE[0], Math.min(TC_RANGE[1], Math.round(v * 10) / 10));
+    TC.cal = v;
+    $("#tcBox").style.height = (TC_CARD * v + 2).toFixed(1) + "px";      // the middles of its two 2-pixel lines a card's height apart
+    $("#tcRange").value = String(v);
+    $("#tcRange").setAttribute("aria-valuetext", (TC_CARD * v).toFixed(0) + " screen points tall");
+  }
+  function tcCalOpen() {
+    tcCalShow(tcPx());
+    bSetT("#tcSaid", tcKept() ? "Matched before on this device. Check it again, or use the usual size." : "Starting from this screen's usual size.");
+    openDialog("#tcModal");
+    $("#tcModal .modal-card").scrollTop = 0;
+    setTimeout(function () { try { $("#tcRange").focus({ preventScroll: true }); } catch (e) {} }, 30);
+  }
+  // how: "save" keeps the size shown, "usual" goes back to the screen's usual size, anything else leaves it as it was
+  function tcCalClose(how) {
+    if ($("#tcModal").hidden) return;
+    if (how === "save") store.set("touchPx", TC.cal.toFixed(1));
+    else if (how === "usual") storeDel("touchPx");
+    closeDialog("#tcModal");
+    tcOptSync();
+  }
+
+  function tcInit() {
+    SETTLE_HUSH.push(function (secs) { tcHush(secs); });     // I need to stop: the sweeps fade with everything else
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("#tcCalBtn");
+      if (b) supGate("Soothing Touch", tcCalOpen);            // part of a new technique: it opens with the donation
+    });
+    $("#tcRange").addEventListener("input", function () { tcCalShow(parseFloat(this.value) || tcPx()); });
+    $("#tcLess").addEventListener("click", function () { tcCalShow(TC.cal - 0.3); });
+    $("#tcMore").addEventListener("click", function () { tcCalShow(TC.cal + 0.3); });
+    $("#tcSave").addEventListener("click", function () { tcCalClose("save"); });
+    $("#tcUsual").addEventListener("click", function () { tcCalClose("usual"); });
+    $("#tcCancel").addEventListener("click", function () { tcCalClose(); });
+    $("#tcModal").addEventListener("click", function (e) { if (e.target === this) tcCalClose(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#tcModal").hidden) tcCalClose(); });
+    if (window.__entrain) {
+      var X = window.__entrain;
+      X.TC = TC; X.tcPx = tcPx; X.tcGuess = tcGuess; X.tcPhase = tcPhase; X.tcWords = tcWords; X.smSub = smSub; X.tcSweep = tcSweep;
+    }
   }
   /* ------------------------------- the library -------------------------------
      Goal sections (Sleep, Calm, Focus, Energy, Recover, Reflect) holding practices, breathing
@@ -19121,10 +19713,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     torre: ["Torre, J. B., & Lieberman, M. D. (2018). Putting feelings into words: affect labeling as implicit emotion regulation. Emotion Review, 10(2), 116–124.", "https://doi.org/10.1177/1754073917742706", "DOI"],
     haghayegh: ["Haghayegh, S., Khoshnevis, S., Smolensky, M. H., Diller, K. R., & Castriotta, R. J. (2019). Before-bedtime passive body heating by warm shower or bath to improve sleep: a systematic review and meta-analysis. Sleep Medicine Reviews, 46, 124–135.", "https://doi.org/10.1016/j.smrv.2019.04.008", "DOI"],
     chang: ["Chang, A.-M., Aeschbach, D., Duffy, J. F., & Czeisler, C. A. (2015). Evening use of light-emitting eReaders negatively affects sleep, circadian timing, and next-morning alertness. PNAS, 112(4), 1232–1237.", "https://doi.org/10.1073/pnas.1418490112", "DOI"],
-    scullin: ["Scullin, M. K., Krueger, M. L., Ballard, H. K., Pruett, N., & Bliwise, D. L. (2018). The effects of bedtime writing on difficulty falling asleep: a polysomnographic study comparing to-do lists and completed activity lists. Journal of Experimental Psychology: General, 147(1), 139–146.", "https://doi.org/10.1037/xge0000374", "DOI"]
+    scullin: ["Scullin, M. K., Krueger, M. L., Ballard, H. K., Pruett, N., & Bliwise, D. L. (2018). The effects of bedtime writing on difficulty falling asleep: a polysomnographic study comparing to-do lists and completed activity lists. Journal of Experimental Psychology: General, 147(1), 139–146.", "https://doi.org/10.1037/xge0000374", "DOI"],
+    ekholm: ["Ekholm, B., Spulber, S., & Adler, M. (2020). A randomized controlled study of weighted chain blankets for insomnia in psychiatric disorders. Journal of Clinical Sleep Medicine, 16(9), 1567–1577.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC7970589/", "PMC"],
+    yuwb: ["Yu, J., Du, J., Yang, Z., Chen, W., Sun, S., Gan, M., et al. (2024). Effect of weighted blankets on sleep quality among adults with insomnia: a pilot randomized controlled trial. BMC Psychiatry, 24, 765.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC11539645/", "PMC"]
   };
   var ROUTINES = [
-    { id: "sleep-habits", name: "Healthy sleep habits", icon: "moon", tags: "sleep hygiene insomnia habits bedtime regular schedule caffeine alcohol nap bedroom",
+    { id: "sleep-habits", name: "Healthy sleep habits", icon: "moon", tags: "sleep hygiene insomnia habits bedtime regular schedule caffeine alcohol nap bedroom weighted blanket",
       lead: "Most adults need at least seven hours a night. These habits help you get them. If poor sleep goes on for weeks, the treatment that works best is cognitive behavioural therapy for insomnia (CBT-I), from a clinician or a recommended online course: sleep guidelines advise against relying on habits alone to treat insomnia.",
       steps: [
         { t: "Keep regular hours", p: "Go to bed and get up at about the same times every day, weekends included. In 60,977 people who wore activity trackers, those whose sleep was more regular had a 20 to 48% lower risk of dying over about six years than the least regular, and regularity predicted it better than how long they slept." },
@@ -19133,10 +19727,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         { t: "Alcohol early, if at all", p: "It can make you drowsy, but it breaks up the second half of the night and cuts dream (REM) sleep." },
         { t: "Move in the day", p: "Regular exercise improves sleep. Exercise in the evening is fine for most people too, apart from a hard session that ends within an hour of bedtime.", go: [["#practice/sport", "Sports Performance"]] },
         { t: "A bed for sleep", p: "Keep the bedroom cool, dark and quiet, and the bed for sleep and sex, so your body links it with sleep. If you're still awake after about 20 minutes, get up, do something calm in dim light, and go back when you feel sleepy. This is stimulus control, a part of CBT-I that sleep guidelines also recommend on its own.", go: [["#sleep-sounds", "Sleep sounds"]] },
+        { t: "Perhaps a weighted blanket", p: "If restlessness at night comes with anxiety or a low mood, a weighted blanket may help. In a Swedish trial in people with depression, bipolar disorder, anxiety or ADHD and insomnia, four weeks under a chain blanket of 6 to 8 kg eased insomnia far more than a light one, and in a pilot trial in adults with insomnia, sleep quality improved after a month. It's low-risk, though unproven for most other people. Choose one you can easily push off by yourself: it's not for small children, or for anyone who couldn't take it off unaided." },
         { t: "Naps short and early", p: "Up to about 20 minutes, before mid-afternoon. In a sleep-lab study after a short night, a 10-minute nap gave the quickest boost, with no grogginess afterwards.", go: [["#practice/power-nap", "Power Nap"]] },
         { t: "A wind-down", p: "The last hour before bed decides a lot: see the evening routine.", go: [["#living/evening", "Evening routine"]] }
       ],
-      refs: [R_REF.watson, R_REF.windred, R_REF.brown, R_REF.gardiner, R_REF.ebrahim, R_REF.kredlow, R_REF.stutz, R_REF.edinger, R_REF.brooks] },
+      refs: [R_REF.watson, R_REF.windred, R_REF.brown, R_REF.gardiner, R_REF.ebrahim, R_REF.kredlow, R_REF.stutz, R_REF.edinger, R_REF.brooks, R_REF.ekholm, R_REF.yuwb] },
 
     { id: "morning", name: "A morning routine", icon: "today", tags: "morning routine wake up daylight sunlight breakfast meditation stretch habit",
       lead: "A suggestion to make your own: half an hour or so that sets your body clock and your state for the day. A few of these done every morning count for more than all of them now and then.",
@@ -20357,8 +20952,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   // about this device rather than about you: the headphone check, the install and offline notes,
   // whether a heart sensor has ever connected here, when this device last saved a backup, and its
   // device code and unlock (supporter.js): a donation unlocks one device, so a backup never carries
-  // them to another, and a restore here keeps them
-  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock"];
+  // them to another, and a restore here keeps them; and this screen's real size, matched to a bank
+  // card for Soothing Touch (touch.js), which would be wrong on another screen
+  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock", "touchPx"];
   // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
   var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
   var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+|health)$/;
@@ -20593,7 +21189,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

@@ -23,6 +23,7 @@ const SUITES = [   // name, what it covers, and about how long it takes on its o
   ['isotest', 'A beat\'s Sound: binaural, monaural and isochronic, the signal each makes, locked and unlocked', 75],
   ['voicetest', 'Voice: Om Chanting, Laughter Break, Let It Out and Sing Together', 120],
   ['soundscapes', 'Nature sounds to mix, and Sleep sounds fading out: the synthesis, the fade, locked and unlocked', 90],
+  ['touchtest', 'Touch: Soothing Touch, Self-Massage and the weighted blanket tip', 90],
   ['cuetrend', 'Lock screen, vibration, comparisons, trends, start-up, Heart', 70],
   ['choices', 'Saved patterns, safety note, filters, Heart Coherence, live changes, Restart, Healthy living, Gratitude, Calm Reset, donations, connecting, difficult conversations, autogenic training, walking, feedback, routines and light, the consistency check, a mindful meal, four more programmes, the Heart page explained, breath from the microphone, coffee, Swim & dive', 290]
 ];

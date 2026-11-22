@@ -1474,11 +1474,11 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
           w: document.documentElement.scrollWidth, iw: innerWidth };
       });
       ok(R.tabs === 'Recipes | Supplements | Routines* | Light' && R.w <= R.iw, 'Healthy living has four tabs: ' + R.tabs);
-      ok(R.secs === 'lv-sleep-habits:Healthy sleep habits:8:9 | lv-morning:A morning routine:6:3 | lv-daytime:Through the day:4:6 | lv-evening:An evening routine:7:6' &&
+      ok(R.secs === 'lv-sleep-habits:Healthy sleep habits:9:11 | lv-morning:A morning routine:6:3 | lv-daytime:Through the day:4:6 | lv-evening:An evening routine:7:6' &&
         R.jump === 'Sleep habits>#living/sleep-habits | Morning>#living/morning | Through the day>#living/daytime | Evening>#living/evening',
         'Routines: sleep habits, a morning, the day and an evening, each with its sources: ' + R.secs);
       const S = R.steps, step = (id, t) => (S['lv-' + id] || []).find(x => x.t === t) || { p: '' };
-      ok(S['lv-sleep-habits'].map(x => x.t).join(' | ') === 'Keep regular hours | Bright days, dim evenings, dark nights | Caffeine before the afternoon | Alcohol early, if at all | Move in the day | A bed for sleep | Naps short and early | A wind-down' &&
+      ok(S['lv-sleep-habits'].map(x => x.t).join(' | ') === 'Keep regular hours | Bright days, dim evenings, dark nights | Caffeine before the afternoon | Alcohol early, if at all | Move in the day | A bed for sleep | Perhaps a weighted blanket | Naps short and early | A wind-down' &&
         /at least seven hours/.test(await t(p, '#lv-sleep-habits .lv-rt-lede')) && /cognitive behavioural therapy for insomnia \(CBT-I\)/.test(await t(p, '#lv-sleep-habits .lv-rt-lede')),
         'healthy sleep habits, with CBT-I for insomnia that lasts');
       ok(S['lv-evening'].map(x => x.w).filter(Boolean).join(' | ') === '9 hours before | 3 hours before | 1 to 2 hours before | 1 hour before | 30 minutes before | Bedtime' &&

@@ -11,6 +11,8 @@
        pmr      tense one muscle group, then release it
        drift    a soft glow while the sound carries on (sleep)
        hold     a breath hold: open (tap Breathe in, capped) or a fixed count
+       stroke   strokes along an arm on each breath out, following a gliding dot (touch.js)
+       massage  an area of the body map with its pressure and stroke (touch.js)
      Lengths are in seconds. `lines` are [offset, text] pairs, or plain strings spread
      evenly across the step; a third item marks an Anapana reminder ("ana", said softly) or a
      chime that sounds in place of the voice ("chime"). A step can end when you tap a button
@@ -19,6 +21,8 @@
      A technique from the brain-wave guide carries `sup: true`: it opens with a donation, once on each
      device (supporter.js), and every way to start it asks for that first; its page stays free to read.
      Patterns in BREATHS and tracks in TRACKS take the same flag.
+     A page can add a tip, free to read ([lead, text, link, link text]), and a row of its own under
+     Options (optHtml, redrawn by optSync when the badges change).
   ------------------------------------------------------------------------------ */
 
   function pLines(lines, secs) {
@@ -849,7 +853,10 @@
       },
       how: "The first eight minutes pace your breath from 6 down to about 4.6 breaths a minute, with the out-breath always the longer half: 4 s in and 6 s out, gliding to 5 s in and 8 s out. The fuller inhale keeps the slow pace easy rather than air-hungry as you get drowsy. Then the cue sounds fade over three minutes, a short body release follows, and a soft glow stays on the screen while the binaural beat slides from 6 Hz theta to 3 Hz delta, holds there and fades out.",
       ev: "Each part has its own evidence; the combination hasn't been tested as a package. Twenty minutes of slow breathing at six a minute before bed shortened sleep onset and reduced night waking in people with self-reported insomnia. At that pace a longer exhale was rated more relaxing than the reverse. Relaxation training is a recommended (conditional) treatment for chronic insomnia. A 3 Hz binaural beat lengthened deep sleep in a sleep-lab study.",
-      cite: "Tsai et al. 2015 · Van Diest et al. 2014 · Edinger et al. 2021 (AASM) · Jirakittayakorn & Wongsawat 2018"
+      cite: "Tsai et al. 2015 · Van Diest et al. 2014 · Edinger et al. 2021 (AASM) · Jirakittayakorn & Wongsawat 2018",
+      // free to read, like every tip: the guide's weighted blanket, for the restless whose nights have an anxious or low edge
+      tip: ["A weighted blanket?", "If restlessness at night comes with anxiety or a low mood, a weighted blanket may help: in trials, people with insomnia slept better after a month under one. It's low-risk for most adults. Choose one you can easily push off by yourself; it's not for small children, or for anyone who couldn't take it off unaided.",
+        "#l-weighted", "What the research says"]
     },
     {
       id: "stress-check", name: "Stress Check", lengths: [3, 6], min: 3, strength: 2, stress: true,
@@ -1710,6 +1717,66 @@
       how: "For people in the same room, or on your own. A humming warm-up over a soft drone, five notes up and down on each vowel, then each round three ways: listen once, sing it together twice through, then sing it as a round, each group coming in a line after the one before (on your own, the phone sings first and you come in after it). The words are on the screen, a soft synthesised tune leads at a steady tempo after a count-in, and in a round the screen shows where each part is. Any time left goes to more rounds and a soft hum of the tune. It ends with a moment to notice how you feel. Frère Jacques and Row, Row, Row Your Boat are traditional, free for anyone to sing.",
       ev: "Singing together raised feelings of closeness and positive mood, and raised pain thresholds, a stand-in for the release of endorphins, in small choirs and in a choir of 232 alike. In new adult classes, singers bonded faster than people doing crafts or creative writing, though the others caught up within months: the ice-breaker effect. Music, like laughter, dance and synchronised sport, may bond people both through moving in time together and through endorphins. No study has tested singing along with a phone.",
       cite: "Weinstein et al. 2016 · Pearce et al. 2015 · Tarr et al. 2014"
+    },
+
+    /* ===== touch (touch.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "touch", name: "Soothing Touch", lengths: [5, 10], min: 5, strength: 2, sup: true,
+      tone: "relax", noTap: true, hc: ["touch"],
+      optNote: "Your touch, pace and sound are kept for it.",
+      alias: "Self-soothing touch", words: "touch soothing self-soothing stroke stroking forearm arm skin caress gentle slow c-tactile ct fibres brush velvet soft hug self-hug hand on heart heart comfort calm cortisol oxytocin",
+      blurb: "Stroke your forearm slowly, at about 3 cm a second, one stroke on each long breath out, following a dot on the screen. Or give yourself a hug, or rest a hand on your heart.",
+      parts: "Forearm strokes at 3 cm a second, one arm then the other · or a self-hug · or a hand on your heart",
+      choices: [
+        { key: "touch", label: "Touch", def: "arm", redraw: true,
+          note: function (d) {
+            return {
+              arm: "Slow strokes from wrist to elbow, where the skin's slow-touch nerves are: moderate evidence, from a trial of self-soothing touch and research on these nerves.",
+              hug: "Arms crossed, slow strokes up your upper arms, then a held hug: early to moderate evidence.",
+              heart: "A hand on your heart, then one on your belly too, as most people chose in the self-soothing touch trial: early to moderate evidence."
+            }[pChoice(d, "touch")];
+          },
+          opts: [["arm", "Forearm stroking"], ["hug", "Self-hug"], ["heart", "Hand on heart"]] },
+        { key: "with", label: "Stroke with", def: "hand", show: function (d) { return pChoice(d, "touch") === "arm"; },
+          note: "A soft brush or a piece of velvet is an optional extra, pleasant for many people; its evidence is early.",
+          opts: [["hand", "Your fingertips"], ["soft", "A soft brush or velvet"]] },
+        { key: "pace", label: "Breathing", def: "slow",
+          note: function (d) {
+            return pChoice(d, "touch") === "heart" ? "A longer breath out, at either pace."
+              : pChoice(d, "pace") === "gentle" ? "3 s in, 6 s out: each stroke covers about 18 cm at 3 cm a second, most of the way."
+              : "4 s in, 8 s out: each stroke covers about 24 cm at 3 cm a second, about the length of a forearm.";
+          },
+          opts: [["slow", "4 in, 8 out"], ["gentle", "3 in, 6 out"]] },
+        { key: "sound", label: "Sweeping tone", def: "on", show: function (d) { return pChoice(d, "touch") !== "heart"; },
+          note: "A soft whoosh that rises with each stroke, made on your device: it paces the stroke with your eyes closed.",
+          opts: [["on", "On"], ["off", "Leave it out"]] }
+      ],
+      optHtml: function (d) { return tcOptHtml(d); },        // real size, against a bank card (touch.js)
+      optSync: function () { tcOptSync(); },
+      build: function (min) { return tcSteps(this, min || 5); },
+      end: "Let your hands rest, and take the calm with you.",
+      how: "Choose your touch. Forearm stroking: a dot glides along a drawing of the forearm from the wrist to the elbow at about 3 cm a second, and you follow it with your fingertips (or a soft brush or velvet), one slow stroke on each long breath out, lifting your hand back to the wrist as you breathe in: first the left arm, then the right (twice each in ten minutes), ending with a hand on your heart. A soft sweeping tone rises with each stroke, and under the arm, centimetre marks at real size move at the real speed while you stroke; in Options you can match the screen to a bank card to make them exact. Self-hug: arms crossed, the same slow strokes up your upper arms, then a held hug and a hand on your heart. Hand on heart: one hand on your chest, then the other on your belly, slow circles, and rest, with a longer breath out throughout.",
+      ev: "Hairy skin, like the forearm's, has nerves for caress-like touch, C-tactile fibres, which fire most to slow stroking at about 1 to 10 cm a second, the speeds people find most pleasant. Stroking at 3 cm a second was rated more pleasant than at 30 cm a second and slowed the heart more, in adults; in 9-month-old babies it slowed the heart where slower and faster stroking didn't. A review links this kind of touch with calmer stress responses. In a randomised trial of 159 adults, 20 seconds of self-soothing touch (most chose a hand on the chest and the other on the belly) and a 20-second hug both lowered the stress hormone cortisol after a stressful mock interview, compared with making a paper plane; heart rate and felt stress stayed the same. The participants were mostly young women studying psychology, and the trial couldn't rule out other explanations, such as positive feelings or extra attention. A hand on the heart or a self-hug has early to moderate evidence; soft textures, early.",
+      cite: "Löken et al. 2009 · Pawling et al. 2017 · Fairhurst et al. 2014 · Kidd et al. 2023 · Dreisoerner et al. 2021"
+    },
+    {
+      id: "self-massage", name: "Self-Massage", lengths: [8, 10], min: 8, strength: 2, sup: true,
+      tone: "ther", noTap: true, hc: ["touch"],
+      optNote: "Your choice is kept for it.",
+      alias: "Massage", words: "massage self-massage rub knead kneading hands palms fingers forearms jaw temples scalp head neck shoulders feet foot partner couple together giver receiver alpha tension relax",
+      blurb: "Massage your own hands and forearms, jaw and temples, scalp, neck and shoulders, and feet, with the pressure and stroke for each. Or take turns with a partner, swapping halfway.",
+      parts: "Hands and forearms · jaw and temples · scalp · neck and shoulders · feet · or with a partner",
+      choices: [
+        { key: "who", label: "With", def: "solo",
+          note: "With a partner: hands and forearms, shoulders and neck, and the scalp, for each of you in turn. The receiver sits on a chair; you swap halfway.",
+          opts: [["solo", "On your own"], ["partner", "With a partner"]] }
+      ],
+      build: function (min) { return smSteps(this, min || 8); },
+      end: "Rest your hands, and notice the ease.",
+      how: "On your own: a moment to settle, then each area in turn, lit on the body map, with its pressure and stroke under its name and the time left on it: each hand and forearm (thumb circles in the palm, each finger, long strokes and a gentle squeeze), the jaw and temples, the scalp, the neck and shoulders, and each foot, then a moment of rest. Moderate pressure most of the way: firm enough to move the skin over the muscle, and comfortable. With a partner: agree who gives first and how to say more or less, then the hands and forearms, shoulders and neck, and scalp, and you swap halfway, ending side by side.",
+      ev: "A shift towards alpha brain waves is one of the most consistent findings in EEG studies of massage: across 30 of them, a single session commonly raised alpha and lowered faster beta and gamma activity, and moderate pressure favoured a relaxed, parasympathetic profile. Not every study agrees: in 24 young adults, a massage by hand and one by a device changed delta, theta and beta differently, and alpha fell during that short session in both. Almost all of this research is on massage from a trained therapist; massage you give yourself, or a partner, has been studied far less.",
+      cite: "Chmiel & Kurpas 2026 · Chang et al. 2012",
+      caution: "Leave out any area with an injury, a wound, a rash, a bruise or swelling, and go lightly around varicose veins rather than pressing on them. If you take blood thinners or bruise easily, keep the pressure light. A painful, swollen, warm calf can be a blood clot: leave it alone and see a doctor. Keep to the back and sides of the neck, away from the front of the throat. Massage should feel good: ease off if anything hurts, and with a partner, say so straight away."
     },
 
     /* ===== movement ===== */

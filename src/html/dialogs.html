@@ -94,6 +94,27 @@
 </div>
 
 
+<!-- ============ SOOTHING TOUCH: this screen's real size, against a bank card (touch.js) ============ -->
+<div class="modal tc" id="tcModal" hidden>
+  <div class="modal-card tc-card" role="dialog" aria-modal="true" aria-labelledby="tcTitle">
+    <h2 id="tcTitle">Match a bank card</h2>
+    <p>Lay a bank card on the screen sideways, its top edge on the upper line; its far end can hang over the edge. Then size the box until the lower line meets the card's bottom edge.</p>
+    <div class="tc-box" id="tcBox" aria-hidden="true"><span>Top edge of the card</span><span>Bottom edge</span></div>
+    <div class="tc-adj">
+      <button class="tc-b" id="tcLess" aria-label="Smaller">−</button>
+      <input type="range" id="tcRange" min="25" max="95" step="0.1" aria-label="Size of the box">
+      <button class="tc-b" id="tcMore" aria-label="Larger">+</button>
+    </div>
+    <p class="hint" id="tcSaid" aria-live="polite"></p>
+    <div class="pm-actions">
+      <button class="btn primary" id="tcSave">Save</button>
+      <button class="btn" id="tcUsual">Use the usual size</button>
+      <button class="btn" id="tcCancel">Not now</button>
+    </div>
+  </div>
+</div>
+
+
 <!-- ============ NEW TECHNIQUES: unlocked on this device with a donation (supporter.js) ============ -->
 <div class="modal" id="supModal" hidden>
   <div class="modal-card sup-card" role="dialog" aria-modal="true" aria-labelledby="supTitle">

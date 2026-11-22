@@ -914,11 +914,12 @@
   .si-tl i,.ses-segs i{display:block;min-width:2px;background:var(--panel-3)}
   [data-k="breath"]{--kc:var(--b-in)}
   [data-k="guide"]{--kc:var(--accent)}
-  [data-k="pose"],[data-k="pmr"]{--kc:var(--stim)}
+  [data-k="pose"],[data-k="pmr"],[data-k="massage"]{--kc:var(--stim)}
   [data-k="pump"]{--kc:var(--danger)}
   [data-k="observe"],[data-k="shuffle"],[data-k="count"]{--kc:var(--ther)}
   [data-k="drift"]{--kc:#3b4a78}
   [data-k="sing"]{--kc:var(--food)}
+  [data-k="stroke"]{--kc:var(--hr)}
   .si-tl i{background:color-mix(in srgb,var(--kc) 75%,var(--panel-3))}
 
   /* ---------- practice: session intro ---------- */
@@ -1885,4 +1886,23 @@
     .stl{padding:0}
     .stl-card{max-width:none;min-height:100%;max-height:none;border-radius:0;display:flex;flex-direction:column;justify-content:center;
       padding:max(20px,env(safe-area-inset-top,0px)) 18px max(20px,env(safe-area-inset-bottom,0px))}
+  }
+  /* ---------- touch (touch.js): Soothing Touch's real size against a bank card, and tips on a practice's page ---------- */
+  .si-main > p.si-tip{margin-top:14px;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--relax) 8%,transparent);font-size:13.5px;line-height:1.5}
+  .si-tip b{color:var(--text);font-weight:720}
+  .tc-cal .btn{flex:none}
+  .tc-card{max-width:460px}
+  .tc-card h2{margin-bottom:8px}
+  .tc-card > p{margin-bottom:12px}
+  .tc-box{box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;margin:0 -8px;padding:4px 10px;
+    border-top:2px solid var(--relax);border-bottom:2px solid var(--relax);background:color-mix(in srgb,var(--relax) 7%,transparent);
+    font-size:12px;font-weight:650;color:var(--text-faint);min-height:40px}
+  .tc-adj{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .tc-adj input[type=range]{flex:1;min-width:0;margin:0}
+  .tc-b{flex:none;width:44px;height:44px;border:0;border-radius:12px;background:var(--panel-2);color:var(--text);font:inherit;font-size:20px;font-weight:700;line-height:1;cursor:pointer}
+  .tc-card .pm-actions{margin-top:12px}
+  @media (max-width:560px){
+    .tc{padding:0}
+    .tc-card{max-width:none;min-height:100%;max-height:none;border-radius:0;padding:max(18px,env(safe-area-inset-top,0px)) 18px max(18px,env(safe-area-inset-bottom,0px))}
+    .tc-card .pm-actions .btn{flex:1 1 auto}
   }

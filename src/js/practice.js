@@ -543,6 +543,7 @@
     if (s.k === "shuffle") return "word";
     if (s.k === "count") return "count";
     if (s.k === "sing") return "sing";               // the words to sing, and where each part is (vocal.js)
+    if (s.k === "stroke") return "stroke";           // an arm and a dot to stroke along with (touch.js)
     if (ST.sleepDim && pSleepyStep(s)) return s.k === "shuffle" ? "word" : "dark";   // dimmed for sleep (Settings)
     if (s.k === "drift") return "glow";
     if (s.k === "hold") return "hold";
@@ -562,6 +563,7 @@
     P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1; P.metroNext = 0;
     napWakeStop();                                   // wake-up chimes belong to their own step
     vxEnter(s);                                      // and a song's notes to its own (vocal.js)
+    tcEnter(s);                                      // and a stroke's sweeps to theirs (touch.js)
     if (s.k === "wake") { NP.rung = 0; NP.vibs = 0; }
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
@@ -656,6 +658,7 @@
     else if (s.k === "pmr") pPmrTick(s, st);
     if (s.metro) pMetroTick(s, st);
     vxTick(s, st);                                   // the drone, and a song's tune and count-in (vocal.js)
+    tcTick(s, st);                                   // a soft sweep with each stroke (touch.js)
     pAudioSync(T);
     pUI();
   }
@@ -826,6 +829,10 @@
       sub = s.sub || "0 is not at all, 10 is as strong as it gets";
     } else if (s.k === "sing") {
       sub = vxSub(s, st);
+    } else if (s.k === "stroke") {
+      var tw = tcWords(s, st); cap = tw.cap; sub = tw.sub;
+    } else if (s.k === "massage") {
+      sub = smSub(s, st);
     } else if (s.k === "adapt") {
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
@@ -892,7 +899,7 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -915,6 +922,7 @@
         else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
         else if (vis === "beat") vxBeat(c, W, Hh, s, st, col);
         else if (vis === "sing") vxShow(s, st);
+        else if (vis === "stroke") tcDraw(c, W, Hh, s, st, col);
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -1131,6 +1139,7 @@
     rhyStop(0.3);
     napWakeStop();
     vxHush();
+    tcHush();
     pHush();
     pUnlock();
     pUI();
@@ -1181,6 +1190,7 @@
     rhyStop();
     napWakeStop();
     vxHush();
+    tcHush();
     P.mv = null;
     if (pTrack()) {
       var trk = A.track;
@@ -1315,6 +1325,7 @@
     pGoSync(d, plan);
     pPreRow(d);
     pCareSync(d, plan);
+    if (d.optSync) d.optSync(d);                     // a practice's own row in Options (Soothing Touch's real size)
   }
   // your health check's caution, and a block of fast breathing within the hour or today's rounds (care.js)
   function pCareSync(d, plan) {
@@ -1339,6 +1350,7 @@
       opts.push('<div class="so-row so-seg"><span class="so-l">' + esc(c.label) + (note ? "<small>" + esc(note) + "</small>" : "") + '</span><div class="mini-seg" data-choice="' + c.key + '">' +
         c.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (v === o[0]) + '">' + esc(o[1]) + "</button>"; }).join("") + "</div></div>");
     });
+    if (d.optHtml) opts.push(d.optHtml(d));          // a row of its own (Soothing Touch's real size, touch.js)
     if (d.audio && d.beats) {
       var bt = pBeat(d);
       opts.push('<div class="so-row so-seg so-beat"><span class="so-l">Binaural beat<small id="sBeatNote">' + esc(pBeatNote(d, O)) + '</small></span><div class="mini-seg" id="sOptBeat">' +
@@ -1413,6 +1425,7 @@
         }).join("") + "</ul>" : "") +
         "<h3>How it runs</h3><p>" + esc(d.how || pYogaHow(plan)) + "</p>" +
         '<ol class="si-steps">' + pStepsHtml(d, plan) + "</ol>" +
+        (d.tip ? '<p class="si-tip"><b>' + esc(d.tip[0]) + "</b> " + esc(d.tip[1]) + (d.tip[2] ? ' <a href="' + d.tip[2] + '">' + esc(d.tip[3]) + "</a>" : "") + "</p>" : "") +
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its " + (bmMode(O.beatMode) === "binaural" ? "binaural " : "") + "beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +

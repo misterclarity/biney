@@ -247,8 +247,10 @@ const UK = /\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!R
       const em = L(r)[0];
       ok(!!em && em.t === 'EMDR' && await E(p, h => document.getElementById('l-leftout').nextElementSibling.contains(document.querySelector(h)), em.h), 'and EMDR, under what Entrain leaves out');
       r = await find(p, 'weighted blanket');
-      const wb = L(r)[0];
-      ok(!!wb && wb.t === 'Weighted blanket' && /Techniques at a glance · Touch/.test(wb.s) && /Sleep, less anxiety · Moderate · Learn only/.test(wb.s), 'a row of the table is found by its technique, with its sense, aim, evidence and place in Entrain: ' + (wb && wb.s.slice(0, 90)));
+      // (Touch's own paragraph on weighted blankets comes first now; the table's row is among the results)
+      const wb = L(r).find(i => i.t === 'Weighted blanket');
+      ok(!!wb && L(r)[0].h === '#l-weighted' && /Techniques at a glance · Touch/.test(wb.s) && /Sleep, less anxiety · Moderate · A tip in Sleep Descent and healthy sleep habits/.test(wb.s),
+        'a row of the table is found by its technique, with its sense, aim, evidence and place in Entrain, after the paragraph on it: ' + (wb && wb.s.slice(0, 110)));
       if (wb) {
         await p.click('.fd-it[href="' + wb.h + '"]'); await p.waitForTimeout(800);
         const land = await E(p, h => { const e = document.querySelector(h), b = e.getBoundingClientRect(); return { tr: e.tagName === 'TR', hit: e.classList.contains('fd-hit'), learn: !document.querySelector('#v-learn').hidden, top: Math.round(b.top), bottom: Math.round(b.bottom), ih: innerHeight }; }, wb.h);
