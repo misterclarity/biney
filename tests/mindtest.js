@@ -400,7 +400,7 @@ const NAMES = { imagery: 'Guided Imagery', 'yoga-nidra': 'Yoga Nidra' };
       await clock(p, await E(p, () => window.__entrain.P.total - 0.5)); await p.waitForTimeout(900);
       const fin = await E(p, () => ({ st: window.__entrain.P.state, h: document.querySelector('#sDone h2') ? document.querySelector('#sDone h2').textContent : '',
         hist: (JSON.parse(localStorage.getItem('entrain.history') || '[]').filter(e => e.id === 'yoga-nidra').pop() || {}).n }));
-      ok(fin.st === 'done' && fin.h === 'Yoga nidra is complete. Sit up slowly, in your own time.' && fin.hist === 'Yoga Nidra', 'to the end: ' + fin.h);
+      ok(fin.st === 'done' && fin.h === 'Yoga nidra is complete. Whenever you get up, take it slowly.' && fin.hist === 'Yoga Nidra', 'to the end: ' + fin.h);
       await p.context().close();
 
       // into sleep; and I need to stop, mid-rotation

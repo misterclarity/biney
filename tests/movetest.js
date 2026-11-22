@@ -325,6 +325,11 @@ const QG_EN = ['Holding Up the Sky', 'Drawing the Bow', 'Separating Heaven and E
       ok(D.h === 'Well danced. Notice how you feel now.' && D.tile === 'Mood | 5 → 8 | out of 10, before and after' && D.hist === 'mood 5 → 8 of 10' && D.nx === '#practice/qigong' && D.donate,
         'the end: its line, your mood before and after side by side and in the history, and the Eight Brocades next: ' + JSON.stringify(D));
       ok(await until(p, () => !window.__entrain.MUS.on, 4000), 'and the music ends with it');
+      // with a heart sensor: a rise is expected after moving, and Music Break's line on music for stress stays out of it
+      await E(p, () => window.__entrain.pDone({ secs: 600, early: false, hr0: 82, hr1: 112, hrPts: [] }, false)); await p.waitForTimeout(200);
+      await p.click('#sDone .sd-t[data-ex="hr"]'); await p.waitForTimeout(200);
+      const hx = await E(p, () => document.querySelector('#sdEx').textContent.replace(/\s+/g, ' '));
+      ok(/It rose 30 beats a minute\. That's expected after movement/.test(hx) && !/music for stress/.test(hx), 'its heart rate rising is expected after movement, with no line on music for stress: ' + hx.slice(0, 160));
       // I need to stop silences the music at once
       await go(p, 'practice'); await go(p, 'practice/dance'); await p.click('#sGo');
       await until(p, () => window.__entrain.MUS.on, 4000);

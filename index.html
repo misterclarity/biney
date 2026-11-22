@@ -14043,7 +14043,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "69d3f206";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "fea3608d";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -20121,7 +20121,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ],
       next: { id: "imagery", txt: "Enjoyed the images? Guided Imagery spends longer in one calm place, through every sense." },
       build: function (min) { return ynSteps(this, min || 30); },
-      end: "Yoga nidra is complete. Sit up slowly, in your own time.",
+      end: "Yoga nidra is complete. Whenever you get up, take it slowly.",     // after Back to alert, and after Into sleep
       how: "Lie on your back with a blanket over you, and listen to the sounds around you, far and then near. You make a resolve, a sankalpa: a short, positive sentence of your own, or one of three offered, said silently three times. Then your attention travels quickly round the body as each part is named, about one every three seconds, from the right thumb to the whole body, each part lit and marked on the body map. You count your breaths backwards from 27, feel heaviness and then lightness, warmth and then coolness, and picture quick images as they're named; the longer sessions add a spell of quiet rest. Then the resolve again. Back to alert brings you back gently, to the breath, the room and a slow stretch; Into sleep lets you drift off, with no bells at the end. 20, 30 or 45 minutes; in 45, the rotation goes round twice, the second time a little faster. A 6 Hz theta beat can play underneath if you add it, sliding to 3 Hz delta with Into sleep.",
       ev: "The guide rates yoga nidra as moderate evidence for deep relaxation. In a randomised trial of 41 adults with chronic insomnia, yoga nidra and cognitive behavioural therapy for insomnia both improved sleep time and sleep quality; in the sleep lab only yoga nidra added deep sleep, and its salivary cortisol fell. An online yoga nidra based on a body scan reduced stress slightly over two months of daily use, and its 30-minute version reduced sleep disturbance. In a small brain-imaging study, the release of dopamine in the striatum rose during yoga nidra, along with more theta in the EEG. The stages come from Swami Satyananda Saraswati's teaching; they haven't been tested one by one, and the beats' own evidence is mixed.",
       cite: "Datta et al. 2021 · Moszeik et al. 2025 · Kjaer et al. 2002 · Satyananda Saraswati 1976",
@@ -21530,6 +21530,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (again !== true) { P.paceK = 1; P.beatAdj = 0; P.beatOff = false; }
       P.def = d;
       if (again !== true) P.ci = cont ? ciCarry() : d.stress ? null : ciTake("practice");     // how you were as it began: your check-in, or the end screen's before it (own.js)
+      if (again !== true && pMoodOwn(d)) P.ci = null;  // a practice that rates your mood itself has its own before and after
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
       P.xp = xpFor(d); xpApply();                      // a personal experiment's way of doing it this time (own.js)
       scnStart(d);                                     // and the scene it shows, if any (scenes.js)
@@ -21546,6 +21547,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
       P.eeg = []; egLedReset();                        // the headband's record and Brain-Led Beats' rest (eeg.js)
       oxReset();                                       // the holds an oximeter ended (air.js)
+      coldReset();                                     // the seconds of cold, counted afresh (cold.js)
       pAdaptReset(); napReset(); scReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
@@ -21575,9 +21577,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ambSync();
     };
     var begin = function () { if (d.audio && xpAudio(d, P.opt.audio)) gate(go, bmMode(pOptsOf(d.id).beatMode)); else go(); };    // on speakers there's no headphone check
-    // your check-in first, if you keep them (own.js): not on a restart, carrying on, or a Stress Check, which asks its own
-    if (again === true || cont || d.stress || !ciBefore("practice", d.name, function () { if (P.view === d) begin(); })) begin();
+    // your check-in first, if you keep them (own.js): not on a restart, carrying on, a Stress Check, which asks its own,
+    // or a practice that rates your mood itself before and after (Laughter Break, Dance Break, with their mood check on)
+    if (again === true || cont || d.stress || pMoodOwn(d) || !ciBefore("practice", d.name, function () { if (P.view === d) begin(); })) begin();
   }
+  function pMoodOwn(d) { return !!(d.rate && d.rate.what === "mood" && pChoice(d, "mood") !== "off"); }
   function pPause() {
     if (P.state !== "running") return;
     P.st = pT();
@@ -21619,6 +21623,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
     else target = ((T - P.steps[i].at > 3 && P.steps[i].k !== "write") || i === 0) ? P.steps[i].at : P.steps[i - 1].at;   // writing: back means the step before
     pHoldLeave(T);
+    coldJump(T, target);                               // the cold you stayed for, not the part skipped (cold.js)
     if (P.state === "running") P.t0 = bNow() - target; else P.st = target;
     pHush();
     // a jump into a different breath pattern restarts the guide so it doesn't wait for the breath to end
@@ -22506,7 +22511,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (dl <= -3) p.push("It came down " + plural(-dl, "beat", "beats") + " a minute. A fall like this is the usual sign of the body settling: slow breathing and rest shift the nervous system towards its calming side, which slows the heart.");
       else if (dl >= 3) p.push("It rose " + plural(dl, "beat", "beats") + " a minute. " + (lively ? "That's expected after movement or energising breathing." : "Sitting up, moving or a busy mind can raise it. One session is one reading: your history shows the trend."));
       else p.push("It stayed within a few beats. That's common in short or gentle sessions, or when you started out already rested.");
-      if (d.music) p.push("Across trials of music for stress, heart rate came down more clearly than blood pressure or stress hormones did, by a small to medium amount on average. Your own sessions show what it does for you.");   // Music Break (music.js)
+      if (d.id === "music-break") p.push("Across trials of music for stress, heart rate came down more clearly than blood pressure or stress hormones did, by a small to medium amount on average. Your own sessions show what it does for you.");   // Music Break (music.js)
       if (SD.c.hr) p.push(sdHrAgainst(dl, SD.c.hr, d));
       return ["Heart rate, start to end", p];
     }
@@ -24183,7 +24188,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var COLD_BREAK = 28 * 864e5;               // a month away steps back once
   var COLD_IN = 3, COLD_OUT = 6;             // in the cold: a long breath out of 6 seconds, then 3 in, out first
   var COLD_COL = "#7cc4fa";                  // cold water's blue
-  var COLD = { g: null, next: -1, pip: -1, due: 0 };   // the sound's own gain, the next breath-out tone and pip to schedule, and a bell still due (Hz)
+  // the sound's own gain, the next breath-out tone and pip to schedule, and a bell still due (Hz); from: where on the
+  // practice clock it last ran on from (its start, or where a skip landed), got: the seconds of cold that ran before that
+  var COLD = { g: null, next: -1, pip: -1, due: 0, from: 0, got: 0 };
 
   /* ----- how far you've built up, from the history ----- */
   // { i, secs, n: done at this length, t0: the first of them, last: the latest Cold Finish }
@@ -24362,11 +24369,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var r = ibRecent();
     return r ? "You did " + r.name + " " + ibAgo(r) + ". Give your breathing time to settle back to normal before the cold, and keep breathing all the way through it, with no breath holds." : "";
   }
+  /* The seconds of cold you stayed for: the time the practice clock ran on through the cold step, so skipping on
+     out of it after a few seconds counts those seconds, not the whole step (and the build-up doesn't move on). */
+  function coldStepOf() { return P.steps.filter(function (x) { return x.k === "cold"; })[0] || null; }
+  function coldOver(s, a, b) { return s ? Math.max(0, Math.min(b, s.at + s.secs) - Math.max(a, s.at)) : 0; }
+  function coldReset() { COLD.from = 0; COLD.got = 0; }                    // a practice starts (practice.js pStart)
+  function coldJump(T, to) { COLD.got += coldOver(coldStepOf(), COLD.from, T); COLD.from = to; }   // a skip, on or back (pJump)
   // into the summary: the seconds of cold you stayed for, and the length planned
   function coldSummary(r, T) {
-    var s = P.steps.filter(function (x) { return x.k === "cold"; })[0];
-    if (!s || T <= s.at) return;
-    r.cold = Math.round(Math.min(s.secs, T - s.at));
+    var s = coldStepOf(), got = s ? COLD.got + coldOver(s, COLD.from, T) : 0;
+    if (!(got > 0)) return;
+    r.cold = Math.round(Math.min(s.secs, got));
     r.coldOf = s.secs;
   }
   // the end screen's tile: how long, and where your build-up stands now that this one is in the history

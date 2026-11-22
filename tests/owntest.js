@@ -235,6 +235,19 @@ const NAMES = ['Check in before and after', "Today's minutes and streak", 'Daily
       await p.click('#sGo'); await p.waitForTimeout(400);
       ok(await E(p, () => document.querySelector('#ciModal').hidden && window.__entrain.P.state === 'running'), 'the Stress Check, which asks its own, starts with no check-in');
       await endEarly(p);
+      // Laughter Break rates your mood itself, before and after: no check-in on top of it, unless its mood check is left out
+      await open(p, 'laughter');
+      await p.click('#sGo'); await p.waitForTimeout(400);
+      const lg = await E(p, () => { const X = window.__entrain; return { ci: !document.querySelector('#ciModal').hidden, st: X.P.state, pci: X.P.ci, rates: X.P.steps.filter(s => s.k === 'rate').length }; });
+      ok(!lg.ci && lg.st === 'running' && lg.pci === null && lg.rates === 2, 'Laughter Break, which rates your mood before and after itself, starts with no check-in: ' + JSON.stringify(lg));
+      await endEarly(p);
+      await E(p, () => localStorage.setItem('entrain.pCh.laughter', JSON.stringify({ mood: 'off' })));
+      await open(p, 'laughter');
+      await p.click('#sGo'); await p.waitForTimeout(400);
+      m = await modal(p);
+      ok(m.open && /^Before Laughter Break: how are you right now\?/.test(m.what), 'with its mood check left out, the check-in asks: ' + m.what);
+      await p.click('#ciSkip'); await p.waitForTimeout(300);
+      await endEarly(p);
       await p.context().close();
     }
 

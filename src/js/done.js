@@ -118,7 +118,7 @@
       if (dl <= -3) p.push("It came down " + plural(-dl, "beat", "beats") + " a minute. A fall like this is the usual sign of the body settling: slow breathing and rest shift the nervous system towards its calming side, which slows the heart.");
       else if (dl >= 3) p.push("It rose " + plural(dl, "beat", "beats") + " a minute. " + (lively ? "That's expected after movement or energising breathing." : "Sitting up, moving or a busy mind can raise it. One session is one reading: your history shows the trend."));
       else p.push("It stayed within a few beats. That's common in short or gentle sessions, or when you started out already rested.");
-      if (d.music) p.push("Across trials of music for stress, heart rate came down more clearly than blood pressure or stress hormones did, by a small to medium amount on average. Your own sessions show what it does for you.");   // Music Break (music.js)
+      if (d.id === "music-break") p.push("Across trials of music for stress, heart rate came down more clearly than blood pressure or stress hormones did, by a small to medium amount on average. Your own sessions show what it does for you.");   // Music Break (music.js)
       if (SD.c.hr) p.push(sdHrAgainst(dl, SD.c.hr, d));
       return ["Heart rate, start to end", p];
     }

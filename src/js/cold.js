@@ -20,7 +20,9 @@
   var COLD_BREAK = 28 * 864e5;               // a month away steps back once
   var COLD_IN = 3, COLD_OUT = 6;             // in the cold: a long breath out of 6 seconds, then 3 in, out first
   var COLD_COL = "#7cc4fa";                  // cold water's blue
-  var COLD = { g: null, next: -1, pip: -1, due: 0 };   // the sound's own gain, the next breath-out tone and pip to schedule, and a bell still due (Hz)
+  // the sound's own gain, the next breath-out tone and pip to schedule, and a bell still due (Hz); from: where on the
+  // practice clock it last ran on from (its start, or where a skip landed), got: the seconds of cold that ran before that
+  var COLD = { g: null, next: -1, pip: -1, due: 0, from: 0, got: 0 };
 
   /* ----- how far you've built up, from the history ----- */
   // { i, secs, n: done at this length, t0: the first of them, last: the latest Cold Finish }
@@ -199,11 +201,17 @@
     var r = ibRecent();
     return r ? "You did " + r.name + " " + ibAgo(r) + ". Give your breathing time to settle back to normal before the cold, and keep breathing all the way through it, with no breath holds." : "";
   }
+  /* The seconds of cold you stayed for: the time the practice clock ran on through the cold step, so skipping on
+     out of it after a few seconds counts those seconds, not the whole step (and the build-up doesn't move on). */
+  function coldStepOf() { return P.steps.filter(function (x) { return x.k === "cold"; })[0] || null; }
+  function coldOver(s, a, b) { return s ? Math.max(0, Math.min(b, s.at + s.secs) - Math.max(a, s.at)) : 0; }
+  function coldReset() { COLD.from = 0; COLD.got = 0; }                    // a practice starts (practice.js pStart)
+  function coldJump(T, to) { COLD.got += coldOver(coldStepOf(), COLD.from, T); COLD.from = to; }   // a skip, on or back (pJump)
   // into the summary: the seconds of cold you stayed for, and the length planned
   function coldSummary(r, T) {
-    var s = P.steps.filter(function (x) { return x.k === "cold"; })[0];
-    if (!s || T <= s.at) return;
-    r.cold = Math.round(Math.min(s.secs, T - s.at));
+    var s = coldStepOf(), got = s ? COLD.got + coldOver(s, COLD.from, T) : 0;
+    if (!(got > 0)) return;
+    r.cold = Math.round(Math.min(s.secs, got));
     r.coldOf = s.secs;
   }
   // the end screen's tile: how long, and where your build-up stands now that this one is in the history

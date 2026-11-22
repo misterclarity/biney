@@ -1159,6 +1159,7 @@
       if (again !== true) { P.paceK = 1; P.beatAdj = 0; P.beatOff = false; }
       P.def = d;
       if (again !== true) P.ci = cont ? ciCarry() : d.stress ? null : ciTake("practice");     // how you were as it began: your check-in, or the end screen's before it (own.js)
+      if (again !== true && pMoodOwn(d)) P.ci = null;  // a practice that rates your mood itself has its own before and after
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
       P.xp = xpFor(d); xpApply();                      // a personal experiment's way of doing it this time (own.js)
       scnStart(d);                                     // and the scene it shows, if any (scenes.js)
@@ -1175,6 +1176,7 @@
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
       P.eeg = []; egLedReset();                        // the headband's record and Brain-Led Beats' rest (eeg.js)
       oxReset();                                       // the holds an oximeter ended (air.js)
+      coldReset();                                     // the seconds of cold, counted afresh (cold.js)
       pAdaptReset(); napReset(); scReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
@@ -1204,9 +1206,11 @@
       ambSync();
     };
     var begin = function () { if (d.audio && xpAudio(d, P.opt.audio)) gate(go, bmMode(pOptsOf(d.id).beatMode)); else go(); };    // on speakers there's no headphone check
-    // your check-in first, if you keep them (own.js): not on a restart, carrying on, or a Stress Check, which asks its own
-    if (again === true || cont || d.stress || !ciBefore("practice", d.name, function () { if (P.view === d) begin(); })) begin();
+    // your check-in first, if you keep them (own.js): not on a restart, carrying on, a Stress Check, which asks its own,
+    // or a practice that rates your mood itself before and after (Laughter Break, Dance Break, with their mood check on)
+    if (again === true || cont || d.stress || pMoodOwn(d) || !ciBefore("practice", d.name, function () { if (P.view === d) begin(); })) begin();
   }
+  function pMoodOwn(d) { return !!(d.rate && d.rate.what === "mood" && pChoice(d, "mood") !== "off"); }
   function pPause() {
     if (P.state !== "running") return;
     P.st = pT();
@@ -1248,6 +1252,7 @@
     }
     else target = ((T - P.steps[i].at > 3 && P.steps[i].k !== "write") || i === 0) ? P.steps[i].at : P.steps[i - 1].at;   // writing: back means the step before
     pHoldLeave(T);
+    coldJump(T, target);                               // the cold you stayed for, not the part skipped (cold.js)
     if (P.state === "running") P.t0 = bNow() - target; else P.st = target;
     pHush();
     // a jump into a different breath pattern restarts the guide so it doesn't wait for the breath to end

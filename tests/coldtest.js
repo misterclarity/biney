@@ -320,6 +320,26 @@ const HEALTH = on => JSON.stringify({ at: Date.now() - 1000, on: on });
       ok(stop.g === null && stop.st !== 'running' && stop.st !== 'paused' && stop.settle, 'I need to stop silences the cold\'s sounds at once and opens Settle');
       await p.click('#stlDone'); await p.waitForTimeout(200);
       await p.context().close();
+
+      // skipped on out of the cold after two seconds: those two seconds count, not the whole step, and the build-up stays put
+      p = await page({ health: HEALTH([]), 'pLen.cold-finish': '3' }, { unlock: true });
+      await go(p, 'practice/' + ID);
+      await p.click('#sIntro .so-ok input'); await p.click('#sGo'); await p.waitForTimeout(400);
+      await p.click('#sNext'); await p.waitForTimeout(150); await p.click('#sNext'); await p.waitForTimeout(150);
+      const at2 = await E(p, () => window.__entrain.P.steps.map(s => s.at));
+      await clock(p, at2[2] + 1.8); await p.waitForTimeout(150);
+      const inCold = (await run(p)).step;
+      await p.click('#sNext'); await p.waitForTimeout(250);
+      const after = (await run(p)).step;
+      await clock(p, at2[3] + 31.6); await p.waitForTimeout(900);
+      const sk = await E(p, () => { const X = window.__entrain, b = document.querySelector('#sDone .sd-t[data-ex="cold"]'), H = X.hLoad(), e = H[H.length - 1];
+        return { tile: b ? [...b.children].map(x => x.textContent).join(' | ') : '', cold: e && e.cold, note: e && e.note, n: X.coldLevel().n }; });
+      ok(inCold === 'Cold' && after === 'Warm up' && /^Cold \| [23] s \| of 15 s planned \| Build up: 15 seconds now, 0 of 3 done$/.test(sk.tile) && (sk.cold === 2 || sk.cold === 3) && sk.note === sk.cold + ' s of cold' && sk.n === 0,
+        'skipped on after two seconds in the cold, the end and the history keep those seconds, not the whole 15, and the build-up doesn\'t count it: ' + sk.tile + ' · ' + sk.note);
+      await p.click('#sDone .sd-t[data-ex="cold"]'); await p.waitForTimeout(200);
+      const ex2 = await t(p, '#sdEx');
+      ok(/You turned the water back after [23] of the 15 seconds planned/.test(ex2), 'and its explanation says so: ' + ex2.slice(0, 80));
+      await p.context().close();
     }
 
     /* E. after fast breathing; Morning Wake-Up's end; the routines */
