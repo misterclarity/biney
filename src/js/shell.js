@@ -270,6 +270,7 @@
       H.state === "on" || H.state === "busy" || H.state === "lost" ||         // a heart sensor, which would have to be paired again
       MIC.on || MIC.busy ||                                                   // the microphone listening for your breathing
       CAM.on || CAM.busy || MOT.belly ||                                      // the camera reading your pulse, the phone on your belly (camera.js, motion.js)
+      EG.state !== "off" || !!EG.chk ||                                       // an EEG headband, which would have to be paired again (eeg.js)
       FD.open || !$("#stlModal").hidden ||                                    // search, or settling after I need to stop
       (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
       (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together

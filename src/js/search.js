@@ -171,6 +171,9 @@
     out.push(fdEntry("heart", "Stillness", "Practices done lying down · from the motion sensor",
       ["With the phone resting on your belly or on the bed, the end screen of a practice done lying down shows how much of it you stayed still, and your longest still stretch."], "#l-phone",
       { ic: "moon", col: "var(--hr)", w: 0.9, tags: "still stillness restless restlessness movement motion fidget settle lying body scan yoga nidra nap", sup: true }));
+    out.push(fdEntry("heart", EG_NAME, "Heart · a Muse EEG headband, alpha and theta trends",
+      ["Connect a Muse headband and see whether your alpha and theta are rising or falling since your first minute, with an eyes-open, eyes-closed check."], "#eeg",
+      { ic: "brain", col: "var(--hr)", w: 1.05, alias: "EEG neurofeedback", tags: "eeg muse headband brain waves brainwaves alpha theta neurofeedback interaxon eyes closed calibration", sup: true }));
     out.push(fdEntry("heart", "Live heart data and coherence", "Heart · rate, swing, RMSSD, coherence",
       ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
       { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));

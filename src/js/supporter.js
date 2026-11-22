@@ -294,6 +294,7 @@
     camUI();                                                  // the Heart page's camera button (camera.js)
     motUI();                                                  // Phone on your belly and Stillness, and their cups (motion.js)
     ntUI();                                                   // the Restoration Break's links on the work pages (nature.js)
+    egUI();                                                   // the Heart page's headband button (eeg.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }

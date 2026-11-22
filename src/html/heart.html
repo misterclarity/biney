@@ -294,5 +294,50 @@
         </div>
       </div>
     </div>
+
+    <!-- an EEG headband's brain trends (eeg.js): beside the heart, after it, so the heart's boxes keep their order -->
+    <div class="hr-box eg" id="eeg" data-state="off">
+      <div class="hr-box-head"><b>Brain trends from a headband</b><span class="hint eg-hint" id="egHint">Experimental</span></div>
+      <p class="hr-find-txt eg-intro">A Muse EEG headband reads the brain's rhythms through four sensors, on the forehead and behind the ears. Entrain turns them into broad trends: whether your alpha and theta are rising or falling since your first minute, averaged over the last 25 seconds. A trend, never a verdict on your state, since a headband reads too roughly for that (<a href="#l-muse">how accurate one is</a>).</p>
+      <div class="eg-conn">
+        <span class="hr-pill eg-pill"><i></i><span id="egPillTxt">Not connected</span></span>
+        <button class="btn" id="egGo" type="button">{i:brain}<span id="egGoTxt">Connect a headband</span></button>
+      </div>
+      <p class="eg-msg" id="egMsg" role="status"></p>
+      <p class="eg-err" id="egErr" role="status" hidden></p>
+      <p class="eg-no" id="egNo" hidden>This browser can't reach Bluetooth devices: Safari and the other browsers on iPhone and iPad have no Web Bluetooth. The headband connects in Chrome or Edge on Android, a computer or a Chromebook.</p>
+      <div class="eg-on" id="egOn" hidden>
+        <ul class="eg-sens" id="egSens" aria-label="Each sensor's signal">
+          <li><i aria-hidden="true"></i><span>Left ear</span> <b id="egS0">…</b></li>
+          <li><i aria-hidden="true"></i><span>Left forehead</span> <b id="egS1">…</b></li>
+          <li><i aria-hidden="true"></i><span>Right forehead</span> <b id="egS2">…</b></li>
+          <li><i aria-hidden="true"></i><span>Right ear</span> <b id="egS3">…</b></li>
+        </ul>
+        <div class="eg-tiles">
+          <div class="hr-tile eg-t" data-w=""><div class="k">Alpha <small>8–12 Hz</small></div><div class="v" id="egA">…</div><div class="s" id="egAS">Waiting for a clean signal</div></div>
+          <div class="hr-tile eg-t" data-w=""><div class="k">Theta <small>4–8 Hz</small></div><div class="v" id="egT">…</div><div class="s" id="egTS">Waiting for a clean signal</div></div>
+        </div>
+        <div class="hr-chart sm eg-chart">
+          <canvas id="egChart" aria-hidden="true"></canvas>
+          <p class="hr-empty" id="egEmpty">Alpha (teal) and theta (amber) show here as shares of the signal, averaged over 25 seconds, with your first minute's levels dashed.</p>
+        </div>
+        <p class="mc-read" id="egRead" role="status"></p>
+        <div class="hr-find-foot">
+          <button class="btn" id="egCheck" type="button" aria-pressed="false"><span id="egCheckTxt">Eyes open, eyes closed</span></button>
+          <button class="btn link" id="egAgain" type="button">Start the trend again from now</button>
+        </div>
+        <p class="eg-cal-now" id="egCalNow" role="status" hidden></p>
+        <p class="eg-cal" id="egCalRes" role="status" hidden></p>
+      </div>
+      <details class="ev eg-what">
+        <summary>How it works, and what helps</summary>
+        <div class="ev-body">
+          <p>Each second, the page takes the last two seconds from each sensor, splits them into their rhythms and works out alpha's share (8 to 12&nbsp;Hz) and theta's (4 to 8&nbsp;Hz) of everything from 1 to 30&nbsp;Hz, then averages the sensors with a clean signal. A share rather than a size, so how well each sensor touches the skin matters less. The trend sets the last 25 seconds against your first minute of clean signal: a change of more than 15% either way reads as rising or falling, a smaller one as steady. Start the trend again from now makes the next minute the one to compare with.</p>
+          <p>Blinks, a frown, a tense jaw and movement all show up in a headband's signal, often far bigger than the brain's. So a stretch is left out when a sensor's signal swings more than 150&nbsp;µV from top to bottom, as a blink or a movement makes it, or carries more than 10&nbsp;µV of the fast 30 to 45&nbsp;Hz buzz a tense jaw makes, and a sensor swinging more than 500&nbsp;µV, or flat, is off the skin. A second counts when at least two sensors are clean. What helps: push your hair aside so the sensors behind the ears touch skin, sit the forehead sensors flat just above the eyebrows, dampen them a little if your skin is dry, and keep your jaw soft and your head still.</p>
+          <p>Eyes open, eyes closed is a one-minute check: half a minute with your eyes resting on one point, then half a minute with them closed, between bells. Closing the eyes raises alpha within seconds, one of the most reliable effects in EEG (<a href="#l-day">a typical day</a>), so a clear rise shows the headband is reading you, and how big a rise is yours: Brain-Led Beats then counts a rise that size as a full one. Alpha usually rises as you relax with your eyes closed, and theta as you drift towards sleep or sink into meditation, but brain waves follow what the brain is doing: a rise is a picture, not a score.</p>
+          <p>While a practice runs, its screen shows your alpha and theta trends beside the heart's numbers, and its end screen sets your first minute against your last two. <a href="#practice/brain-led">Brain-Led Beats</a> moves a binaural beat with them. Entrain reads the Muse 2, the Muse S and the 2016 Muse, as the open-source muse-js library does; newer models may send their readings in another format. Nothing is recorded or sent: the readings stay on this device, and only the shares of each second are kept, for this visit.</p>
+        </div>
+      </details>
+    </div>
       </section>
 

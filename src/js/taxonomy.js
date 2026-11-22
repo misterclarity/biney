@@ -28,7 +28,7 @@
       ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["meal", "program", "sit"], ["mindful-sex", "program", "lie sit"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
-      ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
+      ["heart-led", "program", "sit lie"], ["brain-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
       ["t:preop-calm", "sound", "lie"], ["om", "breath", "sit"], ["touch", "relax", "sit lie"], ["music-break", "sound", "sit lie"], ["imagery", "relax", "sit lie"], ["fireside", "relax", "sit lie"]],
     focus: [["focus-primer", "program", "sit"], ["creative", "program", "sit"], ["anapana", "meditate", "sit"], ["b:box", "breath", "sit"],
       ["x:prime", "sound", "sit"], ["t:deep-work", "sound", "sit"], ["t:sustained-24", "sound", "sit"],

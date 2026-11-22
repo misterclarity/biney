@@ -12,7 +12,7 @@
   var P = {
     def: null, view: null, len: 0, steps: [], total: 0, state: "idle",   // idle | intro | running | paused | done
     t0: 0, st: 0, idx: -1, li: 0, tick: 0, raf: 0,
-    hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null,
+    hr: [], coh: [], sw: [], eeg: [], wander: 0, taps: 0, usesB: false, saved: null,     // eeg: a headband's shares each second (eeg.js)
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
@@ -582,6 +582,7 @@
     if (s.k === "tap" || s.tapfig) return "tap";
     if (s.k === "rate") return "rate";
     if (s.k === "adapt") return "adapt";
+    if (s.k === "brain") return "brainled";         // Brain-Led Beats: the beat over your alpha and theta (eeg.js)
     if (s.k === "write") return "write";
     if (s.k === "nap") return "glow";
     if (s.k === "wake") return "orb";
@@ -683,6 +684,7 @@
     pRhythm(s, T);
     if (s.k === "tap") { pTapPoint(s, st); pTapTick(s, st); }
     else if (s.k === "adapt") pAdaptTick(s, st, T);
+    else if (s.k === "brain") egLedTick(s, st, T);     // the beat follows the headband (eeg.js)
     else if (s.k === "measure") scTick(s);
     else if (s.k === "nap") pNapTick(s, st, T);
     else if (s.k === "wake") pWakeTick(s, st);
@@ -877,6 +879,8 @@
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
         : AD.src === "script" ? "No heart data: a gentle scripted descent" : "";
+    } else if (s.k === "brain") {
+      sub = egLedSub(s, st);
     } else if (s.k === "measure") {
       sub = scCaption();
     } else if (s.k === "nap") {
@@ -906,6 +910,7 @@
     var live = hrLive(), tr = pTrack(), chips = [];
     if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
     if (live && H.coh) chips.push('<span class="lc coh">Coherence <b>' + H.coh.cs.toFixed(1) + "</b></span>");
+    chips = chips.concat(egChips());                 // a headband's alpha and theta trends (eeg.js)
     if (tr && A.playing) chips.push('<span class="lc beat">' + esc(tr.band) + " <b>" + beatAt(tr, A.elapsed).toFixed(1) + "</b> Hz</span>");
     else if (tr && P.audioOn && !A.playing && P.state === "running" && T < tr.minutes * 60 - (tr.fade || FADE_OUT)) chips.push('<span class="lc off">Sound paused</span>');   // not once the sound has ended as planned
     var h = chips.join("");
@@ -940,7 +945,7 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, brainled: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -950,7 +955,7 @@
     if (W && s) {
       var vis = pVis(s), now = bNow();
       if (!P_ANIM[vis]) { c.clearRect(0, 0, W, Hh); return; }   // nothing moves on the canvas (writing, a rating, the nap): rest until the next step
-      if (vis !== "adapt" || now - P.drawAt >= 0.25) {          // the heart-led chart changes every few seconds: four frames a second will do
+      if ((vis !== "adapt" && vis !== "brainled") || now - P.drawAt >= 0.25) {          // the heart-led and brain-led charts change every few seconds: four frames a second will do
         P.drawAt = now;
         c.clearRect(0, 0, W, Hh);
         var T = pT(), st = T - s.at, col = P.col[P.def.tone || "relax"] || BCOL["b-in"];
@@ -961,6 +966,7 @@
         else if (vis === "pump") pPump(c, W, Hh, s, st, col);
         else if (vis === "hold") pHold(c, W, Hh, s, st, col);
         else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
+        else if (vis === "brainled") egLedDraw(c, W, Hh, s, T, col);
         else if (vis === "beat") vxBeat(c, W, Hh, s, st, col);
         else if (vis === "sing") vxShow(s, st);
         else if (vis === "stroke") tcDraw(c, W, Hh, s, st, col);
@@ -1148,6 +1154,7 @@
       ntStart(plan.steps);                           // and a step's own nature sound ahead of its scene (nature.js)
       $("#ses").dataset.bare = "";
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
+      P.eeg = []; egLedReset();                        // the headband's record and Brain-Led Beats' rest (eeg.js)
       pAdaptReset(); napReset(); scReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
@@ -1288,12 +1295,13 @@
     if (P.holds.length) r.holds = P.holds.slice();
     if (P.suds.length) r.suds = P.suds.slice();
     var bl = AD.log.filter(function (x) { return x.src !== "base"; });
-    if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatLog = AD.log.slice(); }
+    if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatBrain = bl.some(function (x) { return x.src === "brain"; }); r.beatLog = AD.log.slice(); }
     if (P.bm && P.bm !== "binaural") r.bm = P.bm;     // its beat played monaural or isochronic (beatmode.js)
     napSummary(r, T);
     stressSummary(r, T);
     coldSummary(r, T);                                 // the seconds of cold you stayed for (cold.js)
     motStillSummary(r);                                // how still you stayed (motion.js)
+    egSummary(r, T);                                   // a headband's alpha and theta, first minute to last two (eeg.js)
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(nvcKindOf(d));
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -1306,7 +1314,8 @@
     if (r.wander !== undefined) notes.push("came back " + r.wander + (r.wander === 1 ? " time" : " times"));
     if (r.holds) notes.push("holds " + r.holds.map(fmt).join(", "));
     if (r.suds) notes.push((d.rate ? d.rate.what : "intensity") + " " + r.suds.join(" → ") + " of 10");
-    if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
+    if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart || r.beatBrain ? "" : " (scripted)"));
+    if (egNote(r)) notes.push(egNote(r));
     if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
     if (r.cold) notes.push(r.cold + " s of cold");
     if (r.still && !r.still.none) notes.push("still " + r.still.pct + "%");
@@ -1318,7 +1327,8 @@
     if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg, ib: r.ib, wh: d.id === "wim-hof" && ib ? ib : undefined,
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
-      bm: r.bm, cold: r.cold, still: r.still && !r.still.none ? r.still.pct : undefined, note: notes.join(", ") || undefined });
+      bm: r.bm, cold: r.cold, still: r.still && !r.still.none ? r.still.pct : undefined,
+      alpha: r.eeg && !r.eeg.none ? r.eeg.da : undefined, theta: r.eeg && !r.eeg.none ? r.eeg.dt : undefined, note: notes.join(", ") || undefined });
     return r;
   }
   /* ----- the session screen: intro ----- */

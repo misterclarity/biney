@@ -2106,6 +2106,41 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .so-l .sup-ic{background:none;padding:0;margin-left:6px;color:var(--stim);vertical-align:-2px}
   .so-l .sup-ic svg.i{width:13px;height:13px}
   @media (prefers-reduced-motion: reduce){ .cam-qbar i{transition:none} }
+  /* ---------- an EEG headband's brain trends (eeg.js), after the heart's boxes ---------- */
+  .eg{margin-top:14px;scroll-margin-top:84px}
+  .eg-hint{font-size:12px}
+  .eg[data-state="on"] .eg-intro{display:none}               /* connected: the page is about your trends; the explanation stays below */
+  .eg-conn{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .eg-conn .btn svg.i{color:var(--b-in)}
+  .eg[data-state="on"] .eg-pill i{background:var(--b-in)}
+  .eg[data-state="busy"] .eg-pill i,.eg[data-state="lost"] .eg-pill i{background:var(--b-hold)}
+  .eg-msg{margin:0;font-size:13px;color:var(--text-dim);line-height:1.5}
+  .eg-msg:empty{display:none}
+  .eg-err,.eg-no{margin:0;font-size:13px;color:var(--b-hold);line-height:1.5;max-width:72ch}
+  .eg-err[hidden],.eg-no[hidden],.eg-on[hidden],.eg-cal[hidden],.eg-cal-now[hidden]{display:none}
+  .eg-on{display:flex;flex-direction:column;gap:10px}
+  .eg-sens{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--text-dim)}
+  .eg-sens li{display:inline-flex;align-items:center;gap:6px;min-width:0}
+  .eg-sens li i{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex:none}
+  .eg-sens li b{font-weight:650;color:var(--text-faint)}
+  .eg-sens li[data-q="good"] i{background:var(--b-in)}
+  .eg-sens li[data-q="noisy"] i{background:var(--b-hold)}
+  .eg-sens li[data-q="off"] i{background:var(--danger)}
+  .eg-sens li[data-q="good"] b{color:var(--text)}
+  .eg-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .eg-tiles .hr-tile{background:var(--panel-2)}
+  .eg-t .k small{font-weight:600;margin-left:4px}
+  .hr-chart.eg-chart{height:130px}
+  .eg-cal-now{margin:0;font-size:14px;font-weight:700;color:var(--text)}
+  .eg-cal{margin:0;font-size:13.5px;color:var(--text-dim);line-height:1.5;max-width:72ch}
+  #egCheck[aria-pressed="true"]{border-color:color-mix(in srgb,var(--b-in) 45%,transparent)}
+  details.ev.eg-what{margin-top:2px}
+  .eg-what .ev-body{max-width:72ch}
+  .eg-what .ev-body p{margin:0 0 8px;line-height:1.55}
+  .eg-what .ev-body p:last-child{margin-bottom:0}
+  .lc.eg b{color:var(--b-in)}
+  [data-k="brain"]{--kc:var(--relax)}
+  .sd-chart.eg-sd canvas{cursor:default;height:150px}
 </style>
 </head>
 <body>
@@ -2122,6 +2157,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.2 3 5.5 13.5h5.8L10.4 21l8-10.6h-5.8z"/></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3.5 8.6A1.6 1.6 0 0 1 5.1 7h2.6l1.6-2.4h5.4L16.3 7h2.6a1.6 1.6 0 0 1 1.6 1.6v9.3a1.6 1.6 0 0 1-1.6 1.6H5.1a1.6 1.6 0 0 1-1.6-1.6z"/><circle cx="12" cy="12.9" r="3.5"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><path d="M4.5 14a7.5 7.5 0 0 1 15 0"/><path d="M3 14h3.2M17.8 14H21"/><path d="M6.5 19.5c1.4-2.4 2.4-2.4 3.7 0s2.3 2.4 3.6 0 2.3-2.4 3.7 0"/></symbol>
   <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2.5 12.5h4l2.2-5 4.2 10 2.4-5h6.2"/></symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
   <symbol id="i-install" viewBox="0 0 24 24"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M12 7.5v7M9.2 11.8 12 14.6l2.8-2.8"/></symbol>
@@ -3003,6 +3039,51 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         </div>
       </div>
     </div>
+
+    <!-- an EEG headband's brain trends (eeg.js): beside the heart, after it, so the heart's boxes keep their order -->
+    <div class="hr-box eg" id="eeg" data-state="off">
+      <div class="hr-box-head"><b>Brain trends from a headband</b><span class="hint eg-hint" id="egHint">Experimental</span></div>
+      <p class="hr-find-txt eg-intro">A Muse EEG headband reads the brain's rhythms through four sensors, on the forehead and behind the ears. Entrain turns them into broad trends: whether your alpha and theta are rising or falling since your first minute, averaged over the last 25 seconds. A trend, never a verdict on your state, since a headband reads too roughly for that (<a href="#l-muse">how accurate one is</a>).</p>
+      <div class="eg-conn">
+        <span class="hr-pill eg-pill"><i></i><span id="egPillTxt">Not connected</span></span>
+        <button class="btn" id="egGo" type="button"><svg class="i" aria-hidden="true"><use href="#i-brain"/></svg><span id="egGoTxt">Connect a headband</span></button>
+      </div>
+      <p class="eg-msg" id="egMsg" role="status"></p>
+      <p class="eg-err" id="egErr" role="status" hidden></p>
+      <p class="eg-no" id="egNo" hidden>This browser can't reach Bluetooth devices: Safari and the other browsers on iPhone and iPad have no Web Bluetooth. The headband connects in Chrome or Edge on Android, a computer or a Chromebook.</p>
+      <div class="eg-on" id="egOn" hidden>
+        <ul class="eg-sens" id="egSens" aria-label="Each sensor's signal">
+          <li><i aria-hidden="true"></i><span>Left ear</span> <b id="egS0">…</b></li>
+          <li><i aria-hidden="true"></i><span>Left forehead</span> <b id="egS1">…</b></li>
+          <li><i aria-hidden="true"></i><span>Right forehead</span> <b id="egS2">…</b></li>
+          <li><i aria-hidden="true"></i><span>Right ear</span> <b id="egS3">…</b></li>
+        </ul>
+        <div class="eg-tiles">
+          <div class="hr-tile eg-t" data-w=""><div class="k">Alpha <small>8–12 Hz</small></div><div class="v" id="egA">…</div><div class="s" id="egAS">Waiting for a clean signal</div></div>
+          <div class="hr-tile eg-t" data-w=""><div class="k">Theta <small>4–8 Hz</small></div><div class="v" id="egT">…</div><div class="s" id="egTS">Waiting for a clean signal</div></div>
+        </div>
+        <div class="hr-chart sm eg-chart">
+          <canvas id="egChart" aria-hidden="true"></canvas>
+          <p class="hr-empty" id="egEmpty">Alpha (teal) and theta (amber) show here as shares of the signal, averaged over 25 seconds, with your first minute's levels dashed.</p>
+        </div>
+        <p class="mc-read" id="egRead" role="status"></p>
+        <div class="hr-find-foot">
+          <button class="btn" id="egCheck" type="button" aria-pressed="false"><span id="egCheckTxt">Eyes open, eyes closed</span></button>
+          <button class="btn link" id="egAgain" type="button">Start the trend again from now</button>
+        </div>
+        <p class="eg-cal-now" id="egCalNow" role="status" hidden></p>
+        <p class="eg-cal" id="egCalRes" role="status" hidden></p>
+      </div>
+      <details class="ev eg-what">
+        <summary>How it works, and what helps</summary>
+        <div class="ev-body">
+          <p>Each second, the page takes the last two seconds from each sensor, splits them into their rhythms and works out alpha's share (8 to 12&nbsp;Hz) and theta's (4 to 8&nbsp;Hz) of everything from 1 to 30&nbsp;Hz, then averages the sensors with a clean signal. A share rather than a size, so how well each sensor touches the skin matters less. The trend sets the last 25 seconds against your first minute of clean signal: a change of more than 15% either way reads as rising or falling, a smaller one as steady. Start the trend again from now makes the next minute the one to compare with.</p>
+          <p>Blinks, a frown, a tense jaw and movement all show up in a headband's signal, often far bigger than the brain's. So a stretch is left out when a sensor's signal swings more than 150&nbsp;µV from top to bottom, as a blink or a movement makes it, or carries more than 10&nbsp;µV of the fast 30 to 45&nbsp;Hz buzz a tense jaw makes, and a sensor swinging more than 500&nbsp;µV, or flat, is off the skin. A second counts when at least two sensors are clean. What helps: push your hair aside so the sensors behind the ears touch skin, sit the forehead sensors flat just above the eyebrows, dampen them a little if your skin is dry, and keep your jaw soft and your head still.</p>
+          <p>Eyes open, eyes closed is a one-minute check: half a minute with your eyes resting on one point, then half a minute with them closed, between bells. Closing the eyes raises alpha within seconds, one of the most reliable effects in EEG (<a href="#l-day">a typical day</a>), so a clear rise shows the headband is reading you, and how big a rise is yours: Brain-Led Beats then counts a rise that size as a full one. Alpha usually rises as you relax with your eyes closed, and theta as you drift towards sleep or sink into meditation, but brain waves follow what the brain is doing: a rise is a picture, not a score.</p>
+          <p>While a practice runs, its screen shows your alpha and theta trends beside the heart's numbers, and its end screen sets your first minute against your last two. <a href="#practice/brain-led">Brain-Led Beats</a> moves a binaural beat with them. Entrain reads the Muse 2, the Muse S and the 2016 Muse, as the open-source muse-js library does; newer models may send their readings in another format. Nothing is recorded or sent: the readings stay on this device, and only the shares of each second are kept, for this visit.</p>
+        </div>
+      </details>
+    </div>
       </section>
 
       <!-- ============ LEARN ============ -->
@@ -3131,6 +3212,16 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               &ldquo;more relaxed than a minute ago&rdquo; or &ldquo;alpha is rising&rdquo;, but not for &ldquo;you are in theta
               now&rdquo;: a smoothed, averaged trend says more than any one reading.
             </p>
+            <p id="l-eeg">
+              <b>Brain trends in Entrain.</b> That is how Entrain reads a Muse: <a href="#eeg">Brain trends</a>, on the Heart
+              page, shows whether alpha's and theta's shares of the headband's signal, averaged over the last 25 seconds, are
+              rising or falling since your first minute, and leaves out the seconds a blink, a tense jaw or a movement spoils.
+              Its eyes-open, eyes-closed check uses the most reliable effect of all, alpha rising when the eyes close
+              (<a href="#l-day">a typical day</a>), to show whether the headband is reading you. Neurofeedback itself, seeing or
+              hearing your own brain activity and learning to shift it, has moderate evidence: the research is mixed but
+              promising. <a href="#practice/brain-led">Brain-Led Beats</a> tries it with sound, a beat that follows your alpha
+              and theta, by a rule of Entrain's own that hasn't been tested, so it's marked experimental.
+            </p>
 
             <h3 id="l-glance">Techniques at a glance</h3>
             <p>
@@ -3215,7 +3306,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Feedback</th></tr>
-                <tr class="ln-row"><th scope="row"><b>EEG headband neurofeedback</b> <small>Trains any target state</small></th><td>Moderate (the devices' accuracy limits it)</td><td class="ln-lo">Learn only: <a href="#l-muse">how accurate a headband is</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>EEG headband neurofeedback</b> <small>Trains any target state</small></th><td>Moderate (the devices' accuracy limits it)</td><td><a href="#eeg">Brain trends</a> on Heart, <a href="#practice/brain-led">Brain-Led Beats</a>, and <a href="#l-muse">how accurate a headband is</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Heart coherence sensor</b> <small>Calm, coherence</small></th><td>Moderate (useful feedback; slow pacing itself not proven beyond placebo)</td><td><a href="#heart">Heart</a>, <a href="#practice/coherence">Heart Coherence</a></td></tr>
               </tbody>
             </table>
@@ -4236,7 +4327,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <tr><th scope="row"><b>Skin conductance</b></th><td>Moment-to-moment stress and arousal. Sensitive, but consumer devices are less reliable: a Fitbit Charge 5 agreed only moderately at best with a research device (Ko et al., 2025)</td><td class="ln-lo">A web page can't read it</td></tr>
                 <tr><th scope="row"><b>Blood oxygen</b></th><td>A rough safety signal during breath holds. A wrist reading is less accurate than a fingertip oximeter</td><td class="ln-lo">Not measured</td></tr>
                 <tr><th scope="row"><b>Movement, stillness</b></th><td>Settling down, restlessness, sleep</td><td><a href="#l-phone">Stillness</a>, on the end screen of practices done lying down</td></tr>
-                <tr><th scope="row"><b>EEG</b></th><td>Broad brain-wave trends only, as <a href="#l-muse">measuring at home</a> explains</td><td class="ln-lo">Not measured</td></tr>
+                <tr><th scope="row"><b>EEG</b></th><td>Broad brain-wave trends only, as <a href="#l-muse">measuring at home</a> explains</td><td><a href="#eeg">Brain trends</a> on Heart, from a Muse headband</td></tr>
                 <tr><th scope="row"><b>How you feel</b></th><td>What you actually feel, the main measure in most stress research</td><td><a href="#practice/stress-check">Stress Check</a>, which asks first</td></tr>
               </tbody>
             </table>
@@ -11474,6 +11565,678 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       X.MOT = MOT; X.motRate = motRate; X.motMoving = motMoving; X.motStillFits = motStillFits; X.motVerdict = motVerdict;
     }
   }
+  /* ------------------------- brain trends from a Muse headband -------------------------
+     A Muse EEG headband (the Muse 2, the Muse S, the 2016 Muse) sends its four sensors' readings over
+     Bluetooth: TP9 and TP10 behind the ears, AF7 and AF8 on the forehead, 256 samples a second each, in
+     packets of twelve (12-bit values, 0.48828125 µV a step), as the open-source muse-js reads them. Only
+     Chrome and Edge on Android and computers offer Bluetooth to a web page: no browser on iPhone does.
+
+     Each second, the last two seconds from each sensor are split into their rhythms (a Hann window and
+     the power in each half-hertz from 1 to 45 Hz), and alpha's share (8 to 12 Hz) and theta's (4 to 8 Hz)
+     of everything from 1 to 30 Hz is taken; the sensors with a clean signal are averaged. A share rather
+     than a size, so how well each sensor touches the skin matters less. A stretch is left out when it
+     swings more than 150 µV from top to bottom (a blink, a frown, a movement) or carries the fast buzz of a
+     tense jaw (more than 10 µV between 30 and 45 Hz); a sensor swinging more than 500 µV, or flat, is off
+     the skin. A second counts when at least two sensors are clean.
+
+     What it shows is a trend, never a state (Learn's "Measuring at home": a headband suits "alpha is
+     rising", not "you are in theta"): the shares averaged over the last 25 seconds against your first
+     minute of clean signal, rising or falling when they differ by more than 15%, steady otherwise. On the
+     Heart page, beside a session's other numbers while a practice runs (P.eeg), and on its end screen.
+     The eyes-open, eyes-closed check is the calibration: closing the eyes raises alpha within seconds, so
+     a clear rise shows the headband is reading you, and how big a rise is yours (store "egCal").
+     Brain-Led Beats (practice-data.js) moves a live beat with it, like Heart-Led Beats; its rule is
+     Entrain's own. A new technique: connecting opens with a donation while this device is locked.
+  ---------------------------------------------------------------------------------------- */
+  var EG_NAME = "Brain trends from a headband";
+  var EG_SVC = 0xfe8d;                                       // Interaxon's service (muse-js: MUSE_SERVICE)
+  var EG_CH = ["03", "04", "05", "06"];                       // the EEG characteristics: TP9, AF7, AF8, TP10
+  var EG_SITE = ["Left ear", "Left forehead", "Right forehead", "Right ear"];
+  var EG_FS = 256, EG_WIN = 512, EG_KEEP = 2048;              // samples a second; a two-second window; eight seconds kept
+  var EG_PP = 150, EG_OFF = 500, EG_EMG = 10, EG_FLAT = 0.5;  // µV: a blink or movement, off the skin, a tense jaw, flat
+  var EG_SMOOTH = 25, EG_MIN = 12, EG_REF = 60, EG_REFN = 20, EG_TREND = 0.15;
+  var EG_STEPS = {
+    link: ["linking up", 15000], service: ["finding its EEG", 15000], chars: ["finding its four sensors", 15000],
+    notify: ["asking for its readings", 15000], start: ["starting the EEG stream", 10000], data: ["waiting for the first readings", 8000]
+  };
+  var EG_TRIES = 3;
+  /* state: off | busy | on | lost. Per sensor, the samples of the last eight seconds by their number (ring)
+     and which number each slot holds (at); sec: one entry a second {t (bNow), ok, n clean sensors, a, th, st};
+     sm: the 25-second averages, for the chart; t0: where the first minute starts (connecting, or Start again);
+     q: each sensor's last state; cal: the last eyes check; chk: one running; led: Brain-Led Beats' baseline. */
+  var EG = {
+    state: "off", dev: null, name: "", gen: 0, wantOn: false, tries: 0, step: "", err: "", said: "", msgTxt: "",
+    ctl: null, chars: [], tele: null, hand: null, firstWait: null,
+    ring: [], at: [], last: [], seq: [], base: [], next: 0, s0: -1,
+    sec: [], sm: [], t0: 0, lastAt: 0, q: ["", "", "", ""], batt: null, drawAt: 0,
+    cal: null, chk: null, led: { base: null, calm: 0, pts: [], asked: false }
+  };
+  var EG_TAB = null;
+
+  /* ----- the signal ----- */
+  function egUuid(n) { return "273e00" + n + "-4c4d-454d-96be-f03bac821358"; }
+  // a command to the headband, as muse-js writes it: its length, then "X", the command and a new line
+  function egCmd(cmd) {
+    var s = "X" + cmd + "\n", b = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i);
+    b[0] = b.length - 1;
+    return b;
+  }
+  // one sensor's packet: its number (two bytes) and twelve 12-bit samples, in µV around zero
+  function egDecode(dv) {
+    var out = [];
+    for (var i = 2; i + 2 < dv.byteLength && out.length < 12; i += 3) {
+      var a = dv.getUint8(i), b = dv.getUint8(i + 1), c = dv.getUint8(i + 2);
+      out.push(0.48828125 * (((a << 4) | (b >> 4)) - 0x800), 0.48828125 * ((((b & 15) << 8) | c) - 0x800));
+    }
+    return { idx: dv.getUint16(0), s: out };
+  }
+  function egTab() {
+    if (EG_TAB) return EG_TAB;
+    var n = EG_WIN, c = new Float64Array(n), s = new Float64Array(n), w = new Float64Array(n), ww = 0;
+    for (var i = 0; i < n; i++) {
+      c[i] = Math.cos(2 * Math.PI * i / n); s[i] = Math.sin(2 * Math.PI * i / n);
+      w[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / n); ww += w[i] * w[i];
+    }
+    return (EG_TAB = { c: c, s: s, w: w, ww: ww });
+  }
+  /* Two seconds of one sensor (512 samples), its straight-line drift taken away: how far it swings, its
+     spread, the fast 30-45 Hz buzz of a tense jaw, and alpha's and theta's shares of the power from 1 to 30 Hz. */
+  function egBands(x) {
+    var T = egTab(), n = EG_WIN, y = sigDetrend(x), lo = Infinity, hi = -Infinity, ss = 0, i, k;
+    var yw = new Float64Array(n);
+    for (i = 0; i < n; i++) { if (y[i] < lo) lo = y[i]; if (y[i] > hi) hi = y[i]; ss += y[i] * y[i]; yw[i] = y[i] * T.w[i]; }
+    var tot = 0, al = 0, th = 0, emg = 0;
+    for (k = 2; k <= 90; k++) {                              // bin k is k/2 Hz: 1 to 45 Hz
+      var re = 0, im = 0, m = 0;
+      for (i = 0; i < n; i++) { re += yw[i] * T.c[m]; im -= yw[i] * T.s[m]; m += k; if (m >= n) m -= n; }
+      var p = re * re + im * im, f = k / 2;
+      if (f <= 30) tot += p;
+      if (f >= 4 && f < 8) th += p;
+      else if (f >= 8 && f <= 12) al += p;
+      if (f > 30) emg += p;
+    }
+    return { pp: hi - lo, sd: Math.sqrt(ss / n), emg: Math.sqrt(2 * emg / (n * T.ww)), a: tot ? al / tot : 0, th: tot ? th / tot : 0 };
+  }
+  // good, noisy (a blink, a movement, a tense jaw) or off (no contact)
+  function egState(r) { return r.pp > EG_OFF || r.sd < EG_FLAT ? "off" : r.pp > EG_PP || r.emg > EG_EMG ? "noisy" : "good"; }
+
+  /* ----- trends: the last 25 seconds against your first minute ----- */
+  // the clean seconds' mean shares from `from` (exclusive) to `to`
+  function egMean(list, from, to) {
+    var a = 0, th = 0, n = 0;
+    for (var i = list.length - 1; i >= 0; i--) {
+      var x = list[i];
+      if (x.t <= from) break;
+      if (x.t <= to && x.ok) { a += x.a; th += x.th; n++; }
+    }
+    return n ? { a: a / n, th: th / n, n: n } : null;
+  }
+  function egNow(list, now) { var m = egMean(list, now - EG_SMOOTH, now); return m && m.n >= EG_MIN ? m : null; }
+  /* The first minute of clean signal from t0: the clean seconds in the minute from the first one, once
+     that minute is over, or the first twenty clean seconds if the minute had fewer. */
+  function egRef(list, t0, now) {
+    var c = [];
+    for (var i = 0; i < list.length && c.length < 60; i++) if (list[i].ok && list[i].t >= t0) c.push(list[i]);
+    if (c.length < EG_REFN) return null;
+    var end = c[0].t + EG_REF;
+    if (now < end && c.length < 60) return null;
+    var m = c.filter(function (x) { return x.t < end; });
+    if (m.length < EG_REFN) m = c.slice(0, EG_REFN);
+    return { a: avg(m.map(function (x) { return x.a; })), th: avg(m.map(function (x) { return x.th; })), n: m.length };
+  }
+  function egDelta(ref, cur) { return { a: cur.a / ref.a - 1, th: cur.th / ref.th - 1 }; }
+  function egWord(d) { return d >= EG_TREND ? "rising" : d <= -EG_TREND ? "falling" : "steady"; }
+  function egPct(d) { var v = Math.round(d * 100); return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v) + "%"; }
+  function egCap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  /* ----- connecting ----- */
+  function egSupported() { return !!(navigator.bluetooth && navigator.bluetooth.requestDevice); }
+  function egScale() { return window.__egScale || 1; }        // the tests run the deadlines faster
+  function egErr(name, step, msg) { var e = new Error(msg || name); e.name = name; e.step = step; return e; }
+  function egGo() {
+    if (EG.state === "busy") { egCancel(); return; }
+    if (EG.state === "on" || EG.state === "lost") { egDisconnect(); return; }
+    if (!egSupported()) { egUI(); return; }
+    // the chooser needs this tap: unlocked, it opens now; unlocked in the dialog, its button's tap opens it
+    supGate(EG_NAME, egConnect, function (ok) { if (ok && EG.state === "off") egConnect(); else egUI(); });
+  }
+  function egConnect() {
+    if (!egSupported() || EG.state !== "off") return;
+    EG.err = ""; EG.said = "";
+    var gen = ++EG.gen, req;
+    egSet("busy");
+    egMsg("Choose your headband…");
+    try {
+      req = navigator.bluetooth.requestDevice({ filters: [{ services: [EG_SVC] }, { namePrefix: "Muse" }], optionalServices: [EG_SVC] });
+    } catch (e) { egFail(egErr(e.name || "Error", "choose", e.message), gen); return; }
+    req.then(function (dev) {
+      if (gen !== EG.gen) return;
+      if (EG.dev && EG.dev !== dev) EG.dev.removeEventListener("gattserverdisconnected", egLost);
+      EG.dev = dev; EG.name = dev.name || "Muse headband"; EG.wantOn = true; EG.tries = 0;
+      EG.sec = []; EG.sm = []; EG.t0 = 0;
+      dev.removeEventListener("gattserverdisconnected", egLost);
+      dev.addEventListener("gattserverdisconnected", egLost);
+      egAttach();
+    }, function (e) { egFail(egErr((e && e.name) || "Error", "choose", e && e.message), gen); });
+  }
+  // one step with its deadline; whatever it does after the deadline is ignored
+  function egStep(p, k) {
+    EG.step = k;
+    egMsg("Connecting to " + EG.name + ": " + EG_STEPS[k][0] + (EG.tries > 0 ? ", try " + (EG.tries + 1) + " of " + EG_TRIES : "") + "…");
+    return new Promise(function (ok, no) {
+      var over = false, t = setTimeout(function () { over = true; no(egErr("TimeoutError", k)); }, EG_STEPS[k][1] * egScale());
+      p.then(function (v) { clearTimeout(t); if (!over) ok(v); }, function (e) { clearTimeout(t); if (!over) no(egErr((e && e.name) || "Error", k)); });
+    });
+  }
+  /* Link up, find the service, its control and four EEG characteristics, ask for their readings, then
+     start the stream as muse-js does (halt, preset p21: EEG without the extra channel, status, go) and wait
+     for the first packet. The battery comes along if the headband has its telemetry. */
+  function egAttach() {
+    var gen = ++EG.gen, dev = EG.dev, svc = null;
+    var chk = function (v) { if (gen !== EG.gen || !EG.wantOn) throw egErr("AbortError", EG.step); return v; };
+    if (EG.state !== "lost") egSet("busy");
+    egBufs();
+    egStep(dev.gatt.connect(), "link").then(chk)
+      .then(function (srv) { return egStep(srv.getPrimaryService(EG_SVC), "service"); }).then(chk)
+      .then(function (s) {
+        svc = s;
+        var got = [];
+        // one request at a time, as muse-js makes them: a browser can turn down a Bluetooth request while another is under way
+        return egStep(egSeq([egUuid("01")].concat(EG_CH.map(egUuid)), function (u) { return s.getCharacteristic(u).then(function (c) { got.push(c); }); })
+          .then(function () { return got; }), "chars");
+      }).then(chk)
+      .then(function (cs) {
+        egUnhook();
+        EG.ctl = cs[0]; EG.chars = cs.slice(1);
+        EG.chars.forEach(function (c, i) { c.addEventListener("characteristicvaluechanged", EG.hand[i]); });
+        return egStep(egSeq([EG.ctl].concat(EG.chars), function (c) { return c.startNotifications(); }), "notify");
+      }).then(chk)
+      .then(function () {                                  // the battery, if the headband sends it: three seconds at most, and none is fine
+        var tele = svc.getCharacteristic(egUuid("0b")).then(function (c) {
+          if (gen !== EG.gen) return;
+          EG.tele = c; c.addEventListener("characteristicvaluechanged", egTele);
+          return c.startNotifications();
+        }).catch(function () {});
+        return Promise.race([tele, new Promise(function (r) { setTimeout(r, 3000 * egScale()); })]);
+      }).then(chk)
+      .then(function () {
+        var first = new Promise(function (r) { EG.firstWait = r; });
+        return egStep(egSeq(["h", "p21", "s", "d"], function (c) { return EG.ctl.writeValue(egCmd(c)); }), "start")
+          .then(chk).then(function () { return egStep(first, "data"); });
+      }).then(chk)
+      .then(function () {
+        EG.tries = 0; EG.err = ""; EG.said = "";
+        if (!EG.t0) EG.t0 = bNow();
+        egMsg("");
+        egSet("on");
+      })
+      .catch(function (e) {
+        if (gen !== EG.gen || e.name === "AbortError") return;
+        if (EG.state === "lost" && EG.tries < EG_TRIES && e.name !== "NotFoundError") { egRetry(); return; }
+        egFail(e, gen);
+      });
+  }
+  // f on each of a list in turn, each once the last has finished
+  function egSeq(list, f) { return list.reduce(function (p, x) { return p.then(function () { return f(x); }); }, Promise.resolve()); }
+  function egRetry() {
+    EG.tries++;
+    try { EG.dev.gatt.disconnect(); } catch (x) {}
+    var gen = EG.gen;
+    setTimeout(function () { if (gen === EG.gen && EG.wantOn) egAttach(); }, 1500 * EG.tries * egScale());
+  }
+  function egLost() {
+    if (!EG.wantOn || EG.state !== "on") return;            // still connecting: that try fails by itself
+    egChkEnd("lost");
+    egSet("lost");
+    egMsg("The headband dropped out. Reconnecting…");
+    egRetry();
+  }
+  function egUnhook() {
+    EG.chars.forEach(function (c, i) { try { c.removeEventListener("characteristicvaluechanged", EG.hand[i]); } catch (e) {} });
+    if (EG.tele) { try { EG.tele.removeEventListener("characteristicvaluechanged", egTele); } catch (e) {} }
+    EG.chars = []; EG.tele = null;
+  }
+  function egCancel() {
+    EG.wantOn = false; EG.gen++; EG.firstWait = null;
+    try { if (EG.dev) EG.dev.gatt.disconnect(); } catch (e) {}
+    egUnhook();
+    egMsg("");
+    egSet("off");
+  }
+  function egDisconnect() {
+    EG.wantOn = false; EG.gen++; EG.firstWait = null;
+    egChkEnd("");
+    try { if (EG.ctl && EG.dev && EG.dev.gatt.connected) EG.ctl.writeValue(egCmd("h")).catch(function () {}); } catch (e) {}   // halt the stream
+    try { if (EG.dev) EG.dev.gatt.disconnect(); } catch (e) {}
+    egUnhook();
+    EG.ctl = null; EG.batt = null;
+    egMsg("");
+    egSet("off");
+  }
+  function egFail(e, gen) {
+    if (gen !== undefined && gen !== EG.gen) return;
+    var n = e.name, k = e.step, embedded = false;
+    try { embedded = window.self !== window.top; } catch (x) { embedded = true; }
+    EG.wantOn = false; EG.firstWait = null;
+    try { if (EG.dev && k !== "choose") EG.dev.gatt.disconnect(); } catch (x) {}
+    egUnhook();
+    EG.err = k === "choose" ? (n === "NotFoundError" && /adapter|not available/i.test(e.message || "") ? "Bluetooth is off or unavailable on this device: switch it on, then press Connect a headband again."
+        : n === "NotFoundError" ? "No headband was chosen. Switch the Muse on, keep it close, and press Connect a headband again."
+        : n === "SecurityError" ? (embedded ? "This copy sits inside another page, such as a preview, which blocks Bluetooth. Open Entrain at its own web address to connect."
+          : "The browser wants a fresh tap before it shows its list: press Connect a headband again.")
+        : "Bluetooth isn't available: check that it's switched on, and that the browser is allowed to use it (the browser said " + n + ").")
+      : k === "service" && n === "NotFoundError" ? "This device has no Muse EEG service, so it isn't a headband Entrain can read. It reads the Muse 2, the Muse S and the 2016 Muse."
+      : k === "data" ? "The headband connected but sent no EEG readings. Newer models may send them in a format Entrain can't read yet; the Muse 2, the Muse S and the 2016 Muse are the ones it reads."
+      : EG.state === "lost" ? "The headband dropped out and didn't come back. Switch it off and on, and press Connect a headband again."
+      : (n === "TimeoutError" || n === "NetworkError") && EG_STEPS[k] ? "The headband didn't answer while " + EG_STEPS[k][0] + ". Switch it off and on again, and close the Muse app on any phone nearby, since it can hold on to the headband; then press Connect a headband."
+      : "The connection didn't work (the browser said " + n + " while " + (EG_STEPS[k] ? EG_STEPS[k][0] : "connecting") + "). Switch the headband off and on, and try again.";
+    egMsg("");
+    egSet("off");
+  }
+  function egTele(e) {
+    try { var v = e.target.value; EG.batt = Math.round(Math.max(0, Math.min(100, v.getUint16(2) / 512))); } catch (x) {}
+  }
+
+  /* ----- the readings ----- */
+  function egBufs() {
+    EG.ring = []; EG.at = []; EG.last = []; EG.seq = []; EG.base = [];
+    for (var c = 0; c < 4; c++) {
+      EG.ring.push(new Float64Array(EG_KEEP));
+      var a = new Float64Array(EG_KEEP); a.fill(-1); EG.at.push(a);
+      EG.last.push(-1); EG.seq.push(-1); EG.base.push(0);
+    }
+    EG.next = 0; EG.s0 = -1;
+  }
+  function egOnData(ch, dv) {
+    if (!dv || dv.byteLength < 20 || !EG.ring.length) return;
+    var d = egDecode(dv), last = EG.seq[ch];
+    if (last >= 0 && d.idx < last && last - d.idx > 32768) EG.base[ch] += 65536;     // the packet number wrapped round
+    EG.seq[ch] = d.idx;
+    var abs0 = (EG.base[ch] + d.idx) * 12;
+    for (var j = 0; j < d.s.length; j++) { var k = abs0 + j, pos = k % EG_KEEP; EG.ring[ch][pos] = d.s[j]; EG.at[ch][pos] = k; }
+    if (abs0 + d.s.length - 1 > EG.last[ch]) EG.last[ch] = abs0 + d.s.length - 1;
+    if (EG.s0 < 0) { EG.s0 = abs0; EG.next = abs0 + EG_WIN; }
+    EG.lastAt = bNow();
+    if (EG.firstWait) { var f = EG.firstWait; EG.firstWait = null; f(); }
+    egPump();
+  }
+  // a window each second of signal, once every sensor has sent it (or a second late, without the one that hasn't)
+  function egPump() {
+    var hi = Math.max.apply(null, EG.last), lo = Math.min.apply(null, EG.last);
+    if (hi - EG.next > EG_KEEP - EG_WIN) EG.next += Math.floor((hi - EG.next) / EG_FS) * EG_FS - EG_FS;   // a long gap: catch up
+    while (EG.next - 1 <= hi) {
+      if (lo < EG.next - 1 && hi < EG.next - 1 + EG_FS) break;
+      egSecond(EG.next);
+      EG.next += EG_FS;
+    }
+  }
+  // one sensor's two seconds ending before sample B, a few missing samples held at the last value; too many: null
+  function egWin(ch, B) {
+    var out = new Float64Array(EG_WIN), miss = 0, ring = EG.ring[ch], at = EG.at[ch], prev = null, i, k;
+    for (i = 0; i < EG_WIN; i++) { k = B - EG_WIN + i; if (at[k % EG_KEEP] === k) { prev = ring[k % EG_KEEP]; break; } }
+    for (i = 0; i < EG_WIN; i++) {
+      k = B - EG_WIN + i;
+      var pos = k % EG_KEEP;
+      if (at[pos] === k) prev = ring[pos]; else miss++;
+      out[i] = prev === null ? 0 : prev;
+    }
+    return miss > EG_WIN * 0.05 ? null : out;
+  }
+  function egSecond(B) {
+    var st = [], good = [];
+    for (var ch = 0; ch < 4; ch++) {
+      var w = egWin(ch, B);
+      if (!w) { st.push("off"); continue; }
+      var r = egBands(w), s = egState(r);
+      st.push(s);
+      if (s === "good") good.push(r);
+    }
+    var now = bNow(), x = { t: now, ok: good.length >= 2, n: good.length, st: st };
+    if (x.ok) { x.a = avg(good.map(function (r) { return r.a; })); x.th = avg(good.map(function (r) { return r.th; })); }
+    EG.q = st;
+    EG.sec.push(x);
+    if (EG.sec.length > 1200) EG.sec.splice(0, EG.sec.length - 900);
+    var sm = egNow(EG.sec, now);
+    if (sm) { EG.sm.push({ t: now, a: sm.a, th: sm.th }); if (EG.sm.length > 1200) EG.sm.splice(0, EG.sm.length - 900); }
+    if (P.state === "running") P.eeg.push({ t: pT(), ok: x.ok, a: x.a, th: x.th });      // the practice's own record
+    egChkSecond(x);
+    egUI();
+  }
+  function egLive() { return EG.state === "on" && bNow() - EG.lastAt < 3; }
+
+  /* ----- the eyes-open, eyes-closed check ----- */
+  // half a minute each way; the first five seconds of each are left out while alpha settles
+  var EG_CHK = 30, EG_SETTLE = 5;
+  function egChkGo() {
+    if (EG.chk) { egChkEnd("cancel"); return; }
+    if (EG.state !== "on") return;
+    pBusOn();                                                // the bells, from this tap
+    EG.chk = { t0: bNow(), phase: "open", open: [], closed: [], timer: setInterval(egChkTick, 200) };
+    egCalSay("");
+    egSay("Keep your eyes open, resting on one point.");
+    egUI();
+  }
+  function egChkTick() {
+    var c = EG.chk;
+    if (!c) return;
+    var el = bNow() - c.t0;
+    if (c.phase === "open" && el >= EG_CHK) {
+      c.phase = "closed";
+      pBell(0.5, 0, 392, null, true);
+      egSay("Close your eyes, and keep them closed until the two bells.");
+    } else if (c.phase === "closed" && el >= 2 * EG_CHK) {
+      if (A.ctx) { pBell(0.5, 0, 523.25, null, true); pBell(0.5, A.ctx.currentTime + 0.6, 523.25, null, true); }
+      egSay("Open your eyes.");
+      egChkEnd("done");
+      return;
+    }
+    egUI();
+  }
+  function egChkSecond(x) {
+    var c = EG.chk;
+    if (!c || !x.ok) return;
+    var el = x.t - c.t0;
+    if (c.phase === "open" && el >= EG_SETTLE && el < EG_CHK) c.open.push(x.a);
+    else if (c.phase === "closed" && el >= EG_CHK + EG_SETTLE) c.closed.push(x.a);
+  }
+  function egChkEnd(how) {
+    var c = EG.chk;
+    if (!c) return;
+    clearInterval(c.timer);
+    EG.chk = null;
+    if (how === "done") {
+      var r = egCalOf(c.open, c.closed);
+      if (r.ok) { EG.cal = { at: Date.now(), open: r.open, closed: r.closed, rise: r.rise, n: [c.open.length, c.closed.length] }; store.set("egCal", JSON.stringify(EG.cal)); }
+      egCalSay(egCalTxt(r));
+    } else if (how === "lost") egCalSay("The check stopped: the headband dropped out.");
+    else egCalSay("");
+    egUI();
+  }
+  // the result of a check: alpha's share with the eyes open and closed, and the rise; ten clean seconds each way at least
+  function egCalOf(open, closed) {
+    if (open.length < 10 || closed.length < 10) return { ok: false, no: open.length, nc: closed.length };
+    var o = avg(open), c = avg(closed);
+    return { ok: true, open: o, closed: c, rise: c / o - 1 };
+  }
+  function egCalTxt(r) {
+    var fit = "Push your hair aside so the sensors behind the ears touch skin, sit the forehead sensors flat just above the eyebrows, dampen them a little if your skin is dry, and keep your jaw soft and your head still.";
+    if (!r.ok) return "Too few clean seconds to compare (" + r.no + " with your eyes open, " + r.nc + " closed, of the 25 each way that count): blinks, a tense jaw or a loose sensor spoilt the rest. " + fit + " Then try again.";
+    if (r.rise >= 0.2) return "Alpha rose by " + Math.round(r.rise * 100) + "% with your eyes closed, as it should: the headband is picking up your alpha. Brain-Led Beats now counts a rise like this as a full one.";
+    if (r.rise >= 0.05) return "Alpha rose a little, by " + Math.round(r.rise * 100) + "%, with your eyes closed. That can be your own pattern, or a loose fit. " + fit;
+    return "Alpha didn't rise with your eyes closed (" + egPct(r.rise) + "). It usually does, within seconds, so the headband may not be reading you well. " + fit + " Then try again.";
+  }
+  function egCalSay(s) { EG.said = s; bSetT("#egCalRes", s); $("#egCalRes").hidden = !s; }
+  function egSay(text) {
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+    try {
+      var u = new SpeechSynthesisUtterance(text), v = pVoice();
+      if (v) { u.voice = v; u.lang = v.lang; } else u.lang = "en-GB";
+      u.rate = 0.9;
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  // how far a rise counts as a full one for Brain-Led Beats: the check's own rise, if it found one, else 30%
+  function egSpan() { var c = EG.cal; return c && c.rise >= 0.1 ? Math.max(0.15, Math.min(0.6, c.rise)) : 0.3; }
+
+  /* ----- a practice: live chips, the record, the end screen ----- */
+  function egChips() {
+    if (EG.state !== "on" || !P.eeg) return [];
+    var T = pT(), ref = egRef(P.eeg, 0, T), cur = egNow(P.eeg, T);
+    if (!ref) return ['<span class="lc eg">Headband <b>first minute</b></span>'];
+    if (!cur) return ['<span class="lc off">Headband signal noisy</span>'];
+    var d = egDelta(ref, cur);
+    return ['<span class="lc eg">Alpha <b>' + egWord(d.a) + "</b></span>", '<span class="lc eg">Theta <b>' + egWord(d.th) + "</b></span>"];
+  }
+  /* What the session's headband data says: the first minute of clean signal against the last two minutes,
+     the share of seconds left out, and the 25-second averages every five seconds, for the chart. */
+  function egSummary(r, T) {
+    var L = (P.eeg || []).filter(function (x) { return x.t <= T; });
+    if (L.length < 10) return;
+    var span = L[L.length - 1].t - L[0].t, ok = L.filter(function (x) { return x.ok; }).length, clean = Math.round(100 * ok / L.length);
+    if (span < 150) { r.eeg = { none: true, short: true, clean: clean }; return; }
+    var ref = egRef(L, 0, T), tEnd = L[L.length - 1].t, end = egMean(L, tEnd - 120, tEnd);
+    if (!ref || !end || end.n < 30) { r.eeg = { none: true, clean: clean }; return; }
+    var pts = [];
+    for (var t = L[0].t + EG_SMOOTH; t <= tEnd + 0.01; t += 5) { var m = egNow(L, t); if (m) pts.push({ t: t, a: m.a, th: m.th }); }
+    r.eeg = { da: Math.round((end.a / ref.a - 1) * 100), dt: Math.round((end.th / ref.th - 1) * 100), clean: clean, secs: Math.round(span), ref: ref, end: end, pts: pts };
+  }
+  function egNote(r) { return r.eeg && !r.eeg.none ? "alpha " + egPct(r.eeg.da / 100) + ", theta " + egPct(r.eeg.dt / 100) + " (headband)" : ""; }
+  function egTiles(r) {
+    var e = r.eeg;
+    if (!e) return [];
+    if (e.none) return [["Brain trend", "—", e.short ? "too short to read" : "too few clean seconds", "eeg"]];
+    return [["Alpha", egCap(egWord(e.da / 100)), egPct(e.da / 100) + ", first minute to last two", "eeg"],
+      ["Theta", egCap(egWord(e.dt / 100)), egPct(e.dt / 100) + ", first minute to last two", "eeg"]];
+  }
+  function egExplain(k) {
+    if (k !== "eeg") return null;
+    var e = SD.r.eeg, p = [];
+    if (e.none) {
+      p.push(e.short ? "The headband read less than two and a half minutes of the session, too little to compare a first minute with the end."
+        : "Too few seconds had a clean signal (" + e.clean + "%) to compare the first minute with the last two: blinks, a tense jaw, movement or a loose sensor spoilt the rest. The eyes check on the Heart page helps with the fit.");
+      return ["Brain trend", p];
+    }
+    var how = function (v) { return v >= 15 ? "rose by " + v + "%" : v <= -15 ? "fell by " + (-v) + "%" : "held steady (" + egPct(v / 100) + ")"; };
+    p.push("From your first minute of clean signal to the last two minutes, alpha's share of the headband's signal " + how(e.da) + ", and theta's " + how(e.dt) +
+      ". A change of more than 15% either way counts as rising or falling; a smaller one, as steady.");
+    p.push("Each second, the page takes the last two seconds from each of the headband's four sensors, splits them into their rhythms and works out alpha's (8 to 12 Hz) and theta's (4 to 8 Hz) share of everything from 1 to 30 Hz, then averages the sensors with a clean signal. Seconds spoilt by a blink, a tense jaw or a movement are left out: " +
+      (100 - e.clean) + "% of this session's.");
+    p.push("Alpha usually rises as you relax with your eyes closed, and theta as you drift towards sleep or sink into meditation. But brain waves follow what the brain is doing, a headband reads broad trends rather than states, and one session is one reading, so treat this as a picture of the session rather than a score.");
+    return ["Brain trend", p];
+  }
+  // the end screen's chart: the two shares across the session, the first minute's levels dashed, the beat in violet
+  function egCard(r) {
+    if (!r.eeg || r.eeg.none || r.eeg.pts.length < 3) return "";
+    return '<div class="sd-chart eg-sd"><span>Alpha (teal) and theta (amber) across the session, as shares of the headband\'s signal' + (r.beatLog ? ", with the beat in violet" : "") + "</span>" +
+      '<canvas id="sdEeg" role="img" aria-label="' + esc("Alpha " + egWord(r.eeg.da / 100) + " " + egPct(r.eeg.da / 100) + ", theta " + egWord(r.eeg.dt / 100) + " " + egPct(r.eeg.dt / 100) + ", first minute to last two") + '"></canvas></div>';
+  }
+  function egCardDraw(r) {
+    var cv = $("#sdEeg"), f = cv && fitCanvas(cv);
+    if (!f || !r.eeg || r.eeg.none) return;
+    egPlot(f.c, f.w, f.h, r.eeg.pts, r.eeg.ref, 0, r.secs, r.beatLog, ["0", Math.max(1, Math.round(r.secs / 60)) + " min"]);
+  }
+  // the shares over time (t0 to t1) on one scale, the reference levels dashed; the beat, if any, on its own (3 to 11 Hz)
+  function egPlot(c, W, Hh, pts, ref, t0, t1, beat, lab) {
+    var L = 8, R = W - (beat ? 38 : 8), top = 10, bot = Hh - 18, hi = 0;
+    pts.forEach(function (p) { hi = Math.max(hi, p.a, p.th); });
+    if (ref) hi = Math.max(hi, ref.a, ref.th);
+    hi = Math.min(1, Math.ceil(hi * 10 + 0.5) / 10);
+    var X = function (t) { return L + (t - t0) / Math.max(1, t1 - t0) * (R - L); }, Y = function (v) { return bot - v / hi * (bot - top); };
+    c.strokeStyle = BCOL.line; c.lineWidth = 1;
+    c.beginPath(); c.moveTo(L, bot + 0.5); c.lineTo(R, bot + 0.5); c.stroke();
+    [["a", BCOL["b-in"]], ["th", BCOL["b-hold"]]].forEach(function (s) {
+      if (ref) {
+        c.strokeStyle = rgba(s[1], 0.6); c.lineWidth = 1; c.setLineDash([4, 4]);
+        c.beginPath(); c.moveTo(L, Y(ref[s[0]]) + 0.5); c.lineTo(R, Y(ref[s[0]]) + 0.5); c.stroke(); c.setLineDash([]);
+      }
+      c.strokeStyle = s[1]; c.lineWidth = 2; c.lineJoin = "round"; c.beginPath();
+      pts.forEach(function (p, i) { if (p.t < t0) return; if (i && pts[i - 1].t >= t0) c.lineTo(X(p.t), Y(p[s[0]])); else c.moveTo(X(p.t), Y(p[s[0]])); });
+      c.stroke();
+    });
+    if (beat && beat.length > 1) {
+      var BY = function (hz) { return top + (11 - hz) / 8 * (bot - top); };
+      c.strokeStyle = BCOL["b-out"]; c.lineWidth = 2; c.beginPath();
+      beat.forEach(function (p, i) { if (i) c.lineTo(X(p.t), BY(p.hz)); else c.moveTo(X(p.t), BY(p.hz)); });
+      c.stroke();
+      c.font = "600 10.5px " + B_SANS; c.fillStyle = BCOL["b-out"]; c.textAlign = "left"; c.textBaseline = "middle";
+      c.fillText("11 Hz", R + 4, top + 4); c.fillText("3 Hz", R + 4, bot - 4);
+    }
+    if (!lab) return;
+    c.font = "600 10.5px " + B_SANS; c.textBaseline = "top"; c.textAlign = "left"; c.fillStyle = BCOL["text-faint"];
+    c.fillText(lab[0], L, bot + 4);
+    c.textAlign = "right"; c.fillText(lab[1], R, bot + 4);
+  }
+
+  /* ----- Brain-Led Beats: the beat follows your alpha and theta -----
+     As in Heart-Led Beats (adapt.js): a minute to settle, a minute and a half reading your resting shares with
+     your eyes closed, then every five seconds the beat moves towards a target set by how far your alpha (60%)
+     and theta (40%), averaged over the last 25 seconds, have risen above that rest; a rise of 30%, or the rise
+     your eyes check found, is the full share. From 10 Hz down to 6 Hz, never faster than 0.15 Hz an update,
+     and back up if they fall. With no headband data it follows a gentle scripted descent. Entrain's own rule. */
+  function brainLed(min) {
+    var total = min * 60, settle = 60, base = 90, close = 60;
+    return [
+      G(settle, "Settle", ["Put the headband on and sit back or lie down, with headphones on. Let your forehead and jaw go soft.",
+        "The beat will follow your brain's rhythms. As your alpha and theta rise above their resting level, it glides from 10 Hz towards 6 Hz.",
+        "Close your eyes, and let your attention rest on the sound."], { vis: "orb" }),
+      { k: "brain", phase: "base", secs: base, title: "Reading your rhythms", lines: [[0, "First, a minute and a half to read your resting rhythms. Keep your eyes closed and rest."]] },
+      { k: "brain", phase: "lead", secs: total - settle - base - close, title: "Brain-led beat",
+        lines: [[0, "Now the beat is following your brain. Rest, and let the sound carry you."], [240, "Let the jaw and the forehead stay soft."], [600, "Notice how quiet the mind has become."]] },
+      G(close, "Closing", ["Let the sound fade. Take a fuller breath, and open your eyes when you're ready.", "Look at what your alpha and theta did on the next screen."], { vis: "orb" })
+    ];
+  }
+  function egLedReset() { EG.led = { base: null, calm: 0, pts: [], asked: false }; }
+  // the resting shares: the clean seconds from `from` to `to` in practice time, thirty at least
+  function egLedBase(from, to) {
+    var m = egMean(P.eeg || [], from, to);
+    return m && m.n >= 30 ? m : null;
+  }
+  function egLedTick(s, st, T) {
+    if (s.phase === "base") {
+      if (T - AD.last >= 5) { AD.last = T; AD.log.push({ t: T, hz: AD.cur, src: "base" }); }
+      return;
+    }
+    if (!EG.led.asked) {                                     // the rest: the clean seconds of the step that read it, however late the tick
+      EG.led.asked = true;
+      P.steps.forEach(function (b0) { if (b0.k === "brain" && b0.phase === "base" && b0.at < s.at) EG.led.base = egLedBase(b0.at, b0.at + b0.secs); });
+    }
+    if (T - AD.last < 5) return;
+    AD.last = T;
+    var cur = egLive() ? egNow(P.eeg, T) : null, target, b;
+    if (cur && !EG.led.base && st >= 60) EG.led.base = egLedBase(T - 90, T);      // connected late: the last minute and a half is the rest
+    b = EG.led.base;
+    if (cur) EG.led.pts.push({ t: T, a: cur.a, th: cur.th });
+    if (cur && b) {
+      var span = egSpan(), sc = 0.6 * adClamp((cur.a / b.a - 1) / span) + 0.4 * adClamp((cur.th / b.th - 1) / span);
+      EG.led.calm += (sc - EG.led.calm) * 0.35;
+      target = 10 - 4 * EG.led.calm;
+      AD.src = "brain";
+    } else {
+      target = 10 - 4 * Math.min(1, st / (s.secs * 0.7));
+      AD.src = "script";
+    }
+    target = Math.max(6, Math.min(10, target));
+    AD.cur = Math.round((AD.cur + Math.max(-0.15, Math.min(0.15, target - AD.cur))) * 100) / 100;
+    aBeat(AD.cur, 1.5);
+    AD.log.push({ t: T, hz: AD.cur, calm: EG.led.calm, src: AD.src });
+  }
+  function egLedSub(s, st) {
+    return s.phase === "base" ? (egLive() ? "Reading your resting alpha and theta · " : "No headband data yet · ") + Math.max(0, Math.ceil(s.secs - st)) + " s"
+      : AD.src === "brain" ? "Following your alpha and theta"
+      : AD.src === "script" ? (egLive() ? "Waiting for a clean signal: a gentle scripted descent meanwhile" : "No headband data: a gentle scripted descent") : "";
+  }
+  // the beat now, big, over your alpha and theta (25-second averages) and the beat so far
+  function egLedDraw(c, W, Hh, s, T, col) {
+    var cx = W / 2, top = Hh * 0.08, hz = AD.cur, big = Math.min(W, Hh) * 0.2;
+    c.textAlign = "center"; c.textBaseline = "alphabetic";
+    c.font = "700 " + Math.round(big) + "px " + B_MONO; c.fillStyle = BCOL.text;
+    c.fillText(hz.toFixed(1), cx, top + big);
+    c.font = "650 13px " + B_SANS; c.fillStyle = rgba(col, 0.95);
+    c.fillText("Hz · " + adBand(hz), cx, top + big + 22);
+    var t0 = P.steps[1] ? P.steps[1].at : 0, t1 = Math.max(t0 + 120, T), y0 = Hh * 0.52;
+    c.save(); c.translate(0, y0);
+    egPlot(c, W, Hh - y0, EG.led.pts, EG.led.base, t0, t1, AD.log.length > 1 ? AD.log : null, null);
+    c.restore();
+    c.font = "600 11px " + B_SANS; c.textBaseline = "alphabetic"; c.textAlign = "left";
+    c.fillStyle = BCOL["b-in"]; c.fillText("alpha", 8, y0 - 4);
+    c.fillStyle = BCOL["b-hold"]; c.fillText("theta", 8 + c.measureText("alpha   ").width, y0 - 4);
+    if (AD.log.length > 1) { c.textAlign = "right"; c.fillStyle = BCOL["b-out"]; c.fillText("beat", W - 8, y0 - 4); }
+  }
+
+  /* ----- the Heart page ----- */
+  function egSet(st) {
+    EG.state = st;
+    egUI();
+  }
+  function egMsg(s) { EG.msgTxt = s; bSetT("#egMsg", s); }
+  function egUI() {
+    var box = $("#eeg");
+    if (!box) return;
+    var st = EG.state, on = st === "on", sup = egSupported();
+    box.dataset.state = st;
+    bSetT("#egPillTxt", on ? "Connected" : st === "busy" ? "Connecting…" : st === "lost" ? "Reconnecting…" : "Not connected");
+    var go = $("#egGo");
+    bSetT("#egGoTxt", on || st === "lost" ? "Disconnect" : st === "busy" ? "Cancel" : "Connect a headband");
+    go.disabled = !sup;
+    var tag = go.querySelector(".sup-tag"), lock = !supOn() && st === "off";
+    if (tag && !lock) tag.parentNode.removeChild(tag);
+    else if (!tag && lock) go.insertAdjacentHTML("beforeend", supTag());
+    $("#egNo").hidden = sup;
+    var err = st === "off" ? EG.err : "";
+    bSetT("#egErr", err); $("#egErr").hidden = !err;
+    $("#egOn").hidden = !on;
+    bSetT("#egHint", on ? EG.name + (EG.batt !== null ? " · battery " + EG.batt + "%" : "") : "Experimental");
+    if (!on) return;
+    // each sensor: good, noisy or off the skin
+    var q = EG.q;
+    document.querySelectorAll("#egSens li").forEach(function (li, i) {
+      var s = q[i] || "";
+      if (li.dataset.q !== s) li.dataset.q = s;
+      bSetT("#egS" + i, s === "good" ? "good" : s === "noisy" ? "noisy" : s === "off" ? "off the skin" : "…");
+    });
+    var now = bNow(), ref = egRef(EG.sec, EG.t0, now), cur = egNow(EG.sec, now), d = ref && cur ? egDelta(ref, cur) : null;
+    var any = EG.sec.some(function (x) { return x.ok && x.t >= EG.t0; });
+    [["a", "#egA", "#egAS"], ["th", "#egT", "#egTS"]].forEach(function (k) {
+      bSetT(k[1], d ? egCap(egWord(d[k[0]])) : ref ? "—" : "…");
+      bSetT(k[2], d ? egPct(d[k[0]]) + " since your first minute" : ref ? "Signal too noisy just now"
+        : any ? "Reading your first minute" : "Waiting for a clean signal");
+      var tile = $(k[1]).closest(".eg-t");
+      var w = d ? egWord(d[k[0]]) : "";
+      if (tile.dataset.w !== w) tile.dataset.w = w;
+    });
+    bSetT("#egRead", egReadTxt(ref, cur, d));
+    // the check
+    var c = EG.chk;
+    bSetT("#egCheckTxt", c ? "Cancel the check" : "Eyes open, eyes closed");
+    $("#egCheck").setAttribute("aria-pressed", c ? "true" : "false");
+    var cr = c ? (c.phase === "open" ? "Eyes open, resting on one point: " + Math.max(0, Math.ceil(EG_CHK - (now - c.t0))) + " s"
+      : "Eyes closed until the two bells: " + Math.max(0, Math.ceil(2 * EG_CHK - (now - c.t0))) + " s") : "";
+    bSetT("#egCalNow", cr); $("#egCalNow").hidden = !c;
+    if (!$("#v-heart").hidden && Date.now() - EG.drawAt >= (RM ? 2000 : 500)) { EG.drawAt = Date.now(); egDraw(ref); }
+  }
+  function egReadTxt(ref, cur, d) {
+    var q = EG.q, off = [], noisy = 0, last = EG.sec.filter(function (x) { return x.t > bNow() - 60; });
+    q.forEach(function (s, i) { if (s === "off") off.push(EG_SITE[i]); else if (s === "noisy") noisy++; });
+    var left = last.length ? Math.round(100 * last.filter(function (x) { return !x.ok; }).length / last.length) : 0;
+    if (off.length >= 2) return "Not touching the skin: " + off.join(", ") + ". Push your hair aside so the sensors behind the ears touch skin, and sit the forehead sensors flat, just above the eyebrows.";
+    if (!ref || !cur) {
+      if (left >= 50) return "Blinks, a tense jaw or movement are spoiling the signal (" + left + "% of the last minute left out). Rest your eyes, soften your jaw and keep your head still.";
+      return off.length ? "One sensor isn't touching the skin: " + off[0] + ". The others carry on." : "Sit still with your jaw and forehead soft while the first minute is read.";
+    }
+    return "Alpha " + egWord(d.a) + " and theta " + egWord(d.th) + " since your first minute, from the last 25 seconds" +
+      (left ? "; " + left + "% of the last minute left out for blinks, a tense jaw or movement." : ".");
+  }
+  // the last five minutes of 25-second averages, the first minute's levels dashed
+  function egDraw(ref) {
+    var cv = $("#egChart"), em = $("#egEmpty");
+    if (!cv) return;
+    var now = bNow(), pts = EG.sm.filter(function (p) { return p.t >= EG.t0 && p.t > now - 300; });
+    em.hidden = pts.length >= 2;
+    var f = fitCanvas(cv);
+    if (!f || pts.length < 2) return;
+    var a = Math.max(EG.t0, now - 300);
+    egPlot(f.c, f.w, f.h, pts, ref, a, Math.max(now, pts[0].t + 60), null, [now - a > 90 ? "\u2212" + Math.round((now - a) / 60) + " min" : "", "now"]);
+  }
+  function egRestart() { EG.t0 = bNow(); EG.sm = []; egUI(); }
+
+  function egInit() {
+    EG.hand = [0, 1, 2, 3].map(function (ch) { return function (e) { egOnData(ch, e.target.value); }; });
+    $("#egGo").addEventListener("click", egGo);
+    $("#egCheck").addEventListener("click", egChkGo);
+    $("#egAgain").addEventListener("click", egRestart);
+    SUP_EXTRA.push({ name: EG_NAME, href: "#eeg" });           // Settings' list of what the donation unlocks
+    try { var c = JSON.parse(store.get("egCal") || "null"); if (c && typeof c.rise === "number" && isFinite(c.rise)) EG.cal = c; } catch (e) {}
+    if (EG.cal) egCalSay("Your last check: alpha " + egPct(EG.cal.rise) + " with your eyes closed.");
+    window.addEventListener("pagehide", function () { if (EG.state !== "off") egDisconnect(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { if (EG.state === "on") { EG.drawAt = 0; egUI(); } }).observe($("#egChart"));
+    egUI();
+    if (window.__entrain) {
+      var X = window.__entrain;
+      X.EG = EG; X.egDecode = egDecode; X.egBands = egBands; X.egState = egState; X.egRef = egRef; X.egNow = egNow; X.egCalOf = egCalOf; X.egCalTxt = egCalTxt;
+      X.egCmd = egCmd; X.egSpan = egSpan; X.egWord = egWord; X.egChips = egChips;
+    }
+  }
   /* ---------------------------- app shell ----------------------------
      Views behind a hash router. The five tabs are #home (Today), #practice (the library),
      #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
@@ -11668,7 +12431,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "208606c5";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "1634f36c";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -11746,6 +12509,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       H.state === "on" || H.state === "busy" || H.state === "lost" ||         // a heart sensor, which would have to be paired again
       MIC.on || MIC.busy ||                                                   // the microphone listening for your breathing
       CAM.on || CAM.busy || MOT.belly ||                                      // the camera reading your pulse, the phone on your belly (camera.js, motion.js)
+      EG.state !== "off" || !!EG.chk ||                                       // an EEG headband, which would have to be paired again (eeg.js)
       FD.open || !$("#stlModal").hidden ||                                    // search, or settling after I need to stop
       (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
       (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together
@@ -12226,6 +12990,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     camUI();                                                  // the Heart page's camera button (camera.js)
     motUI();                                                  // Phone on your belly and Stillness, and their cups (motion.js)
     ntUI();                                                   // the Restoration Break's links on the work pages (nature.js)
+    egUI();                                                   // the Heart page's headband button (eeg.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }
@@ -15727,6 +16492,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ev: "This is an experiment. Alpha and theta binaural beats have small, inconsistent effects on anxiety and relaxation in meta-analyses, and heart-rate variability biofeedback has better evidence for stress. But no study has tested binaural beats that follow the heart, and the rule here is Entrain's own. Treat the summary at the end, your heart rate with the beat drawn over it, as the real test.",
       cite: "Experimental · Entrain's own rule"
     },
+    {                                            // a new technique: the beat follows a Muse headband's alpha and theta (eeg.js)
+      id: "brain-led", name: "Brain-Led Beats", exp: true, sup: true, lengths: [15, 20, 30], min: 20, strength: 1, eeg: true,
+      audio: { dyn: true, start: 10, cat: "relax", band: "Alpha to theta, led by your brain", name: "Brain-led beat", carrier: 200, fade: 20 },
+      needs: [["sounds", "Headphones", "for the binaural beat"], ["brain", "Muse headband", "the beat follows it; without one, it runs a scripted descent"]],
+      tip: ["Connect the headband first.", "Put it on and connect it on the Heart page, and try its eyes-open, eyes-closed check: it tunes the beat to the rise in alpha that's yours.", "#eeg", "Brain trends"],
+      blurb: "An experiment in neurofeedback through sound: with a Muse headband on, the binaural beat follows your brain's own rhythms, gliding from alpha towards theta as your alpha and theta rise above their resting level.",
+      build: function (min) { return brainLed(min || 20); },
+      how: "After a minute to settle, a minute and a half reads your resting alpha and theta with your eyes closed, as shares of the headband's signal. From then on, every five seconds, the beat moves towards a target set by how far your alpha (60%) and theta (40%), averaged over the last 25 seconds, have risen above that resting level: a rise of 30%, or the rise your eyes-closed check on the Heart page found, is the full share. The target runs from 10 Hz down to 6 Hz and back up if they fall, and the beat never moves faster than 0.15 Hz per update. Seconds spoilt by blinks, a tense jaw or movement are left out. With no headband data, it follows a scripted 10 to 6 Hz descent.",
+      ev: "This is an experiment. EEG neurofeedback, seeing or hearing your own brain activity and learning to shift it, has moderate evidence: the research is mixed but promising. A consumer headband suits broad, relative trends rather than precise readings: compared with research-grade EEG, the Muse matched worst of three consumer devices (Mikhaylov et al. 2024). And no study has tested binaural beats that follow the brain: the rule here is Entrain's own. Treat the end screen, your alpha and theta with the beat drawn over them, as the real test.",
+      cite: "Experimental · Entrain's own rule · Mikhaylov et al. 2024"
+    },
     {
       id: "conversation", name: "Difficult Conversation", lengths: [6, 10, 15], min: 10, strength: 2,
       tone: "relax", sensor: "best", sensorWhy: "recommended: live coherence while you breathe, and your heart rate coming down", pace: true, paceSplit: 0.4,
@@ -16714,7 +17490,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["meal", "program", "sit"], ["mindful-sex", "program", "lie sit"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
-      ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
+      ["heart-led", "program", "sit lie"], ["brain-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
       ["t:preop-calm", "sound", "lie"], ["om", "breath", "sit"], ["touch", "relax", "sit lie"], ["music-break", "sound", "sit lie"], ["imagery", "relax", "sit lie"], ["fireside", "relax", "sit lie"]],
     focus: [["focus-primer", "program", "sit"], ["creative", "program", "sit"], ["anapana", "meditate", "sit"], ["b:box", "breath", "sit"],
       ["x:prime", "sound", "sit"], ["t:deep-work", "sound", "sit"], ["t:sustained-24", "sound", "sit"],
@@ -16779,7 +17555,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var P = {
     def: null, view: null, len: 0, steps: [], total: 0, state: "idle",   // idle | intro | running | paused | done
     t0: 0, st: 0, idx: -1, li: 0, tick: 0, raf: 0,
-    hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null,
+    hr: [], coh: [], sw: [], eeg: [], wander: 0, taps: 0, usesB: false, saved: null,     // eeg: a headband's shares each second (eeg.js)
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
@@ -17349,6 +18125,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (s.k === "tap" || s.tapfig) return "tap";
     if (s.k === "rate") return "rate";
     if (s.k === "adapt") return "adapt";
+    if (s.k === "brain") return "brainled";         // Brain-Led Beats: the beat over your alpha and theta (eeg.js)
     if (s.k === "write") return "write";
     if (s.k === "nap") return "glow";
     if (s.k === "wake") return "orb";
@@ -17450,6 +18227,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     pRhythm(s, T);
     if (s.k === "tap") { pTapPoint(s, st); pTapTick(s, st); }
     else if (s.k === "adapt") pAdaptTick(s, st, T);
+    else if (s.k === "brain") egLedTick(s, st, T);     // the beat follows the headband (eeg.js)
     else if (s.k === "measure") scTick(s);
     else if (s.k === "nap") pNapTick(s, st, T);
     else if (s.k === "wake") pWakeTick(s, st);
@@ -17644,6 +18422,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
         : AD.src === "script" ? "No heart data: a gentle scripted descent" : "";
+    } else if (s.k === "brain") {
+      sub = egLedSub(s, st);
     } else if (s.k === "measure") {
       sub = scCaption();
     } else if (s.k === "nap") {
@@ -17673,6 +18453,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var live = hrLive(), tr = pTrack(), chips = [];
     if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
     if (live && H.coh) chips.push('<span class="lc coh">Coherence <b>' + H.coh.cs.toFixed(1) + "</b></span>");
+    chips = chips.concat(egChips());                 // a headband's alpha and theta trends (eeg.js)
     if (tr && A.playing) chips.push('<span class="lc beat">' + esc(tr.band) + " <b>" + beatAt(tr, A.elapsed).toFixed(1) + "</b> Hz</span>");
     else if (tr && P.audioOn && !A.playing && P.state === "running" && T < tr.minutes * 60 - (tr.fade || FADE_OUT)) chips.push('<span class="lc off">Sound paused</span>');   // not once the sound has ended as planned
     var h = chips.join("");
@@ -17707,7 +18488,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, brainled: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -17717,7 +18498,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (W && s) {
       var vis = pVis(s), now = bNow();
       if (!P_ANIM[vis]) { c.clearRect(0, 0, W, Hh); return; }   // nothing moves on the canvas (writing, a rating, the nap): rest until the next step
-      if (vis !== "adapt" || now - P.drawAt >= 0.25) {          // the heart-led chart changes every few seconds: four frames a second will do
+      if ((vis !== "adapt" && vis !== "brainled") || now - P.drawAt >= 0.25) {          // the heart-led and brain-led charts change every few seconds: four frames a second will do
         P.drawAt = now;
         c.clearRect(0, 0, W, Hh);
         var T = pT(), st = T - s.at, col = P.col[P.def.tone || "relax"] || BCOL["b-in"];
@@ -17728,6 +18509,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         else if (vis === "pump") pPump(c, W, Hh, s, st, col);
         else if (vis === "hold") pHold(c, W, Hh, s, st, col);
         else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
+        else if (vis === "brainled") egLedDraw(c, W, Hh, s, T, col);
         else if (vis === "beat") vxBeat(c, W, Hh, s, st, col);
         else if (vis === "sing") vxShow(s, st);
         else if (vis === "stroke") tcDraw(c, W, Hh, s, st, col);
@@ -17915,6 +18697,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ntStart(plan.steps);                           // and a step's own nature sound ahead of its scene (nature.js)
       $("#ses").dataset.bare = "";
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
+      P.eeg = []; egLedReset();                        // the headband's record and Brain-Led Beats' rest (eeg.js)
       pAdaptReset(); napReset(); scReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
@@ -18055,12 +18838,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (P.holds.length) r.holds = P.holds.slice();
     if (P.suds.length) r.suds = P.suds.slice();
     var bl = AD.log.filter(function (x) { return x.src !== "base"; });
-    if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatLog = AD.log.slice(); }
+    if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatBrain = bl.some(function (x) { return x.src === "brain"; }); r.beatLog = AD.log.slice(); }
     if (P.bm && P.bm !== "binaural") r.bm = P.bm;     // its beat played monaural or isochronic (beatmode.js)
     napSummary(r, T);
     stressSummary(r, T);
     coldSummary(r, T);                                 // the seconds of cold you stayed for (cold.js)
     motStillSummary(r);                                // how still you stayed (motion.js)
+    egSummary(r, T);                                   // a headband's alpha and theta, first minute to last two (eeg.js)
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(nvcKindOf(d));
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -18073,7 +18857,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (r.wander !== undefined) notes.push("came back " + r.wander + (r.wander === 1 ? " time" : " times"));
     if (r.holds) notes.push("holds " + r.holds.map(fmt).join(", "));
     if (r.suds) notes.push((d.rate ? d.rate.what : "intensity") + " " + r.suds.join(" → ") + " of 10");
-    if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
+    if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart || r.beatBrain ? "" : " (scripted)"));
+    if (egNote(r)) notes.push(egNote(r));
     if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
     if (r.cold) notes.push(r.cold + " s of cold");
     if (r.still && !r.still.none) notes.push("still " + r.still.pct + "%");
@@ -18085,7 +18870,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg, ib: r.ib, wh: d.id === "wim-hof" && ib ? ib : undefined,
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
-      bm: r.bm, cold: r.cold, still: r.still && !r.still.none ? r.still.pct : undefined, note: notes.join(", ") || undefined });
+      bm: r.bm, cold: r.cold, still: r.still && !r.still.none ? r.still.pct : undefined,
+      alpha: r.eeg && !r.eeg.none ? r.eeg.da : undefined, theta: r.eeg && !r.eeg.none ? r.eeg.dt : undefined, note: notes.join(", ") || undefined });
     return r;
   }
   /* ----- the session screen: intro ----- */
@@ -18762,7 +19548,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (ct) tiles.push(ct);
     var stt = motStillTile(r);                           // lying down: how still you stayed (motion.js)
     if (stt) tiles.push(stt);
-    if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatHeart ? "Hz, led by your heart" : "Hz, scripted (no heart data)", "beat"]);
+    egTiles(r).forEach(function (x) { tiles.push(x); });  // a headband's alpha and theta trends (eeg.js)
+    if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatBrain ? "Hz, led by your alpha and theta" : r.beatHeart ? "Hz, led by your heart" : d.eeg ? "Hz, scripted (no headband data)" : "Hz, scripted (no heart data)", "beat"]);
     if (r.nap) {
       if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate", "onset"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated", "nap"]); }
       else tiles.push(["Fell asleep", r.nap.sensor ? "Not detected" : "—", r.nap.sensor ? "resting still helps" : "no heart data", "onset"]);
@@ -18784,6 +19571,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         '<p class="sd-read" id="sdRead">Tap or drag on the chart to read any point.</p>' +
         '<button class="btn link sd-how" id="sdHow" aria-expanded="false" aria-controls="sdHowT">How to read this chart</button>' +
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
+      egCard(r) +                                         // a headband's alpha and theta across the session (eeg.js)
       (r.nvc ? nvcCard(r.nvc) : "") +
       (r.stress ? "" : sdNext(d)) +
       (d.noQuote ? "" : qCard(d.reflect ? ROGERS : qPick())) +       // a Restoration Break ends with no words to read (nature.js)
@@ -18814,6 +19602,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       sdChartWire();
       setTimeout(function () { pChart(r.hrPts, r.secs, r); }, 30);
     }
+    if (r.eeg && !r.eeg.none) setTimeout(function () { egCardDraw(r); }, 30);
   }
 
   /* What comes next: the practice this one began (chosen as "Begin with" on its page), carried on with
@@ -18831,7 +19620,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   // what each number means, with your own value read back
   function sdExplain(k) {
-    var sx = scExplain(k) || coldExplain(k) || motStillExplain(k);
+    var sx = scExplain(k) || coldExplain(k) || motStillExplain(k) || egExplain(k);
     if (sx) return sx;                               // a stress check's own tiles
     var r = SD.r, d = SD.d, n, p = [];
     var plural = function (x, one, many) { return x + " " + (x === 1 ? one : many); };
@@ -18912,7 +19701,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
     if (k === "beat") {
       p.push("Where the " + (r.bm || "binaural") + " beat started and where it finished: " + r.beat0.toFixed(1) + " Hz, then " + r.beat1.toFixed(1) + " Hz.");
-      p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) towards 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
+      if (r.beatBrain || d.eeg) p.push(r.beatBrain ? "After a minute and a half reading your resting alpha and theta, the beat followed them. As their shares of the headband's signal rose above that rest, the beat moved from 10 Hz (alpha) towards 6 Hz (theta), and back up when they fell, by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
+        : "There was no headband data, so the beat followed a fixed, gentle descent instead.");
+      else p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) towards 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
         : "There was no heart data, so the beat followed a fixed, gentle descent instead.");
       p.push("This is an experiment: the rule is Entrain's own, so the chart is the honest test of what it did for you.");
       return ["The beat", p];
@@ -22769,6 +23560,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("heart", "Stillness", "Practices done lying down · from the motion sensor",
       ["With the phone resting on your belly or on the bed, the end screen of a practice done lying down shows how much of it you stayed still, and your longest still stretch."], "#l-phone",
       { ic: "moon", col: "var(--hr)", w: 0.9, tags: "still stillness restless restlessness movement motion fidget settle lying body scan yoga nidra nap", sup: true }));
+    out.push(fdEntry("heart", EG_NAME, "Heart · a Muse EEG headband, alpha and theta trends",
+      ["Connect a Muse headband and see whether your alpha and theta are rising or falling since your first minute, with an eyes-open, eyes-closed check."], "#eeg",
+      { ic: "brain", col: "var(--hr)", w: 1.05, alias: "EEG neurofeedback", tags: "eeg muse headband brain waves brainwaves alpha theta neurofeedback interaxon eyes closed calibration", sup: true }));
     out.push(fdEntry("heart", "Live heart data and coherence", "Heart · rate, swing, RMSSD, coherence",
       ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
       { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));
@@ -24222,7 +25016,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     bm: "string",                                                        // bm: a beat played monaural or isochronic (beatmode.js)
     snd: "string",                                                       // snd: what Sleep sounds played (sleepsounds.js)
     cold: "number",                                                      // cold: the seconds of cold in Cold Finish (cold.js)
-    still: "number" };                                                   // still: the share of a session lain still, in % (motion.js)
+    still: "number",                                                     // still: the share of a session lain still, in % (motion.js)
+    alpha: "number", theta: "number" };                                  // a headband's alpha and theta, first minute to last two, in % (eeg.js)
   var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
     for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
@@ -25123,7 +25918,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit],["music", musInit], ["scenes", scnInit], ["the screen light", ltInit], ["the phone's camera", camInit], ["the motion sensor", motInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit],["music", musInit], ["scenes", scnInit], ["the screen light", ltInit], ["the phone's camera", camInit], ["the motion sensor", motInit], ["the headband", egInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

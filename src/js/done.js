@@ -22,7 +22,8 @@
     if (ct) tiles.push(ct);
     var stt = motStillTile(r);                           // lying down: how still you stayed (motion.js)
     if (stt) tiles.push(stt);
-    if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatHeart ? "Hz, led by your heart" : "Hz, scripted (no heart data)", "beat"]);
+    egTiles(r).forEach(function (x) { tiles.push(x); });  // a headband's alpha and theta trends (eeg.js)
+    if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatBrain ? "Hz, led by your alpha and theta" : r.beatHeart ? "Hz, led by your heart" : d.eeg ? "Hz, scripted (no headband data)" : "Hz, scripted (no heart data)", "beat"]);
     if (r.nap) {
       if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate", "onset"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated", "nap"]); }
       else tiles.push(["Fell asleep", r.nap.sensor ? "Not detected" : "—", r.nap.sensor ? "resting still helps" : "no heart data", "onset"]);
@@ -44,6 +45,7 @@
         '<p class="sd-read" id="sdRead">Tap or drag on the chart to read any point.</p>' +
         '<button class="btn link sd-how" id="sdHow" aria-expanded="false" aria-controls="sdHowT">How to read this chart</button>' +
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
+      egCard(r) +                                         // a headband's alpha and theta across the session (eeg.js)
       (r.nvc ? nvcCard(r.nvc) : "") +
       (r.stress ? "" : sdNext(d)) +
       (d.noQuote ? "" : qCard(d.reflect ? ROGERS : qPick())) +       // a Restoration Break ends with no words to read (nature.js)
@@ -74,6 +76,7 @@
       sdChartWire();
       setTimeout(function () { pChart(r.hrPts, r.secs, r); }, 30);
     }
+    if (r.eeg && !r.eeg.none) setTimeout(function () { egCardDraw(r); }, 30);
   }
 
   /* What comes next: the practice this one began (chosen as "Begin with" on its page), carried on with
@@ -91,7 +94,7 @@
 
   // what each number means, with your own value read back
   function sdExplain(k) {
-    var sx = scExplain(k) || coldExplain(k) || motStillExplain(k);
+    var sx = scExplain(k) || coldExplain(k) || motStillExplain(k) || egExplain(k);
     if (sx) return sx;                               // a stress check's own tiles
     var r = SD.r, d = SD.d, n, p = [];
     var plural = function (x, one, many) { return x + " " + (x === 1 ? one : many); };
@@ -172,7 +175,9 @@
     }
     if (k === "beat") {
       p.push("Where the " + (r.bm || "binaural") + " beat started and where it finished: " + r.beat0.toFixed(1) + " Hz, then " + r.beat1.toFixed(1) + " Hz.");
-      p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) towards 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
+      if (r.beatBrain || d.eeg) p.push(r.beatBrain ? "After a minute and a half reading your resting alpha and theta, the beat followed them. As their shares of the headband's signal rose above that rest, the beat moved from 10 Hz (alpha) towards 6 Hz (theta), and back up when they fell, by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
+        : "There was no headband data, so the beat followed a fixed, gentle descent instead.");
+      else p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) towards 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
         : "There was no heart data, so the beat followed a fixed, gentle descent instead.");
       p.push("This is an experiment: the rule is Entrain's own, so the chart is the honest test of what it did for you.");
       return ["The beat", p];

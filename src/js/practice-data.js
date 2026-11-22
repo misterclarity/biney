@@ -1049,6 +1049,17 @@
       ev: "This is an experiment. Alpha and theta binaural beats have small, inconsistent effects on anxiety and relaxation in meta-analyses, and heart-rate variability biofeedback has better evidence for stress. But no study has tested binaural beats that follow the heart, and the rule here is Entrain's own. Treat the summary at the end, your heart rate with the beat drawn over it, as the real test.",
       cite: "Experimental · Entrain's own rule"
     },
+    {                                            // a new technique: the beat follows a Muse headband's alpha and theta (eeg.js)
+      id: "brain-led", name: "Brain-Led Beats", exp: true, sup: true, lengths: [15, 20, 30], min: 20, strength: 1, eeg: true,
+      audio: { dyn: true, start: 10, cat: "relax", band: "Alpha to theta, led by your brain", name: "Brain-led beat", carrier: 200, fade: 20 },
+      needs: [["sounds", "Headphones", "for the binaural beat"], ["brain", "Muse headband", "the beat follows it; without one, it runs a scripted descent"]],
+      tip: ["Connect the headband first.", "Put it on and connect it on the Heart page, and try its eyes-open, eyes-closed check: it tunes the beat to the rise in alpha that's yours.", "#eeg", "Brain trends"],
+      blurb: "An experiment in neurofeedback through sound: with a Muse headband on, the binaural beat follows your brain's own rhythms, gliding from alpha towards theta as your alpha and theta rise above their resting level.",
+      build: function (min) { return brainLed(min || 20); },
+      how: "After a minute to settle, a minute and a half reads your resting alpha and theta with your eyes closed, as shares of the headband's signal. From then on, every five seconds, the beat moves towards a target set by how far your alpha (60%) and theta (40%), averaged over the last 25 seconds, have risen above that resting level: a rise of 30%, or the rise your eyes-closed check on the Heart page found, is the full share. The target runs from 10 Hz down to 6 Hz and back up if they fall, and the beat never moves faster than 0.15 Hz per update. Seconds spoilt by blinks, a tense jaw or movement are left out. With no headband data, it follows a scripted 10 to 6 Hz descent.",
+      ev: "This is an experiment. EEG neurofeedback, seeing or hearing your own brain activity and learning to shift it, has moderate evidence: the research is mixed but promising. A consumer headband suits broad, relative trends rather than precise readings: compared with research-grade EEG, the Muse matched worst of three consumer devices (Mikhaylov et al. 2024). And no study has tested binaural beats that follow the brain: the rule here is Entrain's own. Treat the end screen, your alpha and theta with the beat drawn over them, as the real test.",
+      cite: "Experimental · Entrain's own rule · Mikhaylov et al. 2024"
+    },
     {
       id: "conversation", name: "Difficult Conversation", lengths: [6, 10, 15], min: 10, strength: 2,
       tone: "relax", sensor: "best", sensorWhy: "recommended: live coherence while you breathe, and your heart rate coming down", pace: true, paceSplit: 0.4,

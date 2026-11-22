@@ -2023,3 +2023,38 @@
   .so-l .sup-ic{background:none;padding:0;margin-left:6px;color:var(--stim);vertical-align:-2px}
   .so-l .sup-ic svg.i{width:13px;height:13px}
   @media (prefers-reduced-motion: reduce){ .cam-qbar i{transition:none} }
+  /* ---------- an EEG headband's brain trends (eeg.js), after the heart's boxes ---------- */
+  .eg{margin-top:14px;scroll-margin-top:84px}
+  .eg-hint{font-size:12px}
+  .eg[data-state="on"] .eg-intro{display:none}               /* connected: the page is about your trends; the explanation stays below */
+  .eg-conn{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .eg-conn .btn svg.i{color:var(--b-in)}
+  .eg[data-state="on"] .eg-pill i{background:var(--b-in)}
+  .eg[data-state="busy"] .eg-pill i,.eg[data-state="lost"] .eg-pill i{background:var(--b-hold)}
+  .eg-msg{margin:0;font-size:13px;color:var(--text-dim);line-height:1.5}
+  .eg-msg:empty{display:none}
+  .eg-err,.eg-no{margin:0;font-size:13px;color:var(--b-hold);line-height:1.5;max-width:72ch}
+  .eg-err[hidden],.eg-no[hidden],.eg-on[hidden],.eg-cal[hidden],.eg-cal-now[hidden]{display:none}
+  .eg-on{display:flex;flex-direction:column;gap:10px}
+  .eg-sens{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--text-dim)}
+  .eg-sens li{display:inline-flex;align-items:center;gap:6px;min-width:0}
+  .eg-sens li i{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex:none}
+  .eg-sens li b{font-weight:650;color:var(--text-faint)}
+  .eg-sens li[data-q="good"] i{background:var(--b-in)}
+  .eg-sens li[data-q="noisy"] i{background:var(--b-hold)}
+  .eg-sens li[data-q="off"] i{background:var(--danger)}
+  .eg-sens li[data-q="good"] b{color:var(--text)}
+  .eg-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .eg-tiles .hr-tile{background:var(--panel-2)}
+  .eg-t .k small{font-weight:600;margin-left:4px}
+  .hr-chart.eg-chart{height:130px}
+  .eg-cal-now{margin:0;font-size:14px;font-weight:700;color:var(--text)}
+  .eg-cal{margin:0;font-size:13.5px;color:var(--text-dim);line-height:1.5;max-width:72ch}
+  #egCheck[aria-pressed="true"]{border-color:color-mix(in srgb,var(--b-in) 45%,transparent)}
+  details.ev.eg-what{margin-top:2px}
+  .eg-what .ev-body{max-width:72ch}
+  .eg-what .ev-body p{margin:0 0 8px;line-height:1.55}
+  .eg-what .ev-body p:last-child{margin-bottom:0}
+  .lc.eg b{color:var(--b-in)}
+  [data-k="brain"]{--kc:var(--relax)}
+  .sd-chart.eg-sd canvas{cursor:default;height:150px}
