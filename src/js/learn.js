@@ -9,9 +9,9 @@
   ------------------------------------------------------------------------------ */
 
   // where a link lands on something that opens only with a donation, as a whole: Settings' screen light,
-  // scenes, your own music, check-ins and daily rhythm; Heart's camera, room air, blood oxygen and brain trends;
-  // History's resonance course and personal experiment
-  var LN_SUP = ["#st-light", "#st-scenes", "#st-mymusic", "#st-checkin", "#st-rhythm", "#cam", "#air", "#ox", "#eeg", "#rcourse", "#experiment"];
+  // scenes, your own music, check-ins and daily rhythm; Heart's camera, room air and brain trends (blood oxygen
+  // is free); History's resonance course and personal experiment
+  var LN_SUP = ["#st-light", "#st-scenes", "#st-mymusic", "#st-checkin", "#st-rhythm", "#cam", "#air", "#eeg", "#rcourse", "#experiment"];
   var LN_LOCKED = { sup: true };
   // the practice, breathing pattern or track a link leads to, if it leads to one, or LN_LOCKED for one of those
   function lnItem(href) {

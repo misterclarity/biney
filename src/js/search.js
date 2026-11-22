@@ -188,7 +188,7 @@
       { ic: "wind", col: "var(--hr)", w: 1.05, alias: AQ_NAME, tags: "co2 carbon dioxide air fresh stuffy ventilation ventilate window aranet aranet4 monitor sensor room ppm focus", sup: true }));
     out.push(fdEntry("heart", OX_NAME, "Heart · a fingertip oximeter, a safety signal for breath holds",
       ["Connect a fingertip pulse oximeter: during a breath hold, in Wim Hof Breathing or on Breathe, a reading below 90% ends the hold with Breathe now."], "#ox",
-      { ic: "drop", col: "var(--hr)", w: 1.05, alias: "SpO2 pulse oximeter", tags: "spo2 oxygen saturation oximeter pulse oximetry blood oxygen fingertip breath hold holds wim hof swim dive freediving safety plx", sup: true }));
+      { ic: "drop", col: "var(--hr)", w: 1.05, alias: "SpO2 pulse oximeter", tags: "spo2 oxygen saturation oximeter pulse oximetry blood oxygen fingertip breath hold holds wim hof swim dive freediving safety plx" }));
     out.push(fdEntry("app", AQ_PROMPT, "Settings · a reminder on focus pages to open a window",
       ["On the page of each focus practice, focus track and the custom primer, a reminder to air the room first, with your room's CO₂ when there's a reading."], "#st-air",
       { ic: "wind", col: "var(--accent)", w: 1, tags: "fresh air open window ventilate ventilation stuffy room co2 focus reminder prompt", sup: true }));

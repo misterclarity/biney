@@ -4,9 +4,11 @@
 //      oximeter's 16-bit floats and its continuous and spot-check measurements with their status fields, what a reading
 //      is worth (good, weak, no finger, demonstration, none), which pages get which tips, and the tips' and the scents
 //      line's wording
-//   B  locked on the real build: the Heart page's two boxes readable, their buttons with the cup opening the dialog by
-//      name with no Bluetooth asked for, a typed reading not kept; Settings' Air the room with the cup, staying off; the
-//      free tips on focus, sleep and Wim Hof's pages with the safety line and its link; Settings' list; search
+//   B  locked on the real build: the Heart page's two boxes readable, Room air's buttons with the cup opening the dialog
+//      by name with no Bluetooth asked for, a typed reading not kept; Settings' Air the room with the cup, staying off;
+//      the free tips on focus, sleep and Wim Hof's pages with the safety line and its link; Settings' list; search; the
+//      oximeter free, a safety feature: no cup, no dialog, connecting, and a low reading ending a Wim Hof hold (with its
+//      tile and history note) and a hold on Breathe
 //   C  unlocked: Air the room on the focus pages (practices, a track, the primer), not elsewhere; It's aired; a typed
 //      reading (high, then fresh enough), what's refused, a reading over two hours old, the choice turned off; the tips
 //      turned off; the reading left out of backups
@@ -123,17 +125,14 @@ const slot = p => E(p, () => { const s = [...document.querySelectorAll('.view:no
       await go(p, 'air', 500);
       const H = await E(p, () => ({ air: !!document.querySelector('#v-heart #air'), ox: !!document.querySelector('#v-heart #ox'), outside: !document.querySelector('#hr #air, #hr #ox'),
         cups: ['#aqGo', '#aqSave', '#oxGo'].map(s => !!document.querySelector(s + ' .sup-tag')), txt: document.querySelector('#air').textContent + document.querySelector('#ox').textContent }));
-      ok(H.air && H.ox && H.outside && H.cups.every(Boolean) && /above about 900/.test(H.txt) && /below 90%/.test(H.txt),
-        'the Heart page has Room air and Blood oxygen after the heart\'s boxes, readable, their buttons with the cup while locked');
+      ok(H.air && H.ox && H.outside && H.cups.join() === 'true,true,false' && /above about 900/.test(H.txt) && /below 90%/.test(H.txt),
+        'the Heart page has Room air and Blood oxygen after the heart\'s boxes, readable, Room air\'s buttons with the cup while locked and the oximeter\'s none (free, a safety feature): ' + H.cups);
       await p.click('#aqGo'); await p.waitForTimeout(300);
       ok(await vis(p, '#supModal') && await t(p, '#supFor') === AQ + ' is one of the new techniques.' && await E(p, () => !window.__air.opts.aranet && window.__entrain.AQ.state === 'off'),
         'Connect an Aranet4 opens the donation dialog by name, and no Bluetooth chooser: ' + await t(p, '#supFor'));
       await p.click('#supClose'); await p.waitForTimeout(200);
       await p.fill('#aqIn', '1200'); await p.click('#aqSave'); await p.waitForTimeout(300);
       ok(await vis(p, '#supModal') && await E(p, () => localStorage.getItem('entrain.co2') === null && document.querySelector('#aqNow').hidden), 'Save opens it too, and keeps nothing');
-      await p.click('#supClose'); await p.waitForTimeout(200);
-      await go(p, 'ox', 300); await p.click('#oxGo'); await p.waitForTimeout(300);
-      ok(await vis(p, '#supModal') && await t(p, '#supFor') === OX + ' is one of the new techniques.' && await E(p, () => !window.__air.opts.ox), 'Connect an oximeter the same: ' + await t(p, '#supFor'));
       await p.click('#supClose'); await p.waitForTimeout(200);
       // Settings
       await go(p, 'st-air', 500);
@@ -159,8 +158,8 @@ const slot = p => E(p, () => { const s = [...document.querySelectorAll('.view:no
         /rosemary.*chewing gum/.test(pages['track/deep-work']) && /lavender/.test(pages['track/sleep-descent']) && /rosemary.*chewing gum/.test(pages['prime']) && /lavender/.test(pages['sleep-sounds']),
         'lavender on sleep pages (Sleep Descent, its track, Sleep sounds), rosemary on Anapana, rosemary and gum on a focus track and the primer, nothing on Calm Reset');
       const W = await E(p, () => { const a = document.querySelector('#sIntro .ox-tip a[href="#ox"]'); return { cup: !!(a && a.nextElementSibling && a.nextElementSibling.classList.contains('sup-tag')), txt: document.querySelector('#sIntro .ox-tip').textContent }; });
-      ok(W.cup && /below 90% during a hold ends it/.test(W.txt) && /only ever ends a hold sooner/.test(W.txt) && !/longer/.test(W.txt),
-        'Wim Hof\'s page says what an oximeter does, with the cup on its link, and nothing about holding longer: ' + W.txt.slice(0, 90));
+      ok(!W.cup && /With a fingertip oximeter connected on the Heart page, a reading below 90% during a hold ends it/.test(W.txt) && /only ever ends a hold sooner/.test(W.txt) && !/longer/.test(W.txt),
+        'Wim Hof\'s page says what an oximeter does, with no cup on its link (it\'s free), and nothing about holding longer: ' + W.txt.slice(0, 90));
       // tips off and on again, free
       await go(p, 'st-air', 400); await p.click('label:has(#aqTipsOn)'); await p.waitForTimeout(200);
       await go(p, 'practice/focus-primer', 400);
@@ -171,14 +170,45 @@ const slot = p => E(p, () => { const s = [...document.querySelectorAll('.view:no
       // Settings' list and search
       await go(p, 'st-supporter', 400);
       const list = await E(p, () => [...document.querySelectorAll('#supList a')].map(a => a.textContent + '>' + a.getAttribute('href')));
-      ok([PROMPT + '>#st-air', AQ + '>#air', OX + '>#ox'].every(x => list.includes(x)), 'Settings\' New techniques lists Air the room, the CO₂ monitor and the oximeter');
+      ok([PROMPT + '>#st-air', AQ + '>#air'].every(x => list.includes(x)) && !list.some(x => x.startsWith(OX)), 'Settings\' New techniques lists Air the room and the CO₂ monitor, and not the oximeter, which is free: ' + list.filter(x => /#(st-air|air|ox)$/.test(x)).join(' | '));
       await p.click('#tbFind'); await p.waitForTimeout(250);
       const hits = async q => { await p.fill('#fdIn', q); await p.waitForTimeout(450); return E(p, () => [...document.querySelectorAll('.fd-it')].map(a => a.querySelector('b').textContent + '>' + a.getAttribute('href') + (a.querySelector('.sup-tag') ? ' +sup' : ''))); };
       const h1 = await hits('co2'), h2 = await hits('oximeter'), h3 = await hits('rosemary'), h4 = await hits('open window');
-      ok(h1[0] === 'Room air (CO₂)>#air +sup' && h2[0] === OX + '>#ox +sup' && h3.includes('Scent and chewing-gum tips>#st-air') && h4.some(x => x === PROMPT + '>#st-air +sup'),
-        'search finds Room air and the oximeter with the badge, the tips without it, and Air the room: ' + [h1[0], h2[0], h3[0], h4[0]].join(' | '));
+      ok(h1[0] === 'Room air (CO₂)>#air +sup' && h2[0] === OX + '>#ox' && h3.includes('Scent and chewing-gum tips>#st-air') && h4.some(x => x === PROMPT + '>#st-air +sup'),
+        'search finds Room air with the badge, the oximeter and the tips without it, and Air the room with it: ' + [h1[0], h2[0], h3[0], h4[0]].join(' | '));
       await p.keyboard.press('Escape');
       await p.context().close();
+      // the oximeter is a safety feature, free for everyone: on the real build, locked, it connects with no dialog and a low reading ends a hold
+      const q = await page(null, { scale: 0.05 });
+      ok(await oxOn(q) && await E(q, () => !window.__entrain.SUP.ok && document.querySelector('#supModal').hidden && !document.querySelector('#oxGo .sup-tag') && window.__air.opts.ox.filters[0].services[0] === 0x1822) && await t(q, '#oxV') === '98',
+        'locked, with no unlock code, Connect an oximeter opens the chooser for the pulse oximeter service, with no dialog and no cup, and reads 98%');
+      await go(q, 'breathe', 400);
+      ok(await until(q, () => !document.querySelector('#bOxStat').hidden && document.querySelector('#bOx').textContent === '98', 3000), 'locked, Breathe shows SpO₂ beside the guide');
+      await go(q, 'practice/wim-hof', 500);
+      ok(/Your oximeter is connected: a reading below 90% during a hold ends it/.test(await t(q, '#sIntro .ox-tip')) && await E(q, () => !document.querySelector('#sIntro .ox-tip .sup-tag')), 'locked, Wim Hof\'s page says the oximeter is connected, with no cup');
+      await q.check('#sOk'); await q.click('#sGo'); await q.waitForTimeout(400);
+      for (let i = 0; i < 4 && !/hold/.test(await E(q, () => window.__entrain.P.steps[window.__entrain.P.idx].title)); i++) { await q.click('#sNext'); await q.waitForTimeout(250); }
+      await q.waitForTimeout(1500);
+      const lh0 = await E(q, () => ({ st: window.__entrain.P.state, step: window.__entrain.P.steps[window.__entrain.P.idx].title, chip: document.querySelector('#sLive').textContent }));
+      await E(q, () => window.__spo2 = 87);
+      await until(q, () => window.__entrain.P.state === 'paused', 4000);
+      const lh = await E(q, () => ({ st: window.__entrain.P.state, step: window.__entrain.P.steps[window.__entrain.P.idx].title, line: document.querySelector('#sLine').textContent, said: window.__said.slice(-1)[0],
+        low: !!document.querySelector('#sLive .lc.ox.low'), dlg: document.querySelector('#supModal').hidden }));
+      ok(lh0.st === 'running' && lh0.step === 'Round 1: hold' && /SpO₂ 98%/.test(lh0.chip) && lh.st === 'paused' && lh.step === 'Round 2: power breaths' && /^Breathe now\. Your oxygen read 87%, below 90%/.test(lh.line) && lh.said === 'Breathe now.' && lh.low && lh.dlg,
+        'locked, Wim Hof\'s hold runs on at 98% with the live chip, and at 87% ends with Breathe now, said and shown, the practice paused: ' + JSON.stringify([lh0, lh]).slice(0, 200));
+      await E(q, () => window.__spo2 = 97); await q.waitForTimeout(1200);
+      await q.click('#sEnd'); await q.click('#sEnd'); await q.waitForTimeout(700);
+      const ltile = await E(q, () => { const b = [...document.querySelectorAll('#sDone .sd-t')].find(x => x.dataset.ex === 'ox'); return b ? b.textContent.replace(/\s+/g, ' ').trim() : ''; });
+      const lhist = await E(q, () => (JSON.parse(localStorage.getItem('entrain.history') || '[]').find(e => e.id === 'wim-hof') || {}).note || '');
+      ok(ltile === 'Oxygen87%below 90%: a hold ended' && /a hold ended at 87% oxygen/.test(lhist), 'locked, the end screen has the Oxygen tile and the history the note: ' + ltile + ' | ' + lhist);
+      await E(q, () => { localStorage.setItem('entrain.diveAck', '1'); window.__spo2 = 98; });
+      await go(q, 'breathe/dive', 500);
+      await q.click('#bStart'); await q.waitForTimeout(1500);
+      await E(q, () => window.__spo2 = 86);
+      const lended = await until(q, () => window.__entrain.B.state === 'done', 4000);
+      const lbh = await E(q, () => ({ hint: document.querySelector('#bHint').textContent, said: window.__said.slice(-1)[0], dlg: document.querySelector('#supModal').hidden }));
+      ok(lended && /^Breathe now: your oxygen read 86%, below 90%/.test(lbh.hint) && lbh.said === 'Breathe now.' && lbh.dlg, 'locked, on Breathe a Swim & dive hold ends at 86% with Breathe now: ' + lbh.hint);
+      await q.context().close();
     }
 
     /* C. unlocked: the reminder, typed readings, the choices */

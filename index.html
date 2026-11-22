@@ -13258,8 +13258,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      pauses, Breathe ends the session. It only ever ends a hold sooner; nothing here lengthens a hold or says one
      could be longer. Entrain's own rule, from general knowledge rather than a trial.
 
-     The CO2 monitor, the typed reading, the oximeter and the reminder open with a donation while this device is
-     locked; the tips, the safety lines and Learn are free.
+     The CO2 monitor, the typed reading and the reminder open with a donation while this device is locked; the
+     oximeter is a safety feature, free for everyone, like the tips, the safety lines and Learn.
   ------------------------------------------------------------------------------- */
   var AQ_NAME = "Room air from a CO₂ monitor";
   var AQ_PROMPT = "Air the room before focus sessions";
@@ -13511,7 +13511,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (OX.state === "busy") { oxCancel(); return; }
     if (OX.state === "on" || OX.state === "lost") { oxDisconnect(); return; }
     if (!aqBt()) { oxUI(); return; }
-    supGate(OX_NAME, oxConnect, function (ok) { if (ok && OX.state === "off") oxConnect(); else oxUI(); });
+    oxConnect();                                               // free for everyone: a safety feature
   }
   function oxConnect() {
     if (!aqBt() || OX.state !== "off") return;
@@ -13736,7 +13736,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function oxNoteHtml() {
     var on = OX.state === "on";
     return '<p class="aq-tip ox-tip"><b>Blood oxygen.</b> ' + (on ? "Your oximeter is connected: a reading below " + OX_FLOOR + "% during a hold ends it, with “Breathe now”."
-      : 'With a fingertip oximeter connected on <a href="#ox">the Heart page</a>' + supTag(true) + ", a reading below " + OX_FLOOR + "% during a hold ends it, with “Breathe now”.") +
+      : 'With a fingertip oximeter connected on <a href="#ox">the Heart page</a>, a reading below ' + OX_FLOOR + "% during a hold ends it, with “Breathe now”.") +
       " A rough safety signal: it only ever ends a hold sooner, and a good reading is no reason to hold on.</p>";
   }
   // every slot on the pages that are open, with what's true now (a new reading, a choice, an unlock)
@@ -13829,7 +13829,6 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     bSetT("#oxGoTxt", on || st === "lost" ? "Disconnect" : st === "busy" ? "Cancel" : "Connect an oximeter");
     var go = $("#oxGo");
     go.disabled = !sup;
-    aqCup(go, st === "off");
     $("#oxNo").hidden = sup;
     var err = st === "off" ? OX.err : "";
     bSetT("#oxErr", err); $("#oxErr").hidden = !err;
@@ -13862,7 +13861,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       aqSlots();
       toast("Aired. The reminder rests for an hour.", { ms: 3500 });
     });
-    SUP_EXTRA.push({ name: AQ_PROMPT, href: "#st-air" }, { name: AQ_NAME, href: "#air" }, { name: OX_NAME, href: "#ox" });     // Settings' list of what the donation unlocks
+    SUP_EXTRA.push({ name: AQ_PROMPT, href: "#st-air" }, { name: AQ_NAME, href: "#air" });     // Settings' list of what the donation unlocks (the oximeter is free)
     window.addEventListener("pagehide", function () { if (AQ.state !== "off") aqDisconnect(); if (OX.state !== "off") oxDisconnect(); });
     setInterval(function () { if (document.querySelector(".aq-slot")) aqSlots(); if (AQ.last && !$("#v-heart").hidden) aqUI(); }, 30000);    // ages, and a reading that has gone stale
     aqUI(); oxUI();
@@ -14072,7 +14071,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "bbc567c3";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "4926afca";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -26775,7 +26774,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       { ic: "wind", col: "var(--hr)", w: 1.05, alias: AQ_NAME, tags: "co2 carbon dioxide air fresh stuffy ventilation ventilate window aranet aranet4 monitor sensor room ppm focus", sup: true }));
     out.push(fdEntry("heart", OX_NAME, "Heart · a fingertip oximeter, a safety signal for breath holds",
       ["Connect a fingertip pulse oximeter: during a breath hold, in Wim Hof Breathing or on Breathe, a reading below 90% ends the hold with Breathe now."], "#ox",
-      { ic: "drop", col: "var(--hr)", w: 1.05, alias: "SpO2 pulse oximeter", tags: "spo2 oxygen saturation oximeter pulse oximetry blood oxygen fingertip breath hold holds wim hof swim dive freediving safety plx", sup: true }));
+      { ic: "drop", col: "var(--hr)", w: 1.05, alias: "SpO2 pulse oximeter", tags: "spo2 oxygen saturation oximeter pulse oximetry blood oxygen fingertip breath hold holds wim hof swim dive freediving safety plx" }));
     out.push(fdEntry("app", AQ_PROMPT, "Settings · a reminder on focus pages to open a window",
       ["On the page of each focus practice, focus track and the custom primer, a reminder to air the room first, with your room's CO₂ when there's a reading."], "#st-air",
       { ic: "wind", col: "var(--accent)", w: 1, tags: "fresh air open window ventilate ventilation stuffy room co2 focus reminder prompt", sup: true }));
@@ -27088,9 +27087,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   ------------------------------------------------------------------------------ */
 
   // where a link lands on something that opens only with a donation, as a whole: Settings' screen light,
-  // scenes, your own music, check-ins and daily rhythm; Heart's camera, room air, blood oxygen and brain trends;
-  // History's resonance course and personal experiment
-  var LN_SUP = ["#st-light", "#st-scenes", "#st-mymusic", "#st-checkin", "#st-rhythm", "#cam", "#air", "#ox", "#eeg", "#rcourse", "#experiment"];
+  // scenes, your own music, check-ins and daily rhythm; Heart's camera, room air and brain trends (blood oxygen
+  // is free); History's resonance course and personal experiment
+  var LN_SUP = ["#st-light", "#st-scenes", "#st-mymusic", "#st-checkin", "#st-rhythm", "#cam", "#air", "#eeg", "#rcourse", "#experiment"];
   var LN_LOCKED = { sup: true };
   // the practice, breathing pattern or track a link leads to, if it leads to one, or LN_LOCKED for one of those
   function lnItem(href) {

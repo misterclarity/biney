@@ -313,7 +313,7 @@ const UK = /\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!R
       const cups = await E(p, () => {
         // a link to a locked practice, breathing pattern or track, to Sleep sounds, to a part of Settings, Heart or History that opens only with a donation,
         // or one with data-sup (whose words name the locked part of Settings' Air and scent or Background sound)
-        const X = window.__entrain, AT = ['#st-light', '#st-scenes', '#st-mymusic', '#st-checkin', '#st-rhythm', '#cam', '#air', '#ox', '#eeg', '#rcourse', '#experiment'];
+        const X = window.__entrain, AT = ['#st-light', '#st-scenes', '#st-mymusic', '#st-checkin', '#st-rhythm', '#cam', '#air', '#eeg', '#rcourse', '#experiment'];
         const locked = a => { const h = a.getAttribute('href'); if (a.hasAttribute('data-sup') || h === '#sleep-sounds' || AT.includes(h)) return !X.SUP.ok; const m = /^#(practice|breathe|track)\/(.+)$/.exec(h); if (!m) return false; const l = m[1] === 'practice' ? X.PRACTICES : m[1] === 'breathe' ? X.BREATHS : X.TRACKS, d = l.find(x => x.id === m[2]); return !!d && !!d.sup && !X.SUP.ok; };
         const links = [...document.querySelectorAll('#science a[href^="#"]')], cup = a => !!(a.nextElementSibling && a.nextElementSibling.classList.contains('sup-tag'));
         const g = s => [...document.querySelectorAll('#lnGlance ' + s)].map(cup);

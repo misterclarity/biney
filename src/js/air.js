@@ -19,8 +19,8 @@
      pauses, Breathe ends the session. It only ever ends a hold sooner; nothing here lengthens a hold or says one
      could be longer. Entrain's own rule, from general knowledge rather than a trial.
 
-     The CO2 monitor, the typed reading, the oximeter and the reminder open with a donation while this device is
-     locked; the tips, the safety lines and Learn are free.
+     The CO2 monitor, the typed reading and the reminder open with a donation while this device is locked; the
+     oximeter is a safety feature, free for everyone, like the tips, the safety lines and Learn.
   ------------------------------------------------------------------------------- */
   var AQ_NAME = "Room air from a CO₂ monitor";
   var AQ_PROMPT = "Air the room before focus sessions";
@@ -272,7 +272,7 @@
     if (OX.state === "busy") { oxCancel(); return; }
     if (OX.state === "on" || OX.state === "lost") { oxDisconnect(); return; }
     if (!aqBt()) { oxUI(); return; }
-    supGate(OX_NAME, oxConnect, function (ok) { if (ok && OX.state === "off") oxConnect(); else oxUI(); });
+    oxConnect();                                               // free for everyone: a safety feature
   }
   function oxConnect() {
     if (!aqBt() || OX.state !== "off") return;
@@ -497,7 +497,7 @@
   function oxNoteHtml() {
     var on = OX.state === "on";
     return '<p class="aq-tip ox-tip"><b>Blood oxygen.</b> ' + (on ? "Your oximeter is connected: a reading below " + OX_FLOOR + "% during a hold ends it, with “Breathe now”."
-      : 'With a fingertip oximeter connected on <a href="#ox">the Heart page</a>' + supTag(true) + ", a reading below " + OX_FLOOR + "% during a hold ends it, with “Breathe now”.") +
+      : 'With a fingertip oximeter connected on <a href="#ox">the Heart page</a>, a reading below ' + OX_FLOOR + "% during a hold ends it, with “Breathe now”.") +
       " A rough safety signal: it only ever ends a hold sooner, and a good reading is no reason to hold on.</p>";
   }
   // every slot on the pages that are open, with what's true now (a new reading, a choice, an unlock)
@@ -590,7 +590,6 @@
     bSetT("#oxGoTxt", on || st === "lost" ? "Disconnect" : st === "busy" ? "Cancel" : "Connect an oximeter");
     var go = $("#oxGo");
     go.disabled = !sup;
-    aqCup(go, st === "off");
     $("#oxNo").hidden = sup;
     var err = st === "off" ? OX.err : "";
     bSetT("#oxErr", err); $("#oxErr").hidden = !err;
@@ -623,7 +622,7 @@
       aqSlots();
       toast("Aired. The reminder rests for an hour.", { ms: 3500 });
     });
-    SUP_EXTRA.push({ name: AQ_PROMPT, href: "#st-air" }, { name: AQ_NAME, href: "#air" }, { name: OX_NAME, href: "#ox" });     // Settings' list of what the donation unlocks
+    SUP_EXTRA.push({ name: AQ_PROMPT, href: "#st-air" }, { name: AQ_NAME, href: "#air" });     // Settings' list of what the donation unlocks (the oximeter is free)
     window.addEventListener("pagehide", function () { if (AQ.state !== "off") aqDisconnect(); if (OX.state !== "off") oxDisconnect(); });
     setInterval(function () { if (document.querySelector(".aq-slot")) aqSlots(); if (AQ.last && !$("#v-heart").hidden) aqUI(); }, 30000);    // ages, and a reading that has gone stale
     aqUI(); oxUI();
