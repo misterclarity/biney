@@ -218,7 +218,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(!/Not for everyone/.test(await E(p, () => document.documentElement.innerHTML)), 'the paragraph repeated on five pages is gone');
       const learn = await E(p, () => ({ toc: !!document.querySelector('.toc a[href="#l-safety"]'), h: document.querySelector('#l-safety').textContent,
         items: [...document.querySelectorAll('#sfNote .sf-list li b')].map(b => b.textContent) }));
-      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Breath holds. | Moving. | Feelings. | Food and supplements. | Light. | Cold and heat. | Scents.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
+      ok(learn.toc && learn.h === 'Safety' && learn.items.join(' | ') === 'The beats. | Headphones with a pacemaker. | Breathing. | Breath holds. | Moving. | Feelings. | Food and supplements. | Light. | Flashing light. | Cold and heat. | Scents.', 'Learn holds the whole note, under Safety: ' + learn.items.join(' | '));
       const opened = async (from) => {
         await p.click(from); await p.waitForTimeout(250);
         return E(p, () => { const m = document.querySelector('#sfModal'), b = document.querySelector('#sfBody');

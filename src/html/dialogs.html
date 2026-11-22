@@ -206,3 +206,29 @@
   </div>
 </div>
 
+
+<!-- ============ LIGHT PULSE AT 40 HZ: asked each time before it starts, and its stage (pulse.js) ============ -->
+<div class="modal" id="lpModal" hidden>
+  <div class="modal-card dv-card lp-ask" role="dialog" aria-modal="true" aria-labelledby="lpTitle">
+    <h2 id="lpTitle">Before the light pulse</h2>
+    <ul class="dv-list" id="lpList">
+      <li>It flickers 40 times a second. Flashing light can set off a seizure in people with photosensitive epilepsy, sometimes their first, and it's commonest in children and young people: keep it away from children.</li>
+      <li>End it at once, with a tap anywhere, if you feel unwell, dizzy or sick, get a headache, see odd colours or patterns, or notice a twitch. Flicker can bring on a migraine in some people: with migraines, ask your doctor first.</li>
+      <li>Sit down in a well-lit room, with the phone at arm's length, and look at the glow or near it. Never while driving, cycling or walking.</li>
+      <li>It ends by itself after ten minutes, when the sound stops, if the screen falls behind, or when Entrain goes out of sight.</li>
+    </ul>
+    <label class="so-ok lp-ok"><input type="checkbox" id="lpOk"> I don't have epilepsy, and flashing light has never given me a seizure.</label>
+    <p class="hint">Asked each time. Why it's this gentle, and the research behind it, are in Learn under Light pulse.</p>
+    <div class="pm-actions">
+      <button class="btn primary" id="lpYes" disabled>Start the light pulse</button>
+      <button class="btn" id="lpNo">Not now</button>
+    </div>
+  </div>
+</div>
+<div class="lp-stage" id="lpStage" role="dialog" aria-modal="true" aria-labelledby="lpStT" aria-describedby="lpStHint" hidden>
+  <div class="lp-glow" id="lpGlow" aria-hidden="true"></div>
+  <div class="lp-head"><h2 id="lpStT">Light pulse</h2><span class="lp-left" id="lpLeft">10:00 left</span></div>
+  <p class="lp-hint" id="lpStHint">Rest your eyes on the glow, or near it. Tap anywhere to end it; the sound plays on.</p>
+  <div class="lp-foot"><button class="btn lp-end" id="lpEnd">End the light pulse</button><button class="ses-out lp-out" id="lpOut">I need to stop</button></div>
+</div>
+

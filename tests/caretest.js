@@ -128,7 +128,7 @@ const entry = (id, ago, o) => Object.assign({ k: 'practice', id, n: id, at: Date
       const every = await E(p, () => { const X = window.__entrain; return { fb: X.hcCaution(['fast-breath']), flick: X.hcCaution(['flicker']), scent: X.hcCaution(['scent']), hold: X.hcCaution(['hold']) }; });
       ok(/With a heart condition, high blood pressure, low blood pressure or fainting, epilepsy, pregnancy or asthma, leave it out/.test(every.fb) && /bring on the feelings of a panic attack/.test(every.fb),
         'everything ticked: each condition named once, panic with a line of its own: ' + every.fb.slice(0, 140) + '…');
-      ok(/With epilepsy, leave the light pulse off unless your doctor says it's safe for you\./.test(every.flick) && /With asthma or pregnancy, check with your doctor or midwife/.test(every.scent) && /feel like panic rising/.test(every.hold),
+      ok(/With epilepsy, Entrain keeps the light pulse off for you; the 40 Hz sound plays as usual\./.test(every.flick) && /With asthma or pregnancy, check with your doctor or midwife/.test(every.scent) && /feel like panic rising/.test(every.hold),
         'flashing light for epilepsy, scents for asthma and pregnancy, holds and panic');
       await E(p, () => localStorage.setItem('entrain.health', JSON.stringify({ at: Date.now(), on: ['heart', 'trauma'] })));
 

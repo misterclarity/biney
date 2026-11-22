@@ -2071,6 +2071,35 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .b-lt .chip .sup-ic{margin-left:5px}
   .lt-ev .strength{vertical-align:middle;margin-left:4px}
   .lt-exp{display:inline-block;font-size:11px;font-weight:750;padding:2px 8px;border-radius:999px;margin-left:4px;color:var(--ther);background:color-mix(in srgb,var(--ther) 14%,transparent)}
+  /* ---------- the light pulse at 40 Hz (pulse.js): its card on the 40 Hz tracks, the question before it, and its stage ---------- */
+  .lp-card{margin-top:16px;padding:14px 16px 16px;border-radius:14px;background:var(--bg-2);border:1px solid var(--line-soft)}
+  .lp-card h3{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:0}
+  .lp-card h3 svg.i{width:18px;height:18px;color:var(--stim)}
+  .lp-card > p{color:var(--text-dim);font-size:14px;line-height:1.5;margin:8px 0 0}
+  .lp-card a{display:inline-block;min-height:24px;color:var(--text);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+  .lp-card > p.lp-st{color:var(--text);font-size:13.5px;margin-top:10px}
+  .lp-card > p.lp-note{font-size:12.5px;color:var(--text-faint);margin-top:6px}
+  .lp-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .lp-acts .btn svg.i{width:17px;height:17px}
+  .lp-acts .btn .sup-tag{margin-left:2px}
+  .lp-ok{margin:4px 0 12px;min-height:44px;align-items:center;color:var(--text)}
+  .lp-ask .hint{margin:0}
+  /* the stage: dark grey all over, no red, the glow's opacity set picture by picture; above everything, the light's veil too */
+  .lp-stage{position:fixed;inset:0;z-index:2147483600;background:#060606;color:#8a8f98;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    padding:calc(env(safe-area-inset-top,0px) + 18px) 16px calc(env(safe-area-inset-bottom,0px) + 22px);text-align:center;cursor:pointer;touch-action:none;
+    -webkit-user-select:none;user-select:none;overflow:hidden}
+  .lp-stage[hidden]{display:none}
+  .lp-glow{position:absolute;left:50%;top:50%;width:min(62vmin,340px);height:min(62vmin,340px);transform:translate(-50%,-50%);border-radius:50%;
+    background:radial-gradient(closest-side,#fff 0,#fff 40%,rgba(255,255,255,0) 100%);opacity:0;will-change:opacity;pointer-events:none}
+  .lp-head,.lp-hint,.lp-foot{position:relative;z-index:1}
+  .lp-head{display:flex;flex-direction:column;align-items:center;gap:2px}
+  .lp-head h2{font-size:17px;font-weight:750;color:#a4a9b2;margin:0}
+  .lp-left{font-size:13px;font-variant-numeric:tabular-nums}
+  .lp-hint{font-size:13.5px;line-height:1.45;max-width:34ch;margin:8px auto 0}
+  .lp-foot{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:auto}
+  .lp-stage .lp-end{background:#14161a;border-color:#2a2d33;color:#b9bec7}
+  .lp-stage .lp-end:hover{background:#1b1e23}
+  body.lp-on{overflow:hidden}
   /* ---------- the phone alone (camera.js, motion.js): a fingertip on the camera, the phone on your belly, stillness ---------- */
   .hr-cam{flex:1 1 100%;min-width:0;border-top:1px solid var(--line-soft);padding-top:14px}
   .hr-cam[hidden],.cam-on[hidden],.cam-off[hidden],.cam-err[hidden]{display:none}
@@ -3359,6 +3388,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-scenes">Scenes</a>
             <a href="#l-restore">Nature breaks</a>
             <a href="#l-light">Light colour</a>
+            <a href="#l-flicker">Light pulse</a>
             <a href="#l-touch">Touch</a>
             <a href="#l-temp">Cold and heat</a>
             <a href="#l-air">Air and scent</a>
@@ -3528,7 +3558,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <tr class="ln-row"><th scope="row"><b>Eyes closed</b> <small>Alpha (relaxation)</small></th><td>Strong</td><td>In the guidance of practices such as <a href="#practice/anapana">Anapana</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Bright, cool light in the morning</b> <small>Alertness</small></th><td>Strong</td><td><a href="#living/morning">A morning routine</a>, <a href="#living/light-box">a light box</a>, and Bright <a href="#st-light">screen light</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Dim, warm light in the evening</b> <small>Ready for sleep</small></th><td>Strong</td><td><a href="#living/sleep-habits">Healthy sleep habits</a>, and Warm or Night <a href="#st-light">screen light</a></td></tr>
-                <tr class="ln-row"><th scope="row"><b>Rhythmic light flicker</b> <small>Entrainment, such as 40&nbsp;Hz</small></th><td>Early (a seizure risk)</td><td class="ln-lo">Learn only</td></tr>
+                <tr class="ln-row"><th scope="row"><b>Rhythmic light flicker</b> <small>Entrainment, such as 40&nbsp;Hz</small></th><td>Early (a seizure risk)</td><td>A <a href="#track/gamma-40">light pulse</a> with the 40&nbsp;Hz tracks, marked experimental, with <a href="#l-flicker">its safeguards</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Nature scenes, restoration breaks</b> <small>Alpha, attention recovery</small></th><td>Moderate</td><td><a href="#practice/restoration">Restoration Break</a> between blocks of work, a walk in a park in <a href="#practice/walking">Walking Meditation</a>, and <a href="#st-scenes">scenes</a> to watch on Breathe or in a practice: clouds, water, leaves, a misty forest</td></tr>
                 <tr class="ln-row"><th scope="row"><b>A fireplace, with its sound</b> <small>Relaxation, lower blood pressure</small></th><td>Moderate</td><td><a href="#practice/fireside">Fireside</a> for the evening, and a fire to watch, one of the <a href="#st-scenes">scenes</a>, always with its crackle (one of the <a href="#l-nature">nature sounds</a>)</td></tr>
                 <tr class="ln-row"><th scope="row"><b>Mid-complexity fractals</b> <small>Stress reduction</small></th><td>Promising (mostly one lab)</td><td>Fractal ridgelines, one of the <a href="#st-scenes">scenes</a></td></tr>
@@ -4421,6 +4451,50 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               up for Bright and down for Night.
             </p>
 
+            <h3 id="l-flicker">Light that pulses at 40 Hz</h3>
+            <p>
+              Light that flickers 40 times a second draws a matching 40&nbsp;Hz rhythm from the visual parts of the brain. In
+              mice bred to develop the changes of Alzheimer's disease, an hour of light flickering at 40&nbsp;Hz lowered amyloid,
+              the protein that builds up in the disease, in the visual cortex (Iaccarino et al., 2016). In the same lab, 40&nbsp;Hz
+              sound on its own improved the mice's memory, and light and sound together lowered amyloid in the prefrontal cortex,
+              which neither did alone (Martorell et al., 2019). In a pilot study of 15 people with mild Alzheimer's disease, an
+              hour a day of 40&nbsp;Hz light and sound for three months was well tolerated, and that group's hippocampus, the
+              brain's memory hub, shrank less and their delayed recall of faces and names was better than in a group given steady
+              light and white noise; the study was small, its outcomes exploratory, and its authors call for a larger trial (Chan
+              et al., 2022). Another lab disputes the idea: in its mice, 40&nbsp;Hz light didn't bring the brain's own gamma rhythm
+              into step, didn't reliably lower amyloid, and the mice moved away from it when they could (Soula et al., 2023). The
+              guide behind Entrain's new techniques rates rhythmic light flicker as promising but early. None of these studies
+              was of healthy people looking for focus.
+            </p>
+            <p>
+              The risk is seizures. Flashing light can set off a seizure in people with photosensitive epilepsy, and some find
+              out only when it happens: about one person in 10,000 has had a seizure set off by light, and one in 4,000 between
+              the ages of 5 and 24. Flicker anywhere from 1 to 65 times a second can do it, and 15 to 25 times a second most of
+              all (Fisher et al., 2005). So 40 is above the most provocative rates but inside the range, which is why the guide
+              asks for clear warnings, an opt-in and safe frequencies.
+            </p>
+            <p>
+              Entrain's light pulse is gentle, and hard to reach by accident. It sits on the 40&nbsp;Hz tracks,
+              <a href="#track/gamma-40">Gamma Focus 40</a> and <a href="#track/gamma-memory">Working Memory Gamma</a>, and plays
+              with their beat. It opens only once your <a href="#st-health">health check</a> is answered with epilepsy and
+              seizures from flashing light left unticked, and it asks you to confirm each time. It's a soft glow on part of a dark
+              screen, in grey rather than red, rising and falling smoothly in a sine wave rather than switching on and off, and
+              its light changes by 7% of the screen's white: the Web Content Accessibility Guidelines count a change of 10% or more
+              as a flash, and more than three flashes in a second as a hazard. It needs a screen that draws at least 120 pictures
+              a second. At the usual 60, a pulse 40 times a second can't be drawn: it comes out as a flicker 20 times a second, in
+              the most provocative range, so Entrain measures your screen each time and keeps the pulse off below 120. A picture
+              the screen draws late is held at the middle level, and if the screen keeps falling behind, the pulse ends. It also
+              ends after ten minutes, with one tap anywhere, when the sound stops, when Entrain goes out of sight and with I need
+              to stop, and it stays off when your device asks for reduced motion.
+            </p>
+            <p>
+              This pulse is far softer than the flickering lights used in the studies, and a phone screen gives far less light
+              than they did: you may see it only as a faint shimmer, or hardly at all. Whether a pulse this gentle does anything
+              hasn't been tested, so it's marked experimental, and if it seems to help, expectation may be part of that (see
+              <a href="#l-expect">placebo</a>). It's for adults without epilepsy, sitting down in a well-lit room with the phone
+              at arm's length; the <a href="#l-safety">safety note</a> has the rest.
+            </p>
+
             <h3 id="l-touch">Touch: slow strokes, a hand on the heart, weighted blankets and massage</h3>
             <p id="l-ctouch">
               <b>Slow, gentle stroking.</b> Hairy skin, like the forearm's, has nerves of its own for caress-like touch:
@@ -4826,6 +4900,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <li><b>Light.</b> Ask a doctor before you use a light box if you have bipolar disorder or an eye condition, or
                   take medicines that make you sensitive to light. Shield your eyes from red and near-infrared devices, and use a
                   light box, never a tanning lamp, for light therapy.</li>
+                <li><b>Flashing light.</b> The light pulse on the 40&nbsp;Hz tracks flickers 40 times a second, and flashing light
+                  can set off a seizure in people with photosensitive epilepsy, sometimes their first; it's commonest in children
+                  and young people. So it opens only once your health check is answered with epilepsy and seizures from flashing
+                  light left unticked, asks you to confirm each time, and isn't for children. It's kept soft, below what the web's
+                  accessibility guidelines count as a flash, and runs only on a screen fast enough to draw it evenly. Use it sitting
+                  down in a well-lit room with the phone at arm's length, never while driving, and end it at once, with a tap
+                  anywhere, if you feel unwell or dizzy, get a headache, see odd colours or patterns, or notice a twitch. With
+                  migraines, ask your doctor first.</li>
                 <li><b>Cold and heat.</b> Cold water sets off a shock response, a gasp, fast breathing and a sudden rise in heart
                   rate and blood pressure, which can be dangerous, above all with a heart condition or high blood pressure: ask
                   your doctor first, and if you're pregnant too. Start gradually, with the end of a shower; never go into cold
@@ -4840,7 +4922,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               <p>Check with a clinician before you start if you have a heart, lung or seizure condition, are pregnant, or are
                 in treatment for anxiety, trauma or depression. Practices with cautions of their own give them in their
                 introduction. The <a href="#st-health">health check</a> in Settings, optional and kept on your device, adds a
-                caution written for you to the practices it affects; it never stops you starting one.</p>
+                caution written for you to the practices it affects; it never stops you starting one, though the light pulse
+                waits for it and stays off with epilepsy ticked.</p>
             </div>
             <section class="refs-sec" id="references">
               <h3>References</h3>
@@ -5033,6 +5116,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Vani, V., Ojha, P., Gadhvi, M. A., &amp; Dixit, A. (2025). Colored light exposure ensues chronotype-based responses: evidence from QEEG analysis. <em>Physiological Research</em>, 74(3), 519–527. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12462703/" rel="noopener">PMC</a></li>
       <li>Sharifpour, R., Balda, F., Paparella, I., et al. (2025). Cortical excitability is affected by light exposure: distinct effects in adolescents and young adults. <em>Neurobiology of Sleep and Circadian Rhythms</em>, 20, 100138. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12688668/" rel="noopener">PMC</a></li>
       <li>Chellappa, S. L., Steiner, R., Oelhafen, P., Lang, D., G&ouml;tz, T., Krebs, J., &amp; Cajochen, C. (2013). Acute exposure to evening blue-enriched light impacts on human sleep. <em>Journal of Sleep Research</em>, 22(5), 573–580. <a href="https://doi.org/10.1111/jsr.12050" rel="noopener">DOI</a></li>
+      <li>Iaccarino, H. F., Singer, A. C., Martorell, A. J., et al. (2016). Gamma frequency entrainment attenuates amyloid load and modifies microglia. <em>Nature</em>, 540(7632), 230–235. <a href="https://doi.org/10.1038/nature20587" rel="noopener">DOI</a></li>
+      <li>Martorell, A. J., Paulson, A. L., Suk, H.-J., et al. (2019). Multi-sensory gamma stimulation ameliorates Alzheimer's-associated pathology and improves cognition. <em>Cell</em>, 177(2), 256–271. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6774262/" rel="noopener">PMC</a></li>
+      <li>Chan, D., Suk, H.-J., Jackson, B. L., et al. (2022). Gamma frequency sensory stimulation in mild probable Alzheimer's dementia patients: results of feasibility and pilot studies. <em>PLOS ONE</em>, 17(12), e0278412. <a href="https://doi.org/10.1371/journal.pone.0278412" rel="noopener">DOI</a></li>
+      <li>Soula, M., Martín-Ávila, A., Zhang, Y., et al. (2023). Forty-hertz light stimulation does not entrain native gamma oscillations in Alzheimer's disease model mice. <em>Nature Neuroscience</em>, 26(4), 570–578. <a href="https://doi.org/10.1038/s41593-023-01270-2" rel="noopener">DOI</a></li>
+      <li>Fisher, R. S., Harding, G., Erba, G., Barkley, G. L., &amp; Wilkins, A. (2005). Photic- and pattern-induced seizures: a review for the Epilepsy Foundation of America Working Group. <em>Epilepsia</em>, 46(9), 1426–1441. <a href="https://doi.org/10.1111/j.1528-1167.2005.31405.x" rel="noopener">DOI</a></li>
+      <li>World Wide Web Consortium. Web Content Accessibility Guidelines (WCAG) 2.2, success criterion 2.3.1: Three flashes or below threshold. <a href="https://www.w3.org/WAI/WCAG22/Understanding/three-flashes-or-below-threshold.html" rel="noopener">W3C</a></li>
       <li>Ikei, H., Song, C., &amp; Miyazaki, Y. (2023). Physiological adjustment effect of visual stimulation by fresh rose flowers on sympathetic nervous activity. <em>Frontiers in Psychology</em>, 14, 1159458. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10174444/" rel="noopener">PMC</a></li>
       <li>L&ouml;ken, L. S., Wessberg, J., Morrison, I., McGlone, F., &amp; Olausson, H. (2009). Coding of pleasant touch by unmyelinated afferents in humans. <em>Nature Neuroscience</em>, 12(5), 547–548. <a href="https://doi.org/10.1038/nn.2312" rel="noopener">DOI</a></li>
       <li>Olausson, H., Lamarre, Y., Backlund, H., Morin, C., Wallin, B. G., Starck, G., Ekholm, S., Strigo, I., Worsley, K., Vallbo, &Aring;. B., &amp; Bushnell, M. C. (2002). Unmyelinated tactile afferents signal touch and project to insular cortex. <em>Nature Neuroscience</em>, 5(9), 900–904. <a href="https://doi.org/10.1038/nn896" rel="noopener">DOI</a></li>
@@ -5329,6 +5418,32 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     </div>
     <p class="hint">Kept in your history on this device, and set against your usual change. <a href="#st-checkin">Check-ins in Settings</a></p>
   </div>
+</div>
+
+
+<!-- ============ LIGHT PULSE AT 40 HZ: asked each time before it starts, and its stage (pulse.js) ============ -->
+<div class="modal" id="lpModal" hidden>
+  <div class="modal-card dv-card lp-ask" role="dialog" aria-modal="true" aria-labelledby="lpTitle">
+    <h2 id="lpTitle">Before the light pulse</h2>
+    <ul class="dv-list" id="lpList">
+      <li>It flickers 40 times a second. Flashing light can set off a seizure in people with photosensitive epilepsy, sometimes their first, and it's commonest in children and young people: keep it away from children.</li>
+      <li>End it at once, with a tap anywhere, if you feel unwell, dizzy or sick, get a headache, see odd colours or patterns, or notice a twitch. Flicker can bring on a migraine in some people: with migraines, ask your doctor first.</li>
+      <li>Sit down in a well-lit room, with the phone at arm's length, and look at the glow or near it. Never while driving, cycling or walking.</li>
+      <li>It ends by itself after ten minutes, when the sound stops, if the screen falls behind, or when Entrain goes out of sight.</li>
+    </ul>
+    <label class="so-ok lp-ok"><input type="checkbox" id="lpOk"> I don't have epilepsy, and flashing light has never given me a seizure.</label>
+    <p class="hint">Asked each time. Why it's this gentle, and the research behind it, are in Learn under Light pulse.</p>
+    <div class="pm-actions">
+      <button class="btn primary" id="lpYes" disabled>Start the light pulse</button>
+      <button class="btn" id="lpNo">Not now</button>
+    </div>
+  </div>
+</div>
+<div class="lp-stage" id="lpStage" role="dialog" aria-modal="true" aria-labelledby="lpStT" aria-describedby="lpStHint" hidden>
+  <div class="lp-glow" id="lpGlow" aria-hidden="true"></div>
+  <div class="lp-head"><h2 id="lpStT">Light pulse</h2><span class="lp-left" id="lpLeft">10:00 left</span></div>
+  <p class="lp-hint" id="lpStHint">Rest your eyes on the glow, or near it. Tap anywhere to end it; the sound plays on.</p>
+  <div class="lp-foot"><button class="btn lp-end" id="lpEnd">End the light pulse</button><button class="ses-out lp-out" id="lpOut">I need to stop</button></div>
 </div>
 
 <!-- ============ MINI PLAYER ============ -->
@@ -6092,6 +6207,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     slpSync();                           // the Sleep sounds page
     msSync();
     micBeatGuard();                      // a beat while a Bluetooth microphone listens: the phone's own instead
+    lpSync();                            // the light pulse ends with its sound (pulse.js)
   }
 
   /* ----- the mini player's own controls ----- */
@@ -6310,6 +6426,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         '<h3>How it runs</h3><p id="trHow">' + esc(trHow(t)) + "</p>" +
         aqSlot(aqTrackKinds(t)) +                                          // air the room and the tips, on focus and sleep tracks (air.js)
         (t.brk ? '<p class="si-tip nt-after">' + ntAfterHtml("After the block.") + "</p>" : "") +     // a break when the work is done (nature.js)
+        lpSlot(t) +                                                        // the light pulse, on the 40 Hz tracks (pulse.js)
         '<details class="ev si-ev"><summary>Evidence ' + dots(t.strength) + '</summary><div class="ev-body">' + esc(t.ev) + "<cite>" + esc(t.cite) + "</cite></div></details>" +
         safeBox([SAFE_BEATS]) +
       "</div>" +
@@ -6353,6 +6470,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (n) n.innerHTML = tinnitusHz()
       ? "<span>Notch centred on <b>" + Math.round(tinnitusHz()) + " Hz</b>, your tinnitus pitch.</span>" + '<button class="btn small" data-rematch="1">Match again</button>'
       : "<span>The notch needs your tinnitus pitch first: a minute with a tone you tune to match it.</span>" + '<button class="btn small" data-rematch="1">Match your pitch</button>';
+    lpUI();                                    // the light pulse's card, on a 40 Hz track (pulse.js)
   }
   function trPlay() {
     var t = trackById(TR.id);
@@ -6579,7 +6697,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      Two blocking dialogs: the headphone check before the first beat, and the tinnitus pitch
      match before the notched track. Focus goes back where it was when one closes, and Tab
      stays inside while one is open (in the others too: the safety note, Swim & dive's cautions,
-     unlocking the new techniques, and matching a bank card for Soothing Touch).
+     unlocking the new techniques, matching a bank card for Soothing Touch, and the light pulse's question).
   ---------------------------------------------------------------------------- */
 
   var lastFocus = null;
@@ -6811,7 +6929,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     // they're all blocking, so Tab has to stay inside them
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return;
-      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal", "#supModal", "#ibModal", "#stlModal", "#tcModal", "#ciModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
+      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal", "#supModal", "#ibModal", "#stlModal", "#tcModal", "#ciModal", "#lpModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
       if (!box) return;
       var all = box.querySelectorAll("button, input, a[href], select, textarea");
       var list = [], i;
@@ -6877,7 +6995,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
      Your health check: an optional, one-time list of nine conditions that change what's safe to try,
      offered once on Today and kept in Settings. It's stored on this device, and travels in backups
-     like your settings. It never stops you starting anything: what it affects shows a stronger
+     like your settings. It never stops you starting anything (but the light pulse, pulse.js, which waits
+     for it and stays off with epilepsy ticked): what it affects shows a stronger
      caution, written for what you ticked. Features name the kinds of risk they carry, and ask
        hcFlags()          which conditions are ticked: { heart, bpHigh, bpLow, epilepsy, pregnant,
                           panic, trauma, psychosis, asthma }, all false until it's answered
@@ -6931,7 +7050,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     heat: { who: ["heart", "bpLow", "pregnant"],
       txt: "Heat lowers your blood pressure and can make you faint. With {who}, leave out saunas and very hot baths unless your doctor approves; drink water, and skip them after alcohol." },
     flicker: { who: ["epilepsy"],
-      txt: "Flashing light can set off a seizure in people with photosensitive epilepsy. With {who}, leave the light pulse off unless your doctor says it's safe for you." },
+      txt: "Flashing light can set off a seizure in people with photosensitive epilepsy. With {who}, Entrain keeps the light pulse off for you; the 40 Hz sound plays as usual." },
     scent: { who: ["asthma", "pregnant"],
       txt: "Some people react to essential oils, and a strong scent can tighten the airways. With {who}, check with your doctor or midwife before you use them; if you go ahead, a drop or two in an aired room, and stop if your chest tightens." },
     imagery: { who: ["psychosis", "trauma"],
@@ -7004,7 +7123,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function hcCard() {
     var r = hcLoad(), on = r ? r.on : [];
     return '<section class="st-card" id="st-health" aria-labelledby="stH"><h2 id="stH">Health check</h2>' +
-      '<p class="st-note">Optional, and kept on this device (and in your backups). Tick anything that applies to you, and the practices it affects show a caution written for you. It never stops you starting anything: the choice stays yours. Most people have no trouble, but across 83 meditation studies, reviewed in 2020, about one person in twelve had an unwanted effect, most often anxiety or depression.</p>' +
+      '<p class="st-note">Optional, and kept on this device (and in your backups). Tick anything that applies to you, and the practices it affects show a caution written for you. It never stops you starting anything, with one exception: the light pulse on the 40 Hz tracks waits for your answers, and stays off with epilepsy ticked. Otherwise the choice stays yours. Most people have no trouble, but across 83 meditation studies, reviewed in 2020, about one person in twelve had an unwanted effect, most often anxiety or depression.</p>' +
       '<div class="hc-list" role="group" aria-label="What applies to you">' +
         HC_ITEMS.map(function (x) { return pToggle("hc-" + x[0], x[1], on.indexOf(x[0]) >= 0, x[2]); }).join("") + "</div>" +
       '<p class="hc-st" id="hcSt" aria-live="polite">' + esc(hcStTxt()) + "</p>" +
@@ -9345,6 +9464,324 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (window.__entrain) {                                       // for automated tests only
       var X = window.__entrain;
       X.LT = LT; X.ltAuto = ltAuto; X.ltResolve = ltResolve; X.ltNow = ltNow; X.ltPart = ltPart; X.ltChrono = ltChrono; X.ltHour = ltHour; X.ltSync = ltSync; X.readColors = readColors; X.BCOL = BCOL;
+    }
+  }
+  /* ------------------------------ light pulse at 40 Hz ------------------------------
+     The brain-wave guide's rhythmic light flicker: light that flickers 40 times a second draws a matching
+     40 Hz response from the brain's visual areas (MIT's research, early, in mice and in people with Alzheimer's
+     disease). The guide rates it promising but early, with a seizure risk for people with photosensitive
+     epilepsy, and asks for clear warnings, opt-in and safe frequencies. So on the 40 Hz tracks (Gamma Focus 40
+     and Working Memory Gamma), with their beat:
+
+     - It opens only once the health check is answered with epilepsy and seizures from flashing light unticked,
+       and asks again each time, in a dialog with a box to tick, before it starts. Reduced motion keeps it off.
+     - It needs a screen that draws at least 120 pictures a second, measured from the browser's frames each
+       time (and with Check this screen, free). At 60, a 40 Hz pulse can't be drawn: it comes out as a 20 Hz
+       flicker, the range most likely to set off a seizure, so it stays off there and the page says why.
+     - It's a soft glow on part of the screen, smooth (a sine wave, not on and off), and dim: the light at its
+       centre moves between 10% and 17% of the screen's full brightness, a change of 7%, where WCAG counts a
+       change of 10% or more as a flash. The glow's opacity is worked out for each picture so that the light,
+       not the pixel value, follows the sine (the sRGB curve undone), on a dark grey stage, with no red.
+     - Each picture's time comes from the browser's frame clock. A picture that comes late is drawn at the
+       middle level rather than at a phase the screen can't keep up with, and more than 12 late in a second
+       end it: an uneven pulse has slower flicker in it.
+     - It ends after ten minutes, with one tap anywhere (or Escape, Space or Enter), when Entrain goes out of
+       sight or another page opens, when the sound stops, with I need to stop, and when reduced motion is
+       turned on. The sound plays on, unless it was I need to stop.
+     A new technique: Start opens with a donation while this device is locked; the card, its cautions and
+     Check this screen are free. Its minutes go into the track's history entry (lpTake, history.js).
+  ---------------------------------------------------------------------------------- */
+  var LP_NAME = "Light pulse at 40 Hz";
+  var LP_HZ = 40;                  // pulses a second, with the 40 Hz tracks' beat
+  var LP_MIN = 118;                // pictures a second the screen must draw: 120, with room for a 119.9 Hz screen measured a hair slow
+  var LP_MAX_MS = 6e5;             // ten minutes at most
+  var LP_MID = 0.135, LP_AMP = 0.035;    // light at the glow's centre (relative luminance, 1 = the screen's white): 0.10 to 0.17
+  var LP_BG = 6;                   // the stage's grey, of 255 (styles.css .lp-stage)
+  var LP_RAMP = 2000;              // ms: the pulse grows from nothing over the first two seconds
+  var LP_LATE = 1.5;               // a picture more than one and a half frames after the last is late
+  var LP_LATE_MAX = 12;            // late pictures in any second that end it
+  var LP_WHAT = "A soft glow in the middle of the screen brightens and dims 40 times a second, with the beat, for up to ten minutes. " +
+    "In MIT's research, light flickering at 40 Hz drew a matching rhythm from the brain; that research is early, in mice and in people with " +
+    "Alzheimer's disease, with lights far stronger than this. This glow is gentle on purpose: low in contrast, smooth, and on part of the screen.";
+  var SAFE_FLICKER = "Flashing light can set off a seizure in people with photosensitive epilepsy, sometimes their first: the light pulse isn't for anyone with epilepsy, or for children. " +
+    "Use it sitting down in a well-lit room, the phone at arm's length, and end it with a tap if you feel unwell, get a headache or see odd colours or patterns.";
+  // what a pulse ended by says, in the toast and on the card
+  var LP_END = {
+    tap: "The light pulse has ended. The sound plays on: pause it in the player whenever you like.",
+    time: "Ten minutes: the light pulse has ended, and the sound plays on.",
+    hidden: "The light pulse ended when Entrain went out of sight.",
+    nav: "The light pulse ended as you left the page.",
+    track: "The light pulse ended with the sound.",
+    slow: "The screen fell behind, so the light pulse ended: drawn unevenly, a pulse has slower flicker in it. Battery saver off and other apps closed may help.",
+    motion: "Your device now asks for reduced motion, so the light pulse ended.",
+    settle: ""
+  };
+  /* on: the stage is up. id: its track. hz: the screen's pictures a second as last measured this visit (null not yet,
+     0 couldn't tell). t0, last: the frame clock at its first and latest picture; cnt: ms of it already in the history;
+     late: the late pictures' times in the last second; secs: pulse seconds per track not yet in the history;
+     trace: each picture's time and light, while the debug hook is on (for the tests) */
+  var LP = { on: false, id: "", ask: "", hz: null, measuring: false, mgen: 0, raf: 0, t0: null, last: 0, wall0: 0, cnt: 0, frameMs: 0, late: [], left: -1,
+    secs: {}, why: "", trace: null, mq: null, glow: null, hideT: 0 };
+
+  // the 40 Hz tracks: a steady 40 Hz beat
+  function lpFits(t) { return !!t && t.beat === LP_HZ && !t.notch && typeof t.rampFrom !== "number" && !t.pts && !t.practice; }
+  function lpRM() { return LP.mq ? !!LP.mq.matches : RM; }
+  // why it can't start now: reduced motion, the health check unanswered, epilepsy ticked, a screen too slow or one it couldn't measure; "" when it can
+  function lpBlock() {
+    if (lpRM()) return "motion";
+    if (!hcAnswered()) return "health";
+    if (hcFlags().epilepsy) return "epilepsy";
+    if (LP.hz === 0) return "unknown";
+    if (LP.hz !== null && LP.hz < LP_MIN) return "slow";
+    return "";
+  }
+
+  /* ----- the light: sRGB's curve, both ways, and the glow's opacity for a light ----- */
+  function lpEnc(L) { return L <= 0.0031308 ? 12.92 * L : 1.055 * Math.pow(L, 1 / 2.4) - 0.055; }
+  function lpLin(v) { return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }
+  // the browser blends the white glow over the grey stage on the encoded values: this opacity gives light L at its centre
+  function lpAlpha(L) { var b = LP_BG / 255; return (lpEnc(L) - b) / (1 - b); }
+  // the light at time t (ms from the first picture), held at the middle on a late picture, growing over the first two seconds
+  function lpLum(t, late) {
+    if (late) return LP_MID;
+    return LP_MID + LP_AMP * Math.min(1, t / LP_RAMP) * Math.sin(2 * Math.PI * LP_HZ * t / 1000);
+  }
+
+  /* ----- the screen: how many pictures a second it draws ----- */
+  // the browser's frame times → pictures a second (from the middle interval, once most intervals agree), or 0
+  function lpHzOf(ts) {
+    var d = [], i;
+    for (i = 4; i < ts.length; i++) d.push(ts[i] - ts[i - 1]);     // the first few frames after a tap can stumble
+    if (d.length < 20) return 0;
+    var s = d.slice().sort(function (a, b) { return a - b; }), m = s[s.length >> 1];
+    if (!(m > 0)) return 0;
+    var near = d.filter(function (x) { return Math.abs(x - m) <= m * 0.15; }).length;
+    return near >= d.length * 0.75 ? 1000 / m : 0;
+  }
+  function lpMeasure(cb) {
+    if (LP.measuring || LP.on) return;
+    LP.measuring = true;
+    lpUI();
+    var ts = [], gen = ++LP.mgen, guard = 0;
+    var fin = function (hz) {
+      if (gen !== LP.mgen) return;
+      LP.mgen++;
+      clearTimeout(guard);
+      LP.measuring = false;
+      LP.hz = hz;
+      lpUI();
+      if (cb) cb(hz);
+    };
+    guard = setTimeout(function () { fin(0); }, 3000);     // a browser that gives no frames (out of sight): it couldn't tell
+    var step = function (now) {
+      if (gen !== LP.mgen) return;
+      if (document.hidden) { fin(0); return; }
+      ts.push(now);
+      if (ts.length < 68 && now - ts[0] < 1300) requestAnimationFrame(step);
+      else fin(lpHzOf(ts));
+    };
+    requestAnimationFrame(step);
+  }
+  function lpSlowTxt(hz) {
+    var n = Math.round(hz);
+    return "This screen draws about " + n + " pictures a second. A pulse 40 times a second needs at least 120 to come out even: " +
+      (n >= 50 && n <= 70 ? "at " + n + " it would come out as a flicker about 20 times a second, in the range most likely to set off a seizure, "
+        : "here it would come out uneven, with slower flicker in it, ") +
+      "so the light pulse stays off on this screen. If yours has a 120 Hz or smooth display setting, turn it on, and battery saver off, then check again. " +
+      "Some browsers draw pages at 60 a second even on a faster screen.";
+  }
+
+  /* ----- the card on a 40 Hz track's page ----- */
+  function lpSlot(t) {
+    if (!lpFits(t)) return "";
+    return '<section class="lp-card" id="lpCard" aria-labelledby="lpH">' +
+      '<h3 id="lpH"><svg class="i" aria-hidden="true"><use href="#i-sun"/></svg>' + esc(LP_NAME) + ' <span class="lt-exp">Experimental</span></h3>' +
+      "<p>" + esc(LP_WHAT) + ' <a href="#l-flicker">Why, and the research</a></p>' +
+      '<p class="lp-st" id="lpSt" aria-live="polite"></p>' +
+      '<div class="lp-acts"><button class="btn primary" id="lpGo"></button><button class="btn" id="lpCheck">Check this screen</button></div>' +
+      '<p class="lp-note">It plays the track too, if it isn\'t playing yet.</p>' +
+      safeBox([SAFE_FLICKER]) + '<div id="lpHc"></div>' +
+      "</section>";
+  }
+  // what the card says now, and whether Start can be pressed
+  function lpSays() {
+    var why = lpBlock();
+    if (LP.measuring) return esc("Checking this screen…");
+    if (why === "motion") return esc("Your device asks for reduced motion, so the light pulse stays off.");
+    if (why === "health") return esc("It opens once your health check is answered, with epilepsy and seizures from flashing light left unticked.") +
+      ' <a href="#st-health">Answer the health check</a>';
+    if (why === "epilepsy") return esc("Your health check lists epilepsy or seizures from flashing light, so the light pulse stays off for you. The 40 Hz sound is still yours to play.");
+    if (why === "unknown") return esc("Entrain couldn't tell how fast this screen draws, so the light pulse stays off. Check again with the screen on and Entrain in front.");
+    if (why === "slow") return esc(lpSlowTxt(LP.hz));
+    if (LP.hz) return esc("This screen draws about " + Math.round(LP.hz) + " pictures a second: enough for an even pulse 40 times a second.");
+    return esc("It needs a screen that draws at least 120 pictures a second: Entrain checks yours each time you start, or now.");
+  }
+  function lpUI() {
+    var c = $("#lpCard");
+    if (!c) return;
+    var why = lpBlock(), go = $("#lpGo"), st = $("#lpSt"), h = lpSays();
+    if (st.innerHTML !== h) st.innerHTML = h;
+    var gh = '<svg class="i" aria-hidden="true"><use href="#i-sun"/></svg>Start the light pulse' + supTag();
+    if (go.innerHTML !== gh) go.innerHTML = gh;
+    go.disabled = !!why || LP.measuring || LP.on;
+    $("#lpCheck").disabled = LP.measuring || LP.on;
+    var hc = hcBox(["flicker"]);
+    if ($("#lpHc").innerHTML !== hc) $("#lpHc").innerHTML = hc;
+  }
+
+  /* ----- starting: the gate, the screen, the dialog, then the sound and the stage ----- */
+  function lpGo() {
+    var t = trackById(TR.id);
+    if (!lpFits(t) || LP.on || LP.measuring || lpBlock()) { lpUI(); return; }
+    supGate(LP_NAME, function () {
+      lpMeasure(function () {
+        if (lpBlock() || !LP.hz) return;          // the card says why
+        lpAsk(t);
+      });
+    });
+  }
+  // asked fresh each time: nothing ticked, Start waiting for the tick
+  function lpAsk(t) {
+    LP.ask = t.id;
+    $("#lpOk").checked = false;
+    $("#lpYes").disabled = true;
+    var g = $("#lpGo");                      // waiting while the screen was measured, it lost focus: it gets it back when this closes
+    if (g && !g.disabled) try { g.focus({ preventScroll: true }); } catch (e) {}
+    openDialog("#lpModal");
+    $("#lpModal .modal-card").scrollTop = 0;
+    setTimeout(function () { try { $("#lpOk").focus(); } catch (e) {} }, 30);
+  }
+  function lpAskClose() { if (!$("#lpModal").hidden) closeDialog("#lpModal"); LP.ask = ""; }
+  function lpBegin() {
+    var t = trackById(LP.ask);
+    lpAskClose();
+    if (!t || trackById(TR.id) !== t || curView !== "track" || lpBlock() || !LP.hz) return;
+    var mine = A.track && A.track.id === t.id;
+    if (!(mine && A.playing)) {
+      if (mine && A.elapsed > 0) play();
+      else gate(function () { load(t); }, bmTrackMode(t));        // the headphone check first, for a binaural beat that hasn't had one
+    }
+    if (A.track && A.track.id === t.id && A.playing) lpShow(t);
+    else toast("The light pulse starts with the sound: once the track is playing, start the light pulse again.", { ms: 6000 });
+  }
+
+  /* ----- the stage ----- */
+  function lpShow(t) {
+    LP.on = true; LP.id = t.id; LP.t0 = null; LP.last = 0; LP.cnt = 0; LP.late = []; LP.left = -1; LP.why = "";
+    LP.wall0 = Date.now();
+    LP.frameMs = 1000 / LP.hz;
+    LP.trace = store.get("debug") ? [] : null;
+    LP.glow.style.opacity = lpAlpha(LP_MID).toFixed(4);
+    bSetT("#lpLeft", fmt(LP_MAX_MS / 1000) + " left");
+    clearTimeout(LP.hideT);
+    $("#lpStage").hidden = false;
+    document.body.classList.add("lp-on");
+    lpUI();
+    LP.raf = requestAnimationFrame(lpFrame);
+    setTimeout(function () { if (LP.on) try { $("#lpEnd").focus({ preventScroll: true }); } catch (e) {} }, 30);
+  }
+  function lpFrame(ts) {
+    if (!LP.on) return;
+    LP.raf = requestAnimationFrame(lpFrame);
+    if (LP.t0 === null) { LP.t0 = ts; LP.last = ts; }
+    var dt = ts - LP.last, t = ts - LP.t0, late = dt > LP.frameMs * LP_LATE;
+    LP.last = ts;
+    if (late) LP.late.push(ts);
+    while (LP.late.length && ts - LP.late[0] > 1000) LP.late.shift();
+    if (LP.late.length > LP_LATE_MAX) { lpEnd("slow"); return; }
+    if (t >= LP_MAX_MS || Date.now() - LP.wall0 >= LP_MAX_MS + 2000) { lpEnd("time"); return; }
+    var L = lpLum(t, late);
+    LP.glow.style.opacity = lpAlpha(L).toFixed(4);
+    if (LP.trace) { LP.trace.push([Math.round(t * 100) / 100, +L.toFixed(5), late ? 1 : 0]); if (LP.trace.length > 2400) LP.trace.splice(0, 1200); }
+    var left = Math.ceil((LP_MAX_MS - t) / 1000);
+    if (left !== LP.left) { LP.left = left; bSetT("#lpLeft", fmt(left) + " left"); }
+  }
+  function lpEnd(why) {
+    if (!LP.on) return;
+    LP.on = false;
+    cancelAnimationFrame(LP.raf); LP.raf = 0;
+    if (LP.t0 !== null) LP.secs[LP.id] = (LP.secs[LP.id] || 0) + Math.max(0, LP.last - LP.t0 - LP.cnt) / 1000;
+    LP.glow.style.opacity = "0";
+    // a tap's own click comes after it: the dark stage stays a moment to catch it, so it can't press what's underneath
+    // (Start on the page, or Settle's buttons)
+    clearTimeout(LP.hideT);
+    if (why === "tap" || why === "settle") LP.hideT = setTimeout(lpHide, 350); else lpHide();
+    LP.why = why;
+    lpUI();
+    if (LP_END[why]) toast(LP_END[why], { ms: why === "slow" ? 9000 : 6000 });
+    var g = $("#lpGo");
+    if (g && why !== "settle" && why !== "nav" && why !== "hidden") try { (g.disabled ? $("#lpCheck") : g).focus({ preventScroll: true }); } catch (e) {}
+  }
+  function lpHide() { if (LP.on) return; $("#lpStage").hidden = true; document.body.classList.remove("lp-on"); }
+  // the sound stopped, paused or changed (playSync): the pulse goes with it
+  function lpSync() {
+    if (LP.on && !(A.playing && A.track && A.track.id === LP.id)) lpEnd("track");
+  }
+  // seconds of light pulse with this track since it was last written down, the running pulse's too (history.js)
+  function lpTake(id) {
+    var s = LP.secs[id] || 0;
+    LP.secs = {};
+    if (LP.on && LP.id === id && LP.t0 !== null) { s += Math.max(0, LP.last - LP.t0 - LP.cnt) / 1000; LP.cnt = LP.last - LP.t0; }
+    return s;
+  }
+
+  function lpInit() {
+    LP.glow = $("#lpGlow");
+    LP.mq = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+    var mqGo = function () { if (lpRM() && LP.on) lpEnd("motion"); lpUI(); };
+    if (LP.mq) { if (LP.mq.addEventListener) LP.mq.addEventListener("change", mqGo); else if (LP.mq.addListener) LP.mq.addListener(mqGo); }
+    document.addEventListener("click", function (e) {
+      if (e.target.closest("#lpGo")) lpGo();
+      else if (e.target.closest("#lpCheck")) lpMeasure(null);
+    });
+    // the dialog before each pulse
+    $("#lpOk").addEventListener("change", function () { $("#lpYes").disabled = !this.checked; });
+    $("#lpYes").addEventListener("click", function () { if ($("#lpOk").checked) lpBegin(); });
+    $("#lpNo").addEventListener("click", lpAskClose);
+    $("#lpModal").addEventListener("click", function (e) { if (e.target === this) lpAskClose(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#lpModal").hidden) lpAskClose(); });
+    // the stage: one tap anywhere ends it; I need to stop ends it and settles
+    var stage = $("#lpStage");
+    stage.addEventListener("pointerdown", function (e) {
+      if (!LP.on) return;
+      e.preventDefault();
+      if (e.target.closest("#lpOut")) { lpEnd("settle"); settleNow(); }
+      else lpEnd("tap");
+    });
+    stage.addEventListener("click", function (e) {           // a button pressed from the keyboard
+      if (!LP.on) return;
+      if (e.target.closest("#lpOut")) { lpEnd("settle"); settleNow(); }
+      else lpEnd("tap");
+    });
+    // while it's up, keys go to it first and no further (the page's own shortcuts wait underneath):
+    // Escape, Space or Enter ends it, Tab stays on its two buttons
+    window.addEventListener("keydown", function (e) {
+      if (!LP.on) return;
+      e.stopPropagation();
+      if (e.key === "Tab") {
+        e.preventDefault();
+        ($("#lpEnd") === document.activeElement ? $("#lpOut") : $("#lpEnd")).focus();
+        return;
+      }
+      if (e.key === "Escape" || e.key === " " || e.key === "Enter" || e.code === "Space") {
+        e.preventDefault();
+        if (document.activeElement === $("#lpOut") && e.key !== "Escape") { lpEnd("settle"); settleNow(); }
+        else lpEnd("tap");
+      }
+    }, true);
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) return;
+      if (LP.on) lpEnd("hidden");
+      if (LP.measuring) { LP.mgen++; LP.measuring = false; lpUI(); }       // a measure cut short tells nothing
+    });
+    window.addEventListener("pagehide", function () { if (LP.on) lpEnd("hidden"); });
+    window.addEventListener("hashchange", function () { if (LP.on) lpEnd("nav"); });
+    SETTLE_HUSH.push(function () { if (LP.on) lpEnd("settle"); });              // I need to stop, from anywhere
+    SUP_EXTRA.push({ name: LP_NAME, href: "#track/gamma-40" });              // Settings' list of what the donation unlocks
+    if (window.__entrain) {
+      var X = window.__entrain;
+      X.LP = LP; X.lpAlpha = lpAlpha; X.lpEnc = lpEnc; X.lpLin = lpLin; X.lpLum = lpLum; X.lpHzOf = lpHzOf; X.lpBlock = lpBlock; X.lpEnd = lpEnd; X.lpFits = lpFits;
+      X.LP_MID = LP_MID; X.LP_AMP = LP_AMP; X.LP_BG = LP_BG; X.LP_MIN = LP_MIN; X.LP_MAX_MS = LP_MAX_MS;
     }
   }
   /* ---------------------- your own breathing patterns ----------------------
@@ -13512,7 +13949,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "33287b8d";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "752552d3";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -25832,6 +26269,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("sound", "Beat sound", "Settings · binaural, monaural or isochronic",
       ["Binaural beats need headphones; monaural beats and isochronic tones play on speakers too. Choose how every beat plays here, or for one practice under its Options."], "#st-beats",
       { ic: "sounds", col: "var(--relax)", w: 1, tags: "isochronic monaural binaural speaker speakers headphones tone tones pulse pulsing mode sound", sup: true }));
+    out.push(fdEntry("sound", LP_NAME, "Gamma Focus 40 and Working Memory Gamma · a soft glow, on a 120 Hz screen",
+      ["A soft glow on part of the screen brightens and dims 40 times a second with the 40 Hz beat, for up to ten minutes. It waits for your health check, stays off with epilepsy, asks each time and needs a screen that draws 120 pictures a second. Experimental."], "#track/gamma-40",
+      { ic: "sun", col: "var(--stim)", w: 1, alias: "Flicker", tags: "flicker flickering flash flashing light strobe glow gamma 40hz hz mit genus visual stimulation entrainment alzheimer photic 120hz refresh rate experimental", sup: true }));
     out.push(fdEntry("sound", TOOLS.sleep.name, "Sleep · a sound that fades out over 15 to 60 min, then ends", [TOOLS.sleep.blurb, slpHowTxt(30)], TOOLS.sleep.href,
       { ic: "moon", col: "var(--relax)", w: 1.1, tags: "sleep timer noise pink white rain crickets stream water fire fade fading fall asleep night bedtime insomnia", sup: true }));
     out.push(fdEntry("sound", "Nature sounds", "Background sound · birdsong, a stream, wind and fire",
@@ -27357,6 +27797,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     snd: "string",                                                       // snd: what Sleep sounds played (sleepsounds.js)
     cold: "number",                                                      // cold: the seconds of cold in Cold Finish (cold.js)
     still: "number",                                                     // still: the share of a session lain still, in % (motion.js)
+    lp: "number",                                                        // lp: the seconds of the light pulse with a 40 Hz track (pulse.js)
     alpha: "number", theta: "number",                                    // a headband's alpha and theta, first minute to last two, in % (eeg.js)
     mood0: "number", mood1: "number", str0: "number", str1: "number",    // your check-in, mood and stress before and after, 0 to 10 (own.js)
     xid: "number", xv: "string" };                                       // a personal experiment's session: which experiment, and which way, A or B (own.js)
@@ -27410,12 +27851,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!t || t.practice) return;
     var el = A.playing && A.ctx ? A.ctx.currentTime - A.startedAt : A.elapsed;
     var from = A.hAt || 0, secs = el - from, ci = ciTake("track", t);    // your check-in as it began, if you keep them (own.js)
+    var lp = lpTake(t.id);                       // the light pulse's seconds with it (pulse.js)
     if (secs < 60) return;
     A.hAt = el;                                  // a paused track logged as the page goes away isn't logged twice
     var e = { k: "track", id: t.id, secs: secs, full: !t.then && el >= t.minutes * 60 - 10 };
     if (t.id === "prime" || t.id === "custom") { e.beat = +t.beat.toFixed(1); e.band = t.band; }
     if (t.sleep) e.snd = t.snd;                   // Sleep sounds: which sound
     else if (A.mode !== "binaural") e.bm = A.mode;     // how it played, when not binaural (beatmode.js)
+    if (lp >= 30) e.lp = Math.round(lp);         // with the light pulse for half a minute or more
     hTrackHr(e, from, el);
     hAdd(ciTag(e, ci));
     if (ci) ciAfterSoon(e, t.name);              // and how you feel now (own.js)
@@ -27459,6 +27902,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (e.k === "breath" && e.rate) p.push(e.rate + " a minute");
     if (e.beat) p.push(e.beat + " Hz " + (e.band || "").toLowerCase());
     if (e.bm === "monaural" || e.bm === "isochronic") p.push(e.bm);
+    if (e.lp) p.push("light pulse " + hMins(e.lp));
     if (e.snd) p.push(slpSound(e.snd)[2]);
     if (e.hr0 && e.hr1) p.push("heart rate " + e.hr0 + " → " + e.hr1);
     else if (e.hrAvg) p.push("heart rate " + e.hrAvg);
@@ -29063,7 +29507,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit], ["the movement practices", mvtInit],["music", musInit], ["your own music", ymInit], ["breath-led sound", blsInit], ["scenes", scnInit], ["the screen light", ltInit], ["the phone's camera", camInit], ["the motion sensor", motInit], ["the headband", egInit], ["room air and the oximeter", aqInit], ["check-ins, the daily rhythm and experiments", owInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit], ["the movement practices", mvtInit],["music", musInit], ["your own music", ymInit], ["breath-led sound", blsInit], ["scenes", scnInit], ["the screen light", ltInit], ["the light pulse", lpInit],["the phone's camera", camInit], ["the motion sensor", motInit], ["the headband", egInit], ["room air and the oximeter", aqInit], ["check-ins, the daily rhythm and experiments", owInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

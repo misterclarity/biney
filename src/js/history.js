@@ -48,6 +48,7 @@
     snd: "string",                                                       // snd: what Sleep sounds played (sleepsounds.js)
     cold: "number",                                                      // cold: the seconds of cold in Cold Finish (cold.js)
     still: "number",                                                     // still: the share of a session lain still, in % (motion.js)
+    lp: "number",                                                        // lp: the seconds of the light pulse with a 40 Hz track (pulse.js)
     alpha: "number", theta: "number",                                    // a headband's alpha and theta, first minute to last two, in % (eeg.js)
     mood0: "number", mood1: "number", str0: "number", str1: "number",    // your check-in, mood and stress before and after, 0 to 10 (own.js)
     xid: "number", xv: "string" };                                       // a personal experiment's session: which experiment, and which way, A or B (own.js)
@@ -101,12 +102,14 @@
     if (!t || t.practice) return;
     var el = A.playing && A.ctx ? A.ctx.currentTime - A.startedAt : A.elapsed;
     var from = A.hAt || 0, secs = el - from, ci = ciTake("track", t);    // your check-in as it began, if you keep them (own.js)
+    var lp = lpTake(t.id);                       // the light pulse's seconds with it (pulse.js)
     if (secs < 60) return;
     A.hAt = el;                                  // a paused track logged as the page goes away isn't logged twice
     var e = { k: "track", id: t.id, secs: secs, full: !t.then && el >= t.minutes * 60 - 10 };
     if (t.id === "prime" || t.id === "custom") { e.beat = +t.beat.toFixed(1); e.band = t.band; }
     if (t.sleep) e.snd = t.snd;                   // Sleep sounds: which sound
     else if (A.mode !== "binaural") e.bm = A.mode;     // how it played, when not binaural (beatmode.js)
+    if (lp >= 30) e.lp = Math.round(lp);         // with the light pulse for half a minute or more
     hTrackHr(e, from, el);
     hAdd(ciTag(e, ci));
     if (ci) ciAfterSoon(e, t.name);              // and how you feel now (own.js)
@@ -150,6 +153,7 @@
     if (e.k === "breath" && e.rate) p.push(e.rate + " a minute");
     if (e.beat) p.push(e.beat + " Hz " + (e.band || "").toLowerCase());
     if (e.bm === "monaural" || e.bm === "isochronic") p.push(e.bm);
+    if (e.lp) p.push("light pulse " + hMins(e.lp));
     if (e.snd) p.push(slpSound(e.snd)[2]);
     if (e.hr0 && e.hr1) p.push("heart rate " + e.hr0 + " → " + e.hr1);
     else if (e.hrAvg) p.push("heart rate " + e.hrAvg);

@@ -50,6 +50,7 @@
         '<h3>How it runs</h3><p id="trHow">' + esc(trHow(t)) + "</p>" +
         aqSlot(aqTrackKinds(t)) +                                          // air the room and the tips, on focus and sleep tracks (air.js)
         (t.brk ? '<p class="si-tip nt-after">' + ntAfterHtml("After the block.") + "</p>" : "") +     // a break when the work is done (nature.js)
+        lpSlot(t) +                                                        // the light pulse, on the 40 Hz tracks (pulse.js)
         '<details class="ev si-ev"><summary>Evidence ' + dots(t.strength) + '</summary><div class="ev-body">' + esc(t.ev) + "<cite>" + esc(t.cite) + "</cite></div></details>" +
         safeBox([SAFE_BEATS]) +
       "</div>" +
@@ -93,6 +94,7 @@
     if (n) n.innerHTML = tinnitusHz()
       ? "<span>Notch centred on <b>" + Math.round(tinnitusHz()) + " Hz</b>, your tinnitus pitch.</span>" + '<button class="btn small" data-rematch="1">Match again</button>'
       : "<span>The notch needs your tinnitus pitch first: a minute with a tone you tune to match it.</span>" + '<button class="btn small" data-rematch="1">Match your pitch</button>';
+    lpUI();                                    // the light pulse's card, on a 40 Hz track (pulse.js)
   }
   function trPlay() {
     var t = trackById(TR.id);

@@ -139,6 +139,9 @@
     out.push(fdEntry("sound", "Beat sound", "Settings · binaural, monaural or isochronic",
       ["Binaural beats need headphones; monaural beats and isochronic tones play on speakers too. Choose how every beat plays here, or for one practice under its Options."], "#st-beats",
       { ic: "sounds", col: "var(--relax)", w: 1, tags: "isochronic monaural binaural speaker speakers headphones tone tones pulse pulsing mode sound", sup: true }));
+    out.push(fdEntry("sound", LP_NAME, "Gamma Focus 40 and Working Memory Gamma · a soft glow, on a 120 Hz screen",
+      ["A soft glow on part of the screen brightens and dims 40 times a second with the 40 Hz beat, for up to ten minutes. It waits for your health check, stays off with epilepsy, asks each time and needs a screen that draws 120 pictures a second. Experimental."], "#track/gamma-40",
+      { ic: "sun", col: "var(--stim)", w: 1, alias: "Flicker", tags: "flicker flickering flash flashing light strobe glow gamma 40hz hz mit genus visual stimulation entrainment alzheimer photic 120hz refresh rate experimental", sup: true }));
     out.push(fdEntry("sound", TOOLS.sleep.name, "Sleep · a sound that fades out over 15 to 60 min, then ends", [TOOLS.sleep.blurb, slpHowTxt(30)], TOOLS.sleep.href,
       { ic: "moon", col: "var(--relax)", w: 1.1, tags: "sleep timer noise pink white rain crickets stream water fire fade fading fall asleep night bedtime insomnia", sup: true }));
     out.push(fdEntry("sound", "Nature sounds", "Background sound · birdsong, a stream, wind and fire",

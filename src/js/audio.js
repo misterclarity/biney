@@ -516,6 +516,7 @@
     slpSync();                           // the Sleep sounds page
     msSync();
     micBeatGuard();                      // a beat while a Bluetooth microphone listens: the phone's own instead
+    lpSync();                            // the light pulse ends with its sound (pulse.js)
   }
 
   /* ----- the mini player's own controls ----- */

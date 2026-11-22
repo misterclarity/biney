@@ -1988,6 +1988,35 @@
   .b-lt .chip .sup-ic{margin-left:5px}
   .lt-ev .strength{vertical-align:middle;margin-left:4px}
   .lt-exp{display:inline-block;font-size:11px;font-weight:750;padding:2px 8px;border-radius:999px;margin-left:4px;color:var(--ther);background:color-mix(in srgb,var(--ther) 14%,transparent)}
+  /* ---------- the light pulse at 40 Hz (pulse.js): its card on the 40 Hz tracks, the question before it, and its stage ---------- */
+  .lp-card{margin-top:16px;padding:14px 16px 16px;border-radius:14px;background:var(--bg-2);border:1px solid var(--line-soft)}
+  .lp-card h3{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:0}
+  .lp-card h3 svg.i{width:18px;height:18px;color:var(--stim)}
+  .lp-card > p{color:var(--text-dim);font-size:14px;line-height:1.5;margin:8px 0 0}
+  .lp-card a{display:inline-block;min-height:24px;color:var(--text);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+  .lp-card > p.lp-st{color:var(--text);font-size:13.5px;margin-top:10px}
+  .lp-card > p.lp-note{font-size:12.5px;color:var(--text-faint);margin-top:6px}
+  .lp-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .lp-acts .btn svg.i{width:17px;height:17px}
+  .lp-acts .btn .sup-tag{margin-left:2px}
+  .lp-ok{margin:4px 0 12px;min-height:44px;align-items:center;color:var(--text)}
+  .lp-ask .hint{margin:0}
+  /* the stage: dark grey all over, no red, the glow's opacity set picture by picture; above everything, the light's veil too */
+  .lp-stage{position:fixed;inset:0;z-index:2147483600;background:#060606;color:#8a8f98;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    padding:calc(env(safe-area-inset-top,0px) + 18px) 16px calc(env(safe-area-inset-bottom,0px) + 22px);text-align:center;cursor:pointer;touch-action:none;
+    -webkit-user-select:none;user-select:none;overflow:hidden}
+  .lp-stage[hidden]{display:none}
+  .lp-glow{position:absolute;left:50%;top:50%;width:min(62vmin,340px);height:min(62vmin,340px);transform:translate(-50%,-50%);border-radius:50%;
+    background:radial-gradient(closest-side,#fff 0,#fff 40%,rgba(255,255,255,0) 100%);opacity:0;will-change:opacity;pointer-events:none}
+  .lp-head,.lp-hint,.lp-foot{position:relative;z-index:1}
+  .lp-head{display:flex;flex-direction:column;align-items:center;gap:2px}
+  .lp-head h2{font-size:17px;font-weight:750;color:#a4a9b2;margin:0}
+  .lp-left{font-size:13px;font-variant-numeric:tabular-nums}
+  .lp-hint{font-size:13.5px;line-height:1.45;max-width:34ch;margin:8px auto 0}
+  .lp-foot{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:auto}
+  .lp-stage .lp-end{background:#14161a;border-color:#2a2d33;color:#b9bec7}
+  .lp-stage .lp-end:hover{background:#1b1e23}
+  body.lp-on{overflow:hidden}
   /* ---------- the phone alone (camera.js, motion.js): a fingertip on the camera, the phone on your belly, stillness ---------- */
   .hr-cam{flex:1 1 100%;min-width:0;border-top:1px solid var(--line-soft);padding-top:14px}
   .hr-cam[hidden],.cam-on[hidden],.cam-off[hidden],.cam-err[hidden]{display:none}

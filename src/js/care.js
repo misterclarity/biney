@@ -3,7 +3,8 @@
 
      Your health check: an optional, one-time list of nine conditions that change what's safe to try,
      offered once on Today and kept in Settings. It's stored on this device, and travels in backups
-     like your settings. It never stops you starting anything: what it affects shows a stronger
+     like your settings. It never stops you starting anything (but the light pulse, pulse.js, which waits
+     for it and stays off with epilepsy ticked): what it affects shows a stronger
      caution, written for what you ticked. Features name the kinds of risk they carry, and ask
        hcFlags()          which conditions are ticked: { heart, bpHigh, bpLow, epilepsy, pregnant,
                           panic, trauma, psychosis, asthma }, all false until it's answered
@@ -57,7 +58,7 @@
     heat: { who: ["heart", "bpLow", "pregnant"],
       txt: "Heat lowers your blood pressure and can make you faint. With {who}, leave out saunas and very hot baths unless your doctor approves; drink water, and skip them after alcohol." },
     flicker: { who: ["epilepsy"],
-      txt: "Flashing light can set off a seizure in people with photosensitive epilepsy. With {who}, leave the light pulse off unless your doctor says it's safe for you." },
+      txt: "Flashing light can set off a seizure in people with photosensitive epilepsy. With {who}, Entrain keeps the light pulse off for you; the 40 Hz sound plays as usual." },
     scent: { who: ["asthma", "pregnant"],
       txt: "Some people react to essential oils, and a strong scent can tighten the airways. With {who}, check with your doctor or midwife before you use them; if you go ahead, a drop or two in an aired room, and stop if your chest tightens." },
     imagery: { who: ["psychosis", "trauma"],
@@ -130,7 +131,7 @@
   function hcCard() {
     var r = hcLoad(), on = r ? r.on : [];
     return '<section class="st-card" id="st-health" aria-labelledby="stH"><h2 id="stH">Health check</h2>' +
-      '<p class="st-note">Optional, and kept on this device (and in your backups). Tick anything that applies to you, and the practices it affects show a caution written for you. It never stops you starting anything: the choice stays yours. Most people have no trouble, but across 83 meditation studies, reviewed in 2020, about one person in twelve had an unwanted effect, most often anxiety or depression.</p>' +
+      '<p class="st-note">Optional, and kept on this device (and in your backups). Tick anything that applies to you, and the practices it affects show a caution written for you. It never stops you starting anything, with one exception: the light pulse on the 40 Hz tracks waits for your answers, and stays off with epilepsy ticked. Otherwise the choice stays yours. Most people have no trouble, but across 83 meditation studies, reviewed in 2020, about one person in twelve had an unwanted effect, most often anxiety or depression.</p>' +
       '<div class="hc-list" role="group" aria-label="What applies to you">' +
         HC_ITEMS.map(function (x) { return pToggle("hc-" + x[0], x[1], on.indexOf(x[0]) >= 0, x[2]); }).join("") + "</div>" +
       '<p class="hc-st" id="hcSt" aria-live="polite">' + esc(hcStTxt()) + "</p>" +
