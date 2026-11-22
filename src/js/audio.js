@@ -385,6 +385,7 @@
 
   function finish() {
     fadeOutAndStop("Session complete: " + Math.round(A.track.minutes) + " min of " + A.track.name + ".", A.track.fade || FADE_OUT);
+    if (A.track.brk) ntAfterWork();                 // a block of work done: a Restoration Break to offer (nature.js)
   }
 
   /* The prime block has elapsed. Cue the user to begin, then do whatever they
@@ -522,7 +523,11 @@
       if (!A.track) return;
       if (A.playing) pause(); else play();
     });
-    $("#stop").addEventListener("click", function () { hardStop(false); });
+    $("#stop").addEventListener("click", function () {
+      var work = A.phase === "task" && A.track && !A.track.practice;     // the custom primer's working phase, ended by you
+      hardStop(false);
+      if (work) ntAfterWork();                      // a Restoration Break to offer (nature.js)
+    });
 
     $("#vol").addEventListener("input", function () {
       if (A.ctx && A.playing) {

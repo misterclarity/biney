@@ -1245,6 +1245,9 @@
   .ses[data-dim="1"] .ses-b.main{background:#1f2a48;color:#7f8bb0}
   .ses[data-dim="1"] .ses-fill{opacity:.25}
   body:has(.ses[data-dim="1"]:not([hidden])).immersive{background:#04060c}
+  /* a break's scene alone (nature.js): after its opening line, no step name, captions or words; the controls stay */
+  .ses[data-bare="1"] .ses-cap,.ses[data-bare="1"] #sStepTxt,.ses[data-bare="1"] .ses-live{visibility:hidden}
+  .ses[data-bare="1"] .ses-left{opacity:.45}
 
   /* ---------- settings ---------- */
   .st{display:grid;gap:14px;max-width:760px;--pcol:var(--accent)}

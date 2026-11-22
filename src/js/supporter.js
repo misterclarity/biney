@@ -293,6 +293,7 @@
     ltUI();                                                   // the screen light's buttons and cups, and the light itself (light.js)
     camUI();                                                  // the Heart page's camera button (camera.js)
     motUI();                                                  // Phone on your belly and Stillness, and their cups (motion.js)
+    ntUI();                                                   // the Restoration Break's links on the work pages (nature.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }

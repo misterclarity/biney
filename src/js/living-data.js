@@ -474,7 +474,10 @@
     ekholm: ["Ekholm, B., Spulber, S., & Adler, M. (2020). A randomized controlled study of weighted chain blankets for insomnia in psychiatric disorders. Journal of Clinical Sleep Medicine, 16(9), 1567–1577.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC7970589/", "PMC"],
     yuwb: ["Yu, J., Du, J., Yang, Z., Chen, W., Sun, S., Gan, M., et al. (2024). Effect of weighted blankets on sleep quality among adults with insomnia: a pilot randomized controlled trial. BMC Psychiatry, 24, 765.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC11539645/", "PMC"],
     sramek: ["Šrámek, P., Šimečková, M., Janský, L., Šavlíková, J., & Vybíral, S. (2000). Human physiological responses to immersion into water of different temperatures. European Journal of Applied Physiology, 81(5), 436–442.", "https://doi.org/10.1007/s004210050065", "DOI"],
-    yankouskaya: ["Yankouskaya, A., Williamson, R., Stacey, C., Totman, J. J., & Massey, H. (2023). Short-term head-out whole-body cold-water immersion facilitates positive affect and increases interaction between large-scale brain networks. Biology, 12(2), 211.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC9953392/", "PMC"]
+    yankouskaya: ["Yankouskaya, A., Williamson, R., Stacey, C., Totman, J. J., & Massey, H. (2023). Short-term head-out whole-body cold-water immersion facilitates positive affect and increases interaction between large-scale brain networks. Biology, 12(2), 211.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC9953392/", "PMC"],
+    berman: ["Berman, M. G., Jonides, J., & Kaplan, S. (2008). The cognitive benefits of interacting with nature. Psychological Science, 19(12), 1207–1212.", "https://pubmed.ncbi.nlm.nih.gov/19121124/", "PubMed"],
+    ikei14: ["Ikei, H., Komatsu, M., Song, C., Himoro, E., & Miyazaki, Y. (2014). The physiological and psychological relaxing effects of viewing rose flowers in office workers. Journal of Physiological Anthropology, 33, 6.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC3974224/", "PMC"],
+    ikei23: ["Ikei, H., Song, C., & Miyazaki, Y. (2023). Physiological adjustment effect of visual stimulation by fresh rose flowers on sympathetic nervous activity. Frontiers in Psychology, 14, 1159458.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC10174444/", "PMC"]
   };
   var ROUTINES = [
     { id: "sleep-habits", name: "Healthy sleep habits", icon: "moon", tags: "sleep hygiene insomnia habits bedtime regular schedule caffeine alcohol nap bedroom weighted blanket",
@@ -507,16 +510,17 @@
       refs: [R_REF.brown, R_REF.windred, R_REF.gardiner, R_REF.sramek, R_REF.yankouskaya] },
 
     { id: "daytime", name: "Through the day", icon: "spark", tags: "screen break screens devices digital break mindfulness overthinking analysis paralysis rumination stuck thinking feelings body",
-      lead: "Two habits that carry the morning's practice through the day, and a third that adds daylight.",
+      lead: "Habits that carry the morning's practice through the day, with daylight, a walk and a few fresh flowers.",
       steps: [
         { t: "Short breaks from screens", p: "Every hour or so, take two to five minutes away from every screen: stand up, look out of a window or into the distance, and take a few slow breaths. Short breaks from devices and screens let your body remember the feeling from the morning's practice, and regulate around it, so the calm you found doesn't stay behind at breakfast. Mindfulness courses teach a three-minute breathing space for the same reason, and in a 2022 meta-analysis of 19 studies, short breaks raised energy and eased fatigue.",
-          go: [["#breathe/sigh", "A minute of cyclic sighs"], ["#practice/calm-reset", "Calm Reset"]] },
+          go: [["#breathe/sigh", "A minute of cyclic sighs"], ["#practice/calm-reset", "Calm Reset"], ["#practice/restoration", "Restoration Break"]] },
         { t: "When thinking goes round in circles", p: "Analysis paralysis, a streak of intellectual overstimulation in which each thought feeds the next, is broken through affect, not more analysis. Turn to what you feel: the feeling, emotion or mood that's here, and the sensations of your body at rest, observed consciously and lovingly, with nothing to solve. Research on repetitive thinking points the same way: abstract, evaluating thought (why is this happening, what does it mean) keeps distress going, while a concrete focus on what you're experiencing lets it settle, and putting a feeling into words dampens it.",
           go: [["#practice/body-scan", "Body Scan"], ["#practice/self-compassion", "Self-Compassion Break"], ["#practice/coherence", "Heart Coherence"]] },
         { t: "Lunch away from the screen", p: "Eat sitting down, away from your desk and the screens. Across 24 studies, eating while distracted made people eat more at that meal and more again later; with your attention on the meal you taste it, and notice when you've had enough.", go: [["#practice/meal", "Mindful Meal"]] },
-        { t: "Daylight and a walk", p: "A walk outside around midday gives you daylight, movement and a break from screens at once.", go: [["#practice/walking", "Walking Meditation"]] }
+        { t: "Daylight and a walk", p: "A walk outside around midday gives you daylight, movement and a break from screens at once. In a park or among trees, it can rest your attention too: in one study, a walk through an arboretum helped attention and memory, and the same walk through a city didn't.", go: [["#practice/walking", "Walking Meditation"]] },
+        { t: "Fresh flowers on your desk", p: "If you like flowers, keep a few fresh ones where you work. Office workers who looked at a vase of fresh roses for four minutes were more relaxed, by their heart-rate variability and by how they felt, than with no flowers, and pooled across 214 people in such studies, roses seemed to even things out: fight-or-flight activity fell in those who started high and rose in those who started low. The evidence is early: mostly one research group, and real flowers only, so pictures of flowers haven't been tested." }
       ],
-      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.robinson, R_REF.brown] },
+      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.robinson, R_REF.brown, R_REF.berman, R_REF.ikei14, R_REF.ikei23] },
 
     { id: "evening", name: "An evening routine", icon: "moon", tags: "evening routine bedtime wind down night screens bath shower to-do list relax sleep",
       lead: "A wind-down to make your own, counted back from bedtime. For an 11 pm bedtime, the last coffee is around 2 pm and the lights go down at 8.",

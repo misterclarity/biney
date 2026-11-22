@@ -1474,7 +1474,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
           w: document.documentElement.scrollWidth, iw: innerWidth };
       });
       ok(R.tabs === 'Recipes | Supplements | Routines* | Light | Cold and heat' && R.w <= R.iw, 'Healthy living has five tabs: ' + R.tabs);
-      ok(R.secs === 'lv-sleep-habits:Healthy sleep habits:9:11 | lv-morning:A morning routine:7:5 | lv-daytime:Through the day:4:6 | lv-evening:An evening routine:7:6' &&
+      ok(R.secs === 'lv-sleep-habits:Healthy sleep habits:9:11 | lv-morning:A morning routine:7:5 | lv-daytime:Through the day:5:9 | lv-evening:An evening routine:7:6' &&
         R.jump === 'Sleep habits>#living/sleep-habits | Morning>#living/morning | Through the day>#living/daytime | Evening>#living/evening',
         'Routines: sleep habits, a morning, the day and an evening, each with its sources: ' + R.secs);
       const S = R.steps, step = (id, t) => (S['lv-' + id] || []).find(x => x.t === t) || { p: '' };
@@ -2162,7 +2162,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
           loose: all('#lvp-routines .lv-go').filter(g => !g.closest('details.lv-sugg')).length, hid: all('#lvp-routines .lv-rsteps .lv-chip').filter(a => a.checkVisibility ? a.checkVisibility() : a.closest('details').open).length };
       });
       ok(R.rot === 0 && !R.loose && R.hid === 0 && R.sugg === 'See also1 | Suggested practices1 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | See also1 | Suggested practices2 | See also2 | Suggested practices3 | ' +
-        'Suggested recipes and practices4 | Suggested practices2 | Suggested practices3 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | See also3 | Suggested practices4 | Suggested practices3',
+        'Suggested recipes and practices4 | Suggested practices3 | Suggested practices3 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | See also3 | Suggested practices4 | Suggested practices3',
         'in the routines nothing is turned on its side, and each step\'s practices wait behind a closed button named for what\'s there, with a count: ' + R.sugg.slice(0, 80) + '…');
       await E(p, () => document.querySelector('#lv-morning .lv-sugg').scrollIntoView({ block: 'center' }));
       await p.click('#lv-morning .lv-sugg > summary'); await p.waitForTimeout(250);

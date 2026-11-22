@@ -334,7 +334,7 @@ const NAMES = ['Heart rate from the camera', 'Phone on your belly', 'Stillness o
     if (!only || only === 'E') {
       const p = await page(null, { unlock: true, speed: 20, mot: { bpm: 6 }, grant: true });
       const fits = await E(p, () => window.__entrain.PRACTICES.filter(d => window.__entrain.motStillFits(d)).map(d => d.id).join(','));
-      ok(fits === 'sleep-descent,coherence,gratitude,nsdr,heart-led,body-scan,pmr,autogenic,shuffle,dirga,power-nap,music-break,imagery,yoga-nidra',
+      ok(fits === 'sleep-descent,coherence,gratitude,nsdr,heart-led,body-scan,pmr,autogenic,shuffle,dirga,power-nap,music-break,imagery,yoga-nidra,fireside',
         'Stillness is offered on the practices done lying down, and not on moving ones, the Stress Check, Wim Hof, Soothing Touch or Mindful Sex: ' + fits);
       await go(p, 'practice/anapana', 400);
       ok(!(await E(p, () => document.querySelector('#sOptStill'))), 'a practice done sitting has no Stillness row');

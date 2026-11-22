@@ -48,6 +48,7 @@
         '<ul class="si-need" id="trNeeds">' + trNeedsHtml(t) + "</ul>" +
         (t.notch ? '<div class="tr-notch" id="trNotch"></div>' : bmRow()) +      // the notched track is binaural only
         '<h3>How it runs</h3><p id="trHow">' + esc(trHow(t)) + "</p>" +
+        (t.brk ? '<p class="si-tip nt-after">' + ntAfterHtml("After the block.") + "</p>" : "") +     // a break when the work is done (nature.js)
         '<details class="ev si-ev"><summary>Evidence ' + dots(t.strength) + '</summary><div class="ev-body">' + esc(t.ev) + "<cite>" + esc(t.cite) + "</cite></div></details>" +
         safeBox([SAFE_BEATS]) +
       "</div>" +

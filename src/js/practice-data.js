@@ -1001,6 +1001,7 @@
         ];
       },
       end: "Prime complete. Start your task now.",
+      next: { id: "restoration", txt: "When your block of work is done, give your focus a few minutes to recover: a Restoration Break is one of your restful scenes and its sound, with nothing to read or do." },
       how: "Under three minutes of resonance breathing, then ten minutes of a 16 Hz beta beat (one of the two beta frequencies that improved watch-keeping in Lane and colleagues' 1998 vigilance trial) while you plan the first step. At the bell the audio fades out and you start. Listening before a task, rather than only during it, is where the binaural evidence for attention is clearest.",
       ev: "In Garcia-Argibay and colleagues' 2019 meta-analysis of binaural beats, listening before a task gave clearer effects on thinking than listening only during it. Beta beats at 16 and 24 Hz improved vigilance in Lane and colleagues' trial. In a small trial, 10 minutes of heart-rate-variability biofeedback improved reaction times and accuracy on a Stroop task under stress.",
       cite: "Garcia-Argibay et al. 2019 · Lane et al. 1998 · Prinsloo et al. 2011"
@@ -1382,8 +1383,31 @@
     {
       id: "walking", name: "Walking Meditation", min: 10, strength: 1,
       tone: "relax", voice: true,
+      alias: "A walk in a park", words: "park nature outdoors outside trees green soft fascination attention restoration",
       blurb: "Walk slowly and attend to each step: lifting, moving, placing. Phone in your pocket, voice guidance on.",
+      /* In a park: a new technique from the brain-wave guide (c.sup), so picking it opens with a donation while this
+         device is locked, and a park kept from before reads as a quiet path until it's unlocked (practice.js pChoice) */
+      choices: [
+        { key: "where", label: "Where", def: "path", sup: ["park"], supName: NT_PARK, redraw: true,
+          note: function (d) {
+            return pChoice(d, "where") === "park" ? "In a park, or anywhere with trees, water or open sky: an easy walk along a path, and then your eyes go where they like, to clouds, leaves, birds and water. A walk in a park helped attention and memory in a study where the same walk through a city didn't."
+              : "A quiet path of ten to twenty steps, indoors or out, walked slowly up and back.";
+          },
+          opts: [["path", "A quiet path"], ["park", "In a park"]] }
+      ],
       build: function () {
+        if (pChoice(this, "where") === "park") return [
+          G(60, "Stand still", ["Find a path in a park, or anywhere with trees, grass, water or open sky.", "Stand for a moment and feel your weight in your feet.",
+            "Keep your eyes open, gaze soft and a few steps ahead."]),
+          G(180, "Slow steps", [[0, "Begin to walk, slower than usual."], [30, "Notice the lifting of the foot, the moving forward, the placing down."],
+            [80, "Let your pace settle into an easy stroll, wherever the path takes you."], [130, WANDER]]),
+          G(120, "Whole body", [[0, "Widen your attention to the whole body walking: the arms, the balance, the breath."],
+            [60, "Let your pace be natural but unhurried."]]),
+          G(180, "What catches your eye", [[0, "Now let your eyes go where they like: clouds drifting, leaves moving in the breeze, birds, water."],
+            [50, "Rest them on whatever holds your attention easily, and move on when you're ready."], [100, "Listen too: birdsong, the wind in the trees, running water."],
+            [145, "Keep a little attention in your feet as you take it all in."]]),
+          G(60, "Closing", ["Let your steps come to rest, and stand for a few breaths.", "Notice how your attention feels now, before you go back to your day."])
+        ];
         return [
           G(60, "Stand still", ["Find a quiet path of ten to twenty steps, indoors or out.", "Stand at one end and feel your weight in your feet.",
             "Keep your eyes open, gaze soft and a few steps ahead."]),
@@ -1395,9 +1419,9 @@
           G(60, "Closing", ["Let your steps come to rest, and stand for a few breaths.", "Observe the sensations in your feet and legs before you move on."])
         ];
       },
-      how: "Ten minutes in four stages: standing, slow steps, the whole body, then the surroundings. Works indoors on a short path.",
-      ev: "Walking itself reduced depressive symptoms in a meta-analysis of 75 randomised trials (standardised mean difference −0.59). Walking meditation adds a mindfulness focus; trials of it are smaller and mostly in older adults.",
-      cite: "Xu et al. 2024 · Goyal et al. 2014"
+      how: "Ten minutes in four stages: standing, slow steps, the whole body, then the surroundings. Works indoors on a short path. In a park, the walk follows the path, and its last stage lets your eyes go where they like: clouds, leaves, birds and water, the gently interesting things that Attention Restoration Theory says let tired attention recover.",
+      ev: "Walking itself reduced depressive symptoms in a meta-analysis of 75 randomised trials (standardised mean difference −0.59). Walking meditation adds a mindfulness focus; trials of it are smaller and mostly in older adults. In a park: in Berman and colleagues' 2008 study, 38 students did better at repeating digits backwards after a 50-minute walk in an arboretum, and not after the same length of walk through a city; the guide rates this real-world nudge as moderate evidence. Walking meditation in a park hasn't been tested itself.",
+      cite: "Xu et al. 2024 · Goyal et al. 2014 · Berman et al. 2008"
     },
 
     /* ===== reflection ===== */
@@ -1898,6 +1922,52 @@
       ev: "The guide rates cold exposure as moderate evidence for alertness and a better mood, with a real safety risk. In 10 healthy men, an hour in water at 14 °C raised noradrenaline by about 530% and dopamine by about 250%. In 33 adults new to cold water, five minutes up to the collarbones at about 20 °C left them feeling more active, alert, attentive, proud and inspired, and less distressed and nervous, changes linked to stronger connections between large brain networks. After 15 minutes at 10.5 °C, cortisol hadn't changed half an hour later but was 47% lower three hours later, in eight healthy adults. All of these were baths, colder or longer than the end of a shower: a cold finish is the gentle start the guide suggests, and hasn't itself been measured this way. Cold shock, the gasp and racing heart of sudden cold water, is cold water's main danger.",
       cite: "Šrámek et al. 2000 · Yankouskaya et al. 2023 · Reed et al. 2023 · Tipton et al. 2017",
       caution: "Cold water sets off a shock response: a gasp, fast breathing and a sudden rise in heart rate and blood pressure. It can be dangerous with a heart condition or high blood pressure, and in pregnancy: ask your doctor first. Start short, with cool rather than icy water, build up over weeks, and turn it warm again at once if you feel dizzy, numb or unwell. Breathe all the way through: never combine cold water with Wim Hof breathing or breath holds, and never practise cold immersion alone in open water. Keep a firm footing, since the gasp can make you unsteady."
+    },
+
+    /* ===== nature (nature.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "fireside", name: "Fireside", lengths: [20, 30, 45], min: 20, strength: 2, sup: true,
+      tone: "relax", noTap: true, noMus: true, noScene: true,    // the fire is its own scene, and its crackle the only sound it needs
+      needs: [["sounds", "Sound on", "the crackle is part of it: the same fire on mute didn't relax people. Its volume is the background sound's"],
+        ["moon", "Somewhere comfortable", "sitting back or lying down, best in the evening"],
+        ["pulse", "Heart sensor", "optional: your heart rate at the start and the end"]],
+      alias: "Fireplace, campfire", words: "fire fireplace hearth campfire log fire flames embers crackle crackling evening relax relaxation blood pressure watch screen calm wind down bedtime",
+      blurb: "A fire to watch, with its crackle, best in the evening: a few slow breaths to begin if you like, then just the flames, for 20 to 45 minutes. The longer people watched a fire with its sound, the more relaxed they became.",
+      parts: "Settle in · slow breaths, if you like · just the fire · back to the room",
+      choices: [
+        { key: "start", label: "To begin", def: "breath", redraw: true, note: function (d) {
+            return pChoice(d, "start") === "breath" ? "Three minutes of slow breathing, 4 seconds in and 6 out, the flames rising as you breathe in and settling as you breathe out. Then just the fire."
+              : "Straight to the fire, after a moment to settle.";
+          },
+          opts: [["breath", "Slow breaths first"], ["fire", "Just the fire"]] }
+      ],
+      next: { id: "sleep-descent", txt: "Bed soon? Sleep Descent takes you on down into sleep, lying down, with long breaths out over a slowing beat." },
+      build: function (min) { return ntFireSteps(this, min || 20); },
+      end: "Take the warmth of the fire with you into your evening.",
+      how: "Sit back or lie down, with the sound up enough to hear the crackle: in the study, the fire relaxed people only with its sound. Three quarters of a minute to settle, then, if you chose them, three minutes of slow breathing, 4 seconds in and 6 out, the flames rising as you breathe in and settling as you breathe out; then just the fire, with a quiet word every few minutes, and a minute at the end to come back to the room. The fire is drawn on your device, with embers rising, and its crackle (one of the nature sounds) always plays with it, even with the background sound off; its volume is the background sound's, in the quick controls while it runs. With reduced motion turned on, the fire stays still.",
+      ev: "The guide rates a fireplace with its sound as moderate evidence for relaxation and lower blood pressure, best in the evening. In three randomised crossover studies with 226 adults, a fire on a screen with its crackle lowered blood pressure, and more the longer people watched; the same fire with the sound off had no consistent effect, so the effect isn't just the flicker. People watched for up to 15 minutes in those studies: Fireside's longer sessions follow the finding that the effect grew with time, and haven't been tested themselves. The study's summary reports a stronger effect in people who become absorbed easily and in more sociable people. This fire is drawn on your device rather than filmed.",
+      cite: "Lynn 2014"
+    },
+    {
+      id: "restoration", name: "Restoration Break", lengths: [3, 5, 10], min: 5, strength: 2, sup: true,
+      tone: "relax", noTap: true, noMus: true, noScene: true, noQuote: true,    // the break chooses its own scene and sound, and ends with no words to read
+      needs: [["sounds", "Sound on, softly", "the scene's own nature sound, unless you choose your background"],
+        ["phone", "A moment away from your work", "between blocks of focus, away from your desk if you can"]],
+      alias: "Nature break, attention restoration", words: "break rest pause recover recovery attention focus tired fatigue work study nature scene scenes restful soft fascination restoration clouds water leaves forest fractal flowers fire birdsong stream wind",
+      blurb: "A few minutes for tired focus to recover between blocks of work: one of your restful scenes with its nature sound, one line to begin, then just the scene and its sound to the end.",
+      parts: "One opening line · a restful scene and its sound · no words or tasks",
+      choices: [
+        { key: "scene", label: "Scene", def: "mine", redraw: true, note: function (d) { return ntSceneNote(d); },
+          opts: [["mine", "Yours"]].concat(SCN_LIST.map(function (x) { return [x.id, x.name]; })) },
+        { key: "snd", label: "Sound", def: "scene", redraw: true, note: function (d) { return ntSndNote(d); },
+          opts: [["scene", "The scene's own"], ["yours", "Your background"]] }
+      ],
+      next: { id: "walking", txt: "Outside is better still: in one study, a walk in a park helped attention and memory, and the same walk through a city didn't. Walking Meditation has a version for a park." },
+      build: function (min) { return ntBreakSteps(this, min || 5); },
+      end: "Break over. If you can, take the next one outside.",
+      how: "Take it between blocks of work, ideally away from your desk. One line to begin, then the scene you chose, or one of yours (picked in Settings, a different one each day), with the nature sound that suits it: wind for the clouds, the leaves and the fractal ridgelines, a stream for the water, birdsong for the forest and the flowers, and the fire's crackle; or your own background sound instead. After the first line there are no more words: no voice, no captions and nothing to do, since content that takes effort to read works against the gentle interest that's meant to rest your attention. The end bells mark the end, if you have them on, and its last page points you outside for the next one, with no quote to read. With reduced motion turned on, the scene stays still.",
+      ev: "The guide rates restoration breaks between focus sessions as moderate evidence. Attention Restoration Theory holds that effortful focus tires with use, and that gently interesting things, drifting clouds, moving leaves, birds, water or fire, hold attention without effort and let it recover. In Berman and colleagues' 2008 study, ten minutes of looking at photographs of nature, but not of cities, improved effortful attention and memory span, and a 50-minute walk in a park improved memory span where the same walk through a city didn't. A 2016 review of 31 studies found nature helped on three measures of attention, while ten other pooled analyses showed no marked benefit; a 2018 review found working memory and cognitive flexibility improved most, and the theory's mechanism is still debated. Leaving out words and tasks follows the theory rather than a test of its own, and these scenes, drawn on your device, haven't been tested themselves.",
+      cite: "Berman et al. 2008 · Ohly et al. 2016 · Stevenson et al. 2018 · Kaplan 1995"
     },
 
     /* ===== movement ===== */

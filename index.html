@@ -1328,6 +1328,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .ses[data-dim="1"] .ses-b.main{background:#1f2a48;color:#7f8bb0}
   .ses[data-dim="1"] .ses-fill{opacity:.25}
   body:has(.ses[data-dim="1"]:not([hidden])).immersive{background:#04060c}
+  /* a break's scene alone (nature.js): after its opening line, no step name, captions or words; the controls stay */
+  .ses[data-bare="1"] .ses-cap,.ses[data-bare="1"] #sStepTxt,.ses[data-bare="1"] .ses-live{visibility:hidden}
+  .ses[data-bare="1"] .ses-left{opacity:.45}
 
   /* ---------- settings ---------- */
   .st{display:grid;gap:14px;max-width:760px;--pcol:var(--accent)}
@@ -2442,6 +2445,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <div data-bm-ctl></div>
             <h3>Why before, not during</h3>
             <p>The clearest finding in the meta-analysis is about timing: listening before a task, or before and during it, worked better than listening only while you work. So prime first, get a cue when the block ends, then start.</p>
+            <p class="si-tip nt-after" id="primeAfter"></p>
             <div data-safe="beats"></div>
           </div>
           <div class="si-side">
@@ -3022,6 +3026,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-sleepsnd">Sound and sleep</a>
             <a href="#l-music">Music</a>
             <a href="#l-scenes">Scenes</a>
+            <a href="#l-restore">Nature breaks</a>
             <a href="#l-light">Light colour</a>
             <a href="#l-touch">Touch</a>
             <a href="#l-temp">Cold and heat</a>
@@ -3182,10 +3187,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <tr class="ln-row"><th scope="row"><b>Bright, cool light in the morning</b> <small>Alertness</small></th><td>Strong</td><td><a href="#living/morning">A morning routine</a>, <a href="#living/light-box">a light box</a>, and Bright <a href="#st-light">screen light</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Dim, warm light in the evening</b> <small>Ready for sleep</small></th><td>Strong</td><td><a href="#living/sleep-habits">Healthy sleep habits</a>, and Warm or Night <a href="#st-light">screen light</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Rhythmic light flicker</b> <small>Entrainment, such as 40&nbsp;Hz</small></th><td>Early (a seizure risk)</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Nature scenes, restoration breaks</b> <small>Alpha, attention recovery</small></th><td>Moderate</td><td><a href="#st-scenes">Scenes</a> to watch on Breathe or in a practice: clouds, water, leaves, a misty forest</td></tr>
-                <tr class="ln-row"><th scope="row"><b>A fireplace, with its sound</b> <small>Relaxation, lower blood pressure</small></th><td>Moderate</td><td>A fire to watch, one of the <a href="#st-scenes">scenes</a>, always with its crackle (one of the <a href="#l-nature">nature sounds</a>)</td></tr>
+                <tr class="ln-row"><th scope="row"><b>Nature scenes, restoration breaks</b> <small>Alpha, attention recovery</small></th><td>Moderate</td><td><a href="#practice/restoration">Restoration Break</a> between blocks of work, a walk in a park in <a href="#practice/walking">Walking Meditation</a>, and <a href="#st-scenes">scenes</a> to watch on Breathe or in a practice: clouds, water, leaves, a misty forest</td></tr>
+                <tr class="ln-row"><th scope="row"><b>A fireplace, with its sound</b> <small>Relaxation, lower blood pressure</small></th><td>Moderate</td><td><a href="#practice/fireside">Fireside</a> for the evening, and a fire to watch, one of the <a href="#st-scenes">scenes</a>, always with its crackle (one of the <a href="#l-nature">nature sounds</a>)</td></tr>
                 <tr class="ln-row"><th scope="row"><b>Mid-complexity fractals</b> <small>Stress reduction</small></th><td>Promising (mostly one lab)</td><td>Fractal ridgelines, one of the <a href="#st-scenes">scenes</a></td></tr>
-                <tr class="ln-row"><th scope="row"><b>Fresh flowers</b> <small>Balancing arousal</small></th><td>Early</td><td>Flowers, one of the <a href="#st-scenes">scenes</a> (real flowers were studied; on a screen, untested)</td></tr>
+                <tr class="ln-row"><th scope="row"><b>Fresh flowers</b> <small>Balancing arousal</small></th><td>Early</td><td>Real flowers on your desk, a tip in <a href="#living/daytime">the day's routine</a>; and flowers, one of the <a href="#st-scenes">scenes</a> (real flowers were studied; on a screen, untested)</td></tr>
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Touch</th></tr>
@@ -3929,6 +3934,52 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               follows your breath. These drawings haven't been tested themselves.
             </p>
 
+            <h3 id="l-restore">Nature breaks: rest for tired attention</h3>
+            <p>
+              Attention Restoration Theory, from Rachel and Stephen Kaplan (Kaplan &amp; Kaplan, 1989), divides attention in
+              two. Directed attention is the effortful focus of work and study, which holds distractions at bay and tires with
+              use. Involuntary attention is drawn without effort by things that are gently interesting, which the theory calls
+              soft fascination: clouds drifting, leaves moving, birds, running water, a fire. Resting directed attention while
+              soft fascination holds you is meant to let it recover. A setting restores best when it takes you away from your
+              usual demands, has enough in it to take in, holds your interest easily, and suits what you want to do: someone
+              who hates hiking won't be restored by a forced trail walk (Kaplan, 1995). Stress Recovery Theory adds that
+              nature calms the body directly, as a quick emotional response (Ulrich et al., 1991), and the two are usually
+              seen as complementary.
+            </p>
+            <p>
+              The study that tested it most directly had 38 students do a draining memory task, then walk for about 50
+              minutes, through an arboretum or along a busy city street, taking the other walk a week later. After the walk
+              among the trees they could repeat about one and a half more digits backwards than before; after the city walk,
+              about half a digit more, which wasn't a reliable change. Their mood improved more among the trees too, but that
+              didn't explain the gain. In a second experiment, 12 people looked at photographs for about ten minutes, and only
+              nature, not city streets, improved the effortful part of an attention test (Berman et al., 2008).
+            </p>
+            <p>
+              How well it holds up: across 31 studies, a systematic review found that nature helped on three measures,
+              repeating digits forwards and backwards and a test of switching between tasks, while the other ten of its pooled
+              analyses showed no marked benefit, from small studies that measured attention in different ways (Ohly et al.,
+              2016). A second review found working memory and cognitive flexibility improved, attentional control less
+              reliably, and that studies meant different things by directed attention and tested it in different ways
+              (Stevenson et al., 2018). Critics call ideas such as soft fascination vague, and say the claim that nature truly
+              restores something used up hasn't been properly tested (Joye &amp; Dewitte, 2018). The guide rates restoration
+              breaks as moderate evidence: nature does seem to help some kinds of attention, especially working memory and
+              switching between tasks, but which, and why, remain open questions.
+            </p>
+            <p>
+              In Entrain, a <a href="#practice/restoration">Restoration Break</a> puts this into a few minutes between blocks
+              of work: one of the <a href="#st-scenes">scenes you find restful</a>, the theory's compatibility, with the nature
+              sound that suits it, one line to begin, then no voice, captions or tasks, since anything that takes effort to
+              read works against soft fascination; the guide calls that plausible, following the theory, rather than tested.
+              It's offered at the end of the <a href="#practice/focus-primer">Focus Primer</a>, when the
+              <a href="#track/deep-work">Deep Work Block</a> ends, and when you end the custom primer's working phase. Its end
+              points you outside, as the guide suggests, to real nature rather than only a screen:
+              <a href="#practice/walking">Walking Meditation</a> has a version for a park, whose guidance turns to clouds,
+              leaves, birds and water. <a href="#practice/fireside">Fireside</a> is the fire from the scenes, with its crackle,
+              for 20 to 45 minutes in the evening: the relaxation grew the longer people watched, though in the study no one
+              watched for more than 15 minutes (Lynn, 2014). And on your desk, real flowers, which are what the rose studies
+              used (Ikei et al., 2014): a tip in <a href="#living/daytime">the day's routine</a>.
+            </p>
+
             <h3 id="l-light">Light colour: bright, warm and red</h3>
             <p>
               Light reaches the brain by a second route besides sight. Cells in the eye that contain melanopsin, most
@@ -4476,6 +4527,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Taylor, R. P. (2006). Reduction of physiological stress using fractal art and architecture. <em>Leonardo</em>, 39(3), 245–251. <a href="https://doi.org/10.1162/leon.2006.39.3.245" rel="noopener">DOI</a></li>
       <li>Taylor, R. P., &amp; Spehar, B. (2016). Fractal fluency: An intimate relationship between the brain and processing of fractal stimuli. In A. Di Ieva (Ed.), <em>The Fractal Geometry of the Brain</em>. Springer. <a href="https://doi.org/10.1007/978-1-4939-3995-4_30" rel="noopener">DOI</a></li>
       <li>Ikei, H., Komatsu, M., Song, C., Himoro, E., &amp; Miyazaki, Y. (2014). The physiological and psychological relaxing effects of viewing rose flowers in office workers. <em>Journal of Physiological Anthropology</em>, 33, 6. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3974224/" rel="noopener">PMC</a></li>
+      <li>Kaplan, R., &amp; Kaplan, S. (1989). <em>The Experience of Nature: A Psychological Perspective</em>. Cambridge University Press.</li>
+      <li>Ulrich, R. S., Simons, R. F., Losito, B. D., Fiorito, E., Miles, M. A., &amp; Zelson, M. (1991). Stress recovery during exposure to natural and urban environments. <em>Journal of Environmental Psychology</em>, 11(3), 201–230. <a href="https://doi.org/10.1016/S0272-4944(05)80184-7" rel="noopener">DOI</a></li>
+      <li>Berman, M. G., Jonides, J., &amp; Kaplan, S. (2008). The cognitive benefits of interacting with nature. <em>Psychological Science</em>, 19(12), 1207–1212. <a href="https://pubmed.ncbi.nlm.nih.gov/19121124/" rel="noopener">PubMed</a></li>
+      <li>Ohly, H., White, M. P., Wheeler, B. W., Bethel, A., Ukoumunne, O. C., Nikolaou, V., &amp; Garside, R. (2016). Attention Restoration Theory: A systematic review of the attention restoration potential of exposure to natural environments. <em>Journal of Toxicology and Environmental Health, Part B</em>, 19(7), 305–343. <a href="https://doi.org/10.1080/10937404.2016.1196155" rel="noopener">DOI</a></li>
+      <li>Stevenson, M. P., Schilhab, T., &amp; Bentsen, P. (2018). Attention Restoration Theory II: a systematic review to clarify attention processes affected by exposure to natural environments. <em>Journal of Toxicology and Environmental Health, Part B</em>, 21(4), 227–268. <a href="https://pubmed.ncbi.nlm.nih.gov/30130463/" rel="noopener">PubMed</a></li>
+      <li>Joye, Y., &amp; Dewitte, S. (2018). Nature's broken path to restoration. A critical look at Attention Restoration Theory. <em>Journal of Environmental Psychology</em>, 59, 1–8. <a href="https://doi.org/10.1016/j.jenvp.2018.08.006" rel="noopener">DOI</a></li>
       <li>Sletten, T. L., Raman, B., Magee, M., Ferguson, S. A., Kennaway, D. J., Grunstein, R. R., Lockley, S. W., &amp; Rajaratnam, S. M. W. (2021). A blue-enriched, increased intensity light intervention to improve alertness and performance in rotating night shift workers in an operational setting. <em>Nature and Science of Sleep</em>, 13, 647–657. <a href="https://doi.org/10.2147/NSS.S287097" rel="noopener">DOI</a></li>
       <li>Kayaba, M., Iwayama, K., Ogata, H., Seya, Y., Kiyono, K., Satoh, M., &amp; Tokuyama, K. (2014). The effect of nocturnal blue light exposure from light-emitting diodes on wakefulness and energy metabolism the following morning. <em>Environmental Health and Preventive Medicine</em>, 19(5), 354–361. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4166587/" rel="noopener">PMC</a></li>
       <li>Chellappa, S. L., Steiner, R., Blattner, P., Oelhafen, P., G&ouml;tz, T., &amp; Cajochen, C. (2011). Non-visual effects of light on melatonin, alertness and cognitive performance: can blue-enriched light keep us alert? <em>PLOS ONE</em>, 6(1), e16429. <a href="https://doi.org/10.1371/journal.pone.0016429" rel="noopener">DOI</a></li>
@@ -4968,7 +5025,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     },
     {
       id: "deep-work", cat: "stim", band: "Beta", name: "Deep Work Block",
-      carrier: 300, beat: 15, minutes: 50, strength: 2,
+      carrier: 300, beat: 15, minutes: 50, strength: 2, brk: true,     // brk: a Restoration Break offered at its end (nature.js)
       desc: "Fifty minutes of a 15 Hz beta beat, sized to a full work or study block: in the 2019 meta-analysis of binaural beats, longer listening went with larger effects.",
       ev: "Time under exposure contributed significantly to the meta-analytic model, with longer periods advisable for maximum effect. Study-focused guidance converges on 25–50 minute blocks followed by a short break.",
       cite: "Garcia-Argibay et al. 2019"
@@ -5389,6 +5446,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   function finish() {
     fadeOutAndStop("Session complete: " + Math.round(A.track.minutes) + " min of " + A.track.name + ".", A.track.fade || FADE_OUT);
+    if (A.track.brk) ntAfterWork();                 // a block of work done: a Restoration Break to offer (nature.js)
   }
 
   /* The prime block has elapsed. Cue the user to begin, then do whatever they
@@ -5526,7 +5584,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (!A.track) return;
       if (A.playing) pause(); else play();
     });
-    $("#stop").addEventListener("click", function () { hardStop(false); });
+    $("#stop").addEventListener("click", function () {
+      var work = A.phase === "task" && A.track && !A.track.practice;     // the custom primer's working phase, ended by you
+      hardStop(false);
+      if (work) ntAfterWork();                      // a Restoration Break to offer (nature.js)
+    });
 
     $("#vol").addEventListener("input", function () {
       if (A.ctx && A.playing) {
@@ -5728,6 +5790,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         '<ul class="si-need" id="trNeeds">' + trNeedsHtml(t) + "</ul>" +
         (t.notch ? '<div class="tr-notch" id="trNotch"></div>' : bmRow()) +      // the notched track is binaural only
         '<h3>How it runs</h3><p id="trHow">' + esc(trHow(t)) + "</p>" +
+        (t.brk ? '<p class="si-tip nt-after">' + ntAfterHtml("After the block.") + "</p>" : "") +     // a break when the work is done (nature.js)
         '<details class="ev si-ev"><summary>Evidence ' + dots(t.strength) + '</summary><div class="ev-body">' + esc(t.ev) + "<cite>" + esc(t.cite) + "</cite></div></details>" +
         safeBox([SAFE_BEATS]) +
       "</div>" +
@@ -11605,7 +11668,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "57a9282b";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "208606c5";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -12162,6 +12225,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ltUI();                                                   // the screen light's buttons and cups, and the light itself (light.js)
     camUI();                                                  // the Heart page's camera button (camera.js)
     motUI();                                                  // Phone on your belly and Stillness, and their cups (motion.js)
+    ntUI();                                                   // the Restoration Break's links on the work pages (nature.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }
@@ -13418,9 +13482,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   function ambSync() {
     musSync();                                     // the music made on the device follows the same sessions (music.js)
-    var sig = ambSig(), x = scnSound(), want;
-    // a fire on screen always comes with its crackle, chosen or not (scenes.js): silent fire showed no effect
-    if (x && ("+" + sig + "+").indexOf("+" + x + "+") < 0) sig = sig ? sig + "+" + x : x;
+    var sig = ambSig(), want;
+    // a fire on screen always comes with its crackle, chosen or not (scenes.js): silent fire showed no effect;
+    // and a step can bring the nature sound that suits its scene (a Restoration Break's, nature.js)
+    [scnSound(), ntSound()].forEach(function (x) {
+      if (x && ("+" + sig + "+").indexOf("+" + x + "+") < 0) sig = sig ? sig + "+" + x : x;
+    });
     want = sig && ambActive() ? sig : null;
     if (want === AMB.playing) return;
     if (AMB.playing) ambStop(want ? 0.8 : 1.5);
@@ -14487,6 +14554,128 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     return !d.tapping && !d.nap && !d.selfPaced && !d.noTap && !pSleepy(d);
   }
   function tapOn(d) { return tapOffered(d) && store.get("pTap." + d.id) === "1"; }
+  /* ------------------------------- nature -------------------------------
+     Fireside, Restoration Break and walking in a park, from the brain-wave guide's "Vision: what you look
+     at" and its Attention Restoration Theory. New techniques: the two practices carry sup: true (their
+     entries are in practice-data.js), and Walking Meditation's "In a park" is a choice that opens with a
+     donation (c.sup in practice.js); every page, caution and Learn section stays free to read.
+       Fireside            the fire scene with its crackle all the way through (a fire on mute showed no
+                           effect in the study), slow breaths to begin if you like, then just the fire,
+                           20 to 45 minutes, best in the evening (the effect grew the longer people watched)
+       Restoration Break   3, 5 or 10 minutes between blocks of work: one of your restful scenes with the
+                           nature sound that suits it, one opening line, then no voice, captions or tasks
+                           (a "bare" stage: words that need effort to read work against soft fascination);
+                           no quote at its end, which suggests taking the next one outside
+       In a park           Walking Meditation's guidance turned to the path and to soft fascination:
+                           clouds, leaves, birds and water (Berman and colleagues' park walk)
+     The break is offered at the end of the Focus Primer (its next), when the Deep Work Block ends and when
+     you end the custom primer's working phase (a notice with a way there), and on those two pages. Fresh
+     flowers on the desk are a tip in Healthy living's day routine (living-data.js).
+  ------------------------------------------------------------------------------ */
+
+  var NT_BARE = 10;                          // seconds the break's opening line stays, before the stage keeps the scene alone
+  var NT_OPEN = "Let your eyes rest on the scene and wander wherever they like, for the rest of the break.";
+  var NT_PARK = "Walking Meditation in a park";      // the choice's name in the unlock dialog and Settings' list
+  var NT_FIRE = ["If your mind wanders, let it come back to the flames and the sound of the fire.",
+    "Notice the colours: deep red at the heart of the fire, gold and orange at the tips.",
+    "Let your shoulders soften, and your hands rest.",
+    "Listen to the crackle, and the quiet between the pops.",
+    "Watch the embers rise and fade.",
+    "Let your breathing stay slow and easy."];
+
+  /* ----- Fireside ----- */
+  // a quiet word now and then, about every six minutes, after the first
+  function ntFireLines(secs, breathed) {
+    var n = Math.max(1, Math.floor(secs / 360)), out = [[0, breathed ? "Now let the breath go at its own pace, and simply watch the fire."
+      : "Let your breathing settle at its own pace, and simply watch the fire."]];
+    for (var i = 0; i < n; i++) out.push([Math.round(secs * (i + 1) / (n + 1)), NT_FIRE[i % NT_FIRE.length]]);
+    return out;
+  }
+  function ntFireSteps(d, min) {
+    var T = min * 60, F = { vis: "scene", scene: "fire" }, br = pChoice(d, "start") === "breath";
+    var steps = [G(45, "By the fire", [[0, "Sit back or lie down, somewhere you can stay a while, with the sound up enough to hear the crackle."],
+      [18, "Let your eyes rest on the flames."]], F)];
+    if (br) steps.push(Br(180, "Slow breaths", { inh: 4, sip: 0, hold: 0, exh: 6, rest: 0 }, { scene: "fire",
+      lines: [[0, "Breathe in for four as the flames rise, and out for six as they settle."], [70, "Let each breath out be soft and slow."],
+        [140, "A few more like this, slow and easy."]] }));
+    var rest = T - 45 - (br ? 180 : 0) - 60;
+    steps.push(G(rest, "Just the fire", ntFireLines(rest, br), ext({ quiet: true }, F)));
+    steps.push(G(60, "Back to the room", [[0, "Let the fire burn on as you come back: your hands, your feet, the room around you."],
+      [25, "Take a slow breath, and stretch if you like."]], F));
+    return steps;
+  }
+
+  /* ----- Restoration Break ----- */
+  // the scene: the one chosen, or Yours, one of the scenes you find restful, a different one each day (scenes.js)
+  function ntScene(d) { var k = pChoice(d, "scene"); return scnGet(k) ? k : scnPick(); }
+  // the nature sound that suits it: wind for the clouds and leaves, a stream for the water, birdsong for the forest and the
+  // flowers, the fire's crackle; the fractal's ridgelines, which have none of their own, get the wind
+  function ntSndOf(id) { return scnSoundOf(id) || "wind"; }
+  function ntSndName(id) { var a = ambAddOf(ntSndOf(id)); return a ? a[2].charAt(0).toLowerCase() + a[2].slice(1) : ""; }
+  function ntBreakSteps(d, min) {
+    var sc = ntScene(d), x = scnGet(sc);
+    return [G(min * 60, x ? x.long : "A restful scene", [[0, NT_OPEN]], { vis: "scene", scene: sc, bare: NT_BARE, nobell: true,
+      amb: pChoice(d, "snd") === "scene" ? ntSndOf(sc) : "" })];
+  }
+  function ntSceneNote(d) {
+    var k = pChoice(d, "scene"), x = scnGet(ntScene(d));
+    return k === "mine" ? "One of the scenes you find restful, picked in Settings, and a different one each day: today, " + x.long.toLowerCase() +
+      ". A setting rests your attention best when it suits you." : x.long + ", every time.";
+  }
+  function ntSndNote(d) {
+    var sc = ntScene(d);
+    return pChoice(d, "snd") === "scene"
+      ? "The nature sound that suits the scene: today, " + ntSndName(sc) + ". Some people find a sound unpleasant, so choose your background instead if you like."
+      : "Your own background sound, if you've chosen one, or quiet." + (sc === "fire" ? " The fire always comes with its crackle." : "");
+  }
+
+  /* ----- while a step runs ----- */
+  // the nature sound the running step asks for, played with the background (ambience.js ambSync adds it)
+  function ntSound() {
+    if (!supOn() || P.state !== "running") return "";
+    var s = P.steps && P.steps[P.idx];
+    return s && s.amb && ambAddOf(s.amb) ? s.amb : "";
+  }
+  // at the start: the sound rendered ahead, so it begins with the scene
+  function ntStart(steps) {
+    var amb = [];
+    steps.forEach(function (s) { if (s.amb && amb.indexOf(s.amb) < 0) amb.push(s.amb); });
+    if (amb.length) amNeed(ambLayers(amb.join("+")).map(function (l) { return l[0]; }));
+  }
+  // a bare step: once its opening line has been read, the stage keeps the scene alone, with no step name, caption or words
+  function ntBare(s, st) {
+    var on = !!(s && s.bare && pBusy() && st >= s.bare) ? "1" : "", ses = $("#ses");
+    if (ses && ses.dataset.bare !== on) ses.dataset.bare = on;
+  }
+
+  /* ----- after a block of work: a Restoration Break ----- */
+  function ntAfterWork() {
+    toast("Block done. A few minutes with a restful scene and its sound lets tired focus recover.", { action: "Restoration Break", ms: 20000,
+      onAct: function () { location.hash = "practice/restoration"; } });
+  }
+  // the Deep Work Block's and the custom primer's pages: the break, with its cup while this device is locked (inside a p.si-tip)
+  function ntAfterHtml(lead) {
+    return "<b>" + esc(lead) + "</b> A few minutes with one of your restful scenes and its sound, with nothing to read or do, " +
+      'lets tired focus recover: <a href="#practice/restoration" data-nt-cup>Restoration Break</a>' + (supLocked(pDef("restoration")) ? supTag(true) : "") + ".";
+  }
+  // after an unlock: the cups go from those links, and Walking Meditation's In a park (supRefresh)
+  function ntUI() {
+    document.querySelectorAll("a[data-nt-cup]").forEach(function (a) {
+      var tag = a.nextElementSibling, has = !!tag && tag.classList.contains("sup-tag"), lk = supLocked(lnItem(a.getAttribute("href")));
+      if (lk && !has) a.insertAdjacentHTML("afterend", supTag(true));
+      else if (!lk && has) tag.parentNode.removeChild(tag);
+    });
+  }
+
+  function ntInit() {
+    SUP_EXTRA.push({ name: NT_PARK, href: "#practice/walking" });     // Settings' list of what the donation unlocks
+    var pr = $("#primeAfter");
+    if (pr) pr.innerHTML = ntAfterHtml("After the work.");
+    if (window.__entrain) {
+      var X = window.__entrain;
+      X.ntSound = ntSound; X.ntScene = ntScene; X.ntSndOf = ntSndOf; X.ntFireLines = ntFireLines; X.ntAfterWork = ntAfterWork; X.NT_BARE = NT_BARE;
+    }
+  }
   /* ------------------------- guided practices: content -------------------------
      Every practice is a list of timed steps. Step kinds:
        guide    spoken and captioned lines, optionally lighting regions of a body map
@@ -15490,6 +15679,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         ];
       },
       end: "Prime complete. Start your task now.",
+      next: { id: "restoration", txt: "When your block of work is done, give your focus a few minutes to recover: a Restoration Break is one of your restful scenes and its sound, with nothing to read or do." },
       how: "Under three minutes of resonance breathing, then ten minutes of a 16 Hz beta beat (one of the two beta frequencies that improved watch-keeping in Lane and colleagues' 1998 vigilance trial) while you plan the first step. At the bell the audio fades out and you start. Listening before a task, rather than only during it, is where the binaural evidence for attention is clearest.",
       ev: "In Garcia-Argibay and colleagues' 2019 meta-analysis of binaural beats, listening before a task gave clearer effects on thinking than listening only during it. Beta beats at 16 and 24 Hz improved vigilance in Lane and colleagues' trial. In a small trial, 10 minutes of heart-rate-variability biofeedback improved reaction times and accuracy on a Stroop task under stress.",
       cite: "Garcia-Argibay et al. 2019 · Lane et al. 1998 · Prinsloo et al. 2011"
@@ -15871,8 +16061,31 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     {
       id: "walking", name: "Walking Meditation", min: 10, strength: 1,
       tone: "relax", voice: true,
+      alias: "A walk in a park", words: "park nature outdoors outside trees green soft fascination attention restoration",
       blurb: "Walk slowly and attend to each step: lifting, moving, placing. Phone in your pocket, voice guidance on.",
+      /* In a park: a new technique from the brain-wave guide (c.sup), so picking it opens with a donation while this
+         device is locked, and a park kept from before reads as a quiet path until it's unlocked (practice.js pChoice) */
+      choices: [
+        { key: "where", label: "Where", def: "path", sup: ["park"], supName: NT_PARK, redraw: true,
+          note: function (d) {
+            return pChoice(d, "where") === "park" ? "In a park, or anywhere with trees, water or open sky: an easy walk along a path, and then your eyes go where they like, to clouds, leaves, birds and water. A walk in a park helped attention and memory in a study where the same walk through a city didn't."
+              : "A quiet path of ten to twenty steps, indoors or out, walked slowly up and back.";
+          },
+          opts: [["path", "A quiet path"], ["park", "In a park"]] }
+      ],
       build: function () {
+        if (pChoice(this, "where") === "park") return [
+          G(60, "Stand still", ["Find a path in a park, or anywhere with trees, grass, water or open sky.", "Stand for a moment and feel your weight in your feet.",
+            "Keep your eyes open, gaze soft and a few steps ahead."]),
+          G(180, "Slow steps", [[0, "Begin to walk, slower than usual."], [30, "Notice the lifting of the foot, the moving forward, the placing down."],
+            [80, "Let your pace settle into an easy stroll, wherever the path takes you."], [130, WANDER]]),
+          G(120, "Whole body", [[0, "Widen your attention to the whole body walking: the arms, the balance, the breath."],
+            [60, "Let your pace be natural but unhurried."]]),
+          G(180, "What catches your eye", [[0, "Now let your eyes go where they like: clouds drifting, leaves moving in the breeze, birds, water."],
+            [50, "Rest them on whatever holds your attention easily, and move on when you're ready."], [100, "Listen too: birdsong, the wind in the trees, running water."],
+            [145, "Keep a little attention in your feet as you take it all in."]]),
+          G(60, "Closing", ["Let your steps come to rest, and stand for a few breaths.", "Notice how your attention feels now, before you go back to your day."])
+        ];
         return [
           G(60, "Stand still", ["Find a quiet path of ten to twenty steps, indoors or out.", "Stand at one end and feel your weight in your feet.",
             "Keep your eyes open, gaze soft and a few steps ahead."]),
@@ -15884,9 +16097,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           G(60, "Closing", ["Let your steps come to rest, and stand for a few breaths.", "Observe the sensations in your feet and legs before you move on."])
         ];
       },
-      how: "Ten minutes in four stages: standing, slow steps, the whole body, then the surroundings. Works indoors on a short path.",
-      ev: "Walking itself reduced depressive symptoms in a meta-analysis of 75 randomised trials (standardised mean difference −0.59). Walking meditation adds a mindfulness focus; trials of it are smaller and mostly in older adults.",
-      cite: "Xu et al. 2024 · Goyal et al. 2014"
+      how: "Ten minutes in four stages: standing, slow steps, the whole body, then the surroundings. Works indoors on a short path. In a park, the walk follows the path, and its last stage lets your eyes go where they like: clouds, leaves, birds and water, the gently interesting things that Attention Restoration Theory says let tired attention recover.",
+      ev: "Walking itself reduced depressive symptoms in a meta-analysis of 75 randomised trials (standardised mean difference −0.59). Walking meditation adds a mindfulness focus; trials of it are smaller and mostly in older adults. In a park: in Berman and colleagues' 2008 study, 38 students did better at repeating digits backwards after a 50-minute walk in an arboretum, and not after the same length of walk through a city; the guide rates this real-world nudge as moderate evidence. Walking meditation in a park hasn't been tested itself.",
+      cite: "Xu et al. 2024 · Goyal et al. 2014 · Berman et al. 2008"
     },
 
     /* ===== reflection ===== */
@@ -16389,6 +16602,52 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       caution: "Cold water sets off a shock response: a gasp, fast breathing and a sudden rise in heart rate and blood pressure. It can be dangerous with a heart condition or high blood pressure, and in pregnancy: ask your doctor first. Start short, with cool rather than icy water, build up over weeks, and turn it warm again at once if you feel dizzy, numb or unwell. Breathe all the way through: never combine cold water with Wim Hof breathing or breath holds, and never practise cold immersion alone in open water. Keep a firm footing, since the gasp can make you unsteady."
     },
 
+    /* ===== nature (nature.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "fireside", name: "Fireside", lengths: [20, 30, 45], min: 20, strength: 2, sup: true,
+      tone: "relax", noTap: true, noMus: true, noScene: true,    // the fire is its own scene, and its crackle the only sound it needs
+      needs: [["sounds", "Sound on", "the crackle is part of it: the same fire on mute didn't relax people. Its volume is the background sound's"],
+        ["moon", "Somewhere comfortable", "sitting back or lying down, best in the evening"],
+        ["pulse", "Heart sensor", "optional: your heart rate at the start and the end"]],
+      alias: "Fireplace, campfire", words: "fire fireplace hearth campfire log fire flames embers crackle crackling evening relax relaxation blood pressure watch screen calm wind down bedtime",
+      blurb: "A fire to watch, with its crackle, best in the evening: a few slow breaths to begin if you like, then just the flames, for 20 to 45 minutes. The longer people watched a fire with its sound, the more relaxed they became.",
+      parts: "Settle in · slow breaths, if you like · just the fire · back to the room",
+      choices: [
+        { key: "start", label: "To begin", def: "breath", redraw: true, note: function (d) {
+            return pChoice(d, "start") === "breath" ? "Three minutes of slow breathing, 4 seconds in and 6 out, the flames rising as you breathe in and settling as you breathe out. Then just the fire."
+              : "Straight to the fire, after a moment to settle.";
+          },
+          opts: [["breath", "Slow breaths first"], ["fire", "Just the fire"]] }
+      ],
+      next: { id: "sleep-descent", txt: "Bed soon? Sleep Descent takes you on down into sleep, lying down, with long breaths out over a slowing beat." },
+      build: function (min) { return ntFireSteps(this, min || 20); },
+      end: "Take the warmth of the fire with you into your evening.",
+      how: "Sit back or lie down, with the sound up enough to hear the crackle: in the study, the fire relaxed people only with its sound. Three quarters of a minute to settle, then, if you chose them, three minutes of slow breathing, 4 seconds in and 6 out, the flames rising as you breathe in and settling as you breathe out; then just the fire, with a quiet word every few minutes, and a minute at the end to come back to the room. The fire is drawn on your device, with embers rising, and its crackle (one of the nature sounds) always plays with it, even with the background sound off; its volume is the background sound's, in the quick controls while it runs. With reduced motion turned on, the fire stays still.",
+      ev: "The guide rates a fireplace with its sound as moderate evidence for relaxation and lower blood pressure, best in the evening. In three randomised crossover studies with 226 adults, a fire on a screen with its crackle lowered blood pressure, and more the longer people watched; the same fire with the sound off had no consistent effect, so the effect isn't just the flicker. People watched for up to 15 minutes in those studies: Fireside's longer sessions follow the finding that the effect grew with time, and haven't been tested themselves. The study's summary reports a stronger effect in people who become absorbed easily and in more sociable people. This fire is drawn on your device rather than filmed.",
+      cite: "Lynn 2014"
+    },
+    {
+      id: "restoration", name: "Restoration Break", lengths: [3, 5, 10], min: 5, strength: 2, sup: true,
+      tone: "relax", noTap: true, noMus: true, noScene: true, noQuote: true,    // the break chooses its own scene and sound, and ends with no words to read
+      needs: [["sounds", "Sound on, softly", "the scene's own nature sound, unless you choose your background"],
+        ["phone", "A moment away from your work", "between blocks of focus, away from your desk if you can"]],
+      alias: "Nature break, attention restoration", words: "break rest pause recover recovery attention focus tired fatigue work study nature scene scenes restful soft fascination restoration clouds water leaves forest fractal flowers fire birdsong stream wind",
+      blurb: "A few minutes for tired focus to recover between blocks of work: one of your restful scenes with its nature sound, one line to begin, then just the scene and its sound to the end.",
+      parts: "One opening line · a restful scene and its sound · no words or tasks",
+      choices: [
+        { key: "scene", label: "Scene", def: "mine", redraw: true, note: function (d) { return ntSceneNote(d); },
+          opts: [["mine", "Yours"]].concat(SCN_LIST.map(function (x) { return [x.id, x.name]; })) },
+        { key: "snd", label: "Sound", def: "scene", redraw: true, note: function (d) { return ntSndNote(d); },
+          opts: [["scene", "The scene's own"], ["yours", "Your background"]] }
+      ],
+      next: { id: "walking", txt: "Outside is better still: in one study, a walk in a park helped attention and memory, and the same walk through a city didn't. Walking Meditation has a version for a park." },
+      build: function (min) { return ntBreakSteps(this, min || 5); },
+      end: "Break over. If you can, take the next one outside.",
+      how: "Take it between blocks of work, ideally away from your desk. One line to begin, then the scene you chose, or one of yours (picked in Settings, a different one each day), with the nature sound that suits it: wind for the clouds, the leaves and the fractal ridgelines, a stream for the water, birdsong for the forest and the flowers, and the fire's crackle; or your own background sound instead. After the first line there are no more words: no voice, no captions and nothing to do, since content that takes effort to read works against the gentle interest that's meant to rest your attention. The end bells mark the end, if you have them on, and its last page points you outside for the next one, with no quote to read. With reduced motion turned on, the scene stays still.",
+      ev: "The guide rates restoration breaks between focus sessions as moderate evidence. Attention Restoration Theory holds that effortful focus tires with use, and that gently interesting things, drifting clouds, moving leaves, birds, water or fire, hold attention without effort and let it recover. In Berman and colleagues' 2008 study, ten minutes of looking at photographs of nature, but not of cities, improved effortful attention and memory span, and a 50-minute walk in a park improved memory span where the same walk through a city didn't. A 2016 review of 31 studies found nature helped on three measures of attention, while ten other pooled analyses showed no marked benefit; a 2018 review found working memory and cognitive flexibility improved most, and the theory's mechanism is still debated. Leaving out words and tasks follows the theory rather than a test of its own, and these scenes, drawn on your device, haven't been tested themselves.",
+      cite: "Berman et al. 2008 · Ohly et al. 2016 · Stevenson et al. 2018 · Kaplan 1995"
+    },
+
     /* ===== movement ===== */
     yogaPractice("standing-flow", { stand: true,
       blurb: "Nine standing poses, held for a few breaths each: mountain, reach, side bends, forward fold, chair, the warriors, triangle and tree." }),
@@ -16456,7 +16715,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
       ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
-      ["t:preop-calm", "sound", "lie"], ["om", "breath", "sit"], ["touch", "relax", "sit lie"], ["music-break", "sound", "sit lie"], ["imagery", "relax", "sit lie"]],
+      ["t:preop-calm", "sound", "lie"], ["om", "breath", "sit"], ["touch", "relax", "sit lie"], ["music-break", "sound", "sit lie"], ["imagery", "relax", "sit lie"], ["fireside", "relax", "sit lie"]],
     focus: [["focus-primer", "program", "sit"], ["creative", "program", "sit"], ["anapana", "meditate", "sit"], ["b:box", "breath", "sit"],
       ["x:prime", "sound", "sit"], ["t:deep-work", "sound", "sit"], ["t:sustained-24", "sound", "sit"],
       ["t:vigilance-16", "sound", "sit"], ["t:gamma-40", "sound", "sit"], ["t:gamma-memory", "sound", "sit"],
@@ -16466,7 +16725,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"], ["laughter", "move", "stand sit"], ["let-it-out", "breath", "stand sit"],
       ["sing", "program", "stand sit"], ["cold-finish", "breath", "stand"]],
     recover: [["recovery", "program", "sit walk"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
-      ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"], ["self-massage", "relax", "sit"], ["yoga-nidra", "relax", "lie"]],
+      ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"], ["self-massage", "relax", "sit"], ["yoga-nidra", "relax", "lie"], ["restoration", "relax", "sit"]],
     reflect: [["nvc-self", "write", "sit"], ["nvc-prep", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
       ["metta", "meditate", "sit walk"], ["gratitude", "meditate", "sit lie walk"]],
     tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: a section of its own
@@ -16475,7 +16734,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],
     anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], gratitude: ["calm"], "back-hips": ["calm"],
     "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"], meal: ["reflect"], "mindful-sex": ["reflect"], sport: ["focus"],
-    laughter: ["calm"], "let-it-out": ["calm"], sing: ["reflect"], "self-massage": ["calm"], imagery: ["sleep"], "yoga-nidra": ["sleep"]
+    laughter: ["calm"], "let-it-out": ["calm"], sing: ["reflect"], "self-massage": ["calm"], imagery: ["sleep"], "yoga-nidra": ["sleep"],
+    fireside: ["sleep"], restoration: ["focus"]
   };
   var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8", dive: "Swim & dive" };
   var TOOLS = {
@@ -16557,7 +16817,28 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var c = (d.choices || []).filter(function (x) { return x.key === key; })[0];
     if (!c) return undefined;
     var v = pChoices(d.id)[key];
-    return c.opts.some(function (o) { return o[0] === v; }) ? v : pChoiceDef(d, c);
+    return c.opts.some(function (o) { return o[0] === v; }) && !pChoiceLk(c, v) ? v : pChoiceDef(d, c);
+  }
+  /* An option that is a new technique (c.sup lists them, as Walking Meditation's In a park): picking it opens with
+     a donation while this device is locked, and one kept from before reads as the usual choice until it's unlocked */
+  function pChoiceSup(c, v) { return !!c.sup && c.sup.indexOf(v) >= 0; }
+  function pChoiceLk(c, v) { return pChoiceSup(c, v) && !supOn(); }
+  // after an unlock (supRefresh, through pIntroReplan): the cups go from those options, and one kept from before is
+  // chosen again, its page drawn afresh with its own steps and note
+  function pChoiceCups(d) {
+    var redo = false;
+    (d.choices || []).forEach(function (c) {
+      if (!c.sup) return;
+      var v = pChoice(d, c.key);
+      document.querySelectorAll('#sOpts [data-choice="' + c.key + '"] button[data-v]').forEach(function (b) {
+        var k = b.dataset.v, tag = b.querySelector(".sup-tag");
+        if ((b.getAttribute("aria-pressed") === "true") !== (k === v)) redo = true;
+        if (!pChoiceSup(c, k)) return;
+        if (tag && supOn()) tag.parentNode.removeChild(tag);
+        else if (!tag && !supOn()) b.insertAdjacentHTML("beforeend", supTag(true));
+      });
+    });
+    if (redo && P.view === d) pIntro(d.id);
   }
   function pChoiceShown(d, c) { return !c.show || c.show(d); }       // some apply only with others (the rests between sets)
   function pFn(v, d) { return typeof v === "function" ? v(d) : v; }  // a note or band that follows the choices
@@ -17374,6 +17655,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!sub && s.sub) sub = s.sub;                  // a step's own line under its name, such as the meal's "At your own pace"
     bSetT("#sCap", cap);
     bSetT("#sSub", sub);
+    ntBare(s, st);                                   // a break's scene alone, once its opening line has been read (nature.js)
     var nose = $("#sNose");
     if (!nose.hidden) {
       var ns = nose.children;
@@ -17630,6 +17912,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       P.steps = plan.steps; P.total = plan.total; P.base = plan.base; P.runLen = P.len;
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
+      ntStart(plan.steps);                           // and a step's own nature sound ahead of its scene (nature.js)
+      $("#ses").dataset.bare = "";
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
       pAdaptReset(); napReset(); scReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
@@ -17739,6 +18023,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     pUnlock();
     P.state = "done";
     $("#ses").dataset.dim = "";
+    $("#ses").dataset.bare = "";
     var asleep = P.steps.length && pSleepyStep(P.steps[P.steps.length - 1]);     // a practice that ends in sleep ends without bells
     if (!early && !quiet && !asleep) {
       pBell(0.5);
@@ -17864,6 +18149,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     pPreRow(d);
     pCareSync(d, plan);
     if (d.optSync) d.optSync(d);                     // a practice's own row in Options (Soothing Touch's real size)
+    pChoiceCups(d);                                  // and its options that are new techniques, after an unlock
   }
   // your health check's caution, and a block of fast breathing within the hour or today's rounds (care.js)
   function pCareSync(d, plan) {
@@ -17888,7 +18174,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (!pChoiceShown(d, c)) return;
       var v = pChoice(d, c.key), note = pFn(c.note, d);
       opts.push('<div class="so-row so-seg"><span class="so-l">' + esc(c.label) + (note ? "<small>" + esc(note) + "</small>" : "") + '</span><div class="mini-seg" data-choice="' + c.key + '">' +
-        c.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (v === o[0]) + '">' + esc(o[1]) + "</button>"; }).join("") + "</div></div>");
+        c.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (v === o[0]) + '">' + esc(o[1]) + (pChoiceSup(c, o[0]) ? supTag(true) : "") + "</button>"; }).join("") + "</div></div>");
     });
     if (d.optHtml) opts.push(d.optHtml(d));          // a row of its own (Soothing Touch's real size, touch.js)
     if (d.audio && d.beats) {
@@ -18090,6 +18376,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       g.addEventListener("click", function (e) {
         var b = e.target.closest("button"); if (!b) return;
         var k = g.dataset.choice, c = (d.choices || []).filter(function (x) { return x.key === k; })[0] || {};
+        if (pChoiceLk(c, b.dataset.v)) {              // a new technique: the way to unlock it first, then it's chosen
+          var pick = function () { if (P.view !== d || !b.isConnected) return; b.click(); };
+          supGate(c.supName || d.name, pick, function (ok) { if (ok) pick(); });
+          return;
+        }
         pChoiceSet(d, k, b.dataset.v);
         if (c.resets || c.redraw) {                   // a sport brings back its own settings; other choices appear or go
           if (c.resets) { var o = pChoices(d.id); c.resets.forEach(function (r) { delete o[r]; }); store.set("pCh." + d.id, JSON.stringify(o)); }
@@ -18495,7 +18786,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
       (r.nvc ? nvcCard(r.nvc) : "") +
       (r.stress ? "" : sdNext(d)) +
-      qCard(d.reflect ? ROGERS : qPick()) +
+      (d.noQuote ? "" : qCard(d.reflect ? ROGERS : qPick())) +       // a Restoration Break ends with no words to read (nature.js)
       '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>' +
       '<div class="note-card donate-card sd-donate"><p><b>Entrain has no ads, and most of it is free.</b> The new techniques open with a donation of €1 or more on each device, and every donation keeps it going.</p>' +
       '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a></div>';
@@ -23252,7 +23543,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ekholm: ["Ekholm, B., Spulber, S., & Adler, M. (2020). A randomized controlled study of weighted chain blankets for insomnia in psychiatric disorders. Journal of Clinical Sleep Medicine, 16(9), 1567–1577.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC7970589/", "PMC"],
     yuwb: ["Yu, J., Du, J., Yang, Z., Chen, W., Sun, S., Gan, M., et al. (2024). Effect of weighted blankets on sleep quality among adults with insomnia: a pilot randomized controlled trial. BMC Psychiatry, 24, 765.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC11539645/", "PMC"],
     sramek: ["Šrámek, P., Šimečková, M., Janský, L., Šavlíková, J., & Vybíral, S. (2000). Human physiological responses to immersion into water of different temperatures. European Journal of Applied Physiology, 81(5), 436–442.", "https://doi.org/10.1007/s004210050065", "DOI"],
-    yankouskaya: ["Yankouskaya, A., Williamson, R., Stacey, C., Totman, J. J., & Massey, H. (2023). Short-term head-out whole-body cold-water immersion facilitates positive affect and increases interaction between large-scale brain networks. Biology, 12(2), 211.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC9953392/", "PMC"]
+    yankouskaya: ["Yankouskaya, A., Williamson, R., Stacey, C., Totman, J. J., & Massey, H. (2023). Short-term head-out whole-body cold-water immersion facilitates positive affect and increases interaction between large-scale brain networks. Biology, 12(2), 211.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC9953392/", "PMC"],
+    berman: ["Berman, M. G., Jonides, J., & Kaplan, S. (2008). The cognitive benefits of interacting with nature. Psychological Science, 19(12), 1207–1212.", "https://pubmed.ncbi.nlm.nih.gov/19121124/", "PubMed"],
+    ikei14: ["Ikei, H., Komatsu, M., Song, C., Himoro, E., & Miyazaki, Y. (2014). The physiological and psychological relaxing effects of viewing rose flowers in office workers. Journal of Physiological Anthropology, 33, 6.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC3974224/", "PMC"],
+    ikei23: ["Ikei, H., Song, C., & Miyazaki, Y. (2023). Physiological adjustment effect of visual stimulation by fresh rose flowers on sympathetic nervous activity. Frontiers in Psychology, 14, 1159458.", "https://pmc.ncbi.nlm.nih.gov/articles/PMC10174444/", "PMC"]
   };
   var ROUTINES = [
     { id: "sleep-habits", name: "Healthy sleep habits", icon: "moon", tags: "sleep hygiene insomnia habits bedtime regular schedule caffeine alcohol nap bedroom weighted blanket",
@@ -23285,16 +23579,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       refs: [R_REF.brown, R_REF.windred, R_REF.gardiner, R_REF.sramek, R_REF.yankouskaya] },
 
     { id: "daytime", name: "Through the day", icon: "spark", tags: "screen break screens devices digital break mindfulness overthinking analysis paralysis rumination stuck thinking feelings body",
-      lead: "Two habits that carry the morning's practice through the day, and a third that adds daylight.",
+      lead: "Habits that carry the morning's practice through the day, with daylight, a walk and a few fresh flowers.",
       steps: [
         { t: "Short breaks from screens", p: "Every hour or so, take two to five minutes away from every screen: stand up, look out of a window or into the distance, and take a few slow breaths. Short breaks from devices and screens let your body remember the feeling from the morning's practice, and regulate around it, so the calm you found doesn't stay behind at breakfast. Mindfulness courses teach a three-minute breathing space for the same reason, and in a 2022 meta-analysis of 19 studies, short breaks raised energy and eased fatigue.",
-          go: [["#breathe/sigh", "A minute of cyclic sighs"], ["#practice/calm-reset", "Calm Reset"]] },
+          go: [["#breathe/sigh", "A minute of cyclic sighs"], ["#practice/calm-reset", "Calm Reset"], ["#practice/restoration", "Restoration Break"]] },
         { t: "When thinking goes round in circles", p: "Analysis paralysis, a streak of intellectual overstimulation in which each thought feeds the next, is broken through affect, not more analysis. Turn to what you feel: the feeling, emotion or mood that's here, and the sensations of your body at rest, observed consciously and lovingly, with nothing to solve. Research on repetitive thinking points the same way: abstract, evaluating thought (why is this happening, what does it mean) keeps distress going, while a concrete focus on what you're experiencing lets it settle, and putting a feeling into words dampens it.",
           go: [["#practice/body-scan", "Body Scan"], ["#practice/self-compassion", "Self-Compassion Break"], ["#practice/coherence", "Heart Coherence"]] },
         { t: "Lunch away from the screen", p: "Eat sitting down, away from your desk and the screens. Across 24 studies, eating while distracted made people eat more at that meal and more again later; with your attention on the meal you taste it, and notice when you've had enough.", go: [["#practice/meal", "Mindful Meal"]] },
-        { t: "Daylight and a walk", p: "A walk outside around midday gives you daylight, movement and a break from screens at once.", go: [["#practice/walking", "Walking Meditation"]] }
+        { t: "Daylight and a walk", p: "A walk outside around midday gives you daylight, movement and a break from screens at once. In a park or among trees, it can rest your attention too: in one study, a walk through an arboretum helped attention and memory, and the same walk through a city didn't.", go: [["#practice/walking", "Walking Meditation"]] },
+        { t: "Fresh flowers on your desk", p: "If you like flowers, keep a few fresh ones where you work. Office workers who looked at a vase of fresh roses for four minutes were more relaxed, by their heart-rate variability and by how they felt, than with no flowers, and pooled across 214 people in such studies, roses seemed to even things out: fight-or-flight activity fell in those who started high and rose in those who started low. The evidence is early: mostly one research group, and real flowers only, so pictures of flowers haven't been tested." }
       ],
-      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.robinson, R_REF.brown] },
+      refs: [R_REF.albulescu, R_REF.segal, R_REF.watkins, R_REF.torre, R_REF.robinson, R_REF.brown, R_REF.berman, R_REF.ikei14, R_REF.ikei23] },
 
     { id: "evening", name: "An evening routine", icon: "moon", tags: "evening routine bedtime wind down night screens bath shower to-do list relax sleep",
       lead: "A wind-down to make your own, counted back from bedtime. For an 11 pm bedtime, the last coffee is around 2 pm and the lights go down at 8.",
@@ -24828,7 +25123,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["music", musInit], ["scenes", scnInit], ["the screen light", ltInit], ["the phone's camera", camInit], ["the motion sensor", motInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit],["music", musInit], ["scenes", scnInit], ["the screen light", ltInit], ["the phone's camera", camInit], ["the motion sensor", motInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

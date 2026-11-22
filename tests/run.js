@@ -28,6 +28,7 @@ const SUITES = [   // name, what it covers, and about how long it takes on its o
   ['mindtest', 'The mind: Guided Imagery and Yoga Nidra, locked and unlocked', 90],
   ['scenetest', 'Scenes to watch: the drawing, the fractal\'s dimension, Breathe, practices, Settings, locked and unlocked', 90],
   ['coldtest', 'Temperature: Cold Finish, its build-up, and the Cold and heat cards, locked and unlocked', 90],
+  ['naturetest', 'Nature: Fireside, Restoration Break and Walking Meditation in a park, the break after work, locked and unlocked', 100],
   ['lighttest', 'Screen light: Bright, Warm and Night measured on the screen, Automatic, your body clock, locked and unlocked', 120],
   ['phonetest', 'Measuring with the phone alone: heart rate from the camera, the phone on your belly, stillness; the method, locked and unlocked', 200],
   ['cuetrend', 'Lock screen, vibration, comparisons, trends, start-up, Heart', 70],

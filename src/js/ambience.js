@@ -613,9 +613,12 @@
   }
   function ambSync() {
     musSync();                                     // the music made on the device follows the same sessions (music.js)
-    var sig = ambSig(), x = scnSound(), want;
-    // a fire on screen always comes with its crackle, chosen or not (scenes.js): silent fire showed no effect
-    if (x && ("+" + sig + "+").indexOf("+" + x + "+") < 0) sig = sig ? sig + "+" + x : x;
+    var sig = ambSig(), want;
+    // a fire on screen always comes with its crackle, chosen or not (scenes.js): silent fire showed no effect;
+    // and a step can bring the nature sound that suits its scene (a Restoration Break's, nature.js)
+    [scnSound(), ntSound()].forEach(function (x) {
+      if (x && ("+" + sig + "+").indexOf("+" + x + "+") < 0) sig = sig ? sig + "+" + x : x;
+    });
     want = sig && ambActive() ? sig : null;
     if (want === AMB.playing) return;
     if (AMB.playing) ambStop(want ? 0.8 : 1.5);

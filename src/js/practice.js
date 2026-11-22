@@ -50,7 +50,28 @@
     var c = (d.choices || []).filter(function (x) { return x.key === key; })[0];
     if (!c) return undefined;
     var v = pChoices(d.id)[key];
-    return c.opts.some(function (o) { return o[0] === v; }) ? v : pChoiceDef(d, c);
+    return c.opts.some(function (o) { return o[0] === v; }) && !pChoiceLk(c, v) ? v : pChoiceDef(d, c);
+  }
+  /* An option that is a new technique (c.sup lists them, as Walking Meditation's In a park): picking it opens with
+     a donation while this device is locked, and one kept from before reads as the usual choice until it's unlocked */
+  function pChoiceSup(c, v) { return !!c.sup && c.sup.indexOf(v) >= 0; }
+  function pChoiceLk(c, v) { return pChoiceSup(c, v) && !supOn(); }
+  // after an unlock (supRefresh, through pIntroReplan): the cups go from those options, and one kept from before is
+  // chosen again, its page drawn afresh with its own steps and note
+  function pChoiceCups(d) {
+    var redo = false;
+    (d.choices || []).forEach(function (c) {
+      if (!c.sup) return;
+      var v = pChoice(d, c.key);
+      document.querySelectorAll('#sOpts [data-choice="' + c.key + '"] button[data-v]').forEach(function (b) {
+        var k = b.dataset.v, tag = b.querySelector(".sup-tag");
+        if ((b.getAttribute("aria-pressed") === "true") !== (k === v)) redo = true;
+        if (!pChoiceSup(c, k)) return;
+        if (tag && supOn()) tag.parentNode.removeChild(tag);
+        else if (!tag && !supOn()) b.insertAdjacentHTML("beforeend", supTag(true));
+      });
+    });
+    if (redo && P.view === d) pIntro(d.id);
   }
   function pChoiceShown(d, c) { return !c.show || c.show(d); }       // some apply only with others (the rests between sets)
   function pFn(v, d) { return typeof v === "function" ? v(d) : v; }  // a note or band that follows the choices
@@ -867,6 +888,7 @@
     if (!sub && s.sub) sub = s.sub;                  // a step's own line under its name, such as the meal's "At your own pace"
     bSetT("#sCap", cap);
     bSetT("#sSub", sub);
+    ntBare(s, st);                                   // a break's scene alone, once its opening line has been read (nature.js)
     var nose = $("#sNose");
     if (!nose.hidden) {
       var ns = nose.children;
@@ -1123,6 +1145,8 @@
       P.steps = plan.steps; P.total = plan.total; P.base = plan.base; P.runLen = P.len;
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
+      ntStart(plan.steps);                           // and a step's own nature sound ahead of its scene (nature.js)
+      $("#ses").dataset.bare = "";
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
       pAdaptReset(); napReset(); scReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
@@ -1232,6 +1256,7 @@
     pUnlock();
     P.state = "done";
     $("#ses").dataset.dim = "";
+    $("#ses").dataset.bare = "";
     var asleep = P.steps.length && pSleepyStep(P.steps[P.steps.length - 1]);     // a practice that ends in sleep ends without bells
     if (!early && !quiet && !asleep) {
       pBell(0.5);
@@ -1357,6 +1382,7 @@
     pPreRow(d);
     pCareSync(d, plan);
     if (d.optSync) d.optSync(d);                     // a practice's own row in Options (Soothing Touch's real size)
+    pChoiceCups(d);                                  // and its options that are new techniques, after an unlock
   }
   // your health check's caution, and a block of fast breathing within the hour or today's rounds (care.js)
   function pCareSync(d, plan) {
@@ -1381,7 +1407,7 @@
       if (!pChoiceShown(d, c)) return;
       var v = pChoice(d, c.key), note = pFn(c.note, d);
       opts.push('<div class="so-row so-seg"><span class="so-l">' + esc(c.label) + (note ? "<small>" + esc(note) + "</small>" : "") + '</span><div class="mini-seg" data-choice="' + c.key + '">' +
-        c.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (v === o[0]) + '">' + esc(o[1]) + "</button>"; }).join("") + "</div></div>");
+        c.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (v === o[0]) + '">' + esc(o[1]) + (pChoiceSup(c, o[0]) ? supTag(true) : "") + "</button>"; }).join("") + "</div></div>");
     });
     if (d.optHtml) opts.push(d.optHtml(d));          // a row of its own (Soothing Touch's real size, touch.js)
     if (d.audio && d.beats) {
@@ -1583,6 +1609,11 @@
       g.addEventListener("click", function (e) {
         var b = e.target.closest("button"); if (!b) return;
         var k = g.dataset.choice, c = (d.choices || []).filter(function (x) { return x.key === k; })[0] || {};
+        if (pChoiceLk(c, b.dataset.v)) {              // a new technique: the way to unlock it first, then it's chosen
+          var pick = function () { if (P.view !== d || !b.isConnected) return; b.click(); };
+          supGate(c.supName || d.name, pick, function (ok) { if (ok) pick(); });
+          return;
+        }
         pChoiceSet(d, k, b.dataset.v);
         if (c.resets || c.redraw) {                   // a sport brings back its own settings; other choices appear or go
           if (c.resets) { var o = pChoices(d.id); c.resets.forEach(function (r) { delete o[r]; }); store.set("pCh." + d.id, JSON.stringify(o)); }

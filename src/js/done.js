@@ -46,7 +46,7 @@
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
       (r.nvc ? nvcCard(r.nvc) : "") +
       (r.stress ? "" : sdNext(d)) +
-      qCard(d.reflect ? ROGERS : qPick()) +
+      (d.noQuote ? "" : qCard(d.reflect ? ROGERS : qPick())) +       // a Restoration Break ends with no words to read (nature.js)
       '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>' +
       '<div class="note-card donate-card sd-donate"><p><b>Entrain has no ads, and most of it is free.</b> The new techniques open with a donation of €1 or more on each device, and every donation keeps it going.</p>' +
       '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a></div>';
