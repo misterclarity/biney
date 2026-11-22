@@ -218,7 +218,8 @@ const M = p => E(p, () => { const m = window.__entrain.MUS; return { on: m.on, b
       // a breathing session: matched to calm, slow, notes on the beat grid
       await go(p, 'breathe'); await E(p, () => { window.__entrain.MUS.log.length = 0; }); await p.click('#bStart');
       ok(await until(p, () => window.__entrain.MUS.on && window.__entrain.MUS.bpm === 60, 4000), 'matched under a breathing session (Resonance, for calm): slow, 60 a minute');
-      await p.waitForTimeout(5000);
+      // a bar is four seconds at 60, and a sparse bar can be only its chord and low note: wait for a second bar
+      await until(p, () => window.__entrain.MUS.log.filter(e => e.bpm === 60).length >= 4, 12000);
       const g = await E(p, () => {
         const L = window.__entrain.MUS.log.filter(e => e.bpm === 60), r = { n: L.length, kinds: [...new Set(L.map(e => e.v))].sort().join(','), worst: 0 };
         for (let i = 1; i < L.length; i++) r.worst = Math.max(r.worst, Math.abs((L[i].t - L[0].t) - (L[i].b - L[0].b)));
@@ -237,7 +238,7 @@ const M = p => E(p, () => { const m = window.__entrain.MUS; return { on: m.on, b
       const lv = await E(p, () => { const L = window.__entrain.MUS.log.filter(e => e.bpm === 124); return { thump: L.filter(e => e.v === 'thump').length, shake: L.filter(e => e.v === 'shake').length }; });
       ok(lv.thump >= 3 && lv.shake >= 3, 'lively brings the soft pulse in: ' + JSON.stringify(lv));
       await p.click('#bPanelDone'); await p.waitForTimeout(250); await p.click('#bStart'); await p.waitForTimeout(300);
-      ok(await E(p, () => !window.__entrain.MUS.on), 'stopping the breathing session stops the music');
+      ok(await until(p, () => !window.__entrain.MUS.on, 3000), 'pausing the breathing session stops the music (after a short fade)');
       // a track: matched to focus (steady), its carrier kept clear
       await E(p, () => { localStorage.setItem('entrain.music', 'aim'); window.__entrain.MUS.st = window.__entrain.musState(1, 50); });
       await go(p, 'track/deep-work', 500); await p.click('#trGo');
