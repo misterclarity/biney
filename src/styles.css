@@ -2250,3 +2250,29 @@
   .xp-honest b{color:var(--text)}
   .si-xp{margin:0;font-size:13px;line-height:1.45;color:var(--text);background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:12px;padding:10px 12px}
   .si-xp[hidden]{display:none}
+
+  /* ---------- your eyes: eyes closed on Breathe, the gaze point (eyes.js) ---------- */
+  .b-stage[data-eyes="1"] .b-view{background:#04060c}
+  .b-stage[data-eyes="1"] .b-head,.b-stage[data-eyes="1"] .b-line{opacity:.45;transition:opacity 2s}
+  #bEyesHint:empty{display:none}
+
+  /* ---------- the resonance course (course.js) ---------- */
+  .rc-l{margin:0 0 10px;font-size:14px;color:var(--text-dim);line-height:1.5}
+  .rc-l b{color:var(--text);font-weight:800;font-variant-numeric:tabular-nums}
+  .rc-l a{color:var(--accent);font-weight:700;text-underline-offset:3px;display:inline-block;min-height:24px;padding-top:2px}
+  .td-more.rc-hc{white-space:normal}
+  .btn.rc-unlock{min-height:44px}
+  .rc-chs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 18px;margin-top:14px}
+  .rc-ch{min-width:0}
+  .rc-cn{margin:0 0 6px;font-size:12.5px;font-weight:700;color:var(--text-dim)}
+  .rc-bars{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:2px;align-items:end;height:74px}
+  .rc-bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;height:100%;gap:3px}
+  .rc-bar i{display:block;height:calc(var(--h) * .72);min-height:0;border-radius:4px 4px 0 0;background:var(--tn-a)}
+  .rc-bar small{font-size:10.5px;color:var(--text-faint);text-align:center;font-variant-numeric:tabular-nums}
+  .hi-rc .xp-act .btn,.hi-rc .xp-next .btn{min-height:44px}
+  .hi-rc{scroll-margin-top:84px}
+  .rc-lv{font-weight:600;color:var(--text-faint);font-variant-numeric:tabular-nums}
+  .hi-rc .xp-honest a{display:inline-block;min-height:24px;text-decoration:underline}
+  .b-stage[data-eyes="1"] .b-go{filter:brightness(.6)}
+  .hi-rc .rc-per{margin-top:12px}
+  .hi-rc #rcPer button{min-height:44px}

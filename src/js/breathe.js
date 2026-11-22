@@ -71,7 +71,8 @@
     wave: "Your breath as a wave scrolling past the marker. Equal in and out with no holds is a pure sine; holds are the flat stretches. What comes next is labelled along the bottom. With a heart sensor connected, your heart rate is drawn over it in pink.",
     box: "Trace the square: up on the in-breath, across the top on the hold, down on the out-breath, back along the bottom.",
     dial: "One lap of the dial is one breath, divided by phase. The centre swells with each in-breath.",
-    column: "The column fills like your lungs and drains as you breathe out."
+    column: "The column fills like your lungs and drains as you breathe out.",
+    gaze: "A still point to rest your eyes on, for calm focus with your eyes open: its soft glow swells as you breathe in and shrinks as you breathe out. Rest your eyes softly on the point; blink when you need to. General practice, not researched."
   };                                                  // a scene's own words are in scenes.js (scnHint)
 
   // max: the sliders' usual range, in half seconds; xmax: the Swim & dive range, in whole seconds
@@ -93,7 +94,8 @@
 
   var BC = {
     pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0, long: false,
-    visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false, scene: "clouds"
+    visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false, scene: "clouds",
+    eyes: false                         // breathing with the eyes closed: the visual hidden, the cues guiding (eyes.js)
   };
 
   var B = {
@@ -124,7 +126,7 @@
     var c = BC;
     if (B.finder) {
       c = B.finder.saved;
-      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue; c.buzz = BC.buzz; c.scene = BC.scene;
+      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue; c.buzz = BC.buzz; c.scene = BC.scene; c.eyes = BC.eyes;
     }
     store.set("breath", JSON.stringify(c));
   }
@@ -380,10 +382,11 @@
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();
     else if (B.state === "paused") { if (!bSupGate("resume") && !dvGate("resume")) bResume(); }
-    else if (!bSupGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) bBegin();   // Start again: rest first? (care.js)
+    else if (!bSupGate("start") && !rcLenGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) bBegin();   // Start again: rest first? (care.js); 20 minutes (course.js)
   }
   // a fresh session: your check-in first, if you keep them (own.js); breath-led sound starts at your own pace (breathled.js)
   function bBegin() {
+    if (eyClosedNow()) eyBreatheCues();             // eyes closed: a sound or vibration to follow (eyes.js)
     var go = function () { if (B.state === "idle" || B.state === "done") { if (!blsStart()) { bFresh(); bResume(); } } };
     if (BLS.phase === "find") { go(); return; }   // Begin now, while breath-led sound waits for your pace: the check-in came before the wait
     if (!ciBefore("breath", ciBreathName(), go)) go();
@@ -744,10 +747,11 @@
         if (BVIS[saved.visual]) BC.visual = saved.visual;    // a scene kept while this device is locked shows the circle (bVisNow)
         if (scnGet(saved.scene)) BC.scene = saved.scene;
         if (["off", "tones", "chimes"].indexOf(saved.sound) >= 0) BC.sound = saved.sound;
-        if ([0, 2, 5, 10, 15].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;
+        if ([0, 2, 5, 10, 15, 20].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;   // 20: with a donation (course.js)
         var cue = parseInt(saved.cue, 10);
         if (cue >= 0 && cue <= 100) BC.cue = cue;
         if (typeof saved.buzz === "boolean") BC.buzz = saved.buzz;
+        if (typeof saved.eyes === "boolean") BC.eyes = saved.eyes;   // kept while this device is locked, the visual shows as usual (eyes.js)
         BC.pattern = (saved.pattern === "custom") ? "custom" : matchPreset();
       }
     } catch (e) {}
@@ -806,16 +810,21 @@
         scnBreatheSync(); syncVisHint(); draw(); saveBreath();
         if (v === "scene" && BC.scene === "fire") amNeed(["fire", "fireP"]);    // its crackle ready to play with it
       };
-      if (v === "scene") scnBreathePick(go); else go();     // a scene is a new technique: the dialog first while locked (scenes.js)
+      if (v === "scene") scnBreathePick(go);                // a scene is a new technique: the dialog first while locked (scenes.js)
+      else if (v === "gaze") eyGazePick(go);                // and so is the gaze point (eyes.js)
+      else go();
     });
     $("#bLen").addEventListener("change", function (e) {
-      if (B.finder) finderCancel();
-      checkRadio("blen", e.target.value);
-      BC.minutes = parseInt(e.target.value, 10);
-      syncChips("#bLen");
-      if (B.state === "running" || B.state === "paused") normalize(breathTime());
-      if (B.state === "done") { B.state = "idle"; bFresh(); syncTransport(); }
-      planTotal(); updateHead(); saveBreath();
+      var v = parseInt(e.target.value, 10);
+      rcLenPick(v, function () {                          // 20 minutes is a new technique: the dialog first while locked (course.js)
+        if (B.finder) finderCancel();
+        checkRadio("blen", String(v));
+        BC.minutes = v;
+        syncChips("#bLen");
+        if (B.state === "running" || B.state === "paused") normalize(breathTime());
+        if (B.state === "done") { B.state = "idle"; bFresh(); syncTransport(); }
+        planTotal(); updateHead(); saveBreath();
+      });
     });
     $("#bSnd").addEventListener("change", function (e) {
       BC.sound = e.target.value;

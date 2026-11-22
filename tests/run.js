@@ -37,6 +37,7 @@ const SUITES = [   // name, what it covers, and about how long it takes on its o
   ['airtest', 'Air, scent and blood oxygen: a CO2 monitor, Air the room, the scent and gum tips, an oximeter ending a hold; locked and unlocked', 110],
   ['owntest', 'Your own data: check-ins before and after, today\'s minutes and the days in a row, a daily rhythm with calendar reminders, a personal experiment; locked and unlocked', 120],
   ['pulsetest', 'Light pulse at 40 Hz: the health check and the screen first, the light measured on the screen, every way it ends; locked and unlocked', 90],
+  ['eyestest', 'Your eyes and the resonance course: the eyes-closed cue, Eyes closed on Breathe, the gaze point, 20 minutes on Breathe and the eight-week course; locked and unlocked', 110],
   ['cuetrend', 'Lock screen, vibration, comparisons, trends, start-up, Heart', 70],
   ['choices', 'Saved patterns, safety note, filters, Heart Coherence, live changes, Restart, Healthy living, Gratitude, Calm Reset, donations, connecting, difficult conversations, autogenic training, walking, feedback, routines and light, the consistency check, a mindful meal, four more programmes, the Heart page explained, breath from the microphone, coffee, Swim & dive', 290]
 ];

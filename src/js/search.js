@@ -123,7 +123,7 @@
         [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id, sup: b.sup }));
     });
     out.push(fdEntry("breath", "Breathing guide", "Breathe · paced breathing",
-      ["Paced breathing with five visuals and scenes that move with your breath, timed sessions, sound cues and live heart data."], "#breathe",
+      ["Paced breathing with five visuals, a gaze point and scenes that move with your breath, sessions of 2 to 20 minutes or open-ended, sound cues and live heart data."], "#breathe",
       { ic: "breathe", col: "var(--b-in)", w: 1, tags: "breathe pace" }));
     TRACKS.forEach(function (t) {
       var g = goalOf(t.goal), gn = g ? g.name : "Tinnitus";
@@ -229,6 +229,19 @@
     out.push(fdEntry("app", "Personal experiment", "History · one practice two ways, alternated over ten sessions",
       ["Compare a practice with its beat or without, with music or without, with a scene or the usual visual, or against another practice: your heart-rate change, coherence and check-ins side by side, with an honest word on noise and expectation."], "#experiment",
       { ic: "target", col: "var(--accent)", w: 1.05, tags: "experiment experiments test compare comparison ab a/b trial n of 1 which works best for me stacked combination combine", sup: true }));
+    // your eyes and the resonance course (eyes.js, course.js)
+    out.push(fdEntry("breath", EY_BREATHE, "Breathe · the visual dark, the cues guiding each breath",
+      ["Breathe with your eyes closed: the visual goes dark, and the rising tone, the chimes or vibration guide each breath. Alpha waves rise within seconds of closing the eyes."], "#breathe",
+      { ic: "breathe", col: "var(--b-in)", w: 1, alias: "Eyes closed", tags: "eyes closed close shut dark blind alpha relax relaxation cue cues tone vibration", sup: true }));
+    out.push(fdEntry("practice", EY_CUE, "Relaxation practices · under Options",
+      ["At the first slow breaths, a soft bell and “Close your eyes now; the sound will guide you”, then the screen dims, in Calm Reset, Heart Coherence, Sleep Descent and other relaxation practices with paced breathing."], "#l-eyes",
+      { ic: "moon", col: "var(--relax)", w: 1, tags: "eyes closed close shut cue bell dim alpha relax relaxation transition", sup: true }));
+    out.push(fdEntry("breath", EY_GAZE, "Breathe and focus practices · a still point to rest your eyes on",
+      ["A still point whose soft glow swells and shrinks with your breath: rest your eyes softly on it, and blink when you need to. General practice, not researched."], "#breathe",
+      { ic: "target", col: "var(--b-in)", w: 1, alias: "Soft gaze", tags: "gaze soft open eyes point focus focal concentration attention trataka candle visual", sup: true }));
+    out.push(fdEntry("app", RC_NAME, "Today and History · 20 minutes twice a day for eight weeks",
+      ["Lehrer's protocol for heart-rate-variability biofeedback: 20 minutes of resonance breathing twice a day (or once) for eight weeks, ticked off on Today, with each week's coherence and swing in History."], "#rcourse",
+      { ic: "target", col: "var(--hr)", w: 1.05, tags: "resonance course programme protocol lehrer hrv biofeedback twice a day 20 minutes eight weeks two months coherence swing plan schedule progress", sup: true }));
     fdLiving(out);
     fdLearn(out);
     return out;

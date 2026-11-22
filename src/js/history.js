@@ -244,7 +244,7 @@
     var l = hLoad(), w = hWeek(), h = '<a class="si-back" href="#home"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Today</a>';
     if (!l.length) {
       h += '<div class="hi-empty"><p>Nothing here yet. Practices, breathing sessions and tracks of a minute or more show up here once they end, with your heart-rate change and coherence when a sensor is connected.</p>' +
-        '<a class="btn small" href="#practice">Open the library</a></div>' + xpSec();      // a personal experiment can be set up before the first session (own.js)
+        '<a class="btn small" href="#practice">Open the library</a></div>' + rcSec() + xpSec();      // the resonance course and a personal experiment can be set up before the first session (course.js, own.js)
       $("#hiBody").innerHTML = h;
       return;
     }
@@ -252,7 +252,7 @@
     h += '<section class="hi-sum" aria-labelledby="hiWk"><h2 id="hiWk">Last 7 days</h2>' + hTotals(w) + owHtml("hiDay") + hDays(w) +
       (goals.length ? '<ul class="hi-goals" aria-label="Minutes by goal">' + goals.map(function (g) {
         return '<li style="--gcol:' + GOAL_COL[g.id] + '"><span>' + esc(g.name) + "</span><i style=\"--w:" + Math.max(4, Math.round(w.goals[g.id] / gmax * 100)) + '%"></i><b>' + Math.round(w.goals[g.id] / 60) + " min</b></li>";
-      }).join("") + "</ul>" : "") + "</section>" + tnSec() + ciSec() + xpSec();     // your check-ins and a personal experiment (own.js)
+      }).join("") + "</ul>" : "") + "</section>" + tnSec() + ciSec() + rcSec() + xpSec();     // your check-ins, the resonance course and a personal experiment (own.js, course.js)
     var day = -1, open = false;
     for (var i = l.length - 1; i >= 0; i--) {
       var d = hDayStart(l[i].at);

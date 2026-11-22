@@ -17,7 +17,7 @@
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off", still: false },
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off", still: false, eyes: false, gaze: false },
     paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
     bm: "",                                         // how its beat played (beatmode.js), for the history
     ci: null, xp: null, xpOrig: null                // your check-in as it began, a personal experiment's way this time and your own options under it (own.js)
@@ -160,7 +160,7 @@
      The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js),
      the music (music) to the background sound's choice (music.js), and the screen light (light) to Breathe's (light.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene", "light", "still"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene", "light", "still", "eyes", "gaze"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -343,7 +343,8 @@
     var sc = scnGet(s.scene) ? s.scene : scnSes();      // a scene in place of the breath visual, following the breath (scenes.js)
     BC.visual = sc ? "scene" : P.opt.visual;
     if (sc) BC.scene = sc;
-    var snd = P.opt.cues;
+    if (!scnGet(s.scene) && eyGazeSes()) BC.visual = "gaze";        // a focus practice's gaze point, following the breath (eyes.js)
+    var snd = eyCues(P.opt.cues);                                     // with the eyes closed, a tone where they'd be silent (eyes.js)
     if (BC.sound !== snd && B.state === "running") { BC.sound = snd; cueOff(); if (snd !== "off") cueOn(); }
     BC.sound = snd;
     BC.cue = s.cueFade ? Math.round(40 * s.cueFade[0]) : 40;
@@ -568,8 +569,9 @@
     for (var i = P.steps.length - 1; i >= 0; i--) if (T >= P.steps[i].at - 1e-6) return i;
     return 0;
   }
-  // what the stage shows for a step: a scene in place of the orb, the still point or the glow when the practice shows one (scenes.js)
-  function pVis(s) { return scnVis(s, pVisOf(s)); }
+  // what the stage shows for a step: a scene in place of the orb, the still point or the glow when the practice shows one (scenes.js),
+  // or the gaze point in a focus practice (eyes.js)
+  function pVis(s) { return scnVis(s, eyVis(s, pVisOf(s))); }
   function pVisOf(s) {
     if (s.k === "breath") return s.pose ? "pose" : "breath";      // a qigong movement: its drawing moves with the breath (movement.js)
     if (s.k === "pose") return "pose";
@@ -615,6 +617,7 @@
     var flowing = s.k === "breath" && prev && prev.k === "breath";
     if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
     $("#ses").dataset.dim = (ST.sleepDim && pSleepyStep(s)) || s.dim ? "1" : "";     // sleep steps if Settings asks; a step that asks for it
+    eyEnter(s);                                      // and the eyes closed, from the first slow breaths (eyes.js)
     ltSync();                                        // Automatic's screen light: Night on a sleep step (light.js)
     pStage(s);
     pRenderSegs();
@@ -679,6 +682,7 @@
       var ln = s.lines[P.li++];
       if (st - ln[0] < 8) {
         if (ln[2] === "chime") pBell(0.3, 0, 659.25, 0, true);      // chosen as the reminder itself, so it sounds even with the bells off
+        else if (ln[2] === "eyes") eyCueSay(s);                       // close your eyes: a soft bell and the words (eyes.js)
         else if (!s.mute) pSay(ln[1], s.quiet || ln[2] === "ana");
         P.lineAt = bNow();
       }
@@ -954,7 +958,7 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, brainled: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1, dance: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, brainled: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1, dance: 1, gaze: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -983,6 +987,7 @@
         else if (vis === "scene") scnStep(c, W, Hh, s, T);
         else if (vis === "cold") coldDraw(c, W, Hh, s, st);
         else if (vis === "dance") dncDraw(c, W, Hh, s, st, col);   // a ring that pulses with the music's beat (movement.js)
+        else if (vis === "gaze") eyGazeStep(c, W, Hh, T, col);     // a point to rest your eyes on (eyes.js)
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -1162,6 +1167,7 @@
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
       P.steps = plan.steps; P.total = plan.total; P.base = plan.base; P.runLen = P.len;
+      eyStart(d, plan.steps);                        // the eyes-closed cue, or the gaze point, if chosen (eyes.js)
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
       ntStart(plan.steps);                           // and a step's own nature sound ahead of its scene (nature.js)
@@ -1492,8 +1498,10 @@
         }).join("") + "</div></div>");
     }
     if (scnFits(d)) opts.push(scnRow(O));               // a scene to watch, kept for this practice: with a donation while locked (scenes.js)
+    if (eyGazeFits(d)) opts.push(eyGazeRow(O));         // a point to rest your eyes on, in a focus practice: with a donation while locked (eyes.js)
     if (ltFits(d)) opts.push(ltRow(O));                 // the screen light, kept for this practice: with a donation while locked (light.js)
     if (motStillFits(d)) opts.push(motStillRow(O));     // how still you stay, from the motion sensor, lying down: with a donation while locked (motion.js)
+    if (eyFits(d)) opts.push(eyCueRow(O));              // the eyes-closed cue, in a relaxation practice: with a donation while locked (eyes.js)
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
     every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl(true) + "</div>");   // its music is a row of its own above
@@ -1602,6 +1610,7 @@
     if (scnFits(d) && scnShown(O.scene) !== "off") s.push(scnOptName(O.scene));
     if (ltFits(d) && ltShown(O.light) !== "off") s.push(LT_KINDS.filter(function (k) { return k[0] === O.light; })[0][1] + " light");
     if (motStillFits(d) && O.still && supOn()) s.push("Stillness");
+    eyOptSum(d, O, s);                                     // the eyes-closed cue and the gaze point (eyes.js)
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -1711,6 +1720,7 @@
       });
     });
     motStillWire(d, O, save);                          // Stillness, kept for this practice (motion.js)
+    eyOptWire2(d, O, save);                            // the eyes-closed cue and the gaze point, kept for this practice (eyes.js)
     var pg = $("#sOptPace");
     if (pg) {
       var paceUI = function () {

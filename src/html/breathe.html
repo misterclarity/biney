@@ -124,6 +124,7 @@
             <label class="chip"><input type="radio" name="bvis" value="dial"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 1.8A6.2 6.2 0 1 1 1.8 8"/><circle cx="8" cy="8" r="2.2"/></svg>Dial</label>
             <label class="chip"><input type="radio" name="bvis" value="column"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="1.5" width="6" height="13" rx="3"/><path d="M5 9.5h6"/></svg>Column</label>
             <label class="chip b-scnchip"><input type="radio" name="bvis" value="scene"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="4.6" r="1.8"/><path d="M1.2 13.5l4.3-6 3 3.8 2-2.4 4.3 4.6z"/></svg>Scene</label>
+            <label class="chip b-gzchip"><input type="radio" name="bvis" value="gaze"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="1.7" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="5.8" stroke-dasharray="1.6 2.2"/></svg>Gaze point</label>
           </div>
           <div class="chips b-scn" id="bScn" role="radiogroup" aria-label="Scene" hidden>
             <label class="chip"><input type="radio" name="bscn" value="clouds" checked> Clouds</label>
@@ -135,6 +136,12 @@
             <label class="chip"><input type="radio" name="bscn" value="fire"> Fire</label>
           </div>
           <p class="hint" id="bVisHint">The circle grows as you breathe in and shrinks as you breathe out. The outer arc fills as each phase runs.</p>
+        </div>
+
+        <div class="prime-row" id="bEyesOpt">
+          <div class="prime-label">Eyes closed</div>
+          <label class="so-row so-tg b-eyes"><span class="so-l"><span id="bEyesL">Breathe with your eyes closed</span><small>The visual goes dark, and the sound cues or vibration guide each breath; if both are off, the rising tone comes on. Alpha waves rise within seconds of closing your eyes.</small></span><input type="checkbox" class="sw" id="bEyesOn"></label>
+          <p class="hint"><span id="bEyesHint" aria-live="polite"></span> <a class="b-led-why" href="#l-eyes">What the research says</a></p>
         </div>
 
         <div class="prime-row b-lt">
@@ -156,6 +163,7 @@
             <label class="chip on"><input type="radio" name="blen" value="5" checked> 5 min</label>
             <label class="chip"><input type="radio" name="blen" value="10"> 10 min</label>
             <label class="chip"><input type="radio" name="blen" value="15"> 15 min</label>
+            <label class="chip"><input type="radio" name="blen" value="20"> 20 min</label>
             <label class="chip"><input type="radio" name="blen" value="0"> Open-ended</label>
           </div>
         </div>

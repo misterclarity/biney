@@ -52,6 +52,7 @@
     }
 
     rhmSync();                          // the daily rhythm, or its offer (own.js)
+    rcTodaySync();                      // the resonance course, ticked off (course.js)
 
     // the six goals, each with the first few of its own
     $("#tdGoals").innerHTML = GOALS.map(function (g) {

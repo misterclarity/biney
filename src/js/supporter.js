@@ -299,6 +299,8 @@
     aqUI(); oxUI();                                           // room air, the reminder, the oximeter, and the focus pages' slots (air.js)
     ymUI(); blsUI();                                          // your own music's Add button, and breath-led sound's switch (yourmusic.js, breathled.js)
     owUI();                                                   // check-ins, the daily rhythm, today's minutes and experiments (own.js)
+    eyUI();                                                   // the eyes-closed cue, eyes closed on Breathe and the gaze point (eyes.js)
+    rcUI();                                                   // the 20-minute length and the resonance course (course.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }

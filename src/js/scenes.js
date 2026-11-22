@@ -402,8 +402,8 @@
   }
 
   /* ----- Breathe: the visual Scene, which follows the breath ----- */
-  // the visual Breathe draws: a scene kept from before shows the circle while this device is locked
-  function bVisNow() { return BC.visual === "scene" && !supOn() ? "circle" : BC.visual; }
+  // the visual Breathe draws: a scene, or the gaze point (eyes.js), kept from before shows the circle while this device is locked
+  function bVisNow() { return (BC.visual === "scene" || BC.visual === "gaze") && !supOn() ? "circle" : BC.visual; }
   BVIS.scene = function (S) {
     if (!supOn()) { BVIS.circle(S); return; }
     scnPaint(d2, CW, CH, scnGet(BC.scene) ? BC.scene : "clouds", bNow(), S.live ? (S.lead ? 0 : S.level) : 0.45);

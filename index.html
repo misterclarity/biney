@@ -2333,6 +2333,32 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .xp-honest b{color:var(--text)}
   .si-xp{margin:0;font-size:13px;line-height:1.45;color:var(--text);background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:12px;padding:10px 12px}
   .si-xp[hidden]{display:none}
+
+  /* ---------- your eyes: eyes closed on Breathe, the gaze point (eyes.js) ---------- */
+  .b-stage[data-eyes="1"] .b-view{background:#04060c}
+  .b-stage[data-eyes="1"] .b-head,.b-stage[data-eyes="1"] .b-line{opacity:.45;transition:opacity 2s}
+  #bEyesHint:empty{display:none}
+
+  /* ---------- the resonance course (course.js) ---------- */
+  .rc-l{margin:0 0 10px;font-size:14px;color:var(--text-dim);line-height:1.5}
+  .rc-l b{color:var(--text);font-weight:800;font-variant-numeric:tabular-nums}
+  .rc-l a{color:var(--accent);font-weight:700;text-underline-offset:3px;display:inline-block;min-height:24px;padding-top:2px}
+  .td-more.rc-hc{white-space:normal}
+  .btn.rc-unlock{min-height:44px}
+  .rc-chs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 18px;margin-top:14px}
+  .rc-ch{min-width:0}
+  .rc-cn{margin:0 0 6px;font-size:12.5px;font-weight:700;color:var(--text-dim)}
+  .rc-bars{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:2px;align-items:end;height:74px}
+  .rc-bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;height:100%;gap:3px}
+  .rc-bar i{display:block;height:calc(var(--h) * .72);min-height:0;border-radius:4px 4px 0 0;background:var(--tn-a)}
+  .rc-bar small{font-size:10.5px;color:var(--text-faint);text-align:center;font-variant-numeric:tabular-nums}
+  .hi-rc .xp-act .btn,.hi-rc .xp-next .btn{min-height:44px}
+  .hi-rc{scroll-margin-top:84px}
+  .rc-lv{font-weight:600;color:var(--text-faint);font-variant-numeric:tabular-nums}
+  .hi-rc .xp-honest a{display:inline-block;min-height:24px;text-decoration:underline}
+  .b-stage[data-eyes="1"] .b-go{filter:brightness(.6)}
+  .hi-rc .rc-per{margin-top:12px}
+  .hi-rc #rcPer button{min-height:44px}
 </style>
 </head>
 <body>
@@ -2456,6 +2482,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         <section class="td-sec" id="tdRhythm" aria-labelledby="tdRhythmH" hidden>
           <div class="td-h"><h2 id="tdRhythmH"><svg class="i" aria-hidden="true"><use href="#i-today"/></svg>Daily rhythm</h2><a class="td-more" href="#st-rhythm">Change</a></div>
           <div id="tdRhythmBody"></div>
+        </section>
+
+        <section class="td-sec" id="tdCourse" aria-labelledby="tdCourseH" hidden>
+          <div class="td-h"><h2 id="tdCourseH"><svg class="i" aria-hidden="true"><use href="#i-breathe"/></svg>Resonance course</h2><a class="td-more" href="#rcourse">Your weeks</a></div>
+          <div id="tdCourseBody"></div>
         </section>
 
         <div class="suggest" id="homeSuggest">
@@ -2878,6 +2909,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <label class="chip"><input type="radio" name="bvis" value="dial"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 1.8A6.2 6.2 0 1 1 1.8 8"/><circle cx="8" cy="8" r="2.2"/></svg>Dial</label>
             <label class="chip"><input type="radio" name="bvis" value="column"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="1.5" width="6" height="13" rx="3"/><path d="M5 9.5h6"/></svg>Column</label>
             <label class="chip b-scnchip"><input type="radio" name="bvis" value="scene"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="4.6" r="1.8"/><path d="M1.2 13.5l4.3-6 3 3.8 2-2.4 4.3 4.6z"/></svg>Scene</label>
+            <label class="chip b-gzchip"><input type="radio" name="bvis" value="gaze"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="1.7" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="5.8" stroke-dasharray="1.6 2.2"/></svg>Gaze point</label>
           </div>
           <div class="chips b-scn" id="bScn" role="radiogroup" aria-label="Scene" hidden>
             <label class="chip"><input type="radio" name="bscn" value="clouds" checked> Clouds</label>
@@ -2889,6 +2921,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <label class="chip"><input type="radio" name="bscn" value="fire"> Fire</label>
           </div>
           <p class="hint" id="bVisHint">The circle grows as you breathe in and shrinks as you breathe out. The outer arc fills as each phase runs.</p>
+        </div>
+
+        <div class="prime-row" id="bEyesOpt">
+          <div class="prime-label">Eyes closed</div>
+          <label class="so-row so-tg b-eyes"><span class="so-l"><span id="bEyesL">Breathe with your eyes closed</span><small>The visual goes dark, and the sound cues or vibration guide each breath; if both are off, the rising tone comes on. Alpha waves rise within seconds of closing your eyes.</small></span><input type="checkbox" class="sw" id="bEyesOn"></label>
+          <p class="hint"><span id="bEyesHint" aria-live="polite"></span> <a class="b-led-why" href="#l-eyes">What the research says</a></p>
         </div>
 
         <div class="prime-row b-lt">
@@ -2910,6 +2948,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <label class="chip on"><input type="radio" name="blen" value="5" checked> 5 min</label>
             <label class="chip"><input type="radio" name="blen" value="10"> 10 min</label>
             <label class="chip"><input type="radio" name="blen" value="15"> 15 min</label>
+            <label class="chip"><input type="radio" name="blen" value="20"> 20 min</label>
             <label class="chip"><input type="radio" name="blen" value="0"> Open-ended</label>
           </div>
         </div>
@@ -3389,6 +3428,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-restore">Nature breaks</a>
             <a href="#l-light">Light colour</a>
             <a href="#l-flicker">Light pulse</a>
+            <a href="#l-eyes">Your eyes</a>
             <a href="#l-touch">Touch</a>
             <a href="#l-temp">Cold and heat</a>
             <a href="#l-air">Air and scent</a>
@@ -3527,7 +3567,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Breath</th></tr>
                 <tr class="ln-row"><th scope="row"><b>Cyclic sighing</b> <small>Long out-breaths, for calm and a better mood</small></th><td>Moderate to strong (one randomised trial against mindfulness)</td><td><a href="#breathe/sigh">Cyclic sigh</a>, <a href="#practice/calm-reset">Calm Reset</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Box breathing</b> <small>Calm focus, lower anxiety</small></th><td>Moderate</td><td><a href="#breathe/box">Box 4-4-4-4</a></td></tr>
-                <tr class="ln-row"><th scope="row"><b>Resonance breathing</b> <small>About 6 breaths a minute, for calm and heart coherence</small></th><td>Moderate (no benefit over placebo breathing in a 400-person trial)</td><td><a href="#breathe/resonance">Resonance 5.5</a>, <a href="#resonance-test">the resonance test</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Resonance breathing</b> <small>About 6 breaths a minute, for calm and heart coherence</small></th><td>Moderate (no benefit over placebo breathing in a 400-person trial)</td><td><a href="#breathe/resonance">Resonance 5.5</a>, <a href="#resonance-test">the resonance test</a>, and <a href="#rcourse">the resonance course</a>, 20 minutes twice a day for eight weeks</td></tr>
                 <tr class="ln-row"><th scope="row"><b>Wim Hof-style breathing</b> <small>Fast breathing with holds, for energy and stress resilience</small></th><td>Moderate (no stress benefit over placebo; a safety risk)</td><td><a href="#practice/wim-hof">Wim Hof Breathing</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Humming (bhramari)</b> <small>Calm</small></th><td>Early to moderate</td><td><a href="#practice/bhramari">Bhramari</a></td></tr>
               </tbody>
@@ -3555,7 +3595,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Vision</th></tr>
-                <tr class="ln-row"><th scope="row"><b>Eyes closed</b> <small>Alpha (relaxation)</small></th><td>Strong</td><td>In the guidance of practices such as <a href="#practice/anapana">Anapana</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Eyes closed</b> <small>Alpha (relaxation)</small></th><td>Strong</td><td>The <a href="#l-eyes">eyes-closed cue</a> in relaxation practices such as <a href="#practice/calm-reset">Calm Reset</a>, Eyes closed on <a href="#breathe">Breathe</a>, and the guidance of practices such as <a href="#practice/anapana">Anapana</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Bright, cool light in the morning</b> <small>Alertness</small></th><td>Strong</td><td><a href="#living/morning">A morning routine</a>, <a href="#living/light-box">a light box</a>, and Bright <a href="#st-light">screen light</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Dim, warm light in the evening</b> <small>Ready for sleep</small></th><td>Strong</td><td><a href="#living/sleep-habits">Healthy sleep habits</a>, and Warm or Night <a href="#st-light">screen light</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Rhythmic light flicker</b> <small>Entrainment, such as 40&nbsp;Hz</small></th><td>Early (a seizure risk)</td><td>A <a href="#track/gamma-40">light pulse</a> with the 40&nbsp;Hz tracks, marked experimental, with <a href="#l-flicker">its safeguards</a></td></tr>
@@ -4495,6 +4535,36 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               at arm's length; the <a href="#l-safety">safety note</a> has the rest.
             </p>
 
+            <h3 id="l-eyes">Your eyes: closed, or resting on a point</h3>
+            <p>
+              Closing your eyes is the simplest way to change your brain waves, and one of the most reliable effects in EEG
+              research: alpha rises within seconds, as the brain stops taking in what it sees. When 28 students rested with
+              their eyes closed and then open, opening them lowered alpha across the scalp while skin conductance, a sign of
+              arousal, rose, and the authors concluded that resting alpha is a fair measure of how aroused someone is
+              (Barry et al., 2007). The guide rates the effect as strong, and suggests closing the eyes as the cue that
+              starts a relaxation session.
+            </p>
+            <p>
+              Entrain's <b>eyes-closed cue</b>, one of the new techniques, is an option for relaxation practices with paced
+              breathing, such as <a href="#practice/calm-reset">Calm Reset</a>, Heart Coherence and Sleep Descent: at the first
+              slow breaths, a soft bell and &ldquo;Close your eyes now; the sound will guide you&rdquo;, then the screen dims
+              and the breath cues guide you, a rising tone if they were set to silent. If a later step has something to look
+              at or tap, a bell and the voice ask you to open your eyes. It stays off while walking, and practices where your
+              eyes have work to do (a video call, a meal, a partner's eyes, a fire, the arm you stroke along with, and Guided
+              Imagery, which has its own way in) leave it out. On Breathe, <b>Eyes closed</b> does the same for the
+              breathing guide: the visual goes dark, and the sound cues or vibration guide each breath. What's measured is
+              alpha rising as the eyes close; whether a cue makes a session work better hasn't been tested.
+            </p>
+            <p id="l-gaze">
+              <b>A soft gaze.</b> Resting your eyes, open, on a single point is meant to keep you alert without
+              overstimulating you, for calm focus. It's general practice rather than research: the guide lists it as not
+              researched, and the gaze techniques with names, candle gazing (trataka) and panoramic vision, had no good-quality
+              studies either (<a href="#l-leftout">left out, and why</a>). Entrain's <b>gaze point</b>, a new technique, is a
+              visual on Breathe and an option for focus practices such as <a href="#practice/focus-primer">Focus Primer</a>
+              and Creative Flow: a still point whose soft glow swells and shrinks with your breath. Rest your eyes softly on
+              the point, and blink when you need to.
+            </p>
+
             <h3 id="l-touch">Touch: slow strokes, a hand on the heart, weighted blankets and massage</h3>
             <p id="l-ctouch">
               <b>Slow, gentle stroking.</b> Hairy skin, like the forearm's, has nerves of its own for caress-like touch:
@@ -4735,6 +4805,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               isn't a failure: in the app study above, practising consistently, four to seven days a week, went with the largest
               improvement (Cearns &amp; Clark, 2023).
             </p>
+            <p id="l-course">
+              <b>The resonance course.</b> The guide lists resonance breathing for 20 minutes twice a day as the standard
+              protocol, to pair with a heart sensor and follow over weeks, and says plainly that a large trial found no added
+              benefit over placebo breathing (Fincham et al., 2023). Entrain's <a href="#rcourse">resonance course</a>, one of
+              the new techniques, follows the original protocol for eight weeks (Lehrer et al., 2000): two sessions of 20
+              minutes or more each day at a resonance pace, on Breathe, whose sessions can now run 20 minutes, or as Heart
+              Coherence, ticked off on Today from your history; and in History, each week's sessions, coherence and swing,
+              from a heart sensor or the phone's camera. Once a day is there for anyone who keeps to the precautionary 20
+              minutes above. The course is a way to practise steadily and see how closely your heart follows your breath; the
+              trials suggest that the daily practice, more than the exact pace, does much of the good.
+            </p>
             <p id="l-combine">
               <b>Combining techniques.</b> Studies rarely test whether effects add up when techniques are stacked. In a pilot
               trial with 60 healthy adults, resonance breathing guided by live music raised well-being and heart-rate variability
@@ -4854,7 +4935,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 distressing memories less vivid and less upsetting (Jeffries &amp; Davis, 2013). But EMDR is a therapy for trauma,
                 given by trained clinicians, so Entrain has no self-guided version: trauma work belongs with a clinician.</li>
               <li><b>Candle gazing and panoramic vision.</b> No good-quality studies of trataka or panoramic vision were found, so
-                Entrain makes no claims for them.</li>
+                Entrain makes no claims for them. Its <a href="#l-gaze">gaze point</a>, a soft gaze on one point, is offered as
+                general practice, untested too.</li>
               <li><b>Skin temperature, skin conductance and health apps.</b> Rings and watches keep skin temperature and skin
                 conductance to their own apps, and Apple Health and Google Health Connect open only to apps installed on the phone,
                 not to a web page. Entrain runs in your browser and sends nothing anywhere, so it reads what a page can: a
@@ -4998,6 +5080,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Fritz, M. M., Armenta, C. N., Walsh, L. C., &amp; Lyubomirsky, S. (2019). Gratitude facilitates healthy eating behavior in adolescents and young adults. <em>Journal of Experimental Social Psychology</em>, 81, 4–14. <a href="https://doi.org/10.1016/j.jesp.2018.08.011" rel="noopener">DOI</a></li>
       <li>Buffey, A. J., Herring, M. P., Langley, C. K., Donnelly, A. E., &amp; Carson, B. P. (2022). The acute effects of interrupting prolonged sitting time in adults with standing and light-intensity walking on biomarkers of cardiometabolic health in adults: a systematic review and meta-analysis. <em>Sports Medicine</em>, 52(8), 1765–1787. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9325803/" rel="noopener">PMC</a></li>
       <li>Hilditch, C. J., &amp; McHill, A. W. (2019). Sleep inertia: current insights. <em>Nature and Science of Sleep</em>, 11, 155–165. <a href="https://doi.org/10.2147/NSS.S188911" rel="noopener">DOI</a></li>
+      <li>Barry, R. J., Clarke, A. R., Johnstone, S. J., Magee, C. A., &amp; Rushby, J. A. (2007). EEG differences between eyes-closed and eyes-open resting conditions. <em>Clinical Neurophysiology</em>, 118(12), 2765–2773. <a href="https://doi.org/10.1016/j.clinph.2007.07.028" rel="noopener">DOI</a></li>
       <li>Brown, T. M., Brainard, G. C., Cajochen, C., et al. (2022). Recommendations for daytime, evening, and nighttime indoor light exposure to best support physiology, sleep, and wakefulness in healthy adults. <em>PLOS Biology</em>, 20(3), e3001571. <a href="https://doi.org/10.1371/journal.pbio.3001571" rel="noopener">DOI</a></li>
       <li>Telles, S., Gupta, R. K., Gandharva, K., Vishwakarma, B., Kala, N., &amp; Balkrishna, A. (2019). Immediate effect of a yoga breathing practice on attention and anxiety in pre-teen children. <em>Children</em>, 6(7), 84. <a href="https://doi.org/10.3390/children6070084" rel="noopener">DOI</a></li>
       <li>Blanchfield, A. W., Hardy, J., De Morree, H. M., Staiano, W., &amp; Marcora, S. M. (2014). Talking yourself out of exhaustion: the effects of self-talk on endurance performance. <em>Medicine &amp; Science in Sports &amp; Exercise</em>, 46(5), 998–1007. <a href="https://doi.org/10.1249/MSS.0000000000000184" rel="noopener">DOI</a></li>
@@ -7372,7 +7455,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     wave: "Your breath as a wave scrolling past the marker. Equal in and out with no holds is a pure sine; holds are the flat stretches. What comes next is labelled along the bottom. With a heart sensor connected, your heart rate is drawn over it in pink.",
     box: "Trace the square: up on the in-breath, across the top on the hold, down on the out-breath, back along the bottom.",
     dial: "One lap of the dial is one breath, divided by phase. The centre swells with each in-breath.",
-    column: "The column fills like your lungs and drains as you breathe out."
+    column: "The column fills like your lungs and drains as you breathe out.",
+    gaze: "A still point to rest your eyes on, for calm focus with your eyes open: its soft glow swells as you breathe in and shrinks as you breathe out. Rest your eyes softly on the point; blink when you need to. General practice, not researched."
   };                                                  // a scene's own words are in scenes.js (scnHint)
 
   // max: the sliders' usual range, in half seconds; xmax: the Swim & dive range, in whole seconds
@@ -7394,7 +7478,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   var BC = {
     pattern: "resonance", inh: 5.5, sip: 0, hold: 0, exh: 5.5, rest: 0, long: false,
-    visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false, scene: "clouds"
+    visual: "circle", minutes: 5, sound: "off", cue: 40, buzz: false, scene: "clouds",
+    eyes: false                         // breathing with the eyes closed: the visual hidden, the cues guiding (eyes.js)
   };
 
   var B = {
@@ -7425,7 +7510,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var c = BC;
     if (B.finder) {
       c = B.finder.saved;
-      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue; c.buzz = BC.buzz; c.scene = BC.scene;
+      c.visual = BC.visual; c.sound = BC.sound; c.cue = BC.cue; c.buzz = BC.buzz; c.scene = BC.scene; c.eyes = BC.eyes;
     }
     store.set("breath", JSON.stringify(c));
   }
@@ -7681,10 +7766,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();
     else if (B.state === "paused") { if (!bSupGate("resume") && !dvGate("resume")) bResume(); }
-    else if (!bSupGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) bBegin();   // Start again: rest first? (care.js)
+    else if (!bSupGate("start") && !rcLenGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) bBegin();   // Start again: rest first? (care.js); 20 minutes (course.js)
   }
   // a fresh session: your check-in first, if you keep them (own.js); breath-led sound starts at your own pace (breathled.js)
   function bBegin() {
+    if (eyClosedNow()) eyBreatheCues();             // eyes closed: a sound or vibration to follow (eyes.js)
     var go = function () { if (B.state === "idle" || B.state === "done") { if (!blsStart()) { bFresh(); bResume(); } } };
     if (BLS.phase === "find") { go(); return; }   // Begin now, while breath-led sound waits for your pace: the check-in came before the wait
     if (!ciBefore("breath", ciBreathName(), go)) go();
@@ -8045,10 +8131,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         if (BVIS[saved.visual]) BC.visual = saved.visual;    // a scene kept while this device is locked shows the circle (bVisNow)
         if (scnGet(saved.scene)) BC.scene = saved.scene;
         if (["off", "tones", "chimes"].indexOf(saved.sound) >= 0) BC.sound = saved.sound;
-        if ([0, 2, 5, 10, 15].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;
+        if ([0, 2, 5, 10, 15, 20].indexOf(saved.minutes) >= 0) BC.minutes = saved.minutes;   // 20: with a donation (course.js)
         var cue = parseInt(saved.cue, 10);
         if (cue >= 0 && cue <= 100) BC.cue = cue;
         if (typeof saved.buzz === "boolean") BC.buzz = saved.buzz;
+        if (typeof saved.eyes === "boolean") BC.eyes = saved.eyes;   // kept while this device is locked, the visual shows as usual (eyes.js)
         BC.pattern = (saved.pattern === "custom") ? "custom" : matchPreset();
       }
     } catch (e) {}
@@ -8107,16 +8194,21 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         scnBreatheSync(); syncVisHint(); draw(); saveBreath();
         if (v === "scene" && BC.scene === "fire") amNeed(["fire", "fireP"]);    // its crackle ready to play with it
       };
-      if (v === "scene") scnBreathePick(go); else go();     // a scene is a new technique: the dialog first while locked (scenes.js)
+      if (v === "scene") scnBreathePick(go);                // a scene is a new technique: the dialog first while locked (scenes.js)
+      else if (v === "gaze") eyGazePick(go);                // and so is the gaze point (eyes.js)
+      else go();
     });
     $("#bLen").addEventListener("change", function (e) {
-      if (B.finder) finderCancel();
-      checkRadio("blen", e.target.value);
-      BC.minutes = parseInt(e.target.value, 10);
-      syncChips("#bLen");
-      if (B.state === "running" || B.state === "paused") normalize(breathTime());
-      if (B.state === "done") { B.state = "idle"; bFresh(); syncTransport(); }
-      planTotal(); updateHead(); saveBreath();
+      var v = parseInt(e.target.value, 10);
+      rcLenPick(v, function () {                          // 20 minutes is a new technique: the dialog first while locked (course.js)
+        if (B.finder) finderCancel();
+        checkRadio("blen", String(v));
+        BC.minutes = v;
+        syncChips("#bLen");
+        if (B.state === "running" || B.state === "paused") normalize(breathTime());
+        if (B.state === "done") { B.state = "idle"; bFresh(); syncTransport(); }
+        planTotal(); updateHead(); saveBreath();
+      });
     });
     $("#bSnd").addEventListener("change", function (e) {
       BC.sound = e.target.value;
@@ -8223,7 +8315,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if ($("#v-breathe").hidden) { syncOrb(S); return; }    // a practice may be running it from elsewhere
     d2.clearRect(0, 0, CW, CH);
     d2.setLineDash([]);
-    (BVIS[BC.visual] || BVIS.circle)(S);
+    eyStage();
+    if (eyClosedNow()) eyClosedDraw(S);                     // eyes closed: the visual hidden (eyes.js)
+    else (BVIS[BC.visual] || BVIS.circle)(S);
     moveMark(S);
     syncOrb(S);
   }
@@ -9045,8 +9139,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
 
   /* ----- Breathe: the visual Scene, which follows the breath ----- */
-  // the visual Breathe draws: a scene kept from before shows the circle while this device is locked
-  function bVisNow() { return BC.visual === "scene" && !supOn() ? "circle" : BC.visual; }
+  // the visual Breathe draws: a scene, or the gaze point (eyes.js), kept from before shows the circle while this device is locked
+  function bVisNow() { return (BC.visual === "scene" || BC.visual === "gaze") && !supOn() ? "circle" : BC.visual; }
   BVIS.scene = function (S) {
     if (!supOn()) { BVIS.circle(S); return; }
     scnPaint(d2, CW, CH, scnGet(BC.scene) ? BC.scene : "clouds", bNow(), S.live ? (S.lead ? 0 : S.level) : 0.45);
@@ -13845,7 +13939,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
     if (h === "living" || h.indexOf("living/") === 0) { showView("living"); lvOpen(h.slice(7)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
-    if (h === "experiment" || h === "checkins") {         // a part of History, which is drawn as it opens (own.js)
+    if (h === "experiment" || h === "checkins" || h === "rcourse") {   // a part of History, which is drawn as it opens (own.js, course.js)
       showView("history");
       var hs = document.getElementById(h);
       if (hs) setTimeout(function () { jumpTo(hs); }, 30);
@@ -13949,7 +14043,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "752552d3";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "05a79a9f";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -14514,6 +14608,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     aqUI(); oxUI();                                           // room air, the reminder, the oximeter, and the focus pages' slots (air.js)
     ymUI(); blsUI();                                          // your own music's Add button, and breath-led sound's switch (yourmusic.js, breathled.js)
     owUI();                                                   // check-ins, the daily rhythm, today's minutes and experiments (own.js)
+    eyUI();                                                   // the eyes-closed cue, eyes closed on Breathe and the gaze point (eyes.js)
+    rcUI();                                                   // the 20-minute length and the resonance course (course.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }
@@ -20262,7 +20358,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off", still: false },
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off", still: false, eyes: false, gaze: false },
     paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
     bm: "",                                         // how its beat played (beatmode.js), for the history
     ci: null, xp: null, xpOrig: null                // your check-in as it began, a personal experiment's way this time and your own options under it (own.js)
@@ -20405,7 +20501,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js),
      the music (music) to the background sound's choice (music.js), and the screen light (light) to Breathe's (light.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene", "light", "still"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene", "light", "still", "eyes", "gaze"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -20588,7 +20684,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var sc = scnGet(s.scene) ? s.scene : scnSes();      // a scene in place of the breath visual, following the breath (scenes.js)
     BC.visual = sc ? "scene" : P.opt.visual;
     if (sc) BC.scene = sc;
-    var snd = P.opt.cues;
+    if (!scnGet(s.scene) && eyGazeSes()) BC.visual = "gaze";        // a focus practice's gaze point, following the breath (eyes.js)
+    var snd = eyCues(P.opt.cues);                                     // with the eyes closed, a tone where they'd be silent (eyes.js)
     if (BC.sound !== snd && B.state === "running") { BC.sound = snd; cueOff(); if (snd !== "off") cueOn(); }
     BC.sound = snd;
     BC.cue = s.cueFade ? Math.round(40 * s.cueFade[0]) : 40;
@@ -20813,8 +20910,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     for (var i = P.steps.length - 1; i >= 0; i--) if (T >= P.steps[i].at - 1e-6) return i;
     return 0;
   }
-  // what the stage shows for a step: a scene in place of the orb, the still point or the glow when the practice shows one (scenes.js)
-  function pVis(s) { return scnVis(s, pVisOf(s)); }
+  // what the stage shows for a step: a scene in place of the orb, the still point or the glow when the practice shows one (scenes.js),
+  // or the gaze point in a focus practice (eyes.js)
+  function pVis(s) { return scnVis(s, eyVis(s, pVisOf(s))); }
   function pVisOf(s) {
     if (s.k === "breath") return s.pose ? "pose" : "breath";      // a qigong movement: its drawing moves with the breath (movement.js)
     if (s.k === "pose") return "pose";
@@ -20860,6 +20958,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var flowing = s.k === "breath" && prev && prev.k === "breath";
     if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
     $("#ses").dataset.dim = (ST.sleepDim && pSleepyStep(s)) || s.dim ? "1" : "";     // sleep steps if Settings asks; a step that asks for it
+    eyEnter(s);                                      // and the eyes closed, from the first slow breaths (eyes.js)
     ltSync();                                        // Automatic's screen light: Night on a sleep step (light.js)
     pStage(s);
     pRenderSegs();
@@ -20924,6 +21023,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       var ln = s.lines[P.li++];
       if (st - ln[0] < 8) {
         if (ln[2] === "chime") pBell(0.3, 0, 659.25, 0, true);      // chosen as the reminder itself, so it sounds even with the bells off
+        else if (ln[2] === "eyes") eyCueSay(s);                       // close your eyes: a soft bell and the words (eyes.js)
         else if (!s.mute) pSay(ln[1], s.quiet || ln[2] === "ana");
         P.lineAt = bNow();
       }
@@ -21199,7 +21299,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, brainled: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1, dance: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, brainled: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1, dance: 1, gaze: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -21228,6 +21328,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         else if (vis === "scene") scnStep(c, W, Hh, s, T);
         else if (vis === "cold") coldDraw(c, W, Hh, s, st);
         else if (vis === "dance") dncDraw(c, W, Hh, s, st, col);   // a ring that pulses with the music's beat (movement.js)
+        else if (vis === "gaze") eyGazeStep(c, W, Hh, T, col);     // a point to rest your eyes on (eyes.js)
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -21407,6 +21508,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
       P.steps = plan.steps; P.total = plan.total; P.base = plan.base; P.runLen = P.len;
+      eyStart(d, plan.steps);                        // the eyes-closed cue, or the gaze point, if chosen (eyes.js)
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
       ntStart(plan.steps);                           // and a step's own nature sound ahead of its scene (nature.js)
@@ -21737,8 +21839,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         }).join("") + "</div></div>");
     }
     if (scnFits(d)) opts.push(scnRow(O));               // a scene to watch, kept for this practice: with a donation while locked (scenes.js)
+    if (eyGazeFits(d)) opts.push(eyGazeRow(O));         // a point to rest your eyes on, in a focus practice: with a donation while locked (eyes.js)
     if (ltFits(d)) opts.push(ltRow(O));                 // the screen light, kept for this practice: with a donation while locked (light.js)
     if (motStillFits(d)) opts.push(motStillRow(O));     // how still you stay, from the motion sensor, lying down: with a donation while locked (motion.js)
+    if (eyFits(d)) opts.push(eyCueRow(O));              // the eyes-closed cue, in a relaxation practice: with a donation while locked (eyes.js)
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
     every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl(true) + "</div>");   // its music is a row of its own above
@@ -21847,6 +21951,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (scnFits(d) && scnShown(O.scene) !== "off") s.push(scnOptName(O.scene));
     if (ltFits(d) && ltShown(O.light) !== "off") s.push(LT_KINDS.filter(function (k) { return k[0] === O.light; })[0][1] + " light");
     if (motStillFits(d) && O.still && supOn()) s.push("Stillness");
+    eyOptSum(d, O, s);                                     // the eyes-closed cue and the gaze point (eyes.js)
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -21956,6 +22061,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       });
     });
     motStillWire(d, O, save);                          // Stillness, kept for this practice (motion.js)
+    eyOptWire2(d, O, save);                            // the eyes-closed cue and the gaze point, kept for this practice (eyes.js)
     var pg = $("#sOptPace");
     if (pg) {
       var paceUI = function () {
@@ -24251,6 +24357,265 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       X.COLD = COLD; X.coldLevel = coldLevel; X.coldLines = coldLines; X.coldPhase = coldPhase; X.coldNow = coldNow; X.TEMPS = TEMPS;
     }
   }
+  /* ------------------------------- your eyes -------------------------------
+     From the guide's vision techniques, three new techniques (supporter.js):
+     - Eyes-closed cue, an option for relaxation practices (calm or sleep, sitting or lying, with paced
+       breathing): closing the eyes raises alpha within seconds, one of the most reliable effects in EEG
+       research, so at the first slow breaths a soft bell and "Close your eyes now; the sound will guide
+       you", then the screen dims. The breath cues sound throughout (a tone where they'd be silent), and a
+       later step with something to look at or tap brings a bell and "Open your eyes now". Never while
+       walking: a practice done walking leaves it off.
+     - Eyes closed, on Breathe: the visual goes dark, and the sound cues or vibration guide each breath
+       (the rising tone comes on if both are off).
+     - Gaze point: a still point whose soft glow swells with the breath, to rest the eyes on with them
+       open. A visual on Breathe, and an option for focus practices in place of the orb, the still point
+       and the breath visual. The guide calls it general practice, not researched, and so does the page.
+  ------------------------------------------------------------------------------ */
+
+  var EY_CUE = "Eyes-closed cue", EY_BREATHE = "Eyes closed on Breathe", EY_GAZE = "Gaze point";
+  var EY_LINE = "Close your eyes now; the sound will guide you.";
+  var EY_OPEN = "Open your eyes now.";
+  var EY_GAZE_TXT = "Rest your eyes softly on the point; blink when you need to.";
+  // relaxation practices that keep the eyes open for a reason of their own: the call beside a video, the meal in front
+  // of you, a partner's eyes, the arm you stroke along with, Guided Imagery's own way in, and the fire you watch
+  var EY_SKIP = ["call", "meal", "mindful-sex", "touch", "imagery", "fireside"];
+  // steps with something to look at or tap: the eyes open again for them
+  var EY_LOOK = ["rate", "write", "count", "tap", "pose", "sing", "stroke", "massage", "cold", "measure", "dance"];
+  /* the running practice's cue: on, the step it came at (idx), whether the screen is dimmed for it (dim) */
+  var EY = { on: false, idx: -1, cued: false, dim: false, gaze: false };
+
+  /* ----- the eyes-closed cue, in a practice ----- */
+  function eyBreathStep(s) { return !!s && s.k === "breath" && !s.pose; }
+  function eyLooks(s) { return !!s && (EY_LOOK.indexOf(s.k) >= 0 || !!s.pose || !!s.tapfig || !!s.endTap || (s.k === "hold" && !!s.open) || s.vis === "scene"); }
+  // a relaxation practice done sitting or lying: calm or sleep is what it's for, or good for, and it isn't for energy or focus
+  function eyRelax(d) {
+    if (!d || d.noEyes || d.stress || d.custom || EY_SKIP.indexOf(d.id) >= 0) return false;
+    if (["move", "write", "measure"].indexOf(d.method) >= 0 || !d.posture) return false;
+    if (d.posture.indexOf("sit") < 0 && d.posture.indexOf("lie") < 0) return false;
+    if (d.goal === "energy" || d.goal === "focus") return false;
+    return d.goal === "calm" || d.goal === "sleep" || (d.also || []).some(function (g) { return g === "calm" || g === "sleep"; });
+  }
+  var EY_FIT = {};                                   // practice id: whether its plan has paced breathing (worked out once)
+  function eyFits(d) {
+    if (!eyRelax(d)) return false;
+    if (!(d.id in EY_FIT)) {
+      var ok = false;
+      try { ok = pPlan(d, pLenOf(d, 0)).steps.some(eyBreathStep); } catch (e) {}
+      EY_FIT[d.id] = ok;
+    }
+    return EY_FIT[d.id];
+  }
+  function eyWalking(d) { return (d.choices || []).some(function (c) { return c.key === "pos"; }) && pChoice(d, "pos") === "walk"; }
+  // at the start (pStart): the cue comes in this session when it's chosen, unlocked, sitting or lying, with breaths to cue
+  function eyStart(d, steps) {
+    EY.on = eyFits(d) && !!P.opt.eyes && supOn() && !eyWalking(d) && steps.some(eyBreathStep);
+    EY.idx = -1; EY.cued = false; EY.dim = false;
+    EY.gaze = eyGazeFits(d) && !!P.opt.gaze && supOn();
+  }
+  /* Each step as it begins (pEnter): at the first slow breaths, the cue goes in as a line of the step (a bell and the
+     words), the step's own first words moving a few seconds later to make room, and the screen dims; after it the
+     screen stays dim, until a step with something to look at or tap opens the eyes again. */
+  function eyEnter(s) {
+    if (!EY.on || P.state === "done") return;
+    var ses = $("#ses");
+    if (!EY.cued && eyBreathStep(s)) {
+      EY.cued = true; EY.idx = P.idx; EY.dim = true;
+      s.lines = eyRoom(s.lines || [], Math.max(0, pT() - s.at), s.secs);
+      ses.dataset.dim = "1";
+      return;
+    }
+    if (!EY.dim || P.idx < EY.idx) return;
+    if (P.idx > EY.idx && eyLooks(s)) {
+      EY.dim = false;
+      if (P.state === "running") {
+        pBell(0.3, A.ctx ? A.ctx.currentTime + 0.6 : 0, 783.99, 0, true);
+        pSay(EY_OPEN, true);
+      }
+      return;
+    }
+    ses.dataset.dim = "1";
+  }
+  /* The step's lines with the cue a moment after st (where the step was entered: 0, unless it was jumped into): the lines
+     already due stay as they are, and the step's own words come after the cue, the first of them six seconds after it */
+  function eyRoom(lines, st, secs) {
+    var c = st + 1.5;
+    if (c >= secs - 1) return lines;
+    var out = [], prev = c, gap = 6, put = false;
+    lines.forEach(function (l) {
+      if (l[0] < st - 0.25) { out.push(l); return; }
+      if (!put) { out.push([c, EY_LINE, "eyes"]); put = true; }
+      var t = Math.max(l[0], prev + gap);
+      gap = 1;
+      if (t >= secs - 0.5) return;                  // (only on a very short step: one that can't move goes unsaid)
+      out.push([t].concat(l.slice(1)));
+      prev = t;
+    });
+    if (!put) out.push([c, EY_LINE, "eyes"]);
+    return out;
+  }
+  // the cue's line, as it's due (pTick): a soft bell that sounds even with the bells off, and the words, softly
+  function eyCueSay(s) {
+    pBell(0.32, 0, 523.25, 0, true);
+    if (!s.mute) pSay(EY_LINE, true);
+  }
+  // the breath cues while the eyes are closed: a tone where they'd be silent (pBreathOn)
+  function eyCues(c) { return EY.on && c === "off" ? "tones" : c; }
+
+  /* ----- Options rows: the cue (relaxation practices), the gaze point (focus practices) ----- */
+  function eyCueRow(O) {
+    return '<label class="so-row so-tg so-eyes"><span class="so-l"><span id="sOptEyesL">' + EY_CUE + supTag(true) + "</span>" +
+      "<small>At the first slow breaths, a soft bell and “" + EY_LINE.replace(/\.$/, "") + "”, then the screen dims. The breath cues sound throughout, a tone if they're set to silent, " +
+      "and a bell asks you to open your eyes for anything to look at. Sitting or lying down: walking, your eyes stay open.</small></span>" +
+      '<input type="checkbox" class="sw" id="sOptEyes"' + (O.eyes && supOn() ? " checked" : "") + "></label>";
+  }
+  function eyGazeFits(d) {
+    return !!d && !d.noGaze && !d.stress && !d.custom && d.goal === "focus" && d.id !== "anapana" && ["move", "write", "measure"].indexOf(d.method) < 0;
+  }
+  function eyGazeRow(O) {
+    return '<label class="so-row so-tg so-gaze"><span class="so-l"><span id="sOptGazeL">' + EY_GAZE + supTag(true) + "</span>" +
+      "<small>A still point in place of the orb and the breath visual, its glow swelling gently with your breath. " + EY_GAZE_TXT + " General practice, not researched.</small></span>" +
+      '<input type="checkbox" class="sw" id="sOptGaze"' + (O.gaze && supOn() ? " checked" : "") + "></label>";
+  }
+  // a switch that opens with a donation while this device is locked (as Stillness does, motion.js)
+  function eyOptWire(id, name, key, d, O, save) {
+    var cb = $(id);
+    if (!cb) return;
+    cb.addEventListener("change", function () {
+      if (!this.checked) { O[key] = false; save(); return; }
+      this.checked = false;
+      var yes = function () {
+        if (P.view !== d) return;
+        O[key] = true; save();
+        var c = $(id); if (c) c.checked = true;
+      };
+      supGate(name, yes, function (ok) { if (ok) yes(); else eyTags(); });
+    });
+  }
+  function eyOptWire2(d, O, save) {
+    eyOptWire("#sOptEyes", EY_CUE, "eyes", d, O, save);
+    eyOptWire("#sOptGaze", EY_GAZE, "gaze", d, O, save);
+  }
+  // the Options summary's words for them
+  function eyOptSum(d, O, s) {
+    if (eyFits(d) && O.eyes && supOn()) s.push("Eyes closed");
+    if (eyGazeFits(d) && O.gaze && supOn()) s.push("Gaze point");
+  }
+
+  /* ----- the gaze point: on Breathe (BVIS.gaze), and in a focus practice ----- */
+  // the session shows the gaze point in place of the orb, the still point and the glow
+  function eyGazeSes() { return EY.gaze && supOn() && pBusy(); }
+  function eyVis(s, v) { return eyGazeSes() && (v === "orb" || v === "still" || v === "glow") ? "gaze" : v; }
+  // the words under the point, in lines that fit
+  function eyWrap(c, txt, x, yEnd, maxW, lh) {
+    var words = txt.split(" "), lines = [], cur = "";
+    words.forEach(function (w) {
+      var t = cur ? cur + " " + w : w;
+      if (cur && c.measureText(t).width > maxW) { lines.push(cur); cur = w; } else cur = t;
+    });
+    if (cur) lines.push(cur);
+    for (var i = 0; i < lines.length; i++) c.fillText(lines[i], x, yEnd - (lines.length - 1 - i) * lh);
+  }
+  /* The point itself stays still; its glow swells as you breathe in and shrinks as you breathe out (with reduced
+     motion, only its light follows the breath). lv: the lung level, 0 to 1. */
+  function eyGazePaint(c, W, H, lv, col) {
+    if (!c || !W || !H) return;
+    var cx = W / 2, cy = H / 2, m = Math.min(W, H), k = RM ? 0.5 : lv, R = m * (0.1 + 0.07 * k), a = 0.14 + 0.24 * lv;
+    var g = c.createRadialGradient(cx, cy, 0, cx, cy, R);
+    g.addColorStop(0, rgba(col, a)); g.addColorStop(0.3, rgba(col, a * 0.5)); g.addColorStop(1, rgba(col, 0));
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.fill();
+    c.fillStyle = rgba(BCOL.text, 0.92); c.beginPath(); c.arc(cx, cy, Math.max(2.5, m * 0.011), 0, Math.PI * 2); c.fill();
+    c.font = "500 12.5px " + B_SANS; c.fillStyle = rgba(BCOL["text-faint"], 0.85); c.textAlign = "center"; c.textBaseline = "bottom";
+    eyWrap(c, EY_GAZE_TXT, cx, H - 12, Math.max(120, W - 40), 17);
+  }
+  BVIS.gaze = function (S) {
+    if (!supOn()) { BVIS.circle(S); return; }       // kept from before, on a device that's locked: the usual circle
+    eyGazePaint(d2, CW, CH, S.live ? (S.lead ? 0 : S.level) : 0.42, S.live && !S.lead ? S.col : BCOL["b-in"]);
+  };
+  // a step without paced breathing (the practice's canvas): the glow swells slowly, about one breath every ten seconds
+  function eyGazeStep(c, W, Hh, T, col) {
+    eyGazePaint(c, W, Hh, RM ? 0.5 : 0.3 + 0.4 * (1 - Math.cos(T * Math.PI * 2 / 10)) / 2, col);
+  }
+  // picked under Visual: at once once this device is unlocked; otherwise the visual stays as it was and the dialog opens
+  function eyGazePick(go) {
+    if (supOn()) { go(); return; }
+    scnBreatheSync();
+    supGate(EY_GAZE, go, function (ok) { if (ok) go(); else scnBreatheSync(); });
+  }
+
+  /* ----- eyes closed, on Breathe ----- */
+  function eyClosedNow() { return !!BC.eyes && supOn() && !P.usesB; }
+  // the cues to follow, in words
+  function eyCueName() {
+    var s = BC.sound === "tones" ? "the rising tone" : BC.sound === "chimes" ? "the chimes" : "", v = BC.buzz && bzOk() ? "the vibration" : "";
+    return s && v ? s + " and " + v : s || v;
+  }
+  // the stage with the visual hidden: dark, and two faint lines in the middle (drawn by draw(), breathe-draw.js)
+  function eyClosedDraw(S) {
+    var cx = CW / 2, cy = CH / 2, cue = eyCueName();
+    label("Eyes closed", cx, cy - 11, rgba(BCOL["text-faint"], 0.7), "center", "middle", 15, "650");
+    label(!S.live ? "Start, then close your eyes" : cue ? "Follow " + cue : "Follow your own breath", cx, cy + 13, rgba(BCOL["text-faint"], 0.5), "center", "middle", 12.5, "500");
+  }
+  function eyStage() {
+    var st = $("#bStage"), v = eyClosedNow() ? "1" : "";
+    if (st && (st.dataset.eyes || "") !== v) st.dataset.eyes = v;
+  }
+  // with the eyes closed, something has to guide each breath: the rising tone comes on when sound and vibration are both off
+  function eyBreatheCues() {
+    if (BC.sound !== "off" || (BC.buzz && bzOk())) return false;
+    BC.sound = "tones";
+    checkRadio("bsnd", "tones"); syncChips("#bSnd");
+    $("#bVolRow").hidden = false;
+    if (B.state === "running") cueOn();
+    saveBreath();
+    return true;
+  }
+  // the switch in Breathe's settings: on with a donation while locked
+  function eyBreatheSet(on) {
+    var cb = $("#bEyesOn");
+    if (!on) { BC.eyes = false; saveBreath(); eyBreatheSync(); draw(); return; }
+    var yes = function () {
+      BC.eyes = true;
+      var tone = eyBreatheCues();
+      saveBreath(); eyBreatheSync(); draw();
+      if (tone) bSetT("#bEyesHint", "The rising tone is on, to guide each breath.");
+    };
+    cb.checked = false;
+    supGate(EY_BREATHE, yes, function (ok) { if (ok) yes(); else eyBreatheSync(); });
+  }
+  function eyBreatheSync() {
+    var cb = $("#bEyesOn");
+    if (cb) cb.checked = !!BC.eyes && supOn();
+    bSetT("#bEyesHint", eyClosedNow() ? "Breathe with your eyes closed and follow " + (eyCueName() || "your own breath") + "." : "");
+    eyStage();
+  }
+
+  /* ----- after an unlock, and starting up ----- */
+  // the cup beside each switch and the Gaze point chip while this device is locked (supRefresh calls this after an unlock)
+  function eyTags() {
+    ["#sOptEyesL", "#sOptGazeL", "#bEyesL"].forEach(function (sel) {
+      var l = $(sel);
+      if (!l) return;
+      var tag = l.querySelector(".sup-tag");
+      if (tag && supOn()) tag.parentNode.removeChild(tag);
+      else if (!tag && !supOn()) l.insertAdjacentHTML("beforeend", supTag(true));
+    });
+    var inp = document.querySelector('#bVis input[value="gaze"]'), lab = inp && inp.parentNode, t = lab && lab.querySelector(".sup-tag");
+    if (lab) {
+      if (t && supOn()) t.parentNode.removeChild(t);
+      else if (!t && !supOn()) lab.insertAdjacentHTML("beforeend", supTag(true));
+    }
+    ["#sOptEyes", "#sOptGaze"].forEach(function (sel) { var c = $(sel); if (c && !supOn()) c.checked = false; });
+  }
+  function eyUI() { eyTags(); eyBreatheSync(); draw(); }
+  function eyInit() {
+    SUP_EXTRA.push({ name: EY_CUE, href: "#l-eyes" }, { name: EY_BREATHE, href: "#breathe" }, { name: EY_GAZE, href: "#breathe" });   // Settings' list of what the donation unlocks
+    $("#bEyesOn").addEventListener("change", function () { eyBreatheSet(this.checked); });
+    eyUI();
+    if (window.__entrain) {
+      var X = window.__entrain;
+      X.EY = EY; X.eyFits = eyFits; X.eyRelax = eyRelax; X.eyGazeFits = eyGazeFits; X.eyRoom = eyRoom; X.eyLooks = eyLooks; X.eyClosedNow = eyClosedNow; X.EY_LINE = EY_LINE; X.EY_GAZE_TXT = EY_GAZE_TXT;
+    }
+  }
   /* ------------------------------- the library -------------------------------
      Goal sections (Sleep, Calm, Focus, Energy, Recover, Reflect) holding practices, breathing
      patterns, tracks and the custom primer, each listed once, under its goal. Everything combines:
@@ -26253,7 +26618,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id, sup: b.sup }));
     });
     out.push(fdEntry("breath", "Breathing guide", "Breathe · paced breathing",
-      ["Paced breathing with five visuals and scenes that move with your breath, timed sessions, sound cues and live heart data."], "#breathe",
+      ["Paced breathing with five visuals, a gaze point and scenes that move with your breath, sessions of 2 to 20 minutes or open-ended, sound cues and live heart data."], "#breathe",
       { ic: "breathe", col: "var(--b-in)", w: 1, tags: "breathe pace" }));
     TRACKS.forEach(function (t) {
       var g = goalOf(t.goal), gn = g ? g.name : "Tinnitus";
@@ -26359,6 +26724,19 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("app", "Personal experiment", "History · one practice two ways, alternated over ten sessions",
       ["Compare a practice with its beat or without, with music or without, with a scene or the usual visual, or against another practice: your heart-rate change, coherence and check-ins side by side, with an honest word on noise and expectation."], "#experiment",
       { ic: "target", col: "var(--accent)", w: 1.05, tags: "experiment experiments test compare comparison ab a/b trial n of 1 which works best for me stacked combination combine", sup: true }));
+    // your eyes and the resonance course (eyes.js, course.js)
+    out.push(fdEntry("breath", EY_BREATHE, "Breathe · the visual dark, the cues guiding each breath",
+      ["Breathe with your eyes closed: the visual goes dark, and the rising tone, the chimes or vibration guide each breath. Alpha waves rise within seconds of closing the eyes."], "#breathe",
+      { ic: "breathe", col: "var(--b-in)", w: 1, alias: "Eyes closed", tags: "eyes closed close shut dark blind alpha relax relaxation cue cues tone vibration", sup: true }));
+    out.push(fdEntry("practice", EY_CUE, "Relaxation practices · under Options",
+      ["At the first slow breaths, a soft bell and “Close your eyes now; the sound will guide you”, then the screen dims, in Calm Reset, Heart Coherence, Sleep Descent and other relaxation practices with paced breathing."], "#l-eyes",
+      { ic: "moon", col: "var(--relax)", w: 1, tags: "eyes closed close shut cue bell dim alpha relax relaxation transition", sup: true }));
+    out.push(fdEntry("breath", EY_GAZE, "Breathe and focus practices · a still point to rest your eyes on",
+      ["A still point whose soft glow swells and shrinks with your breath: rest your eyes softly on it, and blink when you need to. General practice, not researched."], "#breathe",
+      { ic: "target", col: "var(--b-in)", w: 1, alias: "Soft gaze", tags: "gaze soft open eyes point focus focal concentration attention trataka candle visual", sup: true }));
+    out.push(fdEntry("app", RC_NAME, "Today and History · 20 minutes twice a day for eight weeks",
+      ["Lehrer's protocol for heart-rate-variability biofeedback: 20 minutes of resonance breathing twice a day (or once) for eight weeks, ticked off on Today, with each week's coherence and swing in History."], "#rcourse",
+      { ic: "target", col: "var(--hr)", w: 1.05, tags: "resonance course programme protocol lehrer hrv biofeedback twice a day 20 minutes eight weeks two months coherence swing plan schedule progress", sup: true }));
     fdLiving(out);
     fdLearn(out);
     return out;
@@ -27993,7 +28371,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var l = hLoad(), w = hWeek(), h = '<a class="si-back" href="#home"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Today</a>';
     if (!l.length) {
       h += '<div class="hi-empty"><p>Nothing here yet. Practices, breathing sessions and tracks of a minute or more show up here once they end, with your heart-rate change and coherence when a sensor is connected.</p>' +
-        '<a class="btn small" href="#practice">Open the library</a></div>' + xpSec();      // a personal experiment can be set up before the first session (own.js)
+        '<a class="btn small" href="#practice">Open the library</a></div>' + rcSec() + xpSec();      // the resonance course and a personal experiment can be set up before the first session (course.js, own.js)
       $("#hiBody").innerHTML = h;
       return;
     }
@@ -28001,7 +28379,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     h += '<section class="hi-sum" aria-labelledby="hiWk"><h2 id="hiWk">Last 7 days</h2>' + hTotals(w) + owHtml("hiDay") + hDays(w) +
       (goals.length ? '<ul class="hi-goals" aria-label="Minutes by goal">' + goals.map(function (g) {
         return '<li style="--gcol:' + GOAL_COL[g.id] + '"><span>' + esc(g.name) + "</span><i style=\"--w:" + Math.max(4, Math.round(w.goals[g.id] / gmax * 100)) + '%"></i><b>' + Math.round(w.goals[g.id] / 60) + " min</b></li>";
-      }).join("") + "</ul>" : "") + "</section>" + tnSec() + ciSec() + xpSec();     // your check-ins and a personal experiment (own.js)
+      }).join("") + "</ul>" : "") + "</section>" + tnSec() + ciSec() + rcSec() + xpSec();     // your check-ins, the resonance course and a personal experiment (own.js, course.js)
     var day = -1, open = false;
     for (var i = l.length - 1; i >= 0; i--) {
       var d = hDayStart(l[i].at);
@@ -29093,6 +29471,292 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       X.xpGet = xpGet; X.xpStats = xpStats; X.xpFor = xpFor; X.xpNext = xpNext; X.xpSay = xpSay; X.xpFactors = xpFactors; X.XP = XP;
     }
   }
+  /* ---------------------------- the resonance course ----------------------------
+     From the guide's advice on how often: the classic protocol for heart-rate-variability biofeedback,
+     20 minutes of breathing at your resonance rate twice a day for two months (Lehrer and colleagues,
+     2000). Two new techniques (supporter.js):
+     - A 20-minute length on Breathe.
+     - The resonance course: eight weeks, two sessions a day (or one, for those who keep to the precautionary
+       20 minutes a day), each a session of 20 minutes or more at a resonance pace, ticked off from the history
+       on Today, with each week's sessions, coherence and swing in History. It says plainly what the guide
+       says: the standard protocol, but no added benefit over placebo breathing in a large trial, and the
+       20-minute daily cap as a minority, precautionary view.
+     Nothing new goes into the history: the course reads the sessions already there.
+  ------------------------------------------------------------------------------ */
+
+  var RC_NAME = "Resonance course", RC_LEN = "20 minutes on Breathe";
+  var RC_DAYS = 56, RC_WEEKS = 8;
+  var RC_MIN = 1170;                    // a session of 19.5 minutes or more counts as 20 (a timed session ends on a whole breath)
+  var RC_PACE = [4.5, 7];              // a resonance pace, in breaths a minute: the test's range, with a little to spare
+  var RC = { per: 2, arm: 0 };         // per: the setup's sessions a day; arm: End the course waits for a second tap
+
+  /* ----- the course as kept: the day it began (local midnight), sessions a day, and when it was ended early ----- */
+  function rcGet() {
+    var o = null;
+    try { o = JSON.parse(store.get("rcourse") || "null"); } catch (e) {}
+    if (!o || typeof o !== "object" || typeof o.at !== "number" || !(o.at > 0) || o.at > 8.64e15) return null;
+    return { at: hDayStart(o.at), per: o.per === 1 ? 1 : 2, end: typeof o.end === "number" && o.end > 0 ? o.end : 0 };
+  }
+  function rcSave(c) { store.set("rcourse", JSON.stringify({ at: c.at, per: c.per, end: c.end || undefined })); }
+  // days since the course began, by the calendar (a day with a clock change is still one day)
+  function rcDayOf(c, t) { return Math.round((hDayStart(t) - c.at) / DAY); }
+  // a session that counts: 20 minutes or more of resonance breathing, on Breathe at a resonance pace, or Heart Coherence
+  function rcCounts(e) {
+    if (!e || !(e.secs >= RC_MIN)) return false;
+    if (e.k === "practice") return e.id === "coherence";
+    return e.k === "breath" && !e.ib && ["sigh", "box", "478", "dive"].indexOf(e.id) < 0 && e.rate >= RC_PACE[0] && e.rate <= RC_PACE[1];
+  }
+  // the course's sessions, each with its day: by when it began, up to the end of the eighth week or an early end
+  function rcSess(c) {
+    var out = [];
+    hLoad().forEach(function (e) {
+      if (!rcCounts(e)) return;
+      var st = e.at - e.secs * 1000, d = rcDayOf(c, st);
+      if (d < 0 || d >= RC_DAYS || (c.end && st > c.end)) return;
+      out.push({ e: e, day: d, at: st });
+    });
+    return out;
+  }
+  /* Where it stands: today's day and week, today's sessions, and each week's sessions, coherence and swing (the averages
+     of the sessions with a reading: coherence from a sensor that sends the time between beats, not the old estimates) */
+  function rcStats(c, now) {
+    var s = rcSess(c), day = rcDayOf(c, now || Date.now()), wk = [], i, met = {};
+    for (i = 0; i < RC_WEEKS; i++) wk.push({ n: 0, coh: [], sw: [] });
+    s.forEach(function (x) {
+      var w = wk[Math.floor(x.day / 7)];
+      w.n++;
+      if (x.e.coh && !x.e.est) w.coh.push(x.e.coh);
+      if (x.e.swing) w.sw.push(x.e.swing);
+      met[x.day] = (met[x.day] || 0) + 1;
+    });
+    var full = 0;
+    for (var k in met) if (met[k] >= c.per) full++;
+    return {
+      day: day, week: Math.max(1, Math.min(RC_WEEKS, Math.floor(Math.max(0, day) / 7) + 1)),
+      over: !!c.end || day >= RC_DAYS, ended: !!c.end && day < RC_DAYS,
+      n: s.length, target: c.per * RC_DAYS, full: full,
+      today: s.filter(function (x) { return x.day === day; }),
+      weeks: wk.map(function (w) { return { n: w.n, coh: w.coh.length ? avg(w.coh) : null, cn: w.coh.length, sw: w.sw.length ? avg(w.sw) : null, sn: w.sw.length }; })
+    };
+  }
+  function rcOn() { return supOn() && !!rcGet(); }
+  function rcNum(v, dp) { return v.toFixed(dp); }
+  // a measure from its first week with readings to its latest: rising, falling or steady (within 10%)
+  function rcTrend(ws, k, name, unit, dp) {
+    var have = [];
+    ws.forEach(function (w, i) { if (w[k] !== null) have.push({ i: i, v: w[k] }); });
+    if (have.length < 2) return "";
+    var a = have[0], b = have[have.length - 1], rel = a.v ? (b.v - a.v) / a.v : 0;
+    return name + " " + rcNum(a.v, dp) + unit + " in week " + (a.i + 1) + ", " + rcNum(b.v, dp) + unit + " in week " + (b.i + 1) + ": " +
+      (rel > 0.1 ? "rising." : rel < -0.1 ? "falling." : "about the same.");
+  }
+
+  /* ----- a 20-minute session on Breathe at your resonance pace (the test's answer, or 5.5 a minute) ----- */
+  function rcBreathe() {
+    if (P.usesB && pBusy()) { pOpen(); return; }    // a practice is using the guide
+    if (B.state === "running" || B.state === "paused") { goView("breathe"); return; }
+    if (B.finder) finderCancel();
+    var half = Math.round(30 / pResRate() * 2) / 2;
+    BC.long = false; BC.inh = half; BC.sip = 0; BC.hold = 0; BC.exh = half; BC.rest = 0;
+    BC.pattern = matchPreset(); MP.from = "";
+    BC.minutes = 20;
+    if (B.state === "done") { B.state = "idle"; bFresh(); }
+    checkRadio("bpat", BC.pattern); syncChips("#bPats");
+    checkRadio("blen", "20"); syncChips("#bLen");
+    syncFields(); renderNote(); syncVisHint(); applyTimings(); saveBreath();
+    goView("breathe");
+  }
+
+  /* ----- the 20-minute length on Breathe: with a donation while this device is locked ----- */
+  // picked: at once once unlocked; otherwise the length stays as it was and the dialog opens, and an unlock picks it
+  function rcLenPick(v, go) {
+    if (v !== 20 || supOn()) { go(); return; }
+    checkRadio("blen", String(BC.minutes)); syncChips("#bLen");
+    supGate(RC_LEN, go, function (ok) { if (ok) go(); });
+  }
+  // Start with 20 minutes kept from before, on a device that's locked: the dialog first; closed still locked, 15 minutes
+  function rcLenGate(then) {
+    if (BC.minutes !== 20 || supOn()) return false;
+    supGate(RC_LEN, function () { if (then) bToggle(); }, function (ok) {
+      if (ok) { if (then) bToggle(); return; }
+      BC.minutes = 15; checkRadio("blen", "15"); syncChips("#bLen");
+      if (B.state === "idle") planTotal();
+      updateHead(); saveBreath();
+    });
+    return true;
+  }
+  function rcChips() {
+    var inp = document.querySelector('#bLen input[value="20"]'), lab = inp && inp.parentNode, t = lab && lab.querySelector(".sup-tag");
+    if (!lab) return;
+    if (t && supOn()) t.parentNode.removeChild(t);
+    else if (!t && !supOn()) lab.insertAdjacentHTML("beforeend", supTag(true));
+  }
+
+  /* ----- Today: today's sessions ticked off, and the week ----- */
+  function rcSlotName(c, i) { return c.per === 1 ? "Today's 20 minutes" : i ? "Second 20 minutes" : "First 20 minutes"; }
+  function rcWhat(e) {
+    var p = [hItem(e).name];
+    if (e.coh && !e.est) p.push("coherence " + e.coh.toFixed(1));
+    if (e.swing) p.push("swing " + e.swing.toFixed(1));
+    return p.join(" · ");
+  }
+  function rcTodaySync() {
+    var sec = $("#tdCourse"), body = $("#tdCourseBody");
+    if (!sec || !body) return;
+    var c = rcGet(), now = Date.now();
+    if (!c) { sec.hidden = true; return; }
+    var st = rcStats(c, now);
+    sec.hidden = st.over && rcDayOf(c, now) >= RC_DAYS + 7 || (st.ended && now - c.end > 7 * DAY);   // a week after it ends, History keeps it
+    if (sec.hidden) return;
+    if (!supOn()) {                                     // kept on from a backup on a locked device: the way to unlock it
+      body.innerHTML = '<p class="td-empty">Your resonance course is one of the new techniques. <button type="button" class="btn small rc-unlock" id="tdRcUnlock">Unlock it' + supTag(true) + "</button></p>";
+      return;
+    }
+    if (st.over) {
+      body.innerHTML = '<p class="rc-l"><b>' + (st.ended ? "Ended" : "Done") + ":</b> " + st.n + " of " + st.target + " sessions" + (st.ended ? "." : ", over eight weeks.") +
+        ' <a href="#rcourse">Your weeks, with coherence and swing</a></p>';
+      return;
+    }
+    var done = st.today.slice(0, c.per), slots = [], i, first = -1;
+    for (i = 0; i < c.per; i++) {
+      var x = done[i];
+      if (!x && first < 0) first = i;
+      slots.push('<li class="rh-slot' + (x ? " done" : "") + (i === first ? " now" : "") + '">' +
+        '<span class="rh-tick" aria-hidden="true">' + (x ? '<svg class="i"><use href="#i-check"/></svg>' : "") + "</span>" +
+        '<span class="rh-b"><b>' + rcSlotName(c, i) + "</b><span>" + esc(x ? "Done at " + hTime(x.at) + ": " + rcWhat(x.e) : i === first ? "At your resonance pace, gently" : "Later today, a few hours apart") + "</span></span>" +
+        (i === first ? '<button type="button" class="btn small rh-go rc-go" id="tdRcGo">Breathe 20 min</button>' : "") + "</li>");
+    }
+    var w = st.weeks[st.week - 1], wt = c.per * 7, more = st.today.length > c.per ? " (and " + (st.today.length - c.per) + " more)" : "";
+    body.innerHTML = '<p class="rc-l">Week <b>' + st.week + "</b> of 8 · day " + (st.day + 1) + " of 56</p>" +
+      '<ol class="rh-list">' + slots.join("") + "</ol>" +
+      '<div class="rh-foot"><span id="tdRcN">' + Math.min(st.today.length, c.per) + " of " + c.per + " today" + more + " · " + w.n + " of " + wt + " this week</span>" +
+      '<a class="td-more rc-hc" href="#practice/coherence">Heart Coherence counts too, at 20 minutes</a></div>';
+  }
+
+  /* ----- History: the course, its weeks and an honest word ----- */
+  /* One small chart for a measure across the eight weeks, on a scale of its own, every value in its bar's label (and the
+     table under them): a number, null for a week with no reading, undefined for a week still to come */
+  function rcBars(vals, name, fmtV, max, lab) {
+    var top = max || Math.max.apply(null, vals.filter(function (v) { return typeof v === "number"; }).concat([0.001])), last = -1;
+    vals.forEach(function (v, i) { if (typeof v === "number") last = i; });
+    return '<div class="rc-ch"><p class="rc-cn">' + name + (last >= 0 ? ' <span class="rc-lv">· ' + lab(vals[last]) + " in week " + (last + 1) + "</span>" : "") +   // the latest, labelled
+      '</p><div class="rc-bars">' + vals.map(function (v, i) {
+      var h = !v ? 0 : Math.max(6, Math.round(Math.min(1, v / top) * 100)), t = "Week " + (i + 1) + ": " + (v === undefined ? "to come" : v === null ? "no reading" : fmtV(v));
+      return '<span class="rc-bar" role="img" title="' + esc(t) + '" aria-label="' + esc(t) + '"><i style="--h:' + h + '%"></i><small>' + (i + 1) + "</small></span>";
+    }).join("") + "</div></div>";
+  }
+  function rcLede() {
+    return '<p class="xp-lede">Lehrer and colleagues\' protocol for heart-rate-variability biofeedback: 20 minutes of breathing at your resonance rate, twice a day, ' +
+      "for eight weeks. Each session of 20 minutes or more at a resonance pace ticks off on Today: on Breathe at 4.5 to 7 breaths a minute, such as Resonance 5.5 or " +
+      "your own rate from the resonance test, or Heart Coherence. Here, each week's coherence and swing show how closely your heart follows your breath.</p>";
+  }
+  function rcHonest() {
+    return '<p class="xp-honest"><b>What to expect.</b> It\'s the standard protocol, but in the largest placebo-controlled trial, 400 adults who breathed at about 5.5 a minute ' +
+      "for ten minutes a day over four weeks improved on stress, anxiety, depression and wellbeing no more than those breathing at a placebo pace of 12 a minute " +
+      '(Fincham and colleagues, 2023): much of the benefit seems to come from the daily practice itself (see <a href="#l-expect">expectation and placebo</a>). ' +
+      "Breathe gently, no deeper than feels natural, and breathe normally again if you feel light-headed: the original protocol warns against overbreathing.</p>" +
+      '<p class="xp-honest"><b>How much.</b> One practice guide suggests keeping home practice to 20 minutes a day, for a risk that\'s only theoretical. ' +
+      'That\'s a minority, precautionary view: Once a day follows it. <a href="#l-dose">How often and how long</a></p>';
+  }
+  function rcPerSeg(cur) {
+    return '<div class="so-row so-seg rc-per"><span class="so-l">Sessions a day<small>Twice is the classic protocol; once keeps to 20 minutes a day.</small></span>' +
+      '<div class="mini-seg" id="rcPer" role="group" aria-label="Sessions a day">' + [[2, "Twice a day"], [1, "Once a day"]].map(function (o) {
+        return '<button type="button" data-v="' + o[0] + '" aria-pressed="' + (o[0] === cur) + '">' + o[1] + "</button>";
+      }).join("") + "</div></div>";
+  }
+  function rcSec() {
+    var lk = !supOn(), c = rcGet();
+    var h = '<section class="hi-xp hi-rc" id="rcourse" aria-labelledby="rcH"><h2 id="rcH">' + RC_NAME + (lk ? supTag() : "") + "</h2>";
+    if (lk && !c) return h + rcLede() + rcHonest() + '<button type="button" class="btn primary" id="rcOpen">Start the course' + supTag(true) + "</button></section>";
+    if (!c) return h + rcLede() + rcPerSeg(RC.per) + rcHonest() + '<div class="xp-act"><button type="button" class="btn primary" id="rcGo">Start the course</button></div></section>';
+    var st = rcStats(c), wk = st.weeks.slice(0, st.over ? RC_WEEKS : st.week);
+    h += '<p class="xp-what"><b>' + (c.per === 1 ? "Once a day" : "Twice a day") + ", from " + esc(new Date(c.at).toLocaleDateString(undefined, { day: "numeric", month: "long" })) + ".</b> " +
+      (st.over ? (st.ended ? "Ended in week " + st.week + ": " : "Done: ") : "Week " + st.week + " of 8, day " + (st.day + 1) + " of 56: ") +
+      st.n + " of " + st.target + " sessions" + (st.full ? ", " + st.full + (st.full === 1 ? " day" : " days") + " in full." : ".") + "</p>";
+    if (!st.over) h += '<p class="xp-next"><span>Next: 20 minutes at your resonance pace, ' + (H.find && H.find.best ? H.find.best + " a minute, from your test." : "5.5 a minute until you take the resonance test.") +
+      '</span><button type="button" class="btn small" id="rcBreathe">Breathe 20 min</button></p>';
+    var upTo = function (k) { return st.weeks.map(function (w, i) { return i < wk.length ? w[k] : undefined; }); };     // the weeks to come stay empty
+    h += '<div class="rc-chs">' +
+      rcBars(upTo("n"), "Sessions each week, of " + c.per * 7, function (v) { return v + " of " + c.per * 7 + " sessions"; }, c.per * 7, String) +
+      rcBars(upTo("coh"), "Coherence", function (v) { return "coherence " + v.toFixed(1); }, 0, function (v) { return v.toFixed(1); }) +
+      rcBars(upTo("sw"), "Swing, beats a minute", function (v) { return "swing " + v.toFixed(1) + " beats a minute"; }, 0, function (v) { return v.toFixed(1); }) + "</div>";
+    if (st.n) {
+      h += '<div class="xp-tw"><table class="xp-tbl rc-tbl"><caption>Each week of the course</caption><thead><tr><th scope="col">Week</th><th scope="col">Sessions</th><th scope="col">Coherence</th><th scope="col">Swing</th></tr></thead><tbody>' +
+        wk.map(function (w, i) {
+          return '<tr><th scope="row">' + (i + 1) + "</th><td>" + w.n + "</td><td>" + (w.coh === null ? "—" : w.coh.toFixed(1) + "<small> " + w.cn + "×</small>") + "</td><td>" + (w.sw === null ? "—" : w.sw.toFixed(1) + "<small> bpm</small>") + "</td></tr>";
+        }).join("") + "</tbody></table></div>";
+      var said = [rcTrend(wk, "coh", "Coherence", "", 1), rcTrend(wk, "sw", "Swing", " beats a minute", 1)].filter(Boolean);
+      if (said.length) h += '<ul class="xp-say">' + said.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>";
+      if (!wk.some(function (w) { return w.coh !== null || w.sw !== null; })) h += '<p class="xp-miss">No heart readings in these sessions yet: with a heart sensor, or the phone\'s camera, on <a href="#heart">Heart</a>, each week\'s coherence and swing show here.</p>';
+      else h += '<p class="xp-miss">Coherence and the swing rise as your heart follows your breath more closely. They also move with the sensor\'s fit, the time of day, coffee and sleep, so read the weeks together rather than one session.</p>';
+    } else h += '<p class="xp-miss">No sessions yet. A session of 20 minutes or more at a resonance pace counts, on Breathe or as Heart Coherence.</p>';
+    if (!st.over) h += rcPerSeg(c.per);
+    h += rcHonest();
+    h += '<div class="xp-act">' + (st.over ? '<button type="button" class="btn primary" id="rcNew">Start a new course</button>' : '<button type="button" class="btn small" id="rcEnd">End the course</button>') + "</div>";
+    return h + "</section>";
+  }
+  function rcStart() {
+    supGate(RC_NAME, function () {
+      rcSave({ at: hDayStart(Date.now()), per: RC.per === 1 ? 1 : 2, end: 0 });
+      rcRedraw();
+      toast("The course starts today: " + (RC.per === 1 ? "one session" : "two sessions") + " of 20 minutes a day, ticked off on Today.", { ms: 4500 });
+    }, function (ok) { if (ok) rcRedraw(); });
+  }
+  function rcRedraw() {
+    if (curView === "history") {
+      var sec = $("#rcourse");
+      if (sec) sec.outerHTML = rcSec(); else hRender();
+    }
+    if (curView === "home") rcTodaySync();
+  }
+  function rcClick(ev) {
+    var t = ev.target;
+    if (t.closest("#rcOpen")) { supGate(RC_NAME, rcRedraw); return; }
+    if (t.closest("#rcGo")) { rcStart(); return; }
+    if (t.closest("#rcBreathe, #tdRcGo")) { rcBreathe(); return; }
+    if (t.closest("#tdRcUnlock")) { supGate(RC_NAME, rcTodaySync); return; }
+    if (t.closest("#rcNew")) { storeDel("rcourse"); rcRedraw(); var g = $("#rcGo"); if (g) g.focus(); return; }
+    var pb = t.closest("#rcPer button");
+    if (pb) {
+      var v = +pb.getAttribute("data-v"), c = rcGet();
+      if (c) { c.per = v; rcSave(c); } else RC.per = v;
+      rcRedraw();
+      var nb = document.querySelector('#rcPer button[data-v="' + v + '"]');
+      if (nb) nb.focus();
+      return;
+    }
+    var b = t.closest("#rcEnd");
+    if (!b) return;
+    if (RC.arm && Date.now() - RC.arm < 3000) {
+      RC.arm = 0;
+      var x = rcGet();
+      if (x) { x.end = Date.now(); rcSave(x); }
+      rcRedraw();
+      toast("Course ended. Its weeks stay in History.");
+      return;
+    }
+    RC.arm = Date.now();
+    b.textContent = "Tap again to end it";
+    b.classList.add("armed");
+    setTimeout(function () { if (b.isConnected) { b.textContent = "End the course"; b.classList.remove("armed"); } }, 3000);
+  }
+
+  /* ----- after an unlock, and starting up ----- */
+  function rcUI() {
+    rcChips();
+    rcTodaySync();
+    if (curView === "history") rcRedraw();
+  }
+  function rcInit() {
+    SUP_EXTRA.push({ name: RC_LEN, href: "#breathe" }, { name: RC_NAME, href: "#rcourse" });     // Settings' list of what the donation unlocks
+    $("#hiBody").addEventListener("click", rcClick);
+    $("#tdCourseBody").addEventListener("click", rcClick);
+    rcUI();
+    if (window.__entrain) {
+      var X = window.__entrain;
+      X.rcGet = rcGet; X.rcStats = rcStats; X.rcCounts = rcCounts; X.rcSess = rcSess; X.rcTrend = rcTrend; X.rcBreathe = rcBreathe; X.RC = RC;
+    }
+  }
   /* ------------------------------- favourites -------------------------------
      A star on a practice, a track, the primer, the beat builder, a breathing pattern or a recipe keeps
      it on Today. Stored on the device as library keys: a practice's id, b: a breathing pattern,
@@ -29209,6 +29873,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
 
     rhmSync();                          // the daily rhythm, or its offer (own.js)
+    rcTodaySync();                      // the resonance course, ticked off (course.js)
 
     // the six goals, each with the first few of its own
     $("#tdGoals").innerHTML = GOALS.map(function (g) {
@@ -29507,7 +30172,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit], ["the movement practices", mvtInit],["music", musInit], ["your own music", ymInit], ["breath-led sound", blsInit], ["scenes", scnInit], ["the screen light", ltInit], ["the light pulse", lpInit],["the phone's camera", camInit], ["the motion sensor", motInit], ["the headband", egInit], ["room air and the oximeter", aqInit], ["check-ins, the daily rhythm and experiments", owInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit], ["the movement practices", mvtInit],["music", musInit], ["your own music", ymInit], ["breath-led sound", blsInit], ["scenes", scnInit], ["the screen light", ltInit], ["the light pulse", lpInit],["the phone's camera", camInit], ["the motion sensor", motInit], ["the headband", egInit], ["room air and the oximeter", aqInit], ["check-ins, the daily rhythm and experiments", owInit], ["the eyes", eyInit], ["the resonance course", rcInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

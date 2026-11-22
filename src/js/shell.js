@@ -94,7 +94,7 @@
     if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
     if (h === "living" || h.indexOf("living/") === 0) { showView("living"); lvOpen(h.slice(7)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
-    if (h === "experiment" || h === "checkins") {         // a part of History, which is drawn as it opens (own.js)
+    if (h === "experiment" || h === "checkins" || h === "rcourse") {   // a part of History, which is drawn as it opens (own.js, course.js)
       showView("history");
       var hs = document.getElementById(h);
       if (hs) setTimeout(function () { jumpTo(hs); }, 30);
