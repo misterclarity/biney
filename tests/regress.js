@@ -583,8 +583,8 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       ok(await p.$$eval('.pr-grp[data-g=calm] li:not([hidden])', l => l.length) === 27 && !(await p.$('.pr-grp[data-g=calm] .pr-more')), 'Show all opens the rest');
       await p.click('#prFilt [data-f=sleep]'); await p.waitForTimeout(200);
       const sleep = await E(p, () => [...document.querySelectorAll('#prLib .pr-grp')].map(g => g.dataset.g + ': ' + [...g.querySelectorAll('.pc-top b')].map(b => b.textContent).join('|')));
-      ok(sleep[0] === 'sleep: Sleep Descent|4-7-8|Cognitive Shuffle|Evening Stretch|Evening Floor Flow|Delta Sleep' && /^also: .*Body Scan\|.*Progressive Muscle Relaxation\|Autogenic Training\|Bhramari\|Long exhale/.test(sleep[1]),
-        'the Sleep chip: its own six, then "also good for sleep": ' + sleep[1]);
+      ok(sleep[0] === 'sleep: Sleep Descent|4-7-8|Cognitive Shuffle|Evening Stretch|Evening Floor Flow|Delta Sleep|Sleep sounds' && /^also: .*Body Scan\|.*Progressive Muscle Relaxation\|Autogenic Training\|Bhramari\|Long exhale/.test(sleep[1]),
+        'the Sleep chip: its own seven, then "also good for sleep": ' + sleep[1]);
       await p.click('#prFilt [data-f=sleep]'); await p.click('#prFilt [data-f=focus]'); await p.waitForTimeout(200);   // Sleep off again, Focus on
       ok(!(await p.$('#prLib a[href="#practice/standing-flow"]')) && await p.$('#prLib .pr-grp[data-g=also] a[href="#practice/standing-reset"]'), 'Focus: Standing Yoga Flow is not there; Standing Reset is, as also good for focus');
       await p.click('#prFilt [data-f=all]'); await p.click('#prFbtn'); await p.waitForTimeout(150);
@@ -653,7 +653,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       const q = await page(null, OPT());
       await q.setViewportSize({ width: 360, height: 740 });
       const wide = await E(q, async () => {
-        const out = [], hs = window.__entrain.PRACTICES.map(d => 'practice/' + d.id).concat(['home', 'practice', 'breathe', 'heart', 'learn', 'history', 'track/sleep-descent', 'track/tinnitus-notch', 'prime', 'builder', 'yoga', 'settings']);
+        const out = [], hs = window.__entrain.PRACTICES.map(d => 'practice/' + d.id).concat(['home', 'practice', 'breathe', 'heart', 'learn', 'history', 'track/sleep-descent', 'track/tinnitus-notch', 'prime', 'builder', 'yoga', 'settings', 'sleep-sounds']);
         for (const h of hs) {
           location.hash = h; await new Promise(r => setTimeout(r, 120));
           if (document.documentElement.scrollWidth > document.documentElement.clientWidth) out.push(h);

@@ -249,7 +249,7 @@
   /* The beat's sound changed while it plays (beatmode.js): the new voices take over in a quarter of a
      second, from where the track is, and everything else (the volume, the noise bed, the clock) plays on. */
   function aSwapVoices() {
-    if (!A.playing || A.voicesOff || !A.vx) return;
+    if (!A.playing || A.voicesOff || !A.vx || A.track.sleep) return;
     var t = A.ctx.currentTime, old = A.vx, g = A.vbus.gain;
     g.cancelScheduledValues(t);
     g.setValueAtTime(g.value, t);
@@ -274,8 +274,9 @@
     A.elapsed = 0;
     A.phase = track.then ? "prime" : "single";
     A.gainMul = track.gain || 1;                      // a practice's quieter beat (During the Call: half)
-    A.mode = bmTrackMode(track);                      // binaural, monaural or isochronic (beatmode.js)
+    A.mode = track.sleep ? "none" : bmTrackMode(track);   // binaural, monaural or isochronic (beatmode.js); Sleep sounds has no beat
     A.noisePref = $("#noise").checked;
+    $("#player").classList.toggle("p-sleep", !!track.sleep);   // Sleep sounds: no beat, no noise bed, no background, always timed
     $("#noise").disabled = !!track.notch;
     $("#noiseLab").classList.toggle("off", !!track.notch);
     $("#noiseTxt").textContent = track.notch ? "Notched noise (built in)" : "Pink-noise bed";
@@ -291,6 +292,7 @@
   }
   // the player's second line: band, beat (or where it goes), how it plays unless binaural, carrier and length
   function trackSub(track) {
+    if (track.sleep) return track.band + " · fades out over " + Math.round(track.minutes) + " min";
     var beatTxt = track.pts
       ? (track.pts[0][1] === track.beat ? track.beat.toFixed(1) : track.pts[0][1].toFixed(1) + " → " + track.beat.toFixed(1)) + " Hz"
       : typeof track.rampFrom === "number"
@@ -306,13 +308,14 @@
       setStatus("Web Audio is not available in this browser.");
       return;
     }
-    if (!A.voicesOff) buildVoices(A.track, A.elapsed);
+    if (A.track.sleep) slpVoices(A.elapsed);          // Sleep sounds: its own sound and fade (sleepsounds.js)
+    else if (!A.voicesOff) buildVoices(A.track, A.elapsed);
     var t = A.ctx.currentTime;
     A.master.gain.cancelScheduledValues(t);
     A.master.gain.setValueAtTime(0, t);
     A.master.gain.linearRampToValueAtTime(volGain(), t + FADE_IN);
     if (A.track.notch) startNoise(tinnitusHz());
-    else if ($("#noise").checked) startNoise();
+    else if ($("#noise").checked && !A.track.sleep) startNoise();
 
     A.startedAt = A.ctx.currentTime - A.elapsed;
     A.playing = true;
@@ -423,7 +426,7 @@
   function scheduleEnd() {
     clearTimeout(A.endTimer);
     if (A.phase === "task") return;                 // working phase runs open-ended
-    if (A.phase !== "prime" && $("#openEnded").checked && !A.track.practice) return;
+    if (A.phase !== "prime" && aOpen(A.track)) return;
     var total = A.track.minutes * 60;
     if (A.phase === "prime") {
       A.endTimer = setTimeout(enterTask, Math.max(0, (total - A.elapsed) * 1000));
@@ -467,19 +470,25 @@
   function paint() {
     if (!A.track) return;
     var t = A.track, total = t.minutes * 60;
-    var countUp = A.phase === "task" || ($("#openEnded").checked && !t.practice);
+    var countUp = A.phase === "task" || aOpen(t);
     var beat = beatAt(t, A.elapsed);
 
     // the ears: binaural, left and right; monaural, the low and the high tone, both in each ear; isochronic, the one tone and its pulse
     var m = A.mode, iso = m === "isochronic";
-    setText("#pLk", m === "binaural" ? "L" : m === "monaural" ? "Low" : "Tone");
-    setText("#pRk", m === "binaural" ? "R" : "High");
-    setText("#pBk", iso ? "pulse" : "beat");
     if (paintCache.iso !== iso) { paintCache.iso = iso; $("#pEarR").hidden = iso; }
     if (paintCache.bin !== m) { paintCache.bin = m; $("#scOpen").hidden = m !== "binaural"; }    // the headphone check matters only for binaural
-    setText("#pL", t.carrier.toFixed(0) + " Hz");
-    setText("#pR", (t.carrier + beat).toFixed(1) + " Hz");
-    setText("#pBeat", beat.toFixed(1) + " Hz");
+    if (t.sleep) {                                   // Sleep sounds: the sound, and how far it has faded
+      setText("#pLk", "Sound"); setText("#pL", t.band);
+      setText("#pRk", "Level"); setText("#pR", Math.round(100 * slpLevel(A.elapsed / (total || 1))) + "%");
+    } else {
+      setText("#pLk", m === "binaural" ? "L" : m === "monaural" ? "Low" : "Tone");
+      setText("#pRk", m === "binaural" ? "R" : "High");
+      setText("#pBk", iso ? "pulse" : "beat");
+      setText("#pL", t.carrier.toFixed(0) + " Hz");
+      setText("#pR", (t.carrier + beat).toFixed(1) + " Hz");
+      setText("#pBeat", beat.toFixed(1) + " Hz");
+    }
+    slpNight();
 
     var off;
     if (countUp) {
@@ -493,11 +502,14 @@
   }
 
   function setStatus(msg) { $("#status").textContent = msg; }
+  // open-ended: the player's switch, for a track of its own; a practice keeps its clock, and Sleep sounds always ends
+  function aOpen(t) { return !!t && $("#openEnded").checked && !t.practice && !t.sleep; }
 
   // a track started, paused or stopped: the screen lock, its page and the lock screen follow
   function playSync() {
     wlKick();
     trSync();
+    slpSync();                           // the Sleep sounds page
     msSync();
     micBeatGuard();                      // a beat while a Bluetooth microphone listens: the phone's own instead
   }
@@ -532,7 +544,7 @@
       if (A.playing) scheduleEnd();
       paint();
       msSync();
-      setStatus(this.checked
+      setStatus(this.checked && !(A.track && A.track.sleep)
         ? "Open-ended: the session will keep running until you stop it."
         : "Timer active: " + (A.track ? A.track.minutes + " min." : ""));
     });

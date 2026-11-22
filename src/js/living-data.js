@@ -481,7 +481,7 @@
         { t: "Caffeine before the afternoon", p: "Caffeine shortened sleep by about 45 minutes, and added about 9 to the time it took to fall asleep, in a 2023 meta-analysis. To spare your sleep, have the last coffee at least 9 hours before bed, and a strong pre-workout drink at least 13.", go: [["#living/coffee", "Coffee and caffeine"]] },
         { t: "Alcohol early, if at all", p: "It can make you drowsy, but it breaks up the second half of the night and cuts dream (REM) sleep." },
         { t: "Move in the day", p: "Regular exercise improves sleep. Exercise in the evening is fine for most people too, apart from a hard session that ends within an hour of bedtime.", go: [["#practice/sport", "Sports Performance"]] },
-        { t: "A bed for sleep", p: "Keep the bedroom cool, dark and quiet, and the bed for sleep and sex, so your body links it with sleep. If you're still awake after about 20 minutes, get up, do something calm in dim light, and go back when you feel sleepy. This is stimulus control, a part of CBT-I that sleep guidelines also recommend on its own." },
+        { t: "A bed for sleep", p: "Keep the bedroom cool, dark and quiet, and the bed for sleep and sex, so your body links it with sleep. If you're still awake after about 20 minutes, get up, do something calm in dim light, and go back when you feel sleepy. This is stimulus control, a part of CBT-I that sleep guidelines also recommend on its own.", go: [["#sleep-sounds", "Sleep sounds"]] },
         { t: "Naps short and early", p: "Up to about 20 minutes, before mid-afternoon. In a sleep-lab study after a short night, a 10-minute nap gave the quickest boost, with no grogginess afterwards.", go: [["#practice/power-nap", "Power Nap"]] },
         { t: "A wind-down", p: "The last hour before bed decides a lot: see the evening routine.", go: [["#living/evening", "Evening routine"]] }
       ],
@@ -522,7 +522,7 @@
         { w: "30 minutes before", t: "Wind down", p: "Ten to twenty minutes of something calming: Autogenic Training with its bedtime ending lets it carry you into sleep. And, if you like, three good things from the day.",
           go: [["#practice/sleep-descent", "Sleep Descent"], ["#practice/autogenic", "Autogenic Training"], ["#practice/body-scan", "Body Scan"], ["#practice/pmr", "Progressive Muscle Relaxation"]] },
         { w: "Bedtime", t: "Lights out", p: "At your usual time, in a cool, dark, quiet room. If your mind is busy, the Cognitive Shuffle gives it something light to do; if you're still awake after about 20 minutes, get up for a while.",
-          go: [["#practice/shuffle", "Cognitive Shuffle"], ["#breathe/478", "4-7-8 breathing"]] }
+          go: [["#practice/shuffle", "Cognitive Shuffle"], ["#breathe/478", "4-7-8 breathing"], ["#sleep-sounds", "Sleep sounds"]] }
       ],
       refs: [R_REF.gardiner, R_REF.brown, R_REF.haghayegh, R_REF.chang, R_REF.scullin, R_REF.edinger] }
   ];

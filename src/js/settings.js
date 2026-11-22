@@ -51,8 +51,9 @@
         (own.length ? '<div class="st-own"><span>' + esc(list) + (own.length === 1 ? " has" : " have") + " options of " + (own.length === 1 ? "its" : "their") + ' own.</span>' +
           '<button class="btn small" id="stOwnReset">Use the defaults for ' + (own.length === 1 ? "it" : "all of them") + "</button></div>" : "") +
       "</section>" + bmCard() +
-      '<section class="st-card" aria-labelledby="stA"><h2 id="stA">Background sound</h2>' +
-        '<p class="st-note">Rain or crickets under practices, breathing sessions and tracks, made on your device.</p>' + ambCtl() +
+      '<section class="st-card" id="st-amb" aria-labelledby="stA"><h2 id="stA">Background sound</h2>' +
+        '<p class="st-note">Rain or crickets under practices, breathing sessions and tracks, made on your device. Add birdsong, a stream, wind or a fire, ' +
+        'or have one on its own: each goes on and off by itself, since people differ in which natural sounds they find pleasant. <a href="#l-nature">What the research says</a></p>' + ambCtl() +
       "</section>" +
       '<section class="st-card" aria-labelledby="stR"><h2 id="stR">Reflections</h2>' +
         pToggle("stKeep", "Keep a copy on this device", g.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing.") +

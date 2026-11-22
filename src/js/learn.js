@@ -1,12 +1,13 @@
   /* ---------------------------------- Learn ----------------------------------
      Learn is written out in learn.html: brain-wave states, the techniques at a glance by sense, the research behind
      each part of Entrain, and what it leaves out. Reading it is always free. A link in it that leads to one of the
-     new techniques (a practice, a breathing pattern or a track flagged sup: true) carries the donation cup while this
+     new techniques (a practice, a breathing pattern or a track flagged sup: true, or Sleep sounds) carries the donation cup while this
      device is locked, and loses it as soon as it's unlocked (supRefresh calls lnMark).
   ------------------------------------------------------------------------------ */
 
   // the practice, breathing pattern or track a link leads to, if it leads to one
   function lnItem(href) {
+    if (href === "#sleep-sounds") return TOOLS.sleep;          // a tool of its own (sleepsounds.js)
     var m = /^#(practice|breathe|track)\/([\w-]+)$/.exec(href || ""), list;
     if (!m) return null;
     list = m[1] === "practice" ? PRACTICES : m[1] === "breathe" ? BREATHS : TRACKS;

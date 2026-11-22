@@ -40,7 +40,7 @@
   }
   // the track in the player follows a new choice at once (not a practice's beat, which keeps its own, nor the notched track)
   function bmLive() {
-    if (!A.track || A.track.practice || A.track.notch) return;
+    if (!A.track || A.track.practice || A.track.notch || A.track.sleep) return;     // Sleep sounds has no beat
     var m = bmMode();
     if (m === A.mode) return;
     A.mode = m;

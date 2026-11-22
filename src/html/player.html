@@ -32,14 +32,15 @@
     <div class="ears">
         <span class="ear"><span id="pLk">L</span> <b id="pL">—</b></span>
         <span class="ear" id="pEarR"><span id="pRk">R</span> <b id="pR">—</b></span>
-        <span class="ear beat"><span id="pBk">beat</span> <b id="pBeat">—</b></span>
+        <span class="ear beat" id="pEarB"><span id="pBk">beat</span> <b id="pBeat">—</b></span>
         <span class="ear ear-hr" id="pHrChip" title="Heart rate now, and the change since the first minute of this session" hidden>HR <b id="pHr">—</b></span>
       </div>
 
     <div class="toggles">
       <label id="noiseLab"><input type="checkbox" id="noise"> <span id="noiseTxt">Pink-noise bed</span></label>
       <label class="amb-pl"><span>Background</span><select class="amb-sel" aria-label="Background sound"><option value="off">None</option><option value="rain">Summer rain</option><option value="crickets">Crickets</option><option value="night">Rain and crickets</option></select></label>
-      <label><input type="checkbox" id="openEnded"> Open-ended (ignore timer)</label>
+      <label class="p-open"><input type="checkbox" id="openEnded"> Open-ended (ignore timer)</label>
+      <p class="p-night" id="pNight" hidden>{i:moon}<span><b>All night is a long time for noise.</b> Noise played through the night isn't the same as the short bursts that sleep research times to deep sleep, and one study suggests it may cost some of the insight sleep brings. <a href="#sleep-sounds">Sleep sounds</a> fades out and ends by itself. <a href="#l-sleepsnd">Why</a></span></p>
       <button class="btn link" id="scOpen" style="padding:0;font-size:12.5px">Re-check headphones</button>
       <div class="status" id="status" role="status" aria-live="polite">Ready</div>
     </div>

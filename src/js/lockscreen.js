@@ -13,7 +13,7 @@
     want: "off",      // "play", "pause" or "off": what the app last asked of the element
     sys: false,       // the phone paused the track (a call, another app), so it may resume it too
     track: null,      // the track the lock screen is showing
-    bm: ""            // and how its beat plays (beatmode.js)
+    al: ""            // and its second line: the beat and how it plays (beatmode.js), or Sleep sounds' sound and time
   };
   var MS_ART = [{ src: "icons/icon-192.png", sizes: "192x192", type: "image/png" }, { src: "icons/icon-512.png", sizes: "512x512", type: "image/png" }];
 
@@ -51,10 +51,10 @@
     if (!msOk()) return;
     var want = msWanted(), ms = navigator.mediaSession;
     if (want === "off") { msOff(); return; }
-    var t = A.track, el = msEl();
-    if (MS.track !== t || MS.bm !== A.mode) {        // a new track, or the same one played another way (beatmode.js)
-      MS.track = t; MS.bm = A.mode;
-      ms.metadata = new MediaMetadata({ title: t.name, artist: "Entrain", album: t.band + " · " + trBeatTxt(t) + (A.mode === "binaural" ? "" : " · " + A.mode), artwork: MS_ART });
+    var t = A.track, el = msEl(), al = t.sleep ? trackSub(t) : t.band + " · " + trBeatTxt(t) + (A.mode === "binaural" ? "" : " · " + A.mode);
+    if (MS.track !== t || MS.al !== al) {             // a new track, or the same one played another way (beatmode.js), or another sleep sound
+      MS.track = t; MS.al = al;
+      ms.metadata = new MediaMetadata({ title: t.name, artist: "Entrain", album: al, artwork: MS_ART });
     }
     ms.playbackState = want === "play" ? "playing" : "paused";
     msPosition();
@@ -68,7 +68,7 @@
   // the track has stopped or is no longer the lock screen's: end the session, so the controls go away
   function msOff() {
     var ms = navigator.mediaSession;
-    MS.want = "off"; MS.sys = false; MS.track = null;
+    MS.want = "off"; MS.sys = false; MS.track = null; MS.al = "";
     if (MS.el && MS.el.getAttribute("src")) { MS.el.pause(); MS.el.removeAttribute("src"); MS.el.load(); }
     if (ms.metadata) ms.metadata = null;
     ms.playbackState = "none";
@@ -78,7 +78,7 @@
   function msPosition() {
     var ms = navigator.mediaSession, t = A.track;
     if (!ms.setPositionState || !t) return;
-    var total = t.minutes * 60, open = A.phase === "task" || $("#openEnded").checked;
+    var total = t.minutes * 60, open = A.phase === "task" || aOpen(t);
     var at = Math.max(0, A.playing && A.ctx ? A.ctx.currentTime - A.startedAt : A.elapsed);
     try {
       ms.setPositionState(open || !(total > 0) ? { duration: Infinity, playbackRate: 1, position: at }

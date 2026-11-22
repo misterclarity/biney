@@ -1494,6 +1494,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const bad = await E(p, links => {
         const X = window.__entrain;
         return links.filter(h => {
+          if (h === '#sleep-sounds') return !document.getElementById('v-sleep-sounds');     // a page of its own (Sleep sounds)
           const m = /^#(practice|living|breathe)\/(.+)$/.exec(h);
           if (!m) return true;
           if (m[1] === 'practice') return !X.pDef(m[2]);
@@ -1609,7 +1610,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       // page names fit a phone's top bar, with the sensor button a heart until a sensor sends readings
       const fit = async more => {        // the tabs and pages at any width; at 412 px a couple of practices too
         const out = [];
-        for (const v of ['home', 'practice', 'breathe', 'heart', 'learn', 'history', 'settings', 'living', 'prime', 'builder', 'yoga'].concat(more || [])) {
+        for (const v of ['home', 'practice', 'breathe', 'heart', 'learn', 'history', 'settings', 'living', 'prime', 'builder', 'yoga', 'sleep-sounds'].concat(more || [])) {
           await E(p, v => location.hash = v, v); await p.waitForTimeout(160);
           out.push(await E(p, () => { const h = document.querySelector('#viewTitle'); return h.scrollWidth <= h.clientWidth + 1 ? '' : h.textContent; }));
         }
@@ -2160,8 +2161,8 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
           sugg: all('#lvp-routines .lv-sugg').map(d => (d.open ? '*' : '') + d.querySelector('summary').textContent.replace(/\s+/g, ' ').trim()).join(' | '),
           loose: all('#lvp-routines .lv-go').filter(g => !g.closest('details.lv-sugg')).length, hid: all('#lvp-routines .lv-rsteps .lv-chip').filter(a => a.checkVisibility ? a.checkVisibility() : a.closest('details').open).length };
       });
-      ok(R.rot === 0 && !R.loose && R.hid === 0 && R.sugg === 'See also1 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | See also1 | Suggested practices2 | Suggested practices3 | ' +
-        'Suggested recipes and practices4 | Suggested practices2 | Suggested practices3 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | Suggested practices4 | Suggested practices2',
+      ok(R.rot === 0 && !R.loose && R.hid === 0 && R.sugg === 'See also1 | Suggested practices1 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | See also1 | Suggested practices2 | Suggested practices3 | ' +
+        'Suggested recipes and practices4 | Suggested practices2 | Suggested practices3 | Suggested practices1 | Suggested practices1 | See also1 | Suggested practices1 | Suggested practices4 | Suggested practices3',
         'in the routines nothing is turned on its side, and each step\'s practices wait behind a closed button named for what\'s there, with a count: ' + R.sugg.slice(0, 80) + '…');
       await E(p, () => document.querySelector('#lv-morning .lv-sugg').scrollIntoView({ block: 'center' }));
       await p.click('#lv-morning .lv-sugg > summary'); await p.waitForTimeout(250);

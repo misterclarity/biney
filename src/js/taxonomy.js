@@ -23,7 +23,7 @@
   // [item, method, postures]: practices by id, b: a breathing pattern, t: a track, x: a tool
   var CATS = {
     sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
-      ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
+      ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"], ["x:sleep", "sound", "lie"]],
     calm: [["stress-check", "measure", "sit lie"], ["calm-reset", "program", "sit walk"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
       ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["meal", "program", "sit"], ["mindful-sex", "program", "lie sit"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
@@ -56,7 +56,9 @@
       blurb: "Pick a beat and 5 to 20 minutes of priming. When the bell rings, start work with the beat quieter, pink noise, or silence." },
     beats: { name: "Beat builder", href: "#builder", icon: "sliders", strength: 2,
       blurb: "Pick any beat, carrier tone and session length, and play it." },
-    routine: { name: "Routine builder", href: "#yoga", icon: "plus", strength: 2 }
+    routine: { name: "Routine builder", href: "#yoga", icon: "plus", strength: 2 },
+    sleep: { name: "Sleep sounds", href: "#sleep-sounds", icon: "moon", strength: 1, sup: true,      // a new technique (sleepsounds.js)
+      blurb: "Pink noise, rain, crickets, a stream or a fire to fall asleep to, fading out over 15 to 60 minutes and then ending, so nothing plays all night." }
   };
 
   var CAT = {};                              // item key → { goal, also, method, posture, rank }

@@ -139,6 +139,11 @@
     out.push(fdEntry("sound", "Beat sound", "Settings · binaural, monaural or isochronic",
       ["Binaural beats need headphones; monaural beats and isochronic tones play on speakers too. Choose how every beat plays here, or for one practice under its Options."], "#st-beats",
       { ic: "sounds", col: "var(--relax)", w: 1, tags: "isochronic monaural binaural speaker speakers headphones tone tones pulse pulsing mode sound", sup: true }));
+    out.push(fdEntry("sound", TOOLS.sleep.name, "Sleep · a sound that fades out over 15 to 60 min, then ends", [TOOLS.sleep.blurb, slpHowTxt(30)], TOOLS.sleep.href,
+      { ic: "moon", col: "var(--relax)", w: 1.1, tags: "sleep timer noise pink white rain crickets stream water fire fade fading fall asleep night bedtime insomnia", sup: true }));
+    out.push(fdEntry("sound", "Nature sounds", "Background sound · birdsong, a stream, wind and fire",
+      ["Add birdsong, a stream, wind in the leaves or a crackling fire to rain or crickets, or have one on its own, under practices, breathing sessions and tracks. Each goes on and off by itself."], "#st-amb",
+      { ic: "rain", col: "var(--relax)", w: 1, tags: "birdsong birds bird stream brook water river wind leaves fire fireplace crackle crackling campfire nature soundscape ambience background", sup: true }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
       ["Pair a HeartMath ear-clip sensor, a chest strap or a Garmin watch set to broadcast, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
       { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));

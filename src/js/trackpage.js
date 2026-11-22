@@ -22,7 +22,7 @@
         : m === "isochronic" ? ", one tone of " + t.carrier + " Hz in both ears, switched on and off at the beat, with soft edges."
         : ", one tone of " + t.carrier + " Hz in your left ear and one a little higher in your right.") + " It fades out at the end.";
     if (t.notch) s += " Underneath, pink noise with a one-octave gap centred on your own tinnitus pitch.";
-    else s += " The player can add a pink-noise bed, rain or crickets underneath.";
+    else s += " The player can add a pink-noise bed, rain, crickets or nature sounds underneath.";
     return s;
   }
   function trNeeds(t) {

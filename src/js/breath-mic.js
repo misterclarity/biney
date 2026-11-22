@@ -185,7 +185,7 @@
   function micIsBt(label) { return /bluetooth|hands-?free|airpods|\bbuds\b|\bbt\b/i.test(label || ""); }
   // a binaural beat is sounding: a track's, a practice's or a session's, with its tones on (a monaural or
   // isochronic beat is the same in both ears, so mono earbuds play it as it is)
-  function beatPlaying() { return !!(A.playing && A.track && !A.voicesOff && A.mode === "binaural"); }
+  function beatPlaying() { return !!(A.playing && A.track && !A.track.sleep && !A.voicesOff && A.mode === "binaural"); }
   function micInputs() {
     var md = navigator.mediaDevices;
     if (!md || !md.enumerateDevices) return Promise.resolve([]);

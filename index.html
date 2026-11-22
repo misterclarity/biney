@@ -1065,6 +1065,19 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .amb-volrow[hidden]{display:none}
   .amb-pl{gap:8px}
   .amb-pl select{background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:5px 8px;font:inherit;font-size:12.5px}
+  /* the nature sounds to add, each on or off, and Sleep sounds' page and player */
+  .amb-add button{display:inline-flex;align-items:center;gap:4px;min-height:44px}
+  .amb-add .sup-ic{background:none;padding:0;color:var(--stim)}
+  .amb-add .sup-ic svg.i{width:12px;height:12px}
+  .slp-row{flex-direction:column;align-items:stretch;gap:8px;margin:0 0 16px}
+  .slp-row .mini-seg{align-self:flex-start;max-width:100%}
+  .slp-seg button{min-height:44px}
+  .p-sleep #pEarB,.p-sleep #noiseLab,.p-sleep .amb-pl,.p-sleep .p-open,.p-sleep #scOpen{display:none}
+  .p-night{display:flex;gap:8px;align-items:flex-start;margin:0;font-size:12.5px;line-height:1.45;color:var(--text-dim)}
+  .p-night[hidden]{display:none}
+  .p-night svg.i{width:16px;height:16px;flex:none;margin-top:2px;color:var(--b-out)}
+  .p-night a{color:var(--text);display:inline-block;padding:3px 0}
+  .sg-t .sg-rt .sup-tag{color:var(--stim);margin-left:4px}
   .so-tg{cursor:pointer}
   .so-voice{gap:8px}
   .so-voice .so-l{flex:none}
@@ -2066,7 +2079,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
         <div class="suggest" id="homeSuggest">
           <span class="sg-ic"><svg class="i" aria-hidden="true"><use href="#i-practice"/></svg></span>
-          <div class="sg-t"><span class="sg-when" id="sgWhen">Suggested</span><b id="sgName">Practice</b><span id="sgTxt"></span><a class="sg-rt" id="sgRt" href="#living/morning">Your morning routine</a></div>
+          <div class="sg-t"><span class="sg-when" id="sgWhen">Suggested</span><b id="sgName">Practice</b><span id="sgTxt"></span><a class="sg-rt" id="sgRt" href="#living/morning">Your morning routine</a><a class="sg-rt" id="sgSnd" href="#sleep-sounds" hidden>Sleep sounds, fading out</a></div>
           <div class="sg-act"><a class="btn primary small" id="sgGo" href="#practice">Open</a></div>
         </div>
 
@@ -2240,6 +2253,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <!-- ============ TRACK ============ -->
       <section class="view" id="v-track" aria-labelledby="viewTitle" hidden>
         <div class="tr-page" id="trBody"></div>
+      </section>
+
+      <!-- ============ SLEEP SOUNDS ============ -->
+      <section class="view" id="v-sleep-sounds" aria-labelledby="viewTitle" hidden>
+        <div class="tr-page slp-page" id="slpBody"></div>
       </section>
 
       <!-- ============ CUSTOM PRIMER ============ -->
@@ -2508,7 +2526,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         <div class="prime-row">
           <div class="prime-label">Background sound</div>
           <div class="amb-ctl" data-amb-ctl></div>
-          <p class="hint">Summer rain or crickets on a warm night, made on your device. Whatever you pick plays under any session, track or practice.</p>
+          <p class="hint">Summer rain or crickets on a warm night, with birdsong, a stream, wind or a fire if you like, made on your device. Whatever you pick plays under any session, track or practice.</p>
         </div>
 
         <p class="b-safety">
@@ -2805,6 +2823,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-bands">Frequency bands</a>
             <a href="#l-practices">Guided practices</a>
             <a href="#l-voice">Your voice</a>
+            <a href="#l-nature">Nature sounds</a>
+            <a href="#l-sleepsnd">Sound and sleep</a>
             <a href="#l-expect">Placebo and side effects</a>
             <a href="#l-dose">How often</a>
             <a href="#l-measure">What to measure</a>
@@ -2943,7 +2963,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <tr class="ln-row"><th scope="row"><b>Slow-tempo music</b> <small>Relaxation (alpha, theta)</small></th><td>Moderate to strong</td><td class="ln-lo">Learn only</td></tr>
                 <tr class="ln-row"><th scope="row"><b>Fast-tempo music</b> <small>Energy, focus (beta, gamma)</small></th><td>Moderate</td><td class="ln-lo">Learn only</td></tr>
                 <tr class="ln-row"><th scope="row"><b>Music you choose yourself</b> <small>Stress relief</small></th><td>Strong</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>Pink noise timed to deep sleep</b> <small>Deeper sleep, memory</small></th><td>Promising (needs EEG)</td><td class="ln-lo">Learn only: <a href="#l-leftout">why</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Pink noise timed to deep sleep</b> <small>Deeper sleep, memory</small></th><td>Promising (needs EEG)</td><td class="ln-lo">Learn only: <a href="#l-leftout">why</a>, and <a href="#l-sleepsnd">a fading sound instead</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Binaural, isochronic or monaural beats</b> <small>Varies with the target</small></th><td>Mixed</td><td><a href="#sounds">Beat tracks</a>, <a href="#l-iso">on speakers too</a></td></tr>
               </tbody>
               <tbody>
@@ -2961,7 +2981,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <tr class="ln-row"><th scope="row"><b>Dim, warm light in the evening</b> <small>Ready for sleep</small></th><td>Strong</td><td><a href="#living/sleep-habits">Healthy sleep habits</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Rhythmic light flicker</b> <small>Entrainment, such as 40&nbsp;Hz</small></th><td>Early (a seizure risk)</td><td class="ln-lo">Learn only</td></tr>
                 <tr class="ln-row"><th scope="row"><b>Nature scenes, restoration breaks</b> <small>Alpha, attention recovery</small></th><td>Moderate</td><td class="ln-lo">Learn only</td></tr>
-                <tr class="ln-row"><th scope="row"><b>A fireplace, with its sound</b> <small>Relaxation, lower blood pressure</small></th><td>Moderate</td><td class="ln-lo">Learn only</td></tr>
+                <tr class="ln-row"><th scope="row"><b>A fireplace, with its sound</b> <small>Relaxation, lower blood pressure</small></th><td>Moderate</td><td class="ln-lo">Learn only, as a fire to watch; its crackle is one of the <a href="#l-nature">nature sounds</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Mid-complexity fractals</b> <small>Stress reduction</small></th><td>Promising (mostly one lab)</td><td class="ln-lo">Learn only</td></tr>
                 <tr class="ln-row"><th scope="row"><b>Fresh flowers</b> <small>Balancing arousal</small></th><td>Early</td><td class="ln-lo">Learn only</td></tr>
               </tbody>
@@ -3507,7 +3527,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               it (Torre &amp; Lieberman, 2018). None of the four has been tested as a whole.
             </p>
             <p>
-              <b>Background sound and quotes.</b> Summer rain and crickets are synthesised on your device, like the pink-noise
+              <b>Background sound and quotes.</b> Summer rain, crickets and the <a href="#l-nature">nature sounds</a> are synthesised on your device, like the pink-noise
               bed, and are there for comfort: masking sounds didn't weaken binaural beat effects in the research above. The
               quotes come from public-domain translations (George Long's Marcus Aurelius and Epictetus, Richard Gummere's Seneca,
               Max M&uuml;ller's Dhammapada and James Legge's Tao Te Ching) and Thoreau's <em>Walden</em>. Carl Rogers's line is
@@ -3561,6 +3581,58 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               and sport done together (Tarr et al., 2014). <a href="#practice/sing">Sing Together</a> uses two traditional
               rounds, so everyone sings at once and each group still has a part of its own; on your own, the phone takes the
               other part. No study has tested singing along with a phone.
+            </p>
+
+            <h3 id="l-nature">Nature sounds</h3>
+            <p>
+              Natural sounds such as birdsong, wind and water are often, though not always, heard as pleasant and restful:
+              songbirds more than the calls of gulls or crows, some animal sounds not at all, and people differ in which ones they
+              like (Ratcliffe, 2021). In an experiment with 95 students, listening to birdsong raised heart-rate variability, a sign
+              of less physiological stress, compared with traffic noise (Ford et al., 2026). The guide behind Entrain's new
+              techniques rates nature soundscapes such as birdsong and rain as moderate evidence, and advises letting people
+              choose, since some find certain sounds unpleasant. So the background sound is a mix you make: rain or crickets, with
+              birdsong, a stream, wind in the leaves or a crackling fire added on top, each on or off by itself, under any
+              practice, breathing session or track. You'll find it in <a href="#st-amb">Settings</a>, on Breathe and under a
+              practice's Options.
+            </p>
+            <p>
+              A fire is the one sound with a study of its own. In three experiments with 226 adults, watching a fire with its
+              crackle lowered blood pressure, and more the longer people watched, while the same fire with the sound off had
+              no consistent effect (Lynn, 2014). That fire was seen as well as heard, so the crackle on its own hasn't been
+              tested: here it's one more background sound, suited to the evening.
+            </p>
+            <p>
+              Each is synthesised on your device, with no recordings. The birds are whistles that glide, warble and trill in the
+              patterns of a robin, a blackbird, a great tit, a chiffchaff and a wren, with a wood pigeon cooing further off; the
+              stream is noise in two bands with thousands of small bubbles whose pitch rises as they ring; the wind brightens and
+              swells in gusts, with the rustle of leaves rising with it; and the fire is a low roar, a soft hiss and crackles in
+              clusters, with pops and sparks on a loop of another length. The loops differ in length, so together they don't
+              repeat for a long time.
+            </p>
+
+            <h3 id="l-sleepsnd">Sound and sleep</h3>
+            <p>
+              Sound can deepen sleep, but only when it's timed. Short bursts of pink noise played in step with the slow waves of
+              deep sleep, which an EEG watches for all night, raised slow-wave activity and next-morning word recall in older
+              adults (Papalambros et al., 2017), and in 14 volunteers, bursts timed the same way also strengthened the flow of
+              the fluid that clears waste from the brain (Levitt et al., 2026). The memory effect is less sure than the early
+              studies suggested: across 14 studies with 206 participants it shrank year by year, and the memory test used was
+              barely reliable from one night to the next (Harlow et al., 2023). Why Entrain can't do the timing is under
+              <a href="#l-leftout">what it leaves out</a>.
+            </p>
+            <p>
+              Noise played all night is a different thing. In a study of 72 students, those who slept with pink noise playing
+              all night did no better at spotting a hidden rule in a puzzle than those who stayed awake, while those who slept
+              in silence did a little better; the noise shortened the lightest stage of sleep, which went with insight. The
+              authors suggest that overnight pink noise may cost some of what sleep does for insight and pattern detection,
+              though few people found the rule, so it's far from settled (Vickrey &amp; Lerner, 2023). The guide's advice is to
+              avoid all-night noise as a default, and to offer timed or fading sound instead.
+            </p>
+            <p>
+              That's what <a href="#sleep-sounds">Sleep sounds</a> does: pink noise, rain, crickets, a stream or a fire that fades
+              out over 15, 30, 45 or 60 minutes and then ends by itself, even with the player set to open-ended. A fade like this
+              hasn't been tested on its own; it keeps the sound to the time it takes to fall asleep. And when a track is left
+              open-ended late at night with noise or a background sound under it, the player says so.
             </p>
 
             <h3 id="l-expect">Expectation, placebo and side effects</h3>
@@ -3877,6 +3949,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Weinstein, D., Launay, J., Pearce, E., Dunbar, R. I. M., &amp; Stewart, L. (2016). Singing and social bonding: changes in connectivity and pain threshold as a function of group size. <em>Evolution and Human Behavior</em>, 37(2), 152–158. <a href="https://doi.org/10.1016/j.evolhumbehav.2015.10.002" rel="noopener">DOI</a></li>
       <li>Pearce, E., Launay, J., &amp; Dunbar, R. I. M. (2015). The ice-breaker effect: singing mediates fast social bonding. <em>Royal Society Open Science</em>, 2(10), 150221. <a href="https://doi.org/10.1098/rsos.150221" rel="noopener">DOI</a></li>
       <li>Tarr, B., Launay, J., &amp; Dunbar, R. I. M. (2014). Music and social bonding: &ldquo;self-other&rdquo; merging and neurohormonal mechanisms. <em>Frontiers in Psychology</em>, 5, 1096. <a href="https://doi.org/10.3389/fpsyg.2014.01096" rel="noopener">DOI</a></li>
+      <li>Ratcliffe, E. (2021). Sound and soundscape in restorative natural environments: a narrative literature review. <em>Frontiers in Psychology</em>, 12, 570563. <a href="https://doi.org/10.3389/fpsyg.2021.570563" rel="noopener">DOI</a></li>
+      <li>Ford, T., DeMay, P., Hipp, J. A., et al. (2026). Exposure to forests and birdsong may reduce physiological stress among college students. <em>Frontiers in Bird Science</em>, 5. <a href="https://doi.org/10.3389/fbirs.2026.1884835" rel="noopener">DOI</a></li>
+      <li>Lynn, C. D. (2014). Hearth and campfire influences on arterial blood pressure: defraying the costs of the social brain through fireside relaxation. <em>Evolutionary Psychology</em>, 12(5), 983–1003. <a href="https://doi.org/10.1177/147470491401200509" rel="noopener">DOI</a></li>
+      <li>Levitt, J., et al. (2026). Closed-loop auditory stimulation in phase with slow waves during sleep enhances cerebrospinal fluid flow in humans. <em>Science Translational Medicine</em>. <a href="https://doi.org/10.1126/scitranslmed.aea5469" rel="noopener">DOI</a></li>
+      <li>Harlow, T. J., Jané, M. B., Read, H. L., &amp; Chrobak, J. J. (2023). Memory retention following acoustic stimulation in slow-wave sleep: a meta-analytic review of replicability and measurement quality. <em>Frontiers in Sleep</em>, 2. <a href="https://doi.org/10.3389/frsle.2023.1082253" rel="noopener">DOI</a></li>
+      <li>Vickrey, B., &amp; Lerner, I. (2023). Overnight exposure to pink noise could jeopardize sleep-dependent insight and pattern detection. <em>Frontiers in Human Neuroscience</em>, 17, 1302836. <a href="https://doi.org/10.3389/fnhum.2023.1302836" rel="noopener">DOI</a></li>
       <li>American Heart Association. Devices that may interfere with ICDs and pacemakers. <a href="https://www.heart.org/en/health-topics/arrhythmia/prevention--treatment-of-arrhythmia/devices-that-may-interfere-with-icds-and-pacemakers" rel="noopener">heart.org</a></li>
       <li>Fincham, G. W., Strauss, C., &amp; Cavanagh, K. (2023). Effect of coherent breathing on mental health and wellbeing: a randomised placebo-controlled trial. <em>Scientific Reports</em>, 13. <a href="https://doaj.org/article/21a326834cdb4a7fbd35bc10ec8509f0" rel="noopener">DOAJ</a></li>
       <li>Fincham, G. W., Epel, E., Colasanti, A., Strauss, C., &amp; Cavanagh, K. (2024). Effects of brief remote high ventilation breathwork with retention on mental health and wellbeing: a randomised placebo-controlled trial. <em>Scientific Reports</em>, 14, 16893. <a href="https://doi.org/10.1038/s41598-024-64254-7" rel="noopener">DOI</a></li>
@@ -4134,14 +4212,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     <div class="ears">
         <span class="ear"><span id="pLk">L</span> <b id="pL">—</b></span>
         <span class="ear" id="pEarR"><span id="pRk">R</span> <b id="pR">—</b></span>
-        <span class="ear beat"><span id="pBk">beat</span> <b id="pBeat">—</b></span>
+        <span class="ear beat" id="pEarB"><span id="pBk">beat</span> <b id="pBeat">—</b></span>
         <span class="ear ear-hr" id="pHrChip" title="Heart rate now, and the change since the first minute of this session" hidden>HR <b id="pHr">—</b></span>
       </div>
 
     <div class="toggles">
       <label id="noiseLab"><input type="checkbox" id="noise"> <span id="noiseTxt">Pink-noise bed</span></label>
       <label class="amb-pl"><span>Background</span><select class="amb-sel" aria-label="Background sound"><option value="off">None</option><option value="rain">Summer rain</option><option value="crickets">Crickets</option><option value="night">Rain and crickets</option></select></label>
-      <label><input type="checkbox" id="openEnded"> Open-ended (ignore timer)</label>
+      <label class="p-open"><input type="checkbox" id="openEnded"> Open-ended (ignore timer)</label>
+      <p class="p-night" id="pNight" hidden><svg class="i" aria-hidden="true"><use href="#i-moon"/></svg><span><b>All night is a long time for noise.</b> Noise played through the night isn't the same as the short bursts that sleep research times to deep sleep, and one study suggests it may cost some of the insight sleep brings. <a href="#sleep-sounds">Sleep sounds</a> fades out and ends by itself. <a href="#l-sleepsnd">Why</a></span></p>
       <button class="btn link" id="scOpen" style="padding:0;font-size:12.5px">Re-check headphones</button>
       <div class="status" id="status" role="status" aria-live="polite">Ready</div>
     </div>
@@ -4592,7 +4671,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The beat's sound changed while it plays (beatmode.js): the new voices take over in a quarter of a
      second, from where the track is, and everything else (the volume, the noise bed, the clock) plays on. */
   function aSwapVoices() {
-    if (!A.playing || A.voicesOff || !A.vx) return;
+    if (!A.playing || A.voicesOff || !A.vx || A.track.sleep) return;
     var t = A.ctx.currentTime, old = A.vx, g = A.vbus.gain;
     g.cancelScheduledValues(t);
     g.setValueAtTime(g.value, t);
@@ -4617,8 +4696,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     A.elapsed = 0;
     A.phase = track.then ? "prime" : "single";
     A.gainMul = track.gain || 1;                      // a practice's quieter beat (During the Call: half)
-    A.mode = bmTrackMode(track);                      // binaural, monaural or isochronic (beatmode.js)
+    A.mode = track.sleep ? "none" : bmTrackMode(track);   // binaural, monaural or isochronic (beatmode.js); Sleep sounds has no beat
     A.noisePref = $("#noise").checked;
+    $("#player").classList.toggle("p-sleep", !!track.sleep);   // Sleep sounds: no beat, no noise bed, no background, always timed
     $("#noise").disabled = !!track.notch;
     $("#noiseLab").classList.toggle("off", !!track.notch);
     $("#noiseTxt").textContent = track.notch ? "Notched noise (built in)" : "Pink-noise bed";
@@ -4634,6 +4714,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   // the player's second line: band, beat (or where it goes), how it plays unless binaural, carrier and length
   function trackSub(track) {
+    if (track.sleep) return track.band + " · fades out over " + Math.round(track.minutes) + " min";
     var beatTxt = track.pts
       ? (track.pts[0][1] === track.beat ? track.beat.toFixed(1) : track.pts[0][1].toFixed(1) + " → " + track.beat.toFixed(1)) + " Hz"
       : typeof track.rampFrom === "number"
@@ -4649,13 +4730,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       setStatus("Web Audio is not available in this browser.");
       return;
     }
-    if (!A.voicesOff) buildVoices(A.track, A.elapsed);
+    if (A.track.sleep) slpVoices(A.elapsed);          // Sleep sounds: its own sound and fade (sleepsounds.js)
+    else if (!A.voicesOff) buildVoices(A.track, A.elapsed);
     var t = A.ctx.currentTime;
     A.master.gain.cancelScheduledValues(t);
     A.master.gain.setValueAtTime(0, t);
     A.master.gain.linearRampToValueAtTime(volGain(), t + FADE_IN);
     if (A.track.notch) startNoise(tinnitusHz());
-    else if ($("#noise").checked) startNoise();
+    else if ($("#noise").checked && !A.track.sleep) startNoise();
 
     A.startedAt = A.ctx.currentTime - A.elapsed;
     A.playing = true;
@@ -4766,7 +4848,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function scheduleEnd() {
     clearTimeout(A.endTimer);
     if (A.phase === "task") return;                 // working phase runs open-ended
-    if (A.phase !== "prime" && $("#openEnded").checked && !A.track.practice) return;
+    if (A.phase !== "prime" && aOpen(A.track)) return;
     var total = A.track.minutes * 60;
     if (A.phase === "prime") {
       A.endTimer = setTimeout(enterTask, Math.max(0, (total - A.elapsed) * 1000));
@@ -4810,19 +4892,25 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function paint() {
     if (!A.track) return;
     var t = A.track, total = t.minutes * 60;
-    var countUp = A.phase === "task" || ($("#openEnded").checked && !t.practice);
+    var countUp = A.phase === "task" || aOpen(t);
     var beat = beatAt(t, A.elapsed);
 
     // the ears: binaural, left and right; monaural, the low and the high tone, both in each ear; isochronic, the one tone and its pulse
     var m = A.mode, iso = m === "isochronic";
-    setText("#pLk", m === "binaural" ? "L" : m === "monaural" ? "Low" : "Tone");
-    setText("#pRk", m === "binaural" ? "R" : "High");
-    setText("#pBk", iso ? "pulse" : "beat");
     if (paintCache.iso !== iso) { paintCache.iso = iso; $("#pEarR").hidden = iso; }
     if (paintCache.bin !== m) { paintCache.bin = m; $("#scOpen").hidden = m !== "binaural"; }    // the headphone check matters only for binaural
-    setText("#pL", t.carrier.toFixed(0) + " Hz");
-    setText("#pR", (t.carrier + beat).toFixed(1) + " Hz");
-    setText("#pBeat", beat.toFixed(1) + " Hz");
+    if (t.sleep) {                                   // Sleep sounds: the sound, and how far it has faded
+      setText("#pLk", "Sound"); setText("#pL", t.band);
+      setText("#pRk", "Level"); setText("#pR", Math.round(100 * slpLevel(A.elapsed / (total || 1))) + "%");
+    } else {
+      setText("#pLk", m === "binaural" ? "L" : m === "monaural" ? "Low" : "Tone");
+      setText("#pRk", m === "binaural" ? "R" : "High");
+      setText("#pBk", iso ? "pulse" : "beat");
+      setText("#pL", t.carrier.toFixed(0) + " Hz");
+      setText("#pR", (t.carrier + beat).toFixed(1) + " Hz");
+      setText("#pBeat", beat.toFixed(1) + " Hz");
+    }
+    slpNight();
 
     var off;
     if (countUp) {
@@ -4836,11 +4924,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
 
   function setStatus(msg) { $("#status").textContent = msg; }
+  // open-ended: the player's switch, for a track of its own; a practice keeps its clock, and Sleep sounds always ends
+  function aOpen(t) { return !!t && $("#openEnded").checked && !t.practice && !t.sleep; }
 
   // a track started, paused or stopped: the screen lock, its page and the lock screen follow
   function playSync() {
     wlKick();
     trSync();
+    slpSync();                           // the Sleep sounds page
     msSync();
     micBeatGuard();                      // a beat while a Bluetooth microphone listens: the phone's own instead
   }
@@ -4875,7 +4966,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       if (A.playing) scheduleEnd();
       paint();
       msSync();
-      setStatus(this.checked
+      setStatus(this.checked && !(A.track && A.track.sleep)
         ? "Open-ended: the session will keep running until you stop it."
         : "Timer active: " + (A.track ? A.track.minutes + " min." : ""));
     });
@@ -4932,7 +5023,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   // the track in the player follows a new choice at once (not a practice's beat, which keeps its own, nor the notched track)
   function bmLive() {
-    if (!A.track || A.track.practice || A.track.notch) return;
+    if (!A.track || A.track.practice || A.track.notch || A.track.sleep) return;     // Sleep sounds has no beat
     var m = bmMode();
     if (m === A.mode) return;
     A.mode = m;
@@ -5029,7 +5120,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         : m === "isochronic" ? ", one tone of " + t.carrier + " Hz in both ears, switched on and off at the beat, with soft edges."
         : ", one tone of " + t.carrier + " Hz in your left ear and one a little higher in your right.") + " It fades out at the end.";
     if (t.notch) s += " Underneath, pink noise with a one-octave gap centred on your own tinnitus pitch.";
-    else s += " The player can add a pink-noise bed, rain or crickets underneath.";
+    else s += " The player can add a pink-noise bed, rain, crickets or nature sounds underneath.";
     return s;
   }
   function trNeeds(t) {
@@ -5141,7 +5232,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     want: "off",      // "play", "pause" or "off": what the app last asked of the element
     sys: false,       // the phone paused the track (a call, another app), so it may resume it too
     track: null,      // the track the lock screen is showing
-    bm: ""            // and how its beat plays (beatmode.js)
+    al: ""            // and its second line: the beat and how it plays (beatmode.js), or Sleep sounds' sound and time
   };
   var MS_ART = [{ src: "icons/icon-192.png", sizes: "192x192", type: "image/png" }, { src: "icons/icon-512.png", sizes: "512x512", type: "image/png" }];
 
@@ -5179,10 +5270,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!msOk()) return;
     var want = msWanted(), ms = navigator.mediaSession;
     if (want === "off") { msOff(); return; }
-    var t = A.track, el = msEl();
-    if (MS.track !== t || MS.bm !== A.mode) {        // a new track, or the same one played another way (beatmode.js)
-      MS.track = t; MS.bm = A.mode;
-      ms.metadata = new MediaMetadata({ title: t.name, artist: "Entrain", album: t.band + " · " + trBeatTxt(t) + (A.mode === "binaural" ? "" : " · " + A.mode), artwork: MS_ART });
+    var t = A.track, el = msEl(), al = t.sleep ? trackSub(t) : t.band + " · " + trBeatTxt(t) + (A.mode === "binaural" ? "" : " · " + A.mode);
+    if (MS.track !== t || MS.al !== al) {             // a new track, or the same one played another way (beatmode.js), or another sleep sound
+      MS.track = t; MS.al = al;
+      ms.metadata = new MediaMetadata({ title: t.name, artist: "Entrain", album: al, artwork: MS_ART });
     }
     ms.playbackState = want === "play" ? "playing" : "paused";
     msPosition();
@@ -5196,7 +5287,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   // the track has stopped or is no longer the lock screen's: end the session, so the controls go away
   function msOff() {
     var ms = navigator.mediaSession;
-    MS.want = "off"; MS.sys = false; MS.track = null;
+    MS.want = "off"; MS.sys = false; MS.track = null; MS.al = "";
     if (MS.el && MS.el.getAttribute("src")) { MS.el.pause(); MS.el.removeAttribute("src"); MS.el.load(); }
     if (ms.metadata) ms.metadata = null;
     ms.playbackState = "none";
@@ -5206,7 +5297,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function msPosition() {
     var ms = navigator.mediaSession, t = A.track;
     if (!ms.setPositionState || !t) return;
-    var total = t.minutes * 60, open = A.phase === "task" || $("#openEnded").checked;
+    var total = t.minutes * 60, open = A.phase === "task" || aOpen(t);
     var at = Math.max(0, A.playing && A.ctx ? A.ctx.currentTime - A.startedAt : A.elapsed);
     try {
       ms.setPositionState(open || !(total > 0) ? { duration: Infinity, playbackRate: 1, position: at }
@@ -8742,7 +8833,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function micIsBt(label) { return /bluetooth|hands-?free|airpods|\bbuds\b|\bbt\b/i.test(label || ""); }
   // a binaural beat is sounding: a track's, a practice's or a session's, with its tones on (a monaural or
   // isochronic beat is the same in both ears, so mono earbuds play it as it is)
-  function beatPlaying() { return !!(A.playing && A.track && !A.voicesOff && A.mode === "binaural"); }
+  function beatPlaying() { return !!(A.playing && A.track && !A.track.sleep && !A.voicesOff && A.mode === "binaural"); }
   function micInputs() {
     var md = navigator.mediaDevices;
     if (!md || !md.enumerateDevices) return Promise.resolve([]);
@@ -9039,7 +9130,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      Views behind a hash router. The five tabs are #home (Today), #practice (the library),
      #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
      practice, #track/<id> for a track, #prime and #builder for the custom primer and the beat
-     builder, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
+     builder, #sleep-sounds for Sleep sounds, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
      #living/<tab, recipe, supplement, light or routine>; and #settings from the gear, with #feedback and
      #st-<section> for a section of it. Links and search also
      use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>; #unlock opens
@@ -9049,10 +9140,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
 
-  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings", "living"];
+  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings", "living", "sleep-sounds"];
   var V_TITLE = { home: "Today", practice: "Library", breathe: "Breathe", heart: "Heart", learn: "Learn", history: "History", session: "Practice",
-    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings", living: "Healthy living" };
-  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice", living: "learn" };   // the tab each page belongs to
+    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings", living: "Healthy living", "sleep-sounds": "Sleep sounds" };
+  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice", living: "learn", "sleep-sounds": "practice" };   // the tab each page belongs to
   var ALIAS = { today: "home", library: "practice" };
   var BACK = "practice";                 // the list a page was opened from: Today, the library or History
   var BASE_TITLE = document.title;
@@ -9084,6 +9175,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (v === "practice") pRenderLib();               // your routines may have changed
     if (v === "history") hRender();
     if (v === "settings") stRender();
+    if (v === "sleep-sounds") slpOpen();
     backSync();
     var gear = $("#tbSet");
     if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
@@ -9227,7 +9319,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "555186a8";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "e5b61bd3";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -9775,6 +9867,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     else if (curView === "track") trSync();
     lnMark();                                                 // Learn's links to new techniques (learn.js)
     bmSync();                                                 // the beat's Sound buttons and their cups (beatmode.js)
+    ambUI();                                                  // the nature sounds' buttons, and what plays (ambience.js)
+    ambSync();
+    slpSync(); slpLink();                                     // Sleep sounds' page and Today's link to it (sleepsounds.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }
@@ -10424,6 +10519,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      chirp rate of field crickets on a warm night; the berimbau is a struck-string model
      with a gourd resonance, the coin's buzz and the caxixi's rattle. Loops have
      different lengths, so the layers drift against each other and don't audibly repeat.
+     The nature sounds from the brain-wave guide (birdsong, a stream, wind in the leaves
+     and a crackling fire) are layers to add to rain or crickets, or to have on their own,
+     each on or off as you like, since people differ in which natural sounds they find
+     pleasant. They open with a donation (supporter.js); until this device is unlocked,
+     any kept from before stay silent. Sleep sounds (sleepsounds.js) plays the same
+     loops, and pink noise, with a long fade.
   ------------------------------------------------------------------------------ */
   var AMB_SR = 22050;
   function amRand(seed) {                       // a small seeded generator (mulberry32)
@@ -10456,10 +10557,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function amFold(ch, len) {
     ch.forEach(function (d) { for (var i = len; i < d.length; i++) d[i - len] += d[i]; });
   }
-  function amNorm(ch, len, rms) {
-    var s = 0, n = 0;
-    ch.forEach(function (d) { for (var i = 0; i < len; i++) { s += d[i] * d[i]; n++; } });
+  // to a target loudness (root mean square); cap: the highest peak allowed, for sparse sounds whose few loud moments carry it
+  function amNorm(ch, len, rms, cap) {
+    var s = 0, n = 0, pk = 0;
+    ch.forEach(function (d) { for (var i = 0; i < len; i++) { s += d[i] * d[i]; n++; if (Math.abs(d[i]) > pk) pk = Math.abs(d[i]); } });
     var k = rms / Math.sqrt(s / n || 1e-12);
+    if (cap && pk * k > cap) k = cap / pk;
     ch.forEach(function (d) { for (var i = 0; i < len; i++) d[i] *= k; });
     return ch.map(function (d) { return d.subarray(0, len); });
   }
@@ -10619,21 +10722,309 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     return amNorm(ch, len, 0.1);
   }
 
+  /* A biquad's coefficients (Robert Bristow-Johnson's cookbook): "lp" low-pass, "hp" high-pass, "bp" band-pass
+     with a peak of 1, for amFilt to run over a channel. */
+  function amBiq(type, f, q, sr) {
+    var w = 2 * Math.PI * Math.min(f, sr * 0.45) / sr, cs = Math.cos(w), al = Math.sin(w) / (2 * q), a0 = 1 + al, b0, b1, b2;
+    if (type === "lp") { b0 = (1 - cs) / 2; b1 = 1 - cs; b2 = b0; }
+    else if (type === "hp") { b0 = (1 + cs) / 2; b1 = -(1 + cs); b2 = b0; }
+    else { b0 = al; b1 = 0; b2 = -al; }
+    return [b0 / a0, b1 / a0, b2 / a0, -2 * cs / a0, (1 - al) / a0];
+  }
+  // run a biquad over d, in place (or into out)
+  function amFilt(d, c, out) {
+    var o = out || d, x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+    for (var i = 0; i < d.length; i++) {
+      var x = d[i], y = c[0] * x + c[1] * x1 + c[2] * x2 - c[3] * y1 - c[4] * y2;
+      x2 = x1; x1 = x; y2 = y1; y1 = y; o[i] = y;
+    }
+    return o;
+  }
+  // a slow wobble that repeats exactly once a loop: whole numbers of cycles, so a bed can swell across the seam
+  function amSlow(t, secs, parts) {
+    var v = 0;
+    for (var i = 0; i < parts.length; i++) v += parts[i][1] * Math.sin(2 * Math.PI * parts[i][0] * t / secs + parts[i][2]);
+    return v;
+  }
+
+  /* ----- pink noise for sleep: plain and even, a long loop so it never sounds like a pattern ----- */
+  function amPinkBed(sr) {
+    var secs = 12.7, len = Math.round(secs * sr), X = Math.round(0.8 * sr), rnd = amRand(43);
+    var ch = [amPink(len + X, rnd), amPink(len + X, rnd)];
+    ch.forEach(function (d) { amFilt(d, amBiq("hp", 25, 0.7, sr)); });      // no rumble below hearing
+    amXfade(ch, len, X);
+    return amNorm(ch, len, 0.1);
+  }
+
+  /* ----- a stream: the rush of moving water, its babble, and the small bubbles that make it a brook ----- */
+  function amStream(sr) {
+    var secs = 14.3, len = Math.round(secs * sr), X = Math.round(0.6 * sr), rnd = amRand(47);
+    var bed = [new Float32Array(len + X), new Float32Array(len + X)], ev = [new Float32Array(len + sr), new Float32Array(len + sr)];
+    bed.forEach(function (d, c) {
+      var n = amPink(d.length, rnd), lo = amFilt(n, amBiq("bp", 380, 0.6, sr), new Float32Array(d.length)), mid = amFilt(n, amBiq("bp", 1500, 0.9, sr), new Float32Array(d.length));
+      var hi = amFilt(n, amBiq("hp", 3800, 0.7, sr), new Float32Array(d.length));
+      var la = amA(5, sr), g = 0, sw = 1;
+      for (var i = 0; i < d.length; i++) {
+        if (!(i & 63)) sw = 0.82 + amSlow(i / sr, secs, [[2, 0.1, c], [5, 0.06, 1.3 + c], [9, 0.03, 2.1]]);
+        g += la * (Math.abs(n[(i * 7 + 1013) % d.length]) * 2.2 - g);        // the babble's quick, uneven swell
+        d[i] = (lo[i] * 0.9 + mid[i] * (0.25 + g * 0.6) + hi[i] * 0.12) * sw;
+      }
+    });
+    amXfade(bed, len, X);
+    // bubbles: a ring whose pitch rises as it closes (smaller bubbles ring higher and shorter)
+    function bubble(t, f0, amp, pan, tau, rise) {
+      var ph = 0;
+      amAdd(ev, sr, t, Math.round(tau * 6 * sr), pan, function (k) {
+        var tt = k / sr; ph += 2 * Math.PI * f0 * (1 + rise * tt / tau) / sr;
+        return Math.sin(ph) * Math.exp(-tt / tau) * amp * Math.min(1, k / 8);
+      });
+    }
+    for (var t = 0; t < secs; t += -Math.log(1 - rnd()) / 90) {
+      var f0 = 450 * Math.pow(5, rnd());                                     // 450 to 2,250 Hz
+      bubble(t, f0, Math.pow(rnd(), 2.4) * 0.16 * Math.sqrt(900 / f0), 0.15 + rnd() * 0.7, (0.004 + rnd() * 0.01) * Math.sqrt(900 / f0), 0.25 + rnd() * 0.6);
+    }
+    for (t = rnd() * 0.5; t < secs; t += 0.25 + rnd() * 1.1) {            // now and then a deeper gloop
+      bubble(t, 170 + rnd() * 260, 0.08 + rnd() * 0.1, 0.25 + rnd() * 0.5, 0.018 + rnd() * 0.02, 0.4 + rnd() * 0.5);
+    }
+    amFold(ev, len);
+    for (var c = 0; c < 2; c++) for (var i = 0; i < len; i++) bed[c][i] += ev[c][i];
+    return amNorm(bed, len, 0.08);
+  }
+
+  /* ----- wind in the leaves: gusts that come and go, and the rustle of leaves that rises with them ----- */
+  function amWind(sr) {
+    var secs = 19.3, len = Math.round(secs * sr), X = Math.round(0.8 * sr), rnd = amRand(53);
+    var bed = [new Float32Array(len + X), new Float32Array(len + X)], ev = [new Float32Array(len + sr), new Float32Array(len + sr)];
+    // how hard it blows, from 0.1 to 1: the same at the end of the loop as at the start
+    var gust = function (t) { return Math.max(0.1, Math.min(1, 0.48 + amSlow(t, secs, [[2, 0.27, 0.4], [5, 0.15, 2.2], [9, 0.07, 4.1]]))); };
+    bed.forEach(function (d, c) {
+      var n = amPink(d.length, rnd), y1 = 0, y2 = 0, a = 0, g = 0.5, ws = [0, 0, 0, 0], wc = null;
+      for (var i = 0; i < d.length; i++) {
+        if (!(i & 63)) { g = gust((i / sr + c * 0.35) % secs); a = amA(220 + 1100 * g, sr); if (!(i & 1023)) wc = amBiq("bp", 380 + 520 * g, 7, sr); }
+        y1 += a * (n[i] - y1); y2 += a * (y1 - y2);                          // the body of the wind, brighter in a gust
+        var x = n[i], w = wc[0] * x + wc[2] * ws[1] - wc[3] * ws[2] - wc[4] * ws[3];      // and a faint whistle through the branches
+        ws[1] = ws[0]; ws[0] = x; ws[3] = ws[2]; ws[2] = w;
+        d[i] = y2 * (0.25 + 0.9 * g * g) * 1.8 + w * 0.05 * g;
+      }
+    });
+    amXfade(bed, len, X);
+    // the leaves: thousands of tiny, bright ticks, more of them and louder as the gust builds
+    for (var t = 0; t < secs; ) {
+      var g = gust(t), rate = 30 + 900 * g * g * g;
+      t += -Math.log(1 - rnd()) / rate;
+      if (t >= secs) break;
+      (function (m, amp, pan) {
+        var prev = 0, lp = 0, la = amA(6500, sr);
+        amAdd(ev, sr, t, m * 4, pan, function (k) {
+          var w = rnd() * 2 - 1, x = w - prev; prev = w; lp += la * (x - lp);
+          return lp * Math.exp(-k / m) * amp;
+        });
+      })(Math.round((0.0015 + rnd() * 0.005) * sr), Math.pow(rnd(), 2) * (0.08 + 0.22 * gust(t)), rnd());
+    }
+    amFold(ev, len);
+    for (var c = 0; c < 2; c++) for (var i = 0; i < len; i++) bed[c][i] += ev[c][i];
+    return amNorm(bed, len, 0.07);
+  }
+
+  /* ----- a fire in the hearth: the low roar of the flames, a soft hiss, and crackles in clusters ----- */
+  function amFire(sr) {
+    var secs = 15.7, len = Math.round(secs * sr), X = Math.round(0.6 * sr), rnd = amRand(59);
+    var bed = [new Float32Array(len + X), new Float32Array(len + X)], ev = [new Float32Array(len + sr), new Float32Array(len + sr)];
+    var flick = new Float32Array(len + X), fl = 0, fa = amA(1.6, sr);          // how lively the flames are, shared by both sides
+    for (var i = 0; i < flick.length; i++) { fl += fa * ((rnd() * 2 - 1) - fl); flick[i] = fl; }
+    var fmax = 0;
+    for (i = 0; i < flick.length; i++) fmax = Math.max(fmax, Math.abs(flick[i]));
+    for (i = 0; i < flick.length; i++) flick[i] = 0.55 + 0.45 * flick[i] / (fmax || 1);
+    bed.forEach(function (d, c) {
+      var n = amPink(d.length, rnd), roar = amFilt(n, amBiq("lp", 160, 0.7, sr), new Float32Array(d.length)), body = amFilt(n, amBiq("bp", 420, 0.8, sr), new Float32Array(d.length));
+      var hiss = amFilt(n, amBiq("hp", 2600, 0.7, sr), new Float32Array(d.length)), hs = 0, ha = amA(0.9, sr), hr = amRand(61 + c);
+      for (var i = 0; i < d.length; i++) {
+        hs += ha * ((hr() * 2 - 1) - hs);                                   // gas hissing out of the wood, in slow swells
+        var f = flick[i];
+        d[i] = roar[i] * 1.4 * f + body[i] * 0.35 * f * f + hiss[i] * 0.05 * (0.3 + 30 * hs * hs);
+      }
+    });
+    amXfade(bed, len, X);
+    // a crackle: a click shorter than a millisecond or two, brightened, at a random place in the spectrum
+    function click(t, amp, pan) {
+      var m = Math.max(3, Math.round((0.0002 + rnd() * 0.0018) * sr)), c = amBiq("bp", 1500 * Math.pow(6, rnd()), 1.2 + rnd() * 2, sr), s = [0, 0, 0, 0];
+      amAdd(ev, sr, t, m * 6, pan, function (k) {
+        var x = (rnd() * 2 - 1) * Math.exp(-k / m), y = c[0] * x + c[2] * s[1] - c[3] * s[2] - c[4] * s[3];
+        s[1] = s[0]; s[0] = x; s[3] = s[2]; s[2] = y;
+        return (y * 2.5 + x * 0.35) * amp;
+      });
+    }
+    for (var t = 0; t < secs; ) {
+      t += -Math.log(1 - rnd()) / (4 + 9 * flick[Math.min(flick.length - 1, Math.round(t * sr))]);
+      if (t >= secs) break;
+      var n = 1 + Math.floor(Math.pow(rnd(), 1.6) * 7), pan = 0.25 + rnd() * 0.5, loud = Math.pow(rnd(), 2.2);
+      for (var k = 0, tc = t; k < n; k++, tc += 0.004 + Math.pow(rnd(), 2) * 0.06) click(tc, (0.08 + 0.9 * loud) * (0.4 + 0.6 * rnd()), pan + (rnd() - 0.5) * 0.08);
+    }
+    amFold(ev, len);
+    for (var c = 0; c < 2; c++) for (i = 0; i < len; i++) bed[c][i] += ev[c][i];
+    return amNorm(bed, len, 0.085, 0.65);
+  }
+  /* ...and, on a loop of another length, the pops of sap and the sparks that follow, and wood settling */
+  function amFireP(sr) {
+    var secs = 11.9, len = Math.round(secs * sr), rnd = amRand(67);
+    var ch = [new Float32Array(len + sr), new Float32Array(len + sr)];
+    function spark(t, amp, pan) {
+      var m = Math.max(3, Math.round((0.0002 + rnd() * 0.0008) * sr)), prev = 0;
+      amAdd(ch, sr, t, m * 6, pan, function (k) { var w = rnd() * 2 - 1, x = w - prev; prev = w; return x * Math.exp(-k / m) * amp; });
+    }
+    for (var t = 0.3 + rnd(); t < secs; t += 0.9 + rnd() * 2.6) {
+      var pan = 0.3 + rnd() * 0.4, f0 = 90 + rnd() * 140, ph = 0, dec = 0.012 + rnd() * 0.025, amp = 0.35 + rnd() * 0.5;
+      amAdd(ch, sr, t, Math.round(dec * 6 * sr), pan, function (k) {         // the pop: a thump in the log...
+        var tt = k / sr; ph += 2 * Math.PI * f0 * (1 - 0.3 * Math.min(1, tt / 0.05)) / sr;
+        return Math.sin(ph) * Math.exp(-tt / dec) * amp * Math.min(1, k / 4);
+      });
+      spark(t, amp * 0.9, pan);                                              // ...with a sharp edge
+      for (var s = 0, n = 2 + Math.floor(rnd() * 7); s < n; s++) spark(t + 0.02 + Math.pow(rnd(), 1.5) * 0.45, amp * 0.25 * rnd(), pan + (rnd() - 0.5) * 0.3);
+    }
+    for (t = rnd() * 3; t < secs; t += 2.5 + rnd() * 4) {                    // wood settling: a soft, hollow knock
+      (function (f, a, pan) {
+        var ph = 0;
+        amAdd(ch, sr, t, Math.round(0.06 * sr), pan, function (k) { var tt = k / sr; ph += 2 * Math.PI * f / sr; return Math.sin(ph) * Math.exp(-tt / 0.012) * a; });
+      })(500 + rnd() * 900, 0.06 + rnd() * 0.08, 0.3 + rnd() * 0.4);
+    }
+    amFold(ch, len);
+    return amNorm(ch, len, 0.035, 0.55);
+  }
+
+  /* ----- birdsong at dawn: songbirds near and far, each phrase a run of notes that glide, warble and trill ----- */
+  // one note: a pure whistle gliding from f0 to f1, with a vibrato (a quick one makes a buzz or a trill),
+  // its second harmonic, and further birds duller (lp: how much of the brightness is left, 0 to 1)
+  function amChirp(ch, sr, t, d, f0, f1, amp, pan, o) {
+    var m = Math.round(d * sr), ph = 0, vb = o.vib || 0, vr = o.rate || 0, h2 = o.h2 || 0.12, lp = 0, la = amA(o.lp ? 1500 + 6000 * o.lp : 9000, sr), cv = o.curve || 1;
+    amAdd(ch, sr, t, m, pan, function (k) {
+      var u = k / m, f = f0 + (f1 - f0) * Math.pow(u, cv) + f0 * vb * Math.sin(2 * Math.PI * vr * k / sr);
+      ph += 2 * Math.PI * f / sr;
+      var e = Math.pow(Math.sin(Math.PI * Math.min(1, u * (o.att || 1.6))), 0.7) * Math.pow(1 - u, 0.3);
+      lp += la * ((Math.sin(ph) + h2 * Math.sin(2 * ph)) - lp);
+      return lp * e * amp;
+    });
+  }
+  function amBirds(sr, seed, secs, voices, air) {
+    var len = Math.round(secs * sr), X = Math.round(0.6 * sr), rnd = amRand(seed);
+    var bed = [new Float32Array(len + X), new Float32Array(len + X)], ev = [new Float32Array(len + 2 * sr), new Float32Array(len + 2 * sr)];
+    bed.forEach(function (d) {                                                // morning air, just there, so the gaps aren't digital silence
+      var n = amPink(d.length, rnd);
+      amFilt(n, amBiq("bp", 600, 0.5, sr), d);
+      for (var i = 0; i < d.length; i++) d[i] *= air;
+    });
+    amXfade(bed, len, X);
+    voices.forEach(function (v) {
+      var t = rnd() * v.rest[1];
+      while (t < secs) {
+        t = v.sing(ev, sr, rnd, t, v.amp, v.pan, v.lp || 0) + v.rest[0] + rnd() * (v.rest[1] - v.rest[0]);
+      }
+    });
+    amFold(ev, len);
+    for (var c = 0; c < 2; c++) for (var i = 0; i < len; i++) bed[c][i] += ev[c][i];
+    return amNorm(bed, len, 0.045, 0.6);
+  }
+  // each sings a phrase from time t and says when it ends: a robin's thin, tumbling warble...
+  function amRobin(ch, sr, rnd, t, amp, pan, lp) {
+    for (var i = 0, n = 7 + Math.floor(rnd() * 8); i < n; i++) {
+      var d = 0.04 + rnd() * 0.13, f0 = 2600 + rnd() * 4200, buzz = rnd() < 0.35;
+      amChirp(ch, sr, t, d, f0, f0 * (0.65 + rnd() * 0.7), amp * (0.5 + rnd() * 0.5), pan, { vib: buzz ? 0.05 : 0.01, rate: buzz ? 35 + rnd() * 45 : 8, curve: 0.5 + rnd(), lp: lp });
+      t += d + 0.012 + rnd() * 0.05;
+    }
+    return t;
+  }
+  // ...a blackbird's low, fluting notes and the twitter at the end...
+  function amBlackbird(ch, sr, rnd, t, amp, pan, lp) {
+    for (var i = 0, n = 3 + Math.floor(rnd() * 4); i < n; i++) {
+      var d = 0.14 + rnd() * 0.24, f0 = 1300 + rnd() * 1500;
+      amChirp(ch, sr, t, d, f0, f0 * (0.82 + rnd() * 0.42), amp * (0.6 + rnd() * 0.4), pan, { vib: 0.012, rate: 5 + rnd() * 4, h2: 0.2, curve: 0.7 + rnd() * 0.8, att: 2.4, lp: lp });
+      t += d + 0.03 + rnd() * 0.1;
+    }
+    for (i = 0, n = 2 + Math.floor(rnd() * 5); i < n; i++) {
+      var f = 3500 + rnd() * 3000;
+      amChirp(ch, sr, t, 0.025 + rnd() * 0.03, f, f * (0.7 + rnd() * 0.5), amp * 0.4, pan, { lp: lp });
+      t += 0.05 + rnd() * 0.03;
+    }
+    return t;
+  }
+  // ...a great tit's two notes, again and again...
+  function amTit(ch, sr, rnd, t, amp, pan, lp) {
+    var hi = 4700 + rnd() * 900, lo = hi * (0.68 + rnd() * 0.08), per = 0.28 + rnd() * 0.08;
+    for (var i = 0, n = 3 + Math.floor(rnd() * 5); i < n; i++, t += per) {
+      amChirp(ch, sr, t, 0.085, hi, hi * 0.94, amp, pan, { lp: lp });
+      amChirp(ch, sr, t + per * 0.45, 0.1, lo, lo * 0.97, amp * 0.85, pan, { lp: lp });
+    }
+    return t;
+  }
+  // ...a chiffchaff saying its name...
+  function amChiff(ch, sr, rnd, t, amp, pan, lp) {
+    var a = 4100 + rnd() * 400, b = a * (1.18 + rnd() * 0.08);
+    for (var i = 0, n = 6 + Math.floor(rnd() * 8); i < n; i++, t += 0.36 + rnd() * 0.1) {
+      var f = (i + Math.floor(rnd() * 1.4)) % 2 ? a : b;
+      amChirp(ch, sr, t, 0.07, f, f * 0.78, amp * (0.75 + rnd() * 0.25), pan, { curve: 0.6, lp: lp });
+    }
+    return t;
+  }
+  // ...a wren's loud, rattling trill...
+  function amWren(ch, sr, rnd, t, amp, pan, lp) {
+    for (var i = 0, n = 3 + Math.floor(rnd() * 4); i < n; i++) { var f = 4000 + rnd() * 3000; amChirp(ch, sr, t, 0.05, f, f * (0.8 + rnd() * 0.4), amp * 0.8, pan, { lp: lp }); t += 0.07; }
+    var rate = 13 + rnd() * 5, top = 6200 + rnd() * 1200;
+    for (i = 0, n = Math.round(rate * (0.9 + rnd() * 0.9)); i < n; i++, t += 1 / rate) amChirp(ch, sr, t, 0.6 / rate, top, top * 0.62, amp, pan, { curve: 0.8, lp: lp });
+    return t;
+  }
+  // ...a wood pigeon cooing in the distance...
+  function amDove(ch, sr, rnd, t, amp, pan, lp) {
+    var f = 430 + rnd() * 90, beats = [[0.28, 0.6], [0.55, 1], [0.3, 0.7], [0.28, 0.65], [0.32, 0.7]];
+    for (var i = 0; i < beats.length; i++) {
+      amChirp(ch, sr, t, beats[i][0], f * (i === 1 ? 1.06 : 1), f * 0.93, amp * beats[i][1], pan, { h2: 0.25, att: 3, lp: lp });
+      t += beats[i][0] + (i === 1 ? 0.12 : 0.06);
+    }
+    return t;
+  }
+  // ...and short calls from all around
+  function amCalls(ch, sr, rnd, t, amp, pan, lp) {
+    for (var i = 0, n = 1 + Math.floor(rnd() * 3); i < n; i++, t += 0.15 + rnd() * 0.4) {
+      var f = 5800 + rnd() * 2200;
+      amChirp(ch, sr, t, 0.02 + rnd() * 0.025, f, f * (0.75 + rnd() * 0.15), amp * (0.4 + rnd() * 0.6), rnd(), { lp: lp });
+    }
+    return t;
+  }
+  // the birds close by, and a loop of another length with the ones further off
+  function amBirdsA(sr) {
+    return amBirds(sr, 71, 16.9, [
+      { sing: amRobin, amp: 0.3, pan: 0.32, rest: [2.2, 5.5] },
+      { sing: amBlackbird, amp: 0.34, pan: 0.7, rest: [3, 6.5] },
+      { sing: amTit, amp: 0.16, pan: 0.85, rest: [4, 9], lp: 0.6 },
+      { sing: amCalls, amp: 0.1, pan: 0.5, rest: [0.6, 2.4], lp: 0.7 }], 0.012);
+  }
+  function amBirdsB(sr) {
+    return amBirds(sr, 73, 21.1, [
+      { sing: amChiff, amp: 0.12, pan: 0.15, rest: [3, 8], lp: 0.4 },
+      { sing: amWren, amp: 0.13, pan: 0.6, rest: [5, 10], lp: 0.35 },
+      { sing: amDove, amp: 0.1, pan: 0.9, rest: [4, 9], lp: 0.2 },
+      { sing: amRobin, amp: 0.08, pan: 0.05, rest: [3, 7], lp: 0.3 },
+      { sing: amCalls, amp: 0.05, pan: 0.5, rest: [0.5, 2], lp: 0.4 }], 0.008);
+  }
+
   /* ----- rendering off the main thread -----
      The same functions run in a small worker made from their own source, so a phone
      doesn't stall for the second it takes. Without workers they run here instead. */
   var AM = { data: {}, bufs: {}, wait: {}, w: null };
-  var AM_FNS = [amRand, amPink, amA, amXfade, amFold, amNorm, amAdd, amRain, amCrickets, amCricketsA, amCricketsB, amBerimbau];
-  function amMake(name) {
-    return name === "rain" ? amRain(AMB_SR) : name === "crkA" ? amCricketsA(AMB_SR) : name === "crkB" ? amCricketsB(AMB_SR) : amBerimbau(AMB_SR, RHY.bar, RHY.bars);
+  var AM_FNS = [amRand, amPink, amA, amXfade, amFold, amNorm, amAdd, amRain, amCrickets, amCricketsA, amCricketsB, amBerimbau,
+    amBiq, amFilt, amSlow, amPinkBed, amStream, amWind, amFire, amFireP, amChirp, amBirds, amRobin, amBlackbird, amTit, amChiff, amWren, amDove, amCalls,
+    amBirdsA, amBirdsB, amRender];
+  // every loop by its name, here and in the worker alike (the berimbau's bar and bars come in, since the worker has no RHY)
+  function amRender(name, sr, bar, bars) {
+    var f = { rain: amRain, crkA: amCricketsA, crkB: amCricketsB, pink: amPinkBed, stream: amStream, wind: amWind, fire: amFire, fireP: amFireP, birdA: amBirdsA, birdB: amBirdsB }[name];
+    return f ? f(sr) : amBerimbau(sr, bar, bars);
   }
+  function amMake(name) { return amRender(name, AMB_SR, RHY.bar, RHY.bars); }
   function amWorker() {
     if (AM.w !== null) return AM.w;
     AM.w = false;
     try {
       if (!window.Worker || !window.Blob || !window.URL) return false;
       var src = '"use strict";var AMB_SR=' + AMB_SR + ";\n" + AM_FNS.map(String).join("\n") +
-        "\nonmessage=function(e){var n=e.data,ch=n==='rain'?amRain(AMB_SR):n==='crkA'?amCricketsA(AMB_SR):n==='crkB'?amCricketsB(AMB_SR):amBerimbau(AMB_SR," + RHY.bar + "," + RHY.bars + ");" +
+        "\nonmessage=function(e){var n=e.data,ch=amRender(n,AMB_SR," + RHY.bar + "," + RHY.bars + ");" +
         "postMessage({name:n,L:ch[0],R:ch[1]},[ch[0].buffer,ch[1].buffer]);};";
       var w = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" })));
       w.onmessage = function (e) { amGot(e.data.name, [e.data.L, e.data.R]); };
@@ -10675,16 +11066,32 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     return AM.bufs[name];
   }
 
-  /* ----- playback ----- */
-  var AMB = { kind: "off", vol: 40, out: null, srcs: [], playing: null, until: 0, tick: 0 };
+  /* ----- playback -----
+     The background is rain, crickets or both (or neither), with any of the nature sounds added on top. */
+  var AMB = { kind: "off", add: [], vol: 40, out: null, srcs: [], playing: null, until: 0, tick: 0 };
   var AMB_KINDS = [["off", "Off"], ["rain", "Summer rain"], ["crickets", "Crickets"], ["night", "Rain and crickets"]];
   var AMB_SHORT = { off: "Off", rain: "Rain", crickets: "Crickets", night: "Rain + crickets" };
+  // the nature sounds: [id, its button, its name (also in the player's list and the unlock dialog), its loops and their levels]
+  var AMB_ADD = [["birds", "Birdsong", "Birdsong", [["birdA", 1], ["birdB", 0.9]]], ["stream", "Stream", "A stream", [["stream", 1]]],
+    ["wind", "Wind", "Wind in the leaves", [["wind", 1]]], ["fire", "Fire", "A crackling fire", [["fire", 1], ["fireP", 0.8]]]];
   function ambGain() { var v = AMB.vol / 100; return v * v * 0.9; }
-  function ambLayers(kind) {
-    return kind === "rain" ? [["rain", 1]] : kind === "crickets" ? [["crkA", 1], ["crkB", 1]] : kind === "night" ? [["rain", 0.8], ["crkA", 0.55], ["crkB", 0.55]] : [];
+  function ambAddOf(id) { for (var i = 0; i < AMB_ADD.length; i++) if (AMB_ADD[i][0] === id) return AMB_ADD[i]; return null; }
+  // the nature sounds that play: the ones chosen, once this device is unlocked
+  function ambAddNow() { return supOn() ? AMB.add.slice() : []; }
+  // what plays, as one name ("rain", "night+fire", "birds"), or "" for nothing
+  function ambSig() { return (AMB.kind !== "off" ? [AMB.kind] : []).concat(ambAddNow()).join("+"); }
+  function ambLayers(sig) {
+    var out = [];
+    String(sig || "").split("+").forEach(function (k) {
+      if (k === "rain") out.push(["rain", 1]);
+      else if (k === "crickets") out.push(["crkA", 1], ["crkB", 1]);
+      else if (k === "night") out.push(["rain", 0.8], ["crkA", 0.55], ["crkB", 0.55]);
+      else if (ambAddOf(k)) ambAddOf(k)[3].forEach(function (l) { out.push(l); });
+    });
+    return out;
   }
-  function ambStart(kind) {
-    var layers = ambLayers(kind);
+  function ambStart(sig) {
+    var layers = ambLayers(sig);
     if (!amNeed(layers.map(function (l) { return l[0]; }), ambSync)) return;     // starts when rendered
     if (!ensureCtx()) return;
     var ctx = A.ctx, now = ctx.currentTime;
@@ -10699,7 +11106,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     AMB.out.gain.cancelScheduledValues(now);
     AMB.out.gain.setValueAtTime(AMB.out.gain.value, now);
     AMB.out.gain.linearRampToValueAtTime(ambGain(), now + 2);
-    AMB.playing = kind;
+    AMB.playing = sig;
   }
   function ambStop(fade) {
     if (!AMB.playing || !A.ctx) { AMB.playing = null; return; }
@@ -10711,12 +11118,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     old.forEach(function (p) { try { p[0].stop(now + f + 0.05); } catch (e) {} p[0].onended = function () { try { p[0].disconnect(); p[1].disconnect(); } catch (e) {} }; });
   }
   /* Background sound plays whenever something is running: a track, the breathing guide or a
-     practice (a short preview too). It follows them in and out, so there's nothing to manage. */
+     practice (a short preview too). It follows them in and out, so there's nothing to manage.
+     Sleep sounds is a sound of its own, so the background stays out of it. */
   function ambActive() {
-    return !!(A.playing || B.state === "running" || (typeof P !== "undefined" && P.state === "running") || bNow() < AMB.until);
+    return !!((A.playing && !(A.track && A.track.sleep)) || B.state === "running" || (typeof P !== "undefined" && P.state === "running") || bNow() < AMB.until);
   }
   function ambSync() {
-    var want = AMB.kind !== "off" && ambActive() ? AMB.kind : null;
+    var sig = ambSig(), want = sig && ambActive() ? sig : null;
     if (want === AMB.playing) return;
     if (AMB.playing) ambStop(want ? 0.8 : 1.5);
     if (want) ambStart(want);
@@ -10724,51 +11132,130 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function ambVolNow() {
     if (AMB.out && AMB.playing && A.ctx) AMB.out.gain.setTargetAtTime(ambGain(), A.ctx.currentTime, 0.08);
   }
+  // a five-second taste of a new choice when nothing runs
+  function ambTaste(quiet) { if (ambSig() && !ambActive() && !quiet) AMB.until = bNow() + 5; }
+  // rain, crickets, both or off; off is all of it, the nature sounds too
   function ambSet(kind, quiet) {
     AMB.kind = kind;
     store.set("amb", kind);
-    if (kind !== "off" && !ambActive() && !quiet) AMB.until = bNow() + 5;     // a five-second taste
-    ambSync(); ambUI();
+    if (kind === "off") ambAddSet([]);
+    ambTaste(quiet); ambSync(); ambUI();
   }
+  function ambAddSet(list) {
+    AMB.add = AMB_ADD.map(function (a) { return a[0]; }).filter(function (id) { return list.indexOf(id) >= 0; });
+    store.set("ambAdd", AMB.add.join(","));
+  }
+  /* A nature sound on or off. Turning one on is using a new technique: at once once this device is unlocked,
+     otherwise the unlock dialog, and on it goes if the dialog unlocks the device. */
+  function ambToggle(id, quiet) {
+    var a = ambAddOf(id);
+    if (!a) return;
+    if (ambAddNow().indexOf(id) >= 0) { ambAddSet(AMB.add.filter(function (x) { return x !== id; })); ambSync(); ambUI(); return; }
+    var go = function () { ensureCtx(); ambAddSet(AMB.add.concat([id])); ambTaste(quiet); ambSync(); ambUI(); };    // the sound started in the tap, as Safari wants
+    if (supOn()) go(); else supGate(a[2], go, function (ok) { if (ok) go(); });
+  }
+  // one sound on its own, from the player's list or the session's quick button: rain, crickets, both, off or a nature sound
+  function ambPreset(v, quiet) {
+    var a = ambAddOf(v);
+    if (!a && !AMB_KINDS.some(function (k) { return k[0] === v; })) { ambUI(); return; }
+    var go = function () {
+      AMB.kind = a ? "off" : v;
+      store.set("amb", AMB.kind);
+      ambAddSet(a ? [v] : []);
+      ambTaste(quiet); ambSync(); ambUI();
+    };
+    if (!a || supOn()) go();
+    else { supGate(a[2], go, function (ok) { if (ok) go(); }); ambUI(); }   // the list shows what still plays meanwhile
+  }
+  // what's chosen, as one of the sounds on their own, or "mix"
+  function ambCur() {
+    var add = ambAddNow();
+    if (!add.length) return AMB.kind;
+    return AMB.kind === "off" && add.length === 1 ? add[0] : "mix";
+  }
+  // the session's quick button: the next sound on its own (a mix of your own goes back to off)
+  function ambCycle() {
+    var ks = AMB_KINDS.concat(supOn() ? AMB_ADD : []).map(function (k) { return k[0]; });
+    ambPreset(ks[(ks.indexOf(ambCur()) + 1) % ks.length], true);
+  }
+  // in words: "Rain and crickets", "Rain, birdsong and fire"
+  function ambName() {
+    var n = AMB.kind === "off" ? [] : [AMB.kind === "night" ? "Rain and crickets" : AMB.kind === "rain" ? "Rain" : "Crickets"];
+    ambAddNow().forEach(function (id) { var w = ambAddOf(id)[1]; n.push(n.length ? w.toLowerCase() : w); });
+    return n.length > 1 ? n.slice(0, -1).join(", ") + " and " + n[n.length - 1] : n[0] || "Off";
+  }
+  function ambShort() { var c = ambCur(); return c === "mix" ? "Mix" : ambAddOf(c) ? ambAddOf(c)[1] : AMB_SHORT[c]; }
   function ambSetVol(v) { AMB.vol = Math.max(0, Math.min(100, v)); store.set("ambVol", String(AMB.vol)); ambVolNow(); ambUI(); }
   /* All the background-sound controls share these classes and stay in step. */
+  function ambPressed(k) { return k === AMB.kind && (k !== "off" || !ambAddNow().length); }
   function ambChips(id) {
     return '<div class="mini-seg amb-seg"' + (id ? ' id="' + id + '"' : "") + ' role="group" aria-label="Background sound">' + AMB_KINDS.map(function (k) {
-      return '<button data-amb="' + k[0] + '" aria-pressed="' + (AMB.kind === k[0]) + '">' + (k[0] === "night" ? "Both" : k[0] === "rain" ? "Rain" : k[1]) + "</button>";
+      return '<button data-amb="' + k[0] + '" aria-pressed="' + ambPressed(k[0]) + '">' + (k[0] === "night" ? "Both" : k[0] === "rain" ? "Rain" : k[1]) + "</button>";
+    }).join("") + "</div>";
+  }
+  // the nature sounds, each on or off, with the cup while this device is locked
+  function ambAddChips() {
+    var now = ambAddNow();
+    return '<div class="mini-seg amb-seg amb-add" role="group" aria-label="Nature sounds, each on or off">' + AMB_ADD.map(function (a) {
+      return '<button type="button" data-amb-add="' + a[0] + '" aria-pressed="' + (now.indexOf(a[0]) >= 0) + '">' + a[1] + supTag(true) + "</button>";
     }).join("") + "</div>";
   }
   function ambVolInput(label) {
     return '<input type="range" class="amb-vol" min="0" max="100" value="' + AMB.vol + '" aria-label="' + (label || "Background volume") + '">';
   }
   function ambCtl() {
-    return ambChips() + '<label class="amb-volrow b-vol"' + (AMB.kind === "off" ? " hidden" : "") + "><span>Volume</span>" + ambVolInput() + "</label>";
+    return ambChips() + ambAddChips() + '<label class="amb-volrow b-vol"' + (ambSig() ? "" : " hidden") + "><span>Volume</span>" + ambVolInput() + "</label>";
+  }
+  // the player's list: each sound on its own, and a mix of your own when that's what plays
+  function ambSelFill(sel) {
+    var cur = ambCur(), key = cur + "|" + supOn() + "|" + (cur === "mix" ? ambName() : "");
+    if (sel.getAttribute("data-k") !== key) {
+      sel.innerHTML = AMB_KINDS.map(function (k) { return '<option value="' + k[0] + '">' + (k[0] === "off" ? "None" : k[1]) + "</option>"; }).join("") +
+        AMB_ADD.map(function (a) { return '<option value="' + a[0] + '">' + a[2] + (supOn() ? "" : " · with a donation") + "</option>"; }).join("") +
+        (cur === "mix" ? '<option value="mix">' + esc(ambName()) + "</option>" : "");
+      sel.setAttribute("data-k", key);
+    }
+    sel.value = cur;
   }
   function ambUI() {
-    var i, bs = document.querySelectorAll("[data-amb]");
-    for (i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", bs[i].dataset.amb === AMB.kind ? "true" : "false");
+    var i, now = ambAddNow(), sig = ambSig(), lock = !supOn();
+    var bs = document.querySelectorAll("[data-amb]");
+    for (i = 0; i < bs.length; i++) bs[i].setAttribute("aria-pressed", ambPressed(bs[i].dataset.amb) ? "true" : "false");
+    var ad = document.querySelectorAll("[data-amb-add]");
+    for (i = 0; i < ad.length; i++) {
+      var tag = ad[i].querySelector(".sup-tag");
+      ad[i].setAttribute("aria-pressed", now.indexOf(ad[i].getAttribute("data-amb-add")) >= 0 ? "true" : "false");
+      if (tag && !lock) tag.parentNode.removeChild(tag);
+      else if (!tag && lock) ad[i].insertAdjacentHTML("beforeend", supTag(true));
+    }
     var vs = document.querySelectorAll(".amb-vol");
     for (i = 0; i < vs.length; i++) if (document.activeElement !== vs[i]) vs[i].value = AMB.vol;
     var rows = document.querySelectorAll(".amb-volrow");
-    for (i = 0; i < rows.length; i++) rows[i].hidden = AMB.kind === "off";
+    for (i = 0; i < rows.length; i++) rows[i].hidden = !sig;
     var sel = document.querySelectorAll(".amb-sel");
-    for (i = 0; i < sel.length; i++) sel[i].value = AMB.kind;
+    for (i = 0; i < sel.length; i++) ambSelFill(sel[i]);
     var q = $("#sqAmb");
-    if (q) { q.setAttribute("aria-pressed", AMB.kind !== "off" ? "true" : "false"); bSetT("#sqAmbTxt", AMB.kind === "off" ? "Background" : AMB_SHORT[AMB.kind]); }
+    if (q) { q.setAttribute("aria-pressed", sig ? "true" : "false"); bSetT("#sqAmbTxt", sig ? ambShort() : "Background"); }
   }
   function ambInit() {
     var k = store.get("amb");
     if (AMB_KINDS.some(function (x) { return x[0] === k; })) AMB.kind = k;
+    var ad = String(store.get("ambAdd") || "").split(",");
+    AMB.add = AMB_ADD.map(function (a) { return a[0]; }).filter(function (id) { return ad.indexOf(id) >= 0; });
     var v = parseInt(store.get("ambVol"), 10);
     if (!isNaN(v)) AMB.vol = Math.max(0, Math.min(100, v));
+    SUP_EXTRA.push({ name: "Nature sounds in the background", href: "#st-amb" });     // Settings' list of what the donation unlocks
     document.addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("[data-amb]");
-      if (b) ambSet(b.dataset.amb);
+      if (b) { ambSet(b.dataset.amb); return; }
+      var a = e.target.closest && e.target.closest("[data-amb-add]");
+      if (a) ambToggle(a.getAttribute("data-amb-add"));
     });
     document.addEventListener("input", function (e) {
       if (e.target.classList && e.target.classList.contains("amb-vol")) ambSetVol(parseInt(e.target.value, 10));
     });
     document.addEventListener("change", function (e) {
-      if (e.target.classList && e.target.classList.contains("amb-sel")) ambSet(e.target.value);
+      if (e.target.classList && e.target.classList.contains("amb-sel")) ambPreset(e.target.value);
     });
     var hosts = document.querySelectorAll("[data-amb-ctl]");
     for (var i = 0; i < hosts.length; i++) hosts[i].innerHTML = ambCtl();
@@ -10804,6 +11291,214 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     RHY.gain.gain.linearRampToValueAtTime(0, now + f);
     try { src.stop(now + f + 0.05); } catch (e) {}
     src.onended = function () { try { src.disconnect(); } catch (e) {} };
+  }
+  /* ------------------------------- sleep sounds -------------------------------
+     A sound to fall asleep to: pink noise, rain, crickets, a stream or a fire, made on the device (ambience.js),
+     that fades out over the time you choose, 15, 30, 45 or 60 minutes, and then ends by itself. Noise played all
+     night is a different thing from the short bursts that sleep research times to deep sleep, and one study suggests it
+     may cost some of the insight sleep brings, so nothing here plays all night: the whole fade goes onto the
+     audio clock the moment it starts (it carries on with the screen off and the page asleep), each sound is told
+     to stop at the end, and the player's Open-ended leaves it alone.
+     It plays like a track: audio.js treats a track with sleep: true as one of these, so it has the mini player,
+     the lock screen, the history and pause on a call, and "I need to stop" fades it. Its page is #sleep-sounds,
+     reached from the library under Sleep, Today in the evening and the sleep routines. It's a new technique, so
+     Play opens with a donation (supporter.js); the page and its cautions are free to read.
+     The player's note about Open-ended with noise late at night is a caution, so it's free too (slpNight).
+  ---------------------------------------------------------------------------- */
+
+  // [id, its button, in a sentence, its loops and their levels]
+  var SLP_SOUNDS = [["pink", "Pink noise", "pink noise", [["pink", 1]]], ["rain", "Rain", "rain", [["rain", 1]]],
+    ["crickets", "Crickets", "crickets", [["crkA", 1], ["crkB", 1]]], ["stream", "Stream", "a stream", [["stream", 1]]],
+    ["fire", "Fire", "a crackling fire", [["fire", 1], ["fireP", 0.8]]]];
+  var SLP_MINS = [15, 30, 45, 60];
+  // the sound and the time chosen (kept on the device); gain: its level against the player's volume, like the background's
+  var SLP = { snd: "pink", min: 30, gain: 2.2 };
+  var SLP_SAFE = "Keep it quiet: as low as is comfortable, and lower still through earbuds or headphones in bed. If you've slept badly for weeks, " +
+    "talk to your doctor: the treatment that works best for insomnia is cognitive behavioural therapy (CBT-I).";
+
+  function slpSound(id) { for (var i = 0; i < SLP_SOUNDS.length; i++) if (SLP_SOUNDS[i][0] === id) return SLP_SOUNDS[i]; return SLP_SOUNDS[0]; }
+  function slpMine() { return !!(A.track && A.track.sleep); }
+  // how loud, from 1 at the start to 0 at the end: slowly at first, then faster (a raised cosine)
+  function slpLevel(u) { return u <= 0 ? 1 : u >= 1 ? 0 : 0.5 + 0.5 * Math.cos(Math.PI * u); }
+  /* The whole fade on the audio clock, from `at` seconds into a `total`: a straight line between points no
+     more than 15 seconds apart, down to silence at the end. Any AudioParam: the page's, or a test's offline one. */
+  function slpFade(param, now, at, total) {
+    var step = Math.max(5, Math.min(15, total / 240));
+    param.cancelScheduledValues(now);
+    param.setValueAtTime(slpLevel(at / total), now);
+    for (var s = (Math.floor(at / step) + 1) * step; s < total; s += step) param.linearRampToValueAtTime(slpLevel(s / total), now + s - at);
+    param.linearRampToValueAtTime(0, now + Math.max(0, total - at));
+  }
+  // the track the player plays: no beat, a sound and its time
+  function slpTrack() {
+    var s = slpSound(SLP.snd);
+    return { id: "sleep", sleep: true, sup: true, cat: "relax", name: "Sleep sounds", snd: s[0], band: s[1], minutes: SLP.min, gain: SLP.gain, fade: 2, carrier: 0, beat: 0 };
+  }
+  /* The sound itself, from `offset` seconds in (audio.js's play() calls this for a sleep track). Its loops are
+     made the first time (the page asks for them as it opens, so they're usually ready); if they aren't yet,
+     it comes in as soon as they are. fadeIn: seconds to come in over, when the rest is already playing. */
+  function slpVoices(offset, fadeIn) {
+    var t = A.track, ctx = A.ctx, lay = slpSound(t.snd)[3], gen = A.gen;
+    var ready = amNeed(lay.map(function (l) { return l[0]; }), function () {
+      if (A.gen === gen && A.playing && A.track === t && !A.vx) slpVoices(A.ctx.currentTime - A.startedAt, 1.5);
+    });
+    if (!ready) return;
+    var now = ctx.currentTime, total = t.minutes * 60, left = Math.max(0, total - offset);
+    var out = ctx.createGain(), fb = ctx.createGain(), nodes = [out, fb];
+    out.connect(A.master); fb.connect(out);
+    if (fadeIn) { out.gain.setValueAtTime(0, now); out.gain.linearRampToValueAtTime(1, now + fadeIn); }
+    slpFade(fb.gain, now, offset, total);
+    lay.forEach(function (l, i) {
+      var src = ctx.createBufferSource(), g = ctx.createGain();
+      src.buffer = amBuf(l[0]); src.loop = true; g.gain.value = l[1];
+      src.connect(g); g.connect(fb);
+      src.start(now, (offset + i * 3.7) % src.buffer.duration);
+      src.stop(now + left + 0.5);                     // and it ends, whatever the page is doing by then
+      nodes.push(src, g);
+    });
+    A.vbus = out; A.vx = nodes; A.bp = null;
+    SLP.fb = fb;
+  }
+  // another sound while it plays: the new one takes over in a second, from where the fade has got to
+  function slpSwap() {
+    paintCache = {};
+    $("#pSub").textContent = trackSub(A.track);
+    if (A.playing && A.vx) {
+      var t = A.ctx.currentTime, g = A.vbus.gain;
+      g.cancelScheduledValues(t);
+      g.setValueAtTime(g.value, t);
+      g.linearRampToValueAtTime(0, t + 1);
+      aVoicesEnd(A.vx, 1.3);
+      aVoicesForget();
+      slpVoices(t - A.startedAt, 1);
+    }
+    paint();
+    msSync();
+  }
+
+  /* ----- the page ----- */
+  function slpHowTxt(min) {
+    return "It starts at your volume, fades slowly at first and then faster, and is silent at " + min + " minutes, when it ends by itself. " +
+      "The whole fade is set going as it starts, so it carries on with the screen off, and the player's Open-ended doesn't apply. " +
+      "Change the sound while it plays and the new one carries on where the fade has got to; pick another time and it starts again. " +
+      "Each sound is synthesised on your device and loops seamlessly: nothing is downloaded or recorded.";
+  }
+  function slpSeg(id, attr, opts, label) {
+    return '<div class="mini-seg slp-seg" id="' + id + '" role="group" aria-label="' + label + '">' + opts.map(function (o) {
+      return '<button type="button" ' + attr + '="' + o[0] + '" aria-pressed="false">' + o[1] + "</button>";
+    }).join("") + "</div>";
+  }
+  function slpOpen() {
+    var x = TOOLS.sleep;
+    if (!supLocked(x)) amNeed(slpSound(SLP.snd)[3].map(function (l) { return l[0]; }));     // ready before Play
+    var need = [["volume", "Low volume", "just loud enough to hear; it gets quieter as it goes"],
+      ["sounds", "The phone's speaker", "or a speaker by the bed; headphones aren't needed"], ["moon", "In bed", "lights out, ready to sleep"]];
+    var h = backLink() +
+      '<div class="si-head">' +
+        '<div class="si-top"><span class="si-kind">Sleep · Sound · 15–60 min</span>' + favBtn("x:sleep", x.name) + "</div>" +
+        "<h2>" + esc(x.name) + "</h2>" +
+        '<p class="si-blurb">' + esc(x.blurb) + "</p>" +
+      "</div>" +
+      '<div class="si-grid"><div class="si-main">' +
+        '<ul class="si-need">' + need.map(function (n) { return '<li><svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] + "</span></li>"; }).join("") + "</ul>" +
+        '<div class="so-row so-seg slp-row"><span class="so-l">Sound<small>Pick the one you find pleasant: people differ, and a sound one person loves can grate on another.</small></span>' +
+          slpSeg("slpSnd", "data-slp-snd", SLP_SOUNDS, "Sound") + "</div>" +
+        '<div class="so-row so-seg slp-row"><span class="so-l">Fades out over</span>' +
+          slpSeg("slpMin", "data-slp-min", SLP_MINS.map(function (m) { return [m, m + " min"]; }), "Fades out over") + "</div>" +
+        '<h3>How it runs</h3><p id="slpHow"></p>' +
+        '<details class="ev si-ev"><summary>Evidence ' + dots(x.strength) + '</summary><div class="ev-body">' +
+          "Nobody has tested a sound that fades out like this one, so treat it as something to try. Natural sounds such as birdsong, wind and water " +
+          "are often, though not always, found pleasant and restful, and people differ in which ones they like. Short bursts of pink noise timed to " +
+          "the slow waves of deep sleep strengthened them, and with them memory, in sleep studies, but that needs a headband that reads brain waves all " +
+          "night, and later studies found it harder to repeat. Pink noise played all night is a different thing: in a study of 72 students, those who slept with it " +
+          "did no better at spotting a hidden rule than those who stayed awake, and the authors suggest it may cost some of the insight sleep brings. So Sleep sounds keeps to the time it takes you to fall asleep, and then ends. " +
+          '<a href="#l-sleepsnd">More in Learn</a><cite>Ratcliffe 2021 · Papalambros et al. 2017 · Harlow et al. 2023 · Vickrey &amp; Lerner 2023</cite></div></details>' +
+        safeBox([SLP_SAFE]) +
+      "</div>" +
+      '<div class="si-side"><div class="si-bar">' +
+        '<button class="btn primary si-go" id="slpGo"></button>' +
+        '<p class="si-bar-note" id="slpSupNote" hidden>' + SUP_NOTE + "</p>" +
+        '<p class="si-bar-note">Plays in the player at the bottom: you can lock the phone and let it fade.</p>' +
+      "</div></div></div>";
+    var el = $("#slpBody");
+    el.innerHTML = h;
+    el.style.setProperty("--pcol", GOAL_COL.sleep);
+    slpSync();
+  }
+  // the page follows the player: Play, Pause or Resume, and the sound and time that are playing
+  function slpSync() {
+    var b = $("#slpGo");
+    if (!b) return;
+    var mine = slpMine(), lk = !mine && supLocked(TOOLS.sleep), ic, txt;
+    var snd = mine ? A.track.snd : SLP.snd, min = mine ? A.track.minutes : SLP.min;
+    if (mine && A.playing) { ic = "pause"; txt = "Pause"; }
+    else if (mine && A.elapsed > 0) { ic = "play"; txt = "Resume at " + fmt(A.elapsed); }
+    else if (lk) { ic = "cup"; txt = "Unlock to play"; }                    // a new technique, not yet unlocked on this device
+    else { ic = "play"; txt = "Play " + SLP.min + " min"; min = SLP.min; snd = SLP.snd; }
+    b.innerHTML = '<svg class="i' + (ic === "play" ? "" : " ic-stroke") + '" aria-hidden="true"><use href="#i-' + ic + '"/></svg>' + esc(txt);
+    $("#slpSupNote").hidden = !lk;
+    document.querySelectorAll("#slpSnd [data-slp-snd]").forEach(function (x) { x.setAttribute("aria-pressed", x.getAttribute("data-slp-snd") === snd ? "true" : "false"); });
+    document.querySelectorAll("#slpMin [data-slp-min]").forEach(function (x) { x.setAttribute("aria-pressed", +x.getAttribute("data-slp-min") === min ? "true" : "false"); });
+    bSetT("#slpHow", slpHowTxt(min));
+  }
+  function slpPlay() {
+    if (slpMine() && A.playing) { pause(); return; }
+    if (slpMine() && A.elapsed > 0) { play(); return; }
+    if (supLocked(TOOLS.sleep)) { supGate(TOOLS.sleep.name, slpPlay); return; }     // a new technique: unlocked first
+    ensureCtx();                                     // in the tap itself, which Safari needs
+    load(slpTrack());
+  }
+  function slpPickSnd(id) {
+    SLP.snd = slpSound(id)[0];
+    store.set("slpSnd", SLP.snd);
+    if (slpMine() && A.track.snd !== SLP.snd) { A.track.snd = SLP.snd; A.track.band = slpSound(SLP.snd)[1]; slpSwap(); }
+    if (!supLocked(TOOLS.sleep)) amNeed(slpSound(SLP.snd)[3].map(function (l) { return l[0]; }));
+    slpSync();
+  }
+  // another time: playing, it starts again with it; paused, it waits at the start
+  function slpPickMin(m) {
+    if (SLP_MINS.indexOf(m) < 0) return;
+    SLP.min = m;
+    store.set("slpMin", String(m));
+    if (slpMine() && A.track.minutes !== m) {
+      if (A.playing) load(slpTrack());
+      else if (A.elapsed > 0) hardStop(true);
+    }
+    slpSync();
+  }
+
+  /* ----- elsewhere ----- */
+  // late at night: 9 pm to 5 am (the tests can set the hour)
+  function slpLate() { var h = window.__slpHour !== undefined ? window.__slpHour : new Date().getHours(); return h >= 21 || h < 5; }
+  /* The player's note, free like every caution: a track left open-ended, with noise or a background sound
+     under it, late at night. */
+  function slpNight() {
+    var el = $("#pNight");
+    if (!el) return;
+    var t = A.track, on = !!t && !t.sleep && !t.practice && $("#openEnded").checked && (($("#noise").checked && !t.notch) || !!ambSig()) && slpLate();
+    if (el.hidden === on) el.hidden = !on;
+  }
+  // Today's suggestion, in the evening and at night: Sleep sounds beside the evening routine
+  function slpLink(hr) {
+    var a = $("#sgSnd");
+    if (!a) return;
+    if (typeof hr === "number") a.hidden = !(hr >= 17 || hr < 5);
+    a.innerHTML = "Sleep sounds, fading out" + supTag(true);
+  }
+  function slpInit() {
+    var s = store.get("slpSnd"), m = parseInt(store.get("slpMin"), 10);
+    if (SLP_SOUNDS.some(function (x) { return x[0] === s; })) SLP.snd = s;
+    if (SLP_MINS.indexOf(m) >= 0) SLP.min = m;
+    SUP_EXTRA.push({ name: "Sleep sounds", href: "#sleep-sounds" });     // Settings' list of what the donation unlocks
+    $("#slpBody").addEventListener("click", function (e) {
+      if (e.target.closest("#slpGo")) { slpPlay(); return; }
+      var b = e.target.closest("[data-slp-snd]");
+      if (b) { slpPickSnd(b.getAttribute("data-slp-snd")); return; }
+      b = e.target.closest("[data-slp-min]");
+      if (b) slpPickMin(parseInt(b.getAttribute("data-slp-min"), 10));
+    });
+    $("#noise").addEventListener("change", slpNight);
+    $("#openEnded").addEventListener("change", slpNight);
   }
 
   /* ------------------------------- quotes -------------------------------
@@ -12789,7 +13484,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   // [item, method, postures]: practices by id, b: a breathing pattern, t: a track, x: a tool
   var CATS = {
     sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
-      ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
+      ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"], ["x:sleep", "sound", "lie"]],
     calm: [["stress-check", "measure", "sit lie"], ["calm-reset", "program", "sit walk"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
       ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["meal", "program", "sit"], ["mindful-sex", "program", "lie sit"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
@@ -12822,7 +13517,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       blurb: "Pick a beat and 5 to 20 minutes of priming. When the bell rings, start work with the beat quieter, pink noise, or silence." },
     beats: { name: "Beat builder", href: "#builder", icon: "sliders", strength: 2,
       blurb: "Pick any beat, carrier tone and session length, and play it." },
-    routine: { name: "Routine builder", href: "#yoga", icon: "plus", strength: 2 }
+    routine: { name: "Routine builder", href: "#yoga", icon: "plus", strength: 2 },
+    sleep: { name: "Sleep sounds", href: "#sleep-sounds", icon: "moon", strength: 1, sup: true,      // a new technique (sleepsounds.js)
+      blurb: "Pink noise, rain, crickets, a stream or a fire to fall asleep to, fading out over 15 to 60 minutes and then ending, so nothing plays all night." }
   };
 
   var CAT = {};                              // item key → { goal, also, method, posture, rank }
@@ -14233,7 +14930,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
-    every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, made on your device.</small></span>' + ambCtl() + "</div>");
+    every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl() + "</div>");
     if (d.reflect) every.push(pToggle("sOptKeep", "Keep a copy on this device", O.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
     var openOpts = store.get("optsOpen") === "1";
     var other = pBusy() && P.def !== d;
@@ -14331,7 +15028,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
     if (O.buzz && bzOk() && pPlan(d, pLenOf(d, P.len)).steps.some(function (x) { return x.k === "breath"; })) s.push("Vibration");
-    if (AMB.kind !== "off") s.push(AMB.kind === "night" ? "Rain and crickets" : AMB.kind === "rain" ? "Rain" : "Crickets");
+    if (ambSig()) s.push(ambName());
     return s.join(" · ");
   }
   function pYogaHow(plan) {
@@ -14480,7 +15177,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       toast("These are now the options for every practice that hasn't set its own.");
     });
     reset.addEventListener("click", function () { storeDel("pOpt." + d.id); pIntro(d.id); });
-    $("#sOpts").addEventListener("click", function (e) { if (e.target.closest("[data-amb]")) setTimeout(sum, 0); });
+    $("#sOpts").addEventListener("click", function (e) { if (e.target.closest("[data-amb], [data-amb-add]")) setTimeout(sum, 0); });
     [["#sOptCues", "cues"], ["#sOptVis", "visual"], ["#sOptAna", "ana"], ["#sOptVar", "var"]].forEach(function (p) {
       var g = $(p[0]);
       if (!g) return;
@@ -14588,6 +15285,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var rt = hr >= 5 && hr < 9 ? ["morning", "Your morning routine"] : hr >= 9 && hr < 17 ? ["daytime", "Screen breaks through the day"] : ["evening", "Your evening routine"];
     var a = $("#sgRt");
     if (a) { a.href = "#living/" + rt[0]; bSetT("#sgRt", rt[1]); }        // the routine for this time of day, in Healthy living
+    slpLink(hr);                                                            // and Sleep sounds, in the evening and at night
   }
 
   function pSleepyStep(s) { return !!s.sleepy || s.k === "drift" || s.k === "nap" || (s.k === "shuffle" && !s.awake); }   // awake: words to play with, not to sleep by
@@ -14665,10 +15363,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       P.opt.rhythm = !P.opt.rhythm; pSaveOpt(); pQuickSync();
       if (P.state === "running") pRhythm(P.steps[P.idx], pT());
     });
-    $("#sqAmb").addEventListener("click", function () {      // cycles: off, rain, crickets, both
-      var ks = AMB_KINDS.map(function (k) { return k[0]; });
-      ambSet(ks[(ks.indexOf(AMB.kind) + 1) % ks.length], true);
-    });
+    $("#sqAmb").addEventListener("click", ambCycle);      // cycles: off, rain, crickets, both, then each nature sound once unlocked
     $("#sqVol").addEventListener("input", function () {
       var v = $("#vol");
       v.value = this.value;
@@ -14694,7 +15389,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
     if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList,
       SUP: SUP, supOn: supOn, supKept: supKept, supRefresh: supRefresh, supDevice: supDevice, FD: FD,
-      aVoices: aVoices, bmMode: bmMode, bmStored: bmStored, aBeat: aBeat, pBeatStep: pBeatStep, enterTask: enterTask, beatPlaying: beatPlaying, SUP_EXTRA: SUP_EXTRA };   // for automated tests only
+      aVoices: aVoices, bmMode: bmMode, bmStored: bmStored, aBeat: aBeat, pBeatStep: pBeatStep, enterTask: enterTask, beatPlaying: beatPlaying, SUP_EXTRA: SUP_EXTRA,
+      amRender: amRender, amNeed: amNeed, AMB_ADD: AMB_ADD, ambSig: ambSig, ambCur: ambCur, SLP: SLP, SLP_SOUNDS: SLP_SOUNDS, slpLevel: slpLevel, slpFade: slpFade, slpNight: slpNight };   // for automated tests only
   }
   /* ------------------------------- the end screen -------------------------------
      What a practice measured, as tiles you can tap for what each number means, with your own
@@ -15721,29 +16417,30 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       method: "sound", posture: t.posture, needs: t.notch ? ["phones"] : libPhones(), mins: [t.minutes, t.minutes], minsTxt: t.minutes + " min",
       label: t.band + " track", href: "#track/" + t.id, icon: "sounds", col: LIB_TRACK_COL[t.cat] || "var(--relax)", strength: t.strength, badges: [], sup: !!t.sup };
   }
+  // the custom primer, Sleep sounds (no beat, so no headphones), the beat builder and the routine builder
   function libTool(id) {
-    var x = TOOLS[id], c = CAT["x:" + id] || {};
+    var x = TOOLS[id], c = CAT["x:" + id] || {}, sl = id === "sleep";
     return { key: "x:" + id, type: "tool", name: x.name, blurb: x.blurb || "", goal: c.goal || "", also: [], method: id === "routine" ? "move" : "sound",
-      posture: c.posture || ["sit"], needs: id === "routine" ? ["space"] : libPhones(), mins: id === "prime" ? [5, 20] : [1, 60],
-      minsTxt: id === "prime" ? "5–20 min" : "your choice", label: id === "prime" ? "Beats before work" : "Tool", nopos: id !== "prime",
-      href: x.href, icon: x.icon, col: id === "routine" ? "var(--accent)" : "var(--stim)", strength: id === "prime" ? x.strength : 0, badges: [] };
+      posture: c.posture || ["sit"], needs: id === "routine" ? ["space"] : sl ? [] : libPhones(), mins: id === "prime" ? [5, 20] : sl ? [15, 60] : [1, 60],
+      minsTxt: id === "prime" ? "5–20 min" : sl ? "15–60 min" : "your choice", label: id === "prime" ? "Beats before work" : "Tool", nopos: id !== "prime" && !sl,
+      href: x.href, icon: x.icon, col: id === "routine" ? "var(--accent)" : sl ? GOAL_COL.sleep : "var(--stim)", strength: id === "prime" || sl ? x.strength : 0, badges: [], sup: !!x.sup };
   }
   function libAll() {
     var out = PRACTICES.map(libPractice);
     BREATHS.forEach(function (b) { if (b.goal) out.push(libPattern(b)); });
     TRACKS.forEach(function (t) { if (t.goal && t.goal !== "tinnitus") out.push(libTrack(t)); });
-    out.push(libTool("prime"));
+    out.push(libTool("prime"), libTool("sleep"));
     out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
     return out;
   }
   // the first few names under a goal, in the library's own order, without working out every
   // practice's length as libAll does: Today's goal tiles need only the names
   function libNames(goal, n) {
-    var out = [], x = libTool("prime");
+    var out = [];
     PRACTICES.forEach(function (d) { if (d.goal === goal) out.push({ key: d.id, name: d.name }); });
     BREATHS.forEach(function (b) { if (b.goal === goal) out.push({ key: "b:" + b.id, name: PATTERN_NAMES[b.id] || b.id }); });
     TRACKS.forEach(function (t) { if (t.goal === goal && goal !== "tinnitus") out.push({ key: "t:" + t.id, name: t.name }); });
-    if (x.goal === goal) out.push(x);
+    [libTool("prime"), libTool("sleep")].forEach(function (x) { if (x.goal === goal) out.push(x); });
     out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
     return out.slice(0, n).map(function (it) { return it.name; });
   }
@@ -16011,8 +16708,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         (own.length ? '<div class="st-own"><span>' + esc(list) + (own.length === 1 ? " has" : " have") + " options of " + (own.length === 1 ? "its" : "their") + ' own.</span>' +
           '<button class="btn small" id="stOwnReset">Use the defaults for ' + (own.length === 1 ? "it" : "all of them") + "</button></div>" : "") +
       "</section>" + bmCard() +
-      '<section class="st-card" aria-labelledby="stA"><h2 id="stA">Background sound</h2>' +
-        '<p class="st-note">Rain or crickets under practices, breathing sessions and tracks, made on your device.</p>' + ambCtl() +
+      '<section class="st-card" id="st-amb" aria-labelledby="stA"><h2 id="stA">Background sound</h2>' +
+        '<p class="st-note">Rain or crickets under practices, breathing sessions and tracks, made on your device. Add birdsong, a stream, wind or a fire, ' +
+        'or have one on its own: each goes on and off by itself, since people differ in which natural sounds they find pleasant. <a href="#l-nature">What the research says</a></p>' + ambCtl() +
       "</section>" +
       '<section class="st-card" aria-labelledby="stR"><h2 id="stR">Reflections</h2>' +
         pToggle("stKeep", "Keep a copy on this device", g.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing.") +
@@ -17639,6 +18337,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("sound", "Beat sound", "Settings · binaural, monaural or isochronic",
       ["Binaural beats need headphones; monaural beats and isochronic tones play on speakers too. Choose how every beat plays here, or for one practice under its Options."], "#st-beats",
       { ic: "sounds", col: "var(--relax)", w: 1, tags: "isochronic monaural binaural speaker speakers headphones tone tones pulse pulsing mode sound", sup: true }));
+    out.push(fdEntry("sound", TOOLS.sleep.name, "Sleep · a sound that fades out over 15 to 60 min, then ends", [TOOLS.sleep.blurb, slpHowTxt(30)], TOOLS.sleep.href,
+      { ic: "moon", col: "var(--relax)", w: 1.1, tags: "sleep timer noise pink white rain crickets stream water fire fade fading fall asleep night bedtime insomnia", sup: true }));
+    out.push(fdEntry("sound", "Nature sounds", "Background sound · birdsong, a stream, wind and fire",
+      ["Add birdsong, a stream, wind in the leaves or a crackling fire to rain or crickets, or have one on its own, under practices, breathing sessions and tracks. Each goes on and off by itself."], "#st-amb",
+      { ic: "rain", col: "var(--relax)", w: 1, tags: "birdsong birds bird stream brook water river wind leaves fire fireplace crackle crackling campfire nature soundscape ambience background", sup: true }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
       ["Pair a HeartMath ear-clip sensor, a chest strap or a Garmin watch set to broadcast, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
       { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));
@@ -17920,12 +18623,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* ---------------------------------- Learn ----------------------------------
      Learn is written out in learn.html: brain-wave states, the techniques at a glance by sense, the research behind
      each part of Entrain, and what it leaves out. Reading it is always free. A link in it that leads to one of the
-     new techniques (a practice, a breathing pattern or a track flagged sup: true) carries the donation cup while this
+     new techniques (a practice, a breathing pattern or a track flagged sup: true, or Sleep sounds) carries the donation cup while this
      device is locked, and loses it as soon as it's unlocked (supRefresh calls lnMark).
   ------------------------------------------------------------------------------ */
 
   // the practice, breathing pattern or track a link leads to, if it leads to one
   function lnItem(href) {
+    if (href === "#sleep-sounds") return TOOLS.sleep;          // a tool of its own (sleepsounds.js)
     var m = /^#(practice|breathe|track)\/([\w-]+)$/.exec(href || ""), list;
     if (!m) return null;
     list = m[1] === "practice" ? PRACTICES : m[1] === "breathe" ? BREATHS : TRACKS;
@@ -18428,7 +19132,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         { t: "Caffeine before the afternoon", p: "Caffeine shortened sleep by about 45 minutes, and added about 9 to the time it took to fall asleep, in a 2023 meta-analysis. To spare your sleep, have the last coffee at least 9 hours before bed, and a strong pre-workout drink at least 13.", go: [["#living/coffee", "Coffee and caffeine"]] },
         { t: "Alcohol early, if at all", p: "It can make you drowsy, but it breaks up the second half of the night and cuts dream (REM) sleep." },
         { t: "Move in the day", p: "Regular exercise improves sleep. Exercise in the evening is fine for most people too, apart from a hard session that ends within an hour of bedtime.", go: [["#practice/sport", "Sports Performance"]] },
-        { t: "A bed for sleep", p: "Keep the bedroom cool, dark and quiet, and the bed for sleep and sex, so your body links it with sleep. If you're still awake after about 20 minutes, get up, do something calm in dim light, and go back when you feel sleepy. This is stimulus control, a part of CBT-I that sleep guidelines also recommend on its own." },
+        { t: "A bed for sleep", p: "Keep the bedroom cool, dark and quiet, and the bed for sleep and sex, so your body links it with sleep. If you're still awake after about 20 minutes, get up, do something calm in dim light, and go back when you feel sleepy. This is stimulus control, a part of CBT-I that sleep guidelines also recommend on its own.", go: [["#sleep-sounds", "Sleep sounds"]] },
         { t: "Naps short and early", p: "Up to about 20 minutes, before mid-afternoon. In a sleep-lab study after a short night, a 10-minute nap gave the quickest boost, with no grogginess afterwards.", go: [["#practice/power-nap", "Power Nap"]] },
         { t: "A wind-down", p: "The last hour before bed decides a lot: see the evening routine.", go: [["#living/evening", "Evening routine"]] }
       ],
@@ -18469,7 +19173,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         { w: "30 minutes before", t: "Wind down", p: "Ten to twenty minutes of something calming: Autogenic Training with its bedtime ending lets it carry you into sleep. And, if you like, three good things from the day.",
           go: [["#practice/sleep-descent", "Sleep Descent"], ["#practice/autogenic", "Autogenic Training"], ["#practice/body-scan", "Body Scan"], ["#practice/pmr", "Progressive Muscle Relaxation"]] },
         { w: "Bedtime", t: "Lights out", p: "At your usual time, in a cool, dark, quiet room. If your mind is busy, the Cognitive Shuffle gives it something light to do; if you're still awake after about 20 minutes, get up for a while.",
-          go: [["#practice/shuffle", "Cognitive Shuffle"], ["#breathe/478", "4-7-8 breathing"]] }
+          go: [["#practice/shuffle", "Cognitive Shuffle"], ["#breathe/478", "4-7-8 breathing"], ["#sleep-sounds", "Sleep sounds"]] }
       ],
       refs: [R_REF.gardiner, R_REF.brown, R_REF.haghayegh, R_REF.chang, R_REF.scullin, R_REF.edinger] }
   ];
@@ -18741,7 +19445,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function lvGoLabel(go) {
     var pr = 0, rc = 0, ot = 0;
     go.forEach(function (g) {
-      if (/^#(practice|breathe)\//.test(g[0])) pr++;
+      if (/^#(practice\/|breathe\/|sleep-sounds$)/.test(g[0])) pr++;
       else if (recipeById(g[0].replace(/^#living\//, ""))) rc++;
       else ot++;
     });
@@ -18757,7 +19461,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         return "<li>" + (x.w ? '<span class="lv-when">' + esc(x.w) + "</span>" : "") + "<b>" + esc(x.t) + "</b><p>" + esc(lvNb(x.p)) + "</p>" +
           (x.go ? '<details class="lv-sugg"><summary>' + esc(lvGoLabel(x.go)) + '<span class="lv-sugg-n" aria-hidden="true">' + x.go.length + "</span>" +
             '<svg class="i lv-chev" aria-hidden="true"><use href="#i-up"/></svg></summary>' +
-            '<p class="lv-go">' + x.go.map(function (g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + "</a>"; }).join("") + "</p></details>" : "") + "</li>";
+            '<p class="lv-go">' + x.go.map(function (g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + (supLocked(lnItem(g[0])) ? supTag(true) : "") + "</a>"; }).join("") + "</p></details>" : "") + "</li>";
       }).join("") + "</ol>" + lvRefs(r.refs) + "</section>";
   }
   var LV_LEGEND = '<p class="pr-legend">Evidence' +
@@ -19001,7 +19705,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var H_FIELDS = { k: "string", id: "string", n: "string", band: "string", note: "string", at: "number", secs: "number",
     rate: "number", beat: "number", hr0: "number", hr1: "number", hrAvg: "number", swing: "number", coh: "number", best: "number", rm: "number", felt: "number",
     full: "boolean", est: "boolean", ib: "boolean", wh: "number",        // ib: a block of intense breathing; wh: Wim Hof's rounds (care.js)
-    bm: "string" };                                                      // bm: a beat played monaural or isochronic (beatmode.js)
+    bm: "string",                                                        // bm: a beat played monaural or isochronic (beatmode.js)
+    snd: "string" };                                                     // snd: what Sleep sounds played (sleepsounds.js)
   var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
     for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
@@ -19052,7 +19757,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     A.hAt = el;                                  // a paused track logged as the page goes away isn't logged twice
     var e = { k: "track", id: t.id, secs: secs, full: !t.then && el >= t.minutes * 60 - 10 };
     if (t.id === "prime" || t.id === "custom") { e.beat = +t.beat.toFixed(1); e.band = t.band; }
-    if (A.mode !== "binaural") e.bm = A.mode;     // how it played, when not binaural (beatmode.js)
+    if (t.sleep) e.snd = t.snd;                   // Sleep sounds: which sound
+    else if (A.mode !== "binaural") e.bm = A.mode;     // how it played, when not binaural (beatmode.js)
     hAdd(e);
   }
   function hTest(secs, best) { hAdd({ k: "test", id: "resonance", secs: secs, full: true, best: best }); }
@@ -19062,7 +19768,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function hKey(e) {
     if (e.k === "practice") return e.id;
     if (e.k === "breath") return "b:" + e.id;
-    if (e.k === "track") return e.id === "prime" ? "x:prime" : e.id === "custom" ? "x:beats" : "t:" + e.id;
+    if (e.k === "track") return e.id === "prime" ? "x:prime" : e.id === "custom" ? "x:beats" : e.id === "sleep" ? "x:sleep" : "t:" + e.id;
     return "";
   }
   // what to show for a session: its name, where it leads, its icon and colour
@@ -19082,6 +19788,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (e.k === "breath" && e.rate) p.push(e.rate + " a minute");
     if (e.beat) p.push(e.beat + " Hz " + (e.band || "").toLowerCase());
     if (e.bm === "monaural" || e.bm === "isochronic") p.push(e.bm);
+    if (e.snd) p.push(slpSound(e.snd)[2]);
     if (e.hr0 && e.hr1) p.push("heart rate " + e.hr0 + " → " + e.hr1);
     else if (e.hrAvg) p.push("heart rate " + e.hrAvg);
     if (e.coh) p.push("coherence " + e.coh.toFixed(1) + (e.est ? " (est.)" : ""));
@@ -19886,7 +20593,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

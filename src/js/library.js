@@ -79,29 +79,30 @@
       method: "sound", posture: t.posture, needs: t.notch ? ["phones"] : libPhones(), mins: [t.minutes, t.minutes], minsTxt: t.minutes + " min",
       label: t.band + " track", href: "#track/" + t.id, icon: "sounds", col: LIB_TRACK_COL[t.cat] || "var(--relax)", strength: t.strength, badges: [], sup: !!t.sup };
   }
+  // the custom primer, Sleep sounds (no beat, so no headphones), the beat builder and the routine builder
   function libTool(id) {
-    var x = TOOLS[id], c = CAT["x:" + id] || {};
+    var x = TOOLS[id], c = CAT["x:" + id] || {}, sl = id === "sleep";
     return { key: "x:" + id, type: "tool", name: x.name, blurb: x.blurb || "", goal: c.goal || "", also: [], method: id === "routine" ? "move" : "sound",
-      posture: c.posture || ["sit"], needs: id === "routine" ? ["space"] : libPhones(), mins: id === "prime" ? [5, 20] : [1, 60],
-      minsTxt: id === "prime" ? "5–20 min" : "your choice", label: id === "prime" ? "Beats before work" : "Tool", nopos: id !== "prime",
-      href: x.href, icon: x.icon, col: id === "routine" ? "var(--accent)" : "var(--stim)", strength: id === "prime" ? x.strength : 0, badges: [] };
+      posture: c.posture || ["sit"], needs: id === "routine" ? ["space"] : sl ? [] : libPhones(), mins: id === "prime" ? [5, 20] : sl ? [15, 60] : [1, 60],
+      minsTxt: id === "prime" ? "5–20 min" : sl ? "15–60 min" : "your choice", label: id === "prime" ? "Beats before work" : "Tool", nopos: id !== "prime" && !sl,
+      href: x.href, icon: x.icon, col: id === "routine" ? "var(--accent)" : sl ? GOAL_COL.sleep : "var(--stim)", strength: id === "prime" || sl ? x.strength : 0, badges: [], sup: !!x.sup };
   }
   function libAll() {
     var out = PRACTICES.map(libPractice);
     BREATHS.forEach(function (b) { if (b.goal) out.push(libPattern(b)); });
     TRACKS.forEach(function (t) { if (t.goal && t.goal !== "tinnitus") out.push(libTrack(t)); });
-    out.push(libTool("prime"));
+    out.push(libTool("prime"), libTool("sleep"));
     out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
     return out;
   }
   // the first few names under a goal, in the library's own order, without working out every
   // practice's length as libAll does: Today's goal tiles need only the names
   function libNames(goal, n) {
-    var out = [], x = libTool("prime");
+    var out = [];
     PRACTICES.forEach(function (d) { if (d.goal === goal) out.push({ key: d.id, name: d.name }); });
     BREATHS.forEach(function (b) { if (b.goal === goal) out.push({ key: "b:" + b.id, name: PATTERN_NAMES[b.id] || b.id }); });
     TRACKS.forEach(function (t) { if (t.goal === goal && goal !== "tinnitus") out.push({ key: "t:" + t.id, name: t.name }); });
-    if (x.goal === goal) out.push(x);
+    [libTool("prime"), libTool("sleep")].forEach(function (x) { if (x.goal === goal) out.push(x); });
     out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
     return out.slice(0, n).map(function (it) { return it.name; });
   }

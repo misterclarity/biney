@@ -1389,7 +1389,7 @@
     }
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
-    every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, made on your device.</small></span>' + ambCtl() + "</div>");
+    every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl() + "</div>");
     if (d.reflect) every.push(pToggle("sOptKeep", "Keep a copy on this device", O.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
     var openOpts = store.get("optsOpen") === "1";
     var other = pBusy() && P.def !== d;
@@ -1487,7 +1487,7 @@
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
     if (O.buzz && bzOk() && pPlan(d, pLenOf(d, P.len)).steps.some(function (x) { return x.k === "breath"; })) s.push("Vibration");
-    if (AMB.kind !== "off") s.push(AMB.kind === "night" ? "Rain and crickets" : AMB.kind === "rain" ? "Rain" : "Crickets");
+    if (ambSig()) s.push(ambName());
     return s.join(" · ");
   }
   function pYogaHow(plan) {
@@ -1636,7 +1636,7 @@
       toast("These are now the options for every practice that hasn't set its own.");
     });
     reset.addEventListener("click", function () { storeDel("pOpt." + d.id); pIntro(d.id); });
-    $("#sOpts").addEventListener("click", function (e) { if (e.target.closest("[data-amb]")) setTimeout(sum, 0); });
+    $("#sOpts").addEventListener("click", function (e) { if (e.target.closest("[data-amb], [data-amb-add]")) setTimeout(sum, 0); });
     [["#sOptCues", "cues"], ["#sOptVis", "visual"], ["#sOptAna", "ana"], ["#sOptVar", "var"]].forEach(function (p) {
       var g = $(p[0]);
       if (!g) return;
@@ -1744,6 +1744,7 @@
     var rt = hr >= 5 && hr < 9 ? ["morning", "Your morning routine"] : hr >= 9 && hr < 17 ? ["daytime", "Screen breaks through the day"] : ["evening", "Your evening routine"];
     var a = $("#sgRt");
     if (a) { a.href = "#living/" + rt[0]; bSetT("#sgRt", rt[1]); }        // the routine for this time of day, in Healthy living
+    slpLink(hr);                                                            // and Sleep sounds, in the evening and at night
   }
 
   function pSleepyStep(s) { return !!s.sleepy || s.k === "drift" || s.k === "nap" || (s.k === "shuffle" && !s.awake); }   // awake: words to play with, not to sleep by
@@ -1821,10 +1822,7 @@
       P.opt.rhythm = !P.opt.rhythm; pSaveOpt(); pQuickSync();
       if (P.state === "running") pRhythm(P.steps[P.idx], pT());
     });
-    $("#sqAmb").addEventListener("click", function () {      // cycles: off, rain, crickets, both
-      var ks = AMB_KINDS.map(function (k) { return k[0]; });
-      ambSet(ks[(ks.indexOf(AMB.kind) + 1) % ks.length], true);
-    });
+    $("#sqAmb").addEventListener("click", ambCycle);      // cycles: off, rain, crickets, both, then each nature sound once unlocked
     $("#sqVol").addEventListener("input", function () {
       var v = $("#vol");
       v.value = this.value;
@@ -1850,5 +1848,6 @@
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
     if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList,
       SUP: SUP, supOn: supOn, supKept: supKept, supRefresh: supRefresh, supDevice: supDevice, FD: FD,
-      aVoices: aVoices, bmMode: bmMode, bmStored: bmStored, aBeat: aBeat, pBeatStep: pBeatStep, enterTask: enterTask, beatPlaying: beatPlaying, SUP_EXTRA: SUP_EXTRA };   // for automated tests only
+      aVoices: aVoices, bmMode: bmMode, bmStored: bmStored, aBeat: aBeat, pBeatStep: pBeatStep, enterTask: enterTask, beatPlaying: beatPlaying, SUP_EXTRA: SUP_EXTRA,
+      amRender: amRender, amNeed: amNeed, AMB_ADD: AMB_ADD, ambSig: ambSig, ambCur: ambCur, SLP: SLP, SLP_SOUNDS: SLP_SOUNDS, slpLevel: slpLevel, slpFade: slpFade, slpNight: slpNight };   // for automated tests only
   }

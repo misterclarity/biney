@@ -145,7 +145,7 @@
   function lvGoLabel(go) {
     var pr = 0, rc = 0, ot = 0;
     go.forEach(function (g) {
-      if (/^#(practice|breathe)\//.test(g[0])) pr++;
+      if (/^#(practice\/|breathe\/|sleep-sounds$)/.test(g[0])) pr++;
       else if (recipeById(g[0].replace(/^#living\//, ""))) rc++;
       else ot++;
     });
@@ -161,7 +161,7 @@
         return "<li>" + (x.w ? '<span class="lv-when">' + esc(x.w) + "</span>" : "") + "<b>" + esc(x.t) + "</b><p>" + esc(lvNb(x.p)) + "</p>" +
           (x.go ? '<details class="lv-sugg"><summary>' + esc(lvGoLabel(x.go)) + '<span class="lv-sugg-n" aria-hidden="true">' + x.go.length + "</span>" +
             '<svg class="i lv-chev" aria-hidden="true"><use href="#i-up"/></svg></summary>' +
-            '<p class="lv-go">' + x.go.map(function (g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + "</a>"; }).join("") + "</p></details>" : "") + "</li>";
+            '<p class="lv-go">' + x.go.map(function (g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + (supLocked(lnItem(g[0])) ? supTag(true) : "") + "</a>"; }).join("") + "</p></details>" : "") + "</li>";
       }).join("") + "</ol>" + lvRefs(r.refs) + "</section>";
   }
   var LV_LEGEND = '<p class="pr-legend">Evidence' +

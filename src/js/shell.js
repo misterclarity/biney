@@ -2,7 +2,7 @@
      Views behind a hash router. The five tabs are #home (Today), #practice (the library),
      #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
      practice, #track/<id> for a track, #prime and #builder for the custom primer and the beat
-     builder, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
+     builder, #sleep-sounds for Sleep sounds, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
      #living/<tab, recipe, supplement, light or routine>; and #settings from the gear, with #feedback and
      #st-<section> for a section of it. Links and search also
      use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>; #unlock opens
@@ -12,10 +12,10 @@
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
 
-  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings", "living"];
+  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings", "living", "sleep-sounds"];
   var V_TITLE = { home: "Today", practice: "Library", breathe: "Breathe", heart: "Heart", learn: "Learn", history: "History", session: "Practice",
-    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings", living: "Healthy living" };
-  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice", living: "learn" };   // the tab each page belongs to
+    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings", living: "Healthy living", "sleep-sounds": "Sleep sounds" };
+  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice", living: "learn", "sleep-sounds": "practice" };   // the tab each page belongs to
   var ALIAS = { today: "home", library: "practice" };
   var BACK = "practice";                 // the list a page was opened from: Today, the library or History
   var BASE_TITLE = document.title;
@@ -47,6 +47,7 @@
     if (v === "practice") pRenderLib();               // your routines may have changed
     if (v === "history") hRender();
     if (v === "settings") stRender();
+    if (v === "sleep-sounds") slpOpen();
     backSync();
     var gear = $("#tbSet");
     if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }

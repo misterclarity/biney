@@ -285,6 +285,9 @@
     else if (curView === "track") trSync();
     lnMark();                                                 // Learn's links to new techniques (learn.js)
     bmSync();                                                 // the beat's Sound buttons and their cups (beatmode.js)
+    ambUI();                                                  // the nature sounds' buttons, and what plays (ambience.js)
+    ambSync();
+    slpSync(); slpLink();                                     // Sleep sounds' page and Today's link to it (sleepsounds.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }

@@ -162,6 +162,7 @@ const UK = /\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!R
           if (/^living\//.test(id)) return view.id === 'v-living' && location.hash === h;
           if (id === 'living' || id === 'heart') return view.id === 'v-' + id;
           if (id === 'sounds') return view.id === 'v-practice';
+          if (id === 'sleep-sounds') return view.id === 'v-sleep-sounds' && title === 'Sleep sounds';
           if (id === 'feedback' || /^st-/.test(id)) return view.id === 'v-settings';
           const el = document.getElementById(id);
           return !!el && view.contains(el);
@@ -300,7 +301,7 @@ const UK = /\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!R
         seen.push(await E(p, () => document.querySelector('#supModal').hidden && !document.querySelector('#v-learn').hidden));
       }
       const cups = await E(p, () => {
-        const X = window.__entrain, locked = h => { const m = /^#(practice|breathe|track)\/(.+)$/.exec(h); if (!m) return false; const l = m[1] === 'practice' ? X.PRACTICES : m[1] === 'breathe' ? X.BREATHS : X.TRACKS, d = l.find(x => x.id === m[2]); return !!d && !!d.sup && !X.SUP.ok; };
+        const X = window.__entrain, locked = h => { if (h === '#sleep-sounds') return !X.SUP.ok; const m = /^#(practice|breathe|track)\/(.+)$/.exec(h); if (!m) return false; const l = m[1] === 'practice' ? X.PRACTICES : m[1] === 'breathe' ? X.BREATHS : X.TRACKS, d = l.find(x => x.id === m[2]); return !!d && !!d.sup && !X.SUP.ok; };
         const links = [...document.querySelectorAll('#science a[href^="#"]')];
         return { want: links.filter(a => locked(a.getAttribute('href'))).length, have: document.querySelectorAll('#science .sup-tag').length, right: links.every(a => locked(a.getAttribute('href')) === !!(a.nextElementSibling && a.nextElementSibling.classList.contains('sup-tag'))) };
       });
