@@ -200,8 +200,8 @@ const NAME = 'Brain trends from a headband';
           cups: [...row.children[2].querySelectorAll('a')].map(a => !!(a.nextElementSibling && a.nextElementSibling.classList.contains('sup-tag'))).join(','),
           sig: sig.children[2].textContent, sigLo: sig.children[2].classList.contains('ln-lo'), eeg: document.querySelector('#l-eeg').textContent.replace(/\s+/g, ' ') };
       });
-      ok(!L.lo && L.links === '#eeg #practice/brain-led #l-muse' && L.cups === 'false,true,false' && L.ev === 'Moderate (the devices\' accuracy limits it)',
-        'Learn\'s table of techniques links the headband row to Brain trends and Brain-Led Beats (the practice with the cup, as links to practices have it) and keeps the guide\'s rating: ' + L.links + ' ' + L.cups);
+      ok(!L.lo && L.links === '#eeg #practice/brain-led #l-muse' && L.cups === 'true,true,false' && L.ev === 'Moderate (the devices\' accuracy limits it)',
+        'Learn\'s table of techniques links the headband row to Brain trends and Brain-Led Beats (both with the cup while locked) and keeps the guide\'s rating: ' + L.links + ' ' + L.cups);
       ok(!L.sigLo && /Brain trends on Heart, from a Muse headband/.test(L.sig) && /Brain trends in Entrain\./.test(L.eeg) && /mixed but promising/.test(L.eeg) && /hasn't been tested/.test(L.eeg) && !VERDICT.test(L.eeg),
         'What to measure says where Entrain reads EEG, and Learn how, with the evidence as the guide gives it');
       await p.context().close();

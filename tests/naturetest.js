@@ -419,7 +419,7 @@ const SOUND = { clouds: 'wind', water: 'stream', leaves: 'wind', forest: 'birds'
       ok(/across 31 studies/.test(all) && /three measures/.test(all) && /other ten of its pooled\s+analyses showed no marked benefit/.test(all) && /\(Ohly et al\., 2016\)/.test(all) && /\(Stevenson et al\., 2018\)/.test(all) &&
         /\(Joye & Dewitte, 2018\)/.test(all) && /moderate evidence/.test(all) && /remain open questions/.test(all),
         'the reviews: three measures helped and ten not, working memory and flexibility, the critique, and the guide\'s moderate rating');
-      ok(['#practice/restoration+cup', '#st-scenes', '#practice/focus-primer', '#track/deep-work', '#practice/walking', '#practice/fireside+cup', '#living/daytime'].every(h => L.links.includes(h)) &&
+      ok(['#practice/restoration+cup', '#st-scenes+cup', '#practice/focus-primer', '#track/deep-work', '#practice/walking', '#practice/fireside+cup', '#living/daytime'].every(h => L.links.includes(h)) &&
         /no one\s+watched for more than 15 minutes \(Lynn, 2014\)/.test(all) && /\(Ikei et al\., 2014\)/.test(all) && /plausible, following the theory, rather than tested/.test(all),
         'and what Entrain does with it, linked, the new techniques with the cup: ' + L.links.join(' '));
       ok(L.refs === '011111', 'its six new references, each with a link but the 1989 book: ' + L.refs);

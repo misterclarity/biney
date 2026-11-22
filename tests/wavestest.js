@@ -303,11 +303,19 @@ const UK = /\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!R
         seen.push(await E(p, () => document.querySelector('#supModal').hidden && !document.querySelector('#v-learn').hidden));
       }
       const cups = await E(p, () => {
-        const X = window.__entrain, locked = h => { if (h === '#sleep-sounds') return !X.SUP.ok; const m = /^#(practice|breathe|track)\/(.+)$/.exec(h); if (!m) return false; const l = m[1] === 'practice' ? X.PRACTICES : m[1] === 'breathe' ? X.BREATHS : X.TRACKS, d = l.find(x => x.id === m[2]); return !!d && !!d.sup && !X.SUP.ok; };
-        const links = [...document.querySelectorAll('#science a[href^="#"]')];
-        return { want: links.filter(a => locked(a.getAttribute('href'))).length, have: document.querySelectorAll('#science .sup-tag').length, right: links.every(a => locked(a.getAttribute('href')) === !!(a.nextElementSibling && a.nextElementSibling.classList.contains('sup-tag'))) };
+        // a link to a locked practice, breathing pattern or track, to Sleep sounds, to a part of Settings, Heart or History that opens only with a donation,
+        // or one with data-sup (whose words name the locked part of Settings' Air and scent or Background sound)
+        const X = window.__entrain, AT = ['#st-light', '#st-scenes', '#st-mymusic', '#st-checkin', '#st-rhythm', '#cam', '#air', '#ox', '#eeg', '#rcourse', '#experiment'];
+        const locked = a => { const h = a.getAttribute('href'); if (a.hasAttribute('data-sup') || h === '#sleep-sounds' || AT.includes(h)) return !X.SUP.ok; const m = /^#(practice|breathe|track)\/(.+)$/.exec(h); if (!m) return false; const l = m[1] === 'practice' ? X.PRACTICES : m[1] === 'breathe' ? X.BREATHS : X.TRACKS, d = l.find(x => x.id === m[2]); return !!d && !!d.sup && !X.SUP.ok; };
+        const links = [...document.querySelectorAll('#science a[href^="#"]')], cup = a => !!(a.nextElementSibling && a.nextElementSibling.classList.contains('sup-tag'));
+        const g = s => [...document.querySelectorAll('#lnGlance ' + s)].map(cup);
+        return { want: links.filter(locked).length, have: document.querySelectorAll('#science .sup-tag').length, right: links.every(a => locked(a) === cup(a)),
+          glance: [].concat(...['a[href="#rcourse"]', 'a[href="#st-air"]', 'a[href="#air"]', 'a[href="#st-amb"]', 'a[href="#st-mymusic"]', 'a[href="#st-light"]', 'a[href="#st-scenes"]', 'a[href="#eeg"]'].map(g)),
+          free: [document.querySelector('#l-nature ~ p a[href="#st-amb"]'), [...document.querySelectorAll('#science a[href="#st-air"]')].find(a => /turned\s+off in/.test(a.parentNode.textContent)), document.querySelector('#science a[href="#st-beats"]')].map(a => !!a && !cup(a)) };
       });
       ok(seen.every(Boolean) && cups.right && cups.have === cups.want, 'on the locked build every part of it opens with no dialog, and only links to locked techniques carry the cup (' + cups.have + ' now)');
+      ok(cups.glance.length === 13 && cups.glance.every(Boolean) && cups.free.every(Boolean),
+        'the table\'s links to the resonance course, Air the room, a monitor, background music, your own music, screen light, scenes and brain trends carry the cup too; Settings\' background sound, the scent tips and the beats, which have free parts, none: ' + JSON.stringify(cups.glance) + ' ' + JSON.stringify(cups.free));
       await flag(p, ['bhramari', 'b:sigh']);
       await go(p, 'l-glance', 300);
       const F = await E(p, () => {

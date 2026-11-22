@@ -3573,14 +3573,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Smell</th></tr>
-                <tr class="ln-row"><th scope="row"><b>Fresh air, low CO<sub>2</sub></b> <small>Clear thinking</small></th><td>Strong</td><td><a href="#st-air">Air the room</a> before focus sessions, your room's CO<sub>2</sub> from <a href="#air">a monitor</a>, and a step in <a href="#living/daytime">the day's routine</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Fresh air, low CO<sub>2</sub></b> <small>Clear thinking</small></th><td>Strong</td><td><a href="#st-air" data-sup>Air the room</a> before focus sessions, your room's CO<sub>2</sub> from <a href="#air">a monitor</a>, and a step in <a href="#living/daytime">the day's routine</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Rosemary scent</b> <small>Alertness</small></th><td>Early</td><td>An optional tip on focus pages, such as <a href="#practice/focus-primer">Focus Primer</a>, with its safety line (<a href="#l-scent">why</a>)</td></tr>
                 <tr class="ln-row"><th scope="row"><b>Lavender scent</b> <small>Relaxation</small></th><td>Early to moderate</td><td>An optional tip on sleep pages, such as <a href="#practice/sleep-descent">Sleep Descent</a>, and in <a href="#living/evening">an evening routine</a></td></tr>
               </tbody>
               <tbody>
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Sound</th></tr>
-                <tr class="ln-row"><th scope="row"><b>Slow-tempo music</b> <small>Relaxation (alpha, theta)</small></th><td>Moderate to strong</td><td><a href="#practice/music-break">Music Break</a>, and slow <a href="#st-amb">background music</a></td></tr>
-                <tr class="ln-row"><th scope="row"><b>Fast-tempo music</b> <small>Energy, focus (beta, gamma)</small></th><td>Moderate</td><td>Steady or lively <a href="#st-amb">background music</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Slow-tempo music</b> <small>Relaxation (alpha, theta)</small></th><td>Moderate to strong</td><td><a href="#practice/music-break">Music Break</a>, and slow <a href="#st-amb" data-sup>background music</a></td></tr>
+                <tr class="ln-row"><th scope="row"><b>Fast-tempo music</b> <small>Energy, focus (beta, gamma)</small></th><td>Moderate</td><td>Steady or lively <a href="#st-amb" data-sup>background music</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Music you choose yourself</b> <small>Stress relief</small></th><td>Strong</td><td><a href="#st-mymusic">Your own music</a>, under any session and in <a href="#practice/music-break">Music Break</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Pink noise timed to deep sleep</b> <small>Deeper sleep, memory</small></th><td>Promising (needs EEG)</td><td class="ln-lo">Learn only: <a href="#l-leftout">why</a>, and <a href="#l-sleepsnd">a fading sound instead</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Binaural, isochronic or monaural beats</b> <small>Varies with the target</small></th><td>Mixed</td><td><a href="#sounds">Beat tracks</a>, <a href="#l-iso">on speakers too</a></td></tr>
@@ -4668,7 +4668,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             </p>
             <p>
               So the page of each focus practice and focus track, and the custom primer, can remind you to air the room first
-              (<a href="#st-air">Air the room before focus sessions</a>, in Settings), and shows your room's CO₂
+              (<a href="#st-air" data-sup>Air the room before focus sessions</a>, in Settings), and shows your room's CO₂
               when there's a reading from the last two hours: from an Aranet4 monitor connected over Bluetooth, or a number you type
               in from any monitor, on the Heart page's <a href="#air">Room air</a>. Above about 900&nbsp;ppm it says to open a
               window. Outdoor air holds about 420&nbsp;ppm, so a few minutes with a window open brings the room's air down towards
@@ -14043,7 +14043,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "05a79a9f";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "c91c8b09";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -26988,13 +26988,22 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* ---------------------------------- Learn ----------------------------------
      Learn is written out in learn.html: brain-wave states, the techniques at a glance by sense, the research behind
      each part of Entrain, and what it leaves out. Reading it is always free. A link in it that leads to one of the
-     new techniques (a practice, a breathing pattern or a track flagged sup: true, or Sleep sounds) carries the donation cup while this
-     device is locked, and loses it as soon as it's unlocked (supRefresh calls lnMark).
+     new techniques (a practice, a breathing pattern or a track flagged sup: true, Sleep sounds, or a part of Settings,
+     Heart or History that opens only with a donation) carries the donation cup while this device is locked, and loses
+     it as soon as it's unlocked (supRefresh calls lnMark). Air and scent and Background sound in Settings have free
+     parts too, so a link to them carries the cup only when it has data-sup, which goes on one whose words name the
+     part that needs the donation (Air the room, background music).
   ------------------------------------------------------------------------------ */
 
-  // the practice, breathing pattern or track a link leads to, if it leads to one
+  // where a link lands on something that opens only with a donation, as a whole: Settings' screen light,
+  // scenes, your own music, check-ins and daily rhythm; Heart's camera, room air, blood oxygen and brain trends;
+  // History's resonance course and personal experiment
+  var LN_SUP = ["#st-light", "#st-scenes", "#st-mymusic", "#st-checkin", "#st-rhythm", "#cam", "#air", "#ox", "#eeg", "#rcourse", "#experiment"];
+  var LN_LOCKED = { sup: true };
+  // the practice, breathing pattern or track a link leads to, if it leads to one, or LN_LOCKED for one of those
   function lnItem(href) {
     if (href === "#sleep-sounds") return TOOLS.sleep;          // a tool of its own (sleepsounds.js)
+    if (LN_SUP.indexOf(href) >= 0) return LN_LOCKED;
     var m = /^#(practice|breathe|track)\/([\w-]+)$/.exec(href || ""), list;
     if (!m) return null;
     list = m[1] === "practice" ? PRACTICES : m[1] === "breathe" ? BREATHS : TRACKS;
@@ -27007,7 +27016,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!sci) return;
     sci.querySelectorAll('a[href^="#"]').forEach(function (a) {
       var tag = a.nextElementSibling, has = !!tag && tag.classList.contains("sup-tag");
-      if (supLocked(lnItem(a.getAttribute("href")))) { if (!has) a.insertAdjacentHTML("afterend", supTag(true)); }
+      if (supLocked(a.hasAttribute("data-sup") ? LN_LOCKED : lnItem(a.getAttribute("href")))) { if (!has) a.insertAdjacentHTML("afterend", supTag(true)); }
       else if (has) tag.parentNode.removeChild(tag);
     });
   }

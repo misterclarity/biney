@@ -417,13 +417,13 @@ const slot = p => E(p, () => { const s = [...document.querySelectorAll('.view:no
       const R = await E(p, () => {
         const tx = e => e.textContent.replace(/\s+/g, ' ').trim(), li = s => [...document.querySelectorAll(s + ' .lv-rsteps > li')].find(l => /Air the room|Wind down/.test(l.querySelector('b').textContent));
         const a = li('#lv-daytime'), w = li('#lv-evening');
-        return { a: tx(a.querySelector('p')), go: [...a.querySelectorAll('.lv-go a, a.lv-chip')].map(x => x.getAttribute('href')).join(' '), w: tx(w.querySelector('p')),
+        return { a: tx(a.querySelector('p')), go: [...a.querySelectorAll('.lv-go a, a.lv-chip')].map(x => x.getAttribute('href')).join(' '), cup: !!a.querySelector('a.lv-chip[href="#air"] .sup-tag'), w: tx(w.querySelector('p')),
           dref: [...document.querySelectorAll('#lv-daytime .lv-refl li')].map(tx).filter(x => /^(Allen, J\. G\.|Young, A\. S\.)/.test(x)).length,
           eref: [...document.querySelectorAll('#lv-evening .lv-refl li')].map(tx).filter(x => /^Diego/.test(x)).length };
       });
-      ok(/^Before a block of focused work, open a window for a few minutes/.test(R.a) && /61% higher/.test(R.a) && /900 ppm/.test(R.a) && R.go === '#air' && R.dref === 2 &&
+      ok(/^Before a block of focused work, open a window for a few minutes/.test(R.a) && /61% higher/.test(R.a) && /900 ppm/.test(R.a) && R.go === '#air' && R.cup && R.dref === 2 &&
         /a little lavender is a gentle extra/.test(R.w) && /never swallowed/.test(R.w) && /cats above all/.test(R.w) && R.eref === 1,
-        'the day routine airs the room, with Room air and two sources; the evening routine\'s wind-down offers lavender with its safety line and source');
+        'the day routine airs the room, with Room air (and its cup while locked) and two sources; the evening routine\'s wind-down offers lavender with its safety line and source');
       await go(p, 'air', 400);
       ok(await E(p, () => document.querySelector('#supModal').hidden), 'the routine\'s link opens Room air, with no dialog');
       await p.context().close();
