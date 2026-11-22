@@ -11,8 +11,10 @@
   // them to another, and a restore here keeps them; and this screen's real size, matched to a bank
   // card for Soothing Touch (touch.js), which would be wrong on another screen
   var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock", "touchPx", "co2", "airAt"];
-  // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
-  var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
+  // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged.
+  // myMusic is your own songs' names, lengths and thumbs (yourmusic.js): the files themselves stay in this
+  // browser's database on this device, and never go into a backup
+  var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog", "myMusic"];
   var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+|health)$/;
   var BK_MAX = 5e6;                       // bytes: more than a browser's whole storage for one site
   var BK = { pending: null, persisted: null, asked: false };

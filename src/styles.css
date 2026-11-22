@@ -2098,3 +2098,40 @@
   .b-stat.b-ox{color:var(--b-in);background:color-mix(in srgb,var(--b-in) 12%,transparent)}
   .b-stat.b-ox b{color:var(--b-in)}
   .b-stat.b-ox.low,.b-stat.b-ox.low b{color:var(--danger)}
+  /* your own music: Settings' list of songs, the thumbs after a session (the end screen, under Breathe's guide) */
+  .ym-list{display:flex;flex-direction:column;gap:6px}
+  .ym-row{display:flex;align-items:center;gap:10px;padding:4px 4px 4px 2px;border-radius:12px;min-width:0}
+  .ym-row[data-away="1"] .ym-nm b{color:var(--text-dim)}
+  .ym-b{display:inline-flex;align-items:center;justify-content:center;flex:none;width:44px;height:44px;border-radius:12px;border:0;background:var(--bg-2);color:var(--text-dim);cursor:pointer}
+  .ym-b svg.i{width:18px;height:18px}
+  .ym-b.ym-away{background:none;cursor:default;color:var(--text-faint)}
+  .ym-play[aria-pressed="true"]{background:var(--panel-3);color:var(--text)}
+  .ym-b:focus-visible,.ym-th:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .ym-nm{display:flex;flex-direction:column;gap:2px;flex:1 1 auto;width:0;min-width:0}
+  .ym-nm b{font-size:14px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ym-nm small{font-size:12.5px;color:var(--text-faint);line-height:1.4}
+  .ym-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .ym-act .btn{min-height:44px}
+  .ym-act .sup-tag{margin-left:6px}
+  .ym-none,.ym-tot{margin:0}
+  .ym-msg:empty{display:none}
+  .ym-rate{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--relax) 8%,transparent)}
+  .ym-rate-h{margin:0;font-size:13.5px;color:var(--text-dim);line-height:1.45}
+  .ym-rate-h b{color:var(--text)}
+  .ym-rrow{display:flex;align-items:center;gap:8px;min-width:0}
+  .ym-rrow .ym-nm{display:block;width:0;font-size:14px;font-weight:650;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ym-th{display:inline-flex;align-items:center;justify-content:center;flex:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--text-dim);cursor:pointer}
+  .ym-th svg.i{width:19px;height:19px}
+  .ym-th.ym-dn svg.i{transform:rotate(180deg)}
+  .ym-th[aria-pressed="true"]{background:var(--panel-3);color:var(--relax);border-color:var(--relax)}
+  .ym-th.ym-dn[aria-pressed="true"]{color:var(--text);border-color:var(--text-dim)}
+  .ym-said{margin:0}
+  .ym-said:empty{display:none}
+  #sDone .ym-rate{margin-top:14px}
+  .b-ym-row[hidden]{display:none}
+  .b-stage.focus .b-ym-row{display:none!important}
+  /* breath-led sound: its row under the guide, and the choice of what listens */
+  .b-led-row svg.i{color:var(--relax)}
+  .b-led-seg button{min-height:44px}
+  .b-led-src{margin-top:8px}
+  .b-led-why{display:inline-block;min-height:24px;color:var(--text-dim);text-decoration:underline;text-underline-offset:3px}

@@ -147,6 +147,12 @@
     out.push(fdEntry("sound", "Music in the background", "Background sound · slow, steady, lively or matched",
       ["Music made on your device, with no words: soft chords, a low note and plucked notes, slow for sleep and calm, steady for focus, lively for energy. It plays under practices, breathing sessions and tracks, and a practice can keep its own."], "#st-amb",
       { ic: "sounds", col: "var(--relax)", w: 1.05, tags: "music tempo bpm beats song songs tune melody chords ambient generative slow steady lively focus energy calm background", sup: true }));
+    out.push(fdEntry("sound", YM_NAME, "Settings · songs from this device, under any session",
+      ["Add songs from this device: they stay in this browser, play offline under practices, breathing sessions and tracks, and in Music Break, and a thumbs up or down after each session decides which come up more often."], "#st-mymusic",
+      { ic: "sounds", col: "var(--relax)", w: 1.05, tags: "my music own songs song playlist favourite mp3 m4a aac wav audio file files add tracks liked thumbs preference chosen choose", sup: true }));
+    out.push(fdEntry("breath", BLS_NAME, "Breathe · music that follows your breathing and slows it",
+      ["The music's chords swell as you breathe in and ebb as you breathe out, while the guide starts at your own pace, found by the phone on your belly or the microphone, and slows gently towards your resonance pace. Experimental."], "#breathe",
+      { ic: "breathe", col: "var(--b-in)", w: 1, tags: "breath led adaptive biofeedback music follows breathing slow down slower pace resonance swell loudness belly microphone experimental", sup: true }));
     out.push(fdEntry("breath", "Scenes", "Breathe, practices and Settings · clouds, water, leaves, a forest, a fractal, flowers, a fire",
       ["Scenes to watch, drawn on your device and moving slowly: on Breathe the scene moves with your breath, in a practice it takes the place of the orb, and in Settings you pick the ones you find restful."], "#st-scenes",
       { ic: "leaf", col: "var(--b-in)", w: 1.05, alias: SCN_NAME, tags: "scene scenes visual visuals nature clouds sky water lake sea ripples leaves tree branch forest mist misty ridge mountains fractal fractals flowers roses fire fireplace flames embers restful restorative soft fascination video", sup: true }));

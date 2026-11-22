@@ -1825,27 +1825,29 @@
     {
       id: "music-break", name: "Music Break", lengths: [10, 15, 20], min: 10, strength: 3, sup: true,
       tone: "relax", noTap: true,
-      music: function (d) { return pChoice(d, "tempo"); },     // the music plays all through, at the tempo chosen here (music.js)
+      music: function (d) { return pChoice(d, "tempo"); },     // the music plays all through, at the tempo chosen here, or your own songs (music.js, yourmusic.js)
       optNote: "Your tempo is kept for it.",
-      alias: "Music for stress", words: "music listen listening song songs tune tunes melody chords ambient relax relaxing stress tempo slow calm heart rate pulse eyes closed break pause",
-      blurb: "Ten to twenty minutes with your eyes closed and soft music made on your device, slow unless you pick another tempo. With a heart sensor, the end shows your heart rate at the start and the end, against your usual.",
+      alias: "Music for stress", words: "music listen listening song songs tune tunes melody chords ambient relax relaxing stress tempo slow calm heart rate pulse eyes closed break pause own favourite playlist",
+      blurb: "Ten to twenty minutes with your eyes closed and soft music made on your device, slow unless you pick another tempo, or songs of your own. With a heart sensor, the end shows your heart rate at the start and the end, against your usual.",
       parts: "Settle in · Listen, eyes closed · Come back",
       needs: [["sounds", "Speakers or headphones", "the music plays on either; headphones close out the room"],
         ["pulse", "Heart sensor", "optional: your heart rate at the start and the end, against your usual"]],
       choices: [
-        { key: "tempo", label: "Music", def: "slow",
+        { key: "tempo", label: "Music", def: "slow", redraw: true,     // the page drawn again, so the note fits the choice
           note: function (d) {
             return {
               slow: "Slow, about 60 beats a minute: the tempo that goes with calm. Pick another if you like it better, since music you like does more.",
               steady: "Steady, about 96 beats a minute, the tempo Entrain plays for focus. Music you like does more, so keep it if you enjoy it.",
-              lively: "Lively, about 124 beats a minute, with a soft pulse: the tempo for energy. Music you like does more, so keep it if you enjoy it."
+              lively: "Lively, about 124 beats a minute, with a soft pulse: the tempo for energy. Music you like does more, so keep it if you enjoy it.",
+              own: ymHereN() ? "Your own songs, from Your own music in Settings, picked by chance and more often the ones you've liked. Music you choose yourself is what the research rates highest."
+                : "Your own songs, once you add some under Your own music in Settings; until then it plays slow music made on your device."
             }[pChoice(d, "tempo")];
           },
-          opts: [["slow", "Slow"], ["steady", "Steady"], ["lively", "Lively"]] }
+          opts: [["slow", "Slow"], ["steady", "Steady"], ["lively", "Lively"], ["own", "Yours"]] }
       ],
-      build: function (min) { return mbSteps(min || 10); },
+      build: function (min) { return mbSteps(min || 10, pChoice(this, "tempo") === "own" && ymHereN() > 0); },
       end: "Welcome back. Notice how you feel now.",
-      how: "Settle in for 45 seconds and let your eyes close, then simply listen, with a few quiet words now and then, while music made on your device plays: soft chords, a low note under them and sparse plucked notes, never quite the same twice, slow (60 beats a minute) unless you pick steady (96) or lively (124). In the last 50 seconds the music softens and you come back and open your eyes. With a heart sensor connected, the end shows your heart rate over the first two minutes and the last two, against your usual for Music Break. The volume is the background sound's, in the quick controls while it runs.",
+      how: "Settle in for 45 seconds and let your eyes close, then simply listen, with a few quiet words now and then, while music made on your device plays: soft chords, a low note under them and sparse plucked notes, never quite the same twice, slow (60 beats a minute) unless you pick steady (96) or lively (124). Or pick Yours for songs of your own, added under Your own music in Settings, with a thumbs up or down for each at the end. In the last 50 seconds the music softens and you come back and open your eyes. With a heart sensor connected, the end shows your heart rate over the first two minutes and the last two, against your usual for Music Break. The volume is the background sound's, in the quick controls while it runs.",
       ev: "Across two meta-analyses of 104 randomised trials, music, mostly listening, lowered the body's signs of stress with a small-to-medium effect and how stressed people felt with a medium one, and of the body's signs it lowered heart rate most clearly. With a music therapist the effect was larger, across 47 studies. In one EEG study, slow music raised theta and alpha at the front of the head and fast music raised beta and gamma. Music people like raises brain-wave power more than music they dislike, so the tempo you enjoy is the one to pick. The studies used recorded music, often chosen by the researchers or the listeners; the music here is made on your device, and hasn't been tested itself.",
       cite: "de Witte et al. 2020 · de Witte et al. 2022 · Yang et al. 2025 · Kučikienė & Praninskienė 2018"
     },

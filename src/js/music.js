@@ -16,11 +16,13 @@
      plays it throughout, at the tempo you pick. It's a new technique, so it opens with a donation
      (supporter.js); until this device is unlocked, a choice kept from before stays silent.
      For other features: musStart(opts), musStop(fade), musTempo(bpm, glide) and musSwell(level, secs).
+     Yours, the songs you've added in Settings, is one more choice once a song is on this device: musWant
+     names it, and yourmusic.js plays them in place of the music made here.
   ------------------------------------------------------------------------------ */
 
   var MUS_BPM = { slow: 60, steady: 96, lively: 124 };
   var MUS_KINDS = [["off", "Off"], ["aim", "Matched"], ["slow", "Slow"], ["steady", "Steady"], ["lively", "Lively"]];
-  var MUS_SHORT = { aim: "Matched music", slow: "Slow music", steady: "Steady music", lively: "Lively music" };
+  var MUS_SHORT = { aim: "Matched music", slow: "Slow music", steady: "Steady music", lively: "Lively music", own: "Your own music" };
   var MUS_NAME = "Music made on your device";          // the unlock dialog: "… is one of the new techniques."
   var MUS_NOTE = "Made on your device, with no words. Matched follows what the session is for: slow for sleep and calm, steady for focus, lively for energy.";
   var MUS_MAJ = [0, 2, 4, 5, 7, 9, 11];                 // the major scale, in semitones above its keynote
@@ -51,7 +53,7 @@
   var MUS = { on: false, own: "", bpm: 60, to: 60, rate: 0, b0: 0, t0: 0, at: 0, plan: 0, q: [], st: null, fix: "", timer: 0,
     bus: null, lvl: null, run: null, pad: null, swell: 1, lv: 1, log: [], nz: null };
 
-  function musOk(k) { return k === "off" || k === "aim" || k === "slow" || k === "steady" || k === "lively"; }
+  function musOk(k) { return k === "off" || k === "aim" || k === "slow" || k === "steady" || k === "lively" || k === "own"; }
   // this device's choice, as kept, and as it plays: off until this device is unlocked
   function musStored() { var k = store.get("music"); return musOk(k) ? k : "off"; }
   function musDev() { return supOn() ? musStored() : "off"; }
@@ -249,7 +251,7 @@
   function musRetempo(bpm, t) { MUS.b0 = musBeatAt(t); MUS.t0 = t; MUS.bpm = bpm; }
   // as loud as the background sound, which has the one volume for both
   function musGain() { return ambGain() * 0.9; }
-  function musVolNow() { if (MUS.bus && A.ctx) MUS.bus.gain.setTargetAtTime(musGain(), A.ctx.currentTime, 0.08); }
+  function musVolNow() { if (MUS.bus && A.ctx) MUS.bus.gain.setTargetAtTime(musGain(), A.ctx.currentTime, 0.08); ymVolNow(); }
   function musTick() {
     if (!MUS.on || !A.ctx) return;
     var ctx = A.ctx, now = ctx.currentTime;
@@ -371,12 +373,18 @@
     } else if (ambActive()) { k = musStored(); goal = musGoal(); }
     else return null;
     if (!musOk(k) || k === "off") return null;
+    if (k === "own") {                               // your own songs (yourmusic.js); with none on this device, music matched to the session
+      if (ymCan()) return { own: true, lvl: s && typeof s.musLvl === "number" ? s.musLvl : 1 };
+      k = "aim";
+    }
     return { bpm: s && s.bpm ? s.bpm : MUS_BPM[k === "aim" ? musAim(goal) : k], lvl: s && typeof s.musLvl === "number" ? s.musLvl : 1 };
   }
   // called with the background sound (ambSync): starts, stops or changes the tempo, unless a feature plays it its own way
   function musSync() {
-    if (MUS.own) return;
+    if (MUS.own) { ymSync(null); return; }          // a feature playing the music its own way keeps your songs out too
     var w = musWant();
+    ymSync(w && w.own ? w : null);                   // your own songs, when Yours is chosen (yourmusic.js)
+    if (w && w.own) w = null;
     if (!w) { if (MUS.on) musStop(1.5); return; }
     if (MUS.on) {
       musLevel(w.lvl, 4);
@@ -388,11 +396,13 @@
   }
 
   /* ----- what it looks like ----- */
-  // the buttons: off, matched and the three tempos, the cup on all but Off while this device is locked.
+  // the buttons: off, matched and the three tempos, and Yours once a song of your own is on this device (or it's the
+  // choice), the cup on all but Off while this device is locked.
   // scope: "dev" for this device's choice (handled here), "prac" for a practice's own (practice.js)
+  function musKinds(cur) { return MUS_KINDS.concat(ymHereN() > 0 || cur === "own" ? [["own", "Yours"]] : []); }
   function musSeg(id, cur, scope) {
     return '<div class="mini-seg mus-seg"' + (id ? ' id="' + id + '"' : "") + ' data-mus-for="' + scope + '" role="group" aria-label="Music">' +
-      MUS_KINDS.map(function (k) {
+      musKinds(cur).map(function (k) {
         return '<button type="button" data-mus="' + k[0] + '" aria-pressed="' + (k[0] === cur) + '">' + k[1] + (k[0] !== "off" ? supTag(true) : "") + "</button>";
       }).join("") + "</div>";
   }
@@ -402,10 +412,10 @@
   }
   // the player's list
   function musSelFill(sel) {
-    var key = String(supOn());
+    var key = supOn() + "|" + musKinds(musDev()).length;
     if (sel.getAttribute("data-k") !== key) {
-      sel.innerHTML = MUS_KINDS.map(function (k) {
-        return '<option value="' + k[0] + '">' + (k[0] === "off" ? "None" : k[0] === "aim" ? "Matched to the session" : k[1] + ", " + MUS_BPM[k[0]] + " a minute") +
+      sel.innerHTML = musKinds(musDev()).map(function (k) {
+        return '<option value="' + k[0] + '">' + (k[0] === "off" ? "None" : k[0] === "aim" ? "Matched to the session" : k[0] === "own" ? "Your own music" : k[1] + ", " + MUS_BPM[k[0]] + " a minute") +
           (k[0] !== "off" && !supOn() ? " · with a donation" : "") + "</option>";
       }).join("");
       sel.setAttribute("data-k", key);
@@ -417,6 +427,9 @@
     var dev = musDev(), lock = !supOn();
     document.querySelectorAll(".mus-seg").forEach(function (g) {
       var cur = g.getAttribute("data-mus-for") === "prac" && P.view ? musShown(pOptsOf(P.view.id).music) : dev;
+      var yb = g.querySelector('button[data-mus="own"]'), yw = musKinds(cur).length > MUS_KINDS.length;
+      if (yw && !yb) g.insertAdjacentHTML("beforeend", '<button type="button" data-mus="own" aria-pressed="false">Yours</button>');   // a song of your own added, or the last one removed
+      else if (!yw && yb) yb.parentNode.removeChild(yb);
       g.querySelectorAll("button[data-mus]").forEach(function (b) {
         var k = b.getAttribute("data-mus"), tag = b.querySelector(".sup-tag");
         b.setAttribute("aria-pressed", k === cur ? "true" : "false");
@@ -431,7 +444,7 @@
   function musPick(k, then) {
     if (!musOk(k)) return;
     if (k === "off" || supOn()) { if (k !== "off") ensureCtx(); then(k); return; }
-    supGate(MUS_NAME, function () { ensureCtx(); then(k); }, function (ok) { if (ok) then(k); else musUI(); });
+    supGate(k === "own" ? YM_NAME : MUS_NAME, function () { ensureCtx(); then(k); }, function (ok) { if (ok) then(k); else musUI(); });
     musUI();                                         // meanwhile the buttons and the player's list show what still plays
   }
   // this device's choice: kept, a six-second taste of it when nothing plays, and an open practice page with no choice of its own follows it
@@ -443,12 +456,13 @@
   }
 
   /* ----- Music Break: eyes closed, the music, and your heart before and after ----- */
-  function mbSteps(min) {
+  // own: to your own songs (yourmusic.js), so the words leave out the chords and plucked notes made here
+  function mbSteps(min, own) {
     var T = (min || 10) * 60, a = 45, z = 50, L = T - a - z;
     return [
       G(a, "Settle in", [[0, "Sit or lie back comfortably, and let the music begin."], [14, "Rest the phone somewhere you can leave it, and let your hands rest."],
         [28, "Let your eyes close. The music will carry you from here."]], { vis: "glow", quiet: true }),
-      Ob(L, "Listen", [[0, "Let your attention rest on the music: the low notes, the chords, the soft plucked notes."],
+      Ob(L, "Listen", [[0, own ? "Let your attention rest on the music: its sounds, its rhythm, the way it moves." : "Let your attention rest on the music: the low notes, the chords, the soft plucked notes."],
         [frac(L, 0.2), "Let your breath find its own easy pace."], [frac(L, 0.45), "When your mind wanders, come back to one sound and follow it."],
         [frac(L, 0.75), "Let your face, shoulders and hands soften. Just listen."]], { vis: "glow", dim: true, quiet: true, nobell: true }),
       G(z, "Come back", [[0, "The music is coming to an end. Take a slightly deeper breath."], [16, "Move your fingers and toes, and stretch if you like."],

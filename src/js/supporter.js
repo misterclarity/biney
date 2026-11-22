@@ -297,6 +297,7 @@
     egUI();                                                   // the Heart page's headband button (eeg.js)
     mvtUI();                                                  // the qigong moves' cups in the routine builder (movement.js)
     aqUI(); oxUI();                                           // room air, the reminder, the oximeter, and the focus pages' slots (air.js)
+    ymUI(); blsUI();                                          // your own music's Add button, and breath-led sound's switch (yourmusic.js, breathled.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }

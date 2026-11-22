@@ -87,6 +87,7 @@
     }
     if (B.swings.length) e.swing = +avg(B.swings.map(function (x) { return x.amp; })).toFixed(1);
     if (B.coh.length) e.coh = +avg(B.coh).toFixed(2);
+    blsHist(e);                                  // breath-led sound: a pace of its own, from yours (breathled.js)
     hAdd(e);
   }
   // a track, the primer or a built beat: the time actually listened, once it stops for good

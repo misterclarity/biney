@@ -2181,6 +2181,43 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .b-stat.b-ox{color:var(--b-in);background:color-mix(in srgb,var(--b-in) 12%,transparent)}
   .b-stat.b-ox b{color:var(--b-in)}
   .b-stat.b-ox.low,.b-stat.b-ox.low b{color:var(--danger)}
+  /* your own music: Settings' list of songs, the thumbs after a session (the end screen, under Breathe's guide) */
+  .ym-list{display:flex;flex-direction:column;gap:6px}
+  .ym-row{display:flex;align-items:center;gap:10px;padding:4px 4px 4px 2px;border-radius:12px;min-width:0}
+  .ym-row[data-away="1"] .ym-nm b{color:var(--text-dim)}
+  .ym-b{display:inline-flex;align-items:center;justify-content:center;flex:none;width:44px;height:44px;border-radius:12px;border:0;background:var(--bg-2);color:var(--text-dim);cursor:pointer}
+  .ym-b svg.i{width:18px;height:18px}
+  .ym-b.ym-away{background:none;cursor:default;color:var(--text-faint)}
+  .ym-play[aria-pressed="true"]{background:var(--panel-3);color:var(--text)}
+  .ym-b:focus-visible,.ym-th:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .ym-nm{display:flex;flex-direction:column;gap:2px;flex:1 1 auto;width:0;min-width:0}
+  .ym-nm b{font-size:14px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ym-nm small{font-size:12.5px;color:var(--text-faint);line-height:1.4}
+  .ym-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .ym-act .btn{min-height:44px}
+  .ym-act .sup-tag{margin-left:6px}
+  .ym-none,.ym-tot{margin:0}
+  .ym-msg:empty{display:none}
+  .ym-rate{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--relax) 8%,transparent)}
+  .ym-rate-h{margin:0;font-size:13.5px;color:var(--text-dim);line-height:1.45}
+  .ym-rate-h b{color:var(--text)}
+  .ym-rrow{display:flex;align-items:center;gap:8px;min-width:0}
+  .ym-rrow .ym-nm{display:block;width:0;font-size:14px;font-weight:650;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ym-th{display:inline-flex;align-items:center;justify-content:center;flex:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--text-dim);cursor:pointer}
+  .ym-th svg.i{width:19px;height:19px}
+  .ym-th.ym-dn svg.i{transform:rotate(180deg)}
+  .ym-th[aria-pressed="true"]{background:var(--panel-3);color:var(--relax);border-color:var(--relax)}
+  .ym-th.ym-dn[aria-pressed="true"]{color:var(--text);border-color:var(--text-dim)}
+  .ym-said{margin:0}
+  .ym-said:empty{display:none}
+  #sDone .ym-rate{margin-top:14px}
+  .b-ym-row[hidden]{display:none}
+  .b-stage.focus .b-ym-row{display:none!important}
+  /* breath-led sound: its row under the guide, and the choice of what listens */
+  .b-led-row svg.i{color:var(--relax)}
+  .b-led-seg button{min-height:44px}
+  .b-led-src{margin-top:8px}
+  .b-led-why{display:inline-block;min-height:24px;color:var(--text-dim);text-decoration:underline;text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -2225,6 +2262,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5H5z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
   <symbol id="i-voice" viewBox="0 0 24 24"><path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4 3.5v-3.5H6.5a2 2 0 0 1-2-2z"/><path d="M8.5 10.5h7"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 17.5V6.3l10-2.1v11.2"/><circle cx="6.7" cy="17.6" r="2.3"/><circle cx="16.7" cy="15.5" r="2.3"/></symbol>
+  <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7.5 10.5v9h-3v-9z"/><path d="M7.5 10.5l3.7-6.2a1.6 1.6 0 0 1 2.9 1.2l-.8 3.7h5.2a1.7 1.7 0 0 1 1.7 2l-1.3 6.7a1.7 1.7 0 0 1-1.7 1.6H7.5"/></symbol>
   <symbol id="i-drum" viewBox="0 0 24 24"><path d="M7.5 2.8c5.2 3.6 5.2 14.8 0 18.4"/><path d="M7.5 2.8v18.4"/><circle cx="14.6" cy="15.4" r="3.2"/><path d="M5 9.8l5 1.6"/></symbol>
   <symbol id="i-nvc" viewBox="0 0 24 24"><path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4 3.5v-3.5H6.5a2 2 0 0 1-2-2z"/><path d="M12 13.4s-2.9-1.6-2.9-3.6a1.5 1.5 0 0 1 2.9-.6 1.5 1.5 0 0 1 2.9.6c0 2-2.9 3.6-2.9 3.6z"/></symbol>
   <symbol id="i-rain" viewBox="0 0 24 24"><path d="M7.2 14.8a3.9 3.9 0 0 1 .4-7.8 5.2 5.2 0 0 1 10 1.6 3.1 3.1 0 0 1-.4 6.2z"/><path d="M8.5 18l-.9 2.4M12.4 18l-.9 2.4M16.3 18l-.9 2.4"/></symbol>
@@ -2642,6 +2681,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             </div>
             <div class="b-dive b-ib" id="bIbRow" hidden><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span id="bIbTxt"></span></div>
             <div class="b-belly-row" id="bBellyRow" hidden><svg class="i" aria-hidden="true"><use href="#i-breathe"/></svg><span id="bBellyTxt" role="status"></span></div>
+            <div class="b-belly-row b-led-row" id="bLedRow" hidden><svg class="i" aria-hidden="true"><use href="#i-music"/></svg><span id="bLedTxt" role="status"></span></div>
+            <div class="b-ym-row" id="bYmRow" hidden></div>
             <div class="b-sensor" id="bSensorRow">
               <svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg>
               <span id="bSensorTxt">Connect a heart sensor to watch your heart rate follow your breath.</span>
@@ -2769,6 +2810,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         <div class="prime-row" id="bBellyOpt">
           <div class="prime-label">Phone on your belly</div>
           <label class="so-row so-tg b-belly"><span class="so-l"><span id="bBellyL">Count my breaths with the motion sensor</span><small>Lie back with the phone flat on your belly, screen up: each breath tilts it a little, and beside the guide you'll see whether you're following it, faster or slower.</small></span><input type="checkbox" class="sw" id="bBellyOn"></label>
+        </div>
+
+        <div class="prime-row" id="bLedOpt">
+          <div class="prime-label">Breath-led sound <span class="lt-exp">Experimental</span></div>
+          <label class="so-row so-tg b-led"><span class="so-l"><span id="bLedL">Music that follows your breathing</span><small>Its chords swell as you breathe in and ebb as you breathe out. The guide starts at your own pace, then slows gently towards your resonance pace while you keep up. It listens with the phone on your belly or the microphone.</small></span><input type="checkbox" class="sw" id="bLedOn"></label>
+          <div class="b-led-src" id="bLedSrcRow" hidden>
+            <div class="mini-seg b-led-seg" id="bLedSrc" role="group" aria-label="Follow my breathing with"><button type="button" data-v="belly" aria-pressed="true">Phone on my belly</button><button type="button" data-v="mic" aria-pressed="false">Microphone</button></div>
+          </div>
+          <p class="hint"><span id="bLedHint"></span> <a class="b-led-why" href="#l-mymusic">What the research says</a></p>
         </div>
 
         <div class="prime-row">
@@ -3208,6 +3258,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-nature">Nature sounds</a>
             <a href="#l-sleepsnd">Sound and sleep</a>
             <a href="#l-music">Music</a>
+            <a href="#l-mymusic">Your own music</a>
             <a href="#l-scenes">Scenes</a>
             <a href="#l-restore">Nature breaks</a>
             <a href="#l-light">Light colour</a>
@@ -3363,7 +3414,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <tr class="ln-sense"><th colspan="3" scope="rowgroup">Sound</th></tr>
                 <tr class="ln-row"><th scope="row"><b>Slow-tempo music</b> <small>Relaxation (alpha, theta)</small></th><td>Moderate to strong</td><td><a href="#practice/music-break">Music Break</a>, and slow <a href="#st-amb">background music</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Fast-tempo music</b> <small>Energy, focus (beta, gamma)</small></th><td>Moderate</td><td>Steady or lively <a href="#st-amb">background music</a></td></tr>
-                <tr class="ln-row"><th scope="row"><b>Music you choose yourself</b> <small>Stress relief</small></th><td>Strong</td><td class="ln-lo">Learn only</td></tr>
+                <tr class="ln-row"><th scope="row"><b>Music you choose yourself</b> <small>Stress relief</small></th><td>Strong</td><td><a href="#st-mymusic">Your own music</a>, under any session and in <a href="#practice/music-break">Music Break</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Pink noise timed to deep sleep</b> <small>Deeper sleep, memory</small></th><td>Promising (needs EEG)</td><td class="ln-lo">Learn only: <a href="#l-leftout">why</a>, and <a href="#l-sleepsnd">a fading sound instead</a></td></tr>
                 <tr class="ln-row"><th scope="row"><b>Binaural, isochronic or monaural beats</b> <small>Varies with the target</small></th><td>Mixed</td><td><a href="#sounds">Beat tracks</a>, <a href="#l-iso">on speakers too</a></td></tr>
               </tbody>
@@ -4090,6 +4141,39 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               falls near a beat's carrier tone moves an octave away, so the music leaves a binaural beat alone.
             </p>
 
+            <h3 id="l-mymusic">Your own music, and music that follows your breath</h3>
+            <p>
+              Of the three ways to use music, the guide behind Entrain's new techniques rates music you choose yourself as the
+              strongest for stress relief, because liked music works better: in EEG studies, music a listener likes raises
+              brain-wave power more than music they dislike (Kučikienė &amp; Praninskienė, 2018). So Entrain can play your own
+              songs. Add them under <a href="#st-mymusic">Your own music</a> in Settings: they're kept in this browser on your
+              device and play offline, nothing is uploaded, and a backup keeps only their names and your thumbs. Choose Yours
+              under Music, in Settings, on Breathe, in the player or in a practice's Options, or in
+              <a href="#practice/music-break">Music Break</a>, and they play under practices, breathing sessions and tracks at
+              the background sound's volume, picked by chance. After each session, a thumbs up or down for each song that played
+              steers what comes next: a song you've liked comes up more often, up to five times as often, and one you've turned
+              down is left out while there are others. Songs with few words tend to sit better under spoken guidance, and under a
+              binaural beat, soft music keeps the beat's tones clear.
+            </p>
+            <p>
+              Music can also follow your breathing. In one study, 19 adults worked on a demanding task while ambient music made
+              by a computer rose and fell in loudness, by about 6&nbsp;dB, with their breathing, read from a chest strap. Every
+              version slowed their breathing compared with their own baseline, most of all the one that swelled at three
+              quarters of each person's own breathing rate, and measures of arousal (heart rate, skin conductance and slow brain
+              potentials) fell with it (Leslie et al., 2019). The guide rates breath-adaptive music, music that follows and
+              gently slows your breathing, as early but promising.
+            </p>
+            <p>
+              <a href="#breathe">Breath-led sound</a>, on Breathe, borrows that idea. With the phone on your belly or the
+              microphone listening, the guide starts at your own breathing pace, keeps it for a minute, then slows by about a
+              breath a minute each minute towards your resonance pace (your resonance test's, or 5.5 a minute), and waits
+              whenever you're breathing faster than it. The music made on your device plays under it, its chords swelling as you
+              breathe in and ebbing as you breathe out. With the phone on your belly they follow the belly itself, once Entrain
+              has learnt from your first guided breaths which way it tilts as you breathe in; with the microphone, which hears
+              each breath but not which way it goes, they follow the guide. It's marked experimental: the study used a chest
+              strap and no guide to follow, and Entrain's version hasn't been tested.
+            </p>
+
             <h3 id="l-scenes">Scenes to watch: nature, fractals, flowers and fire</h3>
             <p>
               What you look at matters too. In an early study, alpha waves, a sign of wakeful relaxation, were higher while
@@ -4797,6 +4881,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>de Witte, M., da Silva Pinho, A., Stams, G.-J., Moonen, X., Bos, A. E. R., &amp; van Hooren, S. (2022). Music therapy for stress reduction: a systematic review and meta-analysis. <em>Health Psychology Review</em>, 16(1), 134–159. <a href="https://doi.org/10.1080/17437199.2020.1846580" rel="noopener">DOI</a></li>
       <li>Yang, Z., Su, Q., Xie, J., Su, H., Huang, T., Han, C., Zhang, S., Zhang, K., &amp; Xu, G. (2025). Music tempo modulates emotional states as revealed through EEG insights. <em>Scientific Reports</em>, 15, 8276. <a href="https://doi.org/10.1038/s41598-025-92679-1" rel="noopener">DOI</a></li>
       <li>Kučikienė, D., &amp; Praninskienė, R. (2018). The impact of music on the bioelectrical oscillations of the brain. <em>Acta Medica Lituanica</em>, 25(2), 101–106. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6130927/" rel="noopener">PMC</a></li>
+      <li>Leslie, G., Ghandeharioun, A., Zhou, D., &amp; Picard, R. W. (2019). Engineering music to slow breathing and invite relaxed physiology. In <em>2019 8th International Conference on Affective Computing and Intelligent Interaction (ACII)</em> (pp. 1–7). IEEE. <a href="https://doi.org/10.1109/ACII.2019.8925531" rel="noopener">DOI</a> · <a href="https://arxiv.org/abs/1907.08844" rel="noopener">arXiv</a></li>
       <li>Ulrich, R. S. (1981). Natural versus urban scenes: Some psychophysiological effects. <em>Environment and Behavior</em>, 13(5), 523–556. <a href="https://doi.org/10.1177/0013916581135001" rel="noopener">DOI</a></li>
       <li>Chang, C.-Y., Hammitt, W. E., Chen, P.-K., Machnik, L., &amp; Su, W.-C. (2008). Psychophysiological responses and restorative values of natural environments in Taiwan. <em>Landscape and Urban Planning</em>, 85(2), 79–84. <a href="https://doi.org/10.1016/j.landurbplan.2007.09.010" rel="noopener">DOI</a></li>
       <li>Grassini, S., Segurini, G. V., &amp; Koivisto, M. (2022). Watching nature videos promotes physiological restoration: Evidence from the modulation of alpha waves in electroencephalography. <em>Frontiers in Psychology</em>, 13, 871143. <a href="https://doi.org/10.3389/fpsyg.2022.871143" rel="noopener">DOI</a></li>
@@ -6239,8 +6324,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!msOk()) return;
     var ms = navigator.mediaSession;
     var on = function (action, fn) { try { ms.setActionHandler(action, fn); } catch (e) {} };
-    on("play", function () { if (A.track && !A.playing) play(); });
-    on("pause", function () { if (A.playing) pause(); });
+    on("play", function () { if (A.track && !A.playing) play(); else ymSysPlay(); });
+    on("pause", function () { if (A.playing) pause(); else ymSysPause(); });     // a song of your own under a breathing session (yourmusic.js)
     on("stop", function () { if (A.track) hardStop(false); });
   }
   /* ------------------------------ builder ---------------------------- */
@@ -7258,9 +7343,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     bSetT("#bVisHint", s);
   }
   function syncTransport() {
-    var st = B.state;
-    bSetT("#bStart", st === "running" ? "Pause" : st === "paused" ? "Resume" : st === "done" ? "Start again" : "Start breathing");
-    $("#bReset").disabled = st === "idle";
+    var st = B.state, find = st === "idle" && BLS.phase === "find";     // breath-led sound waiting for your pace (breathled.js)
+    bSetT("#bStart", st === "running" ? "Pause" : st === "paused" ? "Resume" : st === "done" ? "Start again" : find ? "Begin now" : "Start breathing");
+    $("#bReset").disabled = st === "idle" && !find;
     settleSync(); ibBreatheSync();                  // I need to stop, while it runs (settle.js); rest between blocks (care.js)
   }
   function kindHint(k) {
@@ -7280,7 +7365,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   function updateHead() {
     var st = B.state, bt = breathTime(), k, name, hint, L = null;
-    if (st === "idle") { k = "ready"; name = "Ready"; hint = "Press start, then follow the shape."; }
+    if (st === "idle") {
+      var bh = blsHead();                           // breath-led sound, finding your pace first (breathled.js)
+      k = "ready"; name = bh ? bh[0] : "Ready"; hint = bh ? bh[1] : "Press start, then follow the shape.";
+    }
     else if (st === "done") { k = "done"; name = "Done"; hint = B.doneMsg; }
     else if (bt < 0) { k = "lead"; name = "Get ready"; hint = "Let your breath settle. First inhale in " + Math.ceil(-bt - 1e-6) + "…"; }
     else {
@@ -7326,7 +7414,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();
     else if (B.state === "paused") { if (!bSupGate("resume") && !dvGate("resume")) bResume(); }
-    else if (!bSupGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) { bFresh(); bResume(); }   // Start again: rest first? (care.js)
+    else if (!bSupGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) {   // Start again: rest first? (care.js)
+      if (!blsStart()) { bFresh(); bResume(); }      // breath-led sound starts at your own pace (breathled.js)
+    }
   }
 
   /* ----- a new technique's pattern (sup: true; supporter.js), not yet unlocked on this device: picking it,
@@ -7451,6 +7541,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     syncTransport(); updateHead(); draw();
   }
   function bStop() {
+    if (BLS.phase === "find") blsEnd(true);          // breath-led sound was still finding your pace (breathled.js)
     clearInterval(B.tick);
     cancelAnimationFrame(B.raf);
     cueOff();
@@ -13263,7 +13354,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "66e05e0f";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "5e7c749f";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -13826,6 +13917,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     egUI();                                                   // the Heart page's headband button (eeg.js)
     mvtUI();                                                  // the qigong moves' cups in the routine builder (movement.js)
     aqUI(); oxUI();                                           // room air, the reminder, the oximeter, and the focus pages' slots (air.js)
+    ymUI(); blsUI();                                          // your own music's Add button, and breath-led sound's switch (yourmusic.js, breathled.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }
@@ -15555,11 +15647,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      plays it throughout, at the tempo you pick. It's a new technique, so it opens with a donation
      (supporter.js); until this device is unlocked, a choice kept from before stays silent.
      For other features: musStart(opts), musStop(fade), musTempo(bpm, glide) and musSwell(level, secs).
+     Yours, the songs you've added in Settings, is one more choice once a song is on this device: musWant
+     names it, and yourmusic.js plays them in place of the music made here.
   ------------------------------------------------------------------------------ */
 
   var MUS_BPM = { slow: 60, steady: 96, lively: 124 };
   var MUS_KINDS = [["off", "Off"], ["aim", "Matched"], ["slow", "Slow"], ["steady", "Steady"], ["lively", "Lively"]];
-  var MUS_SHORT = { aim: "Matched music", slow: "Slow music", steady: "Steady music", lively: "Lively music" };
+  var MUS_SHORT = { aim: "Matched music", slow: "Slow music", steady: "Steady music", lively: "Lively music", own: "Your own music" };
   var MUS_NAME = "Music made on your device";          // the unlock dialog: "… is one of the new techniques."
   var MUS_NOTE = "Made on your device, with no words. Matched follows what the session is for: slow for sleep and calm, steady for focus, lively for energy.";
   var MUS_MAJ = [0, 2, 4, 5, 7, 9, 11];                 // the major scale, in semitones above its keynote
@@ -15590,7 +15684,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   var MUS = { on: false, own: "", bpm: 60, to: 60, rate: 0, b0: 0, t0: 0, at: 0, plan: 0, q: [], st: null, fix: "", timer: 0,
     bus: null, lvl: null, run: null, pad: null, swell: 1, lv: 1, log: [], nz: null };
 
-  function musOk(k) { return k === "off" || k === "aim" || k === "slow" || k === "steady" || k === "lively"; }
+  function musOk(k) { return k === "off" || k === "aim" || k === "slow" || k === "steady" || k === "lively" || k === "own"; }
   // this device's choice, as kept, and as it plays: off until this device is unlocked
   function musStored() { var k = store.get("music"); return musOk(k) ? k : "off"; }
   function musDev() { return supOn() ? musStored() : "off"; }
@@ -15788,7 +15882,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function musRetempo(bpm, t) { MUS.b0 = musBeatAt(t); MUS.t0 = t; MUS.bpm = bpm; }
   // as loud as the background sound, which has the one volume for both
   function musGain() { return ambGain() * 0.9; }
-  function musVolNow() { if (MUS.bus && A.ctx) MUS.bus.gain.setTargetAtTime(musGain(), A.ctx.currentTime, 0.08); }
+  function musVolNow() { if (MUS.bus && A.ctx) MUS.bus.gain.setTargetAtTime(musGain(), A.ctx.currentTime, 0.08); ymVolNow(); }
   function musTick() {
     if (!MUS.on || !A.ctx) return;
     var ctx = A.ctx, now = ctx.currentTime;
@@ -15910,12 +16004,18 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     } else if (ambActive()) { k = musStored(); goal = musGoal(); }
     else return null;
     if (!musOk(k) || k === "off") return null;
+    if (k === "own") {                               // your own songs (yourmusic.js); with none on this device, music matched to the session
+      if (ymCan()) return { own: true, lvl: s && typeof s.musLvl === "number" ? s.musLvl : 1 };
+      k = "aim";
+    }
     return { bpm: s && s.bpm ? s.bpm : MUS_BPM[k === "aim" ? musAim(goal) : k], lvl: s && typeof s.musLvl === "number" ? s.musLvl : 1 };
   }
   // called with the background sound (ambSync): starts, stops or changes the tempo, unless a feature plays it its own way
   function musSync() {
-    if (MUS.own) return;
+    if (MUS.own) { ymSync(null); return; }          // a feature playing the music its own way keeps your songs out too
     var w = musWant();
+    ymSync(w && w.own ? w : null);                   // your own songs, when Yours is chosen (yourmusic.js)
+    if (w && w.own) w = null;
     if (!w) { if (MUS.on) musStop(1.5); return; }
     if (MUS.on) {
       musLevel(w.lvl, 4);
@@ -15927,11 +16027,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
 
   /* ----- what it looks like ----- */
-  // the buttons: off, matched and the three tempos, the cup on all but Off while this device is locked.
+  // the buttons: off, matched and the three tempos, and Yours once a song of your own is on this device (or it's the
+  // choice), the cup on all but Off while this device is locked.
   // scope: "dev" for this device's choice (handled here), "prac" for a practice's own (practice.js)
+  function musKinds(cur) { return MUS_KINDS.concat(ymHereN() > 0 || cur === "own" ? [["own", "Yours"]] : []); }
   function musSeg(id, cur, scope) {
     return '<div class="mini-seg mus-seg"' + (id ? ' id="' + id + '"' : "") + ' data-mus-for="' + scope + '" role="group" aria-label="Music">' +
-      MUS_KINDS.map(function (k) {
+      musKinds(cur).map(function (k) {
         return '<button type="button" data-mus="' + k[0] + '" aria-pressed="' + (k[0] === cur) + '">' + k[1] + (k[0] !== "off" ? supTag(true) : "") + "</button>";
       }).join("") + "</div>";
   }
@@ -15941,10 +16043,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
   // the player's list
   function musSelFill(sel) {
-    var key = String(supOn());
+    var key = supOn() + "|" + musKinds(musDev()).length;
     if (sel.getAttribute("data-k") !== key) {
-      sel.innerHTML = MUS_KINDS.map(function (k) {
-        return '<option value="' + k[0] + '">' + (k[0] === "off" ? "None" : k[0] === "aim" ? "Matched to the session" : k[1] + ", " + MUS_BPM[k[0]] + " a minute") +
+      sel.innerHTML = musKinds(musDev()).map(function (k) {
+        return '<option value="' + k[0] + '">' + (k[0] === "off" ? "None" : k[0] === "aim" ? "Matched to the session" : k[0] === "own" ? "Your own music" : k[1] + ", " + MUS_BPM[k[0]] + " a minute") +
           (k[0] !== "off" && !supOn() ? " · with a donation" : "") + "</option>";
       }).join("");
       sel.setAttribute("data-k", key);
@@ -15956,6 +16058,9 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     var dev = musDev(), lock = !supOn();
     document.querySelectorAll(".mus-seg").forEach(function (g) {
       var cur = g.getAttribute("data-mus-for") === "prac" && P.view ? musShown(pOptsOf(P.view.id).music) : dev;
+      var yb = g.querySelector('button[data-mus="own"]'), yw = musKinds(cur).length > MUS_KINDS.length;
+      if (yw && !yb) g.insertAdjacentHTML("beforeend", '<button type="button" data-mus="own" aria-pressed="false">Yours</button>');   // a song of your own added, or the last one removed
+      else if (!yw && yb) yb.parentNode.removeChild(yb);
       g.querySelectorAll("button[data-mus]").forEach(function (b) {
         var k = b.getAttribute("data-mus"), tag = b.querySelector(".sup-tag");
         b.setAttribute("aria-pressed", k === cur ? "true" : "false");
@@ -15970,7 +16075,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   function musPick(k, then) {
     if (!musOk(k)) return;
     if (k === "off" || supOn()) { if (k !== "off") ensureCtx(); then(k); return; }
-    supGate(MUS_NAME, function () { ensureCtx(); then(k); }, function (ok) { if (ok) then(k); else musUI(); });
+    supGate(k === "own" ? YM_NAME : MUS_NAME, function () { ensureCtx(); then(k); }, function (ok) { if (ok) then(k); else musUI(); });
     musUI();                                         // meanwhile the buttons and the player's list show what still plays
   }
   // this device's choice: kept, a six-second taste of it when nothing plays, and an open practice page with no choice of its own follows it
@@ -15982,12 +16087,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
 
   /* ----- Music Break: eyes closed, the music, and your heart before and after ----- */
-  function mbSteps(min) {
+  // own: to your own songs (yourmusic.js), so the words leave out the chords and plucked notes made here
+  function mbSteps(min, own) {
     var T = (min || 10) * 60, a = 45, z = 50, L = T - a - z;
     return [
       G(a, "Settle in", [[0, "Sit or lie back comfortably, and let the music begin."], [14, "Rest the phone somewhere you can leave it, and let your hands rest."],
         [28, "Let your eyes close. The music will carry you from here."]], { vis: "glow", quiet: true }),
-      Ob(L, "Listen", [[0, "Let your attention rest on the music: the low notes, the chords, the soft plucked notes."],
+      Ob(L, "Listen", [[0, own ? "Let your attention rest on the music: its sounds, its rhythm, the way it moves." : "Let your attention rest on the music: the low notes, the chords, the soft plucked notes."],
         [frac(L, 0.2), "Let your breath find its own easy pace."], [frac(L, 0.45), "When your mind wanders, come back to one sound and follow it."],
         [frac(L, 0.75), "Let your face, shoulders and hands soften. Just listen."]], { vis: "glow", dim: true, quiet: true, nobell: true }),
       G(z, "Come back", [[0, "The music is coming to an end. Take a slightly deeper breath."], [16, "Move your fingers and toes, and stretch if you like."],
@@ -16011,6 +16117,842 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       X.MUS = MUS; X.MUS_FEEL = MUS_FEEL; X.MUS_BPM = MUS_BPM; X.musState = musState; X.musBar = musBar; X.musPlay = musPlay; X.musChord = musChord;
       X.musStart = musStart; X.musStop = musStop; X.musTempo = musTempo; X.musSwell = musSwell; X.musWant = musWant; X.musZone = musZone; X.musFree = musFree;
       X.musHz = musHz; X.musDev = musDev; X.musAim = musAim; X.mbSteps = mbSteps;
+    }
+  }
+  /* ------------------------------- your own music -------------------------------
+     Songs from this device, played under any session. The brain-wave guide rates music you choose
+     yourself as strong evidence for stress relief, because liked music works better than music
+     chosen for you (Learn, #l-mymusic), so Settings takes audio files from the device and keeps
+     them in this browser's own database (IndexedDB), where they play offline and nothing is sent
+     anywhere. The list of their names, lengths and thumbs is kept with the rest of the settings,
+     so a backup carries the names but never the files: restored on another phone, a song waits
+     there until its file is added again, and keeps its thumbs.
+     Chosen as Yours under Music (music.js: Settings, Breathe, the player, a practice's Options,
+     Music Break), a song plays through one audio element routed into the app's audio graph, so it
+     shares the background sound's volume, fades in and out with the session, and goes quiet with
+     I need to stop. Pausing keeps your place in the song; the next song is picked by chance,
+     weighted by your thumbs: one you've liked comes up more often (up to five times as often),
+     one you've turned down is left out while there are others.
+     After a practice, and under Breathe after a breathing session, each song that played for at
+     least 20 seconds gets a thumbs up and a thumbs down.
+     It's a new technique, so adding songs and choosing Yours open with a donation (supporter.js).
+  ------------------------------------------------------------------------------ */
+
+  var YM_NAME = "Your own music";                      // the unlock dialog: "… is one of the new techniques."
+  var YM_MAX = 40, YM_BIG = 80 * 1024 * 1024;          // songs on this device, and the largest file (bytes)
+  var YM_MIN = 20;                                     // seconds a song plays before it's asked about
+  var YM_TYPES = /\.(mp3|m4a|aac|mp4|wav|wave|ogg|oga|opus|flac|webm|weba|caf|aif|aiff)$/i;
+  /* list: the songs, as kept { id, name, secs, size, up, down, at }; here: the ones whose file is on this device;
+     db: the database, once open; el, src, g, lvl, out: the playing element and its way into the audio graph (g: this
+     run's fade, lvl: a session's level, out: the volume); on: playing for a session (or a taste in Settings); cur: the
+     song in the element; url: its object URL; stopAt: when it last stopped (a pause keeps your place for a while);
+     gen: guards timers from an earlier start; segs: what played and when, for the end screens; votes: the thumbs
+     given, by occasion; taste: a song tried in Settings; bless: the element unlocked for Safari; bFrom, bWas: Breathe's
+     session, watched for its end; occ: Breathe's last session's occasion; msg: what Settings says about the last add. */
+  var YM = { list: [], here: {}, bad: {}, db: null, dbTried: false, el: null, src: null, g: null, lvl: null, out: null, lv: 1,
+    on: false, cur: "", url: "", stopAt: 0, gen: 0, segs: [], votes: {}, taste: "", bless: "", blessing: false, sys: false,
+    bFrom: 0, bWas: "idle", occ: "", busy: false, msg: "", err: "" };
+
+  /* ----- the list, kept with the settings (names only) ----- */
+  function ymId() { return (Date.now().toString(36) + Math.random().toString(36).slice(2, 7)).slice(-12); }
+  function ymLoadList() {
+    var l = [];
+    try { var v = JSON.parse(store.get("myMusic") || "[]"); if (Array.isArray(v)) l = v; } catch (e) {}
+    YM.list = l.filter(function (s) { return s && typeof s === "object" && /^[a-z0-9]{1,16}$/.test(s.id) && typeof s.name === "string"; }).map(function (s) {
+      return { id: s.id, name: s.name.slice(0, 120), secs: Math.max(0, +s.secs || 0), size: Math.max(0, +s.size || 0),
+        up: Math.max(0, Math.round(+s.up || 0)), down: Math.max(0, Math.round(+s.down || 0)), at: +s.at || 0 };
+    }).slice(0, 200);
+  }
+  function ymSaveList() { store.set("myMusic", JSON.stringify(YM.list)); }
+  function ymGet(id) { for (var i = 0; i < YM.list.length; i++) if (YM.list[i].id === id) return YM.list[i]; return null; }
+  // the songs that can play on this device
+  function ymHereList() { return YM.list.filter(function (s) { return YM.here[s.id] && !YM.bad[s.id]; }); }
+  function ymHereN() { return ymHereList().length; }
+  // whether Yours can play: unlocked, with a song here
+  function ymCan() { return supOn() && ymHereN() > 0; }
+  // a name from a file's: without its extension, its underscores as spaces
+  function ymNameOf(f) { return String(f || "").replace(/\.[a-z0-9]{2,5}$/i, "").replace(/[_]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 80) || "A song"; }
+  // a song's standing, from its thumbs: liked counts up to five times as likely, turned down left out
+  function ymScore(s) { return (s.up || 0) - (s.down || 0); }
+  function ymWeight(s) { var n = ymScore(s); return n > 0 ? 1 + Math.min(n, 4) : n < 0 ? 0 : 1; }
+  function ymStanding(s) {
+    var n = ymScore(s);
+    return n > 0 ? "liked" + (n > 1 ? " " + n + " times" : "") + ", so it comes up more often" : n < 0 ? "turned down, so it plays only when there's nothing else" : "";
+  }
+  /* The next song, by chance, weighted by your thumbs; not the one just played (not) while another may play, so a
+     song turned down stays out even then (pure but for Math.random; r, from 0 to 1, stands in for it in the tests) */
+  function ymPick(not, r) {
+    var c = ymHereList(), add = function (a, b) { return a + b; };
+    if (!c.length) return "";
+    var w = c.map(ymWeight);
+    if (!w.reduce(add, 0)) w = c.map(function () { return 1; });      // every one turned down: they play anyway, in turn
+    if (not && c.length > 1) {
+      var w2 = w.map(function (x, i) { return c[i].id === not ? 0 : x; });
+      if (w2.reduce(add, 0) > 0) w = w2;
+    }
+    var sum = w.reduce(add, 0), x = (r === undefined ? Math.random() : r) * sum;
+    for (var i = 0; i < c.length; i++) { x -= w[i]; if (x < 0) return c[i].id; }
+    return c[c.length - 1].id;
+  }
+
+  /* ----- the files, in this browser's database ----- */
+  function ymDb(then) {
+    if (YM.db) { then(YM.db); return; }
+    if (!window.indexedDB) { YM.err = "nodb"; then(null); return; }
+    try {
+      var rq = indexedDB.open("entrain-music", 1);
+      rq.onupgradeneeded = function () {
+        var db = rq.result;
+        if (!db.objectStoreNames.contains("meta")) db.createObjectStore("meta", { keyPath: "id" });
+        if (!db.objectStoreNames.contains("data")) db.createObjectStore("data", { keyPath: "id" });
+      };
+      rq.onsuccess = function () { YM.db = rq.result; YM.err = ""; then(YM.db); };
+      rq.onerror = function () { YM.err = "nodb"; then(null); };
+      rq.onblocked = function () { YM.err = "nodb"; then(null); };
+    } catch (e) { YM.err = "nodb"; then(null); }
+  }
+  // which files are here: the list learns them, and a file the list has lost (a backup restored from before it was
+  // added) comes back into the list with its name
+  function ymScan(then) {
+    ymDb(function (db) {
+      if (!db) { YM.here = {}; if (then) then(); return; }
+      try {
+        var out = [], rq = db.transaction("meta", "readonly").objectStore("meta").openCursor();
+        rq.onsuccess = function () {
+          var c = rq.result;
+          if (c) { out.push(c.value); c.continue(); return; }
+          YM.here = {};
+          var add = false;
+          out.forEach(function (m) {
+            if (!m || !m.id) return;
+            YM.here[m.id] = true;
+            if (!ymGet(m.id)) { YM.list.push({ id: m.id, name: String(m.name || "A song").slice(0, 120), secs: +m.secs || 0, size: +m.size || 0, up: 0, down: 0, at: +m.at || Date.now() }); add = true; }
+          });
+          if (add) ymSaveList();
+          if (then) then();
+        };
+        rq.onerror = function () { if (then) then(); };
+      } catch (e) { if (then) then(); }
+    });
+  }
+  function ymRead(id, then) {
+    ymDb(function (db) {
+      if (!db) { then(null); return; }
+      try {
+        var rq = db.transaction(["meta", "data"], "readonly"), m = null, d = null;
+        rq.objectStore("meta").get(id).onsuccess = function (e) { m = e.target.result || null; };
+        rq.objectStore("data").get(id).onsuccess = function (e) { d = e.target.result || null; };
+        rq.oncomplete = function () { then(m && d && d.data ? { type: m.type, data: d.data } : null); };
+        rq.onerror = function () { then(null); };
+      } catch (e) { then(null); }
+    });
+  }
+  function ymPut(meta, data, then) {
+    ymDb(function (db) {
+      if (!db) { then("nodb"); return; }
+      try {
+        var tx = db.transaction(["meta", "data"], "readwrite");
+        tx.objectStore("meta").put(meta);
+        tx.objectStore("data").put({ id: meta.id, data: data });
+        tx.oncomplete = function () { then(""); };
+        tx.onabort = tx.onerror = function () { then(tx.error && tx.error.name === "QuotaExceededError" ? "full" : "fail"); };
+      } catch (e) { then(e && e.name === "QuotaExceededError" ? "full" : "fail"); }
+    });
+  }
+  function ymDrop(id, then) {
+    ymDb(function (db) {
+      if (!db) { if (then) then(); return; }
+      try {
+        var tx = db.transaction(["meta", "data"], "readwrite");
+        tx.objectStore("meta").delete(id); tx.objectStore("data").delete(id);
+        tx.oncomplete = tx.onerror = tx.onabort = function () { if (then) then(); };
+      } catch (e) { if (then) then(); }
+    });
+  }
+
+  /* ----- adding songs ----- */
+  function ymIsAudio(f) { return /^audio\//.test(f.type || "") || YM_TYPES.test(f.name || ""); }
+  // whether this browser can play a file, and its length: an element of its own reads the file's header
+  function ymProbe(f, then) {
+    var url, el = new Audio(), done = false, t;
+    var fin = function (secs) {
+      if (done) return;
+      done = true; clearTimeout(t);
+      try { el.removeAttribute("src"); el.load(); } catch (e) {}
+      try { URL.revokeObjectURL(url); } catch (e) {}
+      then(secs);
+    };
+    try { url = URL.createObjectURL(f); } catch (e) { then(-1); return; }
+    el.preload = "metadata";
+    el.addEventListener("loadedmetadata", function () { fin(isFinite(el.duration) && el.duration > 0 ? el.duration : 0); });
+    el.addEventListener("error", function () { fin(-1); });
+    t = setTimeout(function () { fin(-1); }, 15000);
+    el.src = url;
+  }
+  function ymBytes(f, then) {
+    if (f.arrayBuffer) { f.arrayBuffer().then(then, function () { then(null); }); return; }
+    var r = new FileReader();
+    r.onload = function () { then(r.result); };
+    r.onerror = function () { then(null); };
+    r.readAsArrayBuffer(f);
+  }
+  /* Files from the picker, one at a time: a sound file this browser can play, not too large, not one that's here
+     already (by name); a song kept by name from a backup takes its file back, with its thumbs. */
+  function ymAdd(files) {
+    files = Array.prototype.slice.call(files || []);
+    if (!files.length || YM.busy) return;
+    YM.busy = true;
+    var said = [], added = [], i = 0;
+    ymMsg("Adding " + (files.length === 1 ? "the song" : files.length + " songs") + "…");
+    var next = function () {
+      if (i >= files.length) {
+        YM.busy = false;
+        if (added.length) said.unshift("Added " + (added.length === 1 ? "“" + added[0] + "”" : added.length + " songs") + ".");
+        ymMsg(said.join(" ")); ymUI(); musUI(); ambUI();
+        return;
+      }
+      var f = files[i++], name = ymNameOf(f.name), same = YM.list.filter(function (s) { return s.name.toLowerCase() === name.toLowerCase(); })[0];
+      if (!ymIsAudio(f)) { said.push("“" + name + "” isn't a sound file."); next(); return; }
+      if (f.size > YM_BIG) { said.push("“" + name + "” is over " + Math.round(YM_BIG / 1048576) + " MB, too large to keep here."); next(); return; }
+      if (same && YM.here[same.id]) { said.push("“" + name + "” is here already."); next(); return; }
+      if (!same && ymHereN() >= YM_MAX) { said.push("There's room for " + YM_MAX + " songs; remove one to add another."); next(); return; }
+      ymProbe(f, function (secs) {
+        if (secs < 0) { said.push("This browser can't play “" + name + "”. Most phones play MP3, AAC (M4A) and WAV files."); next(); return; }
+        ymBytes(f, function (buf) {
+          if (!buf) { said.push("“" + name + "” couldn't be read."); next(); return; }
+          var id = same ? same.id : ymId(), meta = { id: id, name: name, type: f.type || "", size: f.size, secs: Math.round(secs), at: Date.now() };
+          ymPut(meta, buf, function (err) {
+            if (err) { said.push(err === "full" ? "There wasn't room on this device for “" + name + "”." : err === "nodb" ? "This browser won't keep files for a page, so songs can't be added here." : "“" + name + "” couldn't be kept."); next(); return; }
+            YM.here[id] = true; delete YM.bad[id];
+            if (same) { same.secs = meta.secs; same.size = meta.size; }
+            else YM.list.push({ id: id, name: name, secs: meta.secs, size: meta.size, up: 0, down: 0, at: meta.at });
+            ymSaveList();
+            added.push(name);
+            next();
+          });
+        });
+      });
+    };
+    next();
+  }
+  function ymRemove(id) {
+    var s = ymGet(id);
+    if (!s) return;
+    YM.list = YM.list.filter(function (x) { return x.id !== id; });
+    delete YM.here[id];
+    ymSaveList();
+    if (YM.cur === id && YM.on) { if (YM.taste) ymHalt(); else ymNext(); }    // the song playing: the next one, or quiet
+    ymDrop(id, function () { ymUI(); musUI(); ambUI(); });
+    ymMsg("Removed “" + s.name + "”.");
+    ymUI(); musUI(); ambUI();
+  }
+
+  /* ----- playing: one element, into the audio graph ----- */
+  function ymGain() { return ambGain() * 0.8; }         // the background sound's volume; a recording sits a little under the music made here
+  function ymEl() {
+    if (YM.el) return YM.el;
+    var el = YM.el = new Audio();
+    el.preload = "auto";
+    el.addEventListener("ended", function () { if (YM.on && YM.taste) { ymHalt(); ymUI(); } else if (YM.on) ymNext(); });
+    el.addEventListener("error", function () {
+      if (YM.blessing || !YM.on || !YM.cur || el.getAttribute("src") !== YM.url) return;
+      YM.bad[YM.cur] = true;                           // a file this browser can't play after all: the next one
+      if (YM.taste) { ymHalt(); ymUI(); } else ymNext();
+    });
+    // the phone took the sound (a call, another app): the song waits for it, without a fight
+    el.addEventListener("pause", function () { if (YM.on && !YM.pausing && !el.ended && !YM.blessing && Date.now() - (YM.srcAt || 0) > 1000) { YM.sys = true; ymSegEnd(); } });
+    el.addEventListener("play", function () { if (YM.sys && YM.on) { YM.sys = false; ymSegStart(YM.cur); } });
+    return el;
+  }
+  // its way into the audio graph, once: fade, level, volume, out
+  function ymGraph() {
+    if (YM.out || !A.ctx) return;
+    var ctx = A.ctx;
+    YM.out = ctx.createGain(); YM.out.gain.value = ymGain(); YM.out.connect(ctx.destination);
+    YM.lvl = ctx.createGain(); YM.lvl.gain.value = YM.lv; YM.lvl.connect(YM.out);
+    YM.g = ctx.createGain(); YM.g.gain.value = 0; YM.g.connect(YM.lvl);
+    try { YM.src = ctx.createMediaElementSource(ymEl()); YM.src.connect(YM.g); } catch (e) { YM.src = null; }   // else the element's own volume
+  }
+  function ymVolNow() {
+    if (YM.out && A.ctx) YM.out.gain.setTargetAtTime(ymGain(), A.ctx.currentTime, 0.08);
+    if (YM.el && !YM.src) YM.el.volume = Math.max(0, Math.min(1, ymGain() * YM.lv / 0.72));
+  }
+  // a session's level (a practice's closing words over it), over about secs seconds
+  function ymLevel(x, secs) {
+    if (x === YM.lv) return;
+    YM.lv = x;
+    if (YM.lvl && A.ctx) YM.lvl.gain.setTargetAtTime(x, A.ctx.currentTime, Math.max(0.02, (secs || 1) / 3));
+    ymVolNow();
+  }
+  function ymFade(to, secs) {
+    if (!YM.g || !A.ctx) return;
+    var p = YM.g.gain, now = A.ctx.currentTime;
+    p.cancelScheduledValues(now); p.setValueAtTime(p.value, now); p.linearRampToValueAtTime(to, now + Math.max(0.02, secs));
+  }
+  // what played, and when: a song's stretch starts and ends with its sound
+  function ymSegStart(id) { if (id) YM.segs.push({ id: id, from: Date.now(), to: 0 }); if (YM.segs.length > 80) YM.segs.splice(0, 20); }
+  function ymSegEnd() { var s = YM.segs[YM.segs.length - 1]; if (s && !s.to) s.to = Date.now(); }
+  // the songs that played for at least YM_MIN seconds since t (ms), in the order they first played
+  function ymSince(t) {
+    var secs = {}, order = [], now = Date.now();
+    YM.segs.forEach(function (s) {
+      var a = Math.max(s.from, t), b = s.to || now;
+      if (b <= a) return;
+      if (!(s.id in secs)) { secs[s.id] = 0; order.push(s.id); }
+      secs[s.id] += (b - a) / 1000;
+    });
+    return order.filter(function (id) { return secs[id] >= YM_MIN && ymGet(id); });
+  }
+  /* Start (or carry on): within twenty minutes of a pause, the same song from where it was; otherwise the next one
+     by chance. The sound fades in over two seconds; t: a song to try in Settings, which plays once, through. */
+  function ymPlay(t) {
+    if (!ensureCtx()) return;
+    ymGraph();
+    var el = ymEl(), keep = !t && YM.cur && YM.here[YM.cur] && !YM.bad[YM.cur] && el.getAttribute("src") === YM.url && YM.url && !el.ended &&
+      Date.now() - YM.stopAt < 20 * 60000 && !YM.taste;
+    YM.on = true; YM.gen++; YM.taste = t || ""; YM.sys = false;
+    if (keep) ymGo(YM.gen);
+    else ymLoad(t || ymPick(YM.cur), YM.gen, 0);
+  }
+  function ymLoad(id, g, tries) {
+    if (!id || tries > 5) { if (YM.on) ymStop(0.3); ymUI(); return; }   // no song left that can play here
+    ymRead(id, function (rec) {
+      if (g !== YM.gen || !YM.on) return;
+      if (!rec) { delete YM.here[id]; ymUI(); musUI(); ymLoad(YM.taste ? "" : ymPick(id), g, tries + 1); return; }
+      var el = ymEl(), url;
+      try { url = URL.createObjectURL(new Blob([rec.data], { type: rec.type || "audio/mpeg" })); } catch (e) { YM.bad[id] = true; ymLoad(ymPick(id), g, tries + 1); return; }
+      if (YM.url) try { URL.revokeObjectURL(YM.url); } catch (e) {}
+      YM.url = url; YM.cur = id; YM.srcAt = Date.now();
+      el.src = url;
+      ymGo(g);
+    });
+  }
+  function ymGo(g) {
+    var el = ymEl();
+    ymFade(1, 2);
+    if (!YM.src) ymVolNow();
+    var p = el.play();
+    if (p && p.catch) p.catch(function (e) { if (g === YM.gen && e && e.name !== "AbortError") { YM.err = "play"; ymSegEnd(); ymUI(); } });
+    YM.err = "";
+    ymSegStart(YM.cur);
+    ymUI();
+  }
+  function ymNext() {
+    ymSegEnd();
+    if (!YM.on) return;
+    ymLoad(ymPick(YM.cur), YM.gen, 0);
+  }
+  // stop: the sound fades over `fade` seconds, then the element pauses where it is
+  function ymStop(fade) {
+    if (!YM.on) return;
+    var f = fade === undefined ? 1.5 : Math.max(0.02, fade), g = ++YM.gen;
+    YM.on = false; YM.taste = ""; YM.stopAt = Date.now();
+    ymSegEnd();
+    ymFade(0, f);
+    setTimeout(function () { if (g === YM.gen && YM.el) { YM.pausing = true; YM.el.pause(); YM.pausing = false; } }, f * 1000 + 120);
+    ymUI();
+  }
+  function ymHalt() { ymStop(0.3); }
+  // the phone's own controls (lock screen, notifications) pausing or playing a song when no track holds them (lockscreen.js)
+  function ymSysPause() { if (YM.on && YM.el && !YM.el.paused) YM.el.pause(); }
+  function ymSysPlay() { if (YM.on && YM.sys && YM.el) { var p = YM.el.play(); if (p && p.catch) p.catch(function () {}); } }
+  // I need to stop: gone in the same few tenths of a second as everything else
+  function ymHush(secs) { ymStop(secs === undefined ? 0.5 : secs); }
+
+  /* Following the music's choice (musSync, music.js, every half second with the background sound): w is
+     { lvl } while Yours should play, or null. A song tried in Settings plays on until it ends or is stopped. */
+  function ymSync(w) {
+    ymWatch();
+    if (!w) { if (YM.on && !YM.taste) ymStop(1.5); return; }
+    var lv = w.lvl === undefined ? 1 : w.lvl;
+    if (YM.taste) YM.taste = "";                     // a session began during a taste: it carries on as the session's
+    if (YM.on) { ymLevel(lv, 4); return; }
+    YM.lv = lv;                                      // a new start comes in at its level at once
+    if (YM.lvl && A.ctx) { YM.lvl.gain.cancelScheduledValues(A.ctx.currentTime); YM.lvl.gain.setValueAtTime(lv, A.ctx.currentTime); }
+    ymPlay();
+  }
+  /* Breathe's own sessions, watched for their start and end: after one in which a song played, the row under the
+     guide asks about it. A practice using the guide has its own end screen. */
+  function ymWatch() {
+    var st = B.state, run = (st === "running" || st === "paused") && !P.usesB && !B.finder;
+    if (run && YM.bWas !== "run") { YM.bWas = "run"; YM.bFrom = Date.now(); YM.occ = ""; ymBreatheRow(); }
+    else if (!run && YM.bWas === "run") {
+      YM.bWas = "idle";
+      var ids = ymSince(YM.bFrom);
+      YM.occ = ids.length ? "b" + YM.bFrom : "";
+      YM.bIds = ids;
+      ymBreatheRow();
+    }
+  }
+  // Safari on an iPhone plays an element only once a tap has started it: the first tap with Yours chosen plays a
+  // moment of silence on it, so a song can follow later, when its file has been read
+  function ymBlessTap() {
+    if (YM.bless || YM.on || !ymCan() || (musDev() !== "own" && !ymPracOwn())) return;
+    var el = ymEl();
+    if (!YM.blessUrl) {
+      var n = 800, b = new Uint8Array(44 + n), v = new DataView(b.buffer), tag = function (at, s) { for (var i = 0; i < 4; i++) b[at + i] = s.charCodeAt(i); };
+      tag(0, "RIFF"); v.setUint32(4, 36 + n, true); tag(8, "WAVE"); tag(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+      v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); tag(36, "data"); v.setUint32(40, n, true);
+      for (var i = 44; i < b.length; i++) b[i] = 128;
+      YM.blessUrl = URL.createObjectURL(new Blob([b], { type: "audio/wav" }));
+    }
+    ensureCtx(); ymGraph();
+    YM.bless = "pending"; YM.blessing = true;
+    el.src = YM.blessUrl;
+    var after = function () {
+      YM.blessing = false;
+      if (el.getAttribute("src") === YM.blessUrl) { YM.pausing = true; el.pause(); YM.pausing = false; el.removeAttribute("src"); }
+    };
+    var p = el.play();
+    if (p && p.then) p.then(function () { YM.bless = "done"; after(); }, function () { YM.bless = ""; after(); });
+    else { YM.bless = "done"; after(); }
+  }
+  // the practice on screen plays your songs: Yours under its Options, or as its own music (Music Break's)
+  function ymPracOwn() { var d = P.view; return !!d && (d.music ? pFn(d.music, d) === "own" : pOptsOf(d.id).music === "own"); }
+
+  /* ----- the thumbs ----- */
+  // a thumb given on one occasion (an end screen, Breathe's last session): a second tap takes it back
+  function ymVote(occ, id, v) {
+    var s = ymGet(id);
+    if (!s || !occ) return;
+    var o = YM.votes[occ] = YM.votes[occ] || {}, was = o[id] || 0;
+    if (was === 1) s.up = Math.max(0, s.up - 1);
+    if (was === -1) s.down = Math.max(0, s.down - 1);
+    var now = was === v ? 0 : v;
+    if (now === 1) s.up++;
+    if (now === -1) s.down++;
+    o[id] = now;
+    ymSaveList();
+    document.querySelectorAll('.ym-rate[data-ym-occ="' + occ + '"] [data-ym="' + id + '"] .ym-th').forEach(function (b) {
+      b.setAttribute("aria-pressed", +b.getAttribute("data-ym-v") === now ? "true" : "false");
+    });
+    var note = document.querySelector('.ym-rate[data-ym-occ="' + occ + '"] .ym-said');
+    if (note) note.textContent = now === 1 ? "Thanks: “" + s.name + "” will come up more often." : now === -1 ? "“" + s.name + "” will be left out while there are other songs." : "";
+    if (curView === "settings") ymUI();
+  }
+  // the songs that played, each with a thumbs up and a thumbs down
+  function ymRateHtml(ids, occ) {
+    if (!ids || !ids.length || !occ) return "";
+    var o = YM.votes[occ] || {}, th = '<svg class="i" aria-hidden="true"><use href="#i-thumb"/></svg>';
+    return '<div class="ym-rate" data-ym-occ="' + occ + '"><p class="ym-rate-h"><b>Your music.</b> How was it? Songs you like come up more often.</p>' +
+      ids.slice(0, 6).map(function (id) {
+        var s = ymGet(id), n = esc(s.name);
+        return '<div class="ym-rrow" data-ym="' + id + '"><span class="ym-nm">' + n + "</span>" +
+          '<button type="button" class="ym-th" data-ym-v="1" aria-pressed="' + (o[id] === 1) + '" aria-label="More of ' + n + '">' + th + "</button>" +
+          '<button type="button" class="ym-th ym-dn" data-ym-v="-1" aria-pressed="' + (o[id] === -1) + '" aria-label="Less of ' + n + '">' + th + "</button></div>";
+      }).join("") + '<p class="ym-said hint" role="status"></p></div>';
+  }
+  // the end screen of a practice (done.js): the songs since it started
+  function ymDoneCard() {
+    var at = P.startedAt || 0;
+    return at ? ymRateHtml(ymSince(at), "p" + at) : "";
+  }
+  // under Breathe's guide, after one of your own sessions
+  function ymBreatheRow() {
+    var row = $("#bYmRow");
+    if (!row) return;
+    var h = YM.occ && YM.bWas !== "run" ? ymRateHtml(YM.bIds || [], YM.occ) : "";
+    if (row.getAttribute("data-occ") !== YM.occ || !h) { row.innerHTML = h; row.setAttribute("data-occ", YM.occ); }
+    row.hidden = !h;
+  }
+
+  /* ----- Settings: the card ----- */
+  function ymMB(b) { return b >= 1048576 ? (b / 1048576).toFixed(b >= 10485760 ? 0 : 1) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB"; }
+  function ymStCard() {
+    return '<section class="st-card" id="st-mymusic" aria-labelledby="stYm"><h2 id="stYm">Your own music</h2>' +
+      '<p class="st-note">Music you like does more for you than music chosen for you. Add songs from this device, then choose Yours under Music, above, ' +
+      'on Breathe or in a practice\'s Options: they play under practices, breathing sessions and tracks, and in Music Break. <a href="#l-mymusic">Why your own</a></p>' +
+      '<p class="st-note">The files stay in this browser on this device and play offline; nothing is uploaded. A backup keeps their names and your thumbs, not the files.</p>' +
+      '<div class="ym-list" id="ymList"></div>' +
+      '<div class="ym-act"><button type="button" class="btn" id="ymAdd"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>Add music<span id="ymAddTag">' + supTag() + "</span></button>" +
+      '<input type="file" id="ymFile" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus,.flac,.webm" multiple hidden></div>' +
+      '<p class="st-note ym-msg" id="ymMsg" role="status">' + esc(YM.msg) + "</p></section>";
+  }
+  function ymMsg(s) { YM.msg = s || ""; bSetT("#ymMsg", YM.msg); }
+  function ymListHtml() {
+    if (!YM.list.length) return '<p class="hint ym-none">No songs yet. Music you love to relax to, focus with or move to: songs with few words often sit best under guidance.</p>';
+    var tot = 0, th = YM.list.map(function (s) {
+      var here = !!YM.here[s.id], n = esc(s.name), playing = YM.on && YM.cur === s.id, st = ymStanding(s);
+      if (here) tot += s.size;
+      return '<div class="ym-row" data-ym="' + s.id + '"' + (here ? "" : ' data-away="1"') + ">" +
+        (here ? '<button type="button" class="ym-b ym-play" data-ym-play aria-pressed="' + playing + '" aria-label="' + (playing ? "Stop " : "Play ") + n + '"><svg class="i" aria-hidden="true"><use href="#i-' + (playing ? "pause" : "play") + '"/></svg></button>' : '<span class="ym-b ym-away" aria-hidden="true"><svg class="i"><use href="#i-sounds"/></svg></span>') +
+        '<span class="ym-nm"><b>' + n + "</b><small>" + (here ? (s.secs ? fmt(s.secs) + " · " : "") + ymMB(s.size) + (YM.bad[s.id] ? " · this browser can't play it" : "") : "Not on this device: add the file again to play it here") +
+        (st ? " · " + st : "") + "</small></span>" +
+        '<button type="button" class="ym-b ym-del" data-ym-del aria-label="Remove ' + n + '"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>';
+    }).join("");
+    return th + '<p class="hint ym-tot">' + (ymHereN() === 1 ? "One song" : ymHereN() + " songs") + " on this device" + (tot ? ", " + ymMB(tot) : "") +
+      (YM.list.some(function (s) { return ymScore(s) !== 0; }) ? ". Songs you've liked come up more often, and ones you've turned down are left out while there are others." : ". After each session, a thumbs up or down for what played: songs you like come up more often.") + "</p>";
+  }
+  function ymUI() {
+    var l = $("#ymList");
+    if (l) l.innerHTML = ymListHtml();
+    var t = $("#ymAddTag");
+    if (t && t.innerHTML !== supTag()) t.innerHTML = supTag();
+    if (YM.err === "nodb") bSetT("#ymMsg", "This browser won't keep files for a page (a private window often can't), so songs can't be added here.");
+  }
+  function ymStWire() {
+    var add = $("#ymAdd"), f = $("#ymFile"), l = $("#ymList");
+    if (!add) return;
+    ymUI();
+    add.addEventListener("click", function () {
+      if (YM.busy) return;
+      supGate(YM_NAME, function () { f.value = ""; f.click(); }, function () { ymUI(); });   // the picker opens in the tap, once unlocked
+    });
+    f.addEventListener("change", function () { if (supOn()) ymAdd(f.files); });
+    l.addEventListener("click", function (e) {
+      var row = e.target.closest("[data-ym]"), id = row && row.getAttribute("data-ym");
+      if (!id) return;
+      if (e.target.closest("[data-ym-del]")) { ymRemove(id); return; }
+      if (e.target.closest("[data-ym-play]")) {
+        if (YM.on && YM.cur === id) { ymHalt(); return; }
+        if (!supOn()) return;
+        if (YM.on && !YM.taste) { ymMsg("Your music is playing for a session; it can be tried once that ends."); return; }
+        ymPlay(id);
+      }
+    });
+  }
+
+  function ymInit() {
+    ymLoadList();
+    SUP_EXTRA.push({ name: YM_NAME, href: "#st-mymusic" });          // Settings' list of what the donation unlocks
+    SETTLE_HUSH.push(ymHush);                                          // I need to stop: the song fades with everything else
+    ymScan(function () { ymUI(); musUI(); ambUI(); });
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest(".ym-rate .ym-th") : null;
+      if (b) { var occ = b.closest(".ym-rate").getAttribute("data-ym-occ"), id = b.closest("[data-ym]").getAttribute("data-ym"); ymVote(occ, id, +b.getAttribute("data-ym-v")); }
+    });
+    ["touchend", "click"].forEach(function (k) { document.addEventListener(k, ymBlessTap, true); });
+    if (window.__entrain) {                                             // for automated tests only
+      var X = window.__entrain;
+      X.YM = YM; X.ymPick = ymPick; X.ymWeight = ymWeight; X.ymSince = ymSince; X.ymAdd = ymAdd; X.ymScan = ymScan; X.ymLoadList = ymLoadList; X.ymHereN = ymHereN; X.ymNameOf = ymNameOf;
+    }
+  }
+  /* ------------------------------ breath-led sound ------------------------------
+     On Breathe, an experimental way to slow down with music. The brain-wave guide rates
+     breath-adaptive music, music that follows the user's breathing and gently slows it, as early but
+     promising; the study behind it played ambient music whose loudness rose and fell with each
+     person's breathing, and the version that swelled a little slower than their own pace slowed
+     their breathing most (Learn, #l-mymusic). Here:
+     - Listening: the phone on your belly (motion.js) or the microphone (breath-mic.js) finds your
+       own breathing pace. Start breathing with it on, and if neither has your pace yet, Breathe waits
+       ("Breathe as usual") while the music begins, for up to 75 seconds, then starts the guide.
+     - The pace: the guide starts at the pace it found (40% in, 60% out, the resonance test's split),
+       stays there for a minute, then slows by a quarter of a breath a minute every 15 seconds, so
+       a breath a minute each minute, towards your resonance pace (the test's answer, or 5.5). While
+       the sensor reads you as faster than the guide, it holds where it is until you're with it. It
+       never speeds up, and a pace or pattern changed by hand mid-session is yours from then on.
+     - The sound: the music made on the device (music.js), slow, whose chords swell as you breathe in
+       and ebb as you breathe out, by about 6 dB, as in the study. With the phone on your belly they
+       follow the belly itself: the tilt's main direction, smoothed, set between its lowest and highest
+       over the last breath and a half. Which way is in is learnt from the guide: once you've followed
+       it for a while, the tilt goes up or down with its breaths in, and from then on the chords follow
+       you, in step or not. Until then, and with the microphone (which hears each breath but not which
+       way it goes), they swell with the guide, which started at your own pace.
+     It's a new technique, so turning it on opens with a donation (supporter.js). Nothing is recorded or kept
+     beyond the session's start and end pace, which go into the history.
+  ------------------------------------------------------------------------------ */
+
+  var BLS_NAME = "Breath-led sound";
+  var BLS_WAIT = 75;                       // seconds Breathe waits for your pace before starting at the pattern's
+  var BLS_HOLD = 60, BLS_EVERY = 15, BLS_STEP = 0.25;    // a minute at your pace, then a quarter of a breath a minute slower every 15 s
+  var BLS_WIN = 30;                        // seconds of the belly's tilt read at a time
+  var BLS_LP = null;
+  /* on: the switch (this device's; it works once unlocked); src: what listens, "belly" or "mic"; phase: off, find
+     (waiting for your pace) or run; t0: when it began waiting; from: what the guide started at ("sensor" or "pattern");
+     rate0, rate, target: breaths a minute where the guide started, where it is now, where it's heading; next: when it
+     may slow next; hold: holding while you're faster; hand: the pace was changed by hand; ph, pend: the guide's
+     phases it set, now and waiting for the next breath; v: the belly's main direction; sign: which way it goes as
+     you breathe in (0 until learnt); pairs: the belly's level beside the guide's, to learn it; lvl, how: the chords'
+     level and what leads it ("belly", "guide" or ""); last: the session before. */
+  var BLS = { on: false, src: "belly", phase: "off", t0: 0, from: "", rate0: 0, rate: 0, target: 0, next: 0, hold: false, hand: false,
+    ph: null, pend: null, v: null, sign: 0, pairs: [], corr: 0, corrAt: 0, lvl: 0.7, how: "", last: null, timer: 0 };
+
+  function blsOn() { return BLS.on && supOn(); }
+  function blsHasBelly() { return !!window.DeviceMotionEvent; }
+  function blsHasMic() { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
+  // the guide's breath at a pace: 40% in, 60% out, as the resonance test breathes (heart-charts.js)
+  function blsT(rate) { return findTimings(rate); }
+  function blsNum(r) { return motNum(r); }
+  // your pace, once the chosen sensor (or the other, if it's listening) is sure of it
+  function blsRateNow() {
+    var b = motBellyOk() ? MOT.est.rate : 0, m = micOk() ? MIC.est.rate : 0;
+    return BLS.src === "mic" ? m || b : b || m;
+  }
+  // a rougher reading, when waiting has run out
+  function blsRateRough() {
+    var b = MOT.belly && MOT.est && MOT.est.rate || 0, m = MIC.on && MIC.est && MIC.est.rate || 0;
+    return BLS.src === "mic" ? m || b : b || m;
+  }
+  function blsListening() { return BLS.src === "belly" ? MOT.belly : MIC.on || MIC.busy; }
+  // the chosen sensor can't read anything here: no motion access or readings, or no microphone
+  function blsSensorBad() {
+    if (BLS.src === "belly") return !blsHasBelly() || MOT.state === "denied" || MOT.state === "none";
+    return !blsHasMic() || (!MIC.on && !MIC.busy && !!MIC.err);
+  }
+  // start the chosen sensor, in the tap (Safari asks for motion access there; browsers ask for the microphone)
+  function blsListen() {
+    if (BLS.src === "belly") { if (!MOT.belly && blsHasBelly()) motBellySet(true); }
+    else if (!MIC.on && !MIC.busy && blsHasMic()) micStart();
+  }
+  function blsMusic(fade) { if (!MUS.on || MUS.own !== "breath") musStart({ feel: "slow", own: "breath", fade: fade }); }
+
+  /* ----- a session ----- */
+  // Start breathing (bToggle), with it on: true when it takes over the start
+  function blsStart() {
+    if (!blsOn() || P.usesB || B.finder || BC.long) return false;
+    if (BLS.phase === "find") { blsBegin(true); return true; }      // Begin now
+    if (B.state === "done") { B.state = "idle"; bFresh(); }
+    ensureCtx();
+    blsListen();
+    blsMusic(3); musSwell(0.7, 0.5);
+    if (blsRateNow()) { blsBegin(false); return true; }
+    BLS.phase = "find"; BLS.t0 = bNow();
+    blsTimer();
+    syncTransport(); updateHead(); blsUI();
+    return true;
+  }
+  // the guide begins: at your pace, or (with no reading, or Begin now before one) the pattern's
+  function blsBegin(now) {
+    var r = blsRateNow() || (now ? blsRateRough() : 0), start = r ? Math.max(3, Math.min(18, r)) : 60 / cycleOf(BC);
+    start = Math.round(start * 10) / 10;
+    BLS.from = r ? "sensor" : "pattern";
+    BLS.rate0 = BLS.rate = start;
+    BLS.target = Math.min(start, pResRate());
+    BLS.phase = "run"; BLS.hand = false; BLS.hold = false; BLS.pairs = []; BLS.corr = 0;
+    BLS.next = bNow() + B_LEAD + BLS_HOLD;
+    bFresh();
+    B.ph = BLS.ph = buildPhases(blsT(start)); BLS.pend = null;
+    planTotal(); renderLine();
+    bResume();
+    blsMusic(2);
+    blsTimer(); blsUI();
+  }
+  // a quarter of a breath a minute slower, from the next breath, unless you're still faster than the guide
+  function blsSlow(now) {
+    var g = 60 / B.ph.cycle, r = blsRateNow();
+    if (r && motVerdict(r, g) === "faster") { BLS.hold = true; BLS.next = now + 10; return; }
+    BLS.hold = false;
+    var nr = Math.max(BLS.target, Math.round((BLS.rate - BLS_STEP) * 100) / 100);
+    normalize(breathTime());
+    var ph = buildPhases(blsT(nr));
+    B.pending = BLS.pend = ph;
+    BLS.rate = nr; BLS.next = now + BLS_EVERY;
+  }
+  // the session ended (or the wait was cancelled): the music fades, and what it did is kept for the row
+  function blsEnd(cancel) {
+    if (BLS.phase === "run" && !cancel) BLS.last = { rate0: BLS.rate0, rate1: BLS.rate, from: BLS.from, hand: BLS.hand };
+    BLS.phase = "off"; BLS.pend = null;
+    clearInterval(BLS.timer); BLS.timer = 0;
+    if (MUS.own === "breath") musStop(2);
+    syncTransport(); updateHead(); blsUI();
+  }
+  function blsTimer() { clearInterval(BLS.timer); BLS.timer = setInterval(blsTick, 100); }
+  function blsTick() {
+    var now = bNow();
+    if (BLS.phase === "find") {
+      if (!blsOn() || P.usesB || B.state !== "idle") { blsEnd(true); return; }
+      if (blsRateNow()) { blsBegin(false); return; }
+      if (blsSensorBad() || now - BLS.t0 > BLS_WAIT) { blsBegin(true); return; }
+      blsPad(blsBelly());
+      updateHead(); blsUI();
+      return;
+    }
+    if (BLS.phase !== "run") { clearInterval(BLS.timer); BLS.timer = 0; return; }
+    if ((B.state !== "running" && B.state !== "paused") || P.usesB || B.finder) { blsEnd(false); return; }
+    if (!blsOn()) {                                                // turned off mid-session: the music goes, and the guide keeps the pace it's at
+      if (MUS.own === "breath") musStop(1.5);
+      BLS.hand = true;
+      return;
+    }
+    if (B.state === "paused") { if (MUS.on && MUS.own === "breath") musStop(1); }
+    else blsMusic(2);
+    // a pace or pattern changed by hand: the pace is yours from now on
+    if (B.ph === BLS.pend) { BLS.ph = BLS.pend; BLS.pend = null; }
+    if (!BLS.hand && (B.ph !== BLS.ph || (B.pending && B.pending !== BLS.pend))) BLS.hand = true;
+    var b = blsBelly(), bt = breathTime();
+    if (b && b.raw !== null && B.state === "running" && bt >= 0) blsLearn(b.raw, levelAt(bt), now);
+    blsPad(b);
+    if (B.state === "running" && !BLS.hand && now >= BLS.next && BLS.rate > BLS.target + 0.001) blsSlow(now);
+    blsUI();
+  }
+
+  /* ----- the belly's tilt, as the breath ----- */
+  /* The level of the belly's breath now, 0 to 1 (pure, for the tests): the last BLS_WIN seconds of the motion sensor's
+     readings (ten a second, { t, x, y, z }) on an even grid, each axis with its straight-line drift taken away and
+     smoothed (to 0.7 Hz, both ways, so nothing lags), reduced to the direction they move in most (kept pointing the
+     way it did last time, vPrev), and set between the lowest and highest of the last breath and a half at `rate` a
+     minute. raw: that level (null when the phone barely moves); v: the direction; amp: the swing, in m/s². */
+  function blsTilt(bins, vPrev, rate) {
+    var nb = bins.length;
+    if (nb < 100) return null;
+    var t1 = bins[nb - 1].t, t0 = Math.max(bins[0].t, t1 - BLS_WIN), n = Math.round((t1 - t0) * MOT_FS) + 1, j = 0, k;
+    if (n < 100) return null;
+    while (j < nb - 1 && bins[j + 1].t <= t0 + 1e-6) j++;
+    var xs = new Float64Array(n), ys = new Float64Array(n), zs = new Float64Array(n);
+    for (k = 0; k < n; k++) {
+      var t = t0 + k / MOT_FS;
+      while (j < nb - 1 && bins[j + 1].t <= t + 1e-6) j++;
+      xs[k] = bins[j].x; ys[k] = bins[j].y; zs[k] = bins[j].z;
+    }
+    if (!BLS_LP) BLS_LP = [sigBiquad("lp", 0.7, MOT_FS)];
+    var ax = [xs, ys, zs].map(function (a) { return sigZero(sigDetrend(a), BLS_LP, 20); }), C = [[0, 0, 0], [0, 0, 0], [0, 0, 0]], r, c;
+    for (r = 0; r < 3; r++) for (c = 0; c < 3; c++) { var sum = 0; for (k = 0; k < n; k++) sum += ax[r][k] * ax[c][k]; C[r][c] = sum / n; }
+    var v = vPrev ? vPrev.slice() : [C[0][0] + 1e-9, C[1][1] + 1e-9, C[2][2] + 1e-9];
+    for (var it = 0; it < 30; it++) {
+      var w = [0, 1, 2].map(function (q) { return C[q][0] * v[0] + C[q][1] * v[1] + C[q][2] * v[2]; }), nv = Math.sqrt(w[0] * w[0] + w[1] * w[1] + w[2] * w[2]);
+      if (!(nv > 0)) break;
+      v = w.map(function (x) { return x / nv; });
+    }
+    if (vPrev && v[0] * vPrev[0] + v[1] * vPrev[1] + v[2] * vPrev[2] < 0) v = v.map(function (x) { return -x; });
+    var per = rate > 0 ? 60 / rate : 8, m = Math.round(Math.max(6, Math.min(20, 1.5 * per)) * MOT_FS), lo = Infinity, hi = -Infinity, s = 0;
+    for (k = Math.max(0, n - m); k < n; k++) {
+      s = v[0] * ax[0][k] + v[1] * ax[1][k] + v[2] * ax[2][k];
+      if (s < lo) lo = s;
+      if (s > hi) hi = s;
+    }
+    var amp = hi - lo;
+    return { v: v, amp: amp, raw: amp > 0.05 ? Math.max(0, Math.min(1, (s - lo) / amp)) : null };    // under about a third of a degree, too faint to follow
+  }
+  // the belly's breath now, while the phone is on it
+  function blsBelly() {
+    if (BLS.src !== "belly" || !MOT.belly || MOT.state !== "ok" || (MOT.est && MOT.est.q === "moving")) return null;
+    var b = blsTilt(MOT.bins, BLS.v, MOT.est && MOT.est.rate);
+    if (b) BLS.v = b.v;
+    return b;
+  }
+  // how closely two lists move together, -1 to 1
+  function blsCorr(a, b) {
+    var n = a.length, ma = avg(a), mb = avg(b), sab = 0, saa = 0, sbb = 0;
+    for (var i = 0; i < n; i++) { var x = a[i] - ma, y = b[i] - mb; sab += x * y; saa += x * x; sbb += y * y; }
+    return saa > 0 && sbb > 0 ? sab / Math.sqrt(saa * sbb) : 0;
+  }
+  /* Which way is in: the belly's level beside the guide's over the last 30 seconds, once a second, from the guide's
+     second breath on. Following the guide, they rise and fall together one way or the other; once there are 20 seconds
+     of it, clearly one way (0.5 or more) sets the direction, and only clearly the other way (0.6 or more) for as long,
+     as when the phone is turned over, changes it. Breathing out of step with the guide shows no such link, and
+     teaches nothing. */
+  function blsLearn(raw, guide, now) {
+    if (breathTime() < B.ph.cycle) return;
+    BLS.pairs.push([raw, guide, now]);
+    while (BLS.pairs.length && BLS.pairs[0][2] < now - 30) BLS.pairs.shift();
+    if (now - BLS.corrAt < 1 || BLS.pairs.length < 40 || now - BLS.pairs[0][2] < 20) return;
+    BLS.corrAt = now;
+    var r = BLS.corr = blsCorr(BLS.pairs.map(function (p) { return p[0]; }), BLS.pairs.map(function (p) { return p[1]; })), sg = r > 0 ? 1 : -1;
+    if (!BLS.sign && Math.abs(r) >= 0.5) BLS.sign = sg;
+    else if (BLS.sign && sg !== BLS.sign && Math.abs(r) >= 0.6) BLS.sign = sg;
+  }
+  // the chords' level: the belly's breath once its direction is known, else the guide's, else steady
+  function blsPad(b) {
+    var lv = 0.7, how = "";
+    if (b && b.raw !== null && BLS.sign) { lv = BLS.sign > 0 ? b.raw : 1 - b.raw; how = "belly"; }
+    else if (BLS.phase === "run" && B.state === "running" && breathTime() >= 0) { lv = levelAt(breathTime()); how = "guide"; }
+    BLS.lvl = lv; BLS.how = how;
+    if (MUS.on && MUS.own === "breath") musSwell(0.5 + 0.5 * lv, 0.3);    // full on a breath in, half (6 dB down) at the end of a breath out
+  }
+
+  /* ----- Breathe's words for it ----- */
+  // the head of the guide while it waits for your pace (updateHead): [name, hint]
+  function blsHead() {
+    if (BLS.phase !== "find") return null;
+    var e = BLS.src === "mic" ? MIC.est : MOT.est, left = e && e.q === "listening" && e.left ? e.left : 0;
+    return ["Breathe as usual", left ? "Finding your pace: about " + left + (left === 1 ? " second" : " seconds") + " to go. The guide then begins at it."
+      : "Finding your pace. The guide begins at it as soon as it's clear, or press Begin now."];
+  }
+  // the session's history entry (history.js): breathing at its own pace, with where it began
+  function blsHist(e) {
+    if (BLS.phase !== "run") return;
+    e.id = "custom"; delete e.n;
+    e.rate = +BLS.rate.toFixed(1);
+    e.note = "breath-led from " + blsNum(BLS.rate0) + " a minute";
+  }
+  function blsSensorTxt() {
+    if (BLS.src === "belly") {
+      if (!blsHasBelly()) return "This device has no motion sensor a page can use: choose the microphone instead.";
+      if (MOT.state === "denied") return "Motion access wasn't given, so the phone can't feel your breathing. Turn Phone on your belly off and on again to be asked once more.";
+      if (MOT.state === "none") return "No motion readings are coming in, so the phone can't feel your breathing here. Most computers have no motion sensor: choose the microphone instead.";
+      return MOT.belly ? "Lie back and rest the phone flat on your belly, screen up, just below the ribs." : "The phone on your belly listens once you start.";
+    }
+    if (!blsHasMic()) return "This browser can't use a microphone here: choose the phone on your belly instead.";
+    if (!MIC.on && !MIC.busy && MIC.err) return "The microphone didn't start: Heart's Breath from the microphone says why.";
+    return MIC.on ? "Prop the phone 10 to 20 cm from your face, and breathe so it can hear you." : "The microphone listens once you start.";
+  }
+  function blsTxt() {
+    var src = BLS.src === "mic" ? "the microphone" : "the phone";
+    if (BLS.phase === "find") return "Breathe as you usually do. The music has begun, and the guide begins at your own pace once " + src + " has it. " + blsSensorTxt();
+    if (BLS.phase === "run") {
+      var s;
+      if (BLS.hand) s = "You've set the pace yourself, so the guide keeps it.";
+      else {
+        s = BLS.from === "sensor" ? "The guide began at your own pace, " + blsNum(BLS.rate0) + " breaths a minute" : "With no steady reading of your breathing, the guide began at the pattern's pace, " + blsNum(BLS.rate0) + " a minute";
+        if (BLS.rate > BLS.target + 0.001) s += BLS.hold ? ", and holds at " + blsNum(BLS.rate) + " until you're with it: let each breath out run a little longer."
+          : BLS.rate === BLS.rate0 && bNow() < BLS.next ? ", keeps it for a minute, then slows gently towards your resonance pace, " + blsNum(BLS.target) + "."
+          : ", and slows gently towards your resonance pace, " + blsNum(BLS.target) + ": now " + blsNum(BLS.rate) + ".";
+        else s += BLS.rate0 <= BLS.target + 0.001 ? ", at or below your resonance pace already, so it stays there." : ", and is now at your resonance pace, " + blsNum(BLS.target) + ".";
+      }
+      return s + (BLS.how === "belly" ? " The chords swell and ebb with your belly." :
+        BLS.src === "belly" && MOT.belly && MOT.state === "ok" ? " The chords swell with the guide until the phone has learnt which way your belly moves as you breathe in." :
+        BLS.src === "mic" && MIC.on ? " The chords swell with the guide: a microphone hears each breath, but not which way it goes." : " The chords swell with the guide.");
+    }
+    if (BLS.last && B.state !== "running" && B.state !== "paused") {
+      var L = BLS.last;
+      return "Last session, breath-led: the guide went from " + blsNum(L.rate0) + " to " + blsNum(L.rate1) + " breaths a minute" + (L.hand ? ", then kept the pace you set." : ".");
+    }
+    if (BC.long) return "Breath-led sound keeps to breathing with no long holds, so Swim & dive's range plays as set.";
+    return "Start breathing: the music begins, and the guide starts at your own pace, then slows gently while you keep up. " + blsSensorTxt();
+  }
+  function blsUI() {
+    var on = blsOn(), cb = $("#bLedOn");
+    if (!cb) return;
+    if (cb.checked !== on) cb.checked = on;
+    var l = $("#bLedL"), tag = l && l.querySelector(".sup-tag");
+    if (tag && supOn()) tag.parentNode.removeChild(tag);
+    else if (l && !tag && !supOn()) l.insertAdjacentHTML("beforeend", supTag(true));
+    $("#bLedSrcRow").hidden = !on;
+    document.querySelectorAll("#bLedSrc button[data-v]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-v") === BLS.src ? "true" : "false"); });
+    bSetT("#bLedHint", on ? blsSensorTxt() : "Experimental: early research, and Entrain's own way of doing it hasn't been tested.");
+    var row = $("#bLedRow");
+    row.hidden = !on;
+    if (on) bSetT("#bLedTxt", blsTxt());
+    // the settings' pace shows the guide's while it leads, and the pattern's again after
+    var lead = BLS.phase === "run" && !BLS.hand && B.ph;
+    if (lead) bSetT("#bRateV", (60 / B.ph.cycle).toFixed(1) + " breaths/min, breath-led");
+    else if (BLS.ratePut) syncRate();
+    BLS.ratePut = !!lead;
+  }
+  // the switch: on with a donation while locked, then the sensor in the same tap
+  function blsSet(on) {
+    if (!on) {
+      BLS.on = false; store.set("breathLed", "0");
+      if (BLS.phase === "find") blsEnd(true);
+      blsUI(); return;
+    }
+    var yes = function () {
+      BLS.on = true; store.set("breathLed", "1");
+      blsListen();
+      blsUI();
+    };
+    $("#bLedOn").checked = false;
+    supGate(BLS_NAME, yes, function (ok) { if (ok) yes(); else blsUI(); });
+  }
+  function blsSrc(v) {
+    if (v !== "belly" && v !== "mic") return;
+    BLS.src = v; store.set("breathLedSrc", v);
+    if (blsOn()) blsListen();
+    blsUI();
+  }
+
+  function blsInit() {
+    BLS.on = store.get("breathLed") === "1";
+    var s = store.get("breathLedSrc");
+    BLS.src = s === "mic" || s === "belly" ? s : blsHasBelly() ? "belly" : "mic";
+    SUP_EXTRA.push({ name: BLS_NAME, href: "#breathe" });              // Settings' list of what the donation unlocks
+    SETTLE_HUSH.push(function () { if (BLS.phase !== "off") blsEnd(BLS.phase === "find"); });   // I need to stop: it ends with the session
+    $("#bLedOn").addEventListener("change", function () { blsSet(this.checked); });
+    $("#bLedSrc").addEventListener("click", function (e) { var b = e.target.closest("button[data-v]"); if (b) blsSrc(b.getAttribute("data-v")); });
+    blsUI();
+    if (window.__entrain) {                                             // for automated tests only
+      var X = window.__entrain;
+      X.BLS = BLS; X.blsTilt = blsTilt; X.blsCorr = blsCorr; X.blsGuideLv = function () { return B.state === "running" && breathTime() >= 0 ? levelAt(breathTime()) : -1; };
     }
   }
   /* ------------------------------- sleep sounds -------------------------------
@@ -18380,27 +19322,29 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     {
       id: "music-break", name: "Music Break", lengths: [10, 15, 20], min: 10, strength: 3, sup: true,
       tone: "relax", noTap: true,
-      music: function (d) { return pChoice(d, "tempo"); },     // the music plays all through, at the tempo chosen here (music.js)
+      music: function (d) { return pChoice(d, "tempo"); },     // the music plays all through, at the tempo chosen here, or your own songs (music.js, yourmusic.js)
       optNote: "Your tempo is kept for it.",
-      alias: "Music for stress", words: "music listen listening song songs tune tunes melody chords ambient relax relaxing stress tempo slow calm heart rate pulse eyes closed break pause",
-      blurb: "Ten to twenty minutes with your eyes closed and soft music made on your device, slow unless you pick another tempo. With a heart sensor, the end shows your heart rate at the start and the end, against your usual.",
+      alias: "Music for stress", words: "music listen listening song songs tune tunes melody chords ambient relax relaxing stress tempo slow calm heart rate pulse eyes closed break pause own favourite playlist",
+      blurb: "Ten to twenty minutes with your eyes closed and soft music made on your device, slow unless you pick another tempo, or songs of your own. With a heart sensor, the end shows your heart rate at the start and the end, against your usual.",
       parts: "Settle in · Listen, eyes closed · Come back",
       needs: [["sounds", "Speakers or headphones", "the music plays on either; headphones close out the room"],
         ["pulse", "Heart sensor", "optional: your heart rate at the start and the end, against your usual"]],
       choices: [
-        { key: "tempo", label: "Music", def: "slow",
+        { key: "tempo", label: "Music", def: "slow", redraw: true,     // the page drawn again, so the note fits the choice
           note: function (d) {
             return {
               slow: "Slow, about 60 beats a minute: the tempo that goes with calm. Pick another if you like it better, since music you like does more.",
               steady: "Steady, about 96 beats a minute, the tempo Entrain plays for focus. Music you like does more, so keep it if you enjoy it.",
-              lively: "Lively, about 124 beats a minute, with a soft pulse: the tempo for energy. Music you like does more, so keep it if you enjoy it."
+              lively: "Lively, about 124 beats a minute, with a soft pulse: the tempo for energy. Music you like does more, so keep it if you enjoy it.",
+              own: ymHereN() ? "Your own songs, from Your own music in Settings, picked by chance and more often the ones you've liked. Music you choose yourself is what the research rates highest."
+                : "Your own songs, once you add some under Your own music in Settings; until then it plays slow music made on your device."
             }[pChoice(d, "tempo")];
           },
-          opts: [["slow", "Slow"], ["steady", "Steady"], ["lively", "Lively"]] }
+          opts: [["slow", "Slow"], ["steady", "Steady"], ["lively", "Lively"], ["own", "Yours"]] }
       ],
-      build: function (min) { return mbSteps(min || 10); },
+      build: function (min) { return mbSteps(min || 10, pChoice(this, "tempo") === "own" && ymHereN() > 0); },
       end: "Welcome back. Notice how you feel now.",
-      how: "Settle in for 45 seconds and let your eyes close, then simply listen, with a few quiet words now and then, while music made on your device plays: soft chords, a low note under them and sparse plucked notes, never quite the same twice, slow (60 beats a minute) unless you pick steady (96) or lively (124). In the last 50 seconds the music softens and you come back and open your eyes. With a heart sensor connected, the end shows your heart rate over the first two minutes and the last two, against your usual for Music Break. The volume is the background sound's, in the quick controls while it runs.",
+      how: "Settle in for 45 seconds and let your eyes close, then simply listen, with a few quiet words now and then, while music made on your device plays: soft chords, a low note under them and sparse plucked notes, never quite the same twice, slow (60 beats a minute) unless you pick steady (96) or lively (124). Or pick Yours for songs of your own, added under Your own music in Settings, with a thumbs up or down for each at the end. In the last 50 seconds the music softens and you come back and open your eyes. With a heart sensor connected, the end shows your heart rate over the first two minutes and the last two, against your usual for Music Break. The volume is the background sound's, in the quick controls while it runs.",
       ev: "Across two meta-analyses of 104 randomised trials, music, mostly listening, lowered the body's signs of stress with a small-to-medium effect and how stressed people felt with a medium one, and of the body's signs it lowered heart rate most clearly. With a music therapist the effect was larger, across 47 studies. In one EEG study, slow music raised theta and alpha at the front of the head and fast music raised beta and gamma. Music people like raises brain-wave power more than music they dislike, so the tempo you enjoy is the one to pick. The studies used recorded music, often chosen by the researchers or the listeners; the music here is made on your device, and hasn't been tested itself.",
       cite: "de Witte et al. 2020 · de Witte et al. 2022 · Yang et al. 2025 · Kučikienė & Praninskienė 2018"
     },
@@ -20746,6 +21690,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         '<button class="btn link sd-how" id="sdHow" aria-expanded="false" aria-controls="sdHowT">How to read this chart</button>' +
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
       egCard(r) +                                         // a headband's alpha and theta across the session (eeg.js)
+      ymDoneCard() +                                      // your own songs that played, each with a thumbs up and down (yourmusic.js)
       (r.nvc ? nvcCard(r.nvc) : "") +
       (r.stress ? "" : sdNext(d)) +
       (d.noQuote ? "" : qCard(d.reflect ? ROGERS : qPick())) +       // a Restoration Break ends with no words to read (nature.js)
@@ -23074,7 +24019,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         'or have one on its own: each goes on and off by itself, since people differ in which natural sounds they find pleasant. <a href="#l-nature">What the research says</a></p>' +
         '<p class="st-note">Music made on your device can play under them too, and a practice can keep a choice of its own under Options. ' +
         '<a href="#l-music">Music and the research</a></p>' + ambCtl() +
-      "</section>" + scnCard() + aqCard() +
+      "</section>" + ymStCard() + scnCard() + aqCard() +
       '<section class="st-card" aria-labelledby="stR"><h2 id="stR">Reflections</h2>' +
         pToggle("stKeep", "Keep a copy on this device", g.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing.") +
       "</section>" +
@@ -23096,6 +24041,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     supStWire();
     hcStWire();
     scnStWire();
+    ymStWire();
     ltStWire();
     aqStWire();
     bkWire();
@@ -24718,6 +25664,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("sound", "Music in the background", "Background sound · slow, steady, lively or matched",
       ["Music made on your device, with no words: soft chords, a low note and plucked notes, slow for sleep and calm, steady for focus, lively for energy. It plays under practices, breathing sessions and tracks, and a practice can keep its own."], "#st-amb",
       { ic: "sounds", col: "var(--relax)", w: 1.05, tags: "music tempo bpm beats song songs tune melody chords ambient generative slow steady lively focus energy calm background", sup: true }));
+    out.push(fdEntry("sound", YM_NAME, "Settings · songs from this device, under any session",
+      ["Add songs from this device: they stay in this browser, play offline under practices, breathing sessions and tracks, and in Music Break, and a thumbs up or down after each session decides which come up more often."], "#st-mymusic",
+      { ic: "sounds", col: "var(--relax)", w: 1.05, tags: "my music own songs song playlist favourite mp3 m4a aac wav audio file files add tracks liked thumbs preference chosen choose", sup: true }));
+    out.push(fdEntry("breath", BLS_NAME, "Breathe · music that follows your breathing and slows it",
+      ["The music's chords swell as you breathe in and ebb as you breathe out, while the guide starts at your own pace, found by the phone on your belly or the microphone, and slows gently towards your resonance pace. Experimental."], "#breathe",
+      { ic: "breathe", col: "var(--b-in)", w: 1, tags: "breath led adaptive biofeedback music follows breathing slow down slower pace resonance swell loudness belly microphone experimental", sup: true }));
     out.push(fdEntry("breath", "Scenes", "Breathe, practices and Settings · clouds, water, leaves, a forest, a fractal, flowers, a fire",
       ["Scenes to watch, drawn on your device and moving slowly: on Breathe the scene moves with your breath, in a practice it takes the place of the orb, and in Settings you pick the ones you find restful."], "#st-scenes",
       { ic: "leaf", col: "var(--b-in)", w: 1.05, alias: SCN_NAME, tags: "scene scenes visual visuals nature clouds sky water lake sea ripples leaves tree branch forest mist misty ridge mountains fractal fractals flowers roses fire fireplace flames embers restful restorative soft fascination video", sup: true }));
@@ -26255,6 +27207,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
     if (B.swings.length) e.swing = +avg(B.swings.map(function (x) { return x.amp; })).toFixed(1);
     if (B.coh.length) e.coh = +avg(B.coh).toFixed(2);
+    blsHist(e);                                  // breath-led sound: a pace of its own, from yours (breathled.js)
     hAdd(e);
   }
   // a track, the primer or a built beat: the time actually listened, once it stops for good
@@ -26883,8 +27836,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   // them to another, and a restore here keeps them; and this screen's real size, matched to a bank
   // card for Soothing Touch (touch.js), which would be wrong on another screen
   var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock", "touchPx", "co2", "airAt"];
-  // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
-  var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
+  // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged.
+  // myMusic is your own songs' names, lengths and thumbs (yourmusic.js): the files themselves stay in this
+  // browser's database on this device, and never go into a backup
+  var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog", "myMusic"];
   var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+|health)$/;
   var BK_MAX = 5e6;                       // bytes: more than a browser's whole storage for one site
   var BK = { pending: null, persisted: null, asked: false };
@@ -27117,7 +28072,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit], ["the movement practices", mvtInit],["music", musInit], ["scenes", scnInit], ["the screen light", ltInit], ["the phone's camera", camInit], ["the motion sensor", motInit], ["the headband", egInit], ["room air and the oximeter", aqInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit], ["the movement practices", mvtInit],["music", musInit], ["your own music", ymInit], ["breath-led sound", blsInit], ["scenes", scnInit], ["the screen light", ltInit], ["the phone's camera", camInit], ["the motion sensor", motInit], ["the headband", egInit], ["room air and the oximeter", aqInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

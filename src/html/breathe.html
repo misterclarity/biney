@@ -53,6 +53,8 @@
             </div>
             <div class="b-dive b-ib" id="bIbRow" hidden>{i:warn}<span id="bIbTxt"></span></div>
             <div class="b-belly-row" id="bBellyRow" hidden>{i:breathe}<span id="bBellyTxt" role="status"></span></div>
+            <div class="b-belly-row b-led-row" id="bLedRow" hidden>{i:music}<span id="bLedTxt" role="status"></span></div>
+            <div class="b-ym-row" id="bYmRow" hidden></div>
             <div class="b-sensor" id="bSensorRow">
               {i:pulse}
               <span id="bSensorTxt">Connect a heart sensor to watch your heart rate follow your breath.</span>
@@ -180,6 +182,15 @@
         <div class="prime-row" id="bBellyOpt">
           <div class="prime-label">Phone on your belly</div>
           <label class="so-row so-tg b-belly"><span class="so-l"><span id="bBellyL">Count my breaths with the motion sensor</span><small>Lie back with the phone flat on your belly, screen up: each breath tilts it a little, and beside the guide you'll see whether you're following it, faster or slower.</small></span><input type="checkbox" class="sw" id="bBellyOn"></label>
+        </div>
+
+        <div class="prime-row" id="bLedOpt">
+          <div class="prime-label">Breath-led sound <span class="lt-exp">Experimental</span></div>
+          <label class="so-row so-tg b-led"><span class="so-l"><span id="bLedL">Music that follows your breathing</span><small>Its chords swell as you breathe in and ebb as you breathe out. The guide starts at your own pace, then slows gently towards your resonance pace while you keep up. It listens with the phone on your belly or the microphone.</small></span><input type="checkbox" class="sw" id="bLedOn"></label>
+          <div class="b-led-src" id="bLedSrcRow" hidden>
+            <div class="mini-seg b-led-seg" id="bLedSrc" role="group" aria-label="Follow my breathing with"><button type="button" data-v="belly" aria-pressed="true">Phone on my belly</button><button type="button" data-v="mic" aria-pressed="false">Microphone</button></div>
+          </div>
+          <p class="hint"><span id="bLedHint"></span> <a class="b-led-why" href="#l-mymusic">What the research says</a></p>
         </div>
 
         <div class="prime-row">

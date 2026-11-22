@@ -183,8 +183,8 @@ const M = p => E(p, () => { const m = window.__entrain.MUS; return { on: m.on, b
         dots: document.querySelectorAll('.si-ev .dot.on, .si-ev .dots .on').length, needs: document.querySelector('.si-need').textContent.replace(/\s+/g, ' '), mus: !!document.querySelector('#sOptMus') }));
       ok(pg.title === 'Music Break' && /^Calm · Sound · 10 min$/.test(pg.kind) && pg.go === 'Unlock to start' && pg.note && /eyes closed/.test(pg.blurb) && /104 randomised trials/.test(pg.ev) && /hasn't been tested itself/.test(pg.ev),
         'Music Break\'s page is free to read, its evidence honest about the music itself, and Start reads Unlock to start: ' + pg.kind + ' · ' + pg.go);
-      ok(/Speakers or headphones/.test(pg.needs) && /Heart sensor optional/.test(pg.needs) && !pg.mus && await seg(p, '#sOpts [data-choice=tempo] button') === 'Slow* | Steady | Lively',
-        'it needs speakers or headphones and, optionally, a heart sensor; its own tempo choice (slow first) stands in for the Music row: ' + pg.needs);
+      ok(/Speakers or headphones/.test(pg.needs) && /Heart sensor optional/.test(pg.needs) && !pg.mus && await seg(p, '#sOpts [data-choice=tempo] button') === 'Slow* | Steady | Lively | Yours',
+        'it needs speakers or headphones and, optionally, a heart sensor; its own tempo choice (slow first, or your own songs) stands in for the Music row: ' + pg.needs);
       await p.click('#sGo'); await p.waitForTimeout(350);
       ok(await E(p, () => !document.querySelector('#supModal').hidden && window.__entrain.P.state !== 'running' && !window.__entrain.MUS.on) && /^Music Break is one of the new techniques/.test(await t(p, '#supFor')), 'Start opens the donation dialog instead');
       await p.keyboard.press('Escape'); await p.waitForTimeout(200);
@@ -453,7 +453,7 @@ const M = p => E(p, () => { const m = window.__entrain.MUS; return { on: m.on, b
         'music and stress, tempo and brain waves, and taste, each with its sources in the references');
       ok(/small-to-medium/.test(L.ps[0]) && /moderate to strong/.test(L.ps[1]) && /strongest of the three/.test(L.ps[2]) && /hasn't been tested itself/.test(L.ps[3]) && /moves an octave away/.test(L.ps[3]),
         'the evidence as the guide gives it, and honest about Entrain\'s own music');
-      ok(L.slow === '#practice/music-break #st-amb | Moderate to strong' && L.fast === '#st-amb | Moderate' && L.own === ' | Strong', 'the glance table links slow and fast music to where Entrain has them; music you choose yourself stays in Learn for now: ' + [L.slow, L.fast, L.own].join(' / '));
+      ok(L.slow === '#practice/music-break #st-amb | Moderate to strong' && L.fast === '#st-amb | Moderate' && L.own === '#st-mymusic #practice/music-break | Strong', 'the glance table links slow and fast music to where Entrain has them, and music you choose yourself to Your own music and Music Break: ' + [L.slow, L.fast, L.own].join(' / '));
       const sp = await E(p, s => { const re = new RegExp(s, 'i'), x = [...document.querySelectorAll('#l-music, #l-music ~ p')].slice(0, 5).map(e => e.textContent).join(' '); return (x.match(re) || [''])[0]; }, SPELL.source);
       ok(!sp, 'British spelling in it' + (sp ? ': ' + sp : ''));
       // 360 px: Music Break's page and Settings' Background sound; targets

@@ -89,7 +89,7 @@
     if (!msOk()) return;
     var ms = navigator.mediaSession;
     var on = function (action, fn) { try { ms.setActionHandler(action, fn); } catch (e) {} };
-    on("play", function () { if (A.track && !A.playing) play(); });
-    on("pause", function () { if (A.playing) pause(); });
+    on("play", function () { if (A.track && !A.playing) play(); else ymSysPlay(); });
+    on("pause", function () { if (A.playing) pause(); else ymSysPause(); });     // a song of your own under a breathing session (yourmusic.js)
     on("stop", function () { if (A.track) hardStop(false); });
   }

@@ -47,6 +47,7 @@
         '<button class="btn link sd-how" id="sdHow" aria-expanded="false" aria-controls="sdHowT">How to read this chart</button>' +
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
       egCard(r) +                                         // a headband's alpha and theta across the session (eeg.js)
+      ymDoneCard() +                                      // your own songs that played, each with a thumbs up and down (yourmusic.js)
       (r.nvc ? nvcCard(r.nvc) : "") +
       (r.stress ? "" : sdNext(d)) +
       (d.noQuote ? "" : qCard(d.reflect ? ROGERS : qPick())) +       // a Restoration Break ends with no words to read (nature.js)

@@ -309,9 +309,9 @@
     bSetT("#bVisHint", s);
   }
   function syncTransport() {
-    var st = B.state;
-    bSetT("#bStart", st === "running" ? "Pause" : st === "paused" ? "Resume" : st === "done" ? "Start again" : "Start breathing");
-    $("#bReset").disabled = st === "idle";
+    var st = B.state, find = st === "idle" && BLS.phase === "find";     // breath-led sound waiting for your pace (breathled.js)
+    bSetT("#bStart", st === "running" ? "Pause" : st === "paused" ? "Resume" : st === "done" ? "Start again" : find ? "Begin now" : "Start breathing");
+    $("#bReset").disabled = st === "idle" && !find;
     settleSync(); ibBreatheSync();                  // I need to stop, while it runs (settle.js); rest between blocks (care.js)
   }
   function kindHint(k) {
@@ -331,7 +331,10 @@
 
   function updateHead() {
     var st = B.state, bt = breathTime(), k, name, hint, L = null;
-    if (st === "idle") { k = "ready"; name = "Ready"; hint = "Press start, then follow the shape."; }
+    if (st === "idle") {
+      var bh = blsHead();                           // breath-led sound, finding your pace first (breathled.js)
+      k = "ready"; name = bh ? bh[0] : "Ready"; hint = bh ? bh[1] : "Press start, then follow the shape.";
+    }
     else if (st === "done") { k = "done"; name = "Done"; hint = B.doneMsg; }
     else if (bt < 0) { k = "lead"; name = "Get ready"; hint = "Let your breath settle. First inhale in " + Math.ceil(-bt - 1e-6) + "…"; }
     else {
@@ -377,7 +380,9 @@
     if (P.usesB && pBusy()) { pOpen(); return; }
     if (B.state === "running") bPause();
     else if (B.state === "paused") { if (!bSupGate("resume") && !dvGate("resume")) bResume(); }
-    else if (!bSupGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) { bFresh(); bResume(); }   // Start again: rest first? (care.js)
+    else if (!bSupGate("start") && !dvGate("start") && !(B.state === "done" && ibAsk("breathe"))) {   // Start again: rest first? (care.js)
+      if (!blsStart()) { bFresh(); bResume(); }      // breath-led sound starts at your own pace (breathled.js)
+    }
   }
 
   /* ----- a new technique's pattern (sup: true; supporter.js), not yet unlocked on this device: picking it,
@@ -502,6 +507,7 @@
     syncTransport(); updateHead(); draw();
   }
   function bStop() {
+    if (BLS.phase === "find") blsEnd(true);          // breath-led sound was still finding your pace (breathled.js)
     clearInterval(B.tick);
     cancelAnimationFrame(B.raf);
     cueOff();
