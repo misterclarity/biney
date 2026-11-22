@@ -20,6 +20,8 @@
     if (r.suds) tiles.push([d.rate ? d.rate.name : "Intensity", r.suds.join(" → "), r.suds.length > 1 ? (d.rate ? "out of 10, before and after" : "out of 10, first to last") : "out of 10", "suds"]);   // a feeling's strength, or what the practice rates
     var ct = coldTile(r);                                // Cold Finish: the seconds of cold, and where your build-up stands (cold.js)
     if (ct) tiles.push(ct);
+    var stt = motStillTile(r);                           // lying down: how still you stayed (motion.js)
+    if (stt) tiles.push(stt);
     if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatHeart ? "Hz, led by your heart" : "Hz, scripted (no heart data)", "beat"]);
     if (r.nap) {
       if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate", "onset"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated", "nap"]); }
@@ -89,7 +91,7 @@
 
   // what each number means, with your own value read back
   function sdExplain(k) {
-    var sx = scExplain(k) || coldExplain(k);
+    var sx = scExplain(k) || coldExplain(k) || motStillExplain(k);
     if (sx) return sx;                               // a stress check's own tiles
     var r = SD.r, d = SD.d, n, p = [];
     var plural = function (x, one, many) { return x + " " + (x === 1 ? one : many); };

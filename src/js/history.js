@@ -46,7 +46,8 @@
     full: "boolean", est: "boolean", ib: "boolean", wh: "number",        // ib: a block of intense breathing; wh: Wim Hof's rounds (care.js)
     bm: "string",                                                        // bm: a beat played monaural or isochronic (beatmode.js)
     snd: "string",                                                       // snd: what Sleep sounds played (sleepsounds.js)
-    cold: "number" };                                                    // cold: the seconds of cold in Cold Finish (cold.js)
+    cold: "number",                                                      // cold: the seconds of cold in Cold Finish (cold.js)
+    still: "number" };                                                   // still: the share of a session lain still, in % (motion.js)
   var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
     for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];

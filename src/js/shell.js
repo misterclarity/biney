@@ -165,7 +165,7 @@
 
     bSetT("#qkSensorT", st === "on" ? H.name : "Heart sensor");
     var sub;
-    if (st === "on") sub = live ? Math.round(H.hr) + " bpm" + (H.coh ? ", coherence " + H.coh.cs.toFixed(1) : "") : "Connected, waiting for readings";
+    if (st === "on") sub = live ? Math.round(H.hr) + " bpm" + (H.coh ? ", coherence " + H.coh.cs.toFixed(1) : "") : H.src === "cam" ? "Camera on, waiting for your fingertip" : "Connected, waiting for readings";
     else if (st === "busy") sub = "Connecting…";
     else if (st === "lost") sub = "Reconnecting…";
     else sub = hrSupported() ? "Not connected. Open to connect." : "Needs Chrome or Edge on Android or a computer";
@@ -173,7 +173,8 @@
 
     var btn = $("#bSensorBtn");
     if (st === "on" || st === "lost") {
-      bSetT("#bSensorTxt", (st === "lost" ? "Reconnecting to " : "Connected to ") + H.name + ". Heart rate and coherence show above the guide.");
+      bSetT("#bSensorTxt", H.src === "cam" ? "Reading your pulse with the phone's camera. Heart rate and coherence show above the guide."
+        : (st === "lost" ? "Reconnecting to " : "Connected to ") + H.name + ". Heart rate and coherence show above the guide.");
       bSetT("#bSensorBtn", "Heart details"); btn.dataset.act = "details";
     } else if (st === "busy") {
       bSetT("#bSensorTxt", "Connecting to your sensor…");
@@ -268,6 +269,7 @@
       A.playing || (!!A.track && A.elapsed > 0) ||                            // a track, playing or paused partway through
       H.state === "on" || H.state === "busy" || H.state === "lost" ||         // a heart sensor, which would have to be paired again
       MIC.on || MIC.busy ||                                                   // the microphone listening for your breathing
+      CAM.on || CAM.busy || MOT.belly ||                                      // the camera reading your pulse, the phone on your belly (camera.js, motion.js)
       FD.open || !$("#stlModal").hidden ||                                    // search, or settling after I need to stop
       (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
       (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together

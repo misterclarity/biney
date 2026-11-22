@@ -162,6 +162,15 @@
     out.push(fdEntry("heart", "Resonance test", "Heart · about 10 minutes",
       ["Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the biggest heart-rate swing."], "#resonance-test",
       { ic: "target", col: "var(--hr)", w: 1.1, tags: "resonance frequency rate pace hrv" }));
+    out.push(fdEntry("heart", CAM_NAME, "Heart · a fingertip on the phone's camera, at rest",
+      ["No sensor? Rest a fingertip over the phone's camera and its light, and your pulse gives heart rate, the swing in each breath, RMSSD and coherence."], "#cam",
+      { ic: "heart", col: "var(--hr)", w: 1.05, tags: "camera phone finger fingertip pulse ppg photoplethysmography torch flash light no sensor iphone hrv rmssd", sup: true }));
+    out.push(fdEntry("breath", MOT_BELLY, "Breathe · the motion sensor counts your breaths",
+      ["Lie back with the phone on your belly: its motion sensor counts your breaths, and beside the guide you see whether you're following it, faster or slower."], "#breathe",
+      { ic: "breathe", col: "var(--b-in)", w: 1, tags: "belly tummy abdomen motion sensor accelerometer breathing rate count breaths following pace lying", sup: true }));
+    out.push(fdEntry("heart", "Stillness", "Practices done lying down · from the motion sensor",
+      ["With the phone resting on your belly or on the bed, the end screen of a practice done lying down shows how much of it you stayed still, and your longest still stretch."], "#l-phone",
+      { ic: "moon", col: "var(--hr)", w: 0.9, tags: "still stillness restless restlessness movement motion fidget settle lying body scan yoga nidra nap", sup: true }));
     out.push(fdEntry("heart", "Live heart data and coherence", "Heart · rate, swing, RMSSD, coherence",
       ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
       { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));

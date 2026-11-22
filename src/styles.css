@@ -1985,3 +1985,38 @@
   .b-lt .chip .sup-ic{margin-left:5px}
   .lt-ev .strength{vertical-align:middle;margin-left:4px}
   .lt-exp{display:inline-block;font-size:11px;font-weight:750;padding:2px 8px;border-radius:999px;margin-left:4px;color:var(--ther);background:color-mix(in srgb,var(--ther) 14%,transparent)}
+  /* ---------- the phone alone (camera.js, motion.js): a fingertip on the camera, the phone on your belly, stillness ---------- */
+  .hr-cam{flex:1 1 100%;min-width:0;border-top:1px solid var(--line-soft);padding-top:14px}
+  .hr-cam[hidden],.cam-on[hidden],.cam-off[hidden],.cam-err[hidden]{display:none}
+  .cam-off{display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px}
+  .cam-off > p{margin:0;font-size:13.5px;color:var(--text-dim);flex:1 1 260px;max-width:62ch;line-height:1.5}
+  .cam-off .btn svg.i{color:var(--hr)}
+  .cam-off .cam-err{flex:1 1 100%;max-width:none;color:var(--b-hold);font-size:13px}
+  .cam-on{display:flex;flex-direction:column;gap:10px}
+  .cam-exp{display:inline-block;margin-left:6px;font-size:11.5px;font-weight:650;vertical-align:1px;color:var(--ther);
+    background:color-mix(in srgb,var(--ther) 14%,transparent);border-radius:7px;padding:2px 8px}
+  .cam-row{display:flex;gap:12px;align-items:center}
+  .cam-vid{width:56px;height:42px;border-radius:10px;object-fit:cover;background:var(--bg-2);flex:none}
+  .cam-how{margin:0;font-size:13.5px;color:var(--text-dim);line-height:1.5;min-width:0}
+  .cam-q{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-dim)}
+  .cam-q b{min-width:6.5em;color:var(--text);font-weight:700}
+  .cam-qbar{position:relative;flex:1;height:8px;border-radius:99px;background:var(--panel-3);overflow:hidden}
+  .cam-qbar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:99px;background:var(--b-hold);transition:width .3s}
+  .cam-qbar[data-q="mid"] i{background:var(--b-in)}
+  .cam-qbar[data-q="high"] i{background:var(--relax-deep)}
+  .hr-chart.cam-chart{height:110px}
+  details.ev.cam-what{margin-top:2px}
+  .cam-what .ev-body{max-width:72ch}
+  .cam-what .ev-body p{margin:0 0 8px;line-height:1.55}
+  .cam-what .ev-body p:last-child{margin-bottom:0}
+  .b-stat.b-belly{color:var(--b-out);background:color-mix(in srgb,var(--b-out) 12%,transparent)}
+  .b-stat.b-belly b{color:var(--b-out)}
+  .b-belly-row{display:flex;align-items:center;gap:10px 12px;font-size:13.5px;color:var(--text-dim);padding:11px 14px;border-radius:14px;
+    background:color-mix(in srgb,var(--b-out) 8%,transparent)}
+  .b-belly-row[hidden]{display:none}
+  .b-belly-row svg.i{color:var(--b-out);flex:none}
+  .b-stage.focus .b-belly-row{display:none!important}
+  .b-belly{--pcol:var(--b-out)}
+  .so-l .sup-ic{background:none;padding:0;margin-left:6px;color:var(--stim);vertical-align:-2px}
+  .so-l .sup-ic svg.i{width:13px;height:13px}
+  @media (prefers-reduced-motion: reduce){ .cam-qbar i{transition:none} }

@@ -23,6 +23,7 @@
             <span class="b-stat b-hr" id="bHrStat" title="Heart rate from your sensor" hidden><i class="hr-dot" aria-hidden="true"></i><b id="bHr">—</b> bpm</span>
             <span class="b-stat b-hr" id="bCohStat" title="Coherence score over the last 64 seconds, usually 0 to 8" hidden>coherence <b id="bCoh">—</b></span>
             <span class="b-stat b-mic" id="bMicStat" title="Your breathing pace, as the microphone hears it" hidden>heard <b id="bMic">—</b> /min</span>
+            <span class="b-stat b-belly" id="bBellyStat" title="Your breathing pace, as the phone on your belly counts it" hidden>belly <b id="bBelly">—</b> /min · <span id="bBellyV"></span></span>
             <span class="b-favs" id="bFav"></span>
           </div>
         </div>
@@ -50,6 +51,7 @@
               <button type="button" class="btn small" id="bDiveInfo">Read the cautions</button>
             </div>
             <div class="b-dive b-ib" id="bIbRow" hidden>{i:warn}<span id="bIbTxt"></span></div>
+            <div class="b-belly-row" id="bBellyRow" hidden>{i:breathe}<span id="bBellyTxt" role="status"></span></div>
             <div class="b-sensor" id="bSensorRow">
               {i:pulse}
               <span id="bSensorTxt">Connect a heart sensor to watch your heart rate follow your breath.</span>
@@ -172,6 +174,11 @@
         <div class="prime-row" id="bBuzzRow" hidden>
           <div class="prime-label">Vibration</div>
           <label class="so-row so-tg b-buzz"><span class="so-l">Vibrate at each change<small>One short buzz to breathe in, one long to breathe out, two light taps for a hold. With or without sound.</small></span><input type="checkbox" class="sw" id="bBuzz"></label>
+        </div>
+
+        <div class="prime-row" id="bBellyOpt">
+          <div class="prime-label">Phone on your belly</div>
+          <label class="so-row so-tg b-belly"><span class="so-l"><span id="bBellyL">Count my breaths with the motion sensor</span><small>Lie back with the phone flat on your belly, screen up: each breath tilts it a little, and beside the guide you'll see whether you're following it, faster or slower.</small></span><input type="checkbox" class="sw" id="bBellyOn"></label>
         </div>
 
         <div class="prime-row">

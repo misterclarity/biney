@@ -291,6 +291,8 @@
     slpSync(); slpLink();                                     // Sleep sounds' page and Today's link to it (sleepsounds.js)
     scnUI();                                                  // the scenes' buttons and cups, and Breathe's visual (scenes.js)
     ltUI();                                                   // the screen light's buttons and cups, and the light itself (light.js)
+    camUI();                                                  // the Heart page's camera button (camera.js)
+    motUI();                                                  // Phone on your belly and Stillness, and their cups (motion.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }

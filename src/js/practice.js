@@ -17,7 +17,7 @@
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off" },
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off", still: false },
     paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
     bm: ""                                          // how its beat played (beatmode.js), for the history
   };
@@ -138,7 +138,7 @@
      The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js),
      the music (music) to the background sound's choice (music.js), and the screen light (light) to Breathe's (light.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene", "light"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene", "light", "still"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -1109,12 +1109,14 @@
       P.len = pLenOf(d, parseInt(store.get("pLen." + d.id), 10) || 0);
       try { history.replaceState(null, "", "#practice/" + d.id); } catch (e) {}   // the address names what runs
     }
+    motStillAsk(d);                                    // motion access for Stillness, in this tap (motion.js)
     var go = function () {
       if (pBusy()) pFinish(true, true);
       if (again !== true) { P.paceK = 1; P.beatAdj = 0; P.beatOff = false; }
       P.def = d;
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
       scnStart(d);                                     // and the scene it shows, if any (scenes.js)
+      motStillStart(d);                                // and how still you stay, if it notes that (motion.js)
       if (B.finder) finderCancel();
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
@@ -1266,6 +1268,7 @@
     napSummary(r, T);
     stressSummary(r, T);
     coldSummary(r, T);                                 // the seconds of cold you stayed for (cold.js)
+    motStillSummary(r);                                // how still you stayed (motion.js)
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(nvcKindOf(d));
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -1281,6 +1284,7 @@
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
     if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
     if (r.cold) notes.push(r.cold + " s of cold");
+    if (r.still && !r.still.none) notes.push("still " + r.still.pct + "%");
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
     // fast breathing that ran: an hour's rest before the next block, and Wim Hof's rounds for the day (care.js)
     var ib = P.steps.filter(function (s) { return ibStep(s) && s.at < T; }).length;
@@ -1289,7 +1293,7 @@
     if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg, ib: r.ib, wh: d.id === "wim-hof" && ib ? ib : undefined,
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
-      bm: r.bm, cold: r.cold, note: notes.join(", ") || undefined });
+      bm: r.bm, cold: r.cold, still: r.still && !r.still.none ? r.still.pct : undefined, note: notes.join(", ") || undefined });
     return r;
   }
   /* ----- the session screen: intro ----- */
@@ -1431,6 +1435,7 @@
     }
     if (scnFits(d)) opts.push(scnRow(O));               // a scene to watch, kept for this practice: with a donation while locked (scenes.js)
     if (ltFits(d)) opts.push(ltRow(O));                 // the screen light, kept for this practice: with a donation while locked (light.js)
+    if (motStillFits(d)) opts.push(motStillRow(O));     // how still you stay, from the motion sensor, lying down: with a donation while locked (motion.js)
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
     every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl(true) + "</div>");   // its music is a row of its own above
@@ -1536,6 +1541,7 @@
     if (!d.music && !d.noMus && musShown(O.music) !== "off") s.push(MUS_SHORT[O.music]);
     if (scnFits(d) && scnShown(O.scene) !== "off") s.push(scnOptName(O.scene));
     if (ltFits(d) && ltShown(O.light) !== "off") s.push(LT_KINDS.filter(function (k) { return k[0] === O.light; })[0][1] + " light");
+    if (motStillFits(d) && O.still && supOn()) s.push("Stillness");
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -1639,6 +1645,7 @@
         O.light = k; save(); ltUI();
       });
     });
+    motStillWire(d, O, save);                          // Stillness, kept for this practice (motion.js)
     var pg = $("#sOptPace");
     if (pg) {
       var paceUI = function () {

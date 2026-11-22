@@ -160,7 +160,7 @@ const UK = /\b(programs?|toward|synthesiz\w*|color\w*|favor\w*|behavior\w*|(?<!R
           if ((m = /^breathe\/(.+)$/.exec(id))) return X.BREATHS.some(b => b.id === m[1]) && view.id === 'v-breathe' && X.BC.pattern === m[1];
           if ((m = /^track\/(.+)$/.exec(id))) { const d = X.TRACKS.find(x => x.id === m[1]); return !!d && view.id === 'v-track' && title === d.name; }
           if (/^living\//.test(id)) return view.id === 'v-living' && location.hash === h;
-          if (id === 'living' || id === 'heart') return view.id === 'v-' + id;
+          if (id === 'living' || id === 'heart' || id === 'breathe') return view.id === 'v-' + id;
           if (id === 'sounds') return view.id === 'v-practice';
           if (id === 'sleep-sounds') return view.id === 'v-sleep-sounds' && title === 'Sleep sounds';
           if (id === 'feedback' || /^st-/.test(id)) return view.id === 'v-settings';

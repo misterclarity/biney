@@ -25,6 +25,37 @@
           <button class="btn" id="hrConnect">Connect sensor</button>
           <button class="btn link" id="hrAny">My sensor isn't listed</button>
         </div>
+        <!-- no sensor: a fingertip on the phone's camera (camera.js). Inside the top panel, so the boxes below keep their order -->
+        <div class="hr-cam" id="cam" data-on="0">
+          <div class="cam-off" id="camOff">
+            <p>No sensor? Your phone's camera can read your pulse from a fingertip while you rest, for heart rate, RMSSD and coherence.</p>
+            <button class="btn" id="camGo" type="button">{i:camera}Use the phone's camera</button>
+            <p class="cam-err" id="camErr" role="status" hidden></p>
+          </div>
+          <div class="cam-on" id="camOn" hidden>
+            <div class="hr-box-head"><b>Heart rate from the camera <span class="cam-exp">Experimental</span></b><span class="hint" id="camLight"></span></div>
+            <div class="cam-row">
+              <video class="cam-vid" id="camVid" muted playsinline aria-hidden="true"></video>
+              <p class="cam-how">Rest the pad of one finger lightly over the camera on the back and the light beside it. Sit still, with your hand resting on your lap or a table.</p>
+            </div>
+            <div class="cam-q"><span>Signal</span><div class="cam-qbar" id="camQ" role="meter" aria-label="Signal quality" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="No fingertip" data-q="low"><i id="camQBar"></i></div><b id="camQTxt">No fingertip</b></div>
+            <div class="hr-chart sm cam-chart">
+              <canvas id="camTrace" aria-hidden="true"></canvas>
+              <p class="hr-empty" id="camEmpty">Your pulse shows here as a wave, with a dot on each beat counted.</p>
+            </div>
+            <p class="mc-read" id="camRead" role="status"></p>
+            <div class="hr-find-foot"><button class="btn" id="camStop" type="button">Stop the camera</button></div>
+            <details class="ev cam-what">
+              <summary>How it works, and what helps</summary>
+              <div class="ev-body">
+                <p>Each heartbeat sends a little more blood into your fingertip, which then lets a little less light through, so the camera sees the picture darken a shade about once a second. It's the way a pulse oximeter works, called photoplethysmography. The page averages the colour of 30 pictures a second, keeps the rhythm between 42 and 210 beats a minute, finds the darkest moment of each beat to within a few thousandths of a second, and passes the time between beats on to the same numbers a chest strap feeds: heart rate, the swing within each breath, RMSSD and coherence, and the resonance test and the Stress Check too.</p>
+                <p>What helps: cover the lens and the light with the pad of one finger and rest it there lightly, since pressing hard squeezes the blood out and flattens the pulse. Keep your hand still on your lap or a table, and keep quiet: moving and talking swamp the pulse, which is what the signal meter shows, and beats count only while it reads fair or good. Warm hands give a stronger pulse than cold ones. Where the browser can't switch the light on, use a lamp or a window: daylight through the fingertip works too. The light can get warm; lift your finger for a moment if it does.</p>
+                <p>For resting only. In studies, a fingertip on a phone's camera agreed closely with an ECG at rest, for heart rate and for RMSSD, and during slow breathing for biofeedback. Entrain's own way of reading it hasn't been tested against an ECG, or across skin tones, so it's marked experimental. <a href="#l-phone">The research, in Learn</a>.</p>
+                <p>Nothing is recorded or sent: each picture becomes three colour averages on this device and is gone. The camera stays on until you press Stop the camera, connect a sensor or close the page, and turns itself off after two minutes without a fingertip.</p>
+              </div>
+            </details>
+          </div>
+        </div>
       </div>
 
       <details class="hr-guide" id="connect">

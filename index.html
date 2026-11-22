@@ -2068,6 +2068,41 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   .b-lt .chip .sup-ic{margin-left:5px}
   .lt-ev .strength{vertical-align:middle;margin-left:4px}
   .lt-exp{display:inline-block;font-size:11px;font-weight:750;padding:2px 8px;border-radius:999px;margin-left:4px;color:var(--ther);background:color-mix(in srgb,var(--ther) 14%,transparent)}
+  /* ---------- the phone alone (camera.js, motion.js): a fingertip on the camera, the phone on your belly, stillness ---------- */
+  .hr-cam{flex:1 1 100%;min-width:0;border-top:1px solid var(--line-soft);padding-top:14px}
+  .hr-cam[hidden],.cam-on[hidden],.cam-off[hidden],.cam-err[hidden]{display:none}
+  .cam-off{display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px}
+  .cam-off > p{margin:0;font-size:13.5px;color:var(--text-dim);flex:1 1 260px;max-width:62ch;line-height:1.5}
+  .cam-off .btn svg.i{color:var(--hr)}
+  .cam-off .cam-err{flex:1 1 100%;max-width:none;color:var(--b-hold);font-size:13px}
+  .cam-on{display:flex;flex-direction:column;gap:10px}
+  .cam-exp{display:inline-block;margin-left:6px;font-size:11.5px;font-weight:650;vertical-align:1px;color:var(--ther);
+    background:color-mix(in srgb,var(--ther) 14%,transparent);border-radius:7px;padding:2px 8px}
+  .cam-row{display:flex;gap:12px;align-items:center}
+  .cam-vid{width:56px;height:42px;border-radius:10px;object-fit:cover;background:var(--bg-2);flex:none}
+  .cam-how{margin:0;font-size:13.5px;color:var(--text-dim);line-height:1.5;min-width:0}
+  .cam-q{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-dim)}
+  .cam-q b{min-width:6.5em;color:var(--text);font-weight:700}
+  .cam-qbar{position:relative;flex:1;height:8px;border-radius:99px;background:var(--panel-3);overflow:hidden}
+  .cam-qbar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:99px;background:var(--b-hold);transition:width .3s}
+  .cam-qbar[data-q="mid"] i{background:var(--b-in)}
+  .cam-qbar[data-q="high"] i{background:var(--relax-deep)}
+  .hr-chart.cam-chart{height:110px}
+  details.ev.cam-what{margin-top:2px}
+  .cam-what .ev-body{max-width:72ch}
+  .cam-what .ev-body p{margin:0 0 8px;line-height:1.55}
+  .cam-what .ev-body p:last-child{margin-bottom:0}
+  .b-stat.b-belly{color:var(--b-out);background:color-mix(in srgb,var(--b-out) 12%,transparent)}
+  .b-stat.b-belly b{color:var(--b-out)}
+  .b-belly-row{display:flex;align-items:center;gap:10px 12px;font-size:13.5px;color:var(--text-dim);padding:11px 14px;border-radius:14px;
+    background:color-mix(in srgb,var(--b-out) 8%,transparent)}
+  .b-belly-row[hidden]{display:none}
+  .b-belly-row svg.i{color:var(--b-out);flex:none}
+  .b-stage.focus .b-belly-row{display:none!important}
+  .b-belly{--pcol:var(--b-out)}
+  .so-l .sup-ic{background:none;padding:0;margin-left:6px;color:var(--stim);vertical-align:-2px}
+  .so-l .sup-ic svg.i{width:13px;height:13px}
+  @media (prefers-reduced-motion: reduce){ .cam-qbar i{transition:none} }
 </style>
 </head>
 <body>
@@ -2083,6 +2118,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 14.5l6-6 6 6"/></symbol>
   <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.2 3 5.5 13.5h5.8L10.4 21l8-10.6h-5.8z"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3.5 8.6A1.6 1.6 0 0 1 5.1 7h2.6l1.6-2.4h5.4L16.3 7h2.6a1.6 1.6 0 0 1 1.6 1.6v9.3a1.6 1.6 0 0 1-1.6 1.6H5.1a1.6 1.6 0 0 1-1.6-1.6z"/><circle cx="12" cy="12.9" r="3.5"/></symbol>
   <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2.5 12.5h4l2.2-5 4.2 10 2.4-5h6.2"/></symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
   <symbol id="i-install" viewBox="0 0 24 24"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.4"/><path d="M12 7.5v7M9.2 11.8 12 14.6l2.8-2.8"/></symbol>
@@ -2493,6 +2529,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <span class="b-stat b-hr" id="bHrStat" title="Heart rate from your sensor" hidden><i class="hr-dot" aria-hidden="true"></i><b id="bHr">—</b> bpm</span>
             <span class="b-stat b-hr" id="bCohStat" title="Coherence score over the last 64 seconds, usually 0 to 8" hidden>coherence <b id="bCoh">—</b></span>
             <span class="b-stat b-mic" id="bMicStat" title="Your breathing pace, as the microphone hears it" hidden>heard <b id="bMic">—</b> /min</span>
+            <span class="b-stat b-belly" id="bBellyStat" title="Your breathing pace, as the phone on your belly counts it" hidden>belly <b id="bBelly">—</b> /min · <span id="bBellyV"></span></span>
             <span class="b-favs" id="bFav"></span>
           </div>
         </div>
@@ -2520,6 +2557,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               <button type="button" class="btn small" id="bDiveInfo">Read the cautions</button>
             </div>
             <div class="b-dive b-ib" id="bIbRow" hidden><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg><span id="bIbTxt"></span></div>
+            <div class="b-belly-row" id="bBellyRow" hidden><svg class="i" aria-hidden="true"><use href="#i-breathe"/></svg><span id="bBellyTxt" role="status"></span></div>
             <div class="b-sensor" id="bSensorRow">
               <svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg>
               <span id="bSensorTxt">Connect a heart sensor to watch your heart rate follow your breath.</span>
@@ -2644,6 +2682,11 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           <label class="so-row so-tg b-buzz"><span class="so-l">Vibrate at each change<small>One short buzz to breathe in, one long to breathe out, two light taps for a hold. With or without sound.</small></span><input type="checkbox" class="sw" id="bBuzz"></label>
         </div>
 
+        <div class="prime-row" id="bBellyOpt">
+          <div class="prime-label">Phone on your belly</div>
+          <label class="so-row so-tg b-belly"><span class="so-l"><span id="bBellyL">Count my breaths with the motion sensor</span><small>Lie back with the phone flat on your belly, screen up: each breath tilts it a little, and beside the guide you'll see whether you're following it, faster or slower.</small></span><input type="checkbox" class="sw" id="bBellyOn"></label>
+        </div>
+
         <div class="prime-row">
           <div class="prime-label">Background sound</div>
           <div class="amb-ctl" data-amb-ctl></div>
@@ -2686,6 +2729,37 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
           <span class="hr-pill" id="hrPill"><i></i><span id="hrPillTxt">Not connected</span></span>
           <button class="btn" id="hrConnect">Connect sensor</button>
           <button class="btn link" id="hrAny">My sensor isn't listed</button>
+        </div>
+        <!-- no sensor: a fingertip on the phone's camera (camera.js). Inside the top panel, so the boxes below keep their order -->
+        <div class="hr-cam" id="cam" data-on="0">
+          <div class="cam-off" id="camOff">
+            <p>No sensor? Your phone's camera can read your pulse from a fingertip while you rest, for heart rate, RMSSD and coherence.</p>
+            <button class="btn" id="camGo" type="button"><svg class="i" aria-hidden="true"><use href="#i-camera"/></svg>Use the phone's camera</button>
+            <p class="cam-err" id="camErr" role="status" hidden></p>
+          </div>
+          <div class="cam-on" id="camOn" hidden>
+            <div class="hr-box-head"><b>Heart rate from the camera <span class="cam-exp">Experimental</span></b><span class="hint" id="camLight"></span></div>
+            <div class="cam-row">
+              <video class="cam-vid" id="camVid" muted playsinline aria-hidden="true"></video>
+              <p class="cam-how">Rest the pad of one finger lightly over the camera on the back and the light beside it. Sit still, with your hand resting on your lap or a table.</p>
+            </div>
+            <div class="cam-q"><span>Signal</span><div class="cam-qbar" id="camQ" role="meter" aria-label="Signal quality" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="No fingertip" data-q="low"><i id="camQBar"></i></div><b id="camQTxt">No fingertip</b></div>
+            <div class="hr-chart sm cam-chart">
+              <canvas id="camTrace" aria-hidden="true"></canvas>
+              <p class="hr-empty" id="camEmpty">Your pulse shows here as a wave, with a dot on each beat counted.</p>
+            </div>
+            <p class="mc-read" id="camRead" role="status"></p>
+            <div class="hr-find-foot"><button class="btn" id="camStop" type="button">Stop the camera</button></div>
+            <details class="ev cam-what">
+              <summary>How it works, and what helps</summary>
+              <div class="ev-body">
+                <p>Each heartbeat sends a little more blood into your fingertip, which then lets a little less light through, so the camera sees the picture darken a shade about once a second. It's the way a pulse oximeter works, called photoplethysmography. The page averages the colour of 30 pictures a second, keeps the rhythm between 42 and 210 beats a minute, finds the darkest moment of each beat to within a few thousandths of a second, and passes the time between beats on to the same numbers a chest strap feeds: heart rate, the swing within each breath, RMSSD and coherence, and the resonance test and the Stress Check too.</p>
+                <p>What helps: cover the lens and the light with the pad of one finger and rest it there lightly, since pressing hard squeezes the blood out and flattens the pulse. Keep your hand still on your lap or a table, and keep quiet: moving and talking swamp the pulse, which is what the signal meter shows, and beats count only while it reads fair or good. Warm hands give a stronger pulse than cold ones. Where the browser can't switch the light on, use a lamp or a window: daylight through the fingertip works too. The light can get warm; lift your finger for a moment if it does.</p>
+                <p>For resting only. In studies, a fingertip on a phone's camera agreed closely with an ECG at rest, for heart rate and for RMSSD, and during slow breathing for biofeedback. Entrain's own way of reading it hasn't been tested against an ECG, or across skin tones, so it's marked experimental. <a href="#l-phone">The research, in Learn</a>.</p>
+                <p>Nothing is recorded or sent: each picture becomes three colour averages on this device and is gone. The camera stays on until you press Stop the camera, connect a sensor or close the page, and turns itself off after two minutes without a fingertip.</p>
+              </div>
+            </details>
+          </div>
         </div>
       </div>
 
@@ -2955,6 +3029,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
             <a href="#l-expect">Placebo and side effects</a>
             <a href="#l-dose">How often</a>
             <a href="#l-measure">What to measure</a>
+            <a href="#l-phone">The phone alone</a>
             <a href="#l-leftout">Left out, and why</a>
             <a href="#l-safety">Safety</a>
             <a href="#references">References</a>
@@ -4103,13 +4178,13 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
                 <tr><th scope="col">Signal</th><th scope="col">What it shows</th><th scope="col">In Entrain</th></tr>
               </thead>
               <tbody>
-                <tr><th scope="row"><b>Heart rate</b></th><td>Arousal and calming. Good at rest from a chest strap, a watch or ring, or a fingertip on a phone's camera</td><td><a href="#heart">Heart</a>, with a Bluetooth sensor</td></tr>
-                <tr><th scope="row"><b>Heart-rate variability</b></th><td>The balance of calm and stress, and breathing coherence. A chest strap is the most accurate</td><td><a href="#heart">Heart</a>, with a sensor that sends the time between beats</td></tr>
-                <tr><th scope="row"><b>Breathing rate</b></th><td>Whether you're actually following the guided pace</td><td><a href="#l-mic">Breath from the microphone</a></td></tr>
+                <tr><th scope="row"><b>Heart rate</b></th><td>Arousal and calming. Good at rest from a chest strap, a watch or ring, or a fingertip on a phone's camera</td><td><a href="#heart">Heart</a>, with a Bluetooth sensor or <a href="#cam">the phone's camera</a></td></tr>
+                <tr><th scope="row"><b>Heart-rate variability</b></th><td>The balance of calm and stress, and breathing coherence. A chest strap is the most accurate</td><td><a href="#heart">Heart</a>, with a sensor that sends the time between beats, or <a href="#cam">the phone's camera</a></td></tr>
+                <tr><th scope="row"><b>Breathing rate</b></th><td>Whether you're actually following the guided pace</td><td><a href="#l-mic">Breath from the microphone</a>, or <a href="#l-phone">the phone on your belly</a> on Breathe</td></tr>
                 <tr><th scope="row"><b>Finger temperature</b></th><td>Relaxation: the hands warm as their blood vessels widen, and stress cools the fingertips most (Vinkers et al., 2013)</td><td class="ln-lo">A web page can't read it</td></tr>
                 <tr><th scope="row"><b>Skin conductance</b></th><td>Moment-to-moment stress and arousal. Sensitive, but consumer devices are less reliable: a Fitbit Charge 5 agreed only moderately at best with a research device (Ko et al., 2025)</td><td class="ln-lo">A web page can't read it</td></tr>
                 <tr><th scope="row"><b>Blood oxygen</b></th><td>A rough safety signal during breath holds. A wrist reading is less accurate than a fingertip oximeter</td><td class="ln-lo">Not measured</td></tr>
-                <tr><th scope="row"><b>Movement, stillness</b></th><td>Settling down, restlessness, sleep</td><td class="ln-lo">Not measured</td></tr>
+                <tr><th scope="row"><b>Movement, stillness</b></th><td>Settling down, restlessness, sleep</td><td><a href="#l-phone">Stillness</a>, on the end screen of practices done lying down</td></tr>
                 <tr><th scope="row"><b>EEG</b></th><td>Broad brain-wave trends only, as <a href="#l-muse">measuring at home</a> explains</td><td class="ln-lo">Not measured</td></tr>
                 <tr><th scope="row"><b>How you feel</b></th><td>What you actually feel, the main measure in most stress research</td><td><a href="#practice/stress-check">Stress Check</a>, which asks first</td></tr>
               </tbody>
@@ -4121,6 +4196,38 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
               stress a little more accurately than any one alone (Darwish et al., 2025). And as with EEG, changes over a session and
               over weeks say more than a single &ldquo;you are stressed&rdquo; verdict, which is why the end screen sets each number
               against your own usual.
+            </p>
+
+            <h3 id="l-phone">Measuring with the phone alone</h3>
+            <p>
+              A fingertip on the phone's camera, lit by its light, shows each heartbeat: as blood fills the fingertip it lets a
+              little less light through, the principle of a pulse oximeter. Read this way, two apps measured heart rate far more
+              accurately than two that read the face from a distance, against an ECG in 108 hospital patients (Coppetti et al.,
+              2017), and a review of ten studies found that fingertip readings at rest agreed closely with an ECG, though only under
+              tightly controlled conditions; few of them reported their participants' skin tone (Mather et al., 2024). The time
+              between beats holds up too: RMSSD from a fingertip agreed almost perfectly with an ECG at rest (Plews et al., 2017),
+              and during biofeedback at paces from 6.5 down to 4.5 breaths a minute, where the resonance pace it found matched the
+              ECG's for about three people in four (van Dijk et al., 2023). Skin tone matters for any reading made with light: a
+              large study of a phone's front camera reading the face during everyday use met the industry's accuracy standard
+              across light, medium and dark skin (Liao et al., 2026). On <a href="#cam">the Heart page</a>, Use the phone's camera
+              reads your fingertip at rest and feeds each beat to the same numbers a chest strap does. Entrain's own way of reading
+              it hasn't been tested against an ECG, or across skin tones, so it's marked experimental, and a signal meter shows
+              when its beats are clean enough to count.
+            </p>
+            <p>
+              Breathing rate can come from the phone's motion sensor. Laid on the chest, a phone's accelerometer agreed with
+              airflow to within about 1.5 breaths a minute, in a preliminary study of five people (Estrada et al., 2015). On
+              <a href="#breathe">Breathe</a>, Phone on your belly does this lying down: each breath tilts the phone a little, and
+              the page finds the rhythm of that tilt over the last 45 seconds, then says beside the guide whether you're following
+              it, faster or slower. It's Entrain's own reading, untested against airflow, and slow breathing needs a little longer
+              to show.
+            </p>
+            <p>
+              Stillness from the same sensor is the simplest of the three, and general knowledge rather than a tested measure:
+              how much of a session the phone, resting on your belly or on the bed beside you, lay still, and your longest still
+              stretch. Longer still stretches go with settling down, more movement with restlessness. A practice done lying down
+              offers it under Options, and shows it on the end screen. All three are best read as trends over a session and over
+              weeks, set against your own usual, rather than as verdicts.
             </p>
 
             <h3 id="l-leftout">What Entrain leaves out, and why</h3>
@@ -4415,6 +4522,12 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       <li>Fuchs, D., Hillecke, T. K., &amp; Warth, M. (2018). Relaxation effects of musically guided resonance breathing: a randomized controlled pilot study. <em>Music and Medicine</em>, 10(2). <a href="https://doi.org/10.47513/mmd.v10i2.576" rel="noopener">DOI</a></li>
       <li>Vinkers, C. H., Penning, R., Hellhammer, J., et al. (2013). The effect of stress on core and peripheral body temperature in humans. <em>Stress</em>, 16(5), 520–530. <a href="https://doi.org/10.3109/10253890.2013.807243" rel="noopener">DOI</a></li>
       <li>Ko, K., McArthur, G., &amp; Johnco, C. (2025). Validation of the Fitbit Charge 5 for the detection of heart rate and electrodermal activity. <em>Psychophysiology</em>, 62(8), e70116. <a href="https://doi.org/10.1111/psyp.70116" rel="noopener">DOI</a></li>
+      <li>Coppetti, T., Brauchlin, A., Müggler, S., Attinger-Toller, A., Templin, C., Schönrath, F., Hellermann, J., Lüscher, T. F., Biaggi, P., &amp; Wyss, C. A. (2017). Accuracy of smartphone apps for heart rate measurement. <em>European Journal of Preventive Cardiology</em>, 24(12), 1287–1293. <a href="https://doi.org/10.1177/2047487317702044" rel="noopener">DOI</a></li>
+      <li>Mather, J. D., Hayes, L. D., Mair, J. L., &amp; Sculthorpe, N. F. (2024). Validity of resting heart rate derived from contact-based smartphone photoplethysmography compared with electrocardiography: a scoping review and checklist for optimal acquisition and reporting. <em>Frontiers in Digital Health</em>, 6, 1326511. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10937558/" rel="noopener">PMC</a></li>
+      <li>Plews, D. J., Scott, B., Altini, M., Wood, M., Kilding, A. E., &amp; Laursen, P. B. (2017). Comparison of heart-rate-variability recording with smartphone photoplethysmography, Polar H7 chest strap, and electrocardiography. <em>International Journal of Sports Physiology and Performance</em>, 12(10), 1324–1328. <a href="https://doi.org/10.1123/ijspp.2016-0668" rel="noopener">DOI</a></li>
+      <li>van Dijk, W., Huizink, A. C., Oosterman, M., Lemmers-Jansen, I. L. J., &amp; de Vente, W. (2023). Validation of photoplethysmography using a mobile phone application for the assessment of heart rate variability in the context of heart rate variability-biofeedback. <em>Psychosomatic Medicine</em>, 85(7), 568–576. <a href="https://doi.org/10.1097/PSY.0000000000001236" rel="noopener">DOI</a></li>
+      <li>Liao, S., Di Achille, P., Wu, J., et al. (2026). Passive heart-rate monitoring during smartphone use in everyday life. <em>Nature</em>, 655, 728–736. <a href="https://doi.org/10.1038/s41586-026-10507-6" rel="noopener">DOI</a></li>
+      <li>Estrada, L., Torres, A., Sarlabous, L., &amp; Jané, R. (2015). Respiratory signal derived from the smartphone built-in accelerometer during a respiratory load protocol. <em>Annual International Conference of the IEEE Engineering in Medicine and Biology Society</em>, 2015, 6768–6771. <a href="https://pubmed.ncbi.nlm.nih.gov/26737847/" rel="noopener">PubMed</a></li>
       <li>Darwish, B. A., Rehman, S. U., Sadek, I., Salem, N. M., Kareem, G., &amp; Mahmoud, L. N. (2025). From lab to real-life: a three-stage validation of wearable technology for stress monitoring. <em>MethodsX</em>, 14, 103205. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11848792/" rel="noopener">PMC</a></li>
       <li>Papalambros, N. A., Santostasi, G., Malkani, R. G., et al. (2017). Acoustic enhancement of sleep slow oscillations and concomitant memory improvement in older adults. <em>Frontiers in Human Neuroscience</em>, 11, 109. <a href="https://doi.org/10.3389/fnhum.2017.00109" rel="noopener">DOI</a></li>
       <li>Jeffries, F. W., &amp; Davis, P. (2013). What is the role of eye movements in eye movement desensitization and reprocessing (EMDR) for post-traumatic stress disorder (PTSD)? A review. <em>Behavioural and Cognitive Psychotherapy</em>, 41(3), 290–300. <a href="https://doi.org/10.1017/S1352465812000793" rel="noopener">DOI</a></li>
@@ -8862,7 +8975,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     pulseT: 0, tickT: 0, cohT: 0, find: null,
     gen: 0, attaching: false, attempt: 0, step: "",  // connecting: which try, and which step it's on
     log: [], cur: null,        // what happened on each try, and on this one
-    offered: null              // the services a sensor offers when the heart-rate one is missing
+    offered: null,             // the services a sensor offers when the heart-rate one is missing
+    src: ""                    // "cam" while the phone's camera is the sensor (camera.js), "" for Bluetooth
   };
   var FIND_RATES = [6.5, 6, 5.5, 5, 4.5], FIND_STEP = 120;
 
@@ -8875,15 +8989,17 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     H.state = st;
     $("#hr").dataset.state = st;
     bSetT("#hrPillTxt", pill);
+    var ble = H.src !== "cam";            // with the camera on, Connect sensor stays: a sensor takes over from it
     ["#hrConnect", "#gConnect"].forEach(function (sel) {
-      bSetT(sel, (st === "on" || st === "lost") ? "Disconnect" : st === "busy" ? (H.attaching ? "Cancel" : "Connecting…") : "Connect sensor");
+      bSetT(sel, (st === "on" || st === "lost") && ble ? "Disconnect" : st === "busy" ? (H.attaching ? "Cancel" : "Connecting…") : "Connect sensor");
       $(sel).disabled = !hrSupported();
       $(sel).setAttribute("aria-disabled", st === "busy" && !H.attaching ? "true" : "false");   // busy, not disabled, so the button you pressed keeps the focus
     });
-    $("#hrAny").hidden = st === "on" || st === "lost" || !hrSupported();
+    $("#hrAny").hidden = ((st === "on" || st === "lost") && ble) || !hrSupported();
     finderUI();
     hrTiles();
     hrLayout();
+    camUI();
   }
   function hrMsg(s) { bSetT("#hrMsg", s || ""); }
 
@@ -8913,6 +9029,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* `any` opens the browser's chooser on every nearby device, for sensors
      that offer the heart-rate service but don't advertise it. */
   function hrConnect(any) {
+    if (H.src === "cam") camStop();       // the phone's camera was the sensor: a Bluetooth one takes over (camera.js)
     if (H.state === "busy") { if (H.attaching) hrCancel(); return; }   // the chooser is open, or Cancel was pressed
     if (H.state === "on" || H.state === "lost") { hrDisconnect(); return; }
     if (!hrSupported()) return;
@@ -9209,6 +9326,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }, 1500 * H.tries);
   }
   function hrDisconnect() {
+    if (H.src === "cam") { camStop(); return; }
     H.wantOn = false;
     clearInterval(H.tickT);
     clearInterval(H.cohT);
@@ -9311,6 +9429,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (H.state === "busy") sub = "Connecting…";
     else if (H.state === "lost") sub = "Reconnecting…";
     else if (H.state !== "on") sub = "Waiting for a sensor";
+    else if (H.src === "cam") sub = live ? "From the camera, beat to beat" : CAM.res && CAM.res.cover ? "Finding your pulse\u2026" : "Fingertip on the camera";
     else if (H.contact === false) sub = "No skin contact";
     else if (!live) sub = (H.connAt && bNow() - H.connAt < 6) ? "Waiting for the first reading\u2026" : "No readings. Is the sensor broadcasting?";
     else sub = H.hasRR ? "Beat to beat" : "Smoothed rate from the sensor";
@@ -9400,7 +9519,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   /* The live check beside the steps: each line ticks as that step works. */
   function guideCheck() {
-    var st = H.state, live = hrLive(), now = bNow();
+    var cam = H.src === "cam", st = cam ? "off" : H.state, live = !cam && hrLive(), now = bNow();     // the camera isn't a Bluetooth connection
     guideItem("bt", hrSupported() ? "ok" : "no", hrSupported() ? "Ready" : "Not available here. See Your browser.");
     if (st === "on") guideItem("conn", "ok", H.name);
     else if (st === "busy") guideItem("conn", "wait", H.step ? HR_STEPS[H.step][0].charAt(0).toUpperCase() + HR_STEPS[H.step][0].slice(1) + (H.attempt > 1 ? ", try " + H.attempt : "") + "…" : "Connecting…");
@@ -9881,9 +10000,10 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   }
 
   /* The breathing pace to set beside the heart's rhythm: what the microphone hears, when it's sure
-     enough, or else the guide's pace while a session runs. */
+     enough, or what the phone on your belly counts (motion.js), or else the guide's pace while a session runs. */
   function breathPace() {
     if (micOk()) return { rate: MIC.est.rate, src: "mic" };
+    if (motBellyOk()) return { rate: MOT.est.rate, src: "belly" };
     if ((B.state === "running" || B.state === "paused") && B.ph) return { rate: 60 / B.ph.cycle, src: "guide" };
     return null;
   }
@@ -9894,7 +10014,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       var hm = co.f * 60;
       s = "Your heart's rhythm peaks at " + micFmt(hm) + " a minute (" + co.f.toFixed(3) + " Hz).";
       if (bp) {
-        s += bp.src === "mic" ? " You're breathing about " + micFmt(bp.rate) + " a minute, as the microphone hears it." : " The guide is at " + micFmt(bp.rate) + " a minute.";
+        s += bp.src === "mic" ? " You're breathing about " + micFmt(bp.rate) + " a minute, as the microphone hears it."
+          : bp.src === "belly" ? " You're breathing about " + micFmt(bp.rate) + " a minute, as the phone on your belly counts it." : " The guide is at " + micFmt(bp.rate) + " a minute.";
         s += Math.abs(hm - bp.rate) <= Math.max(0.4, 0.08 * bp.rate) ? " They match: your breathing is setting your heart's rhythm."
           : " They differ, so this peak isn't your breathing. Slow, even breathing brings them together.";
       } else {
@@ -10441,6 +10562,855 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     window.addEventListener("pagehide", function () { if (MIC.on || MIC.busy) micStop(); });
     micUI();
   }
+  /* ------------------------- heart rate from the phone's camera -------------------------
+     No sensor? A fingertip over the phone's rear camera, lit by its light, shows each heartbeat:
+     as blood fills the fingertip it lets a little less light through, so the picture darkens a
+     shade about once a second (photoplethysmography, as in a pulse oximeter). Each picture is
+     shrunk to a few dozen pixels and becomes three colour averages; nothing else is kept.
+
+     From the red average (green when red is clipped at full brightness), resampled to 30 a second:
+     a zero-phase band-pass of 0.7 to 3.5 Hz (42 to 210 beats a minute) over the last 10 seconds,
+     the pulse rate from the strongest peak of its spectrum (checked against the wave's own repeats,
+     so a slow heart isn't read at a harmonic), then each beat's darkest moment, refined between
+     samples with a parabola. The signal's quality is the lowest of three: the share of the power at
+     that rate and its harmonics, how alike the beats look, and how steady the gaps between them are.
+     The time from one beat to the next goes into the same pipeline a Bluetooth sensor's beat-to-beat
+     intervals do (H.beats, H.series, hrRecord), so heart rate, the swing in each breath, RMSSD,
+     coherence, the resonance test and the Stress Check all work with it. A beat is counted only once
+     the quality has held for a second and a half, when it looks like the others and its interval lies
+     within 35% of the spectrum's rate and 30% of the one before; a gap or a doubtful beat starts the
+     chain again rather than making one long interval. At rest only: movement swamps the pulse, and
+     the meter says so.
+
+     Frames come with the camera's own time stamps where the browser gives them
+     (MediaStreamTrackProcessor, then requestVideoFrameCallback), and from a 60-a-second timer
+     otherwise, which also carries on while the Heart page is out of sight. A new technique: the
+     button opens with a donation while this device is locked.
+  -------------------------------------------------------------------------------------- */
+  var CAM_NAME = "Heart rate from the camera";
+  var CAM_FS = 30, CAM_WIN = 10, CAM_KEEP = 20, CAM_Q = 0.5, CAM_GOOD = 0.75, CAM_IDLE = 120, CAM_W = 32, CAM_H = 24;
+  var CAM = {
+    on: false, busy: false, gen: 0, stream: null, track: null, reader: null, cx: null,
+    torch: null, raw: [], last: null, anaAt: 0, lastPeak: 0, rr: [], beatT: [], res: null, err: "",
+    t0: 0, frames: 0, off: null, vfcAt: 0, timer: 0, coverAt: 0, said: "", drawAt: 0
+  };
+
+  /* ----- signal helpers, shared with the motion sensor (motion.js) ----- */
+  // one second-order section (the audio cookbook's): "lp" or "hp" at f0 Hz, sampled at fs, Butterworth Q
+  function sigBiquad(type, f0, fs) {
+    var w = 2 * Math.PI * f0 / fs, cw = Math.cos(w), al = Math.sin(w) / (2 * Math.SQRT1_2), a0 = 1 + al;
+    var b1 = type === "lp" ? 1 - cw : -(1 + cw), b0 = type === "lp" ? b1 / 2 : (1 + cw) / 2;
+    return { b0: b0 / a0, b1: b1 / a0, b2: b0 / a0, a1: -2 * cw / a0, a2: (1 - al) / a0 };
+  }
+  function sigFilt(x, c) {
+    var y = new Float64Array(x.length), z1 = 0, z2 = 0;
+    for (var i = 0; i < x.length; i++) {
+      var v = x[i], o = c.b0 * v + z1;
+      z1 = c.b1 * v - c.a1 * o + z2; z2 = c.b2 * v - c.a2 * o;
+      y[i] = o;
+    }
+    return y;
+  }
+  // forward and back through every section: no delay, so a beat stays where it happened. Each end is first
+  // continued by `pad` samples turned over about it, so the filter starts settled rather than ringing at the edges.
+  function sigZero(x, cs, pad) {
+    var n = x.length, p = Math.max(0, Math.min(pad || 0, n - 1)), z = new Float64Array(n + 2 * p), y, i;
+    for (i = 0; i < p; i++) z[i] = 2 * x[0] - x[p - i];
+    for (i = 0; i < n; i++) z[p + i] = x[i];
+    for (i = 0; i < p; i++) z[p + n + i] = 2 * x[n - 1] - x[n - 2 - i];
+    y = z;
+    for (i = 0; i < cs.length; i++) y = sigFilt(y, cs[i]);
+    y = Array.prototype.slice.call(y).reverse();
+    for (i = 0; i < cs.length; i++) y = sigFilt(y, cs[i]);
+    return Array.prototype.slice.call(y).reverse().slice(p, p + n);
+  }
+  // take away the straight line through it, so a slow drift doesn't ring through the filter
+  function sigDetrend(x) {
+    var n = x.length, mx = (n - 1) / 2, my = avg(x), sxy = 0, sxx = 0, i;
+    for (i = 0; i < n; i++) { sxy += (i - mx) * (x[i] - my); sxx += (i - mx) * (i - mx); }
+    var b = sxx ? sxy / sxx : 0, y = new Float64Array(n);
+    for (i = 0; i < n; i++) y[i] = x[i] - my - b * (i - mx);
+    return y;
+  }
+  // the power at each frequency from f0 to f1 (Hz) in steps of df, through a Hann window
+  function sigSpec(y, fs, f0, f1, df) {
+    var n = y.length, w = new Float64Array(n), out = [], i;
+    for (i = 0; i < n; i++) w[i] = y[i] * (0.5 - 0.5 * Math.cos(2 * Math.PI * i / Math.max(1, n - 1)));
+    for (var f = f0; f <= f1 + 1e-9; f += df) {
+      var re = 0, im = 0, k = 2 * Math.PI * f / fs;
+      for (i = 0; i < n; i++) { re += w[i] * Math.cos(k * i); im -= w[i] * Math.sin(k * i); }
+      out.push({ f: f, p: re * re + im * im });
+    }
+    return out;
+  }
+  // the strongest local peak, refined with a parabola through its neighbours
+  function sigPeak(sp, lo, hi) {
+    var best = -1;
+    for (var i = 0; i < sp.length; i++) {
+      if (sp[i].f < lo - 1e-9 || sp[i].f > hi + 1e-9) continue;
+      var l = i > 0 ? sp[i - 1].p : -1, r = i < sp.length - 1 ? sp[i + 1].p : -1;
+      if (sp[i].p >= l && sp[i].p >= r && (best < 0 || sp[i].p > sp[best].p)) best = i;
+    }
+    if (best < 0) return null;
+    var f = sp[best].f;
+    if (best > 0 && best < sp.length - 1) {
+      var a = sp[best - 1].p, b = sp[best].p, c = sp[best + 1].p, d = a - 2 * b + c;
+      if (d < 0) f += 0.5 * (a - c) / d * (sp[1].f - sp[0].f);
+    }
+    return { i: best, f: f, p: sp[best].p };
+  }
+  // the share of the power within ±bw of f and its harmonics (up to k of them)
+  function sigShare(sp, f, bw, k) {
+    var tot = 0, at = 0;
+    sp.forEach(function (s) {
+      tot += s.p;
+      for (var h = 1; h <= k; h++) if (Math.abs(s.f - h * f) <= bw) { at += s.p; break; }
+    });
+    return tot > 0 ? at / tot : 0;
+  }
+
+  /* ----- from pictures to beats ----- */
+  // one picture: the average of each colour, the share of pixels that are a lit fingertip's red, and the share clipped at full red
+  function camGrab(src, t, dedupe) {
+    var cx = CAM.cx;
+    if (!cx || !CAM.on) return;
+    var d;
+    try { cx.drawImage(src, 0, 0, CAM_W, CAM_H); d = cx.getImageData(0, 0, CAM_W, CAM_H).data; } catch (e) { return; }
+    var n = CAM_W * CAM_H, r = 0, g = 0, b = 0, red = 0, clip = 0;
+    for (var i = 0; i < d.length; i += 4) {
+      var R = d[i], G = d[i + 1], B = d[i + 2];
+      r += R; g += G; b += B;
+      if (R > 20 && R > 1.4 * G && R > 1.4 * B) red++;
+      if (R >= 250) clip++;
+    }
+    var s = { t: t, r: r / n, g: g / n, b: b / n, red: red / n, clip: clip / n }, L = CAM.last;
+    if (dedupe && L && s.r === L.r && s.g === L.g && s.b === L.b) return;      // the timer saw the same picture twice
+    if (L && t <= L.t) return;
+    CAM.last = s;
+    CAM.raw.push(s);
+    CAM.frames++;
+    while (CAM.raw.length && CAM.raw[0].t < t - CAM_KEEP) CAM.raw.shift();
+    if (t - CAM.anaAt >= 0.25) { CAM.anaAt = t; camAnalyse(t); }
+  }
+  // a frame's own time stamp (microseconds from the camera) on the page's clock, set again if the two drift apart
+  function camStamp(us) {
+    var now = bNow(), t = us / 1e6;
+    if (CAM.off === null || Math.abs(t + CAM.off - now) > 0.5) CAM.off = now - t;
+    return t + CAM.off;
+  }
+  // the pictures of one colour from `from`, on an even 30-a-second grid
+  function camResample(win, from, n, key) {
+    var x = new Float64Array(n), j = 0;
+    for (var k = 0; k < n; k++) {
+      var t = from + k / CAM_FS;
+      while (j < win.length - 2 && win[j + 1].t < t) j++;
+      var a = win[j], b = win[Math.min(j + 1, win.length - 1)], u = b.t > a.t ? (t - a.t) / (b.t - a.t) : 0;
+      x[k] = a[key] + (b[key] - a[key]) * Math.max(0, Math.min(1, u));
+    }
+    return x;
+  }
+  var CAM_BAND = null;
+  function camBand(x) {
+    if (!CAM_BAND) CAM_BAND = [sigBiquad("hp", 0.7, CAM_FS), sigBiquad("lp", 3.5, CAM_FS)];
+    return sigZero(sigDetrend(x), CAM_BAND, CAM_FS);
+  }
+  /* The pulse rate and how clean the pulse is: the strongest peak between 0.7 and 3.5 Hz, and the share of the power at
+     it and its harmonics. That peak can be one of the pulse's harmonics rather than its own rate, when the heart is slow
+     and the filter's edge weakens the first: the wave then repeats best over two or three of those periods. So of the
+     strongest peak's period and two, three and four of them (down to 36 a minute), the one the wave repeats over best is
+     the beat, the shortest of any that come within 0.1 of the best. */
+  function camSpec(y) {
+    var sp = sigSpec(y, CAM_FS, 0.5, 3.5, 0.02), pk = sigPeak(sp, 0.7, 3.5);
+    if (!pk) return { f0: 1, conc: 0 };
+    var f0 = pk.f, ac = [], k, best = 1;
+    for (k = 1; k <= 4 && (k === 1 || f0 / k >= 0.6); k++) ac[k] = sigAc(y, CAM_FS * k / f0);
+    for (k = 2; k < ac.length; k++) if (ac[k] > ac[best]) best = k;
+    for (k = 1; k < best; k++) if (ac[k] >= ac[best] - 0.1) { best = k; break; }
+    if (best > 1) {
+      var sub = sigPeak(sp, f0 / best - 0.1, f0 / best + 0.1);
+      f0 = sub ? sub.f : f0 / best;
+    }
+    return { f0: f0, conc: sigShare(sp, f0, 0.15, 3) };
+  }
+  // how alike a signal is to itself `lag` samples later (a fraction of a sample by interpolation), from -1 to 1
+  function sigAc(y, lag) {
+    var n = y.length, L = Math.floor(lag), u = lag - L, a = 0, b = 0, c = 0;
+    for (var i = 0; i + L + 1 < n; i++) {
+      var x = y[i], z = y[i + L] * (1 - u) + y[i + L + 1] * u;
+      a += x * z; b += x * x; c += z * z;
+    }
+    return b > 0 && c > 0 ? a / Math.sqrt(b * c) : 0;
+  }
+  // each beat: the highest point of the (inverted) pulse, at least 60% of a beat after the one before, refined between
+  // samples: [{ t, i (the sample, with its fraction) }]
+  function camPeaks(y, f0, t0) {
+    var n = y.length, minD = Math.max(5, Math.round(0.6 * CAM_FS / f0)), srt = Array.prototype.slice.call(y).sort(function (a, b) { return a - b; });
+    var thr = 0.3 * srt[Math.floor(0.9 * (n - 1))], cand = [], keep = [], i;
+    for (i = 1; i < n - 1; i++) if (y[i] > thr && y[i] > y[i - 1] && y[i] >= y[i + 1]) cand.push(i);
+    cand.sort(function (a, b) { return y[b] - y[a]; });
+    cand.forEach(function (c) { if (keep.every(function (k) { return Math.abs(k - c) >= minD; })) keep.push(c); });
+    keep.sort(function (a, b) { return a - b; });
+    return keep.map(function (c) {
+      var a = y[c - 1], b = y[c], d = y[c + 1], den = a - 2 * b + d, off = den < 0 ? Math.max(-0.5, Math.min(0.5, 0.5 * (a - d) / den)) : 0;
+      return { t: t0 + (c + off) / CAM_FS, i: c };
+    });
+  }
+  // how much each beat looks like the window's average beat (from a third of a beat before its peak to half a beat after):
+  // a clean pulse repeats its shape, a jolt of the finger doesn't. A beat too near the window's edge for its whole shape gets null.
+  function camShape(y, pks, f0) {
+    var per = CAM_FS / f0, a = Math.round(0.33 * per), b = Math.round(0.5 * per), len = a + b + 1, tpl = new Float64Array(len), n = 0;
+    var segs = pks.map(function (p) {
+      if (p.i - a < 0 || p.i + b >= y.length) return null;
+      var s = Array.prototype.slice.call(y, p.i - a, p.i + b + 1);
+      for (var j = 0; j < len; j++) tpl[j] += s[j];
+      n++;
+      return s;
+    });
+    if (n < 2) return segs.map(function () { return null; });
+    var corr = function (s) {
+      var ma = 0, mb = 0, j, sab = 0, saa = 0, sbb = 0;
+      for (j = 0; j < len; j++) { ma += s[j]; mb += tpl[j]; }
+      ma /= len; mb /= len;
+      for (j = 0; j < len; j++) { var u = s[j] - ma, v = tpl[j] - mb; sab += u * v; saa += u * u; sbb += v * v; }
+      return saa > 0 && sbb > 0 ? sab / Math.sqrt(saa * sbb) : 0;
+    };
+    return segs.map(function (s) { return s ? corr(s) : null; });
+  }
+  /* One look at the last ten seconds, every quarter of a second: is a fingertip over the lens, how clean is the pulse,
+     and which new beats can be trusted. `st` carries the last beat counted (lastPeak); it works on any list of pictures,
+     so the tests can feed it a made-up pulse. Returns { beats: [{t, rr}], q (0 to 1), cover, dark, f0, ch, y, t0, peaks, span }. */
+  function camStep(st, raw, tEnd) {
+    var out = { beats: [], q: 0, cover: false, dark: false, clip: false, f0: 0, ch: "r", y: null, t0: 0, peaks: [], span: 0 };
+    var i = raw.length - 1, sec = [];
+    while (i >= 0 && raw[i].t > tEnd) i--;
+    var end = i;
+    while (i >= 0 && raw[i].t > tEnd - 1) { sec.push(raw[i]); i--; }
+    if (!sec.length) { st.lastPeak = 0; st.good = 0; return out; }
+    out.cover = avg(sec.map(function (s) { return s.red; })) > 0.8;
+    out.dark = avg(sec.map(function (s) { return (s.r + s.g + s.b) / 3; })) < 6;
+    out.clip = avg(sec.map(function (s) { return s.clip; })) > 0.5;
+    // back from now while the fingertip stays down and the pictures keep coming: what can be read
+    var from = raw[end].t;
+    for (i = end; i > 0 && raw[i].t > tEnd - CAM_WIN; i--) {
+      if (raw[i - 1].red < 0.6 || raw[i].t - raw[i - 1].t > 0.3) break;
+      from = raw[i - 1].t;
+    }
+    out.span = tEnd - from;
+    if (!out.cover || out.span < 4) { st.lastPeak = 0; st.good = 0; return out; }
+    var win = raw.slice(Math.max(0, i - 1), end + 1), n = Math.floor(out.span * CAM_FS);
+    var yr = camBand(camResample(win, from, n, "r")), yg = camBand(camResample(win, from, n, "g"));
+    var sr = camSpec(yr), sg = camSpec(yg), useG = out.clip ? sg.conc >= sr.conc - 0.1 : sg.conc > sr.conc + 0.05;
+    var sp = useG ? sg : sr, y = useG ? yg : yr;
+    for (var k = 0; k < y.length; k++) y[k] = -y[k];          // each beat darkens the picture: turned over, a beat is a peak
+    out.ch = useG ? "g" : "r"; out.f0 = sp.f0; out.y = y; out.t0 = from;
+    var pks = camPeaks(y, sp.f0, from), shape = camShape(y, pks, sp.f0), cs = shape.filter(function (c) { return c !== null; });
+    out.peaks = pks.map(function (p) { return p.t; });
+    // the quality, the lowest of three: the rhythm's share of the power, how alike the beats are, and how steady the gaps
+    // between them (a resting heart's vary by a tenth or so, breathing included; a finger's jolts come at random)
+    var gaps = pks.slice(1).map(function (p, j) { return p.t - pks[j].t; }), gm = avg(gaps);
+    var cv = gaps.length >= 2 ? Math.sqrt(avg(gaps.map(function (g) { return (g - gm) * (g - gm); }))) / gm : 1;
+    var clamp = function (v) { return Math.max(0, Math.min(1, v)); };
+    out.q = Math.min(clamp((sp.conc - 0.3) / 0.4), cs.length ? clamp((avg(cs) - 0.5) / 0.4) : 0, clamp((0.3 - cv) / 0.15));
+    // beats count once the signal has stayed good for a second and a half: a moment of luck in the middle of a jolt doesn't
+    st.good = out.q >= CAM_Q ? (st.good || 0) + 1 : 0;
+    if (st.good < 6 || out.span < 5) { st.lastPeak = 0; st.lastRr = 0; return out; }
+    var per = 1 / sp.f0, edge = tEnd - 1.5, start = from + 1;   // a beat is counted once it's well clear of the window's edges
+    pks.forEach(function (p, j) {
+      var tp = p.t;
+      if (tp <= st.lastPeak + 0.3 * per || tp > edge || tp < start) return;
+      if (shape[j] !== null && shape[j] < 0.8) { st.lastPeak = 0; return; }      // a beat that doesn't look like the others: the chain starts again
+      if (!st.lastPeak) st.lastRr = 0;                  // a new chain: no beat before to compare with
+      else {
+        var rr = (tp - st.lastPeak) * 1000;
+        // within the range of a heartbeat, near the window's rate, and near the beat before (a resting heart changes by a few percent a beat)
+        if (rr >= 300 && rr <= 2000 && Math.abs(rr - 1000 * per) <= 350 * per && (!st.lastRr || Math.abs(rr - st.lastRr) <= 0.3 * st.lastRr)) {
+          out.beats.push({ t: tp, rr: rr });
+          st.lastRr = rr;
+        } else st.lastRr = 0;
+      }
+      st.lastPeak = tp;
+    });
+    return out;
+  }
+  function camAnalyse(tEnd) {
+    var res = camStep(CAM, CAM.raw, tEnd);
+    CAM.res = res;
+    if (res.cover) CAM.coverAt = tEnd;
+    res.beats.forEach(function (b) { camBeat(b.t, b.rr); });
+    if (tEnd - Math.max(CAM.coverAt, CAM.t0) > CAM_IDLE) { CAM.said = "idle"; camStop(); return; }   // two minutes without a fingertip
+    camUI();
+  }
+  // a beat into the heart pipeline, as a sensor's beat-to-beat interval would go (heart.js hrOnValue)
+  function camBeat(t, rr) {
+    if (H.src !== "cam") return;
+    var now = bNow(), pt = { t: t, hr: 60000 / rr };
+    H.hasRR = true;
+    H.beats.push({ t: t, rr: rr });
+    while (H.beats.length && H.beats[0].t < now - 300) H.beats.shift();
+    H.series.push(pt);
+    while (H.series.length && H.series[0].t < now - 300) H.series.shift();
+    hrRecord(pt);
+    CAM.rr.push(rr); if (CAM.rr.length > 5) CAM.rr.shift();
+    CAM.beatT.push(t); while (CAM.beatT.length && CAM.beatT[0] < now - 12) CAM.beatT.shift();
+    H.hr = 60000 / median(CAM.rr);
+    if (!H.since || now - H.lastAt > 5) H.since = now;       // continuous data restarts after a gap
+    H.lastAt = now;
+    hrTiles();
+  }
+
+  /* ----- the camera on and off ----- */
+  function camSupported() { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
+  function camGo() {
+    if (CAM.on || CAM.busy) { camStop(); return; }
+    if (H.state !== "off" && H.src !== "cam") return;          // a sensor is connected: the camera isn't needed
+    supGate(CAM_NAME, camOpen, function (ok) { if (ok && !CAM.on && !CAM.busy) camOpen(); else camUI(); });    // unlocked in the dialog: on it goes
+  }
+  function camOpen() {
+    CAM.err = ""; CAM.said = "";
+    if (!camSupported()) { CAM.err = window.isSecureContext === false ? "insecure" : "unsupported"; camUI(); return; }
+    if (H.state !== "off" && H.src !== "cam") return;
+    var gen = ++CAM.gen, p;
+    CAM.busy = true;
+    camUI();
+    // the camera on the back, small and steady: a few dozen pixels are all the colour averages need
+    var v = { facingMode: { ideal: "environment" }, width: { ideal: 320 }, height: { ideal: 240 }, frameRate: { ideal: 30 } };
+    try { p = navigator.mediaDevices.getUserMedia({ audio: false, video: v }); } catch (e) { camFail(e, gen); return; }
+    p.then(function (stream) {
+      if (gen !== CAM.gen || !CAM.busy) { stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} }); return; }
+      camRun(stream);
+    }).catch(function (e) { camFail(e, gen); });
+  }
+  function camFail(e, gen) {
+    if (gen !== CAM.gen) return;
+    var n = (e && e.name) || "", embedded = false;
+    try { embedded = window.self !== window.top; } catch (x) { embedded = true; }
+    CAM.busy = false; CAM.on = false;
+    CAM.err = n === "NotAllowedError" || n === "SecurityError" ? (embedded ? "embedded" : "denied")
+      : n === "NotFoundError" || n === "OverconstrainedError" || n === "DevicesNotFoundError" ? "none"
+      : n === "NotReadableError" || n === "TrackStartError" || n === "AbortError" ? "busy" : "other:" + (n || "Error");
+    camUI();
+  }
+  function camRun(stream) {
+    var tr = stream.getVideoTracks()[0];
+    if (H.state !== "off") { stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} }); CAM.busy = false; camUI(); return; }   // a sensor came first
+    if (!tr) { stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} }); camFail({ name: "NotFoundError" }, CAM.gen); return; }
+    CAM.stream = stream; CAM.track = tr;
+    CAM.busy = false; CAM.on = true;
+    CAM.raw = []; CAM.last = null; CAM.lastPeak = 0; CAM.rr = []; CAM.beatT = []; CAM.res = null; CAM.anaAt = 0;
+    CAM.t0 = bNow(); CAM.coverAt = 0; CAM.frames = 0; CAM.off = null; CAM.vfcAt = 0; CAM.torch = null;
+    if (!CAM.cx) {
+      var cv = document.createElement("canvas");
+      cv.width = CAM_W; cv.height = CAM_H;
+      CAM.cx = cv.getContext("2d", { willReadFrequently: true });
+    }
+    tr.addEventListener("ended", function () { if (CAM.track === tr && CAM.on) { CAM.said = "ended"; camStop(); } });
+    var vid = $("#camVid");
+    vid.srcObject = stream;
+    var pl = vid.play();
+    if (pl && pl.catch) pl.catch(function () {});
+    camTorch(true);
+    setTimeout(function () { if (CAM.track === tr && !CAM.torch) camTorch(true); }, 700);     // some phones list the light only once the camera runs
+    // the camera becomes this page's heart sensor
+    H.src = "cam"; H.name = "Phone camera";
+    H.beats = []; H.series = []; H.coh = null; H.hasRR = true; H.hr = 0; H.lastAt = 0; H.contact = null; H.since = 0;
+    H.connAt = bNow();
+    bSetT("#hrTitle", "Your pulse from the camera");
+    hrMsg(""); hrLogShow(null);
+    hrSetState("on", "Camera");
+    clearInterval(H.tickT); H.tickT = setInterval(hrTiles, 1000);
+    clearInterval(H.cohT); H.cohT = setInterval(cohTick, 5000);
+    hrPulse();
+    camFrames();
+    camUI();
+  }
+  // the light beside the lens, where the browser lets a page switch it on
+  function camTorch(on) {
+    var tr = CAM.track, caps = {};
+    if (!tr) return;
+    try { caps = tr.getCapabilities ? tr.getCapabilities() : {}; } catch (e) {}
+    if (!caps || !caps.torch) { if (on) CAM.torch = false; camUI(); return; }
+    try {
+      tr.applyConstraints({ advanced: [{ torch: !!on }] }).then(function () { if (CAM.track === tr) { CAM.torch = !!on; camUI(); } },
+        function () { if (CAM.track === tr) { CAM.torch = false; camUI(); } });
+    } catch (e) { CAM.torch = false; }
+  }
+  function camFrames() {
+    var gen = CAM.gen, vid = $("#camVid");
+    CAM.reader = null;
+    if (window.MediaStreamTrackProcessor) {
+      try { CAM.reader = new MediaStreamTrackProcessor({ track: CAM.track }).readable.getReader(); } catch (e) { CAM.reader = null; }
+    }
+    if (CAM.reader) {
+      var rd = CAM.reader;
+      var pump = function () {
+        rd.read().then(function (res) {
+          if (res.done) return;
+          var f = res.value;
+          if (gen === CAM.gen) { try { camGrab(f, camStamp(f.timestamp)); } catch (e) {} }
+          try { f.close(); } catch (e) {}
+          if (gen === CAM.gen) pump();
+        }, function () {});
+      };
+      pump();
+      return;
+    }
+    if (vid.requestVideoFrameCallback) {
+      var cb = function (now, md) {
+        if (gen !== CAM.gen) return;
+        CAM.vfcAt = bNow();
+        var t = md && md.captureTime && Math.abs(md.captureTime / 1000 - CAM.vfcAt) < 1 ? md.captureTime / 1000 : CAM.vfcAt;
+        camGrab(vid, t);
+        vid.requestVideoFrameCallback(cb);
+      };
+      vid.requestVideoFrameCallback(cb);
+    }
+    // while the page shows no video (another tab of Entrain), or without either: look 60 times a second, skipping repeats
+    CAM.timer = setInterval(function () {
+      if (gen !== CAM.gen || bNow() - CAM.vfcAt < 0.3 || vid.readyState < 2) return;
+      camGrab(vid, bNow(), true);
+    }, 16);
+  }
+  function camStop() {
+    CAM.gen++;
+    var was = CAM.on || CAM.busy;
+    CAM.busy = false; CAM.on = false;
+    if (CAM.reader) { try { CAM.reader.cancel(); } catch (e) {} CAM.reader = null; }
+    clearInterval(CAM.timer);
+    if (CAM.stream) CAM.stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) {} });     // the light goes off with it
+    CAM.stream = null; CAM.track = null; CAM.torch = null;
+    var vid = $("#camVid");
+    if (vid) { try { vid.pause(); } catch (e) {} vid.srcObject = null; }
+    if (H.src === "cam") {
+      clearInterval(H.tickT); clearInterval(H.cohT); clearTimeout(H.pulseT);
+      H.coh = null; H.hr = 0; H.src = ""; H.name = "";
+      drawSpectrum();
+      bSetT("#hrTitle", "Pair a heart-rate sensor");
+      hrSetState("off", "Not connected");
+    }
+    if (was || CAM.said) camUI();
+  }
+
+  /* ----- what the Heart page shows ----- */
+  var CAM_ERR = {
+    unsupported: "This browser can't use the camera from a web page. Chrome, Edge, Firefox and Safari can.",
+    insecure: "The camera needs Entrain opened from its web address (https) or as a file on this device.",
+    denied: "The camera wasn't allowed. To use it, allow the camera for this page (in the browser's site settings, by the address bar), then press the button again.",
+    embedded: "This copy sits inside another page, such as a preview, which blocks the camera. Open the page at its own web address to use it.",
+    none: "No camera was found on this device.",
+    busy: "The camera is busy: another app or tab is using it. Close that, then try again."
+  };
+  function camSay() {
+    var r = CAM.res, s;
+    if (CAM.busy) return "Opening the camera…";
+    if (!r || CAM.frames < 10) return "Waiting for the camera…";
+    if (!r.cover) return r.dark ? "Too dark to see your fingertip. Turn on a lamp, or face a window: daylight through the finger works too."
+      : "Cover the camera on the back, and the light beside it, with the pad of one finger, resting it lightly.";
+    if (r.span < 5) return "Fingertip found. Keep still while the page finds your pulse…";
+    if (r.q < CAM_Q) return "The pulse is faint or moving. Keep your hand still and resting, and press more lightly.";
+    s = hrLive() ? "Your pulse: " + Math.round(H.hr) + " beats a minute." : "Finding each beat…";
+    return s + (r.q >= CAM_GOOD ? " A clean signal: keep still." : " Keep still for a cleaner signal.");
+  }
+  function camUI() {
+    var box = $("#cam");
+    if (!box) return;
+    var on = CAM.on || CAM.busy, sensor = H.state !== "off" && H.src !== "cam";
+    box.hidden = sensor;                                       // a Bluetooth sensor is connected or connecting
+    box.dataset.on = on ? "1" : "0";
+    $("#camOff").hidden = on;
+    $("#camOn").hidden = !on;
+    var go = $("#camGo"), tag = go.querySelector(".sup-tag");
+    if (tag && supOn()) tag.parentNode.removeChild(tag);
+    else if (!tag && !supOn()) go.insertAdjacentHTML("beforeend", supTag());
+    var err = CAM.err ? (CAM_ERR[CAM.err] || "The camera didn't start (the browser said " + CAM.err.slice(6) + "). Try again, or close other apps that use it.")
+      : CAM.said === "idle" ? "The camera turned itself off after two minutes without a fingertip on it."
+      : CAM.said === "ended" ? "The camera stopped: another app may have taken it. Press the button to start it again." : "";
+    bSetT("#camErr", err);
+    $("#camErr").hidden = !err || on;
+    if (!on) return;
+    var r = CAM.res, q = r && r.cover ? Math.round(r.q * 100) : 0;
+    bSetT("#camRead", camSay());
+    var bar = $("#camQ");
+    bar.setAttribute("aria-valuenow", String(q));
+    var qt = !r || !r.cover ? "No fingertip" : r.span < 5 ? "Settling" : r.q < CAM_Q ? "Poor" : r.q < CAM_GOOD ? "Fair" : "Good";
+    bar.setAttribute("aria-valuetext", qt);
+    $("#camQBar").style.width = q + "%";
+    bar.dataset.q = !r || !r.cover || r.q < CAM_Q ? "low" : r.q < CAM_GOOD ? "mid" : "high";
+    bSetT("#camQTxt", qt);
+    bSetT("#camLight", CAM.torch === true ? "Light on" : CAM.torch === false ? "Light unavailable: use a lamp or daylight" : "");
+    var now = bNow();
+    if (!$("#v-heart").hidden && now - CAM.drawAt >= (RM ? 1 : 0.2)) { CAM.drawAt = now; camDraw(); }
+  }
+  // the last six seconds of the pulse, turned over so each beat rises, with a dot on each beat counted
+  function camDraw() {
+    var f = fitCanvas($("#camTrace")), r = CAM.res, em = $("#camEmpty");
+    em.hidden = !!(r && r.y && r.cover);
+    if (!f || !r || !r.y || !r.cover) return;
+    var c = f.c, W = f.w, Hh = f.h, y = r.y, n = y.length, span = 6, t1 = r.t0 + (n - 1) / CAM_FS, t0 = t1 - span;
+    var k0 = Math.max(0, Math.floor((t0 - r.t0) * CAM_FS)), lo = Infinity, hi = -Infinity, k;
+    for (k = k0; k < n; k++) { if (y[k] < lo) lo = y[k]; if (y[k] > hi) hi = y[k]; }
+    if (!(hi > lo)) return;
+    var X = function (t) { return 6 + (t - t0) / span * (W - 12); }, Y = function (v) { return Hh - 10 - (v - lo) / (hi - lo) * (Hh - 20); };
+    var col = BCOL.hr || "#f472b6";
+    c.lineWidth = 2; c.lineJoin = "round"; c.strokeStyle = rgba(col, r.q >= CAM_Q ? 0.95 : 0.4);
+    c.beginPath();
+    for (k = k0; k < n; k++) { var t = r.t0 + k / CAM_FS; if (k === k0) c.moveTo(X(t), Y(y[k])); else c.lineTo(X(t), Y(y[k])); }
+    c.stroke();
+    c.fillStyle = col;
+    CAM.beatT.forEach(function (tb) {
+      if (tb < t0 || tb > t1) return;
+      var kk = Math.round((tb - r.t0) * CAM_FS);
+      if (kk < 0 || kk >= n) return;
+      c.beginPath(); c.arc(X(tb), Y(y[kk]), 3.5, 0, 2 * Math.PI); c.fill();
+    });
+  }
+
+  function camInit() {
+    $("#camGo").addEventListener("click", camGo);
+    $("#camStop").addEventListener("click", camStop);
+    SUP_EXTRA.push({ name: CAM_NAME, href: "#cam" });           // Settings' list of what the donation unlocks
+    window.addEventListener("pagehide", function () { if (CAM.on || CAM.busy) camStop(); });
+    if (window.ResizeObserver) new ResizeObserver(function () { if (CAM.on) camDraw(); }).observe($("#camTrace"));
+    camUI();
+    if (window.__entrain) {
+      var X = window.__entrain;
+      X.CAM = CAM; X.camStep = camStep; X.camBand = camBand; X.camSpec = camSpec; X.camStop = camStop; X.rmssd = rmssd; X.cohCompute = cohCompute; X.hrLive = hrLive;
+    }
+  }
+  /* ------------------------- the phone's motion sensor -------------------------
+     Two new techniques from one sensor (DeviceMotion; on an iPhone, after the page has asked
+     for motion access in a tap):
+     - Phone on your belly, on Breathe. Lying back with the phone flat on the belly, each breath
+       tilts it a little, so gravity's pull shifts between its three axes. Averaged into ten
+       readings a second, the three are band-passed to 3 to 42 breaths a minute, reduced to the
+       one direction they move in most (their principal component), and the strongest rhythm in
+       the last 45 seconds is the breathing rate, with how much of the power lies at it as the
+       confidence; each peak of that wave is a breath. Beside the guide it says whether you're
+       with it, faster or slower, and after the session for how much of it you followed.
+     - Stillness, on the end screen of a practice done lying down. Each second counts as moving
+       when there's a jolt (a quick change between readings), a turn (the gyroscope over 25
+       degrees a second) or a knock; the slow rise and fall of breathing counts as still. The
+       end screen shows the share of the session that was still and the longest still stretch.
+     Every reading is time-stamped with bNow(), so sessions and tests keep one clock. Nothing is
+     kept beyond the last 90 seconds of readings, the moments of the last few minutes' breaths and
+     the session's counts.
+  ----------------------------------------------------------------------------- */
+  var MOT_BELLY = "Phone on your belly", MOT_STILL = "Stillness on the end screen";
+  var MOT_FS = 10, MOT_KEEP = 90, MOT_WIN = 45, MOT_MIN = 25;
+  var MOT = {
+    on: false, perm: "", state: "off",          // state: off | wait | ok | none | denied
+    belly: false, still: false,                 // who's listening: Breathe, a practice
+    bins: [], cur: null, got: 0, since: 0, sec: -1, mv: [],   // a tenth of a second each; mv: each second, moving or not
+    est: null, marks: [], tickT: 0, watchT: 0, tickAt: 0,
+    ses: null, last: null,                      // the Breathe session's tally, and the last one's
+    sr: null                                    // the running practice's stillness
+  };
+
+  // motion access: asked in a tap where the browser asks (Safari on an iPhone or iPad; Chrome answers at once). Anything but a
+  // refusal goes ahead: if no readings come, the page says so after three seconds
+  function motAsk(then0) {
+    var D = window.DeviceMotionEvent, then = function (s) { if (s === "ok" && MOT.state === "denied") MOT.state = "off"; then0(s); };
+    if (!D) { then("none"); return; }
+    if (typeof D.requestPermission === "function" && MOT.perm !== "granted") {
+      try {
+        D.requestPermission().then(function (s) { MOT.perm = s; then(s === "denied" ? "denied" : "ok"); }, function () { then("denied"); });
+      } catch (e) { then("denied"); }
+      return;
+    }
+    then("ok");
+  }
+  // listening while Breathe or a practice wants it
+  function motListen() {
+    var want = MOT.belly || MOT.still;
+    if (want && !MOT.on) {
+      MOT.on = true; MOT.got = 0; MOT.since = bNow(); MOT.bins = []; MOT.cur = null; MOT.mv = []; MOT.sec = -1; MOT.marks = []; MOT.est = null;
+      if (MOT.state !== "denied") MOT.state = "wait";
+      window.addEventListener("devicemotion", motOnEvent);
+      clearTimeout(MOT.watchT);
+      MOT.watchT = setTimeout(function () { if (MOT.on && !MOT.got && MOT.state === "wait") { MOT.state = "none"; motUI(); } }, 3000);
+    } else if (!want && MOT.on) {
+      MOT.on = false;
+      window.removeEventListener("devicemotion", motOnEvent);
+      clearTimeout(MOT.watchT);
+      if (MOT.state !== "denied") MOT.state = "off";
+    }
+    clearInterval(MOT.tickT);
+    if (MOT.belly) { MOT.tickAt = bNow(); MOT.tickT = setInterval(motTick, 1000); }
+  }
+  function motOnEvent(e) {
+    var a = e.accelerationIncludingGravity, r = e.rotationRate, t = bNow();
+    if (!a || typeof a.x !== "number" || typeof a.y !== "number" || typeof a.z !== "number") return;
+    if (!MOT.got) { MOT.state = "ok"; motUI(); }
+    MOT.got++;
+    var k = Math.floor(t * MOT_FS), c = MOT.cur;
+    if (!c || c.k !== k) { motClose(); c = MOT.cur = { k: k, sx: 0, sy: 0, sz: 0, n: 0, lo: Infinity, hi: -Infinity, rot: 0, hasRot: false }; }
+    c.sx += a.x; c.sy += a.y; c.sz += a.z; c.n++;
+    var m = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+    if (m < c.lo) c.lo = m;
+    if (m > c.hi) c.hi = m;
+    if (r && typeof r.alpha === "number") { c.hasRot = true; c.rot = Math.max(c.rot, Math.sqrt(r.alpha * r.alpha + (r.beta || 0) * (r.beta || 0) + (r.gamma || 0) * (r.gamma || 0))); }
+  }
+  // a tenth of a second done: its averages, and each whole second whether you moved
+  function motClose() {
+    var c = MOT.cur;
+    if (!c || !c.n) return;
+    MOT.cur = null;
+    var b = { t: c.k / MOT_FS, x: c.sx / c.n, y: c.sy / c.n, z: c.sz / c.n, sp: c.hi - c.lo, rot: c.hasRot ? c.rot : -1 };
+    MOT.bins.push(b);
+    while (MOT.bins.length && MOT.bins[0].t < b.t - MOT_KEEP) MOT.bins.shift();
+    var s = Math.floor(b.t);
+    if (MOT.sec < 0) MOT.sec = s;
+    while (MOT.sec < s) { motSecond(MOT.sec); MOT.sec++; }
+  }
+  // is the phone being moved, beyond the slow tilt of breathing? (pure, for the tests)
+  function motMoving(bins) {
+    for (var i = 0; i < bins.length; i++) {
+      var b = bins[i];
+      if (b.sp > 1.2 || b.rot > 25) return true;                     // a knock, or a turn
+      if (i >= 2) {                                                    // a jolt: a sudden change between readings
+        var p = bins[i - 1], q = bins[i - 2], dx = b.x - 2 * p.x + q.x, dy = b.y - 2 * p.y + q.y, dz = b.z - 2 * p.z + q.z;
+        if (Math.sqrt(dx * dx + dy * dy + dz * dz) > 0.25) return true;
+      }
+    }
+    return false;
+  }
+  function motSecond(s) {
+    var bs = MOT.bins.filter(function (b) { return b.t >= s - 0.2 && b.t < s + 1; });     // the second, with the two readings before it for the jolts
+    if (bs.length < 3) return;
+    var m = motMoving(bs);
+    MOT.mv.push({ t: s, m: m });
+    while (MOT.mv.length && MOT.mv[0].t < s - MOT_KEEP) MOT.mv.shift();
+    var sr = MOT.sr;
+    if (sr && P.state === "running") {
+      sr.secs++;
+      if (m) { if (s - sr.lastMove > 5) sr.moves++; sr.lastMove = s; sr.run = 0; }
+      else { sr.still++; sr.run++; if (sr.run > sr.best) sr.best = sr.run; }
+    }
+  }
+
+  /* ----- the rate from the belly's tilt ----- */
+  var MOT_BAND = null;
+  // xs, ys, zs: ten readings a second. Returns { rate (a minute), conf, amp (m/s²), q, s (the breathing wave), peaks (indices) } (pure, for the tests)
+  function motRate(xs, ys, zs, fs) {
+    if (!MOT_BAND) MOT_BAND = [sigBiquad("hp", 0.05, MOT_FS), sigBiquad("lp", 0.7, MOT_FS)];
+    var ax = [xs, ys, zs].map(function (v) { return sigZero(sigDetrend(v), MOT_BAND, 2 * fs); }), n = xs.length, i, j;
+    // the direction they move in most: the covariance's main axis, by power iteration
+    var C = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) { var sum = 0; for (var k = 0; k < n; k++) sum += ax[i][k] * ax[j][k]; C[i][j] = sum / n; }
+    var v = [C[0][0] + 1e-9, C[1][1] + 1e-9, C[2][2] + 1e-9], it, nv;
+    for (it = 0; it < 30; it++) {
+      var w = [0, 1, 2].map(function (r) { return C[r][0] * v[0] + C[r][1] * v[1] + C[r][2] * v[2]; });
+      nv = Math.sqrt(w[0] * w[0] + w[1] * w[1] + w[2] * w[2]);
+      if (!(nv > 0)) break;
+      v = w.map(function (x) { return x / nv; });
+    }
+    var s = new Float64Array(n), ss = 0;
+    for (k = 0; k < n; k++) { s[k] = v[0] * ax[0][k] + v[1] * ax[1][k] + v[2] * ax[2][k]; ss += s[k] * s[k]; }
+    var amp = Math.sqrt(ss / Math.max(1, n));
+    var sp = sigSpec(s, fs, 3 / 60, 40 / 60, 0.1 / 60), pk = sigPeak(sp, 3 / 60, 40 / 60);
+    if (!pk || amp < 0.02) return { rate: 0, conf: 0, amp: amp, q: "faint", s: s, peaks: [] };     // under about a tenth of a degree's tilt
+    var f = pk.f, conf = sigShare(sp, f, 1 / 60, 2);
+    var per = fs / f, peaks = [], last = -Infinity;
+    for (k = 1; k < n - 1; k++) {
+      if (s[k] > 0 && s[k] > s[k - 1] && s[k] >= s[k + 1] && k - last >= 0.6 * per) { peaks.push(k); last = k; }
+    }
+    return { rate: f * 60, conf: conf, amp: amp, q: conf < 0.35 ? "unsteady" : conf < 0.55 ? "ok" : "clear", s: s, peaks: peaks };
+  }
+  function motBellyOk() { return MOT.belly && !!MOT.est && (MOT.est.q === "ok" || MOT.est.q === "clear"); }
+  // the guide's pace while a session of your own runs on Breathe
+  function motGuide() { return (B.state === "running" || B.state === "paused") && B.ph && !P.usesB ? 60 / B.ph.cycle : 0; }
+  function motVerdict(rate, g) { return !g ? "" : Math.abs(rate - g) <= Math.max(0.8, 0.12 * g) ? "with" : rate > g ? "faster" : "slower"; }
+  function motBelly() {
+    var now = bNow(), from = now - MOT_WIN, bs = MOT.bins.filter(function (b) { return b.t >= from; });
+    var have = bs.length ? now - bs[0].t : 0;
+    if (MOT.state !== "ok" || now - MOT.since < MOT_MIN || bs.length < MOT_MIN * MOT_FS * 0.5) {
+      MOT.est = { q: "listening", left: Math.max(1, Math.ceil(MOT_MIN - Math.min(have, now - MOT.since))) };
+      return;
+    }
+    // an even grid of ten a second, holding the last reading over a gap
+    var t0 = bs[0].t, n = Math.round((now - t0) * MOT_FS), xs = new Float64Array(n), ys = new Float64Array(n), zs = new Float64Array(n), j = 0;
+    for (var k = 0; k < n; k++) {
+      var t = t0 + k / MOT_FS;
+      while (j < bs.length - 1 && bs[j + 1].t <= t + 1e-6) j++;
+      xs[k] = bs[j].x; ys[k] = bs[j].y; zs[k] = bs[j].z;
+    }
+    var mv = MOT.mv.filter(function (x) { return x.t >= from; }), moving = mv.length ? mv.filter(function (x) { return x.m; }).length / mv.length : 0;
+    var r = motRate(xs, ys, zs, MOT_FS);
+    if (moving > 0.25) r.q = "moving";
+    MOT.est = { q: r.q, rate: r.rate, conf: r.conf, amp: r.amp };
+    // each breath, once it's well past
+    if (r.q === "ok" || r.q === "clear") {
+      var per = 60 / r.rate;
+      r.peaks.forEach(function (i) {
+        var tb = t0 + i / MOT_FS, lm = MOT.marks[MOT.marks.length - 1];
+        if (tb < now - 0.35 * per && (!lm || tb > lm + 0.6 * per)) MOT.marks.push(tb);
+      });
+      while (MOT.marks.length && MOT.marks[0] < now - 300) MOT.marks.shift();
+    }
+  }
+  // once a second while the phone is on your belly: the rate, and the session's tally
+  function motTick() {
+    var now = bNow(), dt = Math.min(5, Math.max(0, now - MOT.tickAt));
+    MOT.tickAt = now;
+    motBelly();
+    var g = motGuide(), run = B.state === "running" && !P.usesB;
+    if (run && !MOT.ses) MOT.ses = { secs: 0, read: 0, with: 0, faster: 0, slower: 0, t0: now, g: g };
+    if (MOT.ses && run) {
+      MOT.ses.secs += dt;
+      if (motBellyOk() && g) { MOT.ses.read += dt; MOT.ses[motVerdict(MOT.est.rate, g)] += dt; }
+    }
+    if (MOT.ses && B.state !== "running" && B.state !== "paused") {        // the session ended: what it counted
+      var se = MOT.ses;
+      se.breaths = MOT.marks.filter(function (t) { return t >= se.t0; }).length;
+      MOT.last = se.secs >= 30 ? se : null;
+      MOT.ses = null;
+    }
+    motUI();
+  }
+  function motNum(r) { var x = Math.round(r * 10) / 10; return String(x % 1 ? x.toFixed(1) : x); }
+  // what Breathe says beside the guide and under it
+  function motBellyTxt() {
+    var e = MOT.est, g = motGuide();
+    if (MOT.state === "denied") return "Motion access wasn't given, so the phone can't count your breaths. Turn this off and on again to be asked once more; if the question doesn't come, close the page and open it again.";
+    if (MOT.state === "none") return "No motion readings are coming in, so the phone can't count your breaths here. Phones have a motion sensor, though a browser can keep it from a page; most computers have none.";
+    if (MOT.last && B.state !== "running" && B.state !== "paused") {
+      var L = MOT.last, pc = L.read ? Math.round(100 * L.with / L.read) : 0;
+      return "Last session, on your belly: " + L.breaths + (L.breaths === 1 ? " breath" : " breaths") + " counted" +
+        (L.read >= 20 ? ", and with the guide for " + pc + "% of the time it could read you." : ", though too few clear readings to compare with the guide.");
+    }
+    if (!e || MOT.state === "wait") return "Lie back and rest the phone flat on your belly, screen up, just below the ribs. It counts your breaths after about " + MOT_MIN + " seconds.";
+    if (e.q === "listening") return "Counting your breaths: about " + e.left + (e.left === 1 ? " second" : " seconds") + " to go. Let the phone rest on your belly and breathe as the guide shows.";
+    if (e.q === "faint") return "The phone isn't moving with your breath. Rest it flat on your belly, just below the ribs, and let your belly rise as you breathe in.";
+    if (e.q === "moving") return "Too much movement to count your breaths. Lie still and let the phone rest.";
+    if (e.q === "unsteady") return "Your breathing is uneven to count: roughly " + motNum(e.rate) + " a minute so far.";
+    var s = "You're breathing about " + motNum(e.rate) + " times a minute";
+    if (!g) return s + ". Start the guide to see whether you're following it.";
+    var v = motVerdict(e.rate, g);
+    return s + ", with the guide at " + motNum(g) + (v === "with" ? ": you're following it." : v === "faster" ? ": faster than the guide. Let each breath out run a little longer." : ": slower than the guide. Follow its pace a little more closely.");
+  }
+  function motUI() {
+    var row = $("#bBellyRow"), on = MOT.belly, cb = $("#bBellyOn");
+    if (!row) return;
+    if (cb && cb.checked !== (on && supOn())) cb.checked = on && supOn();
+    row.hidden = !on;
+    if (on) bSetT("#bBellyTxt", motBellyTxt());
+    var ok = on && motBellyOk(), g = motGuide();
+    $("#bBellyStat").hidden = !ok;
+    if (ok) {
+      bSetT("#bBelly", motNum(MOT.est.rate));
+      var v = motVerdict(MOT.est.rate, g);
+      bSetT("#bBellyV", v === "with" ? "with the guide" : v);
+      $("#bBellyStat").dataset.v = v;
+    }
+    motTags();
+  }
+  // the cup beside each motion option while this device is locked (supRefresh calls this after an unlock)
+  function motTags() {
+    ["#bBellyL", "#sOptStillL"].forEach(function (sel) {
+      var l = $(sel);
+      if (!l) return;
+      var tag = l.querySelector(".sup-tag");
+      if (tag && supOn()) tag.parentNode.removeChild(tag);
+      else if (!tag && !supOn()) l.insertAdjacentHTML("beforeend", supTag(true));
+    });
+    var st = $("#sOptStill");
+    if (st && !supOn()) st.checked = false;
+  }
+  // Breathe's switch: on with a donation while locked, then motion access in the same tap
+  function motBellySet(on) {
+    if (!on) { MOT.belly = false; MOT.last = null; MOT.ses = null; motListen(); motUI(); return; }
+    var go = function () {
+      motAsk(function (s) {
+        if (s !== "ok") { MOT.state = s; MOT.belly = true; motUI(); return; }
+        MOT.belly = true; MOT.last = null; MOT.ses = null; motListen(); motTick();
+      });
+    };
+    var yes = function () { $("#bBellyOn").checked = true; go(); };
+    $("#bBellyOn").checked = false;
+    supGate(MOT_BELLY, yes, function (ok) { if (ok) yes(); else motUI(); });     // unlocked in the dialog: on it goes, in that tap
+  }
+
+  /* ----- stillness in a practice done lying down ----- */
+  // a practice lain down for, where the body rests: not a moving one, a measurement or one that strokes or pumps the breath
+  function motStillFits(d) {
+    if (!d || d.stress || d.noStill || d.method === "move" || d.method === "write" || !d.posture) return false;
+    return d.posture.indexOf("lie") >= 0 && d.posture.indexOf("stand") < 0;
+  }
+  function motStillOn(d) { return motStillFits(d) && !!P.opt.still && supOn() && pChoice(d, "pos") !== "walk"; }
+  function motStillRow(O) {
+    return '<label class="so-row so-tg so-still"><span class="so-l"><span id="sOptStillL">Stillness' + supTag(true) + "</span>" +
+      "<small>Rest the phone on your belly or on the bed beside you: its motion sensor notes how still you stay, for the end screen.</small></span>" +
+      '<input type="checkbox" class="sw" id="sOptStill"' + (O.still && supOn() ? " checked" : "") + "></label>";
+  }
+  function motStillWire(d, O, save) {
+    var cb = $("#sOptStill");
+    if (!cb) return;
+    cb.addEventListener("change", function () {
+      if (!this.checked) { O.still = false; save(); return; }
+      this.checked = false;
+      var yes = function () {
+        if (P.view !== d) return;
+        O.still = true; save();
+        var c = $("#sOptStill"); if (c) c.checked = true;
+        motAsk(function () {});                       // motion access now, in the tap, so the start needn't ask
+      };
+      supGate(MOT_STILL, yes, function (ok) { if (ok) yes(); else motTags(); });
+    });
+  }
+  // at Start, in the tap: motion access on an iPhone (pStart)
+  function motStillAsk(d) { if (motStillFits(d) && pOptsOf(d.id).still && supOn()) motAsk(function (s) { if (s !== "ok") MOT.state = s; }); }
+  // once it runs (pStart's go): counting from now
+  function motStillStart(d) {
+    MOT.sr = null;
+    if (!motStillOn(d)) { if (MOT.still) { MOT.still = false; motListen(); } return; }
+    MOT.sr = { secs: 0, still: 0, run: 0, best: 0, moves: 0, lastMove: -1e9 };
+    MOT.still = true;
+    motListen();
+  }
+  // at the end (pSummary): the share of the session that was still, then the sensor rests
+  function motStillSummary(r) {
+    var sr = MOT.sr;
+    MOT.sr = null;
+    if (MOT.still) { MOT.still = false; motListen(); }
+    if (!sr) return;
+    if (sr.secs < 60) { r.still = { none: true, short: sr.secs > 0 }; return; }
+    r.still = { pct: Math.round(100 * sr.still / sr.secs), best: sr.best, moves: sr.moves, secs: sr.secs };
+  }
+  // a stretch of time in words: 45 s, 2 min, 3 min 30 s
+  function motDur(secs) {
+    secs = Math.round(secs);
+    var m = Math.floor(secs / 60), s = secs % 60;
+    return !m ? secs + " s" : m + " min" + (s ? " " + s + " s" : "");
+  }
+  function motStillTile(r) {
+    if (!r.still) return null;
+    if (r.still.none) return ["Stillness", "—", r.still.short ? "too short to read" : "no motion readings", "still"];
+    return ["Stillness", r.still.pct + "%", "still, longest " + motDur(r.still.best), "still"];
+  }
+  function motStillExplain(k) {
+    if (k !== "still") return null;
+    var r = SD.r, s = r.still, p = [];
+    if (s.none) {
+      p.push(s.short ? "The motion sensor read less than a minute of the session, too little to say how still you stayed."
+        : "Stillness was on, but the motion sensor sent no readings: this device may not have one (most computers don't), or motion access wasn't allowed.");
+      return ["Stillness", p];
+    }
+    p.push("How much of the session the phone lay still, resting on you or on the bed: " + s.pct + "% of the " + motDur(s.secs) + " it read. Your longest still stretch lasted " +
+      motDur(s.best) + (s.moves ? ", and you moved or shifted " + (s.moves === 1 ? "once." : s.moves === 2 ? "twice." : s.moves + " times.") : ", and you didn't shift at all."));
+    p.push("Each second counts as moving when the sensor feels a jolt, a turn or a knock; the slow rise and fall of breathing counts as still. Settling into longer still stretches is one sign of relaxing, and restlessness the opposite, but it's a rough measure rather than a tested one. On the bed beside you, the phone notices only bigger movements.");
+    return ["Stillness", p];
+  }
+
+  function motInit() {
+    SUP_EXTRA.push({ name: MOT_BELLY, href: "#breathe" }, { name: MOT_STILL, href: "#l-phone" });    // Settings' list of what the donation unlocks
+    var cb = $("#bBellyOn");
+    if (!window.DeviceMotionEvent) $("#bBellyOpt").hidden = true;          // no motion sensor to ask for
+    cb.addEventListener("change", function () { motBellySet(this.checked); });
+    motUI();
+    if (window.__entrain) {
+      var X = window.__entrain;
+      X.MOT = MOT; X.motRate = motRate; X.motMoving = motMoving; X.motStillFits = motStillFits; X.motVerdict = motVerdict;
+    }
+  }
   /* ---------------------------- app shell ----------------------------
      Views behind a hash router. The five tabs are #home (Today), #practice (the library),
      #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
@@ -10608,7 +11578,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
     bSetT("#qkSensorT", st === "on" ? H.name : "Heart sensor");
     var sub;
-    if (st === "on") sub = live ? Math.round(H.hr) + " bpm" + (H.coh ? ", coherence " + H.coh.cs.toFixed(1) : "") : "Connected, waiting for readings";
+    if (st === "on") sub = live ? Math.round(H.hr) + " bpm" + (H.coh ? ", coherence " + H.coh.cs.toFixed(1) : "") : H.src === "cam" ? "Camera on, waiting for your fingertip" : "Connected, waiting for readings";
     else if (st === "busy") sub = "Connecting…";
     else if (st === "lost") sub = "Reconnecting…";
     else sub = hrSupported() ? "Not connected. Open to connect." : "Needs Chrome or Edge on Android or a computer";
@@ -10616,7 +11586,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
     var btn = $("#bSensorBtn");
     if (st === "on" || st === "lost") {
-      bSetT("#bSensorTxt", (st === "lost" ? "Reconnecting to " : "Connected to ") + H.name + ". Heart rate and coherence show above the guide.");
+      bSetT("#bSensorTxt", H.src === "cam" ? "Reading your pulse with the phone's camera. Heart rate and coherence show above the guide."
+        : (st === "lost" ? "Reconnecting to " : "Connected to ") + H.name + ". Heart rate and coherence show above the guide.");
       bSetT("#bSensorBtn", "Heart details"); btn.dataset.act = "details";
     } else if (st === "busy") {
       bSetT("#bSensorTxt", "Connecting to your sensor…");
@@ -10634,7 +11605,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "7215af71";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "57a9282b";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -10711,6 +11682,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       A.playing || (!!A.track && A.elapsed > 0) ||                            // a track, playing or paused partway through
       H.state === "on" || H.state === "busy" || H.state === "lost" ||         // a heart sensor, which would have to be paired again
       MIC.on || MIC.busy ||                                                   // the microphone listening for your breathing
+      CAM.on || CAM.busy || MOT.belly ||                                      // the camera reading your pulse, the phone on your belly (camera.js, motion.js)
       FD.open || !$("#stlModal").hidden ||                                    // search, or settling after I need to stop
       (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
       (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together
@@ -11188,6 +12160,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     slpSync(); slpLink();                                     // Sleep sounds' page and Today's link to it (sleepsounds.js)
     scnUI();                                                  // the scenes' buttons and cups, and Breathe's visual (scenes.js)
     ltUI();                                                   // the screen light's buttons and cups, and the light itself (light.js)
+    camUI();                                                  // the Heart page's camera button (camera.js)
+    motUI();                                                  // Phone on your belly and Stillness, and their cups (motion.js)
     supStSync();
     if (!$("#supModal").hidden) supDlgSync();
   }
@@ -14785,7 +15759,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       caution: "Choose twilight only where you can safely doze off. On the walk, keep the volume low enough to hear what's around you."
     },
     {
-      id: "mindful-sex", name: "Mindful Sex", lengths: [20, 30, 45], min: 30, open: true, strength: 2,
+      id: "mindful-sex", name: "Mindful Sex", lengths: [20, 30, 45], min: 30, open: true, strength: 2, noStill: true,
       tone: "hr", sensor: "optional", sensorWhy: "optional: your heart rate as it rises and settles", pace: true, paceSplit: 0.4, noTap: true, hc: ["body"],
       opt: { ana: 0 },                           // its reminders take the place of Anapana's
       optNote: "Each part is a choice of its own, kept for it.",
@@ -15106,7 +16080,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       cite: "Raghuraj et al. 1998 · Fincham et al. 2023"
     },
     {
-      id: "wim-hof", name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1,
+      id: "wim-hof", name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1, noStill: true,
       tone: "stim", confirm: true, sensor: "optional", open: true, hc: ["fast-breath", "hold"],
       variant: { key: "breaths", label: "Breaths per round", opts: [[30, "30"], [40, "40"]], def: 30 },
       blurb: "Rounds of deep, full breaths, then a relaxed hold on empty lungs for as long as is comfortable, then one recovery breath held for 15 seconds.",
@@ -15243,7 +16217,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
     /* ===== touch (touch.js): new techniques from the brain-wave guide ===== */
     {
-      id: "touch", name: "Soothing Touch", lengths: [5, 10], min: 5, strength: 2, sup: true,
+      id: "touch", name: "Soothing Touch", lengths: [5, 10], min: 5, strength: 2, sup: true, noStill: true,
       tone: "relax", noTap: true, hc: ["touch"],
       optNote: "Your touch, pace and sound are kept for it.",
       alias: "Self-soothing touch", words: "touch soothing self-soothing stroke stroking forearm arm skin caress gentle slow c-tactile ct fibres brush velvet soft hug self-hug hand on heart heart comfort calm cortisol oxytocin",
@@ -15550,7 +16524,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off" },
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off", still: false },
     paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
     bm: ""                                          // how its beat played (beatmode.js), for the history
   };
@@ -15671,7 +16645,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
      The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js),
      the music (music) to the background sound's choice (music.js), and the screen light (light) to Breathe's (light.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene", "light"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene", "light", "still"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
@@ -16642,12 +17616,14 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
       P.len = pLenOf(d, parseInt(store.get("pLen." + d.id), 10) || 0);
       try { history.replaceState(null, "", "#practice/" + d.id); } catch (e) {}   // the address names what runs
     }
+    motStillAsk(d);                                    // motion access for Stillness, in this tap (motion.js)
     var go = function () {
       if (pBusy()) pFinish(true, true);
       if (again !== true) { P.paceK = 1; P.beatAdj = 0; P.beatOff = false; }
       P.def = d;
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
       scnStart(d);                                     // and the scene it shows, if any (scenes.js)
+      motStillStart(d);                                // and how still you stay, if it notes that (motion.js)
       if (B.finder) finderCancel();
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
@@ -16799,6 +17775,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     napSummary(r, T);
     stressSummary(r, T);
     coldSummary(r, T);                                 // the seconds of cold you stayed for (cold.js)
+    motStillSummary(r);                                // how still you stayed (motion.js)
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(nvcKindOf(d));
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -16814,6 +17791,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
     if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
     if (r.cold) notes.push(r.cold + " s of cold");
+    if (r.still && !r.still.none) notes.push("still " + r.still.pct + "%");
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
     // fast breathing that ran: an hour's rest before the next block, and Wim Hof's rounds for the day (care.js)
     var ib = P.steps.filter(function (s) { return ibStep(s) && s.at < T; }).length;
@@ -16822,7 +17800,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg, ib: r.ib, wh: d.id === "wim-hof" && ib ? ib : undefined,
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
-      bm: r.bm, cold: r.cold, note: notes.join(", ") || undefined });
+      bm: r.bm, cold: r.cold, still: r.still && !r.still.none ? r.still.pct : undefined, note: notes.join(", ") || undefined });
     return r;
   }
   /* ----- the session screen: intro ----- */
@@ -16964,6 +17942,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     }
     if (scnFits(d)) opts.push(scnRow(O));               // a scene to watch, kept for this practice: with a donation while locked (scenes.js)
     if (ltFits(d)) opts.push(ltRow(O));                 // the screen light, kept for this practice: with a donation while locked (light.js)
+    if (motStillFits(d)) opts.push(motStillRow(O));     // how still you stay, from the motion sensor, lying down: with a donation while locked (motion.js)
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
     every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl(true) + "</div>");   // its music is a row of its own above
@@ -17069,6 +18048,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (!d.music && !d.noMus && musShown(O.music) !== "off") s.push(MUS_SHORT[O.music]);
     if (scnFits(d) && scnShown(O.scene) !== "off") s.push(scnOptName(O.scene));
     if (ltFits(d) && ltShown(O.light) !== "off") s.push(LT_KINDS.filter(function (k) { return k[0] === O.light; })[0][1] + " light");
+    if (motStillFits(d) && O.still && supOn()) s.push("Stillness");
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
@@ -17172,6 +18152,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
         O.light = k; save(); ltUI();
       });
     });
+    motStillWire(d, O, save);                          // Stillness, kept for this practice (motion.js)
     var pg = $("#sOptPace");
     if (pg) {
       var paceUI = function () {
@@ -17488,6 +18469,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     if (r.suds) tiles.push([d.rate ? d.rate.name : "Intensity", r.suds.join(" → "), r.suds.length > 1 ? (d.rate ? "out of 10, before and after" : "out of 10, first to last") : "out of 10", "suds"]);   // a feeling's strength, or what the practice rates
     var ct = coldTile(r);                                // Cold Finish: the seconds of cold, and where your build-up stands (cold.js)
     if (ct) tiles.push(ct);
+    var stt = motStillTile(r);                           // lying down: how still you stayed (motion.js)
+    if (stt) tiles.push(stt);
     if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatHeart ? "Hz, led by your heart" : "Hz, scripted (no heart data)", "beat"]);
     if (r.nap) {
       if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate", "onset"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated", "nap"]); }
@@ -17557,7 +18540,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 
   // what each number means, with your own value read back
   function sdExplain(k) {
-    var sx = scExplain(k) || coldExplain(k);
+    var sx = scExplain(k) || coldExplain(k) || motStillExplain(k);
     if (sx) return sx;                               // a stress check's own tiles
     var r = SD.r, d = SD.d, n, p = [];
     var plural = function (x, one, many) { return x + " " + (x === 1 ? one : many); };
@@ -21486,6 +22469,15 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     out.push(fdEntry("heart", "Resonance test", "Heart · about 10 minutes",
       ["Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the biggest heart-rate swing."], "#resonance-test",
       { ic: "target", col: "var(--hr)", w: 1.1, tags: "resonance frequency rate pace hrv" }));
+    out.push(fdEntry("heart", CAM_NAME, "Heart · a fingertip on the phone's camera, at rest",
+      ["No sensor? Rest a fingertip over the phone's camera and its light, and your pulse gives heart rate, the swing in each breath, RMSSD and coherence."], "#cam",
+      { ic: "heart", col: "var(--hr)", w: 1.05, tags: "camera phone finger fingertip pulse ppg photoplethysmography torch flash light no sensor iphone hrv rmssd", sup: true }));
+    out.push(fdEntry("breath", MOT_BELLY, "Breathe · the motion sensor counts your breaths",
+      ["Lie back with the phone on your belly: its motion sensor counts your breaths, and beside the guide you see whether you're following it, faster or slower."], "#breathe",
+      { ic: "breathe", col: "var(--b-in)", w: 1, tags: "belly tummy abdomen motion sensor accelerometer breathing rate count breaths following pace lying", sup: true }));
+    out.push(fdEntry("heart", "Stillness", "Practices done lying down · from the motion sensor",
+      ["With the phone resting on your belly or on the bed, the end screen of a practice done lying down shows how much of it you stayed still, and your longest still stretch."], "#l-phone",
+      { ic: "moon", col: "var(--hr)", w: 0.9, tags: "still stillness restless restlessness movement motion fidget settle lying body scan yoga nidra nap", sup: true }));
     out.push(fdEntry("heart", "Live heart data and coherence", "Heart · rate, swing, RMSSD, coherence",
       ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
       { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));
@@ -22934,7 +23926,8 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     full: "boolean", est: "boolean", ib: "boolean", wh: "number",        // ib: a block of intense breathing; wh: Wim Hof's rounds (care.js)
     bm: "string",                                                        // bm: a beat played monaural or isochronic (beatmode.js)
     snd: "string",                                                       // snd: what Sleep sounds played (sleepsounds.js)
-    cold: "number" };                                                    // cold: the seconds of cold in Cold Finish (cold.js)
+    cold: "number",                                                      // cold: the seconds of cold in Cold Finish (cold.js)
+    still: "number" };                                                   // still: the share of a session lain still, in % (motion.js)
   var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
     for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
@@ -23835,7 +24828,7 @@ THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
     ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
     ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit],
-    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["music", musInit], ["scenes", scnInit], ["the screen light", ltInit], ["the library", libInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["music", musInit], ["scenes", scnInit], ["the screen light", ltInit], ["the phone's camera", camInit], ["the motion sensor", motInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

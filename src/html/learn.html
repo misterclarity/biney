@@ -26,6 +26,7 @@
             <a href="#l-expect">Placebo and side effects</a>
             <a href="#l-dose">How often</a>
             <a href="#l-measure">What to measure</a>
+            <a href="#l-phone">The phone alone</a>
             <a href="#l-leftout">Left out, and why</a>
             <a href="#l-safety">Safety</a>
             <a href="#references">References</a>
@@ -1174,13 +1175,13 @@
                 <tr><th scope="col">Signal</th><th scope="col">What it shows</th><th scope="col">In Entrain</th></tr>
               </thead>
               <tbody>
-                <tr><th scope="row"><b>Heart rate</b></th><td>Arousal and calming. Good at rest from a chest strap, a watch or ring, or a fingertip on a phone's camera</td><td><a href="#heart">Heart</a>, with a Bluetooth sensor</td></tr>
-                <tr><th scope="row"><b>Heart-rate variability</b></th><td>The balance of calm and stress, and breathing coherence. A chest strap is the most accurate</td><td><a href="#heart">Heart</a>, with a sensor that sends the time between beats</td></tr>
-                <tr><th scope="row"><b>Breathing rate</b></th><td>Whether you're actually following the guided pace</td><td><a href="#l-mic">Breath from the microphone</a></td></tr>
+                <tr><th scope="row"><b>Heart rate</b></th><td>Arousal and calming. Good at rest from a chest strap, a watch or ring, or a fingertip on a phone's camera</td><td><a href="#heart">Heart</a>, with a Bluetooth sensor or <a href="#cam">the phone's camera</a></td></tr>
+                <tr><th scope="row"><b>Heart-rate variability</b></th><td>The balance of calm and stress, and breathing coherence. A chest strap is the most accurate</td><td><a href="#heart">Heart</a>, with a sensor that sends the time between beats, or <a href="#cam">the phone's camera</a></td></tr>
+                <tr><th scope="row"><b>Breathing rate</b></th><td>Whether you're actually following the guided pace</td><td><a href="#l-mic">Breath from the microphone</a>, or <a href="#l-phone">the phone on your belly</a> on Breathe</td></tr>
                 <tr><th scope="row"><b>Finger temperature</b></th><td>Relaxation: the hands warm as their blood vessels widen, and stress cools the fingertips most (Vinkers et al., 2013)</td><td class="ln-lo">A web page can't read it</td></tr>
                 <tr><th scope="row"><b>Skin conductance</b></th><td>Moment-to-moment stress and arousal. Sensitive, but consumer devices are less reliable: a Fitbit Charge 5 agreed only moderately at best with a research device (Ko et al., 2025)</td><td class="ln-lo">A web page can't read it</td></tr>
                 <tr><th scope="row"><b>Blood oxygen</b></th><td>A rough safety signal during breath holds. A wrist reading is less accurate than a fingertip oximeter</td><td class="ln-lo">Not measured</td></tr>
-                <tr><th scope="row"><b>Movement, stillness</b></th><td>Settling down, restlessness, sleep</td><td class="ln-lo">Not measured</td></tr>
+                <tr><th scope="row"><b>Movement, stillness</b></th><td>Settling down, restlessness, sleep</td><td><a href="#l-phone">Stillness</a>, on the end screen of practices done lying down</td></tr>
                 <tr><th scope="row"><b>EEG</b></th><td>Broad brain-wave trends only, as <a href="#l-muse">measuring at home</a> explains</td><td class="ln-lo">Not measured</td></tr>
                 <tr><th scope="row"><b>How you feel</b></th><td>What you actually feel, the main measure in most stress research</td><td><a href="#practice/stress-check">Stress Check</a>, which asks first</td></tr>
               </tbody>
@@ -1192,6 +1193,38 @@
               stress a little more accurately than any one alone (Darwish et al., 2025). And as with EEG, changes over a session and
               over weeks say more than a single &ldquo;you are stressed&rdquo; verdict, which is why the end screen sets each number
               against your own usual.
+            </p>
+
+            <h3 id="l-phone">Measuring with the phone alone</h3>
+            <p>
+              A fingertip on the phone's camera, lit by its light, shows each heartbeat: as blood fills the fingertip it lets a
+              little less light through, the principle of a pulse oximeter. Read this way, two apps measured heart rate far more
+              accurately than two that read the face from a distance, against an ECG in 108 hospital patients (Coppetti et al.,
+              2017), and a review of ten studies found that fingertip readings at rest agreed closely with an ECG, though only under
+              tightly controlled conditions; few of them reported their participants' skin tone (Mather et al., 2024). The time
+              between beats holds up too: RMSSD from a fingertip agreed almost perfectly with an ECG at rest (Plews et al., 2017),
+              and during biofeedback at paces from 6.5 down to 4.5 breaths a minute, where the resonance pace it found matched the
+              ECG's for about three people in four (van Dijk et al., 2023). Skin tone matters for any reading made with light: a
+              large study of a phone's front camera reading the face during everyday use met the industry's accuracy standard
+              across light, medium and dark skin (Liao et al., 2026). On <a href="#cam">the Heart page</a>, Use the phone's camera
+              reads your fingertip at rest and feeds each beat to the same numbers a chest strap does. Entrain's own way of reading
+              it hasn't been tested against an ECG, or across skin tones, so it's marked experimental, and a signal meter shows
+              when its beats are clean enough to count.
+            </p>
+            <p>
+              Breathing rate can come from the phone's motion sensor. Laid on the chest, a phone's accelerometer agreed with
+              airflow to within about 1.5 breaths a minute, in a preliminary study of five people (Estrada et al., 2015). On
+              <a href="#breathe">Breathe</a>, Phone on your belly does this lying down: each breath tilts the phone a little, and
+              the page finds the rhythm of that tilt over the last 45 seconds, then says beside the guide whether you're following
+              it, faster or slower. It's Entrain's own reading, untested against airflow, and slow breathing needs a little longer
+              to show.
+            </p>
+            <p>
+              Stillness from the same sensor is the simplest of the three, and general knowledge rather than a tested measure:
+              how much of a session the phone, resting on your belly or on the bed beside you, lay still, and your longest still
+              stretch. Longer still stretches go with settling down, more movement with restlessness. A practice done lying down
+              offers it under Options, and shows it on the end screen. All three are best read as trends over a session and over
+              weeks, set against your own usual, rather than as verdicts.
             </p>
 
             <h3 id="l-leftout">What Entrain leaves out, and why</h3>
@@ -1486,6 +1519,12 @@
       <li>Fuchs, D., Hillecke, T. K., &amp; Warth, M. (2018). Relaxation effects of musically guided resonance breathing: a randomized controlled pilot study. <em>Music and Medicine</em>, 10(2). <a href="https://doi.org/10.47513/mmd.v10i2.576" rel="noopener">DOI</a></li>
       <li>Vinkers, C. H., Penning, R., Hellhammer, J., et al. (2013). The effect of stress on core and peripheral body temperature in humans. <em>Stress</em>, 16(5), 520–530. <a href="https://doi.org/10.3109/10253890.2013.807243" rel="noopener">DOI</a></li>
       <li>Ko, K., McArthur, G., &amp; Johnco, C. (2025). Validation of the Fitbit Charge 5 for the detection of heart rate and electrodermal activity. <em>Psychophysiology</em>, 62(8), e70116. <a href="https://doi.org/10.1111/psyp.70116" rel="noopener">DOI</a></li>
+      <li>Coppetti, T., Brauchlin, A., Müggler, S., Attinger-Toller, A., Templin, C., Schönrath, F., Hellermann, J., Lüscher, T. F., Biaggi, P., &amp; Wyss, C. A. (2017). Accuracy of smartphone apps for heart rate measurement. <em>European Journal of Preventive Cardiology</em>, 24(12), 1287–1293. <a href="https://doi.org/10.1177/2047487317702044" rel="noopener">DOI</a></li>
+      <li>Mather, J. D., Hayes, L. D., Mair, J. L., &amp; Sculthorpe, N. F. (2024). Validity of resting heart rate derived from contact-based smartphone photoplethysmography compared with electrocardiography: a scoping review and checklist for optimal acquisition and reporting. <em>Frontiers in Digital Health</em>, 6, 1326511. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10937558/" rel="noopener">PMC</a></li>
+      <li>Plews, D. J., Scott, B., Altini, M., Wood, M., Kilding, A. E., &amp; Laursen, P. B. (2017). Comparison of heart-rate-variability recording with smartphone photoplethysmography, Polar H7 chest strap, and electrocardiography. <em>International Journal of Sports Physiology and Performance</em>, 12(10), 1324–1328. <a href="https://doi.org/10.1123/ijspp.2016-0668" rel="noopener">DOI</a></li>
+      <li>van Dijk, W., Huizink, A. C., Oosterman, M., Lemmers-Jansen, I. L. J., &amp; de Vente, W. (2023). Validation of photoplethysmography using a mobile phone application for the assessment of heart rate variability in the context of heart rate variability-biofeedback. <em>Psychosomatic Medicine</em>, 85(7), 568–576. <a href="https://doi.org/10.1097/PSY.0000000000001236" rel="noopener">DOI</a></li>
+      <li>Liao, S., Di Achille, P., Wu, J., et al. (2026). Passive heart-rate monitoring during smartphone use in everyday life. <em>Nature</em>, 655, 728–736. <a href="https://doi.org/10.1038/s41586-026-10507-6" rel="noopener">DOI</a></li>
+      <li>Estrada, L., Torres, A., Sarlabous, L., &amp; Jané, R. (2015). Respiratory signal derived from the smartphone built-in accelerometer during a respiratory load protocol. <em>Annual International Conference of the IEEE Engineering in Medicine and Biology Society</em>, 2015, 6768–6771. <a href="https://pubmed.ncbi.nlm.nih.gov/26737847/" rel="noopener">PubMed</a></li>
       <li>Darwish, B. A., Rehman, S. U., Sadek, I., Salem, N. M., Kareem, G., &amp; Mahmoud, L. N. (2025). From lab to real-life: a three-stage validation of wearable technology for stress monitoring. <em>MethodsX</em>, 14, 103205. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11848792/" rel="noopener">PMC</a></li>
       <li>Papalambros, N. A., Santostasi, G., Malkani, R. G., et al. (2017). Acoustic enhancement of sleep slow oscillations and concomitant memory improvement in older adults. <em>Frontiers in Human Neuroscience</em>, 11, 109. <a href="https://doi.org/10.3389/fnhum.2017.00109" rel="noopener">DOI</a></li>
       <li>Jeffries, F. W., &amp; Davis, P. (2013). What is the role of eye movements in eye movement desensitization and reprocessing (EMDR) for post-traumatic stress disorder (PTSD)? A review. <em>Behavioural and Cognitive Psychotherapy</em>, 41(3), 290–300. <a href="https://doi.org/10.1017/S1352465812000793" rel="noopener">DOI</a></li>

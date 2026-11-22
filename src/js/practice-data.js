@@ -1270,7 +1270,7 @@
       caution: "Choose twilight only where you can safely doze off. On the walk, keep the volume low enough to hear what's around you."
     },
     {
-      id: "mindful-sex", name: "Mindful Sex", lengths: [20, 30, 45], min: 30, open: true, strength: 2,
+      id: "mindful-sex", name: "Mindful Sex", lengths: [20, 30, 45], min: 30, open: true, strength: 2, noStill: true,
       tone: "hr", sensor: "optional", sensorWhy: "optional: your heart rate as it rises and settles", pace: true, paceSplit: 0.4, noTap: true, hc: ["body"],
       opt: { ana: 0 },                           // its reminders take the place of Anapana's
       optNote: "Each part is a choice of its own, kept for it.",
@@ -1591,7 +1591,7 @@
       cite: "Raghuraj et al. 1998 · Fincham et al. 2023"
     },
     {
-      id: "wim-hof", name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1,
+      id: "wim-hof", name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1, noStill: true,
       tone: "stim", confirm: true, sensor: "optional", open: true, hc: ["fast-breath", "hold"],
       variant: { key: "breaths", label: "Breaths per round", opts: [[30, "30"], [40, "40"]], def: 30 },
       blurb: "Rounds of deep, full breaths, then a relaxed hold on empty lungs for as long as is comfortable, then one recovery breath held for 15 seconds.",
@@ -1728,7 +1728,7 @@
 
     /* ===== touch (touch.js): new techniques from the brain-wave guide ===== */
     {
-      id: "touch", name: "Soothing Touch", lengths: [5, 10], min: 5, strength: 2, sup: true,
+      id: "touch", name: "Soothing Touch", lengths: [5, 10], min: 5, strength: 2, sup: true, noStill: true,
       tone: "relax", noTap: true, hc: ["touch"],
       optNote: "Your touch, pace and sound are kept for it.",
       alias: "Self-soothing touch", words: "touch soothing self-soothing stroke stroking forearm arm skin caress gentle slow c-tactile ct fibres brush velvet soft hug self-hug hand on heart heart comfort calm cortisol oxytocin",
