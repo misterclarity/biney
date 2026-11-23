@@ -71,7 +71,7 @@ const DAY = 864e5;
       await p.click('a[href="#track/theta-meditation"]'); await p.waitForTimeout(300);
       const pg = await E(p, () => ({ title: document.querySelector('#viewTitle').textContent, kind: document.querySelector('#trBody .si-kind').textContent, how: document.querySelector('#trBody .si-main > p').textContent,
         ev: !!document.querySelector('#trBody details.ev'), cau: document.querySelector('#trBody .si-caution').textContent, go: document.querySelector('#trGo').textContent, back: document.querySelector('#trBody .si-back').textContent }));
-      ok(pg.title === 'Theta Meditation' && pg.kind === 'Calm · Sound · 20 min' && /20 minutes of a steady 6 Hz theta beat/.test(pg.how) && pg.ev && /epilepsy/.test(pg.cau) && pg.go === 'Play 20 min' && pg.back === 'Library',
+      ok(pg.title === 'Theta Meditation' && pg.kind === 'Calm · Sound · 20 min' && /20 minutes of a steady 6 Hz theta beat/.test(pg.how) && pg.ev && /epilepsy/.test(pg.cau) && pg.go === 'Play 20 min' && pg.back === 'Menu',
         'a track page: ' + JSON.stringify(pg).slice(0, 160));
       await p.click('#trGo'); await p.waitForTimeout(500);
       ok(await E(p, () => window.__entrain.A.playing && window.__entrain.A.track.id === 'theta-meditation') && await t(p, '#trGo') === 'Pause' && await p.$eval('body', b => b.classList.contains('has-player')),
