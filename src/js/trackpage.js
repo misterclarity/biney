@@ -36,7 +36,7 @@
     TR.id = id;
     var g = goalOf(t.goal), key = "t:" + t.id;
     var kind = [g ? g.name : t.goal === "tinnitus" ? "Tinnitus" : "", "Sound", Math.round(t.minutes) + " min"].filter(Boolean).join(" · ");
-    var h = '<a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Library</a>' +
+    var h = '<a class="si-back" href="#practice"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Menu</a>' +
       '<div class="si-head">' +
         '<div class="si-top"><span class="si-kind">' + esc(kind) + "</span>" + favBtn(key, t.name) + "</div>" +
         "<h2>" + esc(t.name) + "</h2>" +

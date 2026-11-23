@@ -13,8 +13,8 @@
     { id: "recover", name: "Recover", lede: "Resting in the day, or recovering after training.", icon: "recover" },
     { id: "reflect", name: "Reflect", lede: "Feelings, needs and kindness, towards yourself and others.", icon: "nvc" }
   ];
-  // each goal's colour, on Today's tiles and in History
-  var GOAL_COL = { sleep: "#a78bfa", calm: "#5eead4", focus: "#fbbf24", energy: "#fb923c", recover: "#7dd3fc", reflect: "#f9a8d4" };
+  // each goal's colour, in History's bars
+  var GOAL_COL = { sleep: "#6d4fc2", calm: "#0e7c6b", focus: "#a55e00", energy: "#c2410c", recover: "#1f6fa8", reflect: "#b3366f" };   // deep enough to read on the light page
   var METHODS = [["breath", "Breathing", "breathe"], ["meditate", "Meditation", "practice"], ["move", "Movement", "move"],
     ["relax", "Relaxation", "moon"], ["sound", "Sound", "sounds"], ["write", "Writing", "nvc"], ["program", "Programme", "spark"], ["measure", "Measurement", "pulse"]];
   var POSTURES = [["sit", "Sitting"], ["lie", "Lying"], ["stand", "Standing"], ["walk", "Walking"]];

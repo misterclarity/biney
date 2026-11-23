@@ -253,7 +253,7 @@
         f.w.forEach(function (w, j) {
           var b0 = a0 + j * S / 8, b1 = b0 + S / 8, on = sel.indexOf(w) >= 0;
           h += '<path d="' + nvArc(151, 218, b0 + 0.15, b1 - 0.15) + '" fill="' + f.c + '" fill-opacity="' + (on ? 0.9 : 0.16) + '"/>' +
-            nvRadial(184.5, b0 + S / 16, w, "ww-r", on ? "#0b1120" : f.c);
+            nvRadial(184.5, b0 + S / 16, w, "ww-r", on ? "#14302a" : f.c);
         });
         h += "</g>";
       });
@@ -268,7 +268,7 @@
         h += '<g class="ww' + (on ? " on" : "") + '" data-wword="' + esc(w) + '" role="button" tabindex="0" aria-pressed="' + on + '" aria-label="' + esc(w) + '">' +
           '<path d="' + nvArc(70, 216, a0 + 0.9, a0 + 44.1) + '" fill="' + f.c + '" fill-opacity="' + (on ? 1 : 0.18) + '" stroke="' + f.c + '" stroke-opacity="' + (on ? 1 : 0.55) + '"/>';
         parts.forEach(function (t, q) {
-          h += nvText(m[0], m[1] + (q - (parts.length - 1) / 2) * 17, (on && !q ? "\u2713 " : "") + t.trim(), "ww-n", ' fill="' + (on ? "#0b1120" : f.c) + '"');
+          h += nvText(m[0], m[1] + (q - (parts.length - 1) / 2) * 17, (on && !q ? "\u2713 " : "") + t.trim(), "ww-n", ' fill="' + (on ? "#14302a" : f.c) + '"');
         });
         h += "</g>";
       });

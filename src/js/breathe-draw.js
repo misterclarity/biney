@@ -3,10 +3,21 @@
   var bcv = $("#bCanvas"), d2 = bcv.getContext ? bcv.getContext("2d") : null, CW = 0, CH = 0;
   var BCOL = {}, BVIS = {};
 
+  // Everything drawn sits on a night surface (the dimmed room, the chalkboard), so the drawings take
+  // the night palette, whatever the page around them uses. nightStyle() reads it from a probe.
+  function nightStyle() {
+    var el = document.createElement("i");
+    el.className = "night"; el.hidden = true;
+    document.body.appendChild(el);
+    var cs = getComputedStyle(el), out = function (k) { return cs.getPropertyValue("--" + k).trim(); }, got = {};
+    ["text", "text-dim", "text-faint", "line", "bg", "b-in", "b-sip", "b-hold", "b-out", "hr", "relax", "stim", "ther", "accent", "food"].forEach(function (k) { got[k] = out(k); });
+    el.remove();
+    return got;
+  }
   function readColors() {
-    var cs = getComputedStyle(document.documentElement);
+    var n = nightStyle();
     ["text", "text-dim", "text-faint", "line", "bg", "b-in", "b-sip", "b-hold", "b-out", "hr"].forEach(function (k) {
-      BCOL[k] = cs.getPropertyValue("--" + k).trim() || "#888888";
+      BCOL[k] = n[k] || "#888888";
     });
   }
   function rgba(hex, a) {

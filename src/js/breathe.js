@@ -88,7 +88,7 @@
   var B_TONE = 698.46;      // F5: the rising tone runs F5 to C6, above every carrier on the page
   var B_CHIME = { "in": 1046.5, "sip": 1318.5, "hold": 783.99, "out": 659.25, "rest": 523.25 };
   var TONE_LEVEL = { "in": 1, "sip": 1, "hold": 0.5, "out": 0.22, "rest": 0.03 };
-  var B_SANS = 'system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+  var B_SANS = '"Entrain Text",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
   var B_MONO = '"Entrain Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';   // the big countdown digits
 
   var BC = {

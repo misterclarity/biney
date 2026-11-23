@@ -6,9 +6,10 @@ Inputs, all in this folder:
   html/*.html     the views, dialogs, player and search, one file each
   html/icons.svg  the icon sprite; {i:name} anywhere in the markup is one of its icons
   js/*.js         the script, in the order of JS below; every file shares one scope
-  styles.css      the stylesheet (with the __POPPINS_BOLD__ placeholder)
-  poppins.b64     base64 of the subset Poppins Bold WOFF
-  poppins-OFL.txt the font's copyright and licence, put next to it in the page (the licence asks that
+  styles.css      the stylesheet (with a __FONT_…__ placeholder for each font)
+  fonts/*.b64     base64 of the three typefaces as WOFF2, subset to Latin: Bricolage Grotesque for headings,
+                  Atkinson Hyperlegible Next for text and DM Mono for times and receipts
+  fonts/OFL.txt   their copyrights and licence, put next to them in the page (the licence asks that
                   every copy carry them)
 Outputs, one folder up:
   index.html            the whole app in one file, with no network requests, under the licence in ../LICENSE
@@ -140,20 +141,25 @@ NOTICE = """<!--
   program. If not, see <https://www.gnu.org/licenses/>.
 
   Source: https://github.com/misterclarity/biney
-  The Poppins font inside is under the SIL Open Font License 1.1, whose text comes with it below.
+  The fonts inside (Bricolage Grotesque, Atkinson Hyperlegible Next and DM Mono) are under the
+  SIL Open Font License 1.1, whose text comes with them below.
 -->"""
 assert "--" not in NOTICE[4:-3]
-ofl = rd("poppins-OFL.txt").strip()
-assert "*/" not in ofl and "/*__POPPINS_OFL__*/" in rd("styles.css"), "the font licence needs its place in styles.css"
-css = rd("styles.css").replace("__POPPINS_BOLD__", rd("poppins.b64").strip()).replace(
-    "/*__POPPINS_OFL__*/", "/* The font below, under its licence:\n\n" + ofl + "\n*/")
+ofl = rd("fonts/OFL.txt").strip()
+css = rd("styles.css")
+assert "*/" not in ofl and "/*__FONT_OFL__*/" in css, "the fonts' licence needs its place in styles.css"
+FONTS = {"__FONT_BRICOLAGE__": "bricolage", "__FONT_ATKINSON__": "atkinson", "__FONT_MONO_400__": "dmmono-400", "__FONT_MONO_500__": "dmmono-500"}
+for mark, name in FONTS.items():
+    assert css.count(mark) == 1, "styles.css needs one place for " + mark
+    css = css.replace(mark, rd("fonts/" + name + ".b64").strip())
+css = css.replace("/*__FONT_OFL__*/", "/* The fonts below, under their licence:\n\n" + ofl + "\n*/")
 head = """<!DOCTYPE html>
 """ + NOTICE + """
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b1120">
+<meta name="theme-color" content="#1d6a50">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html">
 <link rel="icon" href="__FAVICON__">
@@ -165,10 +171,11 @@ head = """<!DOCTYPE html>
 </head>
 <body>
 """
-# the favicon is an inline SVG of the brand mark, so the page stays a single file
-fav = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
-       '<stop offset="0" stop-color="#8e98fc"/><stop offset=".5" stop-color="#fbbf24"/><stop offset="1" stop-color="#5eead4"/>'
-       '</linearGradient></defs><rect width="32" height="32" rx="10" fill="url(#g)"/><rect x="8" y="8" width="16" height="16" rx="4" fill="#0b1120"/></svg>')
+# the favicon is an inline SVG of the brand mark (a cloche with breath rising from it), so the page stays a single file
+fav = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#1d6a50"/>'
+       '<g transform="translate(4 4)" fill="none" stroke="#fbfdfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+       '<path d="M6.5 5c.9-1.3 1.85-1.3 2.75 0s1.85 1.3 2.75 0 1.85-1.3 2.75 0 1.85 1.3 2.75 0"/><circle cx="12" cy="8.6" r="1.1"/>'
+       '<path d="M5 16.5a7 7 0 0 1 14 0"/><path d="M3 19h18"/></g></svg>')
 head = head.replace("__FAVICON__", "data:image/svg+xml," + urllib.parse.quote(fav.replace('"', "'"), safe=" :/=.-,'"))
 
 # a short build id from the sources, for About and feedback (the page can't carry the hash of itself)

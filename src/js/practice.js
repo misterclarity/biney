@@ -1064,7 +1064,7 @@
       P.endArm = 0; $("#sEnd").classList.remove("armed"); bSetT("#sEndTxt", "End");
       bSetT("#sTitle", d.name);
       bSetT("#viewTitle", d.name); document.title = d.name + " | Entrain";     // a practice that began another names the one running
-      $("#ses").style.setProperty("--pcol", pColor(d));
+      $("#ses").style.setProperty("--pcol", pColor(d)); $("#sRun").style.setProperty("--pcol", pColor(d));
       pQuickSync();
       pImmersive();
       pLockBreathe();
@@ -1339,7 +1339,7 @@
           return '<li><svg class="i" aria-hidden="true"><use href="#i-' + n[0] + '"/></svg><span><b>' + n[1] + "</b> " + n[2] + "</span></li>";
         }).join("") + "</ul>" : "") +
         "<h3>How it runs</h3><p>" + esc(d.how || pYogaHow(plan)) + "</p>" +
-        '<ol class="si-steps">' + pStepsHtml(d, plan) + "</ol>" +
+        '<h3 class="si-plate-h">On the plate</h3><ol class="si-steps">' + pStepsHtml(d, plan) + "</ol>" +
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
         (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its binaural beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
@@ -1364,7 +1364,7 @@
     var el = $("#sIntro");
     el.innerHTML = h;
     el.style.setProperty("--pcol", pColor(d));
-    $("#ses").style.setProperty("--pcol", pColor(d));
+    $("#ses").style.setProperty("--pcol", pColor(d)); $("#sRun").style.setProperty("--pcol", pColor(d));
     el.hidden = false; $("#sRun").hidden = true; $("#sDone").hidden = true;
     $("#ses").dataset.state = "intro";
     bSetT("#viewTitle", d.name);
@@ -1372,6 +1372,8 @@
     pIntroWire(d, O, hasRhy);
     pImmersive();
     edgeFade(el.querySelector(".si-len"));
+    // Start on Today's special: open its page, then start it, unless it asks you to read its cautions first
+    if (P.autoGo === id) { P.autoGo = null; if (!d.confirm && !pBusy()) pStart(); }
   }
   function pOptScope(d, own) {
     return (own ? "You've changed these for " + esc(d.name) + ". " : "For " + esc(d.name) + " only. " + (d.optNote ? esc(d.optNote) + " " : "")) +
@@ -1578,7 +1580,7 @@
   function pShowRun() {
     $("#sIntro").hidden = true; $("#sDone").hidden = true; $("#sRun").hidden = false;
     $("#ses").dataset.state = "run";
-    $("#ses").style.setProperty("--pcol", pColor(P.def));
+    $("#ses").style.setProperty("--pcol", pColor(P.def)); $("#sRun").style.setProperty("--pcol", pColor(P.def));
     bSetT("#viewTitle", P.def.name);
     document.title = P.def.name + " | Entrain";
     var s = P.steps[P.idx];
@@ -1624,18 +1626,36 @@
   }
   function pOpen() { if (P.def) location.hash = "practice/" + P.def.id; }
 
-  /* ----- Today: a suggestion for the time of day ----- */
+  /* ----- Today: what's being served, by the time of day ----- */
+  // the day's five services, each with its special: [from this hour, the service, the practice, why it]
+  var SERVICES = [
+    [5, "Breakfast", "morning-tonic", "Wake up gently: a long stretch, breathing that quickens, and a beat that rises with you."],
+    [9, "Brunch", "focus-primer", "Steady your breath, then prime with beta before you start."],
+    [12, "Lunch", "calm-reset", "Ten minutes to bring stress down: cyclic sighs, then resonance breathing."],
+    [17, "Dinner", "coherence", "Heart-focused breathing at your resonance pace, with live coherence."],
+    [21, "Late night", "sleep-descent", "Slow breathing that fades into a delta beat as you fall asleep."]
+  ];
+  function pService(hr) {                      // late night runs on past midnight, until breakfast at 5
+    for (var i = SERVICES.length - 1; i >= 0; i--) if (hr >= SERVICES[i][0]) return i;
+    return SERVICES.length - 1;
+  }
+  function pHourTxt(h) { return h === 12 ? "noon" : (h % 12 || 12) + (h < 12 ? " am" : " pm"); }
   function pSuggest() {
-    var hr = new Date().getHours(), pick;
-    if (hr >= 5 && hr < 9) pick = ["morning-tonic", "This morning", "Wake up gently: a long stretch, breathing that quickens, and a beat that rises with you."];
-    else if (hr >= 9 && hr < 12) pick = ["focus-primer", "Before you work", "Steady your breath, then prime with beta before you start."];
-    else if (hr >= 12 && hr < 17) pick = ["calm-reset", "This afternoon", "Ten minutes to bring stress down: cyclic sighs, then resonance breathing."];
-    else if (hr >= 17 && hr < 21) pick = ["coherence", "This evening", "Heart-focused breathing at your resonance pace, with live coherence."];
-    else pick = ["sleep-descent", "Tonight", "Slow breathing that fades into a delta beat as you fall asleep."];
-    var d = pDef(pick[0]);
-    bSetT("#sgWhen", pick[1]);
-    bSetT("#sgName", d.name + " · " + pMinutes(d) + " min");
-    bSetT("#sgTxt", pick[2]);
+    var hr = new Date().getHours(), at = pService(hr), sv = SERVICES[at], nx = SERVICES[(at + 1) % SERVICES.length];
+    var d = pDef(sv[2]), it = libItem(d.id), O = pOptsOf(d.id), dn = pDef(nx[2]);
+    bSetT("#tdHello", hr >= 5 && hr < 12 ? "Good morning." : hr >= 12 && hr < 17 ? "Good afternoon." : hr >= 17 && hr < 21 ? "Good evening." : "Still up?");
+    bSetT("#sgWhen", "Now serving · " + sv[1]);
+    bSetT("#sgName", d.name);
+    bSetT("#sgMeta", [pMinutes(d) + " min", it ? libPos(it) : ""].filter(Boolean).join(" · "));
+    bSetT("#sgTxt", sv[3]);
+    // what it pairs with: its binaural beat, unless you've turned the beat off for it
+    var pair = d.audio && O.audio ? (d.beats ? pBeat(d).label : d.audio.band.replace(" → ", " to ")) : "";
+    $("#sgPair").hidden = !pair;
+    bSetT("#sgPairTxt", pair ? "Pairs with a binaural beat: " + pair : "");
+    $("#sgStart").dataset.id = d.id;
+    bSetT("#sgStartTxt", pBusy() ? "Back to " + P.def.name : "Start");
+    bSetT("#sgNextWhen", nx[1] + " from " + pHourTxt(nx[0]));
+    bSetT("#sgNextName", dn ? dn.name : "");
     $("#sgGo").href = "#practice/" + d.id;
     $("#homeSuggest").style.setProperty("--pcol", pColor(d));
     var rt = hr >= 5 && hr < 9 ? ["morning", "Your morning routine"] : hr >= 9 && hr < 17 ? ["daytime", "Screen breaks through the day"] : ["evening", "Your evening routine"];
@@ -1647,8 +1667,8 @@
   function pInit() {
     stLoad();
     P.opt = pOptDefaults();
-    var cs = getComputedStyle(document.documentElement);
-    ["relax", "stim", "ther", "accent", "food", "hr"].forEach(function (k) { P.col[k] = cs.getPropertyValue("--" + k).trim() || "#5eead4"; });
+    var nc = nightStyle();                       // the session is drawn in the dimmed room, in its colours
+    ["relax", "stim", "ther", "accent", "food", "hr"].forEach(function (k) { P.col[k] = nc[k] || "#5eead4"; });
     P.col.warm = "#f5b97a";
     P.cv = $("#sCanvas");
     P.ctx = P.cv && P.cv.getContext ? P.cv.getContext("2d") : null;

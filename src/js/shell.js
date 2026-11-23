@@ -12,10 +12,10 @@
   -------------------------------------------------------------------- */
 
   var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings", "living"];
-  var V_TITLE = { home: "Today", practice: "Library", breathe: "Breathe", heart: "Heart", learn: "Learn", history: "History", session: "Practice",
+  var V_TITLE = { home: "Today", practice: "Menu", breathe: "Breathe", heart: "Heart", learn: "Learn", history: "History", session: "Practice",
     track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings", living: "Healthy living" };
   var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice", living: "learn" };   // the tab each page belongs to
-  var ALIAS = { today: "home", library: "practice" };
+  var ALIAS = { today: "home", library: "practice", menu: "practice" };
   var BACK = "practice";                 // the list a page was opened from: Today, the library or History
   var BASE_TITLE = document.title;
   var curView = "";
@@ -63,7 +63,7 @@
   }
 
   // the way back from a page: to the list it was opened from
-  function backTo() { return { href: "#" + BACK, label: BACK === "home" ? "Today" : BACK === "history" ? "History" : "Library" }; }
+  function backTo() { return { href: "#" + BACK, label: BACK === "home" ? "Today" : BACK === "history" ? "History" : "Menu" }; }
   function backLink() {
     var b = backTo();
     return '<a class="si-back" href="' + b.href + '"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>' + b.label + "</a>";

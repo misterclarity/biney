@@ -166,17 +166,25 @@
       var plan = pPlan(it.def, 0);
       tl = '<span class="si-tl pc-tl" aria-hidden="true">' + plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + s.secs + ' 1 0"></i>'; }).join("") + "</span>";
     }
-    var pn = it.nopos ? [] : it.posture.map(function (p, i) { var n = postureName(p); return i ? n.toLowerCase() : n; });
-    var pos = pn.length > 2 ? pn.slice(0, -1).join(", ") + " or " + pn[pn.length - 1] : pn.join(" or ");      // Sitting, lying or walking
-    var sub = o.sub || [it.label || methodName(it.method), it.minsTxt, pos].filter(Boolean).join(" · ");
+    var pos = libPos(it);
+    var price = /min$/.test(it.minsTxt || "") ? it.minsTxt : "";       // a length goes where a menu puts the price
+    var sub = o.sub || [it.label || methodName(it.method), price ? "" : it.minsTxt, pos].filter(Boolean).join(" · ");
+    var special = !o.compact && it.href === "#practice/" + SERVICES[pService(new Date().getHours())][2];
     return '<li class="pc' + (it.prog ? " prog" : "") + (o.compact ? " cmp" : "") + (it.type !== "practice" ? " pc-" + it.type : "") + '" style="--pcol:' + it.col + '"' + (hide ? " hidden" : "") + ">" +
       '<a href="' + esc(it.href) + '" class="pc-a">' +
         '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + it.icon + '"/></svg></span>' +
-        '<span class="pc-b"><span class="pc-top"><b>' + esc(it.name) + "</b>" + (it.strength ? dots(it.strength) : "") + "</span>" +
+        '<span class="pc-b">' + (special ? '<span class="pc-special">Today’s special</span>' : "") +
+          '<span class="pc-top"><b>' + esc(it.name) + "</b>" + (it.strength ? dots(it.strength) : "") +
+          (price ? '<span class="pc-lead" aria-hidden="true"></span><span class="pc-price">' + esc(price) + "</span>" : "") + "</span>" +
           '<span class="pc-meta"><span class="pc-sub">' + esc(sub) + "</span>" +
             (o.compact ? "" : it.badges.map(function (b) { return '<span class="' + b[0] + '">' + esc(b[1]) + "</span>"; }).join("")) + "</span>" +
           (it.blurb && !o.compact ? '<span class="pc-blurb">' + esc(it.blurb) + "</span>" : "") + tl +
         "</span></a></li>";
+  }
+  // the positions it can be done in: "Sitting, lying or walking"
+  function libPos(it) {
+    var pn = it.nopos ? [] : it.posture.map(function (p, i) { var n = postureName(p); return i ? n.toLowerCase() : n; });
+    return pn.length > 2 ? pn.slice(0, -1).join(", ") + " or " + pn[pn.length - 1] : pn.join(" or ");
   }
   function libSection(g, title, lede, icon, items, cap, extra) {
     var more = cap && items.length > cap && !LIB.open[g];

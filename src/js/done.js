@@ -29,10 +29,13 @@
     var h = '<div class="sd-head"><span class="sd-ic">' + (early ? "" : '<svg class="i" aria-hidden="true"><use href="#i-check"/></svg>') + "</span>" +
       "<div><h2>" + (early ? "Session ended" : d.end ? esc(d.end) : "Nicely done") + "</h2><p>" + esc(d.name) + "</p></div></div>" +
       '<p class="sd-tap">Tap a number to see what it means' + (c.hr || c.coh || c.swing ? " and how it compares with your usual" : "") + (chart ? ", or the chart to read it." : ".") + "</p>" +
+      // the bill: what you had, on a receipt, and it's on the house
+      '<div class="sd-bill"><p class="sd-bill-h"><b>Entrain</b><span>Table for one · ' + esc(sdWhen(r)) + "</span></p>" +
       '<div class="sd-tiles">' + tiles.map(function (t) {
         return '<button class="sd-t" data-ex="' + t[3] + '" aria-expanded="false" aria-controls="sdEx"><span>' + t[0] + "</span><b>" + t[1] + "</b><small>" + t[2] + "</small>" +
           (t[4] ? '<em class="sd-cmp">' + esc(t[4]) + "</em>" : "") + "</button>";
       }).join("") + "</div>" +
+      '<p class="sd-bill-f"><span>Amount due</span><span>0.00</span></p><p class="sd-bill-t">On the house. Come back hungry.</p></div>' +
       '<div class="sd-ex" id="sdEx" role="region" aria-label="What this number means" hidden></div>' +
       (r.stress ? stressCard(r) : "") +                    // a stress check's advice comes first, before the chart
       (chart ? '<div class="sd-chart"><span>Heart rate across the session, in bpm' + (r.beatLog ? ", with the beat in violet" : "") + "</span>" +
@@ -42,10 +45,10 @@
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
       (r.nvc ? nvcCard(r.nvc) : "") +
       (r.stress ? "" : sdNext(d)) +
-      qCard(d.reflect ? ROGERS : qPick()) +
+      '<div class="sd-fortune"><p class="kicker sd-k"><svg class="i" aria-hidden="true"><use href="#i-cookie"/></svg>Your fortune cookie</p>' + qCard(d.reflect ? ROGERS : qPick()) + "</div>" +
       '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>' +
-      '<div class="note-card donate-card sd-donate"><p><b>Entrain is free and has no ads.</b> If it helps you, a donation keeps it going.</p>' +
-      '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a></div>';
+      '<div class="note-card donate-card sd-donate"><span class="plate dc-jar"><svg class="i" aria-hidden="true"><use href="#i-jar"/></svg></span><p><b>Entrain is free and has no ads.</b> If it restores you, you can leave a tip in the jar.</p>' +
+      '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Leave a tip on Ko-fi</a></div>';
     var el = $("#sDone");
     el.innerHTML = h;
     $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
@@ -75,10 +78,16 @@
      a tap, or else a suggestion of what usually follows (d.next), on its own page. */
   function sdNext(d) {
     var ch = P.chain && P.chain.then !== d.id ? pDef(P.chain.then) : null;
-    if (ch) return '<div class="note-card sd-next"><p><b>Next: ' + esc(ch.name) + ".</b> " + esc(ch.chainTxt || "") + "</p>" +
+    if (ch) return '<div class="note-card sd-next"><span class="kicker sd-k">Next course</span><p><b>Next: ' + esc(ch.name) + ".</b> " + esc(ch.chainTxt || "") + "</p>" +
       '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + "</button></div>";
     var nx = d.next && pDef(d.next.id);
-    return nx ? '<div class="note-card sd-next"><p>' + esc(d.next.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + "</a></div>" : "";
+    return nx ? '<div class="note-card sd-next"><span class="kicker sd-k">Room for dessert?</span><p>' + esc(d.next.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + "</a></div>" : "";
+  }
+  // when you sat down, for the top of the bill: "Mon 23 Nov · 14:32"
+  function sdWhen(r) {
+    var t = new Date((r.at || Date.now()) - (r.secs || 0) * 1000);   // r.at is when it ended
+    return t.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) + " · " +
+      t.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
   }
 
   // what each number means, with your own value read back

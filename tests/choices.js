@@ -493,7 +493,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(im.view && im.inView && im.toc, 'its link opens Learn at the impressum, which Learn\'s contents list too');
       ok(/personal, non-commercial project by misterclarity/.test(im.txt) && /© 2026 misterclarity\. Entrain is free software under the GNU Affero General Public License, version 3: you may use, study, share and change it\./.test(im.txt) &&
         !/All rights reserved/.test(im.txt) && im.link === 'https://github.com/misterclarity/biney' && im.lic === 'https://www.gnu.org/licenses/agpl-3.0.html' &&
-        /Poppins typeface is Copyright 2020 The Poppins Project Authors, used under the SIL Open Font License 1\.1/.test(im.txt), 'the impressum names the project\'s author and page, the copyright, the AGPL and the font\'s licence');
+        /The typefaces are Bricolage Grotesque, Copyright 2022 The Bricolage Grotesque Project Authors; Atkinson Hyperlegible Next, Copyright 2020-2024 The Atkinson Hyperlegible Next Project Authors; and DM Mono, Copyright 2020 The DM Mono Project Authors; each used under the SIL Open Font License 1\.1\./.test(im.txt), 'the impressum names the project\'s author and page, the copyright, the AGPL and the fonts\' licence');
       await p.context().close();
       const root = path.join(__dirname, '..'), rd = f => fs.readFileSync(path.join(root, f), 'utf8');
       const L = rd('LICENSE'), idx = rd('index.html'), prev = fs.existsSync(path.join(root, 'entrain-page.html')) ? rd('entrain-page.html') : '';
@@ -546,8 +546,8 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       ok(/damaged/.test(await t(q, '#stRestore')), 'a backup whose choices for a practice are damaged is refused');
       await q.context().close();
       const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8'), ff = html.indexOf('@font-face'), note = html.slice(html.lastIndexOf('/*', ff), ff);
-      ok(/Copyright 2020 The Poppins Project Authors/.test(note) && /SIL OPEN FONT LICENSE Version 1\.1/.test(note) && /PERMISSION & CONDITIONS[\s\S]*5\) The Font Software[\s\S]*DISCLAIMER/.test(note) && /\*\/\s*$/.test(note),
-        'the embedded font carries its copyright and licence in the page, as the licence asks');
+      ok(/Copyright 2022 The Bricolage Grotesque Project Authors/.test(note) && /Copyright 2020-2024 The Atkinson Hyperlegible Next Project Authors/.test(note) && /Copyright 2020 The DM Mono Project Authors/.test(note) && /SIL OPEN FONT LICENSE Version 1\.1/.test(note) && /PERMISSION & CONDITIONS[\s\S]*5\) The Font Software[\s\S]*DISCLAIMER/.test(note) && /\*\/\s*$/.test(note),
+        'the embedded fonts carry their copyrights and licence in the page, as the licence asks');
     }
 
     /* L. Healthy living: a page under Learn, from Learn, Today and search, with two tabs. Recipes have a
@@ -928,7 +928,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       await E(p, () => location.hash = 'settings'); await p.waitForTimeout(400);
       const btn = sel => E(p, sel => { const a = document.querySelector(sel), r = a.getBoundingClientRect(); return { href: a.getAttribute('href'), target: a.target, rel: a.rel, txt: a.textContent.trim(), h: r.height, col: getComputedStyle(a).color }; }, sel);
       const b = await btn('.st-about a.btn.donate');
-      ok(b.href === 'https://ko-fi.com/misterclarity' && b.target === '_blank' && /noopener/.test(b.rel) && b.txt === 'Support Entrain on Ko-fi' && b.h >= 44,
+      ok(b.href === 'https://ko-fi.com/misterclarity' && b.target === '_blank' && /noopener/.test(b.rel) && b.txt === 'Leave a tip on Ko-fi' && b.h >= 44,
         'Settings has a donations button to Ko-fi, opening in the browser: ' + b.txt);
       await E(p, () => location.hash = 'l-impressum'); await p.waitForTimeout(400);
       ok(await E(p, () => !!document.querySelector('.imprint a[href="https://ko-fi.com/misterclarity"][target="_blank"]')), 'and the impressum links to it too');
@@ -2334,7 +2334,7 @@ const OPT = o => ({ pOpt: JSON.stringify(Object.assign({ voice: false, bells: fa
       const s1 = await E(p, () => {
         const cv = document.querySelector('#hrSpec'), r = cv.getBoundingClientRect(), dpr = cv.width / r.width, c = cv.getContext('2d');
         const rate = parseFloat(cv.dataset.breath.split(':')[1]), x = Math.round((6 + rate / 60 / 0.4 * (r.width - 16)) * dpr);
-        const col = getComputedStyle(document.documentElement).getPropertyValue('--b-in').trim().replace('#', ''), n = parseInt(col, 16), rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+        const col = getComputedStyle(cv).getPropertyValue('--b-in').trim().replace('#', ''), n = parseInt(col, 16), rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
         const d = c.getImageData(x - 2, 0, 5, cv.height).data; let hit = 0;
         for (let i = 0; i < d.length; i += 4) if (Math.abs(d[i] - rgb[0]) + Math.abs(d[i + 1] - rgb[1]) + Math.abs(d[i + 2] - rgb[2]) < 90 && d[i + 3] > 150) hit++;
         return { mark: cv.dataset.breath, hit, read: document.querySelector('#hrSpecRead').textContent };

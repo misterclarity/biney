@@ -209,7 +209,7 @@
     var l = hLoad(), w = hWeek(), h = '<a class="si-back" href="#home"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Today</a>';
     if (!l.length) {
       h += '<div class="hi-empty"><p>Nothing here yet. Practices, breathing sessions and tracks of a minute or more show up here once they end, with your heart-rate change and coherence when a sensor is connected.</p>' +
-        '<a class="btn small" href="#practice">Open the library</a></div>';
+        '<a class="btn small" href="#practice">Open the menu</a></div>';
       $("#hiBody").innerHTML = h;
       return;
     }

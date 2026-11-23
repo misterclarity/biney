@@ -42,7 +42,7 @@ async function jumpTo(p, re) { for (let i = 0; i < 60; i++) { if (re.test(await 
     const sec = await p.evaluate(() => ['morning-stretch', 'evening-stretch', 'solo-capoeira'].map(id => document.querySelector('a[href="#practice/' + id + '"]').closest('.pr-grp').dataset.g).join(','));
     ok(['#practice/morning-stretch', '#practice/evening-stretch', '#practice/solo-capoeira', '#yoga'].every(h => cards.includes(h)) && sec === 'energy,sleep,energy', 'the library lists the three routines under their goals, and the builder: ' + sec);
     ok(/Routine builder/.test(await t(p, '.pc-build')) && /capoeira moves/.test(await t(p, '.pc-build')), 'builder card: ' + (await t(p, '.pc-build .pc-blurb')).slice(0, 70));
-    const meta = await t(p, 'a[href="#practice/solo-capoeira"] .pc-meta');
+    const meta = await t(p, 'a[href="#practice/solo-capoeira"]');   // its length is in the price column, beside the name
     ok(/Berimbau/.test(meta) && /18 min/.test(meta) && /Cautions/.test(meta), 'capoeira card meta: ' + meta);
     await p.evaluate(() => location.hash = 'practice/solo-capoeira'); await p.waitForTimeout(250);
     const need = await t(p, '.si-need');
