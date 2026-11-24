@@ -1,7 +1,7 @@
   /* ------------------------------- search -------------------------------
      One box for everything: practices and your own routines, the movement library, breathing
      patterns, tracks, the Heart tools, Healthy living's recipes, supplements, routines and light, History, Settings
-     and its feedback form, and every paragraph and reference in Learn.
+     with its feedback form and the new techniques, and every paragraph and reference in Learn.
      Matching ignores case and accents, and each word you type has to match the start of a word
      somewhere in the entry, so "anap" finds Anapana and "bencao" finds Bênção. Results come in
      groups, the group with the best match first. Enter opens the top result; "/" or Ctrl+K opens
@@ -86,7 +86,7 @@
     o = o || {};
     xs = xs.filter(Boolean);
     var bare = !!o.bare;                 // a paragraph shown under its section's name: only its own words count
-    return { k: k, t: t, s: s || "", xs: xs, h: h, ic: o.ic || "spark", col: o.col || "", w: o.w || 1,
+    return { k: k, t: t, s: s || "", xs: xs, h: h, ic: o.ic || "spark", col: o.col || "", w: o.w || 1, sup: !!o.sup,   // sup: a new technique (supporter.js)
       tn: bare ? " " : fdFold(t), ti: bare ? " " : fdFold(t + " " + (o.alias || "")), si: bare ? " " : fdFold(s + " " + (o.tags || "")), xi: fdFold(xs.join(" ")) };
   }
   function fdMins(d) {
@@ -101,34 +101,34 @@
     });
     return fdEntry("practice", d.name, [d.custom ? "Your routine" : "", g ? g.name : "", methodName(d.method), fdMins(d)].filter(Boolean).join(" · "),
       [d.blurb, d.parts, steps.join(" · "), d.how], "#practice/" + d.id,
-      { ic: pIcon(d), col: pColor(d), w: 1.25, alias: d.alias || "", tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") + (d.words ? " " + d.words : "") });
+      { ic: pIcon(d), col: pColor(d), w: 1.25, alias: d.alias || "", tags: (d.also || []).join(" ") + " " + d.id.replace(/-/g, " ") + (d.words ? " " + d.words : ""), sup: d.sup });
   }
   function fdBuildBase() {
     var out = [];
     PRACTICES.forEach(function (d) { out.push(fdPractice(d)); });
-    var types = { yoga: "Yoga pose", stretch: "Stretch", mobility: "Mobility drill", capoeira: "Capoeira move" }, poses = {};
+    var types = { yoga: "Yoga pose", stretch: "Stretch", mobility: "Mobility drill", capoeira: "Capoeira move", qigong: "Qigong move" }, poses = {};
     A_POSES.forEach(function (c) { poses[c[0]] = c[1]; });
     ASANAS.forEach(function (a) {
       out.push(fdEntry("pose", a.en, a.sa + " · " + (types[aType(a)] || "Pose") + " · " + (poses[aPos(a)] || "") + (a.sides ? " · both sides" : ""),
         a.cues.map(function (c) { return aCue(c, a.sides ? "right" : null); }).concat([a.caution]), "#yoga/find/" + a.id,
-        { ic: a.cat === "capoeira" ? "drum" : "move", col: "var(--accent)", w: 1, alias: a.sa }));
+        { ic: a.cat === "capoeira" ? "drum" : "move", col: "var(--accent)", w: 1, alias: a.sa, sup: a.sup }));
     });
     out.push(fdEntry("pose", "Routine builder", "Movement · " + ASANAS.length + " poses and moves",
-      ["Pick yoga poses, stretches, mobility drills and capoeira moves, set each one's time, and save the routine."], "#yoga",
-      { ic: "plus", col: "var(--accent)", w: 1.1, tags: "yoga builder custom sequence" }));
+      ["Pick yoga poses, stretches, mobility drills, qigong and capoeira moves, set each one's time, and save the routine."], "#yoga",
+      { ic: "plus", col: "var(--accent)", w: 1.1, tags: "yoga builder custom sequence qigong" }));
     BREATHS.forEach(function (b) {
       var lab = document.querySelector('#bPats input[value="' + b.id + '"]'), t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
       var name = lab ? fdTxt(lab.parentNode) : b.id;
       out.push(fdEntry("breath", name, (goalOf(b.goal) ? goalOf(b.goal).name + " · " : "") + "Breathing pattern · " + (Math.round(600 / per) / 10) + " breaths a minute",
-        [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id }));
+        [b.desc, b.ev], "#breathe/" + b.id, { ic: "breathe", col: "var(--b-in)", w: 1.15, tags: "breathe breathing pattern " + b.id, sup: b.sup }));
     });
     out.push(fdEntry("breath", "Breathing guide", "Breathe · paced breathing",
-      ["Paced breathing with five visuals, timed sessions, sound cues and live heart data."], "#breathe",
+      ["Paced breathing with five visuals, a gaze point and scenes that move with your breath, sessions of 2 to 20 minutes or open-ended, sound cues and live heart data."], "#breathe",
       { ic: "breathe", col: "var(--b-in)", w: 1, tags: "breathe pace" }));
     TRACKS.forEach(function (t) {
       var g = goalOf(t.goal), gn = g ? g.name : "Tinnitus";
       out.push(fdEntry("sound", t.name, gn + " · " + t.band + " track · " + t.minutes + " min", [t.desc, t.ev], "#track/" + t.id,
-        { ic: "sounds", col: "var(--relax)", w: 1, alias: t.goal === "tinnitus" ? "tinnitus" : "", tags: "binaural beat track " + (t.also || []).join(" ") }));
+        { ic: "sounds", col: "var(--relax)", w: 1, alias: t.goal === "tinnitus" ? "tinnitus" : "", tags: "binaural beat track " + (t.also || []).join(" "), sup: t.sup }));
     });
     out.push(fdEntry("sound", "Custom primer", "Focus · Sound · 5 to 20 min before a task",
       ["Listen to a beat before you start a task, get a cue when the block ends, then begin working."], "#prime",
@@ -136,6 +136,32 @@
     out.push(fdEntry("sound", "Beat builder", "Make your own · any beat and carrier",
       ["Pick the beat frequency, the carrier tone and the session length, then play it."], "#builder",
       { ic: "sliders", col: "var(--relax)", w: 1, tags: "binaural custom builder carrier frequency" }));
+    out.push(fdEntry("sound", "Beat sound", "Settings · binaural, monaural or isochronic",
+      ["Binaural beats need headphones; monaural beats and isochronic tones play on speakers too. Choose how every beat plays here, or for one practice under its Options."], "#st-beats",
+      { ic: "sounds", col: "var(--relax)", w: 1, tags: "isochronic monaural binaural speaker speakers headphones tone tones pulse pulsing mode sound", sup: true }));
+    out.push(fdEntry("sound", LP_NAME, "Gamma Focus 40 and Working Memory Gamma · a soft glow, on a 120 Hz screen",
+      ["A soft glow on part of the screen brightens and dims 40 times a second with the 40 Hz beat, for up to ten minutes. It waits for your health check, stays off with epilepsy, asks each time and needs a screen that draws 120 pictures a second. Experimental."], "#track/gamma-40",
+      { ic: "sun", col: "var(--stim)", w: 1, alias: "Flicker", tags: "flicker flickering flash flashing light strobe glow gamma 40hz hz mit genus visual stimulation entrainment alzheimer photic 120hz refresh rate experimental", sup: true }));
+    out.push(fdEntry("sound", TOOLS.sleep.name, "Sleep · a sound that fades out over 15 to 60 min, then ends", [TOOLS.sleep.blurb, slpHowTxt(30)], TOOLS.sleep.href,
+      { ic: "moon", col: "var(--relax)", w: 1.1, tags: "sleep timer noise pink white rain crickets stream water fire fade fading fall asleep night bedtime insomnia", sup: true }));
+    out.push(fdEntry("sound", "Nature sounds", "Background sound · birdsong, a stream, wind and fire",
+      ["Add birdsong, a stream, wind in the leaves or a crackling fire to rain or crickets, or have one on its own, under practices, breathing sessions and tracks. Each goes on and off by itself."], "#st-amb",
+      { ic: "rain", col: "var(--relax)", w: 1, tags: "birdsong birds bird stream brook water river wind leaves fire fireplace crackle crackling campfire nature soundscape ambience background", sup: true }));
+    out.push(fdEntry("sound", "Music in the background", "Background sound · slow, steady, lively or matched",
+      ["Music made on your device, with no words: soft chords, a low note and plucked notes, slow for sleep and calm, steady for focus, lively for energy. It plays under practices, breathing sessions and tracks, and a practice can keep its own."], "#st-amb",
+      { ic: "sounds", col: "var(--relax)", w: 1.05, tags: "music tempo bpm beats song songs tune melody chords ambient generative slow steady lively focus energy calm background", sup: true }));
+    out.push(fdEntry("sound", YM_NAME, "Settings · songs from this device, under any session",
+      ["Add songs from this device: they stay in this browser, play offline under practices, breathing sessions and tracks, and in Music Break, and a thumbs up or down after each session decides which come up more often."], "#st-mymusic",
+      { ic: "sounds", col: "var(--relax)", w: 1.05, tags: "my music own songs song playlist favourite mp3 m4a aac wav audio file files add tracks liked thumbs preference chosen choose", sup: true }));
+    out.push(fdEntry("breath", BLS_NAME, "Breathe · music that follows your breathing and slows it",
+      ["The music's chords swell as you breathe in and ebb as you breathe out, while the guide starts at your own pace, found by the phone on your belly or the microphone, and slows gently towards your resonance pace. Experimental."], "#breathe",
+      { ic: "breathe", col: "var(--b-in)", w: 1, tags: "breath led adaptive biofeedback music follows breathing slow down slower pace resonance swell loudness belly microphone experimental", sup: true }));
+    out.push(fdEntry("breath", "Scenes", "Breathe, practices and Settings · clouds, water, leaves, a forest, a fractal, flowers, a fire",
+      ["Scenes to watch, drawn on your device and moving slowly: on Breathe the scene moves with your breath, in a practice it takes the place of the orb, and in Settings you pick the ones you find restful."], "#st-scenes",
+      { ic: "leaf", col: "var(--b-in)", w: 1.05, alias: SCN_NAME, tags: "scene scenes visual visuals nature clouds sky water lake sea ripples leaves tree branch forest mist misty ridge mountains fractal fractals flowers roses fire fireplace flames embers restful restorative soft fascination video", sup: true }));
+    out.push(fdEntry("app", LT_NAME, "Breathe, practices and Settings · bright, warm or night, by the time of day",
+      ["The light from your screen during a session: Bright, cool and near-white, for focus and energy in the morning; Warm, amber and dimmer, in the evening; Night, very dim and red, before sleep; or Automatic. Say whether you're a morning or an evening person, and the times move with you."], "#st-light",
+      { ic: "sun", col: "var(--stim)", w: 1.05, tags: "light lights colour bright brightness warm amber night red blue tint screen white green body clock circadian chronotype morning evening person lark owl melatonin alert alertness", sup: true }));
     out.push(fdEntry("heart", "Connect a heart sensor", "Heart · Bluetooth heart-rate sensors",
       ["Pair a HeartMath ear-clip sensor, a chest strap or a Garmin watch set to broadcast, and watch your heart rate rise as you breathe in and fall as you breathe out."], "#heart",
       { ic: "heart", col: "var(--hr)", w: 1.1, tags: "hrm pair bluetooth garmin heartmath polar strap" }));
@@ -145,6 +171,30 @@
     out.push(fdEntry("heart", "Resonance test", "Heart · about 10 minutes",
       ["Breathe at 6.5, 6, 5.5, 5 and 4.5 breaths a minute for two minutes each, and see which pace gives the biggest heart-rate swing."], "#resonance-test",
       { ic: "target", col: "var(--hr)", w: 1.1, tags: "resonance frequency rate pace hrv" }));
+    out.push(fdEntry("heart", CAM_NAME, "Heart · a fingertip on the phone's camera, at rest",
+      ["No sensor? Rest a fingertip over the phone's camera and its light, and your pulse gives heart rate, the swing in each breath, RMSSD and coherence."], "#cam",
+      { ic: "heart", col: "var(--hr)", w: 1.05, tags: "camera phone finger fingertip pulse ppg photoplethysmography torch flash light no sensor iphone hrv rmssd", sup: true }));
+    out.push(fdEntry("breath", MOT_BELLY, "Breathe · the motion sensor counts your breaths",
+      ["Lie back with the phone on your belly: its motion sensor counts your breaths, and beside the guide you see whether you're following it, faster or slower."], "#breathe",
+      { ic: "breathe", col: "var(--b-in)", w: 1, tags: "belly tummy abdomen motion sensor accelerometer breathing rate count breaths following pace lying", sup: true }));
+    out.push(fdEntry("heart", "Stillness", "Practices done lying down · from the motion sensor",
+      ["With the phone resting on your belly or on the bed, the end screen of a practice done lying down shows how much of it you stayed still, and your longest still stretch."], "#l-phone",
+      { ic: "moon", col: "var(--hr)", w: 0.9, tags: "still stillness restless restlessness movement motion fidget settle lying body scan yoga nidra nap", sup: true }));
+    out.push(fdEntry("heart", EG_NAME, "Heart · a Muse EEG headband, alpha and theta trends",
+      ["Connect a Muse headband and see whether your alpha and theta are rising or falling since your first minute, with an eyes-open, eyes-closed check."], "#eeg",
+      { ic: "brain", col: "var(--hr)", w: 1.05, alias: "EEG neurofeedback", tags: "eeg muse headband brain waves brainwaves alpha theta neurofeedback interaxon eyes closed calibration", sup: true }));
+    out.push(fdEntry("heart", "Room air (CO₂)", "Heart · an Aranet4 monitor, or a reading you type in",
+      ["Connect an Aranet4 CO₂ monitor, or type the reading from any monitor, and the focus pages show your room's CO₂, with a nudge to open a window above about 900 ppm."], "#air",
+      { ic: "wind", col: "var(--hr)", w: 1.05, alias: AQ_NAME, tags: "co2 carbon dioxide air fresh stuffy ventilation ventilate window aranet aranet4 monitor sensor room ppm focus", sup: true }));
+    out.push(fdEntry("heart", OX_NAME, "Heart · a fingertip oximeter, a safety signal for breath holds",
+      ["Connect a fingertip pulse oximeter: during a breath hold, in Wim Hof Breathing or on Breathe, a reading below 90% ends the hold with Breathe now."], "#ox",
+      { ic: "drop", col: "var(--hr)", w: 1.05, alias: "SpO2 pulse oximeter", tags: "spo2 oxygen saturation oximeter pulse oximetry blood oxygen fingertip breath hold holds wim hof swim dive freediving safety plx" }));
+    out.push(fdEntry("app", AQ_PROMPT, "Settings · a reminder on focus pages to open a window",
+      ["On the page of each focus practice, focus track and the custom primer, a reminder to air the room first, with your room's CO₂ when there's a reading."], "#st-air",
+      { ic: "wind", col: "var(--accent)", w: 1, tags: "fresh air open window ventilate ventilation stuffy room co2 focus reminder prompt", sup: true }));
+    out.push(fdEntry("app", "Scent and chewing-gum tips", "Settings · rosemary, lavender and gum, with their safety line",
+      ["Optional tips with early evidence: rosemary on focus pages, lavender on sleep pages, and chewing gum before focused work."], "#st-air",
+      { ic: "leaf", col: "var(--accent)", w: 0.95, tags: "scent scents smell aroma aromatherapy essential oil oils rosemary lavender diffuser chewing gum chew taste" }));
     out.push(fdEntry("heart", "Live heart data and coherence", "Heart · rate, swing, RMSSD, coherence",
       ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
       { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));
@@ -157,21 +207,63 @@
     out.push(fdEntry("app", "Feedback", "Settings · an idea, a problem or something you liked",
       ["Write it in Settings, and it opens as an issue on Entrain's GitHub page, ready to send."], "#feedback",
       { ic: "send", col: "var(--accent)", w: 1, tags: "contact bug report issue github suggestion idea problem praise question" }));
+    out.push(fdEntry("app", "New techniques", "Settings · a donation of €1 or more unlocks them on this device",
+      ["The techniques from the brain-wave guide open with a donation of €1 or more on Ko-fi, once on each device: your device code, the activation code from the email, and what it unlocks."], "#st-supporter",
+      { ic: "cup", col: "var(--stim)", w: 1, tags: "unlock donation donate supporter support kofi ko fi activation code device brain wave guide" }));
+    out.push(fdEntry("app", "Health check", "Settings · optional, nine questions, kept on this device",
+      ["Tick what applies to you, such as a heart condition, high or low blood pressure, epilepsy, pregnancy, panic attacks, trauma, psychosis or asthma, and the practices it affects show a caution written for you."], "#st-health",
+      { ic: "heart", col: "var(--danger)", w: 1.1, tags: "health safety screening screen medical condition heart blood pressure epilepsy seizure pregnant pregnancy panic trauma ptsd psychosis dissociation asthma doctor" }));
+    out.push(fdEntry("app", "I need to stop", "Settle · ends what's running and calms you down",
+      ["One tap ends a practice or a breathing session, fades the sound in half a second and opens Settle: eyes open, five slow breaths out, and the 5-4-3-2-1 grounding."], "#settle",
+      { ic: "leaf", col: "var(--relax)", w: 1.1, tags: "settle stop end panic overwhelmed overwhelm distress distressed upset anxious anxiety dizzy calm down grounding help quit exit" }));
     out.push(fdEntry("app", "History", "Today · everything you've done, a day at a time",
       ["Practices, breathing sessions, tracks and resonance tests, with the time and your heart-rate change and coherence when a sensor was connected."], "#history",
       { ic: "today", col: "var(--accent)", w: 1, tags: "log sessions stats week minutes past done journal progress" }));
+    // your own data (own.js)
+    out.push(fdEntry("app", CI_NAME, "Settings · your mood and stress, 0 to 10, at the start and end of a session",
+      ["A quick rating of your mood and your stress as any practice, breathing session or track starts and ends, kept in your history and set against your usual change."], "#st-checkin",
+      { ic: "heart", col: "var(--accent)", w: 1.05, alias: "Check-ins", tags: "check in checkin checkins mood stress rating rate feel feeling feelings how before after self report journal what helps", sup: true }));
+    out.push(fdEntry("app", OW_NAME, "Today and History · minutes today and days in a row",
+      ["Your minutes today, the days in a row you've practised and the days of the last month: how often counts for more than how long, and a missed day isn't a setback."], "#history",
+      { ic: "today", col: "var(--accent)", w: 1, alias: "Daily total", tags: "streak streaks days in a row run total minutes today daily total habit consistency", sup: true }));
+    out.push(fdEntry("app", RHM_NAME, "Today · morning energy, a midday reset and an evening wind-down",
+      ["Three short sessions spread through the day, each with a practice you choose, ticked off from your history, with reminders for your calendar and a nudge while Entrain is open."], "#st-rhythm",
+      { ic: "today", col: "var(--accent)", w: 1.05, tags: "rhythm schedule plan routine reminder reminders calendar ics notification notify alarm morning midday lunchtime evening twice three times a day spaced", sup: true }));
+    out.push(fdEntry("app", "Personal experiment", "History · one practice two ways, alternated over ten sessions",
+      ["Compare a practice with its beat or without, with music or without, with a scene or the usual visual, or against another practice: your heart-rate change, coherence and check-ins side by side, with an honest word on noise and expectation."], "#experiment",
+      { ic: "target", col: "var(--accent)", w: 1.05, tags: "experiment experiments test compare comparison ab a/b trial n of 1 which works best for me stacked combination combine", sup: true }));
+    // your eyes and the resonance course (eyes.js, course.js)
+    out.push(fdEntry("breath", EY_BREATHE, "Breathe · the visual dark, the cues guiding each breath",
+      ["Breathe with your eyes closed: the visual goes dark, and the rising tone, the chimes or vibration guide each breath. Alpha waves rise within seconds of closing the eyes."], "#breathe",
+      { ic: "breathe", col: "var(--b-in)", w: 1, alias: "Eyes closed", tags: "eyes closed close shut dark blind alpha relax relaxation cue cues tone vibration", sup: true }));
+    out.push(fdEntry("practice", EY_CUE, "Relaxation practices · under Options",
+      ["At the first slow breaths, a soft bell and “Close your eyes now; the sound will guide you”, then the screen dims, in Calm Reset, Heart Coherence, Sleep Descent and other relaxation practices with paced breathing."], "#l-eyes",
+      { ic: "moon", col: "var(--relax)", w: 1, tags: "eyes closed close shut cue bell dim alpha relax relaxation transition", sup: true }));
+    out.push(fdEntry("breath", EY_GAZE, "Breathe and focus practices · a still point to rest your eyes on",
+      ["A still point whose soft glow swells and shrinks with your breath: rest your eyes softly on it, and blink when you need to. General practice, not researched."], "#breathe",
+      { ic: "target", col: "var(--b-in)", w: 1, alias: "Soft gaze", tags: "gaze soft open eyes point focus focal concentration attention trataka candle visual", sup: true }));
+    out.push(fdEntry("app", RC_NAME, "Today and History · 20 minutes twice a day for eight weeks",
+      ["Lehrer's protocol for heart-rate-variability biofeedback: 20 minutes of resonance breathing twice a day (or once) for eight weeks, ticked off on Today, with each week's coherence and swing in History."], "#rcourse",
+      { ic: "target", col: "var(--hr)", w: 1.05, tags: "resonance course programme protocol lehrer hrv biofeedback twice a day 20 minutes eight weeks two months coherence swing plan schedule progress", sup: true }));
     fdLiving(out);
     fdLearn(out);
     return out;
   }
-  // Learn: headings, paragraphs, list items and references (fdInit gives each an id to land on)
-  var FD_LEARN = "#v-learn h2, #v-learn h3, #v-learn .prose p, #v-learn .prose li, #v-learn .refs li";
+  // Learn: headings, paragraphs, list items, the rows of its techniques at a glance, and references (fdInit gives each an id to land on)
+  var FD_LEARN = "#v-learn h2, #v-learn h3, #v-learn .prose p, #v-learn .prose li, #v-learn tr.ln-row, #v-learn .refs li";
   function fdLearn(out) {
     var head = "Learn";
     document.querySelectorAll(FD_LEARN).forEach(function (el) {
       if (el.closest(".toc") || !el.id) return;
       var tag = el.tagName, txt = fdTxt(el);
       if (!txt) return;
+      if (tag === "TR") {                  // a technique: its name, then its aim, evidence and where Entrain has it
+        var name = fdTxt(el.querySelector("th b")), sense = fdTxt(el.parentNode.querySelector(".ln-sense")),
+          cells = [fdTxt(el.querySelector("th small"))].concat([].slice.call(el.querySelectorAll("td")).map(fdTxt));
+        out.push(fdEntry("learn", name, "Learn · " + head + (sense ? " · " + sense : ""), [cells.filter(Boolean).join(" · ")], "#" + el.id,
+          { ic: "learn", w: 0.12 }));     // low: a practice that only mentions the word still comes first ("chewing" finds the Mindful Meal)
+        return;
+      }
       if (tag === "H2" || tag === "H3") {
         if (txt === "References") { head = txt; return; }
         head = txt;
@@ -261,7 +353,7 @@
         var i = FD.items.push(e) - 1;
         h += '<li><a class="fd-it" href="' + esc(e.h) + '" data-i="' + i + '"' + (e.col ? ' style="--pcol:' + e.col + '"' : "") + ">" +
           '<span class="fd-iic"><svg class="i" aria-hidden="true"><use href="#i-' + e.ic + '"/></svg></span>' +
-          '<span class="fd-tx"><b>' + fdMark(e.t, terms) + "</b><small>" + fdMark(e.s, terms) + "</small>" +
+          '<span class="fd-tx"><b>' + fdMark(e.t, terms) + "</b><small>" + (e.sup ? supTag() : "") + fdMark(e.s, terms) + "</small>" +
           '<span class="fd-sn">' + fdLine(e, terms) + "</span></span></a></li>";
       });
       h += "</ul>";

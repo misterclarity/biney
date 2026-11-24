@@ -8,7 +8,8 @@
     var tr = pTrack();
     if (!tr || !tr.dyn) return;
     tr.cur = hz;
-    if (A.oscR && A.ctx) A.oscR.frequency.setTargetAtTime(tr.carrier + hz, A.ctx.currentTime, tau || 1.5);
+    var bp = aBeatParam();                         // the right-hand tone, or an isochronic tone's pulse (audio.js)
+    if (bp && A.ctx) bp.p.setTargetAtTime(bp.base + hz, A.ctx.currentTime, tau || 1.5);
   }
   function adClamp(x) { return Math.max(0, Math.min(1, x)); }
   function adHR(T, win) { return P.hr.filter(function (x) { return x.t > T - win && x.t <= T; }).map(function (x) { return x.hr; }); }

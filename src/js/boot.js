@@ -13,10 +13,12 @@
       if (window.console && console.error) console.error("Entrain: " + name + " didn't start", e);
     }
   }
-  [["the player", playerInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
+  [["the new techniques", supInit],                         // first: whether this device is unlocked decides how Breathe opens
+    ["the player", playerInit], ["the beat's sound", bmInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
-    ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit], ["the theme", themeInit], ["the library", libInit],
-    ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["search", fdInit], ["backups", bkInit],
+    ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit], ["the theme", themeInit],
+    ["the health check", hcInit], ["rest between breathing blocks", ibInit], ["I need to stop", settleInit], ["the voice practices", vxInit], ["Sleep sounds", slpInit], ["the touch practices", tcInit], ["the mind practices", mnInit], ["Cold Finish", coldInit], ["the nature practices", ntInit], ["the movement practices", mvtInit],["music", musInit], ["your own music", ymInit], ["breath-led sound", blsInit], ["scenes", scnInit], ["the screen light", ltInit], ["the light pulse", lpInit],["the phone's camera", camInit], ["the motion sensor", motInit], ["the headband", egInit], ["room air and the oximeter", aqInit], ["check-ins, the daily rhythm and experiments", owInit], ["the eyes", eyInit], ["the resonance course", rcInit], ["the library", libInit],
+    ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["Learn", lnInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });
   start("the library's lengths", libWarm);                 // its practices' lengths are worked out once the phone is idle

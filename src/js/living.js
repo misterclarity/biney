@@ -4,22 +4,24 @@
      you cook. Supplements: each is a card that opens to what the trials found, how strong that
      is, the amounts studied, what to check first and the sources. Routines: healthy sleep habits,
      a morning, the day and an evening, each step with the practices that fit. Light: a light box
-     and red and near-infrared light, as cards like the supplements'.
+     and red and near-infrared light, as cards like the supplements'. Cold and heat: cold water and
+     plunges, and saunas and hot baths, as cards too, with links to the practices that fit.
      #living opens the tab you had last, #living/<tab> opens a tab, #living/<recipe> a recipe's
-     page, #living/<supplement or light> its card, opened, and #living/<routine> that routine.
+     page, #living/<supplement, light or temperature card> its card, opened, and #living/<routine>
+     that routine.
   -------------------------------------------------------------------------------- */
 
   var LV = { tab: "", rid: "", n: 0, base: 0, cook: false };
   var LV_UNITS = { g: "g", ml: "ml", tsp: "tsp", tbsp: "tbsp", cm: "cm", tin: ["tin", "tins"], handful: ["handful", "handfuls"],
     slice: ["slice", "slices"], pinch: ["pinch", "pinches"] };
   var LV_MAX = 12;                         // servings
-  var LV_TABS = [["recipes", "Recipes"], ["supplements", "Supplements"], ["routines", "Routines"], ["light", "Light"]];
+  var LV_TABS = [["recipes", "Recipes"], ["supplements", "Supplements"], ["routines", "Routines"], ["light", "Light"], ["cold-heat", "Cold and heat"]];
   var LV_SHORT = { "sleep-habits": "Sleep habits", morning: "Morning", daytime: "Through the day", evening: "Evening" };
 
   function routineById(id) { for (var i = 0; i < ROUTINES.length; i++) if (ROUTINES[i].id === id) return ROUTINES[i]; return null; }
   function recipeById(id) { for (var i = 0; i < RECIPES.length; i++) if (RECIPES[i].id === id) return RECIPES[i]; return null; }
-  function suppById(id) {                  // a supplement's card, a light's, or coffee's
-    var all = SUPPS.concat(SUPPS_MORE, LIGHTS, [COFFEE]);
+  function suppById(id) {                  // a supplement's card, a light's, cold's or heat's, or coffee's
+    var all = SUPPS.concat(SUPPS_MORE, LIGHTS, TEMPS, [COFFEE]);
     for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i];
     return null;
   }
@@ -137,6 +139,7 @@
           [s.food ? "In food" : "What to buy", s.food || s.buy]]).map(function (f) { return "<div><dt>" + esc(f[0]) + "</dt><dd>" + esc(lvNb(f[1])) + "</dd></div>"; }).join("") + "</dl>" +
         '<div class="lv-care"><h3><svg class="i" aria-hidden="true"><use href="#i-warn"/></svg>Check first</h3><ul>' +
           s.care.map(function (c) { return "<li>" + esc(lvNb(c)) + "</li>"; }).join("") + "</ul></div>";
+      if (s.go) h += '<p class="lv-go lv-card-go"><span>In Entrain</span>' + s.go.map(lvChip).join("") + "</p>";
     }
     return h + lvRefs(s.refs) + "</div></details>";
   }
@@ -145,11 +148,23 @@
   function lvGoLabel(go) {
     var pr = 0, rc = 0, ot = 0;
     go.forEach(function (g) {
-      if (/^#(practice|breathe)\//.test(g[0])) pr++;
+      if (/^#(practice\/|breathe\/|sleep-sounds$)/.test(g[0])) pr++;
       else if (recipeById(g[0].replace(/^#living\//, ""))) rc++;
       else ot++;
     });
     return ot ? "See also" : rc && pr ? "Suggested recipes and practices" : rc ? "Suggested recipes" : "Suggested practices";
+  }
+  // a link to a practice or a page, with the cup while it's a new technique this device hasn't unlocked
+  function lvChip(g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + (supLocked(lnItem(g[0])) ? supTag(true) : "") + "</a>"; }
+  // after an unlock: the cups go from the links on the page, without drawing it again (supRefresh)
+  function lvMark() {
+    var el = $("#lvBody");
+    if (!el) return;
+    el.querySelectorAll("a.lv-chip").forEach(function (a) {
+      var tag = a.querySelector(".sup-tag"), lk = supLocked(lnItem(a.getAttribute("href")));
+      if (lk && !tag) a.insertAdjacentHTML("beforeend", supTag(true));
+      else if (!lk && tag) tag.parentNode.removeChild(tag);
+    });
   }
   // a routine: its steps, each with when (if it has a time), what and why, and the practices that fit behind a button
   function lvRoutine(r) {
@@ -161,7 +176,7 @@
         return "<li>" + (x.w ? '<span class="lv-when">' + esc(x.w) + "</span>" : "") + "<b>" + esc(x.t) + "</b><p>" + esc(lvNb(x.p)) + "</p>" +
           (x.go ? '<details class="lv-sugg"><summary>' + esc(lvGoLabel(x.go)) + '<span class="lv-sugg-n" aria-hidden="true">' + x.go.length + "</span>" +
             '<svg class="i lv-chev" aria-hidden="true"><use href="#i-up"/></svg></summary>' +
-            '<p class="lv-go">' + x.go.map(function (g) { return '<a class="lv-chip" href="' + esc(g[0]) + '">' + esc(g[1]) + "</a>"; }).join("") + "</p></details>" : "") + "</li>";
+            '<p class="lv-go">' + x.go.map(lvChip).join("") + "</p></details>" : "") + "</li>";
       }).join("") + "</ol>" + lvRefs(r.refs) + "</section>";
   }
   var LV_LEGEND = '<p class="pr-legend">Evidence' +
@@ -195,8 +210,13 @@
       safeBox([SAFE_LIGHT]) + LV_LEGEND +
       '<div class="lv-sups">' + LIGHTS.map(lvSupCard).join("") + "</div>" +
       '<p class="pr-note">Not medical advice. The sources were checked in October 2026, and each card lists its own.</p></div>';
+    var tmp = '<div class="lv-panel" role="tabpanel" id="lvp-cold-heat" aria-labelledby="lvt-cold-heat" hidden>' +
+      '<p class="lv-lede">Cold water wakes you up, and heat helps you wind down. Here is what the research says about each: what it may help, how strong the evidence is, the amounts studied, how to start and what to check first.</p>' +
+      safeBox([SAFE_TEMP]) + hcBox(["cold", "heat"]) + LV_LEGEND +
+      '<div class="lv-sups">' + TEMPS.map(lvSupCard).join("") + "</div>" +
+      '<p class="pr-note">Not medical advice. The sources were checked in November 2026, and each card lists its own.</p></div>';
     return '<a class="si-back" href="#learn"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Learn</a>' +
-      '<p class="v-lede lv-intro">Food, sleep and daily routines that look after you, and an honest look at supplements and light.</p>' + tabs + rec + sup + rtn + lit;
+      '<p class="v-lede lv-intro">Food, sleep and daily routines that look after you, and an honest look at supplements and light.</p>' + tabs + rec + sup + rtn + lit + tmp;
   }
   function lvTab(tab, focus) {
     if (!LV_TABS.some(function (t) { return t[0] === tab; })) tab = "recipes";
@@ -285,7 +305,7 @@
     if (rest && !s && !rt && !LV_TABS.some(function (t) { return t[0] === rest; })) { location.replace("#living"); return; }
     el.innerHTML = lvList();
     el.style.setProperty("--pcol", "var(--food)");
-    lvTab(s ? (s.light ? "light" : "supplements") : rt ? "routines" : rest || store.get("livTab") || "recipes");
+    lvTab(s ? (s.light ? "light" : s.temp ? "cold-heat" : "supplements") : rt ? "routines" : rest || store.get("livTab") || "recipes");
     var card = s || rt ? document.getElementById("lv-" + (s || rt).id) : null;
     if (card) {                            // a card opens; a routine is scrolled to
       if (s) card.open = true;
@@ -304,9 +324,9 @@
 
   /* ----- search: the page, each recipe and each supplement ----- */
   function fdLiving(out) {
-    out.push(fdEntry("living", "Healthy living", "Learn · recipes, supplements, routines and light",
-      ["Simple, nourishing recipes such as congee, kitchari and dal, what the research says about omega-3, coenzyme Q10, creatine, vitamin D, magnesium, B12 and more, healthy sleep habits and a morning and evening routine, and light therapy."], "#living",
-      { ic: "leaf", col: "var(--food)", w: 1.1, tags: "healthy living food nutrition diet eating recipes cooking supplements vitamins routine habits sleep light" }));
+    out.push(fdEntry("living", "Healthy living", "Learn · recipes, supplements, routines, light, cold and heat",
+      ["Simple, nourishing recipes such as congee, kitchari and dal, what the research says about omega-3, coenzyme Q10, creatine, vitamin D, magnesium, B12 and more, healthy sleep habits and a morning and evening routine, light therapy, and cold water and saunas."], "#living",
+      { ic: "leaf", col: "var(--food)", w: 1.1, tags: "healthy living food nutrition diet eating recipes cooking supplements vitamins routine habits sleep light cold heat sauna" }));
     ROUTINES.forEach(function (r) {
       out.push(fdEntry("living", r.name, "Healthy living · routines", [r.lead].concat(r.steps.map(function (x) { return x.t + ": " + x.p; })), "#living/" + r.id,
         { ic: r.icon, col: "var(--food)", w: 1.1, tags: "routine habits " + r.tags }));
@@ -315,6 +335,11 @@
       var b = lvBest(s);
       out.push(fdEntry("living", s.name, "Light therapy · best evidence: " + b[1].toLowerCase(), [s.lead].concat(s.uses.map(function (u) { return u[1] + ": " + u[2]; }), [s.amount, s.care.join(" ")]),
         "#living/" + s.id, { ic: "sun", col: "var(--food)", w: 1.1, alias: s.alias || "", tags: "light therapy " + s.tags }));
+    });
+    TEMPS.forEach(function (s) {
+      var b = lvBest(s);
+      out.push(fdEntry("living", s.name, "Cold and heat · best evidence: " + b[1].toLowerCase(), [s.lead].concat(s.uses.map(function (u) { return u[1] + ": " + u[2]; }), s.facts.map(function (f) { return f[0] + ": " + f[1]; }), [s.care.join(" ")]),
+        "#living/" + s.id, { ic: s.icon, col: "var(--food)", w: 1.1, alias: s.alias || "", tags: "temperature " + s.tags }));
     });
     RECIPES.forEach(function (r) {
       out.push(fdEntry("living", r.name, "Recipe · " + lvTime(r) + " · serves " + r.serves,

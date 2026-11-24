@@ -331,9 +331,10 @@
   }
 
   /* The breathing pace to set beside the heart's rhythm: what the microphone hears, when it's sure
-     enough, or else the guide's pace while a session runs. */
+     enough, or what the phone on your belly counts (motion.js), or else the guide's pace while a session runs. */
   function breathPace() {
     if (micOk()) return { rate: MIC.est.rate, src: "mic" };
+    if (motBellyOk()) return { rate: MOT.est.rate, src: "belly" };
     if ((B.state === "running" || B.state === "paused") && B.ph) return { rate: 60 / B.ph.cycle, src: "guide" };
     return null;
   }
@@ -344,7 +345,8 @@
       var hm = co.f * 60;
       s = "Your heart's rhythm peaks at " + micFmt(hm) + " a minute (" + co.f.toFixed(3) + " Hz).";
       if (bp) {
-        s += bp.src === "mic" ? " You're breathing about " + micFmt(bp.rate) + " a minute, as the microphone hears it." : " The guide is at " + micFmt(bp.rate) + " a minute.";
+        s += bp.src === "mic" ? " You're breathing about " + micFmt(bp.rate) + " a minute, as the microphone hears it."
+          : bp.src === "belly" ? " You're breathing about " + micFmt(bp.rate) + " a minute, as the phone on your belly counts it." : " The guide is at " + micFmt(bp.rate) + " a minute.";
         s += Math.abs(hm - bp.rate) <= Math.max(0.4, 0.08 * bp.rate) ? " They match: your breathing is setting your heart's rhythm."
           : " They differ, so this peak isn't your breathing. Slow, even breathing brings them together.";
       } else {

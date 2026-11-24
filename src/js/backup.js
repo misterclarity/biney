@@ -6,11 +6,16 @@
   ---------------------------------------------------------------------------- */
 
   // about this device rather than about you: the headphone check, the install and offline notes,
-  // whether a heart sensor has ever connected here, and when this device last saved a backup
-  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup"];
-  // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged
-  var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog"];
-  var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+)$/;
+  // whether a heart sensor has ever connected here, when this device last saved a backup, and its
+  // device code and unlock (supporter.js): a donation unlocks one device, so a backup never carries
+  // them to another, and a restore here keeps them; and this screen's real size, matched to a bank
+  // card for Soothing Touch (touch.js), which would be wrong on another screen
+  var BK_SKIP = ["debug", "stereo", "installLater", "offlineNoted", "hrEver", "hrSettle", "lastBackup", "device", "unlock", "touchPx", "co2", "airAt"];
+  // the stored values that are lists or records: a backup whose copy of one doesn't read as that is damaged.
+  // myMusic is your own songs' names, lengths and thumbs (yourmusic.js): the files themselves stay in this
+  // browser's database on this device, and never go into a backup
+  var BK_LISTS = ["history", "favs", "yogaSeqs", "myBreaths", "nvcLog", "myMusic"];
+  var BK_RECORDS = /^(breath|settings|pOpt|pOpt\..+|pCh\..+|resonance|nvcDraft\..+|health)$/;
   var BK_MAX = 5e6;                       // bytes: more than a browser's whole storage for one site
   var BK = { pending: null, persisted: null, asked: false };
 
@@ -177,7 +182,7 @@
   /* ----- the card in Settings ----- */
   function bkCard() {
     return '<section class="st-card" id="st-data" aria-labelledby="stD"><h2 id="stD">Your data</h2>' +
-      '<p class="st-note">Your history, favourites, routines, breathing patterns, settings and any reflections you keep are stored in this browser, on this device, and never sent anywhere. A backup is one file of all of it, to keep safe or to move to another phone.</p>' +
+      '<p class="st-note">Your history, favourites, routines, breathing patterns, settings, health check and any reflections you keep are stored in this browser, on this device, and never sent anywhere. A backup is one file of all of it, to keep safe or to move to another phone.</p>' +
       '<p class="st-note" id="stKeepTxt" hidden></p>' +
       '<div class="st-data-act"><button class="btn primary small" id="stSave">Save a backup</button><button class="btn small" id="stLoadBtn">Restore from a backup</button></div>' +
       '<input type="file" id="stLoad" accept=".json,application/json" hidden>' +

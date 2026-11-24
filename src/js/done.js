@@ -18,7 +18,13 @@
     if (r.wander !== undefined) tiles.push(["Came back", String(r.wander), r.wander === 1 ? "time to the breath" : "times to the breath", "wander"]);
     if (r.holds) tiles.push(["Longest hold", fmt(Math.max.apply(null, r.holds)), r.holds.map(fmt).join(" · "), "holds"]);
     if (r.suds) tiles.push([d.rate ? d.rate.name : "Intensity", r.suds.join(" → "), r.suds.length > 1 ? (d.rate ? "out of 10, before and after" : "out of 10, first to last") : "out of 10", "suds"]);   // a feeling's strength, or what the practice rates
-    if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatHeart ? "Hz, led by your heart" : "Hz, scripted (no heart data)", "beat"]);
+    var ct = coldTile(r);                                // Cold Finish: the seconds of cold, and where your build-up stands (cold.js)
+    if (ct) tiles.push(ct);
+    var stt = motStillTile(r);                           // lying down: how still you stayed (motion.js)
+    if (stt) tiles.push(stt);
+    egTiles(r).forEach(function (x) { tiles.push(x); });  // a headband's alpha and theta trends (eeg.js)
+    oxTiles(r).forEach(function (x) { tiles.push(x); });  // a hold an oximeter ended (air.js)
+    if (r.beat0) tiles.push(["Beat", r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1), r.beatBrain ? "Hz, led by your alpha and theta" : r.beatHeart ? "Hz, led by your heart" : d.eeg ? "Hz, scripted (no headband data)" : "Hz, scripted (no heart data)", "beat"]);
     if (r.nap) {
       if (r.nap.onset !== null) { tiles.push(["Fell asleep", "after " + r.nap.onset + " min", "estimated from heart rate", "onset"]); tiles.push(["Nap", r.nap.slept + " min", "of sleep, estimated", "nap"]); }
       else tiles.push(["Fell asleep", r.nap.sensor ? "Not detected" : "—", r.nap.sensor ? "resting still helps" : "no heart data", "onset"]);
@@ -37,28 +43,33 @@
       }).join("") + "</div>" +
       '<p class="sd-bill-f"><span>Amount due</span><span>0.00</span></p><p class="sd-bill-t">On the house. Come back hungry.</p></div>' +
       '<div class="sd-ex" id="sdEx" role="region" aria-label="What this number means" hidden></div>' +
+      ciCard(r) +                                         // how you feel now, after your check-in as it began (own.js)
       (r.stress ? stressCard(r) : "") +                    // a stress check's advice comes first, before the chart
       (chart ? '<div class="sd-chart"><span>Heart rate across the session, in bpm' + (r.beatLog ? ", with the beat in violet" : "") + "</span>" +
         '<canvas id="sdChart" tabindex="0" role="slider" aria-label="Read the heart-rate chart" aria-valuemin="0" aria-valuemax="' + r.secs + '" aria-valuenow="0" aria-valuetext="Tap or use the arrow keys to read a point"></canvas>' +
         '<p class="sd-read" id="sdRead">Tap or drag on the chart to read any point.</p>' +
         '<button class="btn link sd-how" id="sdHow" aria-expanded="false" aria-controls="sdHowT">How to read this chart</button>' +
         '<div class="sd-how-t" id="sdHowT" hidden>' + sdHowTxt().map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div></div>" : "") +
+      egCard(r) +                                         // a headband's alpha and theta across the session (eeg.js)
+      ymDoneCard() +                                      // your own songs that played, each with a thumbs up and down (yourmusic.js)
       (r.nvc ? nvcCard(r.nvc) : "") +
       (r.stress ? "" : sdNext(d)) +
-      '<div class="sd-fortune"><p class="kicker sd-k"><svg class="i" aria-hidden="true"><use href="#i-cookie"/></svg>Your fortune cookie</p>' + qCard(d.reflect ? ROGERS : qPick()) + "</div>" +
+      (d.noQuote ? "" : '<div class="sd-fortune"><p class="kicker sd-k"><svg class="i" aria-hidden="true"><use href="#i-cookie"/></svg>Your fortune cookie</p>' + qCard(d.reflect ? ROGERS : qPick()) + "</div>") +       // a Restoration Break ends with no words to read (nature.js)
       '<div class="sd-act"><a class="btn primary" href="' + backTo().href + '">Done</a><button class="btn" id="sdAgain">Do it again</button></div>' +
-      '<div class="note-card donate-card sd-donate"><span class="plate dc-jar"><svg class="i" aria-hidden="true"><use href="#i-jar"/></svg></span><p><b>Entrain is free and has no ads.</b> If it restores you, you can leave a tip in the jar.</p>' +
-      '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Leave a tip on Ko-fi</a></div>';
+      '<div class="note-card donate-card sd-donate"><span class="plate dc-jar"><svg class="i" aria-hidden="true"><use href="#i-jar"/></svg></span><p><b>Entrain has no ads, and most of it is free.</b> The new techniques open with a donation of €1 or more on each device, and every donation keeps it going.</p>' +
+      '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a></div>';
     var el = $("#sDone");
     el.innerHTML = h;
     $("#sRun").hidden = true; $("#sIntro").hidden = true; el.hidden = false;
     $("#ses").dataset.state = "done";
-    $("#sdAgain").addEventListener("click", function () { pIntro(d.id); });
+    $("#sdAgain").addEventListener("click", function () { if (!ibAsk("again", d)) pIntro(d.id); });   // fast breathing again: rest first? (care.js)
     if (r.stress) stressWire(r);
+    ciCardWire(r);
     var cg = $("#sdChain");
     if (cg) cg.addEventListener("click", function () {     // on to the practice this one began
       var nx = P.chain && pDef(P.chain.then);
       if (!nx) return;
+      if (supLocked(nx) && !supGate(nx.name, function () { cg.click(); })) return;    // a new technique, locked: the way to unlock it first
       P.view = nx; P.len = P.chain.len; P.chainGo = true;
       try { history.replaceState(null, "", "#practice/" + nx.id); } catch (e) {}
       pStart();
@@ -72,6 +83,7 @@
       sdChartWire();
       setTimeout(function () { pChart(r.hrPts, r.secs, r); }, 30);
     }
+    if (r.eeg && !r.eeg.none) setTimeout(function () { egCardDraw(r); }, 30);
   }
 
   /* What comes next: the practice this one began (chosen as "Begin with" on its page), carried on with
@@ -79,9 +91,12 @@
   function sdNext(d) {
     var ch = P.chain && P.chain.then !== d.id ? pDef(P.chain.then) : null;
     if (ch) return '<div class="note-card sd-next"><span class="kicker sd-k">Next course</span><p><b>Next: ' + esc(ch.name) + ".</b> " + esc(ch.chainTxt || "") + "</p>" +
-      '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + "</button></div>";
-    var nx = d.next && pDef(d.next.id);
-    return nx ? '<div class="note-card sd-next"><span class="kicker sd-k">Room for dessert?</span><p>' + esc(d.next.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + "</a></div>" : "";
+      '<button class="btn primary" id="sdChain">Continue to ' + esc(ch.name) + (ch.sup ? supTag() : "") + "</button></div>";
+    var nt = pFn(d.next, d);                             // a suggestion can follow the choices made (Sports Performance's), or be two (Morning Wake-Up's)
+    return (Array.isArray(nt) ? nt : [nt]).filter(function (x) { return x && pDef(x.id); }).map(function (x, i) {
+      var nx = pDef(x.id);
+      return '<div class="note-card sd-next">' + (i ? "" : '<span class="kicker sd-k">Room for dessert?</span>') + "<p>" + esc(x.txt) + '</p><a class="btn" href="#practice/' + nx.id + '">' + esc(nx.name) + (nx.sup ? supTag() : "") + "</a></div>";
+    }).join("");
   }
   // when you sat down, for the top of the bill: "Mon 23 Nov · 14:32"
   function sdWhen(r) {
@@ -92,7 +107,7 @@
 
   // what each number means, with your own value read back
   function sdExplain(k) {
-    var sx = scExplain(k);
+    var sx = scExplain(k) || coldExplain(k) || motStillExplain(k) || egExplain(k) || oxExplain(k);
     if (sx) return sx;                               // a stress check's own tiles
     var r = SD.r, d = SD.d, n, p = [];
     var plural = function (x, one, many) { return x + " " + (x === 1 ? one : many); };
@@ -112,6 +127,7 @@
       if (dl <= -3) p.push("It came down " + plural(-dl, "beat", "beats") + " a minute. A fall like this is the usual sign of the body settling: slow breathing and rest shift the nervous system towards its calming side, which slows the heart.");
       else if (dl >= 3) p.push("It rose " + plural(dl, "beat", "beats") + " a minute. " + (lively ? "That's expected after movement or energising breathing." : "Sitting up, moving or a busy mind can raise it. One session is one reading: your history shows the trend."));
       else p.push("It stayed within a few beats. That's common in short or gentle sessions, or when you started out already rested.");
+      if (d.id === "music-break") p.push("Across trials of music for stress, heart rate came down more clearly than blood pressure or stress hormones did, by a small to medium amount on average. Your own sessions show what it does for you.");   // Music Break (music.js)
       if (SD.c.hr) p.push(sdHrAgainst(dl, SD.c.hr, d));
       return ["Heart rate, start to end", p];
     }
@@ -142,6 +158,15 @@
       p.push("Holds often lengthen in later rounds: the fast breathing lowers carbon dioxide, so the urge to breathe comes later. That's also why this practice is done only sitting or lying down, with each hold ending as soon as you need to breathe.");
       return ["Breath holds", p];
     }
+    if (k === "suds" && d.rate && d.rate.what === "mood") {           // higher is better, unlike a feeling's strength
+      p.push("How your mood was each time you rated it, from 0 (very low) to 10 (as good as it gets): " + r.suds.join(", then ") + ".");
+      if (r.suds.length > 1) {
+        n = r.suds[r.suds.length - 1] - r.suds[0];
+        p.push(n > 0 ? "Your mood rose " + plural(n, "point", "points") + "." : n < 0 ? "Your mood dipped. That happens; a gentler practice may suit you better today." : "Your mood stayed where it was.");
+        p.push("A rating straight afterwards is partly what you expected to feel, so the pattern over several sessions in your history tells you more than one.");
+      } else p.push("Rate it before and after to see how it changes.");
+      return [d.rate.name, p];
+    }
     if (k === "suds" && d.rate && d.rate.what === "hunger") {
       p.push("How hungry you were each time you rated it, from 0 (not hungry at all) to 10 (as hungry as you get): " + r.suds.join(", then ") + ".");
       if (r.suds.length > 1) {
@@ -162,8 +187,10 @@
       return ["Intensity", p];
     }
     if (k === "beat") {
-      p.push("Where the binaural beat started and where it finished: " + r.beat0.toFixed(1) + " Hz, then " + r.beat1.toFixed(1) + " Hz.");
-      p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) towards 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
+      p.push("Where the " + (r.bm || "binaural") + " beat started and where it finished: " + r.beat0.toFixed(1) + " Hz, then " + r.beat1.toFixed(1) + " Hz.");
+      if (r.beatBrain || d.eeg) p.push(r.beatBrain ? "After a minute and a half reading your resting alpha and theta, the beat followed them. As their shares of the headband's signal rose above that rest, the beat moved from 10 Hz (alpha) towards 6 Hz (theta), and back up when they fell, by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
+        : "There was no headband data, so the beat followed a fixed, gentle descent instead.");
+      else p.push(r.beatHeart ? "After a minute and a half measuring your resting heart, the beat followed it. As your heart rate fell below that baseline, and its variability and coherence rose, the beat moved from 10 Hz (alpha) towards 4 Hz (theta), by at most 0.15 Hz every five seconds. The violet line on the chart shows its path."
         : "There was no heart data, so the beat followed a fixed, gentle descent instead.");
       p.push("This is an experiment: the rule is Entrain's own, so the chart is the honest test of what it did for you.");
       return ["The beat", p];
@@ -260,7 +287,7 @@
     var r = SD.r, t = [];
     t.push("Your heart rate from the start (left) to the end (right), averaged over 10 seconds so the line is easy to follow. The numbers on the left are the top and bottom of its scale, in beats a minute, and the times along the bottom are minutes into the session.");
     t.push("The thin vertical lines mark where each step began." +
-      (r.beatLog ? " The violet line is the binaural beat, on its own scale from 11 Hz at the top to 3 Hz at the bottom." : "") +
+      (r.beatLog ? " The violet line is the " + (r.bm || "binaural") + " beat, on its own scale from 11 Hz at the top to 3 Hz at the bottom." : "") +
       (r.nap && r.nap.onsetT ? " The dashed line marks when you fell asleep (estimated)." : ""));
     t.push("A line that drifts down means your body settled. The ripples are your breaths: heart rate rises as you breathe in and falls as you breathe out. Tap or drag on the chart to read the time, your heart rate and the step at any point.");
     return t.map(esc);

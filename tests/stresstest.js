@@ -26,7 +26,7 @@ const base3 = (rm, hr) => [past(3 * DAY, rm, hr), past(2 * DAY, rm, hr), past(DA
       localStorage.setItem('entrain.debug', '1'); localStorage.setItem('entrain.stereo', '1');
       localStorage.setItem('entrain.pOpt', JSON.stringify({ voice: false, bells: false, cues: 'tones', visual: 'circle', audio: true, voiceName: '', ana: 0, rhythm: true }));
       if (h && !localStorage.getItem('entrain.seeded')) { localStorage.setItem('entrain.history', JSON.stringify(h)); localStorage.setItem('entrain.seeded', '1'); }
-      Object.assign(window, pre || {});
+      Object.assign(window, { __scHour: 14 }, pre || {});     // the advice changes late in the evening: afternoon unless a check sets the hour
     }, [hist || null, pre || {}]);
     if (opts) await p.addInitScript(mock, opts);
     await p.goto(APP);

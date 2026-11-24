@@ -23,22 +23,23 @@
   // [item, method, postures]: practices by id, b: a breathing pattern, t: a track, x: a tool
   var CATS = {
     sleep: [["sleep-descent", "program", "lie"], ["b:478", "breath", "sit lie"], ["shuffle", "relax", "lie"],
-      ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"]],
+      ["evening-stretch", "move", "lie"], ["evening-floor", "move", "lie"], ["t:sleep-descent", "sound", "lie"], ["x:sleep", "sound", "lie"]],
     calm: [["stress-check", "measure", "sit lie"], ["calm-reset", "program", "sit walk"], ["b:sigh", "breath", "sit"], ["b:resonance", "breath", "sit"],
       ["coherence", "program", "sit lie walk"], ["conversation", "program", "sit walk"], ["call", "program", "sit"], ["after-talk", "program", "sit walk"], ["meal", "program", "sit"], ["mindful-sex", "program", "lie sit"], ["grounding", "meditate", "sit walk"], ["tapping", "relax", "sit"],
       ["body-scan", "meditate", "lie"], ["pmr", "relax", "lie"], ["autogenic", "relax", "sit lie"], ["reframe", "relax", "sit walk"], ["nadi", "breath", "sit"], ["bhramari", "breath", "sit"],
       ["ujjayi", "breath", "sit"], ["dirga", "breath", "sit lie"], ["b:exhale", "breath", "sit"], ["walking", "meditate", "walk"],
-      ["heart-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
-      ["t:preop-calm", "sound", "lie"]],
+      ["heart-led", "program", "sit lie"], ["brain-led", "program", "sit lie"], ["t:alpha-stress", "sound", "sit"], ["t:theta-meditation", "sound", "sit"],
+      ["t:preop-calm", "sound", "lie"], ["om", "breath", "sit"], ["touch", "relax", "sit lie"], ["music-break", "sound", "sit lie"], ["imagery", "relax", "sit lie"], ["fireside", "relax", "sit lie"], ["qigong", "move", "stand"]],
     focus: [["focus-primer", "program", "sit"], ["creative", "program", "sit"], ["anapana", "meditate", "sit"], ["b:box", "breath", "sit"],
       ["x:prime", "sound", "sit"], ["t:deep-work", "sound", "sit"], ["t:sustained-24", "sound", "sit"],
       ["t:vigilance-16", "sound", "sit"], ["t:gamma-40", "sound", "sit"], ["t:gamma-memory", "sound", "sit"],
       ["t:creative-reverie", "sound", "sit"]],
     energy: [["morning-tonic", "program", "lie sit stand"], ["sport", "program", "sit stand"], ["b:dive", "breath", "sit lie"], ["morning-yoga", "move", "stand"], ["standing-flow", "move", "stand"], ["morning-stretch", "move", "stand"],
       ["standing-reset", "move", "stand"], ["balance-yoga", "move", "stand"], ["kapalabhati", "breath", "sit"],
-      ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"]],
+      ["wim-hof", "breath", "sit lie"], ["solo-capoeira", "move", "stand"], ["laughter", "move", "stand sit"], ["let-it-out", "breath", "stand sit"],
+      ["sing", "program", "stand sit"], ["cold-finish", "breath", "stand"], ["dance", "move", "stand sit"]],
     recover: [["recovery", "program", "sit walk"], ["nsdr", "program", "lie"], ["power-nap", "relax", "lie"],
-      ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"]],
+      ["back-hips", "move", "lie"], ["t:parasympathetic", "sound", "sit"], ["self-massage", "relax", "sit"], ["yoga-nidra", "relax", "lie"], ["restoration", "relax", "sit"]],
     reflect: [["nvc-self", "write", "sit"], ["nvc-prep", "write", "sit"], ["nvc-choose", "write", "sit"], ["self-compassion", "meditate", "sit"],
       ["metta", "meditate", "sit walk"], ["gratitude", "meditate", "sit lie walk"]],
     tinnitus: [["t:tinnitus-notch", "sound", "sit"]]        // for a condition rather than a goal: a section of its own
@@ -46,7 +47,9 @@
   var ALSO = {
     "body-scan": ["sleep"], pmr: ["sleep"], bhramari: ["sleep"], "b:exhale": ["sleep"], nsdr: ["sleep"],
     anapana: ["calm"], "b:box": ["calm"], "self-compassion": ["calm"], metta: ["calm"], gratitude: ["calm"], "back-hips": ["calm"],
-    "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"], meal: ["reflect"], "mindful-sex": ["reflect"], sport: ["focus"]
+    "standing-reset": ["focus"], "balance-yoga": ["focus"], call: ["focus"], "after-talk": ["reflect"], "nvc-prep": ["calm"], autogenic: ["sleep"], reframe: ["focus"], meal: ["reflect"], "mindful-sex": ["reflect"], sport: ["focus"],
+    laughter: ["calm"], "let-it-out": ["calm"], sing: ["reflect"], "self-massage": ["calm"], imagery: ["sleep"], "yoga-nidra": ["sleep"],
+    fireside: ["sleep"], restoration: ["focus"], qigong: ["energy"]
   };
   var PATTERN_NAMES = { resonance: "Resonance 5.5", sigh: "Cyclic sigh", exhale: "Long exhale", box: "Box 4-4-4-4", "478": "4-7-8", dive: "Swim & dive" };
   var TOOLS = {
@@ -54,7 +57,9 @@
       blurb: "Pick a beat and 5 to 20 minutes of priming. When the bell rings, start work with the beat quieter, pink noise, or silence." },
     beats: { name: "Beat builder", href: "#builder", icon: "sliders", strength: 2,
       blurb: "Pick any beat, carrier tone and session length, and play it." },
-    routine: { name: "Routine builder", href: "#yoga", icon: "plus", strength: 2 }
+    routine: { name: "Routine builder", href: "#yoga", icon: "plus", strength: 2 },
+    sleep: { name: "Sleep sounds", href: "#sleep-sounds", icon: "moon", strength: 1, sup: true,      // a new technique (sleepsounds.js)
+      blurb: "Pink noise, rain, crickets, a stream or a fire to fall asleep to, fading out over 15 to 60 minutes and then ending, so nothing plays all night." }
   };
 
   var CAT = {};                              // item key → { goal, also, method, posture, rank }

@@ -2,19 +2,20 @@
      Views behind a hash router. The five tabs are #home (Today), #practice (the library),
      #breathe, #heart and #learn. Pages open from them: #history from Today; #practice/<id> for a
      practice, #track/<id> for a track, #prime and #builder for the custom primer and the beat
-     builder, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
+     builder, #sleep-sounds for Sleep sounds, #yoga for the routine builder; #living (Healthy living) from Learn and Today, with
      #living/<tab, recipe, supplement, light or routine>; and #settings from the gear, with #feedback and
      #st-<section> for a section of it. Links and search also
-     use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>. Older
+     use #goal/<goal> (the library at one goal), #breathe/<pattern> and #yoga/find/<pose>; #unlock opens
+     the dialog that unlocks the new techniques, and #unlock/<code> is the activation link from the email. Older
      addresses still work: #sounds and #tracks open the library at its sounds, and in-page anchors
      (#connect, #science, #references and the rest) open the view that holds them.
      Everything inside the views keeps its own ids and logic.
   -------------------------------------------------------------------- */
 
-  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings", "living"];
+  var VIEWS = ["home", "practice", "breathe", "heart", "learn", "history", "session", "track", "prime", "builder", "yoga", "settings", "living", "sleep-sounds"];
   var V_TITLE = { home: "Today", practice: "Menu", breathe: "Breathe", heart: "Heart", learn: "Learn", history: "History", session: "Practice",
-    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings", living: "Healthy living" };
-  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice", living: "learn" };   // the tab each page belongs to
+    track: "Track", prime: "Custom primer", builder: "Beat builder", yoga: "Routine builder", settings: "Settings", living: "Healthy living", "sleep-sounds": "Sleep sounds" };
+  var V_TAB = { history: "home", session: "practice", track: "practice", prime: "practice", builder: "practice", yoga: "practice", living: "learn", "sleep-sounds": "practice" };   // the tab each page belongs to
   var ALIAS = { today: "home", library: "practice", menu: "practice" };
   var BACK = "practice";                 // the list a page was opened from: Today, the library or History
   var BASE_TITLE = document.title;
@@ -28,7 +29,7 @@
 
   function showView(v) {
     if (VIEWS.indexOf(v) < 0) v = "home";
-    if (v !== "breathe") sheet(false);
+    if (v !== "breathe") { sheet(false); bLeave(); }   // Breathe's check-in closes, and breath-led sound stops waiting for your pace (breathe.js)
     if (v !== "living") lvLeave();                // a recipe stops keeping the screen on
     VIEWS.forEach(function (n) { $("#v-" + n).hidden = n !== v; });
     var links = document.querySelectorAll(".nav a"), navV = V_TAB[v] || v;
@@ -46,10 +47,11 @@
     if (v === "practice") pRenderLib();               // your routines may have changed
     if (v === "history") hRender();
     if (v === "settings") stRender();
+    if (v === "sleep-sounds") slpOpen();
     backSync();
     var gear = $("#tbSet");
     if (gear) { if (v === "settings") gear.setAttribute("aria-current", "page"); else gear.removeAttribute("aria-current"); }
-    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); dvGate(""); }, 0);   // left on Swim & dive, unaccepted: its cautions
+    if (v === "breathe") setTimeout(function () { sizeCanvas(); bChipShow(); if (!bSupGate("")) dvGate(""); }, 0);   // left on a locked new pattern, or on Swim & dive unaccepted
     if (v !== "session" && P.state === "done") P.state = "idle";
     pImmersive();
     pPill();
@@ -76,12 +78,14 @@
     });
   }
 
-  function route() {
+  function route(e) {
     var h = "";
-    try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
+    try { h = decodeURIComponent(location.hash.slice(1)); } catch (x) {}
     if (!h) { showView("home"); return; }
     if (ALIAS[h]) h = ALIAS[h];
+    if (h === "unlock" || h.indexOf("unlock/") === 0) { supRoute(h.slice(7), e && e.oldURL); return; }   // the new techniques (supporter.js)
     if (h === "session") { location.replace("#practice"); return; }
+    if (h === "settle") { settleRoute(e && e.oldURL); return; }                // I need to stop, from search (settle.js)
     if (h.indexOf("practice/") === 0) { showView("session"); pIntro(h.slice(9)); return; }
     if (h.indexOf("track/") === 0) { showView("track"); trOpen(h.slice(6)); return; }
     if (h.indexOf("goal/") === 0) { libShow(h.slice(5), ""); return; }
@@ -90,6 +94,12 @@
     if (h.indexOf("breathe/") === 0) { showView("breathe"); fdPattern(h.slice(8)); return; }
     if (h === "living" || h.indexOf("living/") === 0) { showView("living"); lvOpen(h.slice(7)); return; }
     if (VIEWS.indexOf(h) >= 0) { showView(h); return; }
+    if (h === "experiment" || h === "checkins" || h === "rcourse") {   // a part of History, which is drawn as it opens (own.js, course.js)
+      showView("history");
+      var hs = document.getElementById(h);
+      if (hs) setTimeout(function () { jumpTo(hs); }, 30);
+      return;
+    }
     if (h === "feedback" || h.indexOf("st-") === 0) {     // a section of Settings, which is drawn as it opens
       showView("settings");
       var sec = document.getElementById(h === "feedback" ? "st-feedback" : h);
@@ -161,7 +171,7 @@
 
     bSetT("#qkSensorT", st === "on" ? H.name : "Heart sensor");
     var sub;
-    if (st === "on") sub = live ? Math.round(H.hr) + " bpm" + (H.coh ? ", coherence " + H.coh.cs.toFixed(1) : "") : "Connected, waiting for readings";
+    if (st === "on") sub = live ? Math.round(H.hr) + " bpm" + (H.coh ? ", coherence " + H.coh.cs.toFixed(1) : "") : H.src === "cam" ? "Camera on, waiting for your fingertip" : "Connected, waiting for readings";
     else if (st === "busy") sub = "Connecting…";
     else if (st === "lost") sub = "Reconnecting…";
     else sub = hrSupported() ? "Not connected. Open to connect." : "Needs Chrome or Edge on Android or a computer";
@@ -169,7 +179,8 @@
 
     var btn = $("#bSensorBtn");
     if (st === "on" || st === "lost") {
-      bSetT("#bSensorTxt", (st === "lost" ? "Reconnecting to " : "Connected to ") + H.name + ". Heart rate and coherence show above the guide.");
+      bSetT("#bSensorTxt", H.src === "cam" ? "Reading your pulse with the phone's camera. Heart rate and coherence show above the guide."
+        : (st === "lost" ? "Reconnecting to " : "Connected to ") + H.name + ". Heart rate and coherence show above the guide.");
       bSetT("#bSensorBtn", "Heart details"); btn.dataset.act = "details";
     } else if (st === "busy") {
       bSetT("#bSensorTxt", "Connecting to your sensor…");
@@ -264,7 +275,11 @@
       A.playing || (!!A.track && A.elapsed > 0) ||                            // a track, playing or paused partway through
       H.state === "on" || H.state === "busy" || H.state === "lost" ||         // a heart sensor, which would have to be paired again
       MIC.on || MIC.busy ||                                                   // the microphone listening for your breathing
-      FD.open || (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
+      CAM.on || CAM.busy || MOT.belly ||                                      // the camera reading your pulse, the phone on your belly (camera.js, motion.js)
+      EG.state !== "off" || !!EG.chk ||                                       // an EEG headband, which would have to be paired again (eeg.js)
+      AQ.state !== "off" || OX.state !== "off" ||                             // a CO2 monitor or an oximeter, the same (air.js)
+      FD.open || !$("#stlModal").hidden || !$("#ciModal").hidden ||           // search, settling after I need to stop, or a check-in (own.js)
+      (!!a && !!a.closest && !!a.closest('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, [contenteditable]')) ||
       (!$("#v-yoga").hidden && Y.items.length > 0) ||                          // a routine being put together
       (!!LV.rid && (LV.cook || !!document.querySelector(".lv-ing input:checked, .lv-steps input:checked")));   // a recipe being cooked
   }

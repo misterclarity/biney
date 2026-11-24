@@ -43,7 +43,15 @@
   // is dropped as it loads, and a session without its kind, time and length is dropped whole.
   var H_FIELDS = { k: "string", id: "string", n: "string", band: "string", note: "string", at: "number", secs: "number",
     rate: "number", beat: "number", hr0: "number", hr1: "number", hrAvg: "number", swing: "number", coh: "number", best: "number", rm: "number", felt: "number",
-    full: "boolean", est: "boolean" };
+    full: "boolean", est: "boolean", ib: "boolean", wh: "number",        // ib: a block of intense breathing; wh: Wim Hof's rounds (care.js)
+    bm: "string",                                                        // bm: a beat played monaural or isochronic (beatmode.js)
+    snd: "string",                                                       // snd: what Sleep sounds played (sleepsounds.js)
+    cold: "number",                                                      // cold: the seconds of cold in Cold Finish (cold.js)
+    still: "number",                                                     // still: the share of a session lain still, in % (motion.js)
+    lp: "number",                                                        // lp: the seconds of the light pulse with a 40 Hz track (pulse.js)
+    alpha: "number", theta: "number",                                    // a headband's alpha and theta, first minute to last two, in % (eeg.js)
+    mood0: "number", mood1: "number", str0: "number", str1: "number",    // your check-in, mood and stress before and after, 0 to 10 (own.js)
+    xid: "number", xv: "string" };                                       // a personal experiment's session: which experiment, and which way, A or B (own.js)
   var H_KINDS = ["practice", "breath", "track", "test"];
   function hClean(e) {
     for (var k in e) if (typeof e[k] !== H_FIELDS[k] || (typeof e[k] === "number" && !isFinite(e[k]))) delete e[k];
@@ -68,8 +76,11 @@
   /* ----- what each kind of session logs ----- */
   // a breathing session on the guide (not one a practice is running, and not the resonance test)
   function hBreath(secs, full) {
-    if (P.usesB || B.finder || secs < 60) return;
-    var e = { k: "breath", id: BC.pattern, secs: secs, full: full, rate: +(60 / cycleOf(BC)).toFixed(1) }, mine = mpGet(BC.pattern);
+    if (BC.long && !P.usesB && !B.finder && secs > 0) ibEnded(preset(BC.pattern) ? patName(preset(BC.pattern)) : "long breath holds");   // rest before the next (care.js)
+    if (P.usesB || B.finder) return;
+    var ci = ciTake("breath");                   // your check-in as it began, if you keep them (own.js)
+    if (secs < 60) return;
+    var e = { k: "breath", id: BC.pattern, secs: secs, full: full, rate: +(60 / cycleOf(BC)).toFixed(1), ib: BC.long || undefined }, mine = mpGet(BC.pattern);
     if (mine) e.n = mine.name;                   // your own pattern keeps its name here even once it's deleted
     var s = B.hr;
     if (s.length >= 10) {
@@ -81,19 +92,39 @@
     }
     if (B.swings.length) e.swing = +avg(B.swings.map(function (x) { return x.amp; })).toFixed(1);
     if (B.coh.length) e.coh = +avg(B.coh).toFixed(2);
-    hAdd(e);
+    blsHist(e);                                  // breath-led sound: a pace of its own, from yours (breathled.js)
+    hAdd(ciTag(e, ci));
+    if (ci) ciAfterSoon(e, ciBreathName());      // and how you feel now (own.js)
   }
   // a track, the primer or a built beat: the time actually listened, once it stops for good
   function hTrack() {
     var t = A.track;
     if (!t || t.practice) return;
     var el = A.playing && A.ctx ? A.ctx.currentTime - A.startedAt : A.elapsed;
-    var secs = el - (A.hAt || 0);
+    var from = A.hAt || 0, secs = el - from, ci = ciTake("track", t);    // your check-in as it began, if you keep them (own.js)
+    var lp = lpTake(t.id);                       // the light pulse's seconds with it (pulse.js)
     if (secs < 60) return;
     A.hAt = el;                                  // a paused track logged as the page goes away isn't logged twice
     var e = { k: "track", id: t.id, secs: secs, full: !t.then && el >= t.minutes * 60 - 10 };
     if (t.id === "prime" || t.id === "custom") { e.beat = +t.beat.toFixed(1); e.band = t.band; }
-    hAdd(e);
+    if (t.sleep) e.snd = t.snd;                   // Sleep sounds: which sound
+    else if (A.mode !== "binaural") e.bm = A.mode;     // how it played, when not binaural (beatmode.js)
+    if (lp >= 30) e.lp = Math.round(lp);         // with the light pulse for half a minute or more
+    hTrackHr(e, from, el);
+    hAdd(ciTag(e, ci));
+    if (ci) ciAfterSoon(e, t.name);              // and how you feel now (own.js)
+  }
+  /* The heart rate while a track played, from a sensor (heart.js keeps it in A.hrLog), kept as a breathing session
+     keeps it: the first minute's average and the last minute's once there are two and a half minutes of readings,
+     or else the average; so History, Today and the trends show what a track does for you. */
+  function hTrackHr(e, from, to) {
+    var s = (A.hrLogTrack === A.track && A.hrLog || []).filter(function (x) { return x.t >= from && x.t <= to + 1; });
+    if (s.length < 10) return;
+    var a = s[0].t, end = s[s.length - 1].t, hr = function (x) { return x.hr; };
+    if (end - a >= 150) {
+      e.hr0 = Math.round(avg(s.filter(function (x) { return x.t < a + 60; }).map(hr)));
+      e.hr1 = Math.round(avg(s.filter(function (x) { return x.t > end - 60; }).map(hr)));
+    } else e.hrAvg = Math.round(avg(s.map(hr)));
   }
   function hTest(secs, best) { hAdd({ k: "test", id: "resonance", secs: secs, full: true, best: best }); }
 
@@ -102,7 +133,7 @@
   function hKey(e) {
     if (e.k === "practice") return e.id;
     if (e.k === "breath") return "b:" + e.id;
-    if (e.k === "track") return e.id === "prime" ? "x:prime" : e.id === "custom" ? "x:beats" : "t:" + e.id;
+    if (e.k === "track") return e.id === "prime" ? "x:prime" : e.id === "custom" ? "x:beats" : e.id === "sleep" ? "x:sleep" : "t:" + e.id;
     return "";
   }
   // what to show for a session: its name, where it leads, its icon and colour
@@ -110,7 +141,7 @@
     var it = hKey(e) ? libItem(hKey(e)) : null;
     if (e.k === "test") return { name: "Resonance test", href: "#resonance-test", icon: "target", col: "var(--hr)", goal: "" };
     if (e.k === "breath" && e.id === "custom") return { name: "Your own breathing pattern", href: "#breathe", icon: "breathe", col: "var(--b-in)", goal: "" };
-    if (it) return { name: it.name, href: it.href, icon: it.icon, col: it.col, goal: it.goal };
+    if (it) return { name: it.name, href: it.href, icon: it.icon, col: it.col, goal: it.goal, sup: it.sup };
     // a routine you've since deleted, or something renamed
     return { name: e.n || "A session", href: e.k === "practice" ? "#practice" : e.k === "breath" ? "#breathe" : "#home", icon: e.k === "breath" ? "breathe" : e.k === "track" ? "sounds" : "practice", col: "var(--accent)", goal: "" };
   }
@@ -121,10 +152,14 @@
     else p.push(hMins(e.secs) + (e.full === false && e.k !== "track" ? ", ended early" : ""));
     if (e.k === "breath" && e.rate) p.push(e.rate + " a minute");
     if (e.beat) p.push(e.beat + " Hz " + (e.band || "").toLowerCase());
+    if (e.bm === "monaural" || e.bm === "isochronic") p.push(e.bm);
+    if (e.lp) p.push("light pulse " + hMins(e.lp));
+    if (e.snd) p.push(slpSound(e.snd)[2]);
     if (e.hr0 && e.hr1) p.push("heart rate " + e.hr0 + " → " + e.hr1);
     else if (e.hrAvg) p.push("heart rate " + e.hrAvg);
     if (e.coh) p.push("coherence " + e.coh.toFixed(1) + (e.est ? " (est.)" : ""));
     if (e.swing) p.push("swing " + e.swing.toFixed(1));
+    if (ciDetail(e)) p.push(ciDetail(e));        // your check-in (own.js)
     if (e.note) p.push(e.note);
     return p.join(" · ");
   }
@@ -189,7 +224,7 @@
     var it = hItem(e);
     return '<li class="hi-e" style="--pcol:' + it.col + '"><a href="' + esc(it.href) + '">' +
       '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + it.icon + '"/></svg></span>' +
-      '<span class="hi-b"><b>' + esc(it.name) + '</b><span>' + esc(hDetail(e)) + "</span></span>" +
+      '<span class="hi-b"><b>' + esc(it.name) + (it.sup ? supTag() : "") + '</b><span>' + esc(hDetail(e)) + "</span></span>" +
       '<time datetime="' + new Date(e.at).toISOString() + '">' + (when ? hWhen(e.at) : hTime(e.at)) + "</time></a></li>";
   }
   function hDays(w) {
@@ -209,15 +244,15 @@
     var l = hLoad(), w = hWeek(), h = '<a class="si-back" href="#home"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Today</a>';
     if (!l.length) {
       h += '<div class="hi-empty"><p>Nothing here yet. Practices, breathing sessions and tracks of a minute or more show up here once they end, with your heart-rate change and coherence when a sensor is connected.</p>' +
-        '<a class="btn small" href="#practice">Open the menu</a></div>';
+        '<a class="btn small" href="#practice">Open the menu</a></div>' + rcSec() + xpSec();      // the resonance course and a personal experiment can be set up before the first session (course.js, own.js)
       $("#hiBody").innerHTML = h;
       return;
     }
     var goals = GOALS.filter(function (g) { return w.goals[g.id]; }), gmax = Math.max.apply(null, goals.map(function (g) { return w.goals[g.id]; }).concat([1]));
-    h += '<section class="hi-sum" aria-labelledby="hiWk"><h2 id="hiWk">Last 7 days</h2>' + hTotals(w) + hDays(w) +
+    h += '<section class="hi-sum" aria-labelledby="hiWk"><h2 id="hiWk">Last 7 days</h2>' + hTotals(w) + owHtml("hiDay") + hDays(w) +
       (goals.length ? '<ul class="hi-goals" aria-label="Minutes by goal">' + goals.map(function (g) {
         return '<li style="--gcol:' + GOAL_COL[g.id] + '"><span>' + esc(g.name) + "</span><i style=\"--w:" + Math.max(4, Math.round(w.goals[g.id] / gmax * 100)) + '%"></i><b>' + Math.round(w.goals[g.id] / 60) + " min</b></li>";
-      }).join("") + "</ul>" : "") + "</section>" + tnSec();
+      }).join("") + "</ul>" : "") + "</section>" + tnSec() + ciSec() + rcSec() + xpSec();     // your check-ins, the resonance course and a personal experiment (own.js, course.js)
     var day = -1, open = false;
     for (var i = l.length - 1; i >= 0; i--) {
       var d = hDayStart(l[i].at);

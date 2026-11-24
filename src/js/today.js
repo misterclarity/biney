@@ -29,6 +29,7 @@
       bSetT("#qkFind", "Last result: " + H.find.best + " breaths a minute, " + d);
     } else bSetT("#qkFind", "A 10-minute test with a heart sensor");
     shellSensor();
+    hcOfferSync();                      // the health check, until it's answered or put off (care.js)
     pSuggest();
     todayRender();
     drawHomeWave();
@@ -47,8 +48,12 @@
     if (l.length) {
       var w = hWeek();
       $("#tdRecentBody").innerHTML = '<div class="td-wk"><div class="td-wt"><span>Last 7 days</span>' + hTotals(w) + "</div>" + hDays(w) + "</div>" +
+        owHtml("tdDay") +                                 // today's minutes and the days in a row (own.js)
         '<ul class="hi-list">' + hLatest(3).map(function (e) { return hRow(e, true); }).join("") + "</ul>";
     }
+
+    rhmSync();                          // the daily rhythm, or its offer (own.js)
+    rcTodaySync();                      // the resonance course, ticked off (course.js)
 
     // the six goals, each with the first few of its own
     $("#tdGoals").innerHTML = GOALS.map(function (g) {

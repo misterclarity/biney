@@ -41,6 +41,7 @@
       safeOpen();
     });
     $("#sfClose").addEventListener("click", safeClose);
+    $("#sfBody").addEventListener("click", function (e) { if (e.target.closest("a[href^='#']")) safeClose(); });   // a link in the note leaves it
     $("#sfModal").addEventListener("click", function (e) { if (e.target === this) safeClose(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") safeClose(); });
   }

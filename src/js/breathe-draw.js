@@ -69,7 +69,9 @@
     if ($("#v-breathe").hidden) { syncOrb(S); return; }    // a practice may be running it from elsewhere
     d2.clearRect(0, 0, CW, CH);
     d2.setLineDash([]);
-    (BVIS[BC.visual] || BVIS.circle)(S);
+    eyStage();
+    if (eyClosedNow()) eyClosedDraw(S);                     // eyes closed: the visual hidden (eyes.js)
+    else (BVIS[BC.visual] || BVIS.circle)(S);
     moveMark(S);
     syncOrb(S);
   }

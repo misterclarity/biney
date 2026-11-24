@@ -1,6 +1,6 @@
 // Runs every suite against the built index.html, a few at a time, and adds up the results.
 //   node tests/run.js                   every suite, as many at a time as there are processor cores (at most 4)
-//   node tests/run.js --jobs 1          one at a time (about twenty minutes; two at a time takes ten)
+//   node tests/run.js --jobs 1          one at a time (about an hour; two at a time takes half an hour)
 //   node tests/run.js regress choices   only the suites named
 // The longest suites start first, so a run takes about as long as its longest suite once there are
 // enough cores. Each suite is its own process with its own browser; its results print in one piece
@@ -17,6 +17,27 @@ const SUITES = [   // name, what it covers, and about how long it takes on its o
   ['todaytest', 'Today, one history, favourites, the library with sounds', 50],
   ['findtest', 'Resonance test with a sensor (about two minutes)', 110],
   ['stresstest', 'Stress Check: the reading, your own baseline, each level\'s advice', 250],
+  ['unlocktest', 'New techniques: the donation gate, activation codes, the signing tool', 60],
+  ['wavestest', 'Learn: brain-wave states, techniques at a glance, placebo, dose, what to measure', 45],
+  ['caretest', 'Safety: the health check, I need to stop and Settle, rest between blocks of intense breathing', 90],
+  ['isotest', 'A beat\'s Sound: binaural, monaural and isochronic, the signal each makes, locked and unlocked', 75],
+  ['voicetest', 'Voice: Om Chanting, Laughter Break, Let It Out and Sing Together', 120],
+  ['soundscapes', 'Nature sounds to mix, and Sleep sounds fading out: the synthesis, the fade, locked and unlocked', 90],
+  ['touchtest', 'Touch: Soothing Touch, Self-Massage and the weighted blanket tip', 90],
+  ['musictest', 'Music made on the device and Music Break: the generator, locked and unlocked, a track\'s heart rate', 120],
+  ['mindtest', 'The mind: Guided Imagery and Yoga Nidra, locked and unlocked', 90],
+  ['scenetest', 'Scenes to watch: the drawing, the fractal\'s dimension, Breathe, practices, Settings, locked and unlocked', 90],
+  ['coldtest', 'Temperature: Cold Finish, its build-up, and the Cold and heat cards, locked and unlocked', 90],
+  ['naturetest', 'Nature: Fireside, Restoration Break and Walking Meditation in a park, the break after work, locked and unlocked', 100],
+  ['lighttest', 'Screen light: Bright, Warm and Night measured on the screen, Automatic, your body clock, locked and unlocked', 120],
+  ['phonetest', 'Measuring with the phone alone: heart rate from the camera, the phone on your belly, stillness; the method, locked and unlocked', 200],
+  ['eegtest', 'A Muse EEG headband: brain trends, the eyes check and Brain-Led Beats; the method, locked and unlocked', 150],
+  ['movetest', 'Movement: Dance Break and the Eight Brocades, the qigong moves in the routine builder, locked and unlocked', 120],
+  ['mymusictest', 'Your own music and breath-led sound: songs kept on the device, the thumbs, the pace from your breath, locked and unlocked', 200],
+  ['airtest', 'Air, scent and blood oxygen: a CO2 monitor, Air the room, the scent and gum tips, an oximeter ending a hold; locked and unlocked', 110],
+  ['owntest', 'Your own data: check-ins before and after, today\'s minutes and the days in a row, a daily rhythm with calendar reminders, a personal experiment; locked and unlocked', 120],
+  ['pulsetest', 'Light pulse at 40 Hz: the health check and the screen first, the light measured on the screen, every way it ends; locked and unlocked', 90],
+  ['eyestest', 'Your eyes and the resonance course: the eyes-closed cue, Eyes closed on Breathe, the gaze point, 20 minutes on Breathe and the eight-week course; locked and unlocked', 110],
   ['cuetrend', 'Lock screen, vibration, comparisons, trends, start-up, Heart', 70],
   ['choices', 'Saved patterns, safety note, filters, Heart Coherence, live changes, Restart, Healthy living, Gratitude, Calm Reset, donations, connecting, difficult conversations, autogenic training, walking, feedback, routines and light, the consistency check, a mindful meal, four more programmes, the Heart page explained, breath from the microphone, coffee, Swim & dive', 290]
 ];

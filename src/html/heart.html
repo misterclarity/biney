@@ -25,6 +25,37 @@
           <button class="btn" id="hrConnect">Connect sensor</button>
           <button class="btn link" id="hrAny">My sensor isn't listed</button>
         </div>
+        <!-- no sensor: a fingertip on the phone's camera (camera.js). Inside the top panel, so the boxes below keep their order -->
+        <div class="hr-cam" id="cam" data-on="0">
+          <div class="cam-off" id="camOff">
+            <p>No sensor? Your phone's camera can read your pulse from a fingertip while you rest, for heart rate, RMSSD and coherence.</p>
+            <button class="btn" id="camGo" type="button">{i:camera}Use the phone's camera</button>
+            <p class="cam-err" id="camErr" role="status" hidden></p>
+          </div>
+          <div class="cam-on" id="camOn" hidden>
+            <div class="hr-box-head"><b>Heart rate from the camera <span class="cam-exp">Experimental</span></b><span class="hint" id="camLight"></span></div>
+            <div class="cam-row">
+              <video class="cam-vid" id="camVid" muted playsinline aria-hidden="true"></video>
+              <p class="cam-how">Rest the pad of one finger lightly over the camera on the back and the light beside it. Sit still, with your hand resting on your lap or a table.</p>
+            </div>
+            <div class="cam-q"><span>Signal</span><div class="cam-qbar" id="camQ" role="meter" aria-label="Signal quality" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="No fingertip" data-q="low"><i id="camQBar"></i></div><b id="camQTxt">No fingertip</b></div>
+            <div class="hr-chart sm cam-chart">
+              <canvas id="camTrace" aria-hidden="true"></canvas>
+              <p class="hr-empty" id="camEmpty">Your pulse shows here as a wave, with a dot on each beat counted.</p>
+            </div>
+            <p class="mc-read" id="camRead" role="status"></p>
+            <div class="hr-find-foot"><button class="btn" id="camStop" type="button">Stop the camera</button></div>
+            <details class="ev cam-what">
+              <summary>How it works, and what helps</summary>
+              <div class="ev-body">
+                <p>Each heartbeat sends a little more blood into your fingertip, which then lets a little less light through, so the camera sees the picture darken a shade about once a second. It's the way a pulse oximeter works, called photoplethysmography. The page averages the colour of 30 pictures a second, keeps the rhythm between 42 and 210 beats a minute, finds the darkest moment of each beat to within a few thousandths of a second, and passes the time between beats on to the same numbers a chest strap feeds: heart rate, the swing within each breath, RMSSD and coherence, and the resonance test and the Stress Check too.</p>
+                <p>What helps: cover the lens and the light with the pad of one finger and rest it there lightly, since pressing hard squeezes the blood out and flattens the pulse. Keep your hand still on your lap or a table, and keep quiet: moving and talking swamp the pulse, which is what the signal meter shows, and beats count only while it reads fair or good. Warm hands give a stronger pulse than cold ones. Where the browser can't switch the light on, use a lamp or a window: daylight through the fingertip works too. The light can get warm; lift your finger for a moment if it does.</p>
+                <p>For resting only. In studies, a fingertip on a phone's camera agreed closely with an ECG at rest, for heart rate and for RMSSD, and during slow breathing for biofeedback. Entrain's own way of reading it hasn't been tested against an ECG, or across skin tones, so it's marked experimental. <a href="#l-phone">The research, in Learn</a>.</p>
+                <p>Nothing is recorded or sent: each picture becomes three colour averages on this device and is gone. The camera stays on until you press Stop the camera, connect a sensor or close the page, and turns itself off after two minutes without a fingertip.</p>
+              </div>
+            </details>
+          </div>
+        </div>
       </div>
 
       <details class="hr-guide" id="connect">
@@ -262,6 +293,109 @@
           </details>
         </div>
       </div>
+    </div>
+
+    <!-- an EEG headband's brain trends (eeg.js): beside the heart, after it, so the heart's boxes keep their order -->
+    <div class="hr-box eg" id="eeg" data-state="off">
+      <div class="hr-box-head"><b>Brain trends from a headband</b><span class="hint eg-hint" id="egHint">Experimental</span></div>
+      <p class="hr-find-txt eg-intro">A Muse EEG headband reads the brain's rhythms through four sensors, on the forehead and behind the ears. Entrain turns them into broad trends: whether your alpha and theta are rising or falling since your first minute, averaged over the last 25 seconds. A trend, never a verdict on your state, since a headband reads too roughly for that (<a href="#l-muse">how accurate one is</a>).</p>
+      <div class="eg-conn">
+        <span class="hr-pill eg-pill"><i></i><span id="egPillTxt">Not connected</span></span>
+        <button class="btn" id="egGo" type="button">{i:brain}<span id="egGoTxt">Connect a headband</span></button>
+      </div>
+      <p class="eg-msg" id="egMsg" role="status"></p>
+      <p class="eg-err" id="egErr" role="status" hidden></p>
+      <p class="eg-no" id="egNo" hidden>This browser can't reach Bluetooth devices: Safari and the other browsers on iPhone and iPad have no Web Bluetooth. The headband connects in Chrome or Edge on Android, a computer or a Chromebook.</p>
+      <div class="eg-on" id="egOn" hidden>
+        <ul class="eg-sens" id="egSens" aria-label="Each sensor's signal">
+          <li><i aria-hidden="true"></i><span>Left ear</span> <b id="egS0">…</b></li>
+          <li><i aria-hidden="true"></i><span>Left forehead</span> <b id="egS1">…</b></li>
+          <li><i aria-hidden="true"></i><span>Right forehead</span> <b id="egS2">…</b></li>
+          <li><i aria-hidden="true"></i><span>Right ear</span> <b id="egS3">…</b></li>
+        </ul>
+        <div class="eg-tiles">
+          <div class="hr-tile eg-t" data-w=""><div class="k">Alpha <small>8–12 Hz</small></div><div class="v" id="egA">…</div><div class="s" id="egAS">Waiting for a clean signal</div></div>
+          <div class="hr-tile eg-t" data-w=""><div class="k">Theta <small>4–8 Hz</small></div><div class="v" id="egT">…</div><div class="s" id="egTS">Waiting for a clean signal</div></div>
+        </div>
+        <div class="hr-chart sm eg-chart">
+          <canvas id="egChart" aria-hidden="true"></canvas>
+          <p class="hr-empty" id="egEmpty">Alpha (teal) and theta (amber) show here as shares of the signal, averaged over 25 seconds, with your first minute's levels dashed.</p>
+        </div>
+        <p class="mc-read" id="egRead" role="status"></p>
+        <div class="hr-find-foot">
+          <button class="btn" id="egCheck" type="button" aria-pressed="false"><span id="egCheckTxt">Eyes open, eyes closed</span></button>
+          <button class="btn link" id="egAgain" type="button">Start the trend again from now</button>
+        </div>
+        <p class="eg-cal-now" id="egCalNow" role="status" hidden></p>
+        <p class="eg-cal" id="egCalRes" role="status" hidden></p>
+      </div>
+      <details class="ev eg-what">
+        <summary>How it works, and what helps</summary>
+        <div class="ev-body">
+          <p>Each second, the page takes the last two seconds from each sensor, splits them into their rhythms and works out alpha's share (8 to 12&nbsp;Hz) and theta's (4 to 8&nbsp;Hz) of everything from 1 to 30&nbsp;Hz, then averages the sensors with a clean signal. A share rather than a size, so how well each sensor touches the skin matters less. The trend sets the last 25 seconds against your first minute of clean signal: a change of more than 15% either way reads as rising or falling, a smaller one as steady. Start the trend again from now makes the next minute the one to compare with.</p>
+          <p>Blinks, a frown, a tense jaw and movement all show up in a headband's signal, often far bigger than the brain's. So a stretch is left out when a sensor's signal swings more than 150&nbsp;µV from top to bottom, as a blink or a movement makes it, or carries more than 10&nbsp;µV of the fast 30 to 45&nbsp;Hz buzz a tense jaw makes, and a sensor swinging more than 500&nbsp;µV, or flat, is off the skin. A second counts when at least two sensors are clean. What helps: push your hair aside so the sensors behind the ears touch skin, sit the forehead sensors flat just above the eyebrows, dampen them a little if your skin is dry, and keep your jaw soft and your head still.</p>
+          <p>Eyes open, eyes closed is a one-minute check: half a minute with your eyes resting on one point, then half a minute with them closed, between bells. Closing the eyes raises alpha within seconds, one of the most reliable effects in EEG (<a href="#l-day">a typical day</a>), so a clear rise shows the headband is reading you, and how big a rise is yours: Brain-Led Beats then counts a rise that size as a full one. Alpha usually rises as you relax with your eyes closed, and theta as you drift towards sleep or sink into meditation, but brain waves follow what the brain is doing: a rise is a picture, not a score.</p>
+          <p>While a practice runs, its screen shows your alpha and theta trends beside the heart's numbers, and its end screen sets your first minute against your last two. <a href="#practice/brain-led">Brain-Led Beats</a> moves a binaural beat with them. Entrain reads the Muse 2, the Muse S and the 2016 Muse, as the open-source muse-js library does; newer models may send their readings in another format. Nothing is recorded or sent: the readings stay on this device, and only the shares of each second are kept, for this visit.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- room air from a CO2 monitor (air.js), for the focus pages -->
+    <div class="hr-box aq-box" id="air" data-state="off">
+      <div class="hr-box-head"><b>Room air (CO₂)</b><span class="hint eg-hint" id="aqHint">For focus sessions</span></div>
+      <p class="hr-find-txt">Fresh air goes with clearer thinking: in office studies, CO₂ above about 900&nbsp;ppm went with lower test scores. Connect an Aranet4 monitor, or type the reading from any CO₂ monitor, and the pages of the focus practices, the focus tracks and the custom primer show it, with a nudge to open a window above about 900&nbsp;ppm (<a href="#l-air">what the research says</a>).</p>
+      <div class="aq-now" id="aqNow" data-hi="" hidden>
+        <div class="aq-ppm"><b id="aqPpm">—</b><small>ppm CO₂</small></div>
+        <p class="aq-say"><b id="aqVerdict"></b> <span id="aqAge"></span></p>
+      </div>
+      <div class="eg-conn">
+        <span class="hr-pill eg-pill"><i></i><span id="aqPillTxt">Not connected</span></span>
+        <button class="btn" id="aqGo" type="button">{i:wind}<span id="aqGoTxt">Connect an Aranet4</span></button>
+      </div>
+      <p class="eg-msg" id="aqMsg" role="status"></p>
+      <p class="eg-msg" id="aqWait" role="status"></p>
+      <p class="eg-err" id="aqErr" role="status" hidden></p>
+      <p class="eg-no" id="aqNo" hidden>This browser can't reach Bluetooth devices: Safari and the other browsers on iPhone and iPad have no Web Bluetooth. The Aranet4 connects in Chrome or Edge on Android, a computer or a Chromebook; here, type its reading below.</p>
+      <form class="aq-type" id="aqForm" novalidate>
+        <label for="aqIn">Or type a reading from any CO₂ monitor</label>
+        <span class="aq-in"><input id="aqIn" type="text" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="ppm"><button class="btn" id="aqSave" type="submit">Save</button></span>
+      </form>
+      <p class="eg-msg" id="aqTypeMsg" role="status"></p>
+      <details class="ev eg-what">
+        <summary>How it works</summary>
+        <div class="ev-body">
+          <p>Indoors, CO₂ builds up from everyone breathing in the room, so it shows how stale the air is. Outdoor air holds about 420&nbsp;ppm. In a controlled office study, ventilation of 20 cubic feet a minute per person, with CO₂ above about 900&nbsp;ppm, went with significantly lower scores on a test of decision-making, so above 900&nbsp;ppm the focus pages say to open a window, and below it that the air is fresh enough. A reading counts for two hours; then the pages go back to the plain reminder.</p>
+          <p>The Aranet4 measures every one to ten minutes, as it's set, and Entrain reads its latest measurement each time it has a new one, with the temperature and humidity it gives too. The first time, your phone or computer may ask for the six-digit code shown on the monitor's screen. Any other monitor: type the number it shows, and it's kept the same way. Nothing is sent anywhere: the reading stays on this device, and isn't in backups, since it belongs to this room.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- blood oxygen from a fingertip oximeter (air.js), a safety signal during breath holds -->
+    <div class="hr-box aq-box ox-box" id="ox" data-state="off">
+      <div class="hr-box-head"><b>Blood oxygen (SpO₂)</b><span class="hint eg-hint" id="oxHint">A safety signal for breath holds</span></div>
+      <p class="hr-find-txt">A fingertip pulse oximeter, connected over Bluetooth, shows how much oxygen your blood carries. While a breath hold runs, in Wim Hof Breathing or on Breathe, a reading below 90% ends the hold at once, with “Breathe now”. It's a rough safety signal: it only ever ends a hold sooner, and a good reading is no reason to hold on (<a href="#l-ox">more in Learn</a>).</p>
+      <div class="eg-conn">
+        <span class="hr-pill eg-pill"><i></i><span id="oxPillTxt">Not connected</span></span>
+        <button class="btn" id="oxGo" type="button">{i:drop}<span id="oxGoTxt">Connect an oximeter</span></button>
+      </div>
+      <p class="eg-msg" id="oxMsg" role="status"></p>
+      <p class="eg-err" id="oxErr" role="status" hidden></p>
+      <p class="eg-no" id="oxNo" hidden>This browser can't reach Bluetooth devices: Safari and the other browsers on iPhone and iPad have no Web Bluetooth. An oximeter connects in Chrome or Edge on Android, a computer or a Chromebook.</p>
+      <div class="eg-on" id="oxOn" hidden>
+        <div class="eg-tiles ox-tiles">
+          <div class="hr-tile ox-t" data-low=""><div class="k">Oxygen</div><div class="v"><span id="oxV">—</span><small>%</small></div><div class="s" id="oxVS">Waiting for a reading</div></div>
+          <div class="hr-tile"><div class="k">Pulse</div><div class="v"><span id="oxPr">—</span><small>bpm</small></div><div class="s">Signal: <span id="oxQ">…</span></div></div>
+        </div>
+        <p class="mc-read" id="oxRead" role="status"></p>
+      </div>
+      <details class="ev eg-what">
+        <summary>How it works, and which oximeters</summary>
+        <div class="ev-body">
+          <p>An oximeter shines red and infrared light through your fingertip and works out how much of your blood's haemoglobin carries oxygen, the SpO₂; at rest it usually reads 95 to 100%. During a practice's breath hold (Wim Hof Breathing's), or a hold in Breathe's pattern (Swim &amp; dive's, or any pattern of your own with a hold), a reading below 90% ends the hold at once: the practice pauses with “Breathe now”, and Breathe ends the session. If the next step is another hold, it's left out too, and a hold that starts while the reading is still low ends straight away.</p>
+          <p>Why only sooner: a fingertip reading trails the blood by several seconds, so by the time it shows a drop, your oxygen may already be a little lower. A wrist or ring reading is less accurate again. So the number is a rough safety signal, never a reason to hold on: breathe at the first strong urge, whatever it says. With no reading, or a finger out of the oximeter, holds run as they would without one. Entrain's own rule, from general knowledge rather than a trial.</p>
+          <p>Entrain reads oximeters that use Bluetooth's standard pulse oximeter service (PLX); many low-cost fingertip oximeters use their own instead and won't connect. Nothing is recorded or sent: only the latest reading is kept, for this visit.</p>
+        </div>
+      </details>
     </div>
       </section>
 

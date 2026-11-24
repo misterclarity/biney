@@ -12,13 +12,15 @@
   var P = {
     def: null, view: null, len: 0, steps: [], total: 0, state: "idle",   // idle | intro | running | paused | done
     t0: 0, st: 0, idx: -1, li: 0, tick: 0, raf: 0,
-    hr: [], coh: [], sw: [], wander: 0, taps: 0, usesB: false, saved: null,
+    hr: [], coh: [], sw: [], eeg: [], wander: 0, taps: 0, usesB: false, saved: null,     // eeg: a headband's shares each second (eeg.js)
     audioOn: false, audioHeld: false, bus: null, pumpNext: 0, wordAt: -1, used: {}, pmr: "",
     internal: false, endArm: 0, lineAt: 0, cv: null, ctx: null, cw: 0, ch: 0, col: {}, holds: [], holdRec: -1,
     mv: null, hasRhy: false, suds: [], sudsBy: {}, rated: -1, tapAt: "", tickNext: 0, nvc: null, resume: null, draftLive: false, draftT: 0, drawAt: 0,
     chain: null, chainGo: false, lastNvc: null,     // a practice that leads on to another; what an NVC part leaves for it
-    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true },
-    paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0     // changes made while it runs, and what a restart needs
+    opt: { voice: true, bells: true, cues: "tones", buzz: false, visual: "circle", audio: true, voiceName: "", ana: 180, rhythm: true, tapTick: false, nvcSave: true, beatMode: "binaural", music: "off", scene: "off", light: "off", still: false, eyes: false, gaze: false },
+    paceK: 1, beatAdj: 0, beatOff: false, runLen: 0, base: 0, rsArm: 0,    // changes made while it runs, and what a restart needs
+    bm: "",                                         // how its beat played (beatmode.js), for the history
+    ci: null, xp: null, xpOrig: null                // your check-in as it began, a personal experiment's way this time and your own options under it (own.js)
   };
   var B_KEYS = ["inh", "sip", "hold", "exh", "rest"];
 
@@ -49,7 +51,28 @@
     var c = (d.choices || []).filter(function (x) { return x.key === key; })[0];
     if (!c) return undefined;
     var v = pChoices(d.id)[key];
-    return c.opts.some(function (o) { return o[0] === v; }) ? v : pChoiceDef(d, c);
+    return c.opts.some(function (o) { return o[0] === v; }) && !pChoiceLk(c, v) ? v : pChoiceDef(d, c);
+  }
+  /* An option that is a new technique (c.sup lists them, as Walking Meditation's In a park): picking it opens with
+     a donation while this device is locked, and one kept from before reads as the usual choice until it's unlocked */
+  function pChoiceSup(c, v) { return !!c.sup && c.sup.indexOf(v) >= 0; }
+  function pChoiceLk(c, v) { return pChoiceSup(c, v) && !supOn(); }
+  // after an unlock (supRefresh, through pIntroReplan): the cups go from those options, and one kept from before is
+  // chosen again, its page drawn afresh with its own steps and note
+  function pChoiceCups(d) {
+    var redo = false;
+    (d.choices || []).forEach(function (c) {
+      if (!c.sup) return;
+      var v = pChoice(d, c.key);
+      document.querySelectorAll('#sOpts [data-choice="' + c.key + '"] button[data-v]').forEach(function (b) {
+        var k = b.dataset.v, tag = b.querySelector(".sup-tag");
+        if ((b.getAttribute("aria-pressed") === "true") !== (k === v)) redo = true;
+        if (!pChoiceSup(c, k)) return;
+        if (tag && supOn()) tag.parentNode.removeChild(tag);
+        else if (!tag && !supOn()) b.insertAdjacentHTML("beforeend", supTag(true));
+      });
+    });
+    if (redo && P.view === d) pIntro(d.id);
   }
   function pChoiceShown(d, c) { return !c.show || c.show(d); }       // some apply only with others (the rests between sets)
   function pFn(v, d) { return typeof v === "function" ? v(d) : v; }  // a note or band that follows the choices
@@ -86,7 +109,7 @@
   function pPlan(d, len) {
     var steps = d.build(len, pVar(d)), at = 0;
     steps.forEach(function (s) { s.at = at; at += s.secs; });
-    if (d.method === "program" && P.opt.ana) pAna(d, steps, at, P.opt.ana);
+    if (d.method === "program" && P.opt.ana && !d.noAna) pAna(d, steps, at, P.opt.ana);
     var base = at;                                   // a programme's sound covers the practice, not the tapping after it
     if (tapOn(d)) tapShort().forEach(function (s) { s.at = at; at += s.secs; s.extra = true; steps.push(s); });
     return { steps: steps, total: at, base: base };
@@ -133,16 +156,30 @@
 
   function pMinutes(d, len) { return Math.max(1, Math.round(pPlan(d, pLenOf(d, len)).total / 60)); }
   /* ----- options: defaults for every practice (in Settings), and each practice's own changes on top.
-     Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself. ----- */
+     Voice choice and keeping reflections are the same everywhere; the rest a practice can set for itself.
+     The beat's sound (beatMode) defaults to this device's choice, which tracks and the tools share (beatmode.js),
+     the music (music) to the background sound's choice (music.js), and the screen light (light) to Breathe's (light.js). ----- */
   var P_OPT0 = JSON.parse(JSON.stringify(P.opt));
-  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual"];
+  var P_OWN = ["voice", "bells", "audio", "rhythm", "tapTick", "ana", "cues", "buzz", "visual", "beatMode", "music", "scene", "light", "still", "eyes", "gaze"];
   function pOptDefaults() {
     var o = JSON.parse(JSON.stringify(P_OPT0));
     try {
       var g = JSON.parse(store.get("pOpt") || "null");
       if (g && typeof g === "object") for (var k in o) if (typeof g[k] === typeof o[k]) o[k] = g[k];
     } catch (e) {}
+    o.beatMode = bmStored();
+    o.music = musStored();
+    o.light = ltStored();
     return o;
+  }
+  // the defaults for every practice, kept: the beat's sound, the music and the screen light go to this device's own choices, which every page then shows
+  function pOptKeep(g) {
+    var m = g.beatMode, mu = g.music, lt = g.light;
+    delete g.beatMode; delete g.music; delete g.light;
+    store.set("pOpt", JSON.stringify(g));
+    if (bmOk(m) && m !== bmStored()) bmSet(m);
+    if (musOk(mu) && mu !== musStored()) musSet(mu, true);
+    if (ltOk(lt) && lt !== ltStored()) ltSet(lt);
   }
   function pOptOwn(id) {
     try { var v = JSON.parse(store.get("pOpt." + id) || "null"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; }
@@ -163,16 +200,19 @@
     var g = pOptDefaults(), b = pOptBase(id), own = {}, n = 0;
     P_OWN.forEach(function (k) { if (o[k] !== b[k]) { own[k] = o[k]; n++; } });
     for (var k in g) if (P_OWN.indexOf(k) < 0) g[k] = o[k];
-    store.set("pOpt", JSON.stringify(g));
+    pOptKeep(g);
     if (n) store.set("pOpt." + id, JSON.stringify(own)); else storeDel("pOpt." + id);
   }
   function pOptMakeDefault(id, o) {
     var g = pOptDefaults();
     P_OWN.forEach(function (k) { g[k] = o[k]; });
-    store.set("pOpt", JSON.stringify(g));
+    pOptKeep(g);
     storeDel("pOpt." + id);
   }
-  function pSaveOpt() { if (P.optFor) pOptSave(P.optFor, P.opt); else store.set("pOpt", JSON.stringify(P.opt)); }
+  function pSaveOpt() {
+    var o = xpReal(P.opt);                           // a personal experiment's setting for this session isn't yours to keep (own.js)
+    if (P.optFor) pOptSave(P.optFor, o); else pOptKeep(JSON.parse(JSON.stringify(o)));
+  }
   // the options an intro shows and edits: the running practice's own stay as they are
   function pIntroOpts(d) {
     if (pBusy() && P.def !== d) return pOptsOf(d.id);
@@ -294,14 +334,17 @@
   function pBreathOn(s, st) {
     if (!P.saved) {
       P.saved = {};
-      ["inh", "sip", "hold", "exh", "rest", "long", "minutes", "sound", "cue", "buzz", "visual"].forEach(function (k) { P.saved[k] = BC[k]; });
+      ["inh", "sip", "hold", "exh", "rest", "long", "minutes", "sound", "cue", "buzz", "visual", "scene"].forEach(function (k) { P.saved[k] = BC[k]; });
     }
     var c = pCfgAt(s, st || 0);
     B_KEYS.forEach(function (k) { BC[k] = c[k]; });
     BC.long = false;                     // a practice's breathing keeps the usual guidance, whatever range Breathe was on
     BC.minutes = 0;
-    BC.visual = P.opt.visual;
-    var snd = P.opt.cues;
+    var sc = scnGet(s.scene) ? s.scene : scnSes();      // a scene in place of the breath visual, following the breath (scenes.js)
+    BC.visual = sc ? "scene" : P.opt.visual;
+    if (sc) BC.scene = sc;
+    if (!scnGet(s.scene) && eyGazeSes()) BC.visual = "gaze";        // a focus practice's gaze point, following the breath (eyes.js)
+    var snd = eyCues(P.opt.cues);                                     // with the eyes closed, a tone where they'd be silent (eyes.js)
     if (BC.sound !== snd && B.state === "running") { BC.sound = snd; cueOff(); if (snd !== "off") cueOn(); }
     BC.sound = snd;
     BC.cue = s.cueFade ? Math.round(40 * s.cueFade[0]) : 40;
@@ -342,7 +385,7 @@
     B.state = "idle";
     applyTimings();
     syncFields(); syncRate(); renderNote(); syncVisHint();
-    checkRadio("bvis", BC.visual); syncChips("#bVis");
+    scnBreatheSync();
     $("#bCue").value = BC.cue;
     bBuzzSync();
     pLockBreathe();
@@ -407,7 +450,7 @@
     var a = pAudio(d, P.base), adj = P.beatAdj || 0, pts = a.dyn ? null : a.pts.map(function (p) { return [p[0], p[1] + adj]; });
     return { id: "prac-" + d.id, pid: d.id, practice: true, cat: a.cat, band: adj && pts ? pBandTxt(pts) : a.band, name: a.name, carrier: a.carrier, gain: a.gain,
       beat: a.dyn ? a.start : pts[pts.length - 1][1], pts: pts, dyn: !!a.dyn, cur: a.start || 0,
-      minutes: P.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "" };
+      minutes: P.base / 60, fade: a.fade, strength: 0, desc: "", ev: "", cite: "", beatMode: P.opt.beatMode };     // its own sound, or this device's (beatmode.js)
   }
   function pBandTxt(pts) {
     var a = bandFor(pts[0][1]).name, b = bandFor(pts[pts.length - 1][1]).name;
@@ -455,11 +498,12 @@
     P.beatAdj = Math.round(adj * 10) / 10;
     var nt = pBeatTrack(P.def);
     tr.pts = nt.pts; tr.beat = nt.beat; tr.band = nt.band;
-    if (A.playing && A.oscR && A.ctx) {             // glide to the new schedule over a second and a half
-      var now = A.ctx.currentTime, T = now - A.startedAt, f = A.oscR.frequency;
+    var bp = aBeatParam();                          // the right-hand tone, or an isochronic tone's pulse (audio.js)
+    if (A.playing && bp && A.ctx) {                 // glide to the new schedule over a second and a half
+      var now = A.ctx.currentTime, T = now - A.startedAt, f = bp.p;
       if (f.cancelAndHoldAtTime) f.cancelAndHoldAtTime(now); else { f.cancelScheduledValues(now); f.setValueAtTime(f.value, now); }
-      f.linearRampToValueAtTime(tr.carrier + beatAt(tr, T + 1.5), now + 1.5);
-      tr.pts.forEach(function (p) { if (p[0] > T + 1.5) f.linearRampToValueAtTime(tr.carrier + p[1], now + (p[0] - T)); });
+      f.linearRampToValueAtTime(bp.base + beatAt(tr, T + 1.5), now + 1.5);
+      tr.pts.forEach(function (p) { if (p[0] > T + 1.5) f.linearRampToValueAtTime(bp.base + p[1], now + (p[0] - T)); });
     }
     $("#pSub").textContent = trackSub(tr);
     bSetT("#sLine", "The beat moves to " + beatAt(tr, pTrackT() + 1.5).toFixed(1) + " Hz, " + bandFor(beatAt(tr, pTrackT() + 1.5)).name.toLowerCase() + ".");
@@ -482,10 +526,11 @@
         if (!pBusy() || P.def !== d) return;
         P.audioOn = true; P.beatOff = false;
         load(pBeatTrack(d));
+        P.bm = A.mode;
         aSeek(pT());
         if (P.state === "paused") { pause(); P.audioHeld = true; }
         pQuickSync(); P.chipsHtml = null; pUI();
-      });
+      }, bmMode(P.opt.beatMode));                 // on speakers (monaural, isochronic) there's no headphone check
     }
     pQuickSync(); P.chipsHtml = null; pUI();
   }
@@ -513,6 +558,7 @@
   // start this practice again from the top, at the length it was started with
   function pRestart() {
     if (!pBusy() || !P.def) return;
+    if (ibAsk("restart")) return;                      // fast breathing again from the top: rest first? (care.js)
     P.view = P.def; P.len = P.runLen;
     pStart(true);
     toast("Started again from the top.", { over: true, ms: 2500 });
@@ -523,12 +569,18 @@
     for (var i = P.steps.length - 1; i >= 0; i--) if (T >= P.steps[i].at - 1e-6) return i;
     return 0;
   }
-  function pVis(s) {
-    if (s.k === "breath") return "breath";
+  // what the stage shows for a step: a scene in place of the orb, the still point or the glow when the practice shows one (scenes.js),
+  // or the gaze point in a focus practice (eyes.js)
+  function pVis(s) { return scnVis(s, eyVis(s, pVisOf(s))); }
+  function pVisOf(s) {
+    if (s.k === "breath") return s.pose ? "pose" : "breath";      // a qigong movement: its drawing moves with the breath (movement.js)
     if (s.k === "pose") return "pose";
     if (s.k === "pump") return "pump";
     if (s.k === "shuffle") return "word";
     if (s.k === "count") return "count";
+    if (s.k === "sing") return "sing";               // the words to sing, and where each part is (vocal.js)
+    if (s.k === "stroke") return "stroke";           // an arm and a dot to stroke along with (touch.js)
+    if (s.k === "cold") return "cold";               // the seconds of cold left, round a breath-out pacer (cold.js)
     if (ST.sleepDim && pSleepyStep(s)) return s.k === "shuffle" ? "word" : "dark";   // dimmed for sleep (Settings)
     if (s.k === "drift") return "glow";
     if (s.k === "hold") return "hold";
@@ -536,6 +588,7 @@
     if (s.k === "tap" || s.tapfig) return "tap";
     if (s.k === "rate") return "rate";
     if (s.k === "adapt") return "adapt";
+    if (s.k === "brain") return "brainled";         // Brain-Led Beats: the beat over your alpha and theta (eeg.js)
     if (s.k === "write") return "write";
     if (s.k === "nap") return "glow";
     if (s.k === "wake") return "orb";
@@ -547,6 +600,10 @@
     var prev = P.steps[P.idx], s = P.steps[i];
     P.idx = i; P.li = 0; P.taps = 0; P.countDone = false; P.pmr = ""; P.pumpNext = 0; P.wordAt = -1; P.nose = null; P.rated = -1; P.metroNext = 0;
     napWakeStop();                                   // wake-up chimes belong to their own step
+    vxEnter(s);                                      // and a song's notes to its own (vocal.js)
+    tcEnter(s);                                      // and a stroke's sweeps to theirs (touch.js)
+    mnEnter(s);                                      // a rotation's point is marked afresh (mind.js)
+    coldEnter(s);                                    // the bells to turn the water cold, and off again (cold.js)
     if (s.k === "wake") { NP.rung = 0; NP.vibs = 0; }
     if (s.mkLines) s.lines = s.mkLines();          // lines built from what you've written so far
     if (s.open && s.secs0 && s.secs < s.secs0) {     // back on an open step that ended early: it gets its full time again
@@ -560,6 +617,8 @@
     var flowing = s.k === "breath" && prev && prev.k === "breath";
     if (prev && !flowing && !s.quiet && !s.nobell && s.k !== "drift" && P.state === "running") pBell(0.45);
     $("#ses").dataset.dim = (ST.sleepDim && pSleepyStep(s)) || s.dim ? "1" : "";     // sleep steps if Settings asks; a step that asks for it
+    eyEnter(s);                                      // and the eyes closed, from the first slow breaths (eyes.js)
+    ltSync();                                        // Automatic's screen light: Night on a sleep step (light.js)
     pStage(s);
     pRenderSegs();
     pUI();
@@ -572,12 +631,14 @@
     fig.hidden = !(vis === "pose" || vis === "body" || vis === "tap" || vis === "face");
     P.tapAt = "";
     var a = vis === "pose" && ASANA[s.pose];
-    P.mv = a && a.keys && s.k === "pose" ? { a: a, side: s.side, box: figBox(a, s.side), drawn: 0, ph: -1 } : null;
-    if (vis === "pose") fig.innerHTML = !a ? "" : P.mv ? figMove(a, pMovePhase(a, s, pT()), s.side, "", P.mv.box) : figSVG(a.fig, s.side);
+    P.mv = a && a.keys && (s.k === "pose" || s.k === "breath") ? { a: a, side: s.side, box: figBox(a, s.side), drawn: 0, ph: -1 } : null;
+    if (vis === "pose") fig.innerHTML = !a ? "" : P.mv ? (s.k === "breath" ? qgSVG(P.mv) : figMove(a, pMovePhase(a, s, pT()), s.side, "", P.mv.box)) : figSVG(a.fig, s.side);
     else if (vis === "body") fig.innerHTML = pBodySVG(s.body || ["all"]);
     else if (vis === "face") fig.innerHTML = pFaceSVG(s.zone || 0);
     else if (vis === "tap") { fig.innerHTML = tapSVG(null, []); pTapPoint(s, pT() - s.at); }
     $("#sRate").hidden = vis !== "rate";
+    $("#sSing").hidden = vis !== "sing";
+    if (vis === "sing") vxShow(s, pT() - s.at);
     var wr = $("#sWrite");
     wr.hidden = vis !== "write";
     $("#ses").dataset.write = vis === "write" ? "1" : "";
@@ -621,6 +682,7 @@
       var ln = s.lines[P.li++];
       if (st - ln[0] < 8) {
         if (ln[2] === "chime") pBell(0.3, 0, 659.25, 0, true);      // chosen as the reminder itself, so it sounds even with the bells off
+        else if (ln[2] === "eyes") eyCueSay(s);                       // close your eyes: a soft bell and the words (eyes.js)
         else if (!s.mute) pSay(ln[1], s.quiet || ln[2] === "ana");
         P.lineAt = bNow();
       }
@@ -630,6 +692,7 @@
     pRhythm(s, T);
     if (s.k === "tap") { pTapPoint(s, st); pTapTick(s, st); }
     else if (s.k === "adapt") pAdaptTick(s, st, T);
+    else if (s.k === "brain") egLedTick(s, st, T);     // the beat follows the headband (eeg.js)
     else if (s.k === "measure") scTick(s);
     else if (s.k === "nap") pNapTick(s, st, T);
     else if (s.k === "wake") pWakeTick(s, st);
@@ -638,6 +701,12 @@
     else if (s.k === "shuffle") pShuffleTick(s, st);
     else if (s.k === "pmr") pPmrTick(s, st);
     if (s.metro) pMetroTick(s, st);
+    vxTick(s, st);                                   // the drone, and a song's tune and count-in (vocal.js)
+    tcTick(s, st);                                   // a soft sweep with each stroke (touch.js)
+    mnTick(s, st);                                   // the point of a rotation round the body, on the body map (mind.js)
+    coldTick(s, st);                                 // the cold's breath-out tones and its last three pips (cold.js)
+    oxTick(s);                                       // a hold ends when the oximeter reads low (air.js)
+    if (P.state !== "running") return;
     pAudioSync(T);
     pUI();
   }
@@ -655,6 +724,7 @@
     var m = P.mv;
     if (!m || bNow() - m.drawn < 0.04) return;
     m.drawn = bNow();
+    if (s.k === "breath") { qgDraw(m); return; }    // a qigong movement goes where the breath is (movement.js)
     var ph = pMovePhase(m.a, s, T);
     if (RM) {                                       // reduced motion: step from key to key instead of gliding
       var mv = movePrep(m.a), i = 0;
@@ -738,13 +808,16 @@
       P.pumpNext++;
     }
   }
-  /* ----- a cadence tick: a soft click s.metro times a minute, to move in time with (a sports session) ----- */
+  /* ----- a cadence tick: a soft click s.metro times a minute, to move in time with (a sports session), from
+     s.metroAt seconds into the step (3 unless it says); s.metroPat picks the ticks that sound, "x" a click and "." a
+     rest, round and round (Laughter Break's ho, ho, ha ha ha), the first of each round a little louder ----- */
   function pMetroTick(s, st) {
-    if (!A.ctx || !pBusOn() || st < 3) return;
-    var gap = 60 / s.metro, horizon = st + (document.hidden ? 2 : 0.6);
-    if (!P.metroNext) P.metroNext = Math.max(3, Math.ceil(st / gap) * gap);
+    var at = s.metroAt || 3, own = !!s.metroAt, gap = 60 / s.metro, horizon = st + (document.hidden ? 2 : 0.6), pat = s.metroPat;
+    if (!A.ctx || (own ? horizon < at : st < 3) || !pBusOn()) return;      // a start of its own is scheduled ahead, so its first tick is on time
+    if (!P.metroNext) P.metroNext = own ? at + Math.max(0, Math.ceil((st - 0.05 - at) / gap)) * gap : Math.max(3, Math.ceil(st / gap) * gap);
     while (P.metroNext < Math.min(horizon, s.secs - 0.5)) {
-      if (P.metroNext >= st - 0.05) pClick(A.ctx.currentTime + (P.metroNext - st), 0.07);
+      var j = Math.round((P.metroNext - at) / gap), on = !pat || pat.charAt(j % pat.length) === "x";
+      if (on && P.metroNext >= st - 0.05) pClick(A.ctx.currentTime + (P.metroNext - st), pat && j % pat.length === 0 ? 0.1 : 0.07);
       P.metroNext += gap;
     }
   }
@@ -776,7 +849,8 @@
       var w = pBreathWords(s); cap = w.cap; sub = w.sub;
     } else if (s.k === "pose") {
       var asa = ASANA[s.pose];
-      sub = asa && asa.move ? asa.sa + " · " + (asa.rhythm ? (P.opt.rhythm ? "with the berimbau" : "in your own rhythm") : "keep it flowing")
+      sub = asa && asa.cat === "qigong" && asa.move ? qgPoseSub(asa, s, T)      // which breath, for a qigong move in a routine (movement.js)
+        : asa && asa.move ? asa.sa + " · " + (asa.rhythm ? (P.opt.rhythm ? "with the berimbau" : "in your own rhythm") : "keep it flowing")
         : (asa ? asa.sa + " · " : "") + "about " + Math.max(1, Math.round((s.secs - 4) / 11)) + " slow breaths";
     } else if (s.k === "guide" && s.trans) {
       sub = "";
@@ -803,10 +877,22 @@
       sub = s.pts.length === 1 ? "Tap gently while you say the set-up" : (st < (s.lead || 0) ? "Get ready: " + Math.ceil(s.lead - st) + "…" : "Point " + (ti + 1) + " of " + s.pts.length + " · " + tp.where);
     } else if (s.k === "rate") {
       sub = s.sub || "0 is not at all, 10 is as strong as it gets";
+    } else if (s.k === "sing") {
+      sub = vxSub(s, st);
+    } else if (s.k === "stroke") {
+      var tw = tcWords(s, st); cap = tw.cap; sub = tw.sub;
+    } else if (s.k === "massage") {
+      sub = smSub(s, st);
+    } else if (s.k === "rotate") {
+      sub = ynSub(s, st);
+    } else if (s.k === "cold") {
+      var cw = coldWords(s, st); cap = cw.cap; sub = cw.sub;
     } else if (s.k === "adapt") {
       sub = s.phase === "base" ? "Measuring your resting heart rate · " + Math.max(0, Math.ceil(s.secs - st)) + " s"
         : AD.src === "heart" ? "Following your heart" + (AD.base ? " · baseline " + Math.round(AD.base.hr) + " bpm" : "")
         : AD.src === "script" ? "No heart data: a gentle scripted descent" : "";
+    } else if (s.k === "brain") {
+      sub = egLedSub(s, st);
     } else if (s.k === "measure") {
       sub = scCaption();
     } else if (s.k === "nap") {
@@ -818,6 +904,7 @@
     if (!sub && s.sub) sub = s.sub;                  // a step's own line under its name, such as the meal's "At your own pace"
     bSetT("#sCap", cap);
     bSetT("#sSub", sub);
+    ntBare(s, st);                                   // a break's scene alone, once its opening line has been read (nature.js)
     var nose = $("#sNose");
     if (!nose.hidden) {
       var ns = nose.children;
@@ -835,6 +922,8 @@
     var live = hrLive(), tr = pTrack(), chips = [];
     if (live) chips.push('<span class="lc hr"><i class="dot hr-dot"></i><b>' + Math.round(H.hr) + '</b> bpm</span>');
     if (live && H.coh) chips.push('<span class="lc coh">Coherence <b>' + H.coh.cs.toFixed(1) + "</b></span>");
+    chips = chips.concat(egChips());                 // a headband's alpha and theta trends (eeg.js)
+    chips = chips.concat(oxChips());                 // an oximeter's SpO2 (air.js)
     if (tr && A.playing) chips.push('<span class="lc beat">' + esc(tr.band) + " <b>" + beatAt(tr, A.elapsed).toFixed(1) + "</b> Hz</span>");
     else if (tr && P.audioOn && !A.playing && P.state === "running" && T < tr.minutes * 60 - (tr.fade || FADE_OUT)) chips.push('<span class="lc off">Sound paused</span>');   // not once the sound has ended as planned
     var h = chips.join("");
@@ -869,7 +958,7 @@
     cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
     P.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1 };   // the visuals drawn on the canvas
+  var P_ANIM = { breath: 1, orb: 1, glow: 1, still: 1, pose: 1, pump: 1, hold: 1, adapt: 1, brainled: 1, beat: 1, sing: 1, stroke: 1, mind: 1, scene: 1, cold: 1, dance: 1, gaze: 1 };   // the visuals drawn on the canvas (a song's words follow the frames too)
   function pDraw(ts) {
     P.raf = 0;
     if (!pBusy() || $("#v-session").hidden || !P.ctx) return;
@@ -879,7 +968,7 @@
     if (W && s) {
       var vis = pVis(s), now = bNow();
       if (!P_ANIM[vis]) { c.clearRect(0, 0, W, Hh); return; }   // nothing moves on the canvas (writing, a rating, the nap): rest until the next step
-      if (vis !== "adapt" || now - P.drawAt >= 0.25) {          // the heart-led chart changes every few seconds: four frames a second will do
+      if ((vis !== "adapt" && vis !== "brainled") || now - P.drawAt >= 0.25) {          // the heart-led and brain-led charts change every few seconds: four frames a second will do
         P.drawAt = now;
         c.clearRect(0, 0, W, Hh);
         var T = pT(), st = T - s.at, col = P.col[P.def.tone || "relax"] || BCOL["b-in"];
@@ -890,6 +979,15 @@
         else if (vis === "pump") pPump(c, W, Hh, s, st, col);
         else if (vis === "hold") pHold(c, W, Hh, s, st, col);
         else if (vis === "adapt") pAdaptDraw(c, W, Hh, s, T, col);
+        else if (vis === "brainled") egLedDraw(c, W, Hh, s, T, col);
+        else if (vis === "beat") vxBeat(c, W, Hh, s, st, col);
+        else if (vis === "sing") vxShow(s, st);
+        else if (vis === "stroke") tcDraw(c, W, Hh, s, st, col);
+        else if (vis === "mind") mnDraw(c, W, Hh, s, st, col);
+        else if (vis === "scene") scnStep(c, W, Hh, s, T);
+        else if (vis === "cold") coldDraw(c, W, Hh, s, st);
+        else if (vis === "dance") dncDraw(c, W, Hh, s, st, col);   // a ring that pulses with the music's beat (movement.js)
+        else if (vis === "gaze") eyGazeStep(c, W, Hh, T, col);     // a point to rest your eyes on (eyes.js)
       }
     }
     P.raf = requestAnimationFrame(pDraw);
@@ -920,6 +1018,7 @@
     c.fillStyle = rgba(col, 0.95); c.beginPath(); c.arc(cx, cy, r * 0.5, 0, Math.PI * 2); c.fill();
   }
   function pPoseRing(c, W, Hh, T, col, s) {
+    if (s && s.k === "breath") { qgRing(c, W, Hh, col); return; }   // a qigong movement: the ring follows your breath (movement.js)
     var a = s && s.k === "pose" && ASANA[s.pose];
     if (a && a.move) {                              // moving: a soft pulse on the beat (stronger on the bar) or a quiet ring
       var cx0 = W / 2, cy0 = Hh / 2, R0 = Math.min(W, Hh) * 0.47, k = 0;
@@ -1022,12 +1121,27 @@
     li.hidden = !x;
     if (x) li.firstChild.textContent = x.name;
   }
+  /* A new technique (sup: true) not yet unlocked on this device: the practice itself, or the one chosen to
+     begin it (noPre: carrying on from that, or from a draft, which skips it). null when it can start. */
+  function pSupWho(d, noPre) {
+    if (supLocked(d)) return d;
+    var pre = noPre ? "" : pChoice(d, "pre"), x = pre && pDef(pre);
+    return x && !x.choices && supLocked(x) ? x : null;
+  }
   // again: a restart, which keeps the pace and beat you set while it ran and skips the cautions you've already confirmed
   function pStart(again) {
     var d = P.view, resume = P.resume;                 // resume: a reflection's draft to carry on from (nvcDraftResume)
     P.resume = null;
     if (!d) return;
+    // every start comes through here: Start, a draft carried on, the end screen's Continue (a restart is already running)
+    var lk = again !== true && pSupWho(d, P.chainGo || !!resume), cg = P.chainGo;
+    if (lk) {
+      P.chainGo = false;
+      supGate(lk.name, function () { if (P.view !== d) return; P.resume = resume; P.chainGo = cg; pStart(again); });
+      return;
+    }
     if (d.confirm && again !== true && !$("#sOk").checked) { $("#sOk").focus(); return; }
+    if (ibCapStop(d, again)) return;                   // today's Wim Hof rounds are done (care.js)
     /* A practice can begin with another, chosen on its page ("Begin with", choice "pre"): that one runs
        first, and its end screen leads on to this one (P.chain). Carrying on (P.chainGo) or a restart skips it. */
     var cont = P.chainGo, pre = again !== true && !cont && !resume ? pChoice(d, "pre") : "";
@@ -1039,18 +1153,30 @@
       P.len = pLenOf(d, parseInt(store.get("pLen." + d.id), 10) || 0);
       try { history.replaceState(null, "", "#practice/" + d.id); } catch (e) {}   // the address names what runs
     }
+    motStillAsk(d);                                    // motion access for Stillness, in this tap (motion.js)
     var go = function () {
       if (pBusy()) pFinish(true, true);
       if (again !== true) { P.paceK = 1; P.beatAdj = 0; P.beatOff = false; }
       P.def = d;
+      if (again !== true) P.ci = cont ? ciCarry() : d.stress ? null : ciTake("practice");     // how you were as it began: your check-in, or the end screen's before it (own.js)
+      if (again !== true && pMoodOwn(d)) P.ci = null;  // a practice that rates your mood itself has its own before and after
       P.opt = pOptsOf(d.id); P.optFor = d.id;          // this practice's options, with its own changes
+      P.xp = xpFor(d); xpApply();                      // a personal experiment's way of doing it this time (own.js)
+      scnStart(d);                                     // and the scene it shows, if any (scenes.js)
+      motStillStart(d);                                // and how still you stay, if it notes that (motion.js)
       if (B.finder) finderCancel();
       if (B.state === "running" || B.state === "paused") bStop();    // the viewer's own breathing session
       var plan = pPlan(d, P.len);
       P.steps = plan.steps; P.total = plan.total; P.base = plan.base; P.runLen = P.len;
+      eyStart(d, plan.steps);                        // the eyes-closed cue, or the gaze point, if chosen (eyes.js)
       P.hasRhy = pPlanHasRhy(plan.steps);
       if (P.hasRhy) amNeed(["rhy"]);                 // render the berimbau ahead of the first capoeira step
+      ntStart(plan.steps);                           // and a step's own nature sound ahead of its scene (nature.js)
+      $("#ses").dataset.bare = "";
       P.hr = []; P.coh = []; P.sw = []; P.wander = 0; P.used = {}; P.idx = -1; P.chipsHtml = null; P.holds = []; P.holdRec = -1; P.suds = []; P.sudsBy = {}; P.rated = -1;
+      P.eeg = []; egLedReset();                        // the headband's record and Brain-Led Beats' rest (eeg.js)
+      oxReset();                                       // the holds an oximeter ended (air.js)
+      coldReset();                                     // the seconds of cold, counted afresh (cold.js)
       pAdaptReset(); napReset(); scReset(); P.nvc = nvcNew(); P.draftLive = false;
       P.state = "running"; P.st = 0; P.t0 = bNow(); P.startedAt = Date.now();
       ensureCtx(); pBusOn();
@@ -1058,6 +1184,7 @@
         load(pBeatTrack(d));
         P.audioOn = true;
       } else P.audioOn = false;
+      P.bm = P.audioOn ? A.mode : "";
       P.audioHeld = false;
       $("#ses").dataset.state = "run";
       $("#sIntro").hidden = true; $("#sDone").hidden = true; $("#sRun").hidden = false;
@@ -1078,8 +1205,12 @@
       pLoop();
       ambSync();
     };
-    if (d.audio && P.opt.audio) gate(go); else go();
+    var begin = function () { if (d.audio && xpAudio(d, P.opt.audio)) gate(go, bmMode(pOptsOf(d.id).beatMode)); else go(); };    // on speakers there's no headphone check
+    // your check-in first, if you keep them (own.js): not on a restart, carrying on, a Stress Check, which asks its own,
+    // or a practice that rates your mood itself before and after (Laughter Break, Dance Break, with their mood check on)
+    if (again === true || cont || d.stress || pMoodOwn(d) || !ciBefore("practice", d.name, function () { if (P.view === d) begin(); })) begin();
   }
+  function pMoodOwn(d) { return !!(d.rate && d.rate.what === "mood" && pChoice(d, "mood") !== "off"); }
   function pPause() {
     if (P.state !== "running") return;
     P.st = pT();
@@ -1089,6 +1220,9 @@
     if (pTrack() && A.playing) { pause(); P.audioHeld = true; }
     rhyStop(0.3);
     napWakeStop();
+    vxHush();
+    tcHush();
+    coldHush();
     pHush();
     pUnlock();
     pUI();
@@ -1118,6 +1252,7 @@
     }
     else target = ((T - P.steps[i].at > 3 && P.steps[i].k !== "write") || i === 0) ? P.steps[i].at : P.steps[i - 1].at;   // writing: back means the step before
     pHoldLeave(T);
+    coldJump(T, target);                               // the cold you stayed for, not the part skipped (cold.js)
     if (P.state === "running") P.t0 = bNow() - target; else P.st = target;
     pHush();
     // a jump into a different breath pattern restarts the guide so it doesn't wait for the breath to end
@@ -1138,6 +1273,9 @@
     pHush();
     rhyStop();
     napWakeStop();
+    vxHush();
+    tcHush();
+    coldHush();
     P.mv = null;
     if (pTrack()) {
       var trk = A.track;
@@ -1152,6 +1290,7 @@
     pUnlock();
     P.state = "done";
     $("#ses").dataset.dim = "";
+    $("#ses").dataset.bare = "";
     var asleep = P.steps.length && pSleepyStep(P.steps[P.steps.length - 1]);     // a practice that ends in sleep ends without bells
     if (!early && !quiet && !asleep) {
       pBell(0.5);
@@ -1182,10 +1321,16 @@
     if (d.id === "anapana") r.wander = P.wander;
     if (P.holds.length) r.holds = P.holds.slice();
     if (P.suds.length) r.suds = P.suds.slice();
+    r.ci = P.ci || null;                               // your check-in as it began, for the end screen's after (own.js)
     var bl = AD.log.filter(function (x) { return x.src !== "base"; });
-    if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatLog = AD.log.slice(); }
+    if (bl.length > 2) { r.beat0 = AD.log[0].hz; r.beat1 = bl[bl.length - 1].hz; r.beatHeart = bl.some(function (x) { return x.src === "heart"; }); r.beatBrain = bl.some(function (x) { return x.src === "brain"; }); r.beatLog = AD.log.slice(); }
+    if (P.bm && P.bm !== "binaural") r.bm = P.bm;     // its beat played monaural or isochronic (beatmode.js)
     napSummary(r, T);
     stressSummary(r, T);
+    coldSummary(r, T);                                 // the seconds of cold you stayed for (cold.js)
+    motStillSummary(r);                                // how still you stayed (motion.js)
+    egSummary(r, T);                                   // a headband's alpha and theta, first minute to last two (eeg.js)
+    oxSummary(r);                                      // the holds an oximeter ended, and at what (air.js)
     if (d.reflect) {                                   // what you wrote stays out of the shared summary text
       r.nvc = nvcSummary(nvcKindOf(d));
       if (r.nvc && P.opt.nvcSave) nvcKeep(r.nvc);
@@ -1198,21 +1343,34 @@
     if (r.wander !== undefined) notes.push("came back " + r.wander + (r.wander === 1 ? " time" : " times"));
     if (r.holds) notes.push("holds " + r.holds.map(fmt).join(", "));
     if (r.suds) notes.push((d.rate ? d.rate.what : "intensity") + " " + r.suds.join(" → ") + " of 10");
-    if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart ? "" : " (scripted)"));
+    if (r.beat0) notes.push("beat " + r.beat0.toFixed(1) + " → " + r.beat1.toFixed(1) + " Hz" + (r.beatHeart || r.beatBrain ? "" : " (scripted)"));
+    if (egNote(r)) notes.push(egNote(r));
+    if (oxNote(r)) notes.push(oxNote(r));
     if (r.stress && scNote(r.stress)) notes.push(scNote(r.stress));
+    if (r.cold) notes.push(r.cold + " s of cold");
+    if (r.still && !r.still.none) notes.push("still " + r.still.pct + "%");
     if (r.nap) notes.push(r.nap.onset !== null ? "asleep after about " + r.nap.onset + " min, about " + r.nap.slept + " min of sleep (est.)" : r.nap.sensor ? "no sleep detected" : "no heart data");
+    // fast breathing that ran: an hour's rest before the next block, and Wim Hof's rounds for the day (care.js)
+    var ib = P.steps.filter(function (s) { return ibStep(s) && s.at < T; }).length;
+    if (ib) { r.ib = true; ibEnded(d.name); }
     if (T >= 60) r.at = Date.now();                    // the end screen tells this one from the earlier ones by it
-    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg,
+    if (T >= 60) hAdd({ k: "practice", id: d.id, n: d.name, at: r.at, secs: r.secs, full: !early, hr0: r.hr0, hr1: r.hr1, hrAvg: r.hrAvg, ib: r.ib, wh: d.id === "wim-hof" && ib ? ib : undefined,
       coh: r.coh && !r.stress ? +r.coh.toFixed(2) : undefined, swing: r.swing ? +r.swing.toFixed(1) : undefined,   // a check's coherence is at rest, unpaced: kept out of the trends
       rm: r.stress && r.stress.ok && r.stress.full ? +r.stress.rm.toFixed(1) : undefined, felt: r.stress && r.stress.self !== null ? r.stress.self : undefined,
-      note: notes.join(", ") || undefined });
+      bm: r.bm, cold: r.cold, still: r.still && !r.still.none ? r.still.pct : undefined,
+      alpha: r.eeg && !r.eeg.none ? r.eeg.da : undefined, theta: r.eeg && !r.eeg.none ? r.eeg.dt : undefined,
+      mood0: r.ci && ciNum(r.ci.m) ? r.ci.m : undefined, str0: r.ci && ciNum(r.ci.s) ? r.ci.s : undefined,     // your check-in before it (own.js)
+      xid: P.xp ? P.xp.id : undefined, xv: P.xp ? P.xp.v : undefined, note: notes.join(", ") || undefined });     // a personal experiment's session (own.js)
     return r;
   }
   /* ----- the session screen: intro ----- */
   function pNeeds(d) {
-    if (d.needs) return d.needs;
+    // a monaural or isochronic beat plays on speakers too (beatmode.js), unless the practice needs headphones anyway (phonesOnly: a call)
+    var bin = !d.audio || bmMode(pOptsOf(d.id).beatMode) === "binaural", spk = function (s) { return s.replace(/binaural /g, ""); };
+    if (d.needs) return bin || d.phonesOnly ? d.needs : d.needs.map(function (x) { return x[0] === "sounds" && x[1] === "Headphones" ? [x[0], "Speakers or headphones", spk(x[2])] : x; });
     var n = [];
-    if (d.audio) n.push(["sounds", "Headphones", d.phonesWhy || (d.opt && d.opt.audio === false ? "only if you add a binaural beat" : "for the binaural layer")]);
+    if (d.audio) n.push(["sounds", bin ? "Headphones" : "Speakers or headphones", d.phonesWhy ? (bin ? d.phonesWhy : spk(d.phonesWhy))
+      : d.opt && d.opt.audio === false ? "only if you add a " + (bin ? "binaural " : "") + "beat" : bin ? "for the binaural layer" : "for the beat"]);
     if (d.sensor === "best") n.push(["pulse", "Heart sensor", d.sensorWhy || "recommended: live heart rate and coherence"]);
     else if (d.sensor === "optional" || pHasBreath(d)) n.push(["pulse", "Heart sensor", d.sensor === "optional" && d.sensorWhy || "optional: adds heart rate and coherence"]);
     if (d.lie) n.push(["moon", "Lying down", "or sitting back, somewhere you can rest"]);
@@ -1244,15 +1402,39 @@
       return '<li data-k="' + r.k + '"><span>' + esc(r.title) + "</span><time>" + (d.selfPaced && r.k === "write" ? "your pace" : fmt(r.secs)) + "</time></li>";
     }).join("");
   }
+  // the Start button: "Start 10 min", or for a new technique not yet unlocked on this device, the way to unlock it
+  function pGoHtml(d, plan) {
+    return pSupWho(d) ? '<svg class="i ic-stroke" aria-hidden="true"><use href="#i-cup"/></svg>Unlock to start'
+      : '<svg class="i" aria-hidden="true"><use href="#i-play"/></svg>' + pGoTxt(d, plan);
+  }
+  function pGoSync(d, plan) {
+    var go = $("#sGo"), ok = $("#sOk"), note = $("#sSupNote"), lk = !!pSupWho(d);
+    if (!go) return;
+    go.innerHTML = pGoHtml(d, plan);
+    go.disabled = !!d.confirm && !lk && !(ok && ok.checked);      // locked, it opens the way to unlock it, cautions or not
+    if (note) note.hidden = !lk;
+  }
   function pIntroReplan(d) {
     if (P.view !== d) return;
-    var el = $("#sIntro"), plan = pPlan(d, pLenOf(d, P.len)), go = $("#sGo");
+    var el = $("#sIntro"), plan = pPlan(d, pLenOf(d, P.len));
     bSetT("#sIntro .si-kind", pKindTxt(d, plan));
     el.querySelector(".si-tl").innerHTML = pSegsHtml(d, plan);
     el.querySelector(".si-steps").innerHTML = pStepsHtml(d, plan);
-    if (go) go.lastChild.textContent = pGoTxt(d, plan);
+    pGoSync(d, plan);
     pPreRow(d);
+    pCareSync(d, plan);
+    if (d.optSync) d.optSync(d);                     // a practice's own row in Options (Soothing Touch's real size)
+    pChoiceCups(d);                                  // and its options that are new techniques, after an unlock
   }
+  // your health check's caution, and a block of fast breathing within the hour or today's rounds (care.js)
+  function pCareSync(d, plan) {
+    var hs = $("#sIntro .hc-slot"), nt = $("#sIbNote"), t = pCareNote(d, plan), h = hcSlot(d);
+    if (hs && hs.innerHTML !== h) hs.innerHTML = h;
+    if (nt) { nt.hidden = !t; bSetT("#sIbNote", t); }
+    xpBarSync(d);                                    // a personal experiment's way this time (own.js)
+  }
+  // above Start: rest between blocks of fast breathing (care.js), and a practice's own (Cold Finish after fast breathing)
+  function pCareNote(d, plan) { return [ibNote(d, plan), d.careNote ? pFn(d.careNote, d) : ""].filter(Boolean).join(" "); }
   function pIntro(id) {
     var d = pDef(id);
     if (!d) { location.hash = "practice"; return; }
@@ -1268,14 +1450,16 @@
       if (!pChoiceShown(d, c)) return;
       var v = pChoice(d, c.key), note = pFn(c.note, d);
       opts.push('<div class="so-row so-seg"><span class="so-l">' + esc(c.label) + (note ? "<small>" + esc(note) + "</small>" : "") + '</span><div class="mini-seg" data-choice="' + c.key + '">' +
-        c.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (v === o[0]) + '">' + esc(o[1]) + "</button>"; }).join("") + "</div></div>");
+        c.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (v === o[0]) + '">' + esc(o[1]) + (pChoiceSup(c, o[0]) ? supTag(true) : "") + "</button>"; }).join("") + "</div></div>");
     });
+    if (d.optHtml) opts.push(d.optHtml(d));          // a row of its own (Soothing Touch's real size, touch.js)
     if (d.audio && d.beats) {
       var bt = pBeat(d);
       opts.push('<div class="so-row so-seg so-beat"><span class="so-l">Binaural beat<small id="sBeatNote">' + esc(pBeatNote(d, O)) + '</small></span><div class="mini-seg" id="sOptBeat">' +
         [["off", "Off"]].concat(d.beats.map(function (b) { return [b.id, b.label]; })).map(function (o) {
           return '<button data-v="' + o[0] + '" aria-pressed="' + (o[0] === "off" ? !O.audio : O.audio && bt.id === o[0]) + '">' + esc(o[1]) + "</button>";
         }).join("") + "</div></div>");
+      opts.push(pBmRow(O));
     }
     if (d.pace) {
       var pc = pPace(d), step = function (k, label, what) {
@@ -1288,7 +1472,11 @@
     }
     opts.push(pToggle("sOptVoice", "Spoken guidance", O.voice, window.speechSynthesis ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !window.speechSynthesis));
     opts.push(pToggle("sOptBells", "Bells between steps", O.bells, ""));
-    if (d.audio && !d.beats) opts.push(pToggle("sOptAudio", "Binaural layer", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. Headphones needed."));
+    if (d.audio && !d.beats) {
+      opts.push(pToggle("sOptAudio", bmMode(O.beatMode) === "binaural" ? "Binaural layer" : "Beat", O.audio, esc(d.audio.band) + ", " + d.audio.carrier + " Hz carrier. " + pBmNeed(O)));
+      opts.push(pBmRow(O));
+    }
+    if (!d.music && !d.noMus) opts.push(pMusRow(O));      // music made on the device, kept for this practice (music.js)
     if (hasRhy) opts.push(pToggle("sOptRhy", "Berimbau", O.rhythm, "A synthesised berimbau keeps time for the capoeira moves."));
     var hasTap = d.tapping || tapOffered(d);
     if (!d.tapping && tapOffered(d)) opts.push(pToggle("sOptTap", "Finish with tapping", tapOn(d), "A short round of tapping on the nine points at the end, about three minutes."));
@@ -1299,7 +1487,7 @@
     }
     if (d.variant) opts.push('<div class="so-row so-seg"><span class="so-l">' + d.variant.label + '</span><div class="mini-seg" id="sOptVar">' +
       d.variant.opts.map(function (o) { return '<button data-v="' + o[0] + '" aria-pressed="' + (pVar(d) === o[0]) + '">' + o[1] + "</button>"; }).join("") + "</div></div>");
-    if (d.method === "program") opts.push('<div class="so-row so-seg so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
+    if (d.method === "program" && !d.noAna) opts.push('<div class="so-row so-seg so-ana"><span class="so-l">Anapana reminders<small>Now and then, a quiet prompt to observe the touch of the breath at the nostrils.</small></span><div class="mini-seg" id="sOptAna">' +
       [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]].map(function (o) {
         return '<button data-v="' + o[0] + '" aria-pressed="' + (O.ana === o[0]) + '">' + o[1] + "</button>";
       }).join("") + "</div></div>");
@@ -1309,14 +1497,19 @@
           return '<button data-v="' + o[0] + '" aria-pressed="' + (O.cues === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
       if (bzOk()) opts.push(pToggle("sOptBuzz", "Vibrate with the breath", O.buzz, "A short buzz to breathe in, a long one to breathe out, two taps for a hold."));
-      opts.push('<div class="so-row so-seg"><span class="so-l">Breath visual</span><div class="mini-seg" id="sOptVis">' +
+      if (plan.steps.some(function (s) { return s.k === "breath" && !s.pose; })) opts.push('<div class="so-row so-seg"><span class="so-l">Breath visual</span><div class="mini-seg" id="sOptVis">' +
         [["circle", "Circle"], ["wave", "Wave"], ["column", "Column"], ["dial", "Dial"]].map(function (o) {
           return '<button data-v="' + o[0] + '" aria-pressed="' + (O.visual === o[0]) + '">' + o[1] + "</button>";
         }).join("") + "</div></div>");
     }
+    if (scnFits(d)) opts.push(scnRow(O));               // a scene to watch, kept for this practice: with a donation while locked (scenes.js)
+    if (eyGazeFits(d)) opts.push(eyGazeRow(O));         // a point to rest your eyes on, in a focus practice: with a donation while locked (eyes.js)
+    if (ltFits(d)) opts.push(ltRow(O));                 // the screen light, kept for this practice: with a donation while locked (light.js)
+    if (motStillFits(d)) opts.push(motStillRow(O));     // how still you stay, from the motion sensor, lying down: with a donation while locked (motion.js)
+    if (eyFits(d)) opts.push(eyCueRow(O));              // the eyes-closed cue, in a relaxation practice: with a donation while locked (eyes.js)
     // the same in every session: which voice, the sound underneath, and what's kept of a reflection
     if (window.speechSynthesis) every.push('<div class="so-row so-voice" id="sVoiceRow"' + (O.voice ? "" : " hidden") + '><span class="so-l">Voice</span><select id="sVoiceSel" aria-label="Voice"></select><button class="btn small" id="sVoiceTest">Test</button></div>');
-    every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, made on your device.</small></span>' + ambCtl() + "</div>");
+    every.push('<div class="so-row so-amb"><span class="so-l">Background sound<small>Rain or crickets under the session, and birdsong, a stream, wind or a fire to add, made on your device.</small></span>' + ambCtl(true) + "</div>");   // its music is a row of its own above
     if (d.reflect) every.push(pToggle("sOptKeep", "Keep a copy on this device", O.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing."));
     var openOpts = store.get("optsOpen") === "1";
     var other = pBusy() && P.def !== d;
@@ -1340,15 +1533,21 @@
         }).join("") + "</ul>" : "") +
         "<h3>How it runs</h3><p>" + esc(d.how || pYogaHow(plan)) + "</p>" +
         '<h3 class="si-plate-h">On the plate</h3><ol class="si-steps">' + pStepsHtml(d, plan) + "</ol>" +
+        (d.tip ? '<p class="si-tip"><b>' + esc(d.tip[0]) + "</b> " + esc(d.tip[1]) + (d.tip[2] ? ' <a href="' + d.tip[2] + '">' + esc(d.tip[3]) + "</a>" : "") + "</p>" : "") +
+        aqSlot(aqPracKinds(d, plan)) +              // air the room, the scent and gum tips, the oximeter on holds (air.js)
         (d.reflect ? nvcJournal(d) : "") +
         '<details class="ev si-ev"><summary>Evidence ' + dots(d.strength) + '</summary><div class="ev-body">' + esc(d.ev) + "<cite>" + esc(d.cite) + "</cite></div></details>" +
-        (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its binaural beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
+        (d.caution || d.audio ? safeBox([d.caution, d.audio ? "About its " + (bmMode(O.beatMode) === "binaural" ? "binaural " : "") + "beat: " + SAFE_BEATS.charAt(0).toLowerCase() + SAFE_BEATS.slice(1) : ""]) : "") +
+        '<div class="hc-slot">' + hcSlot(d) + "</div>" +
       "</div>" +
       '<div class="si-side">' +                     // Start first: above the options on a computer, last on a phone (order)
       '<div class="si-bar">' +
-        (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> None of the cautions apply to me</label>' : "") +
+        (d.confirm ? '<label class="so-ok"><input type="checkbox" id="sOk"> ' + (hcCaution(hcKindsOf(d)) ? "I've read the cautions, and I choose to go ahead" : "None of the cautions apply to me") + "</label>" : "") +
         (other ? '<p class="si-other">' + esc(P.def.name) + " is running. Starting this ends it.</p>" : "") +
-        '<button class="btn primary si-go" id="sGo"' + (d.confirm ? " disabled" : "") + '><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>' + pGoTxt(d, plan) + "</button>" +
+        '<p class="si-ib" id="sIbNote"' + (pCareNote(d, plan) ? "" : " hidden") + ">" + esc(pCareNote(d, plan)) + "</p>" +
+        xpBar(d) +                                  // a personal experiment's way this time (own.js)
+        '<button class="btn primary si-go" id="sGo"' + (d.confirm && !pSupWho(d) ? " disabled" : "") + ">" + pGoHtml(d, plan) + "</button>" +
+        '<p class="si-bar-note" id="sSupNote"' + (pSupWho(d) ? "" : " hidden") + ">" + SUP_NOTE + "</p>" +
       "</div>" +
       '<aside class="si-opts">' + (d.reflect ? nvcDraftStrip(d) : "") +     // first thing on a phone, beside the steps on a computer
         '<button class="so-sum" id="sOptsBtn" aria-expanded="' + openOpts + '" aria-controls="sOpts"><span class="so-sum-t"><b>Options</b>' +
@@ -1381,7 +1580,21 @@
   }
   // what the chosen beat is, or that there's none
   function pBeatNote(d, O) {
-    return O.audio ? pFn(pBeat(d).note, d) + " " + d.audio.carrier + " Hz carrier. Headphones needed." : "No beat: the guidance and breath cues only.";
+    return O.audio ? pFn(pBeat(d).note, d) + " " + d.audio.carrier + " Hz carrier. " + pBmNeed(O) : "No beat: the guidance and breath cues only.";
+  }
+  // what the beat needs, the way it plays (beatmode.js)
+  function pBmNeed(O) {
+    var m = bmMode(O.beatMode);
+    return m === "binaural" ? "Headphones needed." : m === "monaural" ? "Monaural: speakers or headphones." : "Isochronic: speakers or headphones.";
+  }
+  // the Sound row under a practice's beat: binaural, monaural or isochronic, kept for this practice
+  function pBmRow(O) {
+    return '<div class="so-row so-seg so-bm"><span class="so-l">Sound<small>' + BM_NOTE + "</small></span>" + bmSeg("sOptMode", bmMode(O.beatMode), "prac") + "</div>";
+  }
+  // the Music row: off, matched to what the practice is for, or a tempo, kept for this practice; the cups while this device is locked
+  function pMusRow(O) {
+    return '<div class="so-row so-seg so-mus"><span class="so-l">Music<small>' + MUS_NOTE + " Your choice for every session, unless you keep one for this practice.</small></span>" +
+      musSeg("sOptMus", musShown(O.music), "prac") + "</div>";
   }
   // the optimal default is your own resonance rate: the test's answer, or 5.5 a minute, the usual one, until you take it
   function pPaceNote(pc) {
@@ -1399,11 +1612,17 @@
     s.push(O.voice && window.speechSynthesis ? "Voice" : "No voice");
     if (O.bells) s.push("Bells");
     if (d.audio) s.push(O.audio ? (d.beats ? pBeat(d).label : "Binaural") : "No beats");
+    if (d.audio && O.audio && bmMode(O.beatMode) !== "binaural") s.push(bmMode(O.beatMode) === "monaural" ? "Monaural" : "Isochronic");
+    if (!d.music && !d.noMus && musShown(O.music) !== "off") s.push(MUS_SHORT[O.music]);
+    if (scnFits(d) && scnShown(O.scene) !== "off") s.push(scnOptName(O.scene));
+    if (ltFits(d) && ltShown(O.light) !== "off") s.push(LT_KINDS.filter(function (k) { return k[0] === O.light; })[0][1] + " light");
+    if (motStillFits(d) && O.still && supOn()) s.push("Stillness");
+    eyOptSum(d, O, s);                                     // the eyes-closed cue and the gaze point (eyes.js)
     if (hasRhy && O.rhythm) s.push("Berimbau");
     if (!d.tapping && tapOffered(d) && tapOn(d)) s.push("Tapping");
     if (d.method === "program" && O.ana) s.push("Anapana every " + O.ana / 60 + " min");
     if (O.buzz && bzOk() && pPlan(d, pLenOf(d, P.len)).steps.some(function (x) { return x.k === "breath"; })) s.push("Vibration");
-    if (AMB.kind !== "off") s.push(AMB.kind === "night" ? "Rain and crickets" : AMB.kind === "rain" ? "Rain" : "Crickets");
+    if (ambSig()) s.push(ambName());
     return s.join(" · ");
   }
   function pYogaHow(plan) {
@@ -1440,6 +1659,11 @@
       g.addEventListener("click", function (e) {
         var b = e.target.closest("button"); if (!b) return;
         var k = g.dataset.choice, c = (d.choices || []).filter(function (x) { return x.key === k; })[0] || {};
+        if (pChoiceLk(c, b.dataset.v)) {              // a new technique: the way to unlock it first, then it's chosen
+          var pick = function () { if (P.view !== d || !b.isConnected) return; b.click(); };
+          supGate(c.supName || d.name, pick, function (ok) { if (ok) pick(); });
+          return;
+        }
         pChoiceSet(d, k, b.dataset.v);
         if (c.resets || c.redraw) {                   // a sport brings back its own settings; other choices appear or go
           if (c.resets) { var o = pChoices(d.id); c.resets.forEach(function (r) { delete o[r]; }); store.set("pCh." + d.id, JSON.stringify(o)); }
@@ -1461,6 +1685,49 @@
       save(); press(bg, b);
       bSetT("#sBeatNote", pBeatNote(d, O));
     });
+    // the beat's sound, kept for this practice: a speaker way opens with a donation (beatmode.js); the page then says
+    // what it needs, its beat note and its caution for the way it plays
+    var mg = $("#sOptMode");
+    if (mg) mg.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-bm]"); if (!b) return;
+      bmPick(b.getAttribute("data-bm"), function (m) {
+        if (P.view !== d) return;
+        O.beatMode = m; save();
+        pIntro(d.id);
+        var nb = document.querySelector('#sOptMode button[data-bm="' + m + '"]');
+        if (nb) nb.focus();
+      });
+    });
+    // music, kept for this practice: picking it opens with a donation while this device is locked (music.js)
+    var mu = $("#sOptMus");
+    if (mu) mu.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-mus]"); if (!b) return;
+      musPick(b.getAttribute("data-mus"), function (k) {
+        if (P.view !== d) return;
+        O.music = k; save(); musUI();
+      });
+    });
+    // a scene, kept for this practice: picking one opens with a donation while this device is locked (scenes.js)
+    var sg = $("#sOptScn");
+    if (sg) sg.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-scn]"); if (!b) return;
+      scnPickOpt(b.getAttribute("data-scn"), function (k) {
+        if (P.view !== d) return;
+        O.scene = k; save(); scnUI();
+        if (k === "fire") amNeed(["fire", "fireP"]);
+      });
+    });
+    // the screen light, kept for this practice: picking one opens with a donation while this device is locked (light.js)
+    var lg = $("#sOptLt");
+    if (lg) lg.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-lt]"); if (!b) return;
+      ltPick(b.getAttribute("data-lt"), function (k) {
+        if (P.view !== d) return;
+        O.light = k; save(); ltUI();
+      });
+    });
+    motStillWire(d, O, save);                          // Stillness, kept for this practice (motion.js)
+    eyOptWire2(d, O, save);                            // the eyes-closed cue and the gaze point, kept for this practice (eyes.js)
     var pg = $("#sOptPace");
     if (pg) {
       var paceUI = function () {
@@ -1504,7 +1771,7 @@
     });
     var ph = $("#sTapPhrase");
     if (ph) ph.addEventListener("input", function () { store.set("tapPhrase", this.value.trim()); });
-    on("#sOk", function () { $("#sGo").disabled = !this.checked; });
+    on("#sOk", function () { $("#sGo").disabled = !this.checked && !pSupWho(d); });
     var dg = $("#sDraftGo"), dd = $("#sDraftDel");
     if (dg) dg.addEventListener("click", function () { P.resume = nvcDraftGet(d.id); pStart(); });
     if (dd) dd.addEventListener("click", function () {     // two taps, like End: a discarded draft is gone
@@ -1539,7 +1806,7 @@
       toast("These are now the options for every practice that hasn't set its own.");
     });
     reset.addEventListener("click", function () { storeDel("pOpt." + d.id); pIntro(d.id); });
-    $("#sOpts").addEventListener("click", function (e) { if (e.target.closest("[data-amb]")) setTimeout(sum, 0); });
+    $("#sOpts").addEventListener("click", function (e) { if (e.target.closest("[data-amb], [data-amb-add]")) setTimeout(sum, 0); });
     [["#sOptCues", "cues"], ["#sOptVis", "visual"], ["#sOptAna", "ana"], ["#sOptVar", "var"]].forEach(function (p) {
       var g = $(p[0]);
       if (!g) return;
@@ -1596,6 +1863,10 @@
     ambUI();
     $("#sqVolRow").hidden = !P.audioOn;
     $("#sqVol").value = $("#vol").value;
+    var bin = bmMode(P.opt.beatMode) === "binaural";     // names for screen readers that match the way the beat plays
+    pAttr($("#sqVol"), "aria-label", bin ? "Binaural volume" : "Beat volume");
+    pAttr($("#sAdjBt"), "aria-label", bin ? "Binaural beat" : "Beat");
+    pAttr($("#sAdjBtOn"), "aria-label", bin ? "Binaural beat" : "Beat");
     $("#sqRestart").hidden = !!(P.def && P.def.reflect);       // a reflection would lose what you've written
     pAdjUI();
   }
@@ -1603,6 +1874,7 @@
     var on = curView === "session" && pBusy();
     document.body.classList.toggle("immersive", on);
     themeSync();                                       // a practice for sleep turns the bedtime colours on
+    ltSync();                                        // the screen light, while a practice runs on screen or Breathe is open (light.js)
   }
   function pPill() {
     var pill = $("#tbPrac");
@@ -1636,15 +1908,18 @@
     [17, "Dinner", "coherence", "Heart-focused breathing at your resonance pace, with live coherence."],
     [21, "Late night", "sleep-descent", "Slow breathing that fades into a delta beat as you fall asleep."]
   ];
+  // the service on now, by your body clock
+  function pServiceNow() { return pService(Math.floor(ltClock(ltHour()))); }
   function pService(hr) {                      // late night runs on past midnight, until breakfast at 5
     for (var i = SERVICES.length - 1; i >= 0; i--) if (hr >= SERVICES[i][0]) return i;
     return SERVICES.length - 1;
   }
   function pHourTxt(h) { return h === 12 ? "noon" : (h % 12 || 12) + (h < 12 ? " am" : " pm"); }
   function pSuggest() {
-    var hr = new Date().getHours(), at = pService(hr), sv = SERVICES[at], nx = SERVICES[(at + 1) % SERVICES.length];
+    var hr = Math.floor(ltClock(ltHour())), now = new Date().getHours();   // the hour by your body clock: a morning person's an hour on (light.js)
+    var at = pServiceNow(), sv = SERVICES[at], nx = SERVICES[(at + 1) % SERVICES.length];
     var d = pDef(sv[2]), it = libItem(d.id), O = pOptsOf(d.id), dn = pDef(nx[2]);
-    bSetT("#tdHello", hr >= 5 && hr < 12 ? "Good morning." : hr >= 12 && hr < 17 ? "Good afternoon." : hr >= 17 && hr < 21 ? "Good evening." : "Still up?");
+    bSetT("#tdHello", now >= 5 && now < 12 ? "Good morning." : now >= 12 && now < 17 ? "Good afternoon." : now >= 17 && now < 21 ? "Good evening." : "Still up?");
     bSetT("#sgWhen", "Now serving · " + sv[1]);
     bSetT("#sgName", d.name);
     bSetT("#sgMeta", [pMinutes(d) + " min", it ? libPos(it) : ""].filter(Boolean).join(" · "));
@@ -1662,6 +1937,7 @@
     var rt = hr >= 5 && hr < 9 ? ["morning", "Your morning routine"] : hr >= 9 && hr < 17 ? ["daytime", "Screen breaks through the day"] : ["evening", "Your evening routine"];
     var a = $("#sgRt");
     if (a) { a.href = "#living/" + rt[0]; bSetT("#sgRt", rt[1]); }        // the routine for this time of day, in Healthy living
+    slpLink(hr);                                                            // and Sleep sounds, in the evening and at night
   }
 
   function pSleepyStep(s) { return !!s.sleepy || s.k === "drift" || s.k === "nap" || (s.k === "shuffle" && !s.awake); }   // awake: words to play with, not to sleep by
@@ -1739,10 +2015,7 @@
       P.opt.rhythm = !P.opt.rhythm; pSaveOpt(); pQuickSync();
       if (P.state === "running") pRhythm(P.steps[P.idx], pT());
     });
-    $("#sqAmb").addEventListener("click", function () {      // cycles: off, rain, crickets, both
-      var ks = AMB_KINDS.map(function (k) { return k[0]; });
-      ambSet(ks[(ks.indexOf(AMB.kind) + 1) % ks.length], true);
-    });
+    $("#sqAmb").addEventListener("click", ambCycle);      // cycles: off, rain, crickets, both, then each nature sound once unlocked
     $("#sqVol").addEventListener("input", function () {
       var v = $("#vol");
       v.value = this.value;
@@ -1766,5 +2039,8 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, BCOL: BCOL, THEME: THEME, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, BCOL: BCOL, THEME: THEME, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList,
+      SUP: SUP, supOn: supOn, supKept: supKept, supRefresh: supRefresh, supDevice: supDevice, FD: FD,
+      aVoices: aVoices, bmMode: bmMode, bmStored: bmStored, aBeat: aBeat, pBeatStep: pBeatStep, enterTask: enterTask, beatPlaying: beatPlaying, SUP_EXTRA: SUP_EXTRA,
+      amRender: amRender, amNeed: amNeed, AMB_ADD: AMB_ADD, ambSig: ambSig, ambCur: ambCur, SLP: SLP, SLP_SOUNDS: SLP_SOUNDS, slpLevel: slpLevel, slpFade: slpFade, slpNight: slpNight };   // for automated tests only
   }

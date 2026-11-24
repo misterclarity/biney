@@ -30,6 +30,7 @@
           </div>
           <p class="sg-next"><span id="sgNextWhen"></span><b id="sgNextName"></b></p>
           <a class="sg-rt" id="sgRt" href="#living/morning">Your morning routine</a>
+          <a class="sg-rt" id="sgSnd" href="#sleep-sounds" hidden>Sleep sounds, fading out</a>
         </section>
 
         <!-- your breathing pattern, ready to start: from the breath bar -->
@@ -46,6 +47,11 @@
           <div class="home-wave night" aria-hidden="true"><canvas id="homeWave"></canvas></div>
         </div>
 
+        <div class="install hc-offer" id="tdHealth" hidden>
+          <span class="inst-ic">{i:heart}</span>
+          <div class="inst-txt"><b>A short health check</b><span>Nine yes-or-no questions, so the practices that could affect you show a caution written for you. Optional, and kept on this device.</span></div>
+          <div class="inst-act"><a class="btn primary small" id="tdHealthGo" href="#st-health">Take it</a><button class="btn small" id="tdHealthLater">Not now</button></div>
+        </div>
         <section class="td-card td-check" aria-labelledby="tdCheckH">
           <span class="plate">{i:pulse}</span>
           <div class="tc-t">
@@ -66,6 +72,23 @@
           <div id="tdRecentBody"></div>
         </section>
 
+        <div class="install rh-offer" id="tdRhOffer" hidden>
+          <span class="inst-ic">{i:today}</span>
+          <div class="inst-txt"><b>A daily rhythm</b><span>Three short sessions spread through the day: morning energy, a midday reset and an evening wind-down, ticked off as you do them. How often you practise matters more than how long.</span></div>
+          <div class="inst-act"><button class="btn primary small" id="tdRhGo">Set it up</button><button class="btn small" id="tdRhLater">Not now</button></div>
+        </div>
+
+        <section class="td-sec" id="tdRhythm" aria-labelledby="tdRhythmH" hidden>
+          <div class="td-h"><h2 id="tdRhythmH">{i:today}Daily rhythm</h2><a class="td-more" href="#st-rhythm">Change</a></div>
+          <div id="tdRhythmBody"></div>
+        </section>
+
+        <section class="td-sec" id="tdCourse" aria-labelledby="tdCourseH" hidden>
+          <div class="td-h"><h2 id="tdCourseH">{i:breathe}Resonance course</h2><a class="td-more" href="#rcourse">Your weeks</a></div>
+          <div id="tdCourseBody"></div>
+        </section>
+
+
         <section class="td-sec" aria-labelledby="tdGoalsH">
           <div class="td-h"><h2 id="tdGoalsH">On the menu</h2><a class="td-more" href="#practice">Full menu</a></div>
           <div class="td-goals" id="tdGoals"></div>
@@ -85,13 +108,13 @@
         <div class="quick">
           <button class="qk" data-go="resonance-test" style="--qc:var(--hr)"><span class="qi">{i:target}</span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
           <button class="qk" data-go="heart" style="--qc:var(--accent)"><span class="qi">{i:pulse}</span><b id="qkSensorT">Heart sensor</b><span id="qkSensor">Not connected</span></button>
-          <button class="qk qk-wide" data-go="living" style="--qc:var(--food)"><span class="qi">{i:leaf}</span><b>Healthy living</b><span>Recipes, supplements, sleep habits, morning and evening routines, and light</span></button>
+          <button class="qk qk-wide" data-go="living" style="--qc:var(--food)"><span class="qi">{i:leaf}</span><b>Healthy living</b><span>Recipes, supplements, sleep habits, morning and evening routines, and light, cold and heat</span></button>
         </div>
 
         <div class="note-card td-safety">
           <h3>Before you start</h3>
           <ul class="safety">
-            <li>{i:sounds}<span><b>Use headphones for the beats.</b> On speakers the two tones mix in the air and the binaural beat disappears.</span></li>
+            <li>{i:sounds}<span><b>Use headphones for binaural beats.</b> On speakers the two tones mix in the air and the binaural beat disappears; a monaural or isochronic beat, under Sound, plays on speakers.</span></li>
             <li>{i:volume}<span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></li>
             <li class="warn">{i:warn}<span><b>Read the safety notes once.</b> Who should ask a doctor before using the beats or the breath holds, and how to wear headphones with a pacemaker. <button type="button" class="sf-link" data-safety="1">Safety notes</button></span></li>
           </ul>
@@ -104,7 +127,7 @@
 
         <div class="note-card donate-card td-donate">
           <span class="plate dc-jar">{i:jar}</span>
-          <p><b>Entrain is free and has no ads.</b> If it restores you, you can leave a tip in the jar.</p>
-          <a class="btn donate" href="https://ko-fi.com/misterclarity" target="_blank" rel="noopener">{i:cup}Leave a tip on Ko-fi</a>
+          <p><b>Entrain has no ads, and most of it is free.</b> The new techniques open with a donation of €1 or more on each device, and every donation keeps it going.</p>
+          <a class="btn donate" href="https://ko-fi.com/misterclarity" target="_blank" rel="noopener">{i:cup}Support Entrain on Ko-fi</a>
         </div>
       </section>

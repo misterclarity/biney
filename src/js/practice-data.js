@@ -11,11 +11,21 @@
        pmr      tense one muscle group, then release it
        drift    a soft glow while the sound carries on (sleep)
        hold     a breath hold: open (tap Breathe in, capped) or a fixed count
+       stroke   strokes along an arm on each breath out, following a gliding dot (touch.js)
+       massage  an area of the body map with its pressure and stroke (touch.js)
+       rotate   a point of the body named every few seconds and marked on the body map (yoga nidra, mind.js)
      Lengths are in seconds. `lines` are [offset, text] pairs, or plain strings spread
      evenly across the step; a third item marks an Anapana reminder ("ana", said softly) or a
      chime that sounds in place of the voice ("chime"). A step can end when you tap a button
      (endTap names it), dim the screen (dim), and put a line of its own under its name (sub). Programmes add `audio`: a binaural layer whose beat follows
      piecewise-linear points [[second, Hz], ...] across the whole programme.
+     A technique from the brain-wave guide carries `sup: true`: it opens with a donation, once on each
+     device (supporter.js), and every way to start it asks for that first; its page stays free to read.
+     Patterns in BREATHS and tracks in TRACKS take the same flag.
+     A page can add a tip, free to read ([lead, text, link, link text]), and a row of its own under
+     Options (optHtml, redrawn by optSync when the badges change). It can ask for the health check first
+     while it's unanswered (hcFirst, the offer's lead: care.js hcSlot), and add a note above Start (careNote).
+     `next` can be a function of the practice, and can give two suggestions.
   ------------------------------------------------------------------------------ */
 
   function pLines(lines, secs) {
@@ -234,7 +244,7 @@
     for (var r = 1; r <= rounds; r++) {
       var secs = 3 + breaths * cyc;
       st.push(Br(secs, "Round " + r + ": power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1, rest: 0 }, {
-        count: breaths, labels: { "in": "Breathe in fully", out: "Let go" },
+        count: breaths, ib: true, labels: { "in": "Breathe in fully", out: "Let go" },
         hints: { "in": "Belly, then chest.", out: "Let it fall out by itself." },
         lines: [[0, "Round " + num[r - 1] + ". " + breaths + " deep breaths. Fully in, and let go."],
           [Math.round(secs / 2), "Keep going. Fully in, let it go."], [Math.round(secs - 9), "Last few breaths."]] }));
@@ -668,7 +678,7 @@
         [frac(s[0], 0.4), "You'll set your breathing, see your session, and choose your words. Then you're ready" + (during ? " to start." : " to warm up.")]], { vis: "glow" }));
       if (pChoice(d, "breath") === "power") {
         var power = function (secs, first) {
-          return Br(secs, "Power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1.5, rest: 0 }, { lines: [[0, first ? "Quick, full breaths: in through the nose, out through the mouth, strong and rhythmic." : "Once more: quick, full breaths."],
+          return Br(secs, "Power breaths", { inh: 1.5, sip: 0, hold: 0, exh: 1.5, rest: 0 }, { ib: true, lines: [[0, first ? "Quick, full breaths: in through the nose, out through the mouth, strong and rhythmic." : "Once more: quick, full breaths."],
             [Math.round(secs / 2), "Keep it going. Feel the energy rise."]] });
         };
         var brace = { inh: 3, sip: 0, hold: 3, exh: 3, rest: 3 };
@@ -846,7 +856,10 @@
       },
       how: "The first eight minutes pace your breath from 6 down to about 4.6 breaths a minute, with the out-breath always the longer half: 4 s in and 6 s out, gliding to 5 s in and 8 s out. The fuller inhale keeps the slow pace easy rather than air-hungry as you get drowsy. Then the cue sounds fade over three minutes, a short body release follows, and a soft glow stays on the screen while the binaural beat slides from 6 Hz theta to 3 Hz delta, holds there and fades out.",
       ev: "Each part has its own evidence; the combination hasn't been tested as a package. Twenty minutes of slow breathing at six a minute before bed shortened sleep onset and reduced night waking in people with self-reported insomnia. At that pace a longer exhale was rated more relaxing than the reverse. Relaxation training is a recommended (conditional) treatment for chronic insomnia. A 3 Hz binaural beat lengthened deep sleep in a sleep-lab study.",
-      cite: "Tsai et al. 2015 · Van Diest et al. 2014 · Edinger et al. 2021 (AASM) · Jirakittayakorn & Wongsawat 2018"
+      cite: "Tsai et al. 2015 · Van Diest et al. 2014 · Edinger et al. 2021 (AASM) · Jirakittayakorn & Wongsawat 2018",
+      // free to read, like every tip: the guide's weighted blanket, for the restless whose nights have an anxious or low edge
+      tip: ["A weighted blanket?", "If restlessness at night comes with anxiety or a low mood, a weighted blanket may help: in trials, people with insomnia slept better after a month under one. It's low-risk for most adults. Choose one you can easily push off by yourself; it's not for small children, or for anyone who couldn't take it off unaided.",
+        "#l-weighted", "What the research says"]
     },
     {
       id: "stress-check", name: "Stress Check", lengths: [3, 6], min: 3, strength: 2, stress: true,
@@ -988,13 +1001,14 @@
         ];
       },
       end: "Prime complete. Start your task now.",
+      next: { id: "restoration", txt: "When your block of work is done, give your focus a few minutes to recover: a Restoration Break is one of your restful scenes and its sound, with nothing to read or do." },
       how: "Under three minutes of resonance breathing, then ten minutes of a 16 Hz beta beat (one of the two beta frequencies that improved watch-keeping in Lane and colleagues' 1998 vigilance trial) while you plan the first step. At the bell the audio fades out and you start. Listening before a task, rather than only during it, is where the binaural evidence for attention is clearest.",
       ev: "In Garcia-Argibay and colleagues' 2019 meta-analysis of binaural beats, listening before a task gave clearer effects on thinking than listening only during it. Beta beats at 16 and 24 Hz improved vigilance in Lane and colleagues' trial. In a small trial, 10 minutes of heart-rate-variability biofeedback improved reaction times and accuracy on a Stroop task under stress.",
       cite: "Garcia-Argibay et al. 2019 · Lane et al. 1998 · Prinsloo et al. 2011"
     },
     {
       id: "nsdr", name: "Body Scan + Theta", min: 20, strength: 2,
-      tone: "relax", lie: true, sensor: "optional",
+      tone: "relax", lie: true, sensor: "optional", hc: ["body"],
       blurb: "A 20-minute guided body scan over a 6 Hz theta beat: a deep rest in the daytime (sometimes called NSDR), or a way into sleep.",
       parts: "Guided body scan · 6 Hz binaural",
       audio: { name: "Body Scan + Theta", band: "Theta", carrier: 250, pts: [[0, 6], [1200, 6]], fade: 20, cat: "relax" },
@@ -1035,6 +1049,17 @@
       ev: "This is an experiment. Alpha and theta binaural beats have small, inconsistent effects on anxiety and relaxation in meta-analyses, and heart-rate variability biofeedback has better evidence for stress. But no study has tested binaural beats that follow the heart, and the rule here is Entrain's own. Treat the summary at the end, your heart rate with the beat drawn over it, as the real test.",
       cite: "Experimental · Entrain's own rule"
     },
+    {                                            // a new technique: the beat follows a Muse headband's alpha and theta (eeg.js)
+      id: "brain-led", name: "Brain-Led Beats", exp: true, sup: true, lengths: [15, 20, 30], min: 20, strength: 1, eeg: true,
+      audio: { dyn: true, start: 10, cat: "relax", band: "Alpha to theta, led by your brain", name: "Brain-led beat", carrier: 200, fade: 20 },
+      needs: [["sounds", "Headphones", "for the binaural beat"], ["brain", "Muse headband", "the beat follows it; without one, it runs a scripted descent"]],
+      tip: ["Connect the headband first.", "Put it on and connect it on the Heart page, and try its eyes-open, eyes-closed check: it tunes the beat to the rise in alpha that's yours.", "#eeg", "Brain trends"],
+      blurb: "An experiment in neurofeedback through sound: with a Muse headband on, the binaural beat follows your brain's own rhythms, gliding from alpha towards theta as your alpha and theta rise above their resting level.",
+      build: function (min) { return brainLed(min || 20); },
+      how: "After a minute to settle, a minute and a half reads your resting alpha and theta with your eyes closed, as shares of the headband's signal. From then on, every five seconds, the beat moves towards a target set by how far your alpha (60%) and theta (40%), averaged over the last 25 seconds, have risen above that resting level: a rise of 30%, or the rise your eyes-closed check on the Heart page found, is the full share. The target runs from 10 Hz down to 6 Hz and back up if they fall, and the beat never moves faster than 0.15 Hz per update. Seconds spoilt by blinks, a tense jaw or movement are left out. With no headband data, it follows a scripted 10 to 6 Hz descent.",
+      ev: "This is an experiment. EEG neurofeedback, seeing or hearing your own brain activity and learning to shift it, has moderate evidence: the research is mixed but promising. A consumer headband suits broad, relative trends rather than precise readings: compared with research-grade EEG, the Muse matched worst of three consumer devices (Mikhaylov et al. 2024). And no study has tested binaural beats that follow the brain: the rule here is Entrain's own. Treat the end screen, your alpha and theta with the beat drawn over them, as the real test.",
+      cite: "Experimental · Entrain's own rule · Mikhaylov et al. 2024"
+    },
     {
       id: "conversation", name: "Difficult Conversation", lengths: [6, 10, 15], min: 10, strength: 2,
       tone: "relax", sensor: "best", sensorWhy: "recommended: live coherence while you breathe, and your heart rate coming down", pace: true, paceSplit: 0.4,
@@ -1058,10 +1083,11 @@
       cite: "Goessl et al. 2017 · Brooks 2014 · Jamieson et al. 2012 · Creswell et al. 2005 · Gollwitzer & Sheeran 2006 · Kross et al. 2014 · Garcia-Argibay et al. 2019"
     },
     {
-      id: "call", name: "During the Call", lengths: [30, 60, 90], min: 60, open: true, strength: 1,
+      id: "call", name: "During the Call", lengths: [30, 60, 90], min: 60, open: true, strength: 1, noScene: true,   // no scene's sound in the call
       tone: "relax", sensor: "optional", pace: true, paceSplit: 0.4,
       opt: { voice: false, bells: false, cues: "off", buzz: false, ana: 0 },
       optNote: "It starts silent: captions only, with no voice, bells or breath sounds, only the beat.",
+      phonesOnly: true,                          // in any way it plays, a beat from a speaker would go into the call
       needs: [["sounds", "Headphones", "the beat plays under the call's audio, at half your usual volume"],
         ["pulse", "Heart sensor", "optional: your heart rate and coherence while you talk"],
         ["phone", "This screen in view", "beside the call, on this phone or in a window next to it, to glance at the pacer while you listen"]],
@@ -1136,6 +1162,7 @@
     {
       id: "morning-tonic", name: "Morning Wake-Up", lengths: [10, 15, 20], min: 15, strength: 1,
       tone: "stim", sensor: "optional", noTap: true,
+      hc: function (d) { return pChoice(d, "breath") === "fire" ? ["fast-breath"] : []; },   // breath of fire, if chosen (care.js)
       opt: { ana: 0 },                           // the breath changes pace as it goes: Anapana's reminders would talk over it
       needs: [["sounds", "Headphones", "for the beat, at a low volume"], ["pulse", "Heart sensor", "optional: your heart rate as it rises with the breath"],
         ["move", "Space to stand", "an arm's length all around, for the stretches"]],
@@ -1156,16 +1183,21 @@
         { key: "move", label: "Movement", def: "stretch", note: "Stretches in bed (or seated), then a few standing poses with drawings: an upward salute, side bends, a forward fold and arm circles.",
           opts: [["stretch", "Stretch, then stand"], ["still", "Breathing only"]] }
       ],
-      next: { id: "focus-primer", txt: "Starting work soon? The Focus Primer steadies you, then plays 16 Hz beta while you plan your first step." },
+      next: function (d) {                       // work, and the shower: Cold Finish ends it on cold (cold.js), after the breath has settled from breath of fire
+        return [{ id: "focus-primer", txt: "Starting work soon? The Focus Primer steadies you, then plays 16 Hz beta while you plan your first step." },
+          { id: "cold-finish", txt: pChoice(d, "breath") === "fire" ? "Showering next? Cold Finish ends it with 15 seconds to a minute of cold. After breath of fire, give your breathing time to settle back to normal first."
+            : "Showering next? Cold Finish ends it with 15 seconds to a minute of cold, and loud cues to breathe out long and slow." }];
+      },
       build: function (min) { return morningSteps(this, min || 15); },
       how: "Sleep Descent the other way round. Start in bed as you wake, or sitting up: a big yawn and a long, cat-like stretch, then breathing that begins slow, with the out-breath longer, evens out, and quickens, the in-breath leading, while a binaural beat rises from 6 Hz theta through 10 Hz alpha to 16 Hz beta. If you choose breath of fire, two rounds of 30 short, sharp breaths out follow, sitting up. Then stretches in bed (or seated), a few standing poses with drawings to follow, and to finish, daylight, a glass of water and one thing you'd like from today. 10, 15 or 20 minutes.",
       ev: "The grogginess after waking (sleep inertia) usually fades within 15 to 30 minutes, and a 2019 review found no wake-up routine with clear evidence of speeding that up: sound looked promising, light made people feel more alert, and movement hadn't been tested. Beta binaural beats (16 and 24 Hz) improved vigilance and mood compared with theta and delta beats. Fast yoga breathing shifts the heart rhythm towards arousal, the opposite of slow breathing, and a session of it improved attention in 11- and 12-year-olds. Morning daylight is the body clock's strongest signal that the day has begun. This sequence itself hasn't been tested.",
       cite: "Hilditch & McHill 2019 · Lane et al. 1998 · Raghuraj et al. 1998 · Telles et al. 2019 · Brown et al. 2022",
-      caution: "Breath of fire isn't for everyone: leave it out if you're pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks, and go back to easy breathing if you feel dizzy or tingly. Sit up and stand slowly if you tend to feel faint when you get up."
+      caution: "Breath of fire isn't for everyone: leave it out if you're pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks, and go back to easy breathing if you feel dizzy or tingly. Never do it in or near water, in the bath or while driving, and stop if you feel dizzy: fast breathing can make you faint. Sit up and stand slowly if you tend to feel faint when you get up."
     },
     {
       id: "sport", name: "Sports Performance", lengths: [5, 10], min: 10, strength: 2,
       tone: "stim", sensor: "optional", sensorWhy: "optional: your heart rate as you get ready and through the session", pace: true, paceSplit: 0.4, noTap: true,
+      hc: function (d) { return pChoice(d, "when") !== "during" && pChoice(d, "breath") === "power" ? ["fast-breath"] : []; },   // the power breaths, if chosen (care.js)
       opt: { ana: 0 },                           // the cues while you train take the place of Anapana's
       optNote: "Each sport brings its own settings; change any of them, and pick the sport again to bring them back.",
       phonesWhy: "for the beat and the cues: during a session, indoors (an indoor trainer for cycling) or away from traffic, with the volume low enough to hear what's around you",
@@ -1210,12 +1242,15 @@
           note: "Slow breathing with a longer out-breath while you rest, then a few seconds' warning before the next set.",
           opts: [["60", "1 min"], ["90", "1½ min"], ["120", "2 min"], ["180", "3 min"]] }
       ],
-      next: { id: "recovery", txt: "After your session, Exercise Recovery brings your heart rate down with slow breathing over a theta beat." },
+      next: function (d) {                       // before lifting: your voice, to let go of holding back (vocal.js); after a session: recovery
+        return pChoice(d, "sport") === "weights" && pChoice(d, "when") === "before" ? { id: "let-it-out", txt: "Before your first heavy set, Let It Out: a few rounds of your voice, from the belly, to let go of holding back." }
+          : { id: "recovery", txt: "After your session, Exercise Recovery brings your heart rate down with slow breathing over a theta beat." };
+      },
       build: function (min) { return sportSteps(this, min || 10); },
       how: "Pick your sport, and its settings come with it, then change any of them. Before: five or ten minutes to get ready, then your warm-up. Slow breathing at your resonance pace settles nerves while keeping you alert (for weight training: power breaths, then the bracing breath you'll use under a heavy weight), then you rehearse your session in your mind, and choose a few words of your own for when it gets hard, while a binaural beat rises from 10 Hz alpha to 15 Hz beta. During, if you choose it: the beat carries on, a cue comes every five minutes or so (technique, breathing and your words), and a soft tick can set your cadence until you tap Session over (cycling on an indoor trainer, running and rowing indoors or away from traffic); for weight training, tap Set done after each set and rest with slow breathing until the next.",
       ev: "Motivational self-talk, practised for two weeks, lengthened cycling time to exhaustion by about 18% and made the effort feel easier; across 32 studies, self-talk improved performance, motivational words most for strength and endurance. Imagery improved sports performance with a medium effect across studies. Runners kept going longer with a metronome or music matched to their cadence than in silence. Psyching up before lifting may raise strength, though the evidence is tentative. Binaural beats in sport are barely studied: 15 Hz beta beats with music in the rests between rounds helped kickboxers strike faster, but the trial couldn't be blinded, and a 10 Hz beat with music changed nothing measurable for recreational runners. Music itself helps a little.",
       cite: "Blanchfield et al. 2014 · Hatzigeorgiadis et al. 2011 · Simonsmeier et al. 2021 · Bood et al. 2013 · Tod et al. 2003 · Jebabli et al. 2025 · Park et al. 2026 · Terry et al. 2020",
-      caution: "Power breaths can make you light-headed: do them sitting or standing still, and go back to easy breathing if you feel dizzy. Holding your breath to brace raises blood pressure sharply: with high blood pressure, heart disease or an eye condition such as glaucoma, breathe out through the effort instead. During a session, keep the volume low enough to hear what's around you, and use headphones only where it's safe: for cycling, on an indoor trainer, never on the road."
+      caution: "Power breaths can make you light-headed: do them sitting or standing still, never in or near water, in the bath or while driving, and stop and go back to easy breathing if you feel dizzy. Holding your breath to brace raises blood pressure sharply: with high blood pressure, heart disease or an eye condition such as glaucoma, breathe out through the effort instead. During a session, keep the volume low enough to hear what's around you, and use headphones only where it's safe: for cycling, on an indoor trainer, never on the road."
     },
     {
       id: "creative", name: "Creative Flow", lengths: [15, 20, 30], min: 20, strength: 1,
@@ -1247,8 +1282,8 @@
       caution: "Choose twilight only where you can safely doze off. On the walk, keep the volume low enough to hear what's around you."
     },
     {
-      id: "mindful-sex", name: "Mindful Sex", lengths: [20, 30, 45], min: 30, open: true, strength: 2,
-      tone: "hr", sensor: "optional", sensorWhy: "optional: your heart rate as it rises and settles", pace: true, paceSplit: 0.4, noTap: true,
+      id: "mindful-sex", name: "Mindful Sex", lengths: [20, 30, 45], min: 30, open: true, strength: 2, noStill: true,
+      tone: "hr", sensor: "optional", sensorWhy: "optional: your heart rate as it rises and settles", pace: true, paceSplit: 0.4, noTap: true, hc: ["body"],
       opt: { ana: 0 },                           // its reminders take the place of Anapana's
       optNote: "Each part is a choice of its own, kept for it.",
       phonesWhy: "for the beat: for two of you, a splitter or your phone's dual audio sends it to both pairs; or turn it off under Options",
@@ -1287,7 +1322,7 @@
     /* ===== meditation and mindfulness ===== */
     {
       id: "body-scan", name: "Body Scan", lengths: [10, 20, 30], min: 10, strength: 1,
-      tone: "relax", lie: true, voice: true,
+      tone: "relax", lie: true, voice: true, hc: ["body"],
       blurb: "Move your attention slowly through the body, from the feet to the head, observing each sensation as it is.",
       build: function (min) { return bodyScan(min, "wake"); },
       how: "Sixteen stops, from the feet up, each with a few spoken cues. The body map shows where you are. Choose 10, 20 or 30 minutes.",
@@ -1359,8 +1394,31 @@
     {
       id: "walking", name: "Walking Meditation", min: 10, strength: 1,
       tone: "relax", voice: true,
+      alias: "A walk in a park", words: "park nature outdoors outside trees green soft fascination attention restoration",
       blurb: "Walk slowly and attend to each step: lifting, moving, placing. Phone in your pocket, voice guidance on.",
+      /* In a park: a new technique from the brain-wave guide (c.sup), so picking it opens with a donation while this
+         device is locked, and a park kept from before reads as a quiet path until it's unlocked (practice.js pChoice) */
+      choices: [
+        { key: "where", label: "Where", def: "path", sup: ["park"], supName: NT_PARK, redraw: true,
+          note: function (d) {
+            return pChoice(d, "where") === "park" ? "In a park, or anywhere with trees, water or open sky: an easy walk along a path, and then your eyes go where they like, to clouds, leaves, birds and water. A walk in a park helped attention and memory in a study where the same walk through a city didn't."
+              : "A quiet path of ten to twenty steps, indoors or out, walked slowly up and back.";
+          },
+          opts: [["path", "A quiet path"], ["park", "In a park"]] }
+      ],
       build: function () {
+        if (pChoice(this, "where") === "park") return [
+          G(60, "Stand still", ["Find a path in a park, or anywhere with trees, grass, water or open sky.", "Stand for a moment and feel your weight in your feet.",
+            "Keep your eyes open, gaze soft and a few steps ahead."]),
+          G(180, "Slow steps", [[0, "Begin to walk, slower than usual."], [30, "Notice the lifting of the foot, the moving forward, the placing down."],
+            [80, "Let your pace settle into an easy stroll, wherever the path takes you."], [130, WANDER]]),
+          G(120, "Whole body", [[0, "Widen your attention to the whole body walking: the arms, the balance, the breath."],
+            [60, "Let your pace be natural but unhurried."]]),
+          G(180, "What catches your eye", [[0, "Now let your eyes go where they like: clouds drifting, leaves moving in the breeze, birds, water."],
+            [50, "Rest them on whatever holds your attention easily, and move on when you're ready."], [100, "Listen too: birdsong, the wind in the trees, running water."],
+            [145, "Keep a little attention in your feet as you take it all in."]]),
+          G(60, "Closing", ["Let your steps come to rest, and stand for a few breaths.", "Notice how your attention feels now, before you go back to your day."])
+        ];
         return [
           G(60, "Stand still", ["Find a quiet path of ten to twenty steps, indoors or out.", "Stand at one end and feel your weight in your feet.",
             "Keep your eyes open, gaze soft and a few steps ahead."]),
@@ -1372,9 +1430,9 @@
           G(60, "Closing", ["Let your steps come to rest, and stand for a few breaths.", "Observe the sensations in your feet and legs before you move on."])
         ];
       },
-      how: "Ten minutes in four stages: standing, slow steps, the whole body, then the surroundings. Works indoors on a short path.",
-      ev: "Walking itself reduced depressive symptoms in a meta-analysis of 75 randomised trials (standardised mean difference −0.59). Walking meditation adds a mindfulness focus; trials of it are smaller and mostly in older adults.",
-      cite: "Xu et al. 2024 · Goyal et al. 2014"
+      how: "Ten minutes in four stages: standing, slow steps, the whole body, then the surroundings. Works indoors on a short path. In a park, the walk follows the path, and its last stage lets your eyes go where they like: clouds, leaves, birds and water, the gently interesting things that Attention Restoration Theory says let tired attention recover.",
+      ev: "Walking itself reduced depressive symptoms in a meta-analysis of 75 randomised trials (standardised mean difference −0.59). Walking meditation adds a mindfulness focus; trials of it are smaller and mostly in older adults. In a park: in Berman and colleagues' 2008 study, 38 students did better at repeating digits backwards after a 50-minute walk in an arboretum, and not after the same length of walk through a city; the guide rates this real-world nudge as moderate evidence. Walking meditation in a park hasn't been tested itself.",
+      cite: "Xu et al. 2024 · Goyal et al. 2014 · Berman et al. 2008"
     },
 
     /* ===== reflection ===== */
@@ -1407,7 +1465,7 @@
     /* ===== relaxation and sleep ===== */
     {
       id: "pmr", name: "Progressive Muscle Relaxation", min: 12, strength: 2,
-      tone: "relax", lie: true, voice: true,
+      tone: "relax", lie: true, voice: true, hc: ["body"],
       blurb: "Tense each muscle group for a few seconds, then let go and feel the difference. Fourteen groups, hands to feet.",
       build: function () {
         var s = [G(50, "Get comfortable", ["Lie down or sit with your back supported.",
@@ -1425,7 +1483,7 @@
     {
       id: "autogenic", name: "Autogenic Training", lengths: [5, 10, 15, 20], min: 10, strength: 2,
       tone: "relax", voice: true, sensor: "optional", sensorWhy: "optional: your heart rate and coherence as feedback, as in NASA's autogenic-feedback training",
-      pace: true, paceSplit: 0.4, opt: { audio: false },
+      pace: true, paceSplit: 0.4, opt: { audio: false }, hc: ["body"],
       blurb: "Schultz's standard autogenic training, the method NASA adapted for astronauts: short phrases said silently, for heaviness, warmth, a calm heartbeat, the breath, a warm solar plexus and a cool forehead, until your body follows. All six at once, or week by week as in the classic course.",
       parts: "Paced breathing · heaviness · warmth · heartbeat · breath · solar plexus · cool forehead · coming back · heart feedback",
       audio: { name: "Autogenic Training", band: "Theta", carrier: 200, fade: 8, cat: "relax" },
@@ -1545,9 +1603,9 @@
     },
     {
       id: "kapalabhati", name: "Kapalabhati", min: 6, strength: 1,
-      tone: "stim", confirm: true,
+      tone: "stim", confirm: true, hc: ["fast-breath"],
       blurb: "Skull-shining breath: short, sharp exhales from the belly with passive inhales, in three rounds. An energising breath, for a lift in alertness.",
-      caution: "Skip this one if you are pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks. Do it seated, on an empty stomach, and stop if you feel dizzy or tingly.",
+      caution: "Skip this one if you are pregnant, or have high blood pressure, heart disease, epilepsy, a hernia, recent abdominal surgery, glaucoma or a history of panic attacks. Do it seated, on an empty stomach, and stop if you feel dizzy or tingly. Never do it in or near water, in the bath or while driving: fast breathing can make you faint.",
       build: function () {
         var rec = function (n) {
           return G(40, "Recover " + n, ["Breathe slowly and naturally.", "Notice the tingling and the energy. Let the breath settle."], { vis: "glow" });
@@ -1568,19 +1626,19 @@
       cite: "Raghuraj et al. 1998 · Fincham et al. 2023"
     },
     {
-      id: "wim-hof", name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1,
-      tone: "stim", confirm: true, sensor: "optional", open: true,
+      id: "wim-hof", name: "Wim Hof Breathing", lengths: [3, 4], lenUnit: "round", min: 3, strength: 1, noStill: true,
+      tone: "stim", confirm: true, sensor: "optional", open: true, hc: ["fast-breath", "hold"],
       variant: { key: "breaths", label: "Breaths per round", opts: [[30, "30"], [40, "40"]], def: 30 },
       blurb: "Rounds of deep, full breaths, then a relaxed hold on empty lungs for as long as is comfortable, then one recovery breath held for 15 seconds.",
       caution: "Never do this in or near water, in a bath, while driving or standing: the breathing can make you faint without warning, and people have drowned combining it with water. Sit or lie down. Skip it if you are pregnant, or have epilepsy, heart disease, high blood pressure, or a history of fainting or panic attacks. Tingling and light-headedness are common; stop if you feel unwell.",
-      build: function (rounds, breaths) { return wimHof(rounds, breaths); },
-      how: "Each round is 30 (or 40) deep breaths, fully in through the belly and chest and let go, about 2.5 seconds each. Then breathe out and hold with empty lungs, and tap Breathe in when you feel the urge; the hold ends by itself at 3 minutes. A full recovery breath held for 15 seconds closes the round. Your hold times are shown at the end.",
+      build: function (rounds, breaths) { return wimHof(ibWimRounds(rounds), breaths); },    // eight rounds a day at most (care.js)
+      how: "Each round is 30 (or 40) deep breaths, fully in through the belly and chest and let go, about 2.5 seconds each. Then breathe out and hold with empty lungs, and tap Breathe in when you feel the urge; the hold ends by itself at 3 minutes. A full recovery breath held for 15 seconds closes the round. Your hold times are shown at the end. Entrain runs at most eight rounds a day, and Restart and Do it again ask first within an hour of a block.",
       ev: "Men trained in the method (breathing, cold exposure and meditation) released more adrenaline and had a weaker inflammatory response and fewer flu-like symptoms after an endotoxin injection than untrained controls. A follow-up found the breathing alone produced the anti-inflammatory effect. A 2024 systematic review of eight small trials judged the risk of bias high and the evidence not yet strong enough to recommend the method. It is activating, raising adrenaline, rather than calming.",
       cite: "Kox et al. 2014 · Zwaag et al. 2022 · Almahayni & Hammond 2024"
     },
 
     {
-      id: "tapping", name: "Tapping", tapping: true, open: true, min: 7, strength: 1, tone: "ther",
+      id: "tapping", name: "Tapping", tapping: true, open: true, min: 7, strength: 1, tone: "ther", hc: ["body"],
       variant: { key: "rounds", label: "Rounds", opts: [[2, "2"], [3, "3"]], def: 2 },
       blurb: "Rate what's bothering you, then tap nine acupressure points with your fingertips while saying a short phrase. Two or three rounds, then rate it again.",
       caution: "Tapping isn't a treatment for trauma or a mental-health condition. If strong feelings or memories come up, stop, breathe slowly and look around the room, and talk to a professional if it keeps happening. Tap gently.",
@@ -1601,6 +1659,328 @@
       how: "Lie down and rest. Over the first two and a half minutes your resting heart rate is measured. When the one-minute average then stays at least 3 bpm (or 4%) lower for three minutes, you've probably drifted into light sleep, and you'll be woken that many minutes later. With no sign of sleep after 20 minutes you're woken anyway; with no sensor, after the nap length plus five minutes. You wake to rising chimes, a vibration and a beat that climbs back to alpha. The beat during the nap slides from 6 Hz to 3 Hz.",
       ev: "After a short night, a 10-minute afternoon nap improved alertness and performance straight away, with some gains lasting about two and a half hours; 20 minutes helped from about half an hour after waking, and 30 minutes brought grogginess first. Heart rate drops at each transition from waking into light sleep, which is what the estimate relies on, though that was measured in only six sleepers.",
       cite: "Brooks & Lack 2006 · Burgess et al. 1999"
+    },
+
+    /* ===== the voice (vocal.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "om", name: "Om Chanting", lengths: [5, 10, 15], min: 10, strength: 1, sup: true,
+      tone: "relax", sensor: "optional", noTap: true, noMus: true,      // you chant on your own note, or the drone's: no music under it (music.js)
+      opt: { cues: "chimes" },                   // a chime at each turn of the breath sits lightly over your voice
+      optNote: "The drone and the length of each chant are kept for it.",
+      alias: "Aum", words: "om aum chant chanting mantra hum humming vibration drone voice sound meditation calm",
+      blurb: "Chant Om on a long breath out: an open Aaa, a rounded Uuu and a long, humming Mmm that buzzes in your face and head. Then softer, then silently, then sit in the silence after it.",
+      parts: "How to chant · Om aloud · softer · in your mind · silence · an optional low drone",
+      choices: [
+        { key: "drone", label: "Drone", def: "on", note: "A soft, low drone on D, made on your device, to chant with while you learn and while you chant aloud. It fades as you go silent.",
+          opts: [["on", "On"], ["off", "Leave it out"]] },
+        { key: "breath", label: "Each chant", def: "10", note: "How long each breath out lasts, after four seconds in. Start shorter, and lengthen it as your breath allows.",
+          opts: [["8", "8 s"], ["10", "10 s"], ["12", "12 s"], ["15", "15 s"]] }
+      ],
+      next: { id: "bhramari", txt: "Liked the hum? Bhramari, the humming bee breath, is the Mmm on its own, on a long breath out." },
+      build: function (min) { return omSteps(this, min || 10); },
+      end: "Sit for a moment in the stillness, and carry it with you.",
+      how: "A minute to learn the chant, then Om on every breath out: four seconds in through the nose, then a long Aaa, Uuu and Mmm (ten seconds unless you choose otherwise), the Mmm a hum with the lips closed that takes about half the breath. You chant aloud, then (from ten minutes) softer, then silently in your mind, and end by sitting in the silence after it. A soft, low drone on D can play while you chant aloud, and the breath cues are chimes, so they sit lightly over your voice.",
+      ev: "The evidence is early, from small pilot studies. In a brain scan of 12 people, chanting Om aloud quietened the amygdala, the hippocampus and other parts of the limbic system, a pattern like that of vagus nerve stimulation, while saying “ssss” changed nothing there. A 2022 review linked Om chanting with calm, with delta and theta brain waves and with activity in the frontal lobes, but found the studies too weak for firm conclusions. The Mmm is a hum, and humming raised nasal nitric oxide about 15-fold; any sound made on the breath out also lengthens it.",
+      cite: "Kalyani et al. 2011 · Thanneeru et al. 2022 · Weitzberg & Lundberg 2002"
+    },
+    {
+      id: "laughter", name: "Laughter Break", lengths: [5, 10], min: 10, strength: 2, sup: true,
+      tone: "stim", noTap: true, hc: ["strain"],
+      rate: { name: "Mood", what: "mood" },     // its 0 to 10 ratings are of your mood, before and after
+      optNote: "Your choices are kept for it.",
+      alias: "Laughter yoga", words: "laugh laughing laughter yoga giggle humour fun play playful mood happy cheer stress clap clapping ho ha",
+      blurb: "Laughter on purpose, which works even when the joke is missing: a clapping warm-up, short bouts of playful laughter with slow breaths between, and your mood before and after.",
+      parts: "Mood check · clapping warm-up · bouts of laughter · slow breaths · mood again",
+      choices: [
+        { key: "who", label: "With", def: "solo", note: "On your own, a mirror helps; with others, eye contact does, and laughter spreads.",
+          opts: [["solo", "On your own"], ["group", "With others"]] },
+        { key: "mood", label: "Mood check", def: "on", note: "Rate your mood from 0 to 10 before and after. The end screen sets them side by side, and so does your history.",
+          opts: [["on", "Before and after"], ["off", "Leave it out"]] }
+      ],
+      build: function (min) { return lghSteps(this, min || 10); },
+      end: "Well laughed. Take the lightness with you.",
+      how: "A moment to arrive and rate your mood from 0 to 10, then a clapping warm-up to a tick: one, two, one, two, three, “ho, ho, ha ha ha”. Then short bouts of laughter on purpose (greeting laughter, a smile growing into a giggle, milkshake laughter, silent laughter, laughing at an imaginary phone call and hearty laughter; three of them in five minutes), each with a few slow breaths after it. It ends with slow breathing and your mood again, set beside the first at the end and in your history. Laughter here is an exercise: fake it, and it often turns real.",
+      ev: "Laughter on purpose, without a joke, worked better than laughter at something funny in a 2019 review and meta-analysis, and laughter-inducing therapies improved depression. A 2022 meta-analysis of randomised trials in people with physical or mental health problems found benefits for depression, anxiety, mood, stress and pain, the largest for anxiety. The studies were of low quality overall, and their results varied a lot.",
+      cite: "van der Wal & Kok 2019 · Stiwi & Rosendahl 2022",
+      caution: "Laughing hard for a few minutes can leave you breathless, raise your heart rate and dry your mouth: rest between bouts, and keep some water near. Skip the belly laughs, or the whole break, with a hernia, after recent surgery (especially on your belly or chest), with high blood pressure that isn't under control, or late in pregnancy. If you feel dizzy, stop and breathe slowly."
+    },
+    {
+      id: "let-it-out", name: "Let It Out", lengths: [3, 5], min: 5, strength: 2, sup: true,
+      tone: "stim", noTap: true, hc: ["strain"],
+      optNote: "Your sound and when you do it are kept for it.",
+      alias: "Vocal release", words: "shout shouting yell scream ow ouch swear swearing word fouch twizpipe roar lion wolf howl owl hoot animal sounds vocal voice release vent workout gym strength pain stress",
+      blurb: "Let your voice out in short rounds, each followed by long breaths out: “ow”, a shout, a word of your own, or animal sounds just for fun. For energy before a workout, or to release a stressful moment.",
+      parts: "Get set · rounds of “ow”, a shout, your word or animal sounds · long breaths out",
+      choices: [
+        { key: "when", label: "For", def: "before", note: "Before a workout: to raise your energy and let go of holding back. After a stressful moment: to let it out, then settle.",
+          opts: [["before", "Before a workout"], ["after", "After stress"]] },
+        { key: "sound", label: "Your sound", def: "shout",
+          note: function (d) {
+            return {
+              ow: "“Ow” on each tick: saying it helped people bear the pain of icy water for longer (and so did pressing a button).",
+              shout: "A short shout from the belly, “Ha!”, on each tick: shouting as you squeezed raised grip strength in a small study.",
+              word: "Any word that lets it out, a swear word if you like: a real swear word, repeated in a steady voice, raised pain tolerance and strength in studies.",
+              made: "The made-up words from a swearing study, “fouch” and “twizpipe”: people found them funny, though they left pain tolerance where it was.",
+              roar: "Playful and untested: a lion's breath, a wolf's howl and an owl's hoots, each on a long, forceful breath out. Nobody has studied animal sounds; this borrows from the laughter and vocal-release research, and from long breaths out."
+            }[pChoice(d, "sound")];
+          },
+          opts: [["ow", "“Ow”"], ["shout", "A shout"], ["word", "Your word"], ["made", "Made-up words"], ["roar", "Roar it out"]] }
+      ],
+      next: function (d) { return pChoice(d, "when") === "after" ? { id: "calm-reset", txt: "Still wound up? Calm Reset brings it down with long breaths out over a slowing beat." } : null; },
+      build: function (min) { return lioSteps(this, min || 5); },
+      end: "Well done. Let your breath settle at its own pace.",
+      how: "Choose your sound, and whether it's before a workout or after a stressful moment. A short start, then three rounds (four in five minutes): on a soft tick every three seconds, your sound, “ow”, a short shout, a word of your own or the made-up words from a swearing study, said steady and clear, from the belly; after each round, long, slow breaths out. Roar it out swaps the words for animal sounds made on long, forceful breaths out, paced on the screen: a lion's breath, a wolf's howl and an owl's hoots. Before a workout it ends with energy for your warm-up; after a stressful moment, with your breath settling.",
+      ev: "Saying “ow” let people keep a hand in painfully cold water longer than staying silent, and pressing a button did too, so doing something helped. Repeating a swear word at a steady, normal volume raised pain tolerance by about a third, and raised grip strength and power on an exercise bike; the made-up words “fouch” and “twizpipe” were found funny but left pain tolerance unchanged. Shouting as people squeezed raised their strongest grip in a small study. The researchers think swearing works by letting go of holding back, though in their own test humour explained more of it. Roar it out is play: no study has tested animal sounds.",
+      cite: "Swee & Schirmer 2015 · Stephens & Robertson 2020 · Stephens, Spierer & Katehis 2018 · Takarada & Nozaki 2021 · Stephens et al. 2023",
+      caution: "Look after your voice: keep each shout short and from the belly rather than the throat, and use a steady speaking voice if your throat hurts or goes hoarse. Think of the people around you: a sudden shout can alarm them, so choose a place where your voice is welcome, or tell them first. Skip the big shouts with high blood pressure, a heart condition, a hernia or late in pregnancy, and stop if you feel dizzy."
+    },
+    {
+      id: "sing", name: "Sing Together", lengths: [10, 15], min: 10, strength: 2, sup: true,
+      tone: "accent", noTap: true, noAna: true, noMus: true,      // its own tune and drone: no music under it (music.js)
+      optNote: "Your choices are kept for it.",
+      alias: "Sing-along", words: "sing singing song songs round rounds choir group together sing-along music hum humming voice frere jacques brother john bonding friends family party",
+      blurb: "Sing rounds together, Frère Jacques and Row, Row, Row Your Boat, with the words on the screen and a soft tune and drone to lead you. For a group in one room, or on your own, with the phone as your partner.",
+      parts: "Humming warm-up · vowels · listen · together · as a round · two traditional rounds",
+      choices: [
+        { key: "who", label: "Singing", def: "group", redraw: true, note: "Together: everyone in one room, around the phone. On your own: the phone sings the first part of each round and you come in after it.",
+          opts: [["group", "Together"], ["solo", "On your own"]] },
+        { key: "parts", label: "Parts in the round", def: "2", show: function (d) { return pChoice(d, "who") !== "solo"; },
+          note: "How many groups: each comes in a line after the one before. Two is easiest; four needs at least four singers.",
+          opts: [["2", "Two"], ["3", "Three"], ["4", "Four"]] },
+        { key: "song", label: "Songs", def: "both", note: "Traditional rounds, free for anyone to sing.",
+          opts: [["both", "Both"], ["frere", "Frère Jacques"], ["row", "Row Your Boat"]] },
+        { key: "guide", label: "Guide sound", def: "both", note: "A soft synthesised tune sings the melody (in a round, the first part, then each part still singing) over a low drone; the tune alone; or the words and a count-in alone, once you know the songs. On your own, the phone still sings its part of each round.",
+          opts: [["both", "Tune and drone"], ["tune", "Tune"], ["words", "Words only"]] },
+        { key: "tempo", label: "Tempo", def: "usual", note: "Slower is easier while you learn.",
+          opts: [["slow", "Slower"], ["usual", "Usual"]] }
+      ],
+      build: function (min) { return sngSteps(this, min || 10); },
+      end: "Well sung. Thank you for singing.",
+      how: "For people in the same room, or on your own. A humming warm-up over a soft drone, five notes up and down on each vowel, then each round three ways: listen once, sing it together twice through, then sing it as a round, each group coming in a line after the one before (on your own, the phone sings first and you come in after it). The words are on the screen, a soft synthesised tune leads at a steady tempo after a count-in, and in a round the screen shows where each part is. Any time left goes to more rounds and a soft hum of the tune. It ends with a moment to notice how you feel. Frère Jacques and Row, Row, Row Your Boat are traditional, free for anyone to sing.",
+      ev: "Singing together raised feelings of closeness and positive mood, and raised pain thresholds, a stand-in for the release of endorphins, in small choirs and in a choir of 232 alike. In new adult classes, singers bonded faster than people doing crafts or creative writing, though the others caught up within months: the ice-breaker effect. Music, like laughter, dance and synchronised sport, may bond people both through moving in time together and through endorphins. No study has tested singing along with a phone.",
+      cite: "Weinstein et al. 2016 · Pearce et al. 2015 · Tarr et al. 2014"
+    },
+
+    /* ===== touch (touch.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "touch", name: "Soothing Touch", lengths: [5, 10], min: 5, strength: 2, sup: true, noStill: true,
+      tone: "relax", noTap: true, hc: ["touch"],
+      optNote: "Your touch, pace and sound are kept for it.",
+      alias: "Self-soothing touch", words: "touch soothing self-soothing stroke stroking forearm arm skin caress gentle slow c-tactile ct fibres brush velvet soft hug self-hug hand on heart heart comfort calm cortisol oxytocin",
+      blurb: "Stroke your forearm slowly, at about 3 cm a second, one stroke on each long breath out, following a dot on the screen. Or give yourself a hug, or rest a hand on your heart.",
+      parts: "Forearm strokes at 3 cm a second, one arm then the other · or a self-hug · or a hand on your heart",
+      choices: [
+        { key: "touch", label: "Touch", def: "arm", redraw: true,
+          note: function (d) {
+            return {
+              arm: "Slow strokes from wrist to elbow, where the skin's slow-touch nerves are: moderate evidence, from a trial of self-soothing touch and research on these nerves.",
+              hug: "Arms crossed, slow strokes up your upper arms, then a held hug: early to moderate evidence.",
+              heart: "A hand on your heart, then one on your belly too, as most people chose in the self-soothing touch trial: early to moderate evidence."
+            }[pChoice(d, "touch")];
+          },
+          opts: [["arm", "Forearm stroking"], ["hug", "Self-hug"], ["heart", "Hand on heart"]] },
+        { key: "with", label: "Stroke with", def: "hand", show: function (d) { return pChoice(d, "touch") === "arm"; },
+          note: "A soft brush or a piece of velvet is an optional extra, pleasant for many people; its evidence is early.",
+          opts: [["hand", "Your fingertips"], ["soft", "A soft brush or velvet"]] },
+        { key: "pace", label: "Breathing", def: "slow",
+          note: function (d) {
+            return pChoice(d, "touch") === "heart" ? "A longer breath out, at either pace."
+              : pChoice(d, "pace") === "gentle" ? "3 s in, 6 s out: each stroke covers about 18 cm at 3 cm a second, most of the way."
+              : "4 s in, 8 s out: each stroke covers about 24 cm at 3 cm a second, about the length of a forearm.";
+          },
+          opts: [["slow", "4 in, 8 out"], ["gentle", "3 in, 6 out"]] },
+        { key: "sound", label: "Sweeping tone", def: "on", show: function (d) { return pChoice(d, "touch") !== "heart"; },
+          note: "A soft whoosh that rises with each stroke, made on your device: it paces the stroke with your eyes closed.",
+          opts: [["on", "On"], ["off", "Leave it out"]] }
+      ],
+      optHtml: function (d) { return tcOptHtml(d); },        // real size, against a bank card (touch.js)
+      optSync: function () { tcOptSync(); },
+      build: function (min) { return tcSteps(this, min || 5); },
+      end: "Let your hands rest, and take the calm with you.",
+      how: "Choose your touch. Forearm stroking: a dot glides along a drawing of the forearm from the wrist to the elbow at about 3 cm a second, and you follow it with your fingertips (or a soft brush or velvet), one slow stroke on each long breath out, lifting your hand back to the wrist as you breathe in: first the left arm, then the right (twice each in ten minutes), ending with a hand on your heart. A soft sweeping tone rises with each stroke, and under the arm, centimetre marks at real size move at the real speed while you stroke; in Options you can match the screen to a bank card to make them exact. Self-hug: arms crossed, the same slow strokes up your upper arms, then a held hug and a hand on your heart. Hand on heart: one hand on your chest, then the other on your belly, slow circles, and rest, with a longer breath out throughout.",
+      ev: "Hairy skin, like the forearm's, has nerves for caress-like touch, C-tactile fibres, which fire most to slow stroking at about 1 to 10 cm a second, the speeds people find most pleasant. Stroking at 3 cm a second was rated more pleasant than at 30 cm a second and slowed the heart more, in adults; in 9-month-old babies it slowed the heart where slower and faster stroking didn't. A review links this kind of touch with calmer stress responses. In a randomised trial of 159 adults, 20 seconds of self-soothing touch (most chose a hand on the chest and the other on the belly) and a 20-second hug both lowered the stress hormone cortisol after a stressful mock interview, compared with making a paper plane; heart rate and felt stress stayed the same. The participants were mostly young women studying psychology, and the trial couldn't rule out other explanations, such as positive feelings or extra attention. A hand on the heart or a self-hug has early to moderate evidence; soft textures, early.",
+      cite: "Löken et al. 2009 · Pawling et al. 2017 · Fairhurst et al. 2014 · Kidd et al. 2023 · Dreisoerner et al. 2021"
+    },
+    {
+      id: "self-massage", name: "Self-Massage", lengths: [8, 10], min: 8, strength: 2, sup: true,
+      tone: "ther", noTap: true, hc: ["touch"],
+      optNote: "Your choice is kept for it.",
+      alias: "Massage", words: "massage self-massage rub knead kneading hands palms fingers forearms jaw temples scalp head neck shoulders feet foot partner couple together giver receiver alpha tension relax",
+      blurb: "Massage your own hands and forearms, jaw and temples, scalp, neck and shoulders, and feet, with the pressure and stroke for each. Or take turns with a partner, swapping halfway.",
+      parts: "Hands and forearms · jaw and temples · scalp · neck and shoulders · feet · or with a partner",
+      choices: [
+        { key: "who", label: "With", def: "solo",
+          note: "With a partner: hands and forearms, shoulders and neck, and the scalp, for each of you in turn. The receiver sits on a chair; you swap halfway.",
+          opts: [["solo", "On your own"], ["partner", "With a partner"]] }
+      ],
+      build: function (min) { return smSteps(this, min || 8); },
+      end: "Rest your hands, and notice the ease.",
+      how: "On your own: a moment to settle, then each area in turn, lit on the body map, with its pressure and stroke under its name and the time left on it: each hand and forearm (thumb circles in the palm, each finger, long strokes and a gentle squeeze), the jaw and temples, the scalp, the neck and shoulders, and each foot, then a moment of rest. Moderate pressure most of the way: firm enough to move the skin over the muscle, and comfortable. With a partner: agree who gives first and how to say more or less, then the hands and forearms, shoulders and neck, and scalp, and you swap halfway, ending side by side.",
+      ev: "A shift towards alpha brain waves is one of the most consistent findings in EEG studies of massage: across 30 of them, a single session commonly raised alpha and lowered faster beta and gamma activity, and moderate pressure favoured a relaxed, parasympathetic profile. Not every study agrees: in 24 young adults, a massage by hand and one by a device changed delta, theta and beta differently, and alpha fell during that short session in both. Almost all of this research is on massage from a trained therapist; massage you give yourself, or a partner, has been studied far less.",
+      cite: "Chmiel & Kurpas 2026 · Chang et al. 2012",
+      caution: "Leave out any area with an injury, a wound, a rash, a bruise or swelling, and go lightly around varicose veins rather than pressing on them. If you take blood thinners or bruise easily, keep the pressure light. A painful, swollen, warm calf can be a blood clot: leave it alone and see a doctor. Keep to the back and sides of the neck, away from the front of the throat. Massage should feel good: ease off if anything hurts, and with a partner, say so straight away."
+    },
+
+    /* ===== music (music.js): a new technique from the brain-wave guide ===== */
+    {
+      id: "music-break", name: "Music Break", lengths: [10, 15, 20], min: 10, strength: 3, sup: true,
+      tone: "relax", noTap: true,
+      music: function (d) { return pChoice(d, "tempo"); },     // the music plays all through, at the tempo chosen here, or your own songs (music.js, yourmusic.js)
+      optNote: "Your tempo is kept for it.",
+      alias: "Music for stress", words: "music listen listening song songs tune tunes melody chords ambient relax relaxing stress tempo slow calm heart rate pulse eyes closed break pause own favourite playlist",
+      blurb: "Ten to twenty minutes with your eyes closed and soft music made on your device, slow unless you pick another tempo, or songs of your own. With a heart sensor, the end shows your heart rate at the start and the end, against your usual.",
+      parts: "Settle in · Listen, eyes closed · Come back",
+      needs: [["sounds", "Speakers or headphones", "the music plays on either; headphones close out the room"],
+        ["pulse", "Heart sensor", "optional: your heart rate at the start and the end, against your usual"]],
+      choices: [
+        { key: "tempo", label: "Music", def: "slow", redraw: true,     // the page drawn again, so the note fits the choice
+          note: function (d) {
+            return {
+              slow: "Slow, about 60 beats a minute: the tempo that goes with calm. Pick another if you like it better, since music you like does more.",
+              steady: "Steady, about 96 beats a minute, the tempo Entrain plays for focus. Music you like does more, so keep it if you enjoy it.",
+              lively: "Lively, about 124 beats a minute, with a soft pulse: the tempo for energy. Music you like does more, so keep it if you enjoy it.",
+              own: ymHereN() ? "Your own songs, from Your own music in Settings, picked by chance and more often the ones you've liked. Music you choose yourself is what the research rates highest."
+                : "Your own songs, once you add some under Your own music in Settings; until then it plays slow music made on your device."
+            }[pChoice(d, "tempo")];
+          },
+          opts: [["slow", "Slow"], ["steady", "Steady"], ["lively", "Lively"], ["own", "Yours"]] }
+      ],
+      build: function (min) { return mbSteps(min || 10, pChoice(this, "tempo") === "own" && ymHereN() > 0); },
+      end: "Welcome back. Notice how you feel now.",
+      how: "Settle in for 45 seconds and let your eyes close, then simply listen, with a few quiet words now and then, while music made on your device plays: soft chords, a low note under them and sparse plucked notes, never quite the same twice, slow (60 beats a minute) unless you pick steady (96) or lively (124). Or pick Yours for songs of your own, added under Your own music in Settings, with a thumbs up or down for each at the end. In the last 50 seconds the music softens and you come back and open your eyes. With a heart sensor connected, the end shows your heart rate over the first two minutes and the last two, against your usual for Music Break. The volume is the background sound's, in the quick controls while it runs.",
+      ev: "Across two meta-analyses of 104 randomised trials, music, mostly listening, lowered the body's signs of stress with a small-to-medium effect and how stressed people felt with a medium one, and of the body's signs it lowered heart rate most clearly. With a music therapist the effect was larger, across 47 studies. In one EEG study, slow music raised theta and alpha at the front of the head and fast music raised beta and gamma. Music people like raises brain-wave power more than music they dislike, so the tempo you enjoy is the one to pick. The studies used recorded music, often chosen by the researchers or the listeners; the music here is made on your device, and hasn't been tested itself.",
+      cite: "de Witte et al. 2020 · de Witte et al. 2022 · Yang et al. 2025 · Kučikienė & Praninskienė 2018"
+    },
+
+    /* ===== the mind (mind.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "imagery", name: "Guided Imagery", lengths: [10, 15, 20], min: 10, strength: 2, sup: true,
+      tone: "relax", lie: true, voice: true, noTap: true, hc: ["imagery"],
+      alias: "Self-hypnosis", words: "guided imagery visualisation visualise imagine picture hypnosis self-hypnosis hypnotic hypnotherapy relaxation calm safe place happy place beach sea forest trees mountain lake countdown count down ten to one suggestion confidence rest anxiety theta sleep",
+      blurb: "Breathe out slowly, close your eyes and count down from ten, then spend time in a calm place you picture through every sense: a beach, a forest, a mountain lake or your own. A suggestion you choose, then back to alert, or on into sleep.",
+      parts: "Long breaths out · eyes closed · 10 to 1 · your place through each sense · a suggestion · 1 to 5, or into sleep · optional theta",
+      audio: { name: "Guided Imagery", band: "Theta", carrier: 200, fade: 15, cat: "relax" },
+      beats: mnBeats("the hypnotic state is linked with"),
+      opt: { audio: false },
+      choices: [
+        { key: "place", label: "Your place", def: "beach", note: "Where you'll spend the middle of the session, exploring it through each sense. A place of your own can be somewhere you've been, or one you make up.",
+          opts: [["beach", "A beach"], ["forest", "A forest"], ["lake", "A mountain lake"], ["own", "A place of your own"]] },
+        { key: "aim", label: "Suggestion", def: "calm",
+          note: function (d) {
+            return {
+              calm: "Calm you can bring back later with three slow breaths out and a touch of thumb and finger.",
+              confidence: "Picturing yourself meeting something ahead steadily, and a steadiness you can call on later with the same breaths and touch.",
+              rest: "Your body resting and restoring itself: for deep rest now, or before sleep."
+            }[pChoice(d, "aim")];
+          },
+          opts: [["calm", "Calm"], ["confidence", "Confidence"], ["rest", "Rest"]] },
+        { key: "end", label: "Ending", def: "wake", redraw: true, note: "Back to alert counts you up from one to five, your eyes opening on five. At bedtime, Into sleep lets the scene fade and carries you on into sleep, with no bells at the end.",
+          opts: [["wake", "Back to alert"], ["sleep", "Into sleep"]] }
+      ],
+      next: { id: "yoga-nidra", txt: "Ready to go deeper? Yoga Nidra takes you, lying down, through a resolve, a journey of attention round the body, the breath and quick images." },
+      build: function (min) { return giSteps(this, min || 10); },
+      end: "Take the calm of your place with you.",
+      how: "Lie down or sit back. You rest your eyes on one spot while you breathe slowly with a longer breath out (4 seconds in, 6 out) until your eyelids grow heavy; then a chime asks you to close them. A slow count from ten down to one deepens the calm, each number large on the screen. Then the place you chose, a beach, a forest, a mountain lake or a place of your own, explored through each sense in turn: what you see, hear, feel and smell, and a while just to rest there. There, the suggestion you chose: calm you can bring back later with three slow breaths and a touch of thumb and finger, confidence for something ahead, or deep rest. Back to alert counts you up from one to five, your eyes opening on five; Into sleep lets the scene fade and carries you on into sleep, with no bells at the end. A 6 Hz theta beat can play underneath if you add it, sliding to 3 Hz delta with Into sleep.",
+      ev: "The guide rates hypnosis and guided imagery as moderate to strong evidence for less anxiety. An overview of 49 meta-analyses of hypnosis found medium to large effects on distress, anxiety included, around medical procedures, and very small or small effects on physiological measures; only nine of the meta-analyses were of high quality. In the US Department of Veterans Affairs' map of the evidence, guided imagery significantly reduced anxiety or tension in 4 of 6 studies of people having heart surgery, with low confidence; across the other groups studied, the findings were mixed, with low confidence overall. In the EEG, hypnosis has been linked most closely with more theta and with changes in gamma activity. Most of this research is on hypnosis given by a clinician or a recording in hospital; imagery you do on your own at home has been studied less. The beats' own evidence is mixed.",
+      cite: "Rosendahl et al. 2024 · Freeman et al. 2019 (VA) · Jensen et al. 2015",
+      caution: "Guided imagery and deep relaxation can bring up memories or strong feelings, or leave you feeling detached or unreal. If you have, or have had, psychosis or a dissociative disorder, talk to your doctor or therapist before you use it. You can open your eyes whenever you like, and I need to stop ends the session in one tap. Never listen while driving or doing anything that needs your attention, and unless you chose Into sleep, take a moment to come back fully before you stand up."
+    },
+    {
+      id: "yoga-nidra", name: "Yoga Nidra", lengths: [20, 30, 45], min: 30, strength: 2, sup: true,
+      tone: "relax", lie: true, voice: true, noTap: true, hc: ["imagery", "body"],
+      alias: "NSDR, non-sleep deep rest", words: "yoga nidra nsdr non-sleep deep rest yogic sleep sankalpa resolve intention rotation of consciousness awareness body map breath counting count backwards opposites heavy light warm cool images visualisation satyananda relaxation theta sleep insomnia",
+      blurb: "Yogic sleep, also called non-sleep deep rest: lying down, a resolve, a quick journey of attention round the body, your breaths counted backwards, heavy and light, warm and cool, quick images, and the resolve again. Then back to alert, or on into sleep.",
+      parts: "Resolve · rotation round the body · breaths counted back from 27 · heavy and light, warm and cool · images · resolve again · back to alert or into sleep · optional theta",
+      audio: { name: "Yoga Nidra", band: "Theta", carrier: 200, fade: 20, cat: "relax" },
+      beats: mnBeats("linked with yoga nidra's drowsy, inward state"),
+      opt: { audio: false },
+      choices: [
+        { key: "resolve", label: "Your resolve", def: "own", note: "Yoga nidra's sankalpa: a short, positive sentence in the present tense, said three times at the start and again at the end. Make your own, or take one of these.",
+          opts: [["own", "Your own"], ["calm", "I am calm and at ease"], ["rest", "I rest deeply and wake refreshed"], ["strong", "I am steady and strong"]] },
+        { key: "end", label: "Ending", def: "wake", redraw: true, note: "Back to alert brings you back gently: the breath, the room and a slow stretch. At bedtime, Into sleep lets you drift off instead, with no bells at the end.",
+          opts: [["wake", "Back to alert"], ["sleep", "Into sleep"]] }
+      ],
+      next: { id: "imagery", txt: "Enjoyed the images? Guided Imagery spends longer in one calm place, through every sense." },
+      build: function (min) { return ynSteps(this, min || 30); },
+      end: "Yoga nidra is complete. Whenever you get up, take it slowly.",     // after Back to alert, and after Into sleep
+      how: "Lie on your back with a blanket over you, and listen to the sounds around you, far and then near. You make a resolve, a sankalpa: a short, positive sentence of your own, or one of three offered, said silently three times. Then your attention travels quickly round the body as each part is named, about one every three seconds, from the right thumb to the whole body, each part lit and marked on the body map. You count your breaths backwards from 27, feel heaviness and then lightness, warmth and then coolness, and picture quick images as they're named; the longer sessions add a spell of quiet rest. Then the resolve again. Back to alert brings you back gently, to the breath, the room and a slow stretch; Into sleep lets you drift off, with no bells at the end. 20, 30 or 45 minutes; in 45, the rotation goes round twice, the second time a little faster. A 6 Hz theta beat can play underneath if you add it, sliding to 3 Hz delta with Into sleep.",
+      ev: "The guide rates yoga nidra as moderate evidence for deep relaxation. In a randomised trial of 41 adults with chronic insomnia, yoga nidra and cognitive behavioural therapy for insomnia both improved sleep time and sleep quality; in the sleep lab only yoga nidra added deep sleep, and its salivary cortisol fell. An online yoga nidra based on a body scan reduced stress slightly over two months of daily use, and its 30-minute version reduced sleep disturbance. In a small brain-imaging study, the release of dopamine in the striatum rose during yoga nidra, along with more theta in the EEG. The stages come from Swami Satyananda Saraswati's teaching; they haven't been tested one by one, and the beats' own evidence is mixed.",
+      cite: "Datta et al. 2021 · Moszeik et al. 2025 · Kjaer et al. 2002 · Satyananda Saraswati 1976",
+      caution: "Yoga nidra can bring up memories or strong feelings, or leave you feeling detached or unreal. If you have, or have had, psychosis or a dissociative disorder, talk to your doctor or therapist before you use it. With trauma, you can let any part of the body go and move on with the voice. You can open your eyes whenever you like, and I need to stop ends the session in one tap. Never listen while driving. In later pregnancy, lie on your side rather than flat on your back."
+    },
+
+    /* ===== temperature (cold.js): a new technique from the brain-wave guide ===== */
+    {
+      id: "cold-finish", name: "Cold Finish", lengths: [3, 5, 8], min: 5, strength: 2, sup: true,
+      tone: "stim", confirm: true, hc: ["cold"], hcFirst: "Before the cold: your health check.", noTap: true, noMus: true, noScene: true,   // no scene to watch from the shower, nor a crackle over the cues
+      opt: { voice: true, bells: true },         // the phone is outside the shower: the voice and the bells carry the session
+      careNote: function () { return coldCareNote(); },     // fast breathing or long holds within the hour
+      needs: [["phone", "Your phone outside the shower", "somewhere dry, where you can hear it over the water"],
+        ["volume", "Volume up", "the voice and bells are loud on purpose: they say when to turn the water cold, and when to turn it off"],
+        ["warn", "A steady footing", "a non-slip mat or a rail to hold: the first gasp of cold can make you unsteady"]],
+      alias: "Cold shower",
+      words: "cold shower cold water finish cool morning energy wake up alert alertness noradrenaline norepinephrine dopamine mood cold exposure cold therapy plunge ice bath bracing shock gasp",
+      blurb: "End your shower on cold, 15 seconds to a minute of it, building up over the weeks. Loud, spoken cues guide a long, slow breath out through the gasp, with a bell to turn the water cold and another to turn it off.",
+      parts: "A warm shower · slow breaths · 15 to 60 s of cold, breathing out long and slow · warming up",
+      choices: [
+        { key: "cold", label: "Cold", def: "auto",
+          note: function () { return "Build up: " + coldNow() + " " + coldRule() + " Or pick a length yourself."; },
+          opts: [["auto", "Build up"], ["15", "15 s"], ["30", "30 s"], ["45", "45 s"], ["60", "60 s"]] },
+        { key: "tone", label: "Breath-out tone", def: "on", note: "A low tone that falls through each long breath out in the cold, so you can keep the pace when the water drowns the words.",
+          opts: [["on", "On"], ["off", "Off"]] }
+      ],
+      build: function (min) { return coldSteps(this, min || 5); },
+      end: "Cold done. Enjoy the energy.",
+      how: "Put your phone outside the shower, somewhere dry, with the volume up, and tap Start as you step in. Shower warm as usual for most of the 3, 5 or 8 minutes; half a minute before the cold, the voice asks you to finish washing, then to breathe slowly, in through the nose and out long through the mouth. On a triple bell, turn the water to cold, or just to cool the first few times. Through the cold, a voice at the start of each long breath out, a low tone falling with it and the seconds counting down on the screen take you through, with three pips before a second triple bell to turn the water off. Then dry off and move to warm up. Build up starts at 15 seconds, and once you've done three at one length, the third at least a week after the first, the next is 15 seconds longer, up to a minute; after a month away it steps back once. Or pick 15, 30, 45 or 60 seconds yourself. The end screen keeps your seconds of cold, and where your build-up stands.",
+      ev: "The guide rates cold exposure as moderate evidence for alertness and a better mood, with a real safety risk. In 10 healthy men, an hour in water at 14 °C raised noradrenaline by about 530% and dopamine by about 250%. In 33 adults new to cold water, five minutes up to the collarbones at about 20 °C left them feeling more active, alert, attentive, proud and inspired, and less distressed and nervous, changes linked to stronger connections between large brain networks. After 15 minutes at 10.5 °C, cortisol hadn't changed half an hour later but was 47% lower three hours later, in eight healthy adults. All of these were baths, colder or longer than the end of a shower: a cold finish is the gentle start the guide suggests, and hasn't itself been measured this way. Cold shock, the gasp and racing heart of sudden cold water, is cold water's main danger.",
+      cite: "Šrámek et al. 2000 · Yankouskaya et al. 2023 · Reed et al. 2023 · Tipton et al. 2017",
+      caution: "Cold water sets off a shock response: a gasp, fast breathing and a sudden rise in heart rate and blood pressure. It can be dangerous with a heart condition or high blood pressure, and in pregnancy: ask your doctor first. Start short, with cool rather than icy water, build up over weeks, and turn it warm again at once if you feel dizzy, numb or unwell. Breathe all the way through: never combine cold water with Wim Hof breathing or breath holds, and never practise cold immersion alone in open water. Keep a firm footing, since the gasp can make you unsteady."
+    },
+
+    /* ===== nature (nature.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "fireside", name: "Fireside", lengths: [20, 30, 45], min: 20, strength: 2, sup: true,
+      tone: "relax", noTap: true, noMus: true, noScene: true,    // the fire is its own scene, and its crackle the only sound it needs
+      needs: [["sounds", "Sound on", "the crackle is part of it: the same fire on mute didn't relax people. Its volume is the background sound's"],
+        ["moon", "Somewhere comfortable", "sitting back or lying down, best in the evening"],
+        ["pulse", "Heart sensor", "optional: your heart rate at the start and the end"]],
+      alias: "Fireplace, campfire", words: "fire fireplace hearth campfire log fire flames embers crackle crackling evening relax relaxation blood pressure watch screen calm wind down bedtime",
+      blurb: "A fire to watch, with its crackle, best in the evening: a few slow breaths to begin if you like, then just the flames, for 20 to 45 minutes. The longer people watched a fire with its sound, the more relaxed they became.",
+      parts: "Settle in · slow breaths, if you like · just the fire · back to the room",
+      choices: [
+        { key: "start", label: "To begin", def: "breath", redraw: true, note: function (d) {
+            return pChoice(d, "start") === "breath" ? "Three minutes of slow breathing, 4 seconds in and 6 out, the flames rising as you breathe in and settling as you breathe out. Then just the fire."
+              : "Straight to the fire, after a moment to settle.";
+          },
+          opts: [["breath", "Slow breaths first"], ["fire", "Just the fire"]] }
+      ],
+      next: { id: "sleep-descent", txt: "Bed soon? Sleep Descent takes you on down into sleep, lying down, with long breaths out over a slowing beat." },
+      build: function (min) { return ntFireSteps(this, min || 20); },
+      end: "Take the warmth of the fire with you into your evening.",
+      how: "Sit back or lie down, with the sound up enough to hear the crackle: in the study, the fire relaxed people only with its sound. Three quarters of a minute to settle, then, if you chose them, three minutes of slow breathing, 4 seconds in and 6 out, the flames rising as you breathe in and settling as you breathe out; then just the fire, with a quiet word every few minutes, and a minute at the end to come back to the room. The fire is drawn on your device, with embers rising, and its crackle (one of the nature sounds) always plays with it, even with the background sound off; its volume is the background sound's, in the quick controls while it runs. With reduced motion turned on, the fire stays still.",
+      ev: "The guide rates a fireplace with its sound as moderate evidence for relaxation and lower blood pressure, best in the evening. In three randomised crossover studies with 226 adults, a fire on a screen with its crackle lowered blood pressure, and more the longer people watched; the same fire with the sound off had no consistent effect, so the effect isn't just the flicker. People watched for up to 15 minutes in those studies: Fireside's longer sessions follow the finding that the effect grew with time, and haven't been tested themselves. The study's summary reports a stronger effect in people who become absorbed easily and in more sociable people. This fire is drawn on your device rather than filmed.",
+      cite: "Lynn 2014"
+    },
+    {
+      id: "restoration", name: "Restoration Break", lengths: [3, 5, 10], min: 5, strength: 2, sup: true,
+      tone: "relax", noTap: true, noMus: true, noScene: true, noQuote: true,    // the break chooses its own scene and sound, and ends with no words to read
+      needs: [["sounds", "Sound on, softly", "the scene's own nature sound, unless you choose your background"],
+        ["phone", "A moment away from your work", "between blocks of focus, away from your desk if you can"]],
+      alias: "Nature break, attention restoration", words: "break rest pause recover recovery attention focus tired fatigue work study nature scene scenes restful soft fascination restoration clouds water leaves forest fractal flowers fire birdsong stream wind",
+      blurb: "A few minutes for tired focus to recover between blocks of work: one of your restful scenes with its nature sound, one line to begin, then just the scene and its sound to the end.",
+      parts: "One opening line · a restful scene and its sound · no words or tasks",
+      choices: [
+        { key: "scene", label: "Scene", def: "mine", redraw: true, note: function (d) { return ntSceneNote(d); },
+          opts: [["mine", "Yours"]].concat(SCN_LIST.map(function (x) { return [x.id, x.name]; })) },
+        { key: "snd", label: "Sound", def: "scene", redraw: true, note: function (d) { return ntSndNote(d); },
+          opts: [["scene", "The scene's own"], ["yours", "Your background"]] }
+      ],
+      next: { id: "walking", txt: "Outside is better still: in one study, a walk in a park helped attention and memory, and the same walk through a city didn't. Walking Meditation has a version for a park." },
+      build: function (min) { return ntBreakSteps(this, min || 5); },
+      end: "Break over. If you can, take the next one outside.",
+      how: "Take it between blocks of work, ideally away from your desk. One line to begin, then the scene you chose, or one of yours (picked in Settings, a different one each day), with the nature sound that suits it: wind for the clouds, the leaves and the fractal ridgelines, a stream for the water, birdsong for the forest and the flowers, and the fire's crackle; or your own background sound instead. After the first line there are no more words: no voice, no captions and nothing to do, since content that takes effort to read works against the gentle interest that's meant to rest your attention. The end bells mark the end, if you have them on, and its last page points you outside for the next one, with no quote to read. With reduced motion turned on, the scene stays still.",
+      ev: "The guide rates restoration breaks between focus sessions as moderate evidence. Attention Restoration Theory holds that effortful focus tires with use, and that gently interesting things, drifting clouds, moving leaves, birds, water or fire, hold attention without effort and let it recover. In Berman and colleagues' 2008 study, ten minutes of looking at photographs of nature, but not of cities, improved effortful attention and memory span, and a 50-minute walk in a park improved memory span where the same walk through a city didn't. A 2016 review of 31 studies found nature helped on three measures of attention, while ten other pooled analyses showed no marked benefit; a 2018 review found working memory and cognitive flexibility improved most, and the theory's mechanism is still debated. Leaving out words and tasks follows the theory rather than a test of its own, and these scenes, drawn on your device, haven't been tested themselves.",
+      cite: "Berman et al. 2008 · Ohly et al. 2016 · Stevenson et al. 2018 · Kaplan 1995"
     },
 
     /* ===== movement ===== */
@@ -1625,7 +2005,57 @@
     yogaPractice("solo-capoeira", { stand: true, room: true, rhythm: true, strength: 1, tone: "stim",
       blurb: "A warm-up, then the ginga, dodges, the negativa and two kicks to a berimbau, a free ginga to play with, and a cool-down stretch.",
       caution: "Capoeira asks a lot of the knees, hips and ankles. Squat and kick only as deep and as high as is comfortable, keep clear space around you, and skip the moves that hurt.",
-      ev: CAPO_EV, cite: "Köhler et al. 2025" })
+      ev: CAPO_EV, cite: "Köhler et al. 2025" }),
+
+    /* ===== movement (movement.js): new techniques from the brain-wave guide ===== */
+    {
+      id: "dance", name: "Dance Break", lengths: [5, 10, 15], min: 10, strength: 3, sup: true,
+      tone: "stim", noTap: true, noScene: true, hc: ["exertion"],
+      music: function (d) { return pChoice(d, "music") === "own" ? "off" : "lively"; },     // the music plays all through, each part at its own tempo (music.js)
+      rate: { name: "Mood", what: "mood" },     // its 0 to 10 ratings are of your mood, before and after
+      optNote: "Your choices are kept for it.",
+      alias: "Dance", words: "dance dancing disco party groove grooving move moving music beat beats tempo bpm energy mood happy depression low exercise cardio shake sway freestyle seated chair",
+      blurb: "Five to fifteen minutes of free dance to music made on your device, its tempo rising from 100 to 124 beats a minute: shake out, sway, bigger moves, freestyle, then a cool down. Standing or seated, with your mood before and after.",
+      parts: "Mood check · shake out · sway · bigger moves · freestyle · cool down · mood again",
+      needs: [["move", "Room to move", "about two metres clear around you, on a floor with good grip; or a chair, seated"],
+        ["sounds", "Speakers or headphones", "for the music; speakers leave you free to move"]],
+      choices: [
+        { key: "how", label: "Moves", def: "stand", note: "Standing: steps, sways and arm moves on the spot. Seated: the same music with your arms, shoulders, head and feet, in a chair.",
+          opts: [["stand", "Standing"], ["seat", "Seated"]] },
+        { key: "music", label: "Music", def: "made",
+          note: function (d) {
+            return pChoice(d, "music") === "own" ? "Play your own music from another app, something you love to move to; the prompts and the bells come over it. Music you like does more."
+              : "Made on your device: about 100 beats a minute to shake out, rising to 124 for the freestyle, and 100 again to cool down. Music you like does more, so try your own too.";
+          },
+          opts: [["made", "Made on your device"], ["own", "Your own"]] },
+        { key: "mood", label: "Mood check", def: "on", note: "Rate your mood from 0 to 10 before and after. The end screen sets them side by side, and so does your history.",
+          opts: [["on", "Before and after"], ["off", "Leave it out"]] }
+      ],
+      next: { id: "qigong", txt: "For something slower that still moves you, the Eight Brocades: eight qigong movements, each with your breath." },
+      build: function (min) { return dncSteps(this, min || 10); },
+      end: "Well danced. Notice how you feel now.",
+      how: "Five parts to music made on your device, its tempo rising and settling with them: shake out (100 beats a minute), sway (106), bigger moves (114), freestyle (124) and a cool down (100), with a few ideas in each, spoken over the music, and a ring that pulses with the beat. Standing, or Seated for your arms, shoulders, head and feet in a chair. Or your own music: play it from another app and the prompts come over it. Before and after, rate your mood from 0 to 10, set side by side at the end and in your history, or leave the mood check out. The music's volume is the background sound's, in the quick controls while it runs.",
+      ev: "Movement has some of the strongest evidence in the guide. In a 2024 network meta-analysis of randomised trials of exercise for depression, dance brought the largest reduction in symptoms compared with active controls such as usual care, a large effect (Hedges' g −0.96), ahead of walking or jogging (−0.62) and yoga (−0.55), and the results held up against publication bias. The dance estimate rests on only five small trials with 107 people, which the authors say is too few to recommend it more strongly. The trials ran over weeks, mostly with people who had depression; a single break like this one hasn't been tested, and nor has the music made on your device.",
+      cite: "Noetel et al. 2024",
+      caution: "Clear some floor space, with a surface that grips, away from furniture and sharp corners, in trainers or bare feet. Keep to steps and sways rather than jumps with sore knees, hips or ankles, or choose Seated. With a heart condition or high blood pressure, or if you've been told to limit exercise, ask your doctor how hard to work first. Rest if you feel dizzy, faint or very short of breath, and stop at once with any chest pain."
+    },
+    {
+      id: "qigong", name: "Eight Brocades", lengths: [10, 15, 20], min: 15, strength: 2, sup: true,
+      tone: "relax", stand: true, noTap: true, noScene: true, pace: true, paceSplit: 0.4,
+      optNote: "Your pace is kept for it.",
+      alias: "Qigong (Baduanjin)", words: "qigong chi gong chikung baduanjin ba duan jin eight brocades pieces of brocade silk tai chi taiji chinese moving meditation breath breathing standing gentle slow exercise holding up the sky drawing the bow owl bouncing toes",
+      blurb: "Baduanjin, the Eight Brocades of qigong: eight slow, standing movements, from holding up the sky to bouncing on your toes, each repeated with your breath while a drawing moves with you.",
+      parts: "Standing post · the eight movements, each set up and then repeated with your breath · gathering",
+      needs: [["move", "Space to stand", "an arm's length all around, on a floor with good grip"],
+        ["sounds", "Sound on", "the voice names each movement, and the breath cues mark each breath in and out"]],
+      next: { id: "dance", txt: "Want something livelier? Dance Break is free dance to music made on your device, with your mood before and after." },
+      build: function (min) { return qgSteps(this, min || 15); },
+      end: "Let the stillness settle in you before you move on.",
+      how: "A standing post to begin, arms rounded as if holding a large ball. Then the eight movements of Baduanjin in order: holding up the sky, drawing the bow, separating heaven and earth, the wise owl looking back, swaying head and tail, hands to the feet, punching with fierce eyes, and bouncing on the toes. Each is set up in twelve seconds with its drawing, then repeated with your breath: eight, six or four breaths (as many as fit the length at your pace, two at a very slow one; a side on each breath for those done to both sides), and seven bounces on the toes. You breathe in as you open, rise or reach and out as you close, lower or sink; the drawing moves with each breath, the caption says which breath it is and counts them, and the breath cues (a tone, chimes or vibration) mark each one. Your pace is your resonance pace, 40% in and 60% out, unless you set your own under Options. It ends by gathering, hands on the lower belly; with more time, the standing at the start and the end grows longer. The movements are in the routine builder too.",
+      ev: "In a 2024 network meta-analysis of randomised trials of exercise for depression, tai chi or qigong brought a moderate reduction in symptoms compared with active controls such as usual care (Hedges' g −0.42, across 12 trials with 343 people), close to mixed aerobic exercise and a little behind walking or jogging, yoga and strength training. The trials ran over weeks and tested tai chi and qigong in general; this routine, with its breath counts, hasn't been tested itself.",
+      cite: "Noetel et al. 2024",
+      caution: "Move slowly and within a comfortable range. Bend your knees for the forward fold, and keep it small, or skip it, with back pain, glaucoma or high blood pressure that isn't under control; come up slowly. Sink into the horse stance only as low as your knees like. Keep the bounces small and soft with sore knees, ankles or back, or lower your heels slowly instead, and hold a chair if your balance is unsteady."
+    }
   ];
 
   /* Words for the cognitive shuffle: concrete, neutral, easy to picture. */
