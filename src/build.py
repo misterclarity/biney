@@ -29,7 +29,7 @@ JS = [
     "shell.js",
     "asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "taxonomy.js", "practice.js", "done.js",
     "library.js", "settings.js", "adapt.js", "stress.js", "nvc.js", "yoga.js", "search.js", "living-data.js", "living.js",
-    "history.js", "trends.js", "favs.js", "today.js", "backup.js",
+    "history.js", "trends.js", "favs.js", "today.js", "theme.js", "backup.js",
     "boot.js",
 ]
 SOURCES = [(f, rd("js/" + f)) for f in JS]
@@ -153,6 +153,11 @@ for mark, name in FONTS.items():
     assert css.count(mark) == 1, "styles.css needs one place for " + mark
     css = css.replace(mark, rd("fonts/" + name + ".b64").strip())
 css = css.replace("/*__FONT_OFL__*/", "/* The fonts below, under their licence:\n\n" + ofl + "\n*/")
+# Light or dark before anything is drawn, so a phone in bed never flashes white: dark when chosen in Settings,
+# or, on Automatic, when the phone is dark or between 9 pm and 5 am. theme.js keeps it up to date after that.
+THEME_JS = ('<script>(function(){try{var s=JSON.parse(localStorage.getItem("entrain.settings")||"{}")||{},t=s.theme,h=new Date().getHours(),'
+            'm=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;'
+            'document.documentElement.dataset.theme=t==="dark"||(t!=="light"&&(m||h>=21||h<5))?"dark":"light"}catch(e){}})();</script>')
 head = """<!DOCTYPE html>
 """ + NOTICE + """
 <html lang="en">
@@ -164,6 +169,7 @@ head = """<!DOCTYPE html>
 <link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html">
 <link rel="icon" href="__FAVICON__">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+""" + THEME_JS + """
 <title>Entrain — Evidence-Based Binaural Beats</title>
 <meta name="description" content="Binaural beats, paced breathing and live heart-rate biofeedback in one offline page: research-based tracks, a breathing guide with five visuals, Bluetooth heart sensors, coherence and a resonance test.">
 <style>
@@ -204,7 +210,7 @@ print("wrote sw.js, version", ver, "-", len(files), "files")
 # ---- the preview page for Claude: no manifest or worker, just the app, as a whole document ----
 art = ("<!DOCTYPE html>\n" + NOTICE + '\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
        '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'   # the app pads for the safe areas
-       '<link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html">\n<title>Entrain</title>\n<style>\n' + css + '</style>\n</head>\n<body>\n'
+       '<link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html">\n' + THEME_JS + '\n<title>Entrain</title>\n<style>\n' + css + '</style>\n</head>\n<body>\n'
        + body + "\n<script>" + script + "</script>\n</body>\n</html>\n")
 open(os.path.join(ROOT, "entrain-page.html"), "w", encoding="utf-8").write(art)
 print("wrote entrain-page.html", len(art), "bytes")

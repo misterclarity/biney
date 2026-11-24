@@ -1602,6 +1602,7 @@
   function pImmersive() {
     var on = curView === "session" && pBusy();
     document.body.classList.toggle("immersive", on);
+    themeSync();                                       // a practice for sleep turns the bedtime colours on
   }
   function pPill() {
     var pill = $("#tbPrac");
@@ -1765,5 +1766,5 @@
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, BCOL: BCOL, THEME: THEME, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList };   // for automated tests only
   }

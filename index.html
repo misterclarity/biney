@@ -26,6 +26,7 @@
 <link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231d6a50'/%3E%3Cg transform='translate%284 4%29' fill='none' stroke='%23fbfdfa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.5 5c.9-1.3 1.85-1.3 2.75 0s1.85 1.3 2.75 0 1.85-1.3 2.75 0 1.85 1.3 2.75 0'/%3E%3Ccircle cx='12' cy='8.6' r='1.1'/%3E%3Cpath d='M5 16.5a7 7 0 0 1 14 0'/%3E%3Cpath d='M3 19h18'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script>(function(){try{var s=JSON.parse(localStorage.getItem("entrain.settings")||"{}")||{},t=s.theme,h=new Date().getHours(),m=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.dataset.theme=t==="dark"||(t!=="light"&&(m||h>=21||h<5))?"dark":"light"}catch(e){}})();</script>
 <title>Entrain — Evidence-Based Binaural Beats</title>
 <meta name="description" content="Binaural beats, paced breathing and live heart-rate biofeedback in one offline page: research-based tracks, a breathing guide with five visuals, Bluetooth heart sensors, coherence and a resonance test.">
 <style>
@@ -80,6 +81,22 @@
     --butter-tint:#fcf1c7;
     --sage-tint:#d3e6d9;
     --ink:#14302a;
+    --awning-2:#fbfdfa;      /* the awning's pale stripes */
+    --awning-ink:#fbfdfa;    /* words on the fascia */
+    --plate:#ffffff;         /* an icon's plate, and its rim */
+    --plate-rim:#d3e6d9;
+    --plate-line:#c6dccd;
+    --leader:#a9c0b1;        /* a menu's dotted leader */
+    --bar:rgba(251,253,250,.97);   /* the tab bar and the player */
+    --on-tomato:#ffffff;
+    --on-danger:#ffffff;
+    --tomato-line:#efc9bf;
+    --cookie:#b07a12;
+    --glow:rgba(247,208,78,.55);
+    /* each goal's colour, in History's bars */
+    --g-sleep:#6d4fc2;--g-calm:#0e7c6b;--g-focus:#a55e00;--g-energy:#c2410c;--g-recover:#1f6fa8;--g-reflect:#b3366f;
+    /* a sleep step, dimmed when Settings asks: almost nothing lit */
+    --dim-text:#5f7a70;--dim-text-dim:#4c655c;--dim-text-faint:#3c5249;--dim-panel:#0b1d19;--dim-main:#1d3b33;--dim-main-ink:#7f9d92;--dim-room:#050f0d;
     /* Three embedded typefaces (OFL), subset to Latin so the page stays one file and works offline:
        Bricolage Grotesque for headings and signs, Atkinson Hyperlegible Next for everything you read,
        DM Mono for times, tickets and receipts. */
@@ -132,6 +149,71 @@
     color-scheme:dark;
     color:var(--text);
   }
+  /* ---------- dark: the late-night service ----------
+     The lights are low: deep green-black, soft warm text, muted accents, and the night surfaces a
+     touch quieter. Chosen in Settings, or automatic: when the phone is dark, and from 9 pm to 5 am. */
+  :root[data-theme="dark"]{
+    --bg:#0f1714;--bg-2:#0b110f;--panel:#17211d;--panel-2:#1d2924;--panel-3:#25332d;--line:#33433b;--line-soft:#26332d;
+    --text:#d2d9cf;--text-dim:#b0bab0;--text-faint:#96a398;
+    --relax:#7cc7b5;--relax-deep:#9ad6c7;--stim:#ddb06a;--stim-deep:#e7c38a;--ther:#b3a6ec;
+    --accent:#8fc6ad;--on-accent:#0f1714;--danger:#f0a08f;--on-danger:#0f1714;
+    --b-in:#7cc7b5;--b-sip:#9fd6b8;--b-hold:#e0bd77;--b-out:#b3a6ec;--hr:#ec97a5;--food:#a8cf95;
+    --focus:#e3c768;--warn-bg:#2b2716;--warn-ink:#ead39a;
+    --awning:#1a2e26;--awning-2:#43554c;--awning-ink:#e3e9df;--chalk:#1b2c25;--night:#0a110e;
+    --tomato:#d97a64;--tomato-deep:#a9533f;--on-tomato:#fbefe9;--tomato-tint:#2c1f1b;--tomato-line:#4a3029;
+    --butter:#ddc272;--butter-tint:#2b2717;--sage-tint:#26352d;
+    --plate:#1d2a24;--plate-rim:#2d3d35;--plate-line:#34463d;--leader:#4b5d53;--bar:rgba(19,29,25,.97);--cookie:#d9b45a;
+    --g-sleep:#b3a6ec;--g-calm:#7cc7b5;--g-focus:#ddb06a;--g-energy:#ef9a6b;--g-recover:#7fb6e3;--g-reflect:#e79bc0;
+    --shadow:0 24px 48px -28px rgba(0,0,0,.7);--card-shadow:0 1px 0 #0a100d,0 10px 24px -18px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+  :root[data-theme="dark"] :is(.night,.b-stage,.ses-run,.hr-chart,.sd-chart,.hi-tr){
+    --bg:#0b130f;--bg-2:#08100c;--panel:#1b2c25;--panel-2:#223631;--panel-3:#2a4038;--line:#365248;--line-soft:#2a4038;
+    --text:#d6ded3;--text-dim:#b8c6bd;--text-faint:#a3b6ab;
+    --relax:#67d9c4;--relax-deep:#3ccbb2;--stim:#f0b93a;--stim-deep:#e9a52a;--ther:#b2a3f4;
+    --accent:#e2c66c;--on-accent:#14302a;--danger:#f39182;
+    --b-in:#67d9c4;--b-sip:#9fe3c4;--b-hold:#ecc98a;--b-out:#b2a3f4;--hr:#f58fa1;--food:#95d98c;
+    --focus:#e2c66c;--warn-bg:rgba(236,201,138,.1);--warn-ink:#f1dcab;--glow:rgba(226,198,108,.3);
+  }
+  :root[data-theme="dark"] .sp-bowl{opacity:.8}
+
+  /* ---------- bedtime: the sleep practices, used in bed ----------
+     Sleep Descent and the other practices for sleep, and the sleep tracks: their page, the session
+     and the end screen, whatever the theme. Dim, warm and low, with no bright white and no bright
+     colour anywhere, the drawings included, and text still at 4.5:1 or more. */
+  :root[data-mood="bed"]{
+    --bg:#0a0e0c;--bg-2:#070a09;--panel:#101613;--panel-2:#151d19;--panel-3:#1b241f;--line:#26322b;--line-soft:#1a231e;
+    --text:#b3ad99;--text-dim:#9a9583;--text-faint:#908c7c;
+    --relax:#6aa596;--relax-deep:#7db4a6;--stim:#b08c55;--stim-deep:#bf9c66;--ther:#9a8fc4;
+    --accent:#b49a5c;--on-accent:#0a0e0c;--danger:#c98a7a;--on-danger:#0a0e0c;
+    --b-in:#6aa596;--b-sip:#7fae8f;--b-hold:#b39a62;--b-out:#9a8fc4;--hr:#c0848c;--food:#8fa877;
+    --focus:#b49a5c;--warn-bg:#1e1b12;--warn-ink:#c4b58a;
+    --awning:#121b17;--awning-2:#26302b;--awning-ink:#b3ad99;--chalk:#111a16;--night:#060908;
+    --tomato:#a96b5c;--tomato-deep:#7f4a3e;--on-tomato:#e9ddd5;--tomato-tint:#1d1613;--tomato-line:#33241f;
+    --butter:#b49a5c;--butter-tint:#1e1b12;--sage-tint:#18211c;--ink:#0a0e0c;
+    --plate:#141c18;--plate-rim:#222d27;--plate-line:#28342e;--leader:#3a463f;--bar:rgba(12,17,15,.97);--cookie:#a88f55;--glow:transparent;
+    --g-sleep:#9a8fc4;--g-calm:#6aa596;--g-focus:#b08c55;--g-energy:#b88563;--g-recover:#7a9bb5;--g-reflect:#b5849c;
+    --dim-text:#6f6b5e;--dim-text-dim:#5c594e;--dim-text-faint:#4a4840;--dim-panel:#0c100e;--dim-main:#1a1f1a;--dim-main-ink:#6f6b5e;--dim-room:#030504;
+    --shadow:0 24px 48px -28px rgba(0,0,0,.8);--card-shadow:none;
+    color-scheme:dark;
+  }
+  :root[data-mood="bed"] :is(.night,.b-stage,.ses-run,.hr-chart,.sd-chart,.hi-tr){
+    --bg:#070a09;--bg-2:#050807;--panel:#0f1512;--panel-2:#141c18;--panel-3:#1a231e;--line:#222d27;--line-soft:#18201c;
+    --text:#ada793;--text-dim:#948f7e;--text-faint:#8e8a77;
+    --relax:#5f9a8c;--relax-deep:#6ea89a;--stim:#aa8853;--stim-deep:#b99560;--ther:#8b81b8;
+    --accent:#a88f55;--on-accent:#070a09;--danger:#bd8070;
+    --b-in:#5f9a8c;--b-sip:#739f86;--b-hold:#a38c5a;--b-out:#8b81b8;--hr:#b27880;--food:#85a070;
+    --focus:#a88f55;--warn-bg:#16140e;--warn-ink:#b9aa7e;--glow:transparent;
+  }
+  :root[data-mood="bed"] .sp-bowl{opacity:.5}
+  /* in bed, what you can press is drawn in outline, gold on dark: nothing bright to look at */
+  :root[data-mood="bed"] :is(.btn.primary,.si-go,.ses-b.main,.chip.on,.chip-b[aria-pressed="true"],.g-tab[aria-selected="true"]){
+    background:var(--panel-3);color:var(--accent);border:1.5px solid color-mix(in srgb,var(--accent) 50%,transparent);box-shadow:none;filter:none;
+  }
+  :root[data-mood="bed"] .ses-x.armed{background:transparent;color:var(--danger);box-shadow:inset 0 0 0 1.5px var(--danger)}
+  :root[data-mood="bed"] :is(.nav a[aria-current="page"] .ni,.sd-ic,.pill-prac){background:var(--panel-3)!important;color:var(--accent)!important}
+  :root[data-mood="bed"] .nav a[aria-current="page"]{background:none}
+  :root[data-mood="bed"] input.sw:checked{background:color-mix(in srgb,var(--accent) 60%,var(--panel-3))}
   /* The fonts below, under their licence:
 
 Bricolage Grotesque, for headings: Copyright 2022 The Bricolage Grotesque Project Authors (https://github.com/ateliertriay/bricolage)
@@ -276,7 +358,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   /* the mark: a cloche with breath rising from it */
   .brand-mark{
     width:34px;height:34px;border-radius:10px;flex:none;display:grid;place-items:center;
-    background:var(--awning);color:#fbfdfa;
+    background:var(--awning);color:var(--awning-ink);
   }
   .brand-mark svg.i{width:26px;height:26px;stroke-width:1.7}
   .brand-name{font-size:21px;font-weight:800;letter-spacing:-.02em}
@@ -298,15 +380,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     display:flex;align-items:center;gap:12px;
     margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));
     padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));
-    background:var(--awning);color:#fbfdfa;
+    background:var(--awning);color:var(--awning-ink);
     box-shadow:0 calc(-1 * env(safe-area-inset-top,0px)) 0 var(--awning);    /* the fascia goes up under the status bar */
   }
   .topbar::after{
     content:"";position:absolute;left:0;right:0;top:100%;height:22px;pointer-events:none;
     background:
       radial-gradient(circle at 10px 12px,var(--awning) 9.5px,transparent 10px) 0 0/40px 22px repeat-x,
-      radial-gradient(circle at 30px 12px,#fbfdfa 9.5px,transparent 10px) 0 0/40px 22px repeat-x,
-      linear-gradient(90deg,var(--awning) 50%,#fbfdfa 50%) 0 0/40px 12px repeat-x;
+      radial-gradient(circle at 30px 12px,var(--awning-2) 9.5px,transparent 10px) 0 0/40px 22px repeat-x,
+      linear-gradient(90deg,var(--awning) 50%,var(--awning-2) 50%) 0 0/40px 12px repeat-x;
     filter:drop-shadow(0 2px 0 rgba(20,48,42,.13));
   }
   .topbar h1{font-size:20px;font-weight:800;letter-spacing:-.02em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -314,12 +396,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   .top-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
   .pill{
     display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 13px;border-radius:999px;
-    background:rgba(251,253,250,.12);border:1px solid rgba(251,253,250,.3);color:#fbfdfa;
+    background:rgba(251,253,250,.12);border:1px solid rgba(251,253,250,.3);color:var(--awning-ink);
     font-size:13.5px;font-weight:600;white-space:nowrap;cursor:pointer;
   }
   .pill:hover{background:rgba(251,253,250,.2);border-color:rgba(251,253,250,.5)}
   .pill .dot{width:8px;height:8px;border-radius:50%;background:rgba(251,253,250,.6);flex:none}
-  .pill[data-state="on"]{color:#fff;border-color:rgba(251,253,250,.55)}
+  .pill[data-state="on"]{color:var(--awning-ink);border-color:rgba(251,253,250,.55)}
   .pill[data-state="on"] .dot{background:#ffb4c0;opacity:1}
   .pill[data-state="busy"] .dot,.pill[data-state="lost"] .dot{background:var(--butter)}
   .pill .hr-dot{margin:0;width:8px;height:8px;align-self:center}
@@ -362,15 +444,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     .rail{
       left:0;right:0;bottom:0;height:calc(var(--tabbar) + env(safe-area-inset-bottom,0px));
       padding:0 env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
-      background:rgba(251,253,250,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      background:var(--bar);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
       border-top:1px solid var(--line);
     }
     .rail .brand,.rail-foot{display:none}
     .nav{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);height:var(--tabbar)}
     .nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;color:var(--text-faint)}
     .nav .ni{width:56px;height:30px;border-radius:15px;transition:background .15s}
-    .nav a[aria-current="page"]{color:var(--ink);font-weight:700}
-    .nav a[aria-current="page"] .ni{background:var(--butter)}
+    .nav a[aria-current="page"]{color:var(--text);font-weight:700}
+    .nav a[aria-current="page"] .ni{background:var(--butter);color:var(--ink)}
     .top-mark{display:grid;width:30px;height:30px;background:none}
     .top-mark svg.i{width:28px;height:28px}
     .main{padding-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 28px)}
@@ -437,7 +519,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   /* a plate: an icon sits on one, white with a sage rim */
   .plate{
     width:44px;height:44px;border-radius:50%;flex:none;display:grid;place-items:center;color:var(--accent);
-    background:radial-gradient(circle,#fff 0 57%,var(--sage-tint) 59% 100%);box-shadow:inset 0 0 0 1px #c6dccd;
+    background:radial-gradient(circle,var(--plate) 0 57%,var(--plate-rim) 59% 100%);box-shadow:inset 0 0 0 1px var(--plate-line);
   }
   .plate svg.i{width:21px;height:21px}
   .td-hello{margin:0 2px 18px}
@@ -499,7 +581,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   .qk:hover{background:var(--panel-2)}
   .qk .qi{
     width:44px;height:44px;border-radius:50%;display:grid;place-items:center;margin-bottom:10px;color:var(--qc);
-    background:radial-gradient(circle,#fff 0 57%,color-mix(in srgb,var(--qc) 18%,#fff) 59% 100%);
+    background:radial-gradient(circle,var(--plate) 0 57%,color-mix(in srgb,var(--qc) 18%,var(--plate)) 59% 100%);
   }
   .qk b{font-size:16px;font-weight:700;letter-spacing:-.01em}
   .qk span{font-size:14px;color:var(--text-dim);line-height:1.45}
@@ -518,7 +600,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   .install[hidden]{display:none}
   .inst-ic{
     width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;color:var(--accent);
-    background:radial-gradient(circle,#fff 0 57%,var(--sage-tint) 59% 100%);
+    background:radial-gradient(circle,var(--plate) 0 57%,var(--plate-rim) 59% 100%);
   }
   .inst-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
   .inst-txt b{font-size:16px;font-weight:700}
@@ -938,7 +1020,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   .sf-note .sf-list b{color:var(--text);font-weight:720}
   .sf-card .sf-note p:last-child{margin-bottom:0}
   .modal-card .sf-note p{font-size:14px}
-  .tone-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ink);opacity:.6}
+  .tone-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--text);opacity:.6}
   .pm-readout{display:flex;align-items:baseline;gap:10px;justify-content:center;background:var(--panel-2);border-radius:14px;padding:14px;margin:4px 0 16px}
   .pm-hz{font-size:36px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
   .pm-unit{font-size:15px;color:var(--text-faint)}
@@ -951,7 +1033,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   /* ---------- mini player ---------- */
   .player{
     position:fixed;left:0;right:0;bottom:0;z-index:50;
-    background:rgba(251,253,250,.97);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    background:var(--bar);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
     border-top:1px solid var(--line);box-shadow:0 -18px 40px -22px rgba(20,48,42,.35);
     transform:translateY(110%);transition:transform .3s cubic-bezier(.4,0,.2,1),visibility 0s linear .3s;
     visibility:hidden;                              /* closed: out of sight behind the tab bar, and out of the tab order */
@@ -1118,7 +1200,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   }
   .pc-a:hover .pc-top b{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,var(--pcol) 60%,transparent)}
   .pc-ic{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;color:var(--pcol);
-    background:radial-gradient(circle,#fff 0 57%,color-mix(in srgb,var(--pcol) 16%,#fff) 59% 100%);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--pcol) 22%,#fff)}
+    background:radial-gradient(circle,var(--plate) 0 57%,color-mix(in srgb,var(--pcol) 16%,var(--plate)) 59% 100%);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--pcol) 22%,var(--plate))}
   .pc-ic svg.i{width:19px;height:19px}
   .pc-b{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
   .pc-special{align-self:flex-start;margin:-2px 0 2px;padding:2px 8px;border-radius:6px;background:var(--butter);color:var(--ink);
@@ -1126,7 +1208,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   .pc-top{display:flex;align-items:baseline;gap:8px}
   .pc-top b{font-size:17px;font-weight:700;letter-spacing:-.01em;flex:0 1 auto;min-width:0}
   .pc-top .strength{flex:none;align-self:center}
-  .pc-lead{flex:1 1 14px;min-width:14px;border-bottom:2px dotted #a9c0b1;transform:translateY(-4px)}
+  .pc-lead{flex:1 1 14px;min-width:14px;border-bottom:2px dotted var(--leader);transform:translateY(-4px)}
   .pc-price{flex:none;font-family:var(--mono);font-size:14.5px;font-weight:500;white-space:nowrap}
   .pc-blurb{font-size:14.5px;color:var(--text-dim);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   @media (max-width:560px){ .pc-blurb{-webkit-line-clamp:2} .pr-list{padding:2px 14px 0} }
@@ -1179,7 +1261,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   .si-steps li{display:flex;align-items:baseline;gap:10px;font-size:15.5px;padding:9px 0;border-bottom:1px solid var(--line-soft)}
   .si-steps li::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--kc,var(--accent));flex:none;align-self:center}
   .si-steps span{flex:1;display:flex;align-items:baseline;gap:8px;min-width:0}
-  .si-steps span::after{content:"";flex:1 1 14px;min-width:14px;border-bottom:2px dotted #a9c0b1;transform:translateY(-4px)}
+  .si-steps span::after{content:"";flex:1 1 14px;min-width:14px;border-bottom:2px dotted var(--leader);transform:translateY(-4px)}
   .si-steps time{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--text);white-space:nowrap}
   .si-ev{margin-top:4px}
   .si-caution{display:flex;gap:10px;margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--warn-bg);color:var(--warn-ink);font-size:14px}
@@ -1321,7 +1403,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   .ses-b:hover{background:var(--panel-3)}
   .ses-b:disabled{opacity:.35;cursor:default}
   .ses-b svg.i{width:20px;height:20px;fill:currentColor;stroke-width:1.6}
-  .ses-b.main{width:76px;height:76px;background:var(--accent);color:var(--on-accent);box-shadow:0 10px 24px -10px rgba(247,208,78,.55)}
+  .ses-b.main{width:76px;height:76px;background:var(--accent);color:var(--on-accent);box-shadow:0 10px 24px -10px var(--glow)}
   .ses-b.main svg.i{width:26px;height:26px;stroke-width:3.2}
   .ses-quick{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
   .qt{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--text-faint);font-size:12.5px;font-weight:650;
@@ -1410,12 +1492,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   }
 
   /* dimmed for sleep, when Settings asks for it: almost nothing lit */
-  .ses[data-dim="1"] .ses-run{--text:#5f7a70;--text-dim:#4c655c;--text-faint:#3c5249}
+  .ses[data-dim="1"] .ses-run{--text:var(--dim-text);--text-dim:var(--dim-text-dim);--text-faint:var(--dim-text-faint)}
   .ses[data-dim="1"] .ses-stage{opacity:.35;transition:opacity 4s}
-  .ses[data-dim="1"] .ses-b,.ses[data-dim="1"] .ses-x,.ses[data-dim="1"] .lc,.ses[data-dim="1"] .qt[aria-pressed="true"]{background:#0b1d19}
-  .ses[data-dim="1"] .ses-b.main{background:#1d3b33;color:#7f9d92;box-shadow:none}
+  .ses[data-dim="1"] .ses-b,.ses[data-dim="1"] .ses-x,.ses[data-dim="1"] .lc,.ses[data-dim="1"] .qt[aria-pressed="true"]{background:var(--dim-panel)}
+  .ses[data-dim="1"] .ses-b.main{background:var(--dim-main);color:var(--dim-main-ink);box-shadow:none}
   .ses[data-dim="1"] .ses-fill{opacity:.25}
-  body:has(.ses[data-dim="1"]:not([hidden])).immersive{background:#050f0d}
+  body:has(.ses[data-dim="1"]:not([hidden])).immersive{background:var(--dim-room)}
 
   /* ---------- settings ---------- */
   .st{display:grid;gap:14px;max-width:760px;--pcol:var(--accent)}
@@ -1519,7 +1601,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   .sd-bill-t{margin:8px 0 0;text-align:center;font-family:var(--mono);font-size:13.5px;color:var(--text-dim)}
   .sd-fortune{margin-top:14px}
   .sd-k{display:flex;align-items:center;gap:8px;margin:0 0 8px;color:var(--text-faint)}
-  .sd-k svg.i{width:22px;height:22px;color:#b07a12}
+  .sd-k svg.i{width:22px;height:22px;color:var(--cookie)}
   .sd-fortune .sd-quote{margin-top:0}
   .sd-next .sd-k{flex-basis:100%;margin:0;color:var(--tomato-deep)}
   .sd-ex{margin-top:10px;padding:14px 16px 16px;border-radius:16px;background:var(--panel);border:1px solid color-mix(in srgb,var(--pcol) 40%,transparent)}
@@ -1708,11 +1790,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   .yb-tm .lv s{text-decoration:none;color:color-mix(in srgb,var(--text-faint) 45%,transparent)}
   .yb-plus{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-weight:800;font-size:17px;line-height:1}
   .yb-bar{position:sticky;bottom:14px;z-index:30;display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 12px;border-radius:18px;
-    background:rgba(251,253,250,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:0 14px 34px -16px rgba(20,48,42,.4)}
+    background:var(--bar);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:0 14px 34px -16px rgba(20,48,42,.4)}
   .yb-bt{flex:1;font-size:13px;color:var(--text-dim);font-variant-numeric:tabular-nums;min-width:0}
   .yb-bar .btn.primary svg.i{fill:currentColor;stroke:none;width:16px;height:16px}
   #ybDel[hidden]{display:none}
-  #ybDel.armed{background:var(--danger);color:#fff;border-color:var(--danger)}
+  #ybDel.armed{background:var(--danger);color:var(--on-danger);border-color:var(--danger)}
   @media (max-width:1023px){ .yb-bar{bottom:calc(var(--tabbar) + env(safe-area-inset-bottom,0px) + 10px)} }
   @media (max-width:880px){
     .yb-grid{grid-template-columns:minmax(0,1fr)}
@@ -1744,7 +1826,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     box-shadow:var(--card-shadow);transition:background .15s}
   .td-goal:hover{background:var(--panel-2)}
   .td-gi{width:44px;height:44px;border-radius:50%;flex:none;display:grid;place-items:center;color:var(--accent);
-    background:radial-gradient(circle,#fff 0 57%,var(--sage-tint) 59% 100%);box-shadow:inset 0 0 0 1px #c6dccd}
+    background:radial-gradient(circle,var(--plate) 0 57%,var(--plate-rim) 59% 100%);box-shadow:inset 0 0 0 1px var(--plate-line)}
   .td-gi svg.i{width:21px;height:21px}
   .td-goal b{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:-.01em}
   .td-gn{font-size:13px;color:var(--text-faint);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -1987,9 +2069,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     .lv-body{padding:2px 16px 16px}
     .lv-sup > summary{padding:13px 14px}
   }
-  a.btn.donate{gap:8px;color:#fff;background:var(--tomato-deep);border-color:var(--tomato-deep);text-decoration:none}
+  a.btn.donate{gap:8px;color:var(--on-tomato);background:var(--tomato-deep);border-color:var(--tomato-deep);text-decoration:none}
   a.btn.donate:hover{background:var(--tomato-deep);filter:brightness(1.1)}
-  a.btn.donate svg.i{color:#fff}
+  a.btn.donate svg.i{color:var(--on-tomato)}
   .st-about a.btn.donate{align-self:flex-start;margin-top:4px}
   .st-fb .fb-l{display:block;margin:2px 0 -6px;font-weight:700;font-size:14px}
   .st-fb .fb-in,.st-fb .fb-ta{width:100%;box-sizing:border-box;background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:11px 13px;font:inherit;font-size:15.5px;line-height:1.5}
@@ -2000,7 +2082,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   .st-fb .so-tg small{word-break:break-word}
   .donate-card{display:flex;align-items:center;justify-content:space-between;gap:12px 14px;flex-wrap:wrap}
   .donate-card p{margin:0;flex:1 1 200px}
-  .dc-jar{color:var(--tomato-deep);background:radial-gradient(circle,#fff 0 57%,var(--tomato-tint) 59% 100%);box-shadow:inset 0 0 0 1px #efc9bf}
+  .dc-jar{color:var(--tomato-deep);background:radial-gradient(circle,var(--plate) 0 57%,var(--tomato-tint) 59% 100%);box-shadow:inset 0 0 0 1px var(--tomato-line)}
   .donate-card b{color:var(--text);font-weight:700}
   .td-donate{margin-top:12px}
   .sd-donate{margin-top:18px}
@@ -4494,6 +4576,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     bSetT("#viewTitle", t.name);
     document.title = t.name + " | Entrain";
     trSync();
+    themeSync();                                       // a sleep track turns the bedtime colours on
   }
   // the page follows the player: Play, Pause or Resume, and the notch
   function trSync() {
@@ -8297,7 +8380,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   /* The page is complete on its own. When it's served from the site, a small worker (sw.js)
      keeps a copy on the device so it opens offline, and Chrome can install it as an app.
      Opened as a saved file, or inside a preview frame, none of this runs. */
-  var BUILD = "435f64db";                     // the build, from the sources (build.py): shown in About and added to feedback
+  var BUILD = "5e020796";                     // the build, from the sources (build.py): shown in About and added to feedback
   var APP = { reg: null, prompt: null, hadCtl: false, reloading: false, checked: 0, tt: 0, waiting: null, touched: false, t0: Date.now(), autoT: 0 };
 
   function standalone() {
@@ -11427,7 +11510,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     { id: "reflect", name: "Reflect", lede: "Feelings, needs and kindness, towards yourself and others.", icon: "nvc" }
   ];
   // each goal's colour, in History's bars
-  var GOAL_COL = { sleep: "#6d4fc2", calm: "#0e7c6b", focus: "#a55e00", energy: "#c2410c", recover: "#1f6fa8", reflect: "#b3366f" };   // deep enough to read on the light page
+  var GOAL_COL = { sleep: "var(--g-sleep)", calm: "var(--g-calm)", focus: "var(--g-focus)", energy: "var(--g-energy)", recover: "var(--g-recover)", reflect: "var(--g-reflect)" };   // per theme, in styles.css
   var METHODS = [["breath", "Breathing", "breathe"], ["meditate", "Meditation", "practice"], ["move", "Movement", "move"],
     ["relax", "Relaxation", "moon"], ["sound", "Sound", "sounds"], ["write", "Writing", "nvc"], ["program", "Programme", "spark"], ["measure", "Measurement", "pulse"]];
   var POSTURES = [["sit", "Sitting"], ["lie", "Lying"], ["stand", "Standing"], ["walk", "Walking"]];
@@ -13091,6 +13174,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   function pImmersive() {
     var on = curView === "session" && pBusy();
     document.body.classList.toggle("immersive", on);
+    themeSync();                                       // a practice for sleep turns the bedtime colours on
   }
   function pPill() {
     var pill = $("#tbPrac");
@@ -13254,7 +13338,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     if (window.speechSynthesis && speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pFillVoices);
     window.addEventListener("pagehide", function () { if (pBusy()) pHush(); });
     setInterval(function () { if (pBusy()) pPill(); }, 1000);
-    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList };   // for automated tests only
+    if (store.get("debug")) window.__entrain = { P: P, A: A, B: B, BC: BC, H: H, pPlan: pPlan, pDef: pDef, pAudio: pAudio, RHY: RHY, AMB: AMB, AM: AM, ASANA: ASANA, pMovePhase: pMovePhase, QUOTES: QUOTES, qDay: qDay, AD: AD, NP: function () { return NP; }, SC: function () { return SC; }, scBaseline: scBaseline, WL: WL, wlSync: wlSync, PRACTICES: PRACTICES, BREATHS: BREATHS, TRACKS: TRACKS, ST: ST, BCOL: BCOL, THEME: THEME, pOptsOf: pOptsOf, pDone: pDone, MS: MS, TN: TN, libAll: libAll, libNames: libNames, LIB: LIB, MP: MP, LV: LV, RECIPES: RECIPES, SUPPS: SUPPS, SUPPS_MORE: SUPPS_MORE, COFFEE: COFFEE, lvAmt: lvAmt, APP: APP, appBusy: appBusy, MIC: MIC, micRate: micRate, breathPace: breathPace, swingList: swingList };   // for automated tests only
   }
   /* ------------------------------- the end screen -------------------------------
      What a practice measured, as tiles you can tap for what each number means, with your own
@@ -13961,7 +14045,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
      (backup.js), the feedback form, and About with the build.
   ------------------------------------------------------------------------------ */
 
-  var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true };
+  var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true, theme: "auto" };
 
   function stLoad() {
     try {
@@ -14015,6 +14099,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         pToggle("stKeep", "Keep a copy on this device", g.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing.") +
       "</section>" +
       '<section class="st-card" id="st-screen" aria-labelledby="stS"><h2 id="stS">Screen</h2>' +
+        '<div class="so-row so-seg"><span class="so-l">Appearance<small>Automatic is dark when your phone is, and from 9 pm to 5 am. ' +
+          "The practices for sleep always turn to dim, warm bedtime colours, for use in bed.</small></span>" +
+          stSeg("stTheme", [["auto", "Automatic"], ["light", "Light"], ["dark", "Dark"]], ST.theme) + "</div>" +
         pToggle("stScrSes", "Keep the screen on during practices and breathing", ST.screenSessions, "Also for ten minutes into a pause.") +
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
@@ -14148,6 +14235,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       if (!pBusy() && P.optFor) P.opt = pOptsOf(P.optFor);
       stRender();
       toast("Every practice now uses the defaults.");
+    });
+    var th = $("#stTheme");
+    th.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      th.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      themeSet(b.dataset.v);
     });
     on("#stScrSes", function () { ST.screenSessions = this.checked; stSave(); wlSync(); });
     on("#stScrTrk", function () { ST.screenTracks = this.checked; stSave(); wlSync(); });
@@ -15643,8 +15737,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
       { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));
     out.push(fdEntry("app", "Settings", "Defaults for every practice, sound and screen",
-      ["Spoken guidance, voice, bells, breath cues and visual, binaural layer, Anapana reminders, background sound, keeping reflections, and keeping the screen on or dimming it for sleep."], "#settings",
+      ["Spoken guidance, voice, bells, breath cues and visual, binaural layer, Anapana reminders, background sound, keeping reflections, light, dark or automatic, and keeping the screen on or dimming it for sleep."], "#settings",
       { ic: "gear", col: "var(--accent)", w: 1, tags: "options preferences defaults voice bells screen dim brightness wake lock background rain" }));
+    out.push(fdEntry("app", "Appearance", "Settings · light, dark or automatic",
+      ["Light, dark, or automatic: dark when your phone is, and from 9 pm to 5 am. The practices for sleep always turn to dim, warm bedtime colours, for use in bed."], "#st-screen",
+      { ic: "moon", col: "var(--accent)", w: 1, tags: "dark mode night theme light colours colors appearance bedtime dim black" }));
     out.push(fdEntry("app", "Feedback", "Settings · an idea, a problem or something you liked",
       ["Write it in Settings, and it opens as an issue on Entrain's GitHub page, ready to send."], "#feedback",
       { ic: "send", col: "var(--accent)", w: 1, tags: "contact bug report issue github suggestion idea problem praise question" }));
@@ -17589,6 +17686,70 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     });
     if (window.ResizeObserver) new ResizeObserver(drawHomeWave).observe($("#homeWave"));
   }
+  /* --------------------------------- theme ---------------------------------
+     Light, dark, or automatic (Settings, Screen): automatic is dark when the phone is, and for the
+     late-night service, from 9 pm to 5 am, since that's when Sleep Descent and the other practices for
+     sleep get used, often in bed. Those practices and the sleep tracks go further, to the bedtime
+     colours, whatever the theme: their page, the session and the end screen turn dim, warm and low.
+     The colours themselves are in styles.css (:root[data-theme="dark"], :root[data-mood="bed"]); a
+     script at the top of the page sets the theme before anything is drawn, so nothing flashes white.
+  ---------------------------------------------------------------------------- */
+
+  var THEME = { dark: null, bed: null, mq: null };
+
+  function themeDark() {
+    if (ST.theme === "dark") return true;
+    if (ST.theme === "light") return false;
+    var h = new Date().getHours();
+    return !!(THEME.mq && THEME.mq.matches) || h >= 21 || h < 5;
+  }
+  // the practice or track on the screen is for sleep: Sleep Descent and the others for sleep or good for
+  // it, the power nap, and the sleep tracks
+  function themeBed() {
+    if (curView === "session") {
+      var d = $("#sIntro").hidden ? P.def : P.view;            // running or just ended, else the page shown
+      return !!d && (pSleepy(d) || d.id === "power-nap");
+    }
+    if (curView === "track") { var t = trackById(TR.id); return !!t && t.goal === "sleep"; }
+    return false;
+  }
+  function themeSync() {
+    var dark = themeDark(), bed = themeBed(), root = document.documentElement;
+    if (dark === THEME.dark && bed === THEME.bed) return;
+    THEME.dark = dark; THEME.bed = bed;
+    root.dataset.theme = dark ? "dark" : "light";
+    if (bed) root.dataset.mood = "bed"; else delete root.dataset.mood;
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute("content", bed ? "#121b17" : dark ? "#1a2e26" : "#1d6a50");    // the fascia's colour
+    themeRepaint();
+  }
+  // the drawings read their colours when they start; they take the new ones, and what's showing redraws
+  function themeRepaint() {
+    var tries = [
+      readColors,
+      function () { var nc = nightStyle(); ["relax", "stim", "ther", "accent", "food", "hr"].forEach(function (k) { if (nc[k]) P.col[k] = nc[k]; }); },
+      function () { if (curView === "home") drawHomeWave(); },
+      function () { if (curView === "breathe") sizeCanvas(); },
+      function () { if (curView === "heart") { drawSwings(); drawFind(); drawSpectrum(); } },
+      function () { if (curView === "session" && !$("#sDone").hidden && SD.r) sdDraw(); }
+    ];
+    tries.forEach(function (f) { try { f(); } catch (e) {} });
+  }
+  function themeSet(v) {
+    ST.theme = v === "light" || v === "dark" ? v : "auto";
+    stSave();
+    themeSync();
+  }
+  function themeInit() {
+    THEME.mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    if (THEME.mq) {
+      if (THEME.mq.addEventListener) THEME.mq.addEventListener("change", themeSync);
+      else if (THEME.mq.addListener) THEME.mq.addListener(themeSync);
+    }
+    setInterval(themeSync, 60000);                       // the late-night service starts at 9 pm, and ends at 5
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) themeSync(); });
+    themeSync();
+  }
   /* -------------------------------- your data --------------------------------
      Everything Entrain keeps lives in this browser's storage, on this device. A backup is one
      file of all of it, to keep somewhere safe or to move to another phone, and restoring one
@@ -17831,7 +17992,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
   }
   [["the player", playerInit], ["the lock screen", msInit], ["the beat builder", builderInit], ["the custom primer", primeInit], ["dialogs", dialogsInit],
     ["the safety note", safeInit], ["Breathe", initBreath], ["Heart", hrInit], ["the menus", shellInit], ["updates", appInit], ["background sounds", ambInit],
-    ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit], ["the library", libInit],
+    ["quotes", qInit], ["Today", todayInit], ["History", hInit], ["favourites", favInit], ["track pages", trInit], ["practices", pInit], ["the theme", themeInit], ["the library", libInit],
     ["yoga", yInit], ["the NVC practices", nvcInit], ["Healthy living", lvInit], ["search", fdInit], ["backups", bkInit],
     ["the first page", route]                              // the library is built when it's first shown, not here
   ].forEach(function (x) { start(x[0], x[1]); });

@@ -4,7 +4,7 @@
      (backup.js), the feedback form, and About with the build.
   ------------------------------------------------------------------------------ */
 
-  var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true };
+  var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true, theme: "auto" };
 
   function stLoad() {
     try {
@@ -58,6 +58,9 @@
         pToggle("stKeep", "Keep a copy on this device", g.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing.") +
       "</section>" +
       '<section class="st-card" id="st-screen" aria-labelledby="stS"><h2 id="stS">Screen</h2>' +
+        '<div class="so-row so-seg"><span class="so-l">Appearance<small>Automatic is dark when your phone is, and from 9 pm to 5 am. ' +
+          "The practices for sleep always turn to dim, warm bedtime colours, for use in bed.</small></span>" +
+          stSeg("stTheme", [["auto", "Automatic"], ["light", "Light"], ["dark", "Dark"]], ST.theme) + "</div>" +
         pToggle("stScrSes", "Keep the screen on during practices and breathing", ST.screenSessions, "Also for ten minutes into a pause.") +
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
@@ -191,6 +194,13 @@
       if (!pBusy() && P.optFor) P.opt = pOptsOf(P.optFor);
       stRender();
       toast("Every practice now uses the defaults.");
+    });
+    var th = $("#stTheme");
+    th.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      th.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      themeSet(b.dataset.v);
     });
     on("#stScrSes", function () { ST.screenSessions = this.checked; stSave(); wlSync(); });
     on("#stScrTrk", function () { ST.screenTracks = this.checked; stSave(); wlSync(); });

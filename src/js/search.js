@@ -149,8 +149,11 @@
       ["Heart rate, the swing in each breath, RMSSD and coherence, with a spectrum of the rhythms your heart rate moves in."], "#heart",
       { ic: "pulse", col: "var(--hr)", w: 1, tags: "hrv variability rmssd coherence spectrum heartmath" }));
     out.push(fdEntry("app", "Settings", "Defaults for every practice, sound and screen",
-      ["Spoken guidance, voice, bells, breath cues and visual, binaural layer, Anapana reminders, background sound, keeping reflections, and keeping the screen on or dimming it for sleep."], "#settings",
+      ["Spoken guidance, voice, bells, breath cues and visual, binaural layer, Anapana reminders, background sound, keeping reflections, light, dark or automatic, and keeping the screen on or dimming it for sleep."], "#settings",
       { ic: "gear", col: "var(--accent)", w: 1, tags: "options preferences defaults voice bells screen dim brightness wake lock background rain" }));
+    out.push(fdEntry("app", "Appearance", "Settings · light, dark or automatic",
+      ["Light, dark, or automatic: dark when your phone is, and from 9 pm to 5 am. The practices for sleep always turn to dim, warm bedtime colours, for use in bed."], "#st-screen",
+      { ic: "moon", col: "var(--accent)", w: 1, tags: "dark mode night theme light colours colors appearance bedtime dim black" }));
     out.push(fdEntry("app", "Feedback", "Settings · an idea, a problem or something you liked",
       ["Write it in Settings, and it opens as an issue on Entrain's GitHub page, ready to send."], "#feedback",
       { ic: "send", col: "var(--accent)", w: 1, tags: "contact bug report issue github suggestion idea problem praise question" }));

@@ -63,6 +63,7 @@
     bSetT("#viewTitle", t.name);
     document.title = t.name + " | Entrain";
     trSync();
+    themeSync();                                       // a sleep track turns the bedtime colours on
   }
   // the page follows the player: Play, Pause or Resume, and the notch
   function trSync() {

@@ -246,6 +246,106 @@ const DAY = 864e5;
       await go(d, 'track/sleep-descent', 300); await d.screenshot({ path: OUT + 'track-desk.png', fullPage: true });
       await d.close();
     }
+    /* G. light, dark and the bedtime colours: the setting and what Automatic follows (the phone, and the
+       late-night service from 9 pm to 5 am), set before anything is drawn and kept; the practices for sleep
+       and the sleep tracks in dim, warm colours whatever the theme, their drawings too; text at 4.5:1 */
+    if (!only || only === 'G') {
+      const at = async (scheme, hour, st) => {
+        const ctx = await browser.newContext({ userAgent: S20, viewport: { width: 412, height: 915 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, colorScheme: scheme });
+        const p = await ctx.newPage();
+        p.on('pageerror', e => log.push('PAGEERROR ' + e.message));
+        p.on('console', m => { if (m.type() === 'error') log.push('CONSOLE ' + m.text()); });
+        await p.clock.setFixedTime(new Date(2026, 10, 24, hour, 30));
+        await p.addInitScript(s => {
+          if (sessionStorage.getItem('seeded')) return;
+          sessionStorage.setItem('seeded', '1');
+          localStorage.setItem('entrain.debug', '1'); localStorage.setItem('entrain.stereo', 'ok');
+          localStorage.setItem('entrain.pOpt', JSON.stringify({ voice: false, bells: false, cues: 'off', visual: 'circle', audio: false, voiceName: '', ana: 0, rhythm: false }));
+          for (const k in s) localStorage.setItem('entrain.' + k, s[k]);
+        }, st || {});
+        await p.addInitScript(() => { if (window.speechSynthesis) { speechSynthesis.speak = () => {}; speechSynthesis.cancel = () => {}; } });
+        await p.goto(APP); await p.waitForTimeout(400);
+        return p;
+      };
+      const look = p => E(p, () => { const r = document.documentElement, cs = getComputedStyle(document.body);
+        return { theme: r.dataset.theme || '', mood: r.dataset.mood || '', bg: cs.backgroundColor, meta: document.querySelector('meta[name="theme-color"]').getAttribute('content') }; });
+      // contrast of each text colour on each surface, from the tokens in force on an element
+      const worst = (p, sel) => E(p, sel => {
+        const el = document.querySelector(sel), cs = getComputedStyle(el), v = n => cs.getPropertyValue(n).trim();
+        const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4)); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+        const cr = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+        let w = 99, at = '';
+        for (const t of ['--text', '--text-dim', '--text-faint', '--accent', '--relax', '--stim', '--ther', '--hr', '--danger', '--food'])
+          for (const s of ['--bg', '--panel', '--panel-2', '--panel-3']) { const c = cr(v(t), v(s)); if (c < w) { w = c; at = t + ' on ' + s; } }
+        return { w: Math.round(w * 100) / 100, at };
+      }, sel);
+
+      // Automatic, an afternoon, a light phone: light
+      let p = await at('light', 14);
+      let l = await look(p);
+      ok(l.theme === 'light' && !l.mood && l.bg === 'rgb(235, 242, 233)' && l.meta === '#1d6a50', 'Automatic on a light phone in the afternoon is light: ' + JSON.stringify(l));
+      // Sleep Descent: the bedtime colours, though the theme is light, on its page, in the session and on its end screen
+      await go(p, 'practice/sleep-descent', 400);
+      l = await look(p);
+      const go0 = await E(p, () => { const b = getComputedStyle(document.querySelector('#sGo')); return { bg: b.backgroundColor, fg: b.color }; });
+      ok(l.theme === 'light' && l.mood === 'bed' && l.bg === 'rgb(10, 14, 12)' && l.meta === '#121b17' && go0.bg === 'rgb(27, 36, 31)' && go0.fg === 'rgb(180, 154, 92)',
+        'Sleep Descent\'s page turns to the bedtime colours, with Start in outline: ' + JSON.stringify(l) + ' ' + JSON.stringify(go0));
+      let c = await worst(p, '#sIntro');
+      ok(c.w >= 4.5, 'in the bedtime colours every text colour has 4.5:1 or more on every surface: ' + c.w + ' (' + c.at + ')');
+      await p.click('#sGo'); await p.waitForTimeout(600);
+      const run = await E(p, () => { const X = window.__entrain; return { mood: document.documentElement.dataset.mood || '', ther: X.P.col.ther, bin: X.BCOL['b-in'], room: getComputedStyle(document.body).backgroundColor,
+        main: getComputedStyle(document.querySelector('#sPlay')).backgroundColor }; });
+      ok(run.mood === 'bed' && run.ther === '#8b81b8' && run.bin === '#5f9a8c' && run.room === 'rgb(6, 9, 8)' && run.main === 'rgb(26, 35, 30)',
+        'the session runs in the dimmed room in bedtime colours, its drawings too: ' + JSON.stringify(run));
+      c = await worst(p, '#sRun');
+      ok(c.w >= 4.5, 'and the session\'s text has 4.5:1 or more on its surfaces: ' + c.w + ' (' + c.at + ')');
+      await endNow(p); await p.waitForTimeout(500);
+      l = await look(p);
+      ok(l.mood === 'bed' && await vis(p, '#sDone'), 'its end screen stays in the bedtime colours');
+      await go(p, 'home', 400);
+      l = await look(p);
+      const back = await E(p, () => window.__entrain.P.col.ther);
+      ok(l.theme === 'light' && !l.mood && l.bg === 'rgb(235, 242, 233)' && back === '#a78bfa', 'Today is light again, and the drawings take their usual colours back: ' + JSON.stringify(l) + ' ' + back);
+      await go(p, 'practice/calm-reset', 400);
+      ok(!(await look(p)).mood, 'a practice that isn\'t for sleep keeps the theme');
+      await go(p, 'track/sleep-descent', 400);
+      const trk = (await look(p)).mood;
+      await go(p, 'track/theta-meditation', 400);
+      ok(trk === 'bed' && !(await look(p)).mood, 'a sleep track turns to the bedtime colours, another track doesn\'t');
+      // the setting: Dark, kept through a reload and set before the page draws; then Automatic again
+      await go(p, 'settings', 400);
+      ok(/Automatic is dark when your phone is, and from 9 pm to 5 am/.test(await t(p, '#st-screen')) && await E(p, () => document.querySelector('#stTheme [aria-pressed=true]').dataset.v) === 'auto',
+        'Settings has Appearance, on Automatic, and says what Automatic follows');
+      await p.click('#stTheme [data-v=dark]'); await p.waitForTimeout(200);
+      l = await look(p);
+      const kept = await E(p, () => JSON.parse(localStorage.getItem('entrain.settings')).theme);
+      ok(l.theme === 'dark' && l.bg === 'rgb(15, 23, 20)' && l.meta === '#1a2e26' && kept === 'dark', 'Dark turns the app dark at once, and is kept: ' + JSON.stringify(l));
+      c = await worst(p, '#v-settings');
+      ok(c.w >= 4.5, 'in the dark theme every text colour has 4.5:1 or more on every surface: ' + c.w + ' (' + c.at + ')');
+      await p.reload(); await p.waitForTimeout(400);
+      const early = await E(p, () => document.documentElement.dataset.theme);
+      ok(early === 'dark', 'after a reload the page is dark from the start');
+      await go(p, 'settings', 400);
+      await p.click('#stTheme [data-v=auto]'); await p.waitForTimeout(200);
+      ok((await look(p)).theme === 'light', 'Automatic again: light, in the afternoon on a light phone');
+      // search finds it
+      await p.click('#tbFind'); await p.fill('#fdIn', 'dark mode'); await p.waitForTimeout(300);
+      ok(await E(p, () => document.querySelector('#fdRes .fd-it').getAttribute('href')) === '#st-screen', 'search finds Appearance under "dark mode"');
+      await p.keyboard.press('Escape');
+      await p.context().close();
+      // Automatic: dark on a dark phone, and from 9 pm on a light one; Light chosen stays light
+      p = await at('dark', 14);
+      ok((await look(p)).theme === 'dark', 'Automatic on a dark phone is dark');
+      await p.context().close();
+      p = await at('light', 22);
+      l = await look(p);
+      ok(l.theme === 'dark', 'Automatic at 10:30 pm is dark, for the late-night service, even on a light phone');
+      await p.screenshot({ path: OUT + 'today-dark.png' });
+      await p.context().close();
+      p = await at('dark', 22, { settings: JSON.stringify({ theme: 'light' }) });
+      ok((await look(p)).theme === 'light', 'Light chosen stays light, at night on a dark phone');
+      await p.context().close();
+    }
   } catch (e) { log.push('ERROR ' + (e.stack || e.message)); }
   await browser.close();
   console.log(log.join('\n'));

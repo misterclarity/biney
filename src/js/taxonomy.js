@@ -14,7 +14,7 @@
     { id: "reflect", name: "Reflect", lede: "Feelings, needs and kindness, towards yourself and others.", icon: "nvc" }
   ];
   // each goal's colour, in History's bars
-  var GOAL_COL = { sleep: "#6d4fc2", calm: "#0e7c6b", focus: "#a55e00", energy: "#c2410c", recover: "#1f6fa8", reflect: "#b3366f" };   // deep enough to read on the light page
+  var GOAL_COL = { sleep: "var(--g-sleep)", calm: "var(--g-calm)", focus: "var(--g-focus)", energy: "var(--g-energy)", recover: "var(--g-recover)", reflect: "var(--g-reflect)" };   // per theme, in styles.css
   var METHODS = [["breath", "Breathing", "breathe"], ["meditate", "Meditation", "practice"], ["move", "Movement", "move"],
     ["relax", "Relaxation", "moon"], ["sound", "Sound", "sounds"], ["write", "Writing", "nvc"], ["program", "Programme", "spark"], ["measure", "Measurement", "pulse"]];
   var POSTURES = [["sit", "Sitting"], ["lie", "Lying"], ["stand", "Standing"], ["walk", "Walking"]];
