@@ -49,7 +49,7 @@
           desc: "", ev: "", cite: "",
           then: { mode: c.then }
         });
-      });
+      }, bmMode());                            // on speakers (monaural, isochronic) there's no headphone check
     });
     syncPrime();
     $("#primeFav").innerHTML = favBtn("x:prime", "Custom primer");

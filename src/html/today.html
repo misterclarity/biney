@@ -1,7 +1,42 @@
       <!-- ============ TODAY ============ -->
       <section class="view" id="v-home" aria-labelledby="viewTitle">
+        <div class="td-hello">
+          <h2 id="tdHello">Hello.</h2>
+          <p>What would restore you today?</p>
+        </div>
+
+        <!-- the special for this time of day, on the specials board -->
+        <section class="suggest special night" id="homeSuggest" aria-labelledby="sgName">
+          <svg class="sp-bowl" viewBox="0 0 120 120" aria-hidden="true">
+            <path class="sp-steam" d="M42 52c-6-6 6-10 0-16s6-10 0-16"/>
+            <path class="sp-steam sp-s2" d="M60 48c-6-6 6-10 0-16s6-10 0-16"/>
+            <path class="sp-steam sp-s3" d="M78 52c-6-6 6-10 0-16s6-10 0-16"/>
+            <path d="M14 64a46 40 0 0 0 92 0z" fill="#fbfdfa"/>
+            <path d="M21 79q39 13 78 0" fill="none" stroke="#1d6a50" stroke-width="3" stroke-linecap="round"/>
+            <ellipse cx="60" cy="64" rx="46" ry="9" fill="#fbfdfa"/>
+            <ellipse cx="60" cy="64.5" rx="39" ry="6" fill="#e4533b"/>
+            <path d="M47 103h26l-2.5 7h-21z" fill="#d3e6d9"/>
+          </svg>
+          <span class="sg-when kicker" id="sgWhen">Now serving</span>
+          <div class="sg-t">
+            <h3 id="sgName">Practice</h3>
+            <span class="sg-meta" id="sgMeta"></span>
+          </div>
+          <p class="sg-txt" id="sgTxt"></p>
+          <p class="sg-pair" id="sgPair" hidden>{i:pair}<span id="sgPairTxt"></span></p>
+          <div class="sg-act">
+            <button class="btn primary" id="sgStart">{i:play}<span id="sgStartTxt">Start</span></button>
+            <a class="btn" id="sgGo" href="#practice">What’s in it</a>
+          </div>
+          <p class="sg-next"><span id="sgNextWhen"></span><b id="sgNextName"></b></p>
+          <a class="sg-rt" id="sgRt" href="#living/morning">Your morning routine</a>
+          <a class="sg-rt" id="sgSnd" href="#sleep-sounds" hidden>Sleep sounds, fading out</a>
+        </section>
+
+        <!-- your breathing pattern, ready to start: from the breath bar -->
         <div class="home-hero">
-          <div>
+          <div class="hh-t">
+            <span class="kicker hh-k">From the breath bar</span>
             <h2 id="homePat">Resonance 5.5</h2>
             <p id="homePatTxt">5.5 breaths a minute: in for 5.5 s, out for 5.5 s. A 5-minute session.</p>
             <div class="home-actions">
@@ -9,11 +44,25 @@
               <button class="btn" data-go="breathe">Change pattern</button>
             </div>
           </div>
-          <div class="home-wave" aria-hidden="true"><canvas id="homeWave"></canvas></div>
+          <div class="home-wave night" aria-hidden="true"><canvas id="homeWave"></canvas></div>
         </div>
 
+        <div class="install hc-offer" id="tdHealth" hidden>
+          <span class="inst-ic">{i:heart}</span>
+          <div class="inst-txt"><b>A short health check</b><span>Nine yes-or-no questions, so the practices that could affect you show a caution written for you. Optional, and kept on this device.</span></div>
+          <div class="inst-act"><a class="btn primary small" id="tdHealthGo" href="#st-health">Take it</a><button class="btn small" id="tdHealthLater">Not now</button></div>
+        </div>
+        <section class="td-card td-check" aria-labelledby="tdCheckH">
+          <span class="plate">{i:pulse}</span>
+          <div class="tc-t">
+            <h2 id="tdCheckH">Not sure what to order?</h2>
+            <p>Rate how you feel, rest while your heart is read, and get the practice that fits.</p>
+          </div>
+          <a class="btn tc-go" href="#practice/stress-check">Take the Stress Check</a>
+        </section>
+
         <section class="td-sec" id="tdFav" aria-labelledby="tdFavH">
-          <div class="td-h"><h2 id="tdFavH">{i:star}Favourites</h2></div>
+          <div class="td-h"><h2 id="tdFavH">Your usuals</h2></div>
           <ul class="pr-list td-list" id="tdFavList" hidden></ul>
           <p class="td-empty" id="tdFavEmpty">Tap the star on a practice, a track or a breathing pattern to keep it here.</p>
         </section>
@@ -23,14 +72,25 @@
           <div id="tdRecentBody"></div>
         </section>
 
-        <div class="suggest" id="homeSuggest">
-          <span class="sg-ic">{i:practice}</span>
-          <div class="sg-t"><span class="sg-when" id="sgWhen">Suggested</span><b id="sgName">Practice</b><span id="sgTxt"></span><a class="sg-rt" id="sgRt" href="#living/morning">Your morning routine</a></div>
-          <div class="sg-act"><a class="btn primary small" id="sgGo" href="#practice">Open</a></div>
+        <div class="install rh-offer" id="tdRhOffer" hidden>
+          <span class="inst-ic">{i:today}</span>
+          <div class="inst-txt"><b>A daily rhythm</b><span>Three short sessions spread through the day: morning energy, a midday reset and an evening wind-down, ticked off as you do them. How often you practise matters more than how long.</span></div>
+          <div class="inst-act"><button class="btn primary small" id="tdRhGo">Set it up</button><button class="btn small" id="tdRhLater">Not now</button></div>
         </div>
 
+        <section class="td-sec" id="tdRhythm" aria-labelledby="tdRhythmH" hidden>
+          <div class="td-h"><h2 id="tdRhythmH">{i:today}Daily rhythm</h2><a class="td-more" href="#st-rhythm">Change</a></div>
+          <div id="tdRhythmBody"></div>
+        </section>
+
+        <section class="td-sec" id="tdCourse" aria-labelledby="tdCourseH" hidden>
+          <div class="td-h"><h2 id="tdCourseH">{i:breathe}Resonance course</h2><a class="td-more" href="#rcourse">Your weeks</a></div>
+          <div id="tdCourseBody"></div>
+        </section>
+
+
         <section class="td-sec" aria-labelledby="tdGoalsH">
-          <div class="td-h"><h2 id="tdGoalsH">What do you need?</h2><a class="td-more" href="#practice">Library</a></div>
+          <div class="td-h"><h2 id="tdGoalsH">On the menu</h2><a class="td-more" href="#practice">Full menu</a></div>
           <div class="td-goals" id="tdGoals"></div>
         </section>
 
@@ -48,21 +108,26 @@
         <div class="quick">
           <button class="qk" data-go="resonance-test" style="--qc:var(--hr)"><span class="qi">{i:target}</span><b>Find your resonance rate</b><span id="qkFind">A 10-minute test with a heart sensor</span></button>
           <button class="qk" data-go="heart" style="--qc:var(--accent)"><span class="qi">{i:pulse}</span><b id="qkSensorT">Heart sensor</b><span id="qkSensor">Not connected</span></button>
-          <button class="qk qk-wide" data-go="living" style="--qc:var(--food)"><span class="qi">{i:leaf}</span><b>Healthy living</b><span>Recipes, supplements, sleep habits, morning and evening routines, and light</span></button>
+          <button class="qk qk-wide" data-go="living" style="--qc:var(--food)"><span class="qi">{i:leaf}</span><b>Healthy living</b><span>Recipes, supplements, sleep habits, morning and evening routines, and light, cold and heat</span></button>
         </div>
 
         <div class="note-card td-safety">
           <h3>Before you start</h3>
           <ul class="safety">
-            <li>{i:sounds}<span><b>Use headphones for the beats.</b> On speakers the two tones mix in the air and the binaural beat disappears.</span></li>
+            <li>{i:sounds}<span><b>Use headphones for binaural beats.</b> On speakers the two tones mix in the air and the binaural beat disappears; a monaural or isochronic beat, under Sound, plays on speakers.</span></li>
             <li>{i:volume}<span><b>Keep it quiet.</b> Beats come through best at a low, comfortable level.</span></li>
             <li class="warn">{i:warn}<span><b>Read the safety notes once.</b> Who should ask a doctor before using the beats or the breath holds, and how to wear headphones with a pacemaker. <button type="button" class="sf-link" data-safety="1">Safety notes</button></span></li>
           </ul>
         </div>
 
+        <section class="td-why" aria-labelledby="tdWhyH">
+          <h2 id="tdWhyH">Why a restaurant?</h2>
+          <p>The word comes from the French <i>restaurer</i>, to restore: the first restaurants, in 18th-century Paris, served restorative broths. Entrain serves breath instead. (And <i>entrain</i> is French for gusto.)</p>
+        </section>
+
         <div class="note-card donate-card td-donate">
-          <p><b>Entrain is free and has no ads.</b> If it helps you, a donation keeps it going.</p>
+          <span class="plate dc-jar">{i:jar}</span>
+          <p><b>Entrain has no ads, and most of it is free.</b> The new techniques open with a donation of €1 or more on each device, and every donation keeps it going.</p>
           <a class="btn donate" href="https://ko-fi.com/misterclarity" target="_blank" rel="noopener">{i:cup}Support Entrain on Ko-fi</a>
         </div>
       </section>
-

@@ -22,7 +22,8 @@
     pulseT: 0, tickT: 0, cohT: 0, find: null,
     gen: 0, attaching: false, attempt: 0, step: "",  // connecting: which try, and which step it's on
     log: [], cur: null,        // what happened on each try, and on this one
-    offered: null              // the services a sensor offers when the heart-rate one is missing
+    offered: null,             // the services a sensor offers when the heart-rate one is missing
+    src: ""                    // "cam" while the phone's camera is the sensor (camera.js), "" for Bluetooth
   };
   var FIND_RATES = [6.5, 6, 5.5, 5, 4.5], FIND_STEP = 120;
 
@@ -35,15 +36,17 @@
     H.state = st;
     $("#hr").dataset.state = st;
     bSetT("#hrPillTxt", pill);
+    var ble = H.src !== "cam";            // with the camera on, Connect sensor stays: a sensor takes over from it
     ["#hrConnect", "#gConnect"].forEach(function (sel) {
-      bSetT(sel, (st === "on" || st === "lost") ? "Disconnect" : st === "busy" ? (H.attaching ? "Cancel" : "Connecting…") : "Connect sensor");
+      bSetT(sel, (st === "on" || st === "lost") && ble ? "Disconnect" : st === "busy" ? (H.attaching ? "Cancel" : "Connecting…") : "Connect sensor");
       $(sel).disabled = !hrSupported();
       $(sel).setAttribute("aria-disabled", st === "busy" && !H.attaching ? "true" : "false");   // busy, not disabled, so the button you pressed keeps the focus
     });
-    $("#hrAny").hidden = st === "on" || st === "lost" || !hrSupported();
+    $("#hrAny").hidden = ((st === "on" || st === "lost") && ble) || !hrSupported();
     finderUI();
     hrTiles();
     hrLayout();
+    camUI();
   }
   function hrMsg(s) { bSetT("#hrMsg", s || ""); }
 
@@ -73,6 +76,7 @@
   /* `any` opens the browser's chooser on every nearby device, for sensors
      that offer the heart-rate service but don't advertise it. */
   function hrConnect(any) {
+    if (H.src === "cam") camStop();       // the phone's camera was the sensor: a Bluetooth one takes over (camera.js)
     if (H.state === "busy") { if (H.attaching) hrCancel(); return; }   // the chooser is open, or Cancel was pressed
     if (H.state === "on" || H.state === "lost") { hrDisconnect(); return; }
     if (!hrSupported()) return;
@@ -369,6 +373,7 @@
     }, 1500 * H.tries);
   }
   function hrDisconnect() {
+    if (H.src === "cam") { camStop(); return; }
     H.wantOn = false;
     clearInterval(H.tickT);
     clearInterval(H.cohT);
@@ -471,6 +476,7 @@
     if (H.state === "busy") sub = "Connecting…";
     else if (H.state === "lost") sub = "Reconnecting…";
     else if (H.state !== "on") sub = "Waiting for a sensor";
+    else if (H.src === "cam") sub = live ? "From the camera, beat to beat" : CAM.res && CAM.res.cover ? "Finding your pulse\u2026" : "Fingertip on the camera";
     else if (H.contact === false) sub = "No skin contact";
     else if (!live) sub = (H.connAt && bNow() - H.connAt < 6) ? "Waiting for the first reading\u2026" : "No readings. Is the sensor broadcasting?";
     else sub = H.hasRR ? "Beat to beat" : "Smoothed rate from the sensor";
@@ -560,7 +566,7 @@
 
   /* The live check beside the steps: each line ticks as that step works. */
   function guideCheck() {
-    var st = H.state, live = hrLive(), now = bNow();
+    var cam = H.src === "cam", st = cam ? "off" : H.state, live = !cam && hrLive(), now = bNow();     // the camera isn't a Bluetooth connection
     guideItem("bt", hrSupported() ? "ok" : "no", hrSupported() ? "Ready" : "Not available here. See Your browser.");
     if (st === "on") guideItem("conn", "ok", H.name);
     else if (st === "busy") guideItem("conn", "wait", H.step ? HR_STEPS[H.step][0].charAt(0).toUpperCase() + HR_STEPS[H.step][0].slice(1) + (H.attempt > 1 ? ", try " + H.attempt : "") + "…" : "Connecting…");

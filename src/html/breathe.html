@@ -23,6 +23,8 @@
             <span class="b-stat b-hr" id="bHrStat" title="Heart rate from your sensor" hidden><i class="hr-dot" aria-hidden="true"></i><b id="bHr">—</b> bpm</span>
             <span class="b-stat b-hr" id="bCohStat" title="Coherence score over the last 64 seconds, usually 0 to 8" hidden>coherence <b id="bCoh">—</b></span>
             <span class="b-stat b-mic" id="bMicStat" title="Your breathing pace, as the microphone hears it" hidden>heard <b id="bMic">—</b> /min</span>
+            <span class="b-stat b-belly" id="bBellyStat" title="Your breathing pace, as the phone on your belly counts it" hidden>belly <b id="bBelly">—</b> /min · <span id="bBellyV"></span></span>
+            <span class="b-stat b-ox" id="bOxStat" title="Blood oxygen from your oximeter: a hold ends below 90%" hidden>SpO₂ <b id="bOx">—</b>%</span>
             <span class="b-favs" id="bFav"></span>
           </div>
         </div>
@@ -41,6 +43,7 @@
               <button class="btn b-adjust" id="bAdjust" aria-controls="bPanel" aria-expanded="false">{i:sliders}Adjust</button>
               <button class="btn" id="bReset" disabled>Reset</button>
               <button class="btn" id="bFocus">Focus view</button>
+              <button class="btn b-out" id="bOut" hidden>I need to stop</button>
               <span class="b-msg" id="bMsg" role="status"></span>
             </div>
             <div class="b-dive" id="bDiveRow" hidden>
@@ -48,6 +51,10 @@
               <span><b>At your own risk.</b> Breath holds on dry land only, sitting or lying down, and breathe whenever you need to.</span>
               <button type="button" class="btn small" id="bDiveInfo">Read the cautions</button>
             </div>
+            <div class="b-dive b-ib" id="bIbRow" hidden>{i:warn}<span id="bIbTxt"></span></div>
+            <div class="b-belly-row" id="bBellyRow" hidden>{i:breathe}<span id="bBellyTxt" role="status"></span></div>
+            <div class="b-belly-row b-led-row" id="bLedRow" hidden>{i:music}<span id="bLedTxt" role="status"></span></div>
+            <div class="b-ym-row" id="bYmRow" hidden></div>
             <div class="b-sensor" id="bSensorRow">
               {i:pulse}
               <span id="bSensorTxt">Connect a heart sensor to watch your heart rate follow your breath.</span>
@@ -65,6 +72,7 @@
             <div class="ev-body"><span id="bEvTxt"></span><cite id="bCite"></cite></div>
           </details>
           <div id="bDiveSafe" hidden></div>
+          <div id="bDiveHc"></div>
         </div>
 
         <div class="b-fields" id="bFields">
@@ -115,8 +123,37 @@
             <label class="chip"><input type="radio" name="bvis" value="box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/><circle cx="2.5" cy="8" r="1.5" fill="currentColor" stroke="none"/></svg>Box</label>
             <label class="chip"><input type="radio" name="bvis" value="dial"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 1.8A6.2 6.2 0 1 1 1.8 8"/><circle cx="8" cy="8" r="2.2"/></svg>Dial</label>
             <label class="chip"><input type="radio" name="bvis" value="column"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="1.5" width="6" height="13" rx="3"/><path d="M5 9.5h6"/></svg>Column</label>
+            <label class="chip b-scnchip"><input type="radio" name="bvis" value="scene"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="4.6" r="1.8"/><path d="M1.2 13.5l4.3-6 3 3.8 2-2.4 4.3 4.6z"/></svg>Scene</label>
+            <label class="chip b-gzchip"><input type="radio" name="bvis" value="gaze"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="1.7" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="5.8" stroke-dasharray="1.6 2.2"/></svg>Gaze point</label>
+          </div>
+          <div class="chips b-scn" id="bScn" role="radiogroup" aria-label="Scene" hidden>
+            <label class="chip"><input type="radio" name="bscn" value="clouds" checked> Clouds</label>
+            <label class="chip"><input type="radio" name="bscn" value="water"> Water</label>
+            <label class="chip"><input type="radio" name="bscn" value="leaves"> Leaves</label>
+            <label class="chip"><input type="radio" name="bscn" value="forest"> Forest</label>
+            <label class="chip"><input type="radio" name="bscn" value="fractal"> Fractal</label>
+            <label class="chip"><input type="radio" name="bscn" value="flowers"> Flowers</label>
+            <label class="chip"><input type="radio" name="bscn" value="fire"> Fire</label>
           </div>
           <p class="hint" id="bVisHint">The circle grows as you breathe in and shrinks as you breathe out. The outer arc fills as each phase runs.</p>
+        </div>
+
+        <div class="prime-row" id="bEyesOpt">
+          <div class="prime-label">Eyes closed</div>
+          <label class="so-row so-tg b-eyes"><span class="so-l"><span id="bEyesL">Breathe with your eyes closed</span><small>The visual goes dark, and the sound cues or vibration guide each breath; if both are off, the rising tone comes on. Alpha waves rise within seconds of closing your eyes.</small></span><input type="checkbox" class="sw" id="bEyesOn"></label>
+          <p class="hint"><span id="bEyesHint" aria-live="polite"></span> <a class="b-led-why" href="#l-eyes">What the research says</a></p>
+        </div>
+
+        <div class="prime-row b-lt">
+          <div class="prime-label" id="bltLab">Screen light</div>
+          <div class="chips" id="bLight" role="radiogroup" aria-labelledby="bltLab">
+            <label class="chip on"><input type="radio" name="blight" value="off" checked> Usual</label>
+            <label class="chip"><input type="radio" name="blight" value="auto"> Automatic</label>
+            <label class="chip"><input type="radio" name="blight" value="bright"> Bright</label>
+            <label class="chip"><input type="radio" name="blight" value="warm"> Warm</label>
+            <label class="chip"><input type="radio" name="blight" value="night"> Night</label>
+          </div>
+          <p class="hint" id="bLightHint">The screen as it usually is.</p>
         </div>
 
         <div class="prime-row">
@@ -126,6 +163,7 @@
             <label class="chip on"><input type="radio" name="blen" value="5" checked> 5 min</label>
             <label class="chip"><input type="radio" name="blen" value="10"> 10 min</label>
             <label class="chip"><input type="radio" name="blen" value="15"> 15 min</label>
+            <label class="chip"><input type="radio" name="blen" value="20"> 20 min</label>
             <label class="chip"><input type="radio" name="blen" value="0"> Open-ended</label>
           </div>
         </div>
@@ -149,10 +187,24 @@
           <label class="so-row so-tg b-buzz"><span class="so-l">Vibrate at each change<small>One short buzz to breathe in, one long to breathe out, two light taps for a hold. With or without sound.</small></span><input type="checkbox" class="sw" id="bBuzz"></label>
         </div>
 
+        <div class="prime-row" id="bBellyOpt">
+          <div class="prime-label">Phone on your belly</div>
+          <label class="so-row so-tg b-belly"><span class="so-l"><span id="bBellyL">Count my breaths with the motion sensor</span><small>Lie back with the phone flat on your belly, screen up: each breath tilts it a little, and beside the guide you'll see whether you're following it, faster or slower.</small></span><input type="checkbox" class="sw" id="bBellyOn"></label>
+        </div>
+
+        <div class="prime-row" id="bLedOpt">
+          <div class="prime-label">Breath-led sound <span class="lt-exp">Experimental</span></div>
+          <label class="so-row so-tg b-led"><span class="so-l"><span id="bLedL">Music that follows your breathing</span><small>Its chords swell as you breathe in and ebb as you breathe out. The guide starts at your own pace, then slows gently towards your resonance pace while you keep up. It listens with the phone on your belly or the microphone.</small></span><input type="checkbox" class="sw" id="bLedOn"></label>
+          <div class="b-led-src" id="bLedSrcRow" hidden>
+            <div class="mini-seg b-led-seg" id="bLedSrc" role="group" aria-label="Follow my breathing with"><button type="button" data-v="belly" aria-pressed="true">Phone on my belly</button><button type="button" data-v="mic" aria-pressed="false">Microphone</button></div>
+          </div>
+          <p class="hint"><span id="bLedHint"></span> <a class="b-led-why" href="#l-mymusic">What the research says</a></p>
+        </div>
+
         <div class="prime-row">
           <div class="prime-label">Background sound</div>
           <div class="amb-ctl" data-amb-ctl></div>
-          <p class="hint">Summer rain or crickets on a warm night, made on your device. Whatever you pick plays under any session, track or practice.</p>
+          <p class="hint">Summer rain or crickets on a warm night, with birdsong, a stream, wind or a fire if you like, and music, all made on your device. Whatever you pick plays under any session, track or practice.</p>
         </div>
 
         <p class="b-safety">

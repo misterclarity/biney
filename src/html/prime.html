@@ -1,7 +1,7 @@
       <!-- ============ CUSTOM PRIMER ============ -->
       <section class="view" id="v-prime" aria-labelledby="viewTitle" hidden>
         <div class="tool-page" style="--pcol:var(--stim)">
-        <a class="si-back" href="#practice">{i:back}Library</a>
+        <a class="si-back" href="#practice">{i:back}Menu</a>
         <div class="si-head">
           <div class="si-top"><span class="si-kind">Focus · Sound · 5–20 min</span><span id="primeFav"></span></div>
           <h2>Custom primer</h2>
@@ -39,11 +39,14 @@
               </div>
             </div>
             <ul class="si-need">
-              <li>{i:sounds}<span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
+              <li class="bm-need">{i:sounds}<span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
               <li>{i:volume}<span><b>Low volume</b> a quiet, comfortable level is enough</span></li>
             </ul>
+            <div data-bm-ctl></div>
             <h3>Why before, not during</h3>
             <p>The clearest finding in the meta-analysis is about timing: listening before a task, or before and during it, worked better than listening only while you work. So prime first, get a cue when the block ends, then start.</p>
+            <p class="si-tip nt-after" id="primeAfter"></p>
+            <div class="aq-slot" data-aq="work" id="primeAq"></div>
             <div data-safe="beats"></div>
           </div>
           <div class="si-side">

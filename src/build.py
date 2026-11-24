@@ -6,9 +6,10 @@ Inputs, all in this folder:
   html/*.html     the views, dialogs, player and search, one file each
   html/icons.svg  the icon sprite; {i:name} anywhere in the markup is one of its icons
   js/*.js         the script, in the order of JS below; every file shares one scope
-  styles.css      the stylesheet (with the __POPPINS_BOLD__ placeholder)
-  poppins.b64     base64 of the subset Poppins Bold WOFF
-  poppins-OFL.txt the font's copyright and licence, put next to it in the page (the licence asks that
+  styles.css      the stylesheet (with a __FONT_…__ placeholder for each font)
+  fonts/*.b64     base64 of the three typefaces as WOFF2, subset to Latin: Bricolage Grotesque for headings,
+                  Atkinson Hyperlegible Next for text and DM Mono for times and receipts
+  fonts/OFL.txt   their copyrights and licence, put next to them in the page (the licence asks that
                   every copy carry them)
 Outputs, one folder up:
   index.html            the whole app in one file, with no network requests, under the licence in ../LICENSE
@@ -23,12 +24,12 @@ def rd(name): return open(os.path.join(HERE, name), encoding="utf-8").read()
 
 # the script, in order: what runs at load time runs in this order, and boot.js starts the app
 JS = [
-    "core.js", "tracks.js", "audio.js", "trackpage.js", "lockscreen.js", "builder.js", "prime.js", "dialogs.js", "safety.js",
-    "breathe.js", "breathe-draw.js", "mypatterns.js", "heart.js", "heart-charts.js", "breath-mic.js",
-    "shell.js",
-    "asanas.js", "moves.js", "ambience.js", "quotes.js", "tapping.js", "practice-data.js", "taxonomy.js", "practice.js", "done.js",
-    "library.js", "settings.js", "adapt.js", "stress.js", "nvc.js", "yoga.js", "search.js", "living-data.js", "living.js",
-    "history.js", "trends.js", "favs.js", "today.js", "backup.js",
+    "core.js", "tracks.js", "audio.js", "beatmode.js", "trackpage.js", "lockscreen.js", "builder.js", "prime.js", "dialogs.js", "safety.js", "care.js",
+    "breathe.js", "breathe-draw.js", "scenes.js", "light.js", "pulse.js", "mypatterns.js", "heart.js", "heart-charts.js", "breath-mic.js", "camera.js", "motion.js", "eeg.js", "air.js",
+    "shell.js", "supporter.js",
+    "asanas.js", "moves.js", "movement.js", "ambience.js", "music.js", "yourmusic.js", "breathled.js", "sleepsounds.js", "quotes.js", "tapping.js", "nature.js", "practice-data.js", "taxonomy.js", "practice.js", "done.js", "settle.js", "vocal.js", "touch.js", "mind.js", "cold.js", "eyes.js",
+    "library.js", "settings.js", "adapt.js", "stress.js", "nvc.js", "yoga.js", "search.js", "learn.js", "living-data.js", "living.js",
+    "history.js", "trends.js", "own.js", "course.js", "favs.js", "today.js", "theme.js", "backup.js",
     "boot.js",
 ]
 SOURCES = [(f, rd("js/" + f)) for f in JS]
@@ -140,24 +141,35 @@ NOTICE = """<!--
   program. If not, see <https://www.gnu.org/licenses/>.
 
   Source: https://github.com/misterclarity/biney
-  The Poppins font inside is under the SIL Open Font License 1.1, whose text comes with it below.
+  The fonts inside (Bricolage Grotesque, Atkinson Hyperlegible Next and DM Mono) are under the
+  SIL Open Font License 1.1, whose text comes with them below.
 -->"""
 assert "--" not in NOTICE[4:-3]
-ofl = rd("poppins-OFL.txt").strip()
-assert "*/" not in ofl and "/*__POPPINS_OFL__*/" in rd("styles.css"), "the font licence needs its place in styles.css"
-css = rd("styles.css").replace("__POPPINS_BOLD__", rd("poppins.b64").strip()).replace(
-    "/*__POPPINS_OFL__*/", "/* The font below, under its licence:\n\n" + ofl + "\n*/")
+ofl = rd("fonts/OFL.txt").strip()
+css = rd("styles.css")
+assert "*/" not in ofl and "/*__FONT_OFL__*/" in css, "the fonts' licence needs its place in styles.css"
+FONTS = {"__FONT_BRICOLAGE__": "bricolage", "__FONT_ATKINSON__": "atkinson", "__FONT_MONO_400__": "dmmono-400", "__FONT_MONO_500__": "dmmono-500"}
+for mark, name in FONTS.items():
+    assert css.count(mark) == 1, "styles.css needs one place for " + mark
+    css = css.replace(mark, rd("fonts/" + name + ".b64").strip())
+css = css.replace("/*__FONT_OFL__*/", "/* The fonts below, under their licence:\n\n" + ofl + "\n*/")
+# Light or dark before anything is drawn, so a phone in bed never flashes white: dark when chosen in Settings,
+# or, on Automatic, when the phone is dark or between 9 pm and 5 am. theme.js keeps it up to date after that.
+THEME_JS = ('<script>(function(){try{var s=JSON.parse(localStorage.getItem("entrain.settings")||"{}")||{},t=s.theme,h=new Date().getHours(),'
+            'm=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;'
+            'document.documentElement.dataset.theme=t==="dark"||(t!=="light"&&(m||h>=21||h<5))?"dark":"light"}catch(e){}})();</script>')
 head = """<!DOCTYPE html>
 """ + NOTICE + """
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b1120">
+<meta name="theme-color" content="#1d6a50">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html">
 <link rel="icon" href="__FAVICON__">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+""" + THEME_JS + """
 <title>Entrain — Evidence-Based Binaural Beats</title>
 <meta name="description" content="Binaural beats, paced breathing and live heart-rate biofeedback in one offline page: research-based tracks, a breathing guide with five visuals, Bluetooth heart sensors, coherence and a resonance test.">
 <style>
@@ -165,10 +177,11 @@ head = """<!DOCTYPE html>
 </head>
 <body>
 """
-# the favicon is an inline SVG of the brand mark, so the page stays a single file
-fav = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
-       '<stop offset="0" stop-color="#8e98fc"/><stop offset=".5" stop-color="#fbbf24"/><stop offset="1" stop-color="#5eead4"/>'
-       '</linearGradient></defs><rect width="32" height="32" rx="10" fill="url(#g)"/><rect x="8" y="8" width="16" height="16" rx="4" fill="#0b1120"/></svg>')
+# the favicon is an inline SVG of the brand mark (a cloche with breath rising from it), so the page stays a single file
+fav = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#1d6a50"/>'
+       '<g transform="translate(4 4)" fill="none" stroke="#fbfdfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+       '<path d="M6.5 5c.9-1.3 1.85-1.3 2.75 0s1.85 1.3 2.75 0 1.85-1.3 2.75 0 1.85 1.3 2.75 0"/><circle cx="12" cy="8.6" r="1.1"/>'
+       '<path d="M5 16.5a7 7 0 0 1 14 0"/><path d="M3 19h18"/></g></svg>')
 head = head.replace("__FAVICON__", "data:image/svg+xml," + urllib.parse.quote(fav.replace('"', "'"), safe=" :/=.-,'"))
 
 # a short build id from the sources, for About and feedback (the page can't carry the hash of itself)
@@ -197,7 +210,7 @@ print("wrote sw.js, version", ver, "-", len(files), "files")
 # ---- the preview page for Claude: no manifest or worker, just the app, as a whole document ----
 art = ("<!DOCTYPE html>\n" + NOTICE + '\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
        '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'   # the app pads for the safe areas
-       '<link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html">\n<title>Entrain</title>\n<style>\n' + css + '</style>\n</head>\n<body>\n'
+       '<link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html">\n' + THEME_JS + '\n<title>Entrain</title>\n<style>\n' + css + '</style>\n</head>\n<body>\n'
        + body + "\n<script>" + script + "</script>\n</body>\n</html>\n")
 open(os.path.join(ROOT, "entrain-page.html"), "w", encoding="utf-8").write(art)
 print("wrote entrain-page.html", len(art), "bytes")

@@ -75,7 +75,7 @@
     },
     {
       id: "deep-work", cat: "stim", band: "Beta", name: "Deep Work Block",
-      carrier: 300, beat: 15, minutes: 50, strength: 2,
+      carrier: 300, beat: 15, minutes: 50, strength: 2, brk: true,     // brk: a Restoration Break offered at its end (nature.js)
       desc: "Fifty minutes of a 15 Hz beta beat, sized to a full work or study block: in the 2019 meta-analysis of binaural beats, longer listening went with larger effects.",
       ev: "Time under exposure contributed significantly to the meta-analytic model, with longer periods advisable for maximum effect. Study-focused guidance converges on 25–50 minute blocks followed by a short break.",
       cite: "Garcia-Argibay et al. 2019"

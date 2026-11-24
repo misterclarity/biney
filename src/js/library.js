@@ -45,9 +45,12 @@
     if (m[0] !== m[1]) return m[0] + "–" + m[1] + " min";
     return (d.open ? "up to " : "") + m[0] + " min";
   }
+  // headphones for a beat that plays binaural; a monaural or isochronic one plays on speakers too (beatmode.js)
+  function libPhones(mode) { return bmMode(mode) === "binaural" ? ["phones"] : []; }
   function libNeeds(o) {
     var n = [];
-    if ((o.audio && !(o.opt && o.opt.audio === false)) || o.method === "sound") n.push("phones");     // a beat that starts off needs none
+    // a beat that starts off needs none, and nor does music (Music Break plays on speakers too)
+    if ((o.audio && !(o.opt && o.opt.audio === false)) || (o.method === "sound" && !o.music)) n = n.concat(libPhones(o.phonesOnly ? "binaural" : pOptsOf(o.id).beatMode));
     if (o.sensor === "best") n.push("sensor");
     if (o.method === "move" || (o.posture || []).join() === "walk") n.push("space");      // walking as an option needs no more than a quiet route
     return n;
@@ -64,42 +67,43 @@
     if (d.caution) badges.push(["cau", "Cautions"]);
     return { key: d.id, type: "practice", def: d, name: d.name, blurb: d.blurb, goal: d.goal || "", also: d.also || [],
       method: d.method || "move", posture: d.posture || ["stand"], needs: libNeeds(d), mins: m, minsTxt: libMinsTxt(d, m),
-      href: "#practice/" + d.id, icon: pIcon(d), col: pColor(d), strength: d.strength, badges: badges, prog: d.method === "program" };
+      href: "#practice/" + d.id, icon: pIcon(d), col: pColor(d), strength: d.strength, badges: badges, prog: d.method === "program", sup: !!d.sup };
   }
   function libPattern(b) {
     var t = b.t, per = t.inh + t.sip + t.hold + t.exh + t.rest;
     return { key: "b:" + b.id, type: "pattern", name: patName(b), blurb: b.desc, goal: b.goal || "", also: b.also || [],
       method: "breath", posture: b.posture || ["sit"], needs: [], mins: [1, 60], minsTxt: (Math.round(600 / per) / 10) + " breaths a minute",
-      label: "Breathing guide", href: "#breathe/" + b.id, icon: "breathe", col: "var(--b-in)", strength: b.strength, badges: b.mine ? [["mine", "Yours"]] : [] };
+      label: "Breathing guide", href: "#breathe/" + b.id, icon: "breathe", col: "var(--b-in)", strength: b.strength, badges: b.mine ? [["mine", "Yours"]] : [], sup: !!b.sup };
   }
   function libTrack(t) {
     return { key: "t:" + t.id, type: "track", name: t.name, blurb: t.desc, goal: t.goal, also: t.also || [],
-      method: "sound", posture: t.posture, needs: ["phones"], mins: [t.minutes, t.minutes], minsTxt: t.minutes + " min",
-      label: t.band + " track", href: "#track/" + t.id, icon: "sounds", col: LIB_TRACK_COL[t.cat] || "var(--relax)", strength: t.strength, badges: [] };
+      method: "sound", posture: t.posture, needs: t.notch ? ["phones"] : libPhones(), mins: [t.minutes, t.minutes], minsTxt: t.minutes + " min",
+      label: t.band + " track", href: "#track/" + t.id, icon: "sounds", col: LIB_TRACK_COL[t.cat] || "var(--relax)", strength: t.strength, badges: [], sup: !!t.sup };
   }
+  // the custom primer, Sleep sounds (no beat, so no headphones), the beat builder and the routine builder
   function libTool(id) {
-    var x = TOOLS[id], c = CAT["x:" + id] || {};
+    var x = TOOLS[id], c = CAT["x:" + id] || {}, sl = id === "sleep";
     return { key: "x:" + id, type: "tool", name: x.name, blurb: x.blurb || "", goal: c.goal || "", also: [], method: id === "routine" ? "move" : "sound",
-      posture: c.posture || ["sit"], needs: id === "routine" ? ["space"] : ["phones"], mins: id === "prime" ? [5, 20] : [1, 60],
-      minsTxt: id === "prime" ? "5–20 min" : "your choice", label: id === "prime" ? "Beats before work" : "Tool", nopos: id !== "prime",
-      href: x.href, icon: x.icon, col: id === "routine" ? "var(--accent)" : "var(--stim)", strength: id === "prime" ? x.strength : 0, badges: [] };
+      posture: c.posture || ["sit"], needs: id === "routine" ? ["space"] : sl ? [] : libPhones(), mins: id === "prime" ? [5, 20] : sl ? [15, 60] : [1, 60],
+      minsTxt: id === "prime" ? "5–20 min" : sl ? "15–60 min" : "your choice", label: id === "prime" ? "Beats before work" : "Tool", nopos: id !== "prime" && !sl,
+      href: x.href, icon: x.icon, col: id === "routine" ? "var(--accent)" : sl ? GOAL_COL.sleep : "var(--stim)", strength: id === "prime" || sl ? x.strength : 0, badges: [], sup: !!x.sup };
   }
   function libAll() {
     var out = PRACTICES.map(libPractice);
     BREATHS.forEach(function (b) { if (b.goal) out.push(libPattern(b)); });
     TRACKS.forEach(function (t) { if (t.goal && t.goal !== "tinnitus") out.push(libTrack(t)); });
-    out.push(libTool("prime"));
+    out.push(libTool("prime"), libTool("sleep"));
     out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
     return out;
   }
   // the first few names under a goal, in the library's own order, without working out every
   // practice's length as libAll does: Today's goal tiles need only the names
   function libNames(goal, n) {
-    var out = [], x = libTool("prime");
+    var out = [];
     PRACTICES.forEach(function (d) { if (d.goal === goal) out.push({ key: d.id, name: d.name }); });
     BREATHS.forEach(function (b) { if (b.goal === goal) out.push({ key: "b:" + b.id, name: PATTERN_NAMES[b.id] || b.id }); });
     TRACKS.forEach(function (t) { if (t.goal === goal && goal !== "tinnitus") out.push({ key: "t:" + t.id, name: t.name }); });
-    if (x.goal === goal) out.push(x);
+    [libTool("prime"), libTool("sleep")].forEach(function (x) { if (x.goal === goal) out.push(x); });
     out.sort(function (a, b) { return (CAT[a.key] ? CAT[a.key].rank : 99) - (CAT[b.key] ? CAT[b.key].rank : 99); });
     return out.slice(0, n).map(function (it) { return it.name; });
   }
@@ -166,17 +170,25 @@
       var plan = pPlan(it.def, 0);
       tl = '<span class="si-tl pc-tl" aria-hidden="true">' + plan.steps.map(function (s) { return '<i data-k="' + s.k + '" style="flex:' + s.secs + ' 1 0"></i>'; }).join("") + "</span>";
     }
-    var pn = it.nopos ? [] : it.posture.map(function (p, i) { var n = postureName(p); return i ? n.toLowerCase() : n; });
-    var pos = pn.length > 2 ? pn.slice(0, -1).join(", ") + " or " + pn[pn.length - 1] : pn.join(" or ");      // Sitting, lying or walking
-    var sub = o.sub || [it.label || methodName(it.method), it.minsTxt, pos].filter(Boolean).join(" · ");
+    var pos = libPos(it);
+    var price = /min$/.test(it.minsTxt || "") ? it.minsTxt : "";       // a length goes where a menu puts the price
+    var sub = o.sub || [it.label || methodName(it.method), price ? "" : it.minsTxt, pos].filter(Boolean).join(" · ");
+    var special = !o.compact && it.href === "#practice/" + SERVICES[pServiceNow()][2];
     return '<li class="pc' + (it.prog ? " prog" : "") + (o.compact ? " cmp" : "") + (it.type !== "practice" ? " pc-" + it.type : "") + '" style="--pcol:' + it.col + '"' + (hide ? " hidden" : "") + ">" +
       '<a href="' + esc(it.href) + '" class="pc-a">' +
         '<span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-' + it.icon + '"/></svg></span>' +
-        '<span class="pc-b"><span class="pc-top"><b>' + esc(it.name) + "</b>" + (it.strength ? dots(it.strength) : "") + "</span>" +
-          '<span class="pc-meta"><span class="pc-sub">' + esc(sub) + "</span>" +
+        '<span class="pc-b">' + (special ? '<span class="pc-special">Today’s special</span>' : "") +
+          '<span class="pc-top"><b>' + esc(it.name) + "</b>" + (it.strength ? dots(it.strength) : "") +
+          (price ? '<span class="pc-lead" aria-hidden="true"></span><span class="pc-price">' + esc(price) + "</span>" : "") + "</span>" +
+          '<span class="pc-meta"><span class="pc-sub">' + esc(sub) + "</span>" + (it.sup ? supTag() : "") +     // a new technique, locked: on Today too
             (o.compact ? "" : it.badges.map(function (b) { return '<span class="' + b[0] + '">' + esc(b[1]) + "</span>"; }).join("")) + "</span>" +
           (it.blurb && !o.compact ? '<span class="pc-blurb">' + esc(it.blurb) + "</span>" : "") + tl +
         "</span></a></li>";
+  }
+  // the positions it can be done in: "Sitting, lying or walking"
+  function libPos(it) {
+    var pn = it.nopos ? [] : it.posture.map(function (p, i) { var n = postureName(p); return i ? n.toLowerCase() : n; });
+    return pn.length > 2 ? pn.slice(0, -1).join(", ") + " or " + pn[pn.length - 1] : pn.join(" or ");
   }
   function libSection(g, title, lede, icon, items, cap, extra) {
     var more = cap && items.length > cap && !LIB.open[g];
@@ -188,7 +200,7 @@
   function libBuildRow() {
     return '<li class="pc pc-build" style="--pcol:var(--accent)"><a href="#yoga" class="pc-a"><span class="pc-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span>' +
       '<span class="pc-b"><span class="pc-top"><b>Routine builder</b></span><span class="pc-meta"><span class="pc-sub">Tool · your choice</span></span>' +
-      '<span class="pc-blurb">Pick from ' + ASANAS.length + " yoga poses, stretches, mobility drills and capoeira moves, set each one's time, and save the routine. Each comes with its own drawing and spoken cues, offline.</span></span></a></li>";
+      '<span class="pc-blurb">Pick from ' + ASANAS.length + " yoga poses, stretches, mobility drills, qigong and capoeira moves, set each one's time, and save the routine. Each comes with its own drawing and spoken cues, offline.</span></span></a></li>";
   }
   // a chip that toggles a choice, with how many it would show alongside the other rows' choices
   // (no count for "All" and "Any": the line under the chips gives the total)

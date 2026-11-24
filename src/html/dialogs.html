@@ -52,11 +52,97 @@
   <div class="modal-card dv-card" role="dialog" aria-modal="true" aria-labelledby="dvTitle">
     <h2 id="dvTitle">Swim &amp; dive: read this first</h2>
     <ul class="dv-list" id="dvList"></ul>
+    <div id="dvHc"></div>
     <p class="hint">The research behind it is in Learn, under Breath training for swimming and diving.</p>
     <div class="pm-actions">
       <button class="btn primary" id="dvGo">I understand the risks</button>
       <button class="btn" id="dvClose">Not now</button>
     </div>
+  </div>
+</div>
+
+
+<!-- ============ INTENSE BREATHWORK: rest between blocks, and Wim Hof's rounds for the day (care.js) ============ -->
+<div class="modal" id="ibModal" hidden>
+  <div class="modal-card ib-card" role="dialog" aria-modal="true" aria-labelledby="ibTitle">
+    <h2 id="ibTitle">Rest first?</h2>
+    <p id="ibTxt"></p>
+    <p class="hint">Entrain's own rule, following the advice to cap rounds of intense breathing and leave out back-to-back blocks.</p>
+    <div class="pm-actions">
+      <button class="btn primary" id="ibRest">Rest first</button>
+      <button class="btn" id="ibGo">Start anyway</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============ SETTLE: after I need to stop (settle.js) ============ -->
+<div class="modal stl" id="stlModal" hidden>
+  <div class="modal-card stl-card" role="dialog" aria-modal="true" aria-labelledby="stlTitle">
+    <h2 id="stlTitle">Settle</h2>
+    <p class="stl-lead">The session has ended and the sound is off. Keep your eyes open, and feel your feet on the floor and the seat under you.</p>
+    <canvas id="stlCanvas" class="night" aria-hidden="true"></canvas>
+    <p class="stl-cue" id="stlCue" aria-live="polite"></p>
+    <p class="stl-n" id="stlN"></p>
+    <p>Then look around you: name five things you can see, four you can touch, three you can hear, two you can smell and one you can taste.</p>
+    <div class="pm-actions">
+      <button class="btn primary" id="stlDone">Done</button>
+      <button class="btn" id="stlGround">{i:leaf}5-4-3-2-1 Grounding</button>
+    </div>
+    <p class="hint">If this keeps happening, or a practice often leaves you upset, talk to your doctor or a mental-health professional before you carry on with it. If you feel unsafe right now, call your local emergency number.</p>
+  </div>
+</div>
+
+
+<!-- ============ SOOTHING TOUCH: this screen's real size, against a bank card (touch.js) ============ -->
+<div class="modal tc" id="tcModal" hidden>
+  <div class="modal-card tc-card" role="dialog" aria-modal="true" aria-labelledby="tcTitle">
+    <h2 id="tcTitle">Match a bank card</h2>
+    <p>Lay a bank card on the screen sideways, its top edge on the upper line; its far end can hang over the edge. Then size the box until the lower line meets the card's bottom edge.</p>
+    <div class="tc-box" id="tcBox" aria-hidden="true"><span>Top edge of the card</span><span>Bottom edge</span></div>
+    <div class="tc-adj">
+      <button class="tc-b" id="tcLess" aria-label="Smaller">−</button>
+      <input type="range" id="tcRange" min="25" max="95" step="0.1" aria-label="Size of the box">
+      <button class="tc-b" id="tcMore" aria-label="Larger">+</button>
+    </div>
+    <p class="hint" id="tcSaid" aria-live="polite"></p>
+    <div class="pm-actions">
+      <button class="btn primary" id="tcSave">Save</button>
+      <button class="btn" id="tcUsual">Use the usual size</button>
+      <button class="btn" id="tcCancel">Not now</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============ NEW TECHNIQUES: unlocked on this device with a donation (supporter.js) ============ -->
+<div class="modal" id="supModal" hidden>
+  <div class="modal-card sup-card" role="dialog" aria-modal="true" aria-labelledby="supTitle">
+    <h2 id="supTitle">Unlock the new techniques</h2>
+    <p class="sup-for" id="supFor" hidden></p>
+    <p>The techniques from the brain-wave guide open with a donation of €1 or more on Ko-fi, once on each device.</p>
+    <ol class="sup-steps" id="supSteps">
+      <li>
+        <p>Your device code:</p>
+        <div class="sup-dev"><code class="mono" id="supDev"></code><button class="btn" id="supCopy">Copy</button></div>
+        <p class="sup-said" id="supSaid" aria-live="polite" hidden></p>
+      </li>
+      <li>
+        <p>Donate €1 or more on Ko-fi and put this code in your message.</p>
+        <a class="btn donate" id="supKofi" href="https://ko-fi.com/misterclarity" target="_blank" rel="noopener">{i:cup}Donate on Ko-fi</a>
+      </li>
+      <li>
+        <p>You'll get an activation link by email. Open it on this device, or paste the code here. If you use Entrain from your Home Screen, paste the code here: the link opens in your browser instead.</p>
+        <div class="sup-paste">
+          <input id="supIn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Activation code or link" aria-label="Activation code or link">
+          <button class="btn primary" id="supGo">Activate</button>
+        </div>
+      </li>
+    </ol>
+    <p class="sup-res" id="supRes" aria-live="polite" hidden></p>
+    <p class="sup-warn" id="supWarn" hidden></p>
+    <p class="hint">It unlocks this device and this browser only. On another device, or once this browser's data is cleared, a new donation unlocks it there. Backups don't carry it.</p>
+    <div class="pm-actions"><button class="btn" id="supClose">Not now</button></div>
   </div>
 </div>
 
@@ -104,4 +190,45 @@
   </div>
 </div>
 
+
+<!-- ============ CHECK IN: your mood and stress before a session, and after a breathing session or a track (own.js) ============ -->
+<div class="modal ci" id="ciModal" hidden>
+  <div class="modal-card ci-mcard" role="dialog" aria-modal="true" aria-labelledby="ciTitle">
+    <h2 id="ciTitle">Check in</h2>
+    <p id="ciWhat"></p>
+    <div class="ci-qs" id="ciQs"></div>
+    <div class="ci-res" id="ciRes" aria-live="polite" hidden></div>
+    <div class="pm-actions">
+      <button class="btn primary" id="ciGo">Start</button>
+      <button class="btn" id="ciSkip">Skip</button>
+    </div>
+    <p class="hint">Kept in your history on this device, and set against your usual change. <a href="#st-checkin">Check-ins in Settings</a></p>
+  </div>
+</div>
+
+
+<!-- ============ LIGHT PULSE AT 40 HZ: asked each time before it starts, and its stage (pulse.js) ============ -->
+<div class="modal" id="lpModal" hidden>
+  <div class="modal-card dv-card lp-ask" role="dialog" aria-modal="true" aria-labelledby="lpTitle">
+    <h2 id="lpTitle">Before the light pulse</h2>
+    <ul class="dv-list" id="lpList">
+      <li>It flickers 40 times a second. Flashing light can set off a seizure in people with photosensitive epilepsy, sometimes their first, and it's commonest in children and young people: keep it away from children.</li>
+      <li>End it at once, with a tap anywhere, if you feel unwell, dizzy or sick, get a headache, see odd colours or patterns, or notice a twitch. Flicker can bring on a migraine in some people: with migraines, ask your doctor first.</li>
+      <li>Sit down in a well-lit room, with the phone at arm's length, and look at the glow or near it. Never while driving, cycling or walking.</li>
+      <li>It ends by itself after ten minutes, when the sound stops, if the screen falls behind, or when Entrain goes out of sight.</li>
+    </ul>
+    <label class="so-ok lp-ok"><input type="checkbox" id="lpOk"> I don't have epilepsy, and flashing light has never given me a seizure.</label>
+    <p class="hint">Asked each time. Why it's this gentle, and the research behind it, are in Learn under Light pulse.</p>
+    <div class="pm-actions">
+      <button class="btn primary" id="lpYes" disabled>Start the light pulse</button>
+      <button class="btn" id="lpNo">Not now</button>
+    </div>
+  </div>
+</div>
+<div class="lp-stage" id="lpStage" role="dialog" aria-modal="true" aria-labelledby="lpStT" aria-describedby="lpStHint" hidden>
+  <div class="lp-glow" id="lpGlow" aria-hidden="true"></div>
+  <div class="lp-head"><h2 id="lpStT">Light pulse</h2><span class="lp-left" id="lpLeft">10:00 left</span></div>
+  <p class="lp-hint" id="lpStHint">Rest your eyes on the glow, or near it. Tap anywhere to end it; the sound plays on.</p>
+  <div class="lp-foot"><button class="btn lp-end" id="lpEnd">End the light pulse</button><button class="ses-out lp-out" id="lpOut">I need to stop</button></div>
+</div>
 

@@ -48,14 +48,15 @@
   function figFlip(o, side) { if (side === "left") for (var k in o) o[k] = [-o[k][0], o[k][1]]; return o; }
 
   /* An SVG of the pose, framed so it sits on its ground line. A moving figure passes a
-     fixed frame (box), so it doesn't change size, and each frame is set down on that floor. */
+     fixed frame (box), so it doesn't change size, and each frame is set down on that floor,
+     or lifted off it by f.lift (rising onto the toes, which the drawing's point feet can't show). */
   function figSVG(f, side, cls, box, dx) {
     var o = figPts(f), k, flip = side === "left";
     if (dx) for (k in o) o[k] = [o[k][0] + dx, o[k][1]];
     figFlip(o, side);
     var b = figBounds(o), over = f.over || [], front = "";
     if (box && !f.top) {
-      var dy = box.ground - 3 - b.maxY;
+      var dy = box.ground - 3 - b.maxY - (f.lift || 0);
       for (k in o) o[k] = [o[k][0], o[k][1] + dy];
       b = figBounds(o);
     }
@@ -106,14 +107,14 @@
      next key takes, relative to the others; circles (lin) move at an even speed.
      Whatever stays on the floor from one key to the next (a planted foot, a hand)
      is held still, so feet don't skate while the body moves over them. */
-  var FIG_NUM = ["torso", "head", "pelvis", "bend"], FIG_ARR = ["armR", "armL", "legR", "legL", "arm", "arm2", "leg", "leg2"];
+  var FIG_NUM = ["torso", "head", "pelvis", "bend", "lift"], FIG_ARR = ["armR", "armL", "legR", "legL", "arm", "arm2", "leg", "leg2"];
   function fAng(x, y, u) { var d = ((y - x) % 360 + 540) % 360 - 180; return x + d * u; }   // the short way round
   function figLerp(a, c, u) {
     var f = { view: a.view, top: a.top, wall: a.wall, over: u < 0.5 ? a.over : c.over };
     FIG_NUM.forEach(function (k) {
       if (a[k] === undefined && c[k] === undefined) return;
       var x = a[k] !== undefined ? a[k] : k === "pelvis" ? (a.torso || 0) : 0, y = c[k] !== undefined ? c[k] : k === "pelvis" ? (c.torso || 0) : 0;
-      f[k] = k === "bend" ? x + (y - x) * u : fAng(x, y, u);
+      f[k] = k === "bend" || k === "lift" ? x + (y - x) * u : fAng(x, y, u);
     });
     FIG_ARR.forEach(function (k) {
       var x = a[k] || (k === "arm2" ? a.arm : k === "leg2" ? a.leg : null), y = c[k] || (k === "arm2" ? c.arm : k === "leg2" ? c.leg : null);
@@ -130,6 +131,7 @@
     if (f.view === "front") { m.armR = fNeg(f.armL); m.armL = fNeg(f.armR); m.legR = fNeg(f.legL); m.legL = fNeg(f.legR); }
     else ["arm", "arm2", "leg", "leg2"].forEach(function (k) { if (f[k]) m[k] = fNeg(f[k]); });
     if (f.over) m.over = f.over.map(function (k) { return f.view === "front" ? sw[k] : k; });
+    if (f.lift) m.lift = f.lift;
     if (f.d) m.d = f.d;
     if (f.w !== undefined) m.w = f.w;
     return m;
@@ -343,9 +345,9 @@
   var ASANA = {};
   ASANAS.forEach(function (a) { ASANA[a.id] = a; });
   // the library filters by two things: what kind of movement, and the position it starts from
-  var A_TYPES = [["all", "All"], ["yoga", "Yoga poses"], ["stretch", "Stretches"], ["mobility", "Mobility"], ["capoeira", "Capoeira"]];
+  var A_TYPES = [["all", "All"], ["yoga", "Yoga poses"], ["stretch", "Stretches"], ["mobility", "Mobility"], ["capoeira", "Capoeira"], ["qigong", "Qigong"]];
   var A_POSES = [["all", "Any position"], ["stand", "Standing"], ["fours", "All fours"], ["seat", "Seated"], ["lie", "Lying"]];
-  function aType(a) { return a.cat === "capoeira" ? "capoeira" : a.cat === "mobility" ? (a.move ? "mobility" : "stretch") : "yoga"; }
+  function aType(a) { return a.cat === "capoeira" || a.cat === "qigong" ? a.cat : a.cat === "mobility" ? (a.move ? "mobility" : "stretch") : "yoga"; }
   function aPos(a) { return a.pos === "supine" || a.pos === "prone" ? "lie" : a.pos; }
 
   /* Moving between positions gets a short spoken transition. */

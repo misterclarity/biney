@@ -1,10 +1,12 @@
   /* -------------------------------- settings --------------------------------
      What every practice starts with (a practice can change its own under Options on its page),
-     the background sound, what's kept of reflections, how the screen behaves, your data
-     (backup.js), the feedback form, and About with the build.
+     the background sound, the scenes you find restful (scenes.js), what's kept of reflections, check-ins and the daily rhythm (own.js),
+     how the screen behaves and its light
+     (light.js), the new techniques
+     (supporter.js), your data (backup.js), the feedback form, and About with the build.
   ------------------------------------------------------------------------------ */
 
-  var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true };
+  var ST = { screenSessions: true, screenTracks: true, sleepDim: false, lockControls: true, theme: "auto" };
 
   function stLoad() {
     try {
@@ -21,7 +23,7 @@
   function stDefault(k, v) {
     var g = pOptDefaults();
     g[k] = v;
-    store.set("pOpt", JSON.stringify(g));
+    pOptKeep(g);
     if (P_OWN.indexOf(k) < 0) P.opt[k] = v;                   // voice choice and keeping reflections: everywhere, now
     else if (!pBusy() && P.optFor) P.opt = pOptsOf(P.optFor);
   }
@@ -34,7 +36,7 @@
     var g = pOptDefaults(), own = stOwn(), speech = !!window.speechSynthesis;
     var names = own.map(function (d) { return d.name; });
     var list = names.length > 1 ? names.slice(0, -1).join(", ") + " and " + names[names.length - 1] : names[0];
-    $("#stBody").innerHTML =
+    $("#stBody").innerHTML = hcCard() +
       '<section class="st-card" aria-labelledby="stP"><h2 id="stP">Practices</h2>' +
         '<p class="st-note">What every practice starts with. A practice can change these for itself under Options on its own page.</p>' +
         pToggle("stVoice", "Spoken guidance", g.voice, speech ? "Uses your device's own voice; captions always show." : "This browser has no speech; captions only.", !speech) +
@@ -50,28 +52,41 @@
           stSeg("stAna", [[0, "Off"], [120, "2 min"], [180, "3 min"], [300, "5 min"]], g.ana) + "</div>" +
         (own.length ? '<div class="st-own"><span>' + esc(list) + (own.length === 1 ? " has" : " have") + " options of " + (own.length === 1 ? "its" : "their") + ' own.</span>' +
           '<button class="btn small" id="stOwnReset">Use the defaults for ' + (own.length === 1 ? "it" : "all of them") + "</button></div>" : "") +
-      "</section>" +
-      '<section class="st-card" aria-labelledby="stA"><h2 id="stA">Background sound</h2>' +
-        '<p class="st-note">Rain or crickets under practices, breathing sessions and tracks, made on your device.</p>' + ambCtl() +
-      "</section>" +
+      "</section>" + bmCard() +
+      '<section class="st-card" id="st-amb" aria-labelledby="stA"><h2 id="stA">Background sound</h2>' +
+        '<p class="st-note">Rain or crickets under practices, breathing sessions and tracks, made on your device. Add birdsong, a stream, wind or a fire, ' +
+        'or have one on its own: each goes on and off by itself, since people differ in which natural sounds they find pleasant. <a href="#l-nature">What the research says</a></p>' +
+        '<p class="st-note">Music made on your device can play under them too, and a practice can keep a choice of its own under Options. ' +
+        '<a href="#l-music">Music and the research</a></p>' + ambCtl() +
+      "</section>" + ymStCard() + scnCard() + aqCard() +
       '<section class="st-card" aria-labelledby="stR"><h2 id="stR">Reflections</h2>' +
         pToggle("stKeep", "Keep a copy on this device", g.nvcSave, "Your writing is never sent anywhere. While this is on, an unfinished reflection is kept too, so closing the app doesn't lose it. Turn it off to keep nothing.") +
-      "</section>" +
+      "</section>" + ciStCard() +
       '<section class="st-card" id="st-screen" aria-labelledby="stS"><h2 id="stS">Screen</h2>' +
+        '<div class="so-row so-seg"><span class="so-l">Appearance<small>Automatic is dark when your phone is, and from 9 pm to 5 am. ' +
+          "The practices for sleep always turn to dim, warm bedtime colours, for use in bed.</small></span>" +
+          stSeg("stTheme", [["auto", "Automatic"], ["light", "Light"], ["dark", "Dark"]], ST.theme) + "</div>" +
         pToggle("stScrSes", "Keep the screen on during practices and breathing", ST.screenSessions, "Also for ten minutes into a pause.") +
         pToggle("stScrTrk", "Keep the screen on while a track plays", ST.screenTracks, "Turn this off to let the screen turn off as usual while you listen.") +
         (msOk() ? pToggle("stLock", "Tracks on the lock screen", ST.lockControls, "Play, pause and stop a track from the lock screen and the notifications. As with any media app, a playing track pauses music in other apps, and a call pauses the track.") : "") +
         pToggle("stDim", "Dim the screen in sleep steps", ST.sleepDim, "Sleep Descent's drift, the power nap, Cognitive Shuffle and Autogenic Training's bedtime ending go almost dark. The screen still stays on.") +
-      "</section>" + bkCard() +
+      "</section>" + ltCard() + supCard() + bkCard() +
       '<section class="st-card st-fb" id="st-feedback" aria-labelledby="stF"><h2 id="stF">Feedback</h2>' + fbForm() + "</section>" +
       '<section class="st-card st-about" aria-labelledby="stI"><h2 id="stI">About</h2>' +
         '<p class="st-note">&copy; 2026 misterclarity. A personal, non-commercial project, and free software under the GNU AGPL, version 3. <a href="#l-impressum">Impressum, licence and credits</a></p>' +
         '<p class="st-note">Build <span class="mono" id="stBuild">' + BUILD + '</span></p>' +
-        '<p class="st-note">Entrain is free and has no ads. If it helps you, a donation keeps it going.</p>' +
+        '<p class="st-note">Entrain has no ads, and most of it is free. The techniques from the brain-wave guide open with a donation of €1 or more on each device, and every donation keeps it going.</p>' +
         '<a class="btn donate" href="' + DONATE + '" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-cup"/></svg>Support Entrain on Ko-fi</a>' +
       "</section>";
     stWire();
     fbWire();
+    supStWire();
+    hcStWire();
+    scnStWire();
+    ymStWire();
+    ltStWire();
+    aqStWire();
+    ciStWire();
     bkWire();
     pFillVoices(g.voiceName, "#stVoiceSel");
   }
@@ -191,6 +206,13 @@
       if (!pBusy() && P.optFor) P.opt = pOptsOf(P.optFor);
       stRender();
       toast("Every practice now uses the defaults.");
+    });
+    var th = $("#stTheme");
+    th.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      th.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      themeSet(b.dataset.v);
     });
     on("#stScrSes", function () { ST.screenSessions = this.checked; stSave(); wlSync(); });
     on("#stScrTrk", function () { ST.screenTracks = this.checked; stSave(); wlSync(); });

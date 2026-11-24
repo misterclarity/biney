@@ -1,7 +1,8 @@
   /* ---------------------------------- today ----------------------------------
-     The first screen: your breathing pattern ready to start, your favourites, what you did
-     lately and the last seven days from the history, a suggestion for the time of day, and
-     the six goals into the library.
+     The first screen, the restaurant's front: a greeting, the special now being served for the
+     time of day, your breathing pattern ready to start (from the breath bar), the Stress Check,
+     your usuals (favourites), what you did lately and the last seven days from the history,
+     and the six goals into the menu.
   ---------------------------------------------------------------------------- */
 
   var GOAL_NAMES = 3;                   // how many of its own each goal tile names
@@ -28,6 +29,7 @@
       bSetT("#qkFind", "Last result: " + H.find.best + " breaths a minute, " + d);
     } else bSetT("#qkFind", "A 10-minute test with a heart sensor");
     shellSensor();
+    hcOfferSync();                      // the health check, until it's answered or put off (care.js)
     pSuggest();
     todayRender();
     drawHomeWave();
@@ -46,13 +48,17 @@
     if (l.length) {
       var w = hWeek();
       $("#tdRecentBody").innerHTML = '<div class="td-wk"><div class="td-wt"><span>Last 7 days</span>' + hTotals(w) + "</div>" + hDays(w) + "</div>" +
+        owHtml("tdDay") +                                 // today's minutes and the days in a row (own.js)
         '<ul class="hi-list">' + hLatest(3).map(function (e) { return hRow(e, true); }).join("") + "</ul>";
     }
+
+    rhmSync();                          // the daily rhythm, or its offer (own.js)
+    rcTodaySync();                      // the resonance course, ticked off (course.js)
 
     // the six goals, each with the first few of its own
     $("#tdGoals").innerHTML = GOALS.map(function (g) {
       var names = libNames(g.id, GOAL_NAMES);
-      return '<a class="td-goal" href="#goal/' + g.id + '" style="--gcol:' + GOAL_COL[g.id] + '">' +
+      return '<a class="td-goal" href="#goal/' + g.id + '">' +
         '<span class="td-gi"><svg class="i" aria-hidden="true"><use href="#i-' + g.icon + '"/></svg></span>' +
         '<b>' + esc(g.name) + '</b><span class="td-gn">' + esc(names.join(", ")) + "</span></a>";
     }).join("");
@@ -90,6 +96,12 @@
   }
 
   function todayInit() {
+    // the special's Start: its page opens and it begins; with something already running, back to that
+    $("#sgStart").addEventListener("click", function () {
+      if (pBusy()) { pOpen(); return; }
+      P.autoGo = this.dataset.id;
+      location.hash = "practice/" + this.dataset.id;
+    });
     $("#homeStart").addEventListener("click", function () {
       if (pBusy()) { pOpen(); return; }
       goView("breathe");

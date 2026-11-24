@@ -1,7 +1,8 @@
   /* -------------------------------- dialogs --------------------------------
      Two blocking dialogs: the headphone check before the first beat, and the tinnitus pitch
      match before the notched track. Focus goes back where it was when one closes, and Tab
-     stays inside while one is open.
+     stays inside while one is open (in the others too: the safety note, Swim & dive's cautions,
+     unlocking the new techniques, matching a bank card for Soothing Touch, and the light pulse's question).
   ---------------------------------------------------------------------------- */
 
   var lastFocus = null;
@@ -24,8 +25,9 @@
 
   var pendingPlay = null;
 
-  function gate(fn) {
-    if (store.get("stereo") || A.checkSkipped) { fn(); return; }
+  // mode: how the beat will play (beatmode.js); monaural and isochronic beats need no headphones, so no check
+  function gate(fn, mode) {
+    if (store.get("stereo") || A.checkSkipped || (mode && mode !== "binaural")) { fn(); return; }
     pendingPlay = fn;
     openCheck();
   }
@@ -104,7 +106,8 @@
       showResult("bad", "No channel separation.",
         " You are on speakers, a mono device, or a Bluetooth connection that has collapsed to one " +
         "channel. The two tones are mixing before they reach you, so there is no binaural beat \u2014 " +
-        "just a hum. Wired stereo headphones are the reliable fix.", "Continue anyway");
+        "just a hum. Wired stereo headphones are the reliable fix. On speakers, a monaural or isochronic beat " +
+        "works instead: choose it under Sound on the beat's page.", "Continue anyway");
       return;
     }
     showResult("bad", "Nothing came through.",
@@ -231,7 +234,7 @@
     // they're all blocking, so Tab has to stay inside them
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Tab") return;
-      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
+      var box = ["#sfModal", "#scModal", "#pmModal", "#dvModal", "#supModal", "#ibModal", "#stlModal", "#tcModal", "#ciModal", "#lpModal"].map(function (q) { return $(q); }).filter(function (m) { return !m.hidden; })[0] || null;
       if (!box) return;
       var all = box.querySelectorAll("button, input, a[href], select, textarea");
       var list = [], i;

@@ -111,7 +111,7 @@ async function untilStep(p, re, max = 120000) { const t0 = Date.now(); while (Da
     await p.evaluate(() => location.hash = 'practice'); await p.waitForTimeout(200);
     ok(await vis(p, '.pc-build') && /Routine builder/.test(await t(p, '.pc-build')), 'Practice shows the Routine builder');
     await p.click('.pc-build a'); await p.waitForTimeout(300);
-    ok(await p.evaluate(() => location.hash) === '#yoga' && await p.$$eval('#ybLib li', l => l.length) === 56 && await t(p, '#ybLibN') === '56 in all' && await vis(p, '#ybEmpty'), 'builder opens with the 56-item movement library');
+    ok(await p.evaluate(() => location.hash) === '#yoga' && await p.$$eval('#ybLib li', l => l.length) === 65 && await t(p, '#ybLibN') === '65 in all' && await vis(p, '#ybEmpty'), 'builder opens with the 65-item movement library');
     await p.click('#ybPos [data-pos=seat]'); await p.waitForTimeout(100);
     ok(await p.$$eval('#ybLib li', l => l.length) === 7 && await t(p, '#ybLibN') === '7 poses and moves', 'position filter: 7 seated poses and stretches');
     await p.click('#ybCats [data-cat=yoga]'); await p.waitForTimeout(100);

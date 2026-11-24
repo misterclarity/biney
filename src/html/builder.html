@@ -1,7 +1,7 @@
       <!-- ============ BEAT BUILDER ============ -->
       <section class="view" id="v-builder" aria-labelledby="viewTitle" hidden>
         <div class="tool-page" style="--pcol:var(--stim)">
-        <a class="si-back" href="#practice">{i:back}Library</a>
+        <a class="si-back" href="#practice">{i:back}Menu</a>
         <div class="si-head">
           <div class="si-top"><span class="si-kind">Make your own · 5–60 min</span><span id="beatsFav"></span></div>
           <h2>Beat builder</h2>
@@ -27,12 +27,13 @@
                   <p class="hint">Longer exposures performed better in meta-analysis.</p>
                 </div>
               </div>
-              <div class="band-readout">Left ear <b id="cL">250 Hz</b> · Right ear <b id="cR">260 Hz</b></div>
+              <div class="band-readout" id="cEars">Left ear <b id="cL">250 Hz</b> · Right ear <b id="cR">260 Hz</b></div>
             </div>
             <ul class="si-need">
-              <li>{i:sounds}<span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
+              <li class="bm-need">{i:sounds}<span><b>Headphones</b> each ear gets its own tone; on speakers they mix and the beat disappears <button class="btn link si-check" data-check="1">Check yours</button></span></li>
               <li>{i:volume}<span><b>Low volume</b> a quiet, comfortable level is enough</span></li>
             </ul>
+            <div data-bm-ctl></div>
             <h3>Choosing the numbers</h3>
             <p>Beats come through most clearly on carriers between about 200 and 500&nbsp;Hz, and the effect breaks down once the two tones are more than 30 to 35&nbsp;Hz apart. <a href="#l-bands">The frequency bands</a> on the Learn page say what each range of beats has been studied for.</p>
             <div data-safe="beats"></div>
