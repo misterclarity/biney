@@ -741,7 +741,7 @@ const endNow = p => p.evaluate(() => { const b = document.querySelector('#sEnd')
       ok(trk === 0 && ses === 0, 'with the screen options off, a track and a practice let the screen turn off');
       await p.evaluate(() => location.hash = 'settings'); await p.waitForTimeout(200);
       await p.click('label:has(#stScrSes)'); await p.click('label:has(#stScrTrk)'); await p.click('label:has(#stDim)'); await p.waitForTimeout(80);
-      ok(await E(p, () => JSON.stringify(window.__entrain.ST)) === '{"screenSessions":true,"screenTracks":true,"sleepDim":true,"lockControls":true}', 'the screen settings are kept');
+      ok(await E(p, () => JSON.stringify(window.__entrain.ST)) === '{"screenSessions":true,"screenTracks":true,"sleepDim":true,"lockControls":true,"theme":"auto"}', 'the screen settings are kept');
       await p.evaluate(() => location.hash = 'practice/sleep-descent'); await p.waitForTimeout(250);
       await p.click('#sGo'); await p.waitForTimeout(250);
       await jumpTo(p, /^Drift$/); await p.waitForTimeout(150);
